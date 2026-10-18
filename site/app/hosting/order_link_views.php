@@ -45,7 +45,8 @@ function hosting_order_links_context(string $orderId,int $client,bool $asClient=
         // Never return credentials, provider identities, quotas or private policy text to a client.
         if($asClient)return ['ready'=>$ready,'progress'=>$progress];
         $profile=provider_settings_ready()?provider_settings_profile():null;
-        return ['ready'=>$ready,'progress'=>$progress,'profile'=>$profile,'order'=>$order];
+        $catalogOrigin=$row===null?hosting_catalog_agreement_origin($order->data()['agreement']['id'],$client):null;
+        return ['ready'=>$ready,'progress'=>$progress,'profile'=>$profile,'order'=>$order,'catalog_origin'=>$catalogOrigin];
     });
 }
 

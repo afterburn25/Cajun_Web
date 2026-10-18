@@ -6,6 +6,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import subprocess
 import zipfile
 
@@ -66,7 +67,13 @@ def fields(response, action, selector=None, field='action'):
     return matches[0]
 
 
-def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document_root):
+def target_version(repo):
+    value = (Path(repo) / "VERSION").read_text(encoding="utf-8").strip()
+    assert re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", value), "Invalid candidate version"
+    return value
+
+
+def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document_root, hosting_evidence):
     """Apache already serves installed (at / or /subfolder); DB prefix must be unused."""
     repo, installed, qa = Path(repo), Path(installed), Path(qa)
     document_root = Path(document_root).resolve()
@@ -75,8 +82,9 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     assert os.environ.get('CWP_TEST_DATABASE') == 'cwp_test'
     assert installed.is_relative_to(repo / 'test-runtime')
     baseline = repo / 'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'
-    updates = list((repo / 'dist').glob('CajunWebPro-1.26.0-UPDATE.zip'))
-    assert len(updates) == 1, 'Bind this release fixture only after1.26 scope/version freeze.'
+    candidate_version = target_version(repo)
+    updates = list((repo / 'dist').glob('CajunWebPro-' + candidate_version + '-UPDATE.zip'))
+    assert len(updates) == 1, 'Bind this release fixture only after candidate scope/version freeze.'
     unpack(baseline, installed, BASELINE_SHA)
     checks = []
 
@@ -86,6 +94,8 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
 
     def command(helper, mode):
         arguments = [php, str(repo / 'tests' / helper), str(installed), mode]
+        if helper == 'release_126_provider_fixture.php' and mode in ('catalog-read', 'catalog-state', 'catalog-replay'):
+            arguments.append(candidate_version)
         if helper == 'organized_update_fixture.php':
             arguments.append(str(document_root))
         result = subprocess.run(arguments,
@@ -254,7 +264,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     config_bytes = (installed / 'config.php').read_bytes()
     guard_bytes = (installed / '.installed.php').read_bytes()
     unpack(updates[0], installed)
-    updater = base + '/cwp-update-1.26.0/owner-update.php'
+    updater = base + '/cwp-update-' + candidate_version + '/owner-update.php'
 
     def update(action):
         response = submit(owner, updater, action,
@@ -298,6 +308,8 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     ok('Interrupted update denies application under actual Apache', owner.get(admin, timeout=120).status_code == 403)
     update('apply')
     ok('First update retains every original table row column and private file', retained(initial, snapshot()))
+    from release_126_hosting_records import before_setup, continue_after_retention
+    before_setup(repo, installed, base, prefix, php, candidate_version, owner, snapshot, hosting_evidence, qa)
     before_get = snapshot(); response = owner.get(settings, timeout=120)
     ok('Upgraded provider GET does not migrate or replace original history', response.status_code == 200 and exact_business(before_get, snapshot()))
     ok('Updated1.26 keeps the original current inventory marker without implicit migration', identity()['inventory_version'] == '5')
@@ -340,4 +352,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     # Evidence stores only hashes/counts. No raw config, credential, contact, draft or license keys.
     (qa / ('apache-release126-' + prefix + '-upgrade-retention.json')).write_text(json.dumps({'baseline_source': BASELINE_SOURCE,
         'baseline_sha256': BASELINE_SHA, 'initial': initial, 'final': snapshot(), 'observations': checks}, indent=2) + '\n', encoding='utf-8')
+    continue_after_retention(repo, installed, base, prefix, php, candidate_version, owner, alice, bob, first, second,
+                             job_id, initial, catalog, private, OWNER, STAFF, fields, submit, snapshot, identity,
+                             browser, hosting_evidence, qa, BASELINE_SOURCE, BASELINE_SHA)
     return checks

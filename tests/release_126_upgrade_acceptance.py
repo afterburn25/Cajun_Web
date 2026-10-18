@@ -18,7 +18,8 @@ import traceback
 import requests
 from playwright.sync_api import sync_playwright
 from acceptance_environment import selected, php_matches
-from release_126_upgrade_cases import BASELINE_SHA, BASELINE_SOURCE, run, unpack
+from release_126_upgrade_cases import BASELINE_SHA, BASELINE_SOURCE, run, unpack, target_version
+from release_126_hosting_records import new_evidence, finish, names, PREFIXES, REPORT
 
 ROOT = Path(__file__).resolve().parents[1]
 QA = ROOT / 'qa'
@@ -62,6 +63,10 @@ def main():
     assert not RUNTIME.exists(), 'Use a new test-runtime directory; never reset a populated upgrade prefix.'
     RUNTIME.mkdir(parents=True); QA.mkdir(parents=True, exist_ok=True)
     checks = []; scopes = []; failure = None; apache_http = {}; evidence = {}
+    hosting = new_evidence(); candidate = target_version(ROOT)
+    owned = [REPORT, 'apache-release126-hosting-progress.txt', 'apache-release126-hosting-failure.log']
+    owned += [n for p in PREFIXES for n in [names(p)['retention'], *names(p)['images']]]
+    assert not any((QA / n).exists() for n in owned), 'Never overwrite earlier hosting upgrade evidence'
 
     def check(name, value):
         checks.append({'name': name, 'passed': bool(value)})
@@ -106,7 +111,7 @@ def main():
                                 apache_http[label] = body
                             finally:
                                 probe.unlink()
-                            result = run(ROOT, installed, base, prefix, php, check, QA, browser, document_root=web)
+                            result = run(ROOT, installed, base, prefix, php, check, QA, browser, document_root=web, hosting_evidence=hosting)
                             scopes.append({'scope': label, 'prefix': prefix, 'passed': True, 'checks': len(result)})
                         finally:
                             proc.terminate()
@@ -129,7 +134,7 @@ def main():
                             validate(obj['snapshot']); check(prefix + ' initial snapshot is from installed1.25', obj['snapshot']['version'] == '1.25.0')
                         else:
                             validate(obj['initial']); validate(obj['final'])
-                            check(prefix + ' final snapshot is from updated1.26', obj['initial']['version'] == '1.25.0' and obj['final']['version'] == '1.26.0')
+                            check(prefix + ' final snapshot is from updated' + candidate.removesuffix('.0'), obj['initial']['version'] == '1.25.0' and obj['final']['version'] == candidate)
                         evidence[name] = {'bytes': path.stat().st_size, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
                     for size in ['Desktop', 'Mobile']:
                         name = 'apache-release126-' + prefix + '-Upgraded-Client-' + size + '.png'; path = QA / name
@@ -141,13 +146,17 @@ def main():
     except BaseException as error:
         failure = {'type': type(error).__name__, 'message': str(error)}
         (QA / 'apache-release126-failure.log').write_text(traceback.format_exc(), encoding='utf-8')
+        (QA / 'apache-release126-hosting-failure.log').write_text(traceback.format_exc(), encoding='utf-8')
         raise
     finally:
         (QA / 'apache-release126-results.json').write_text(json.dumps({'passed': failure is None and len(scopes) == 4,
             'baseline_source': BASELINE_SOURCE, 'baseline_sha256': BASELINE_SHA,
-            'candidate_version': '1.26.0', 'selected': selected(), 'apache_http': apache_http,
+            'candidate_version': candidate, 'selected': selected(), 'apache_http': apache_http,
             'scope': 'Actual published baseline; synthetic clients/data; no live provider, mail or payment',
             'cases': scopes, 'checks': checks, 'evidence': evidence, 'failure': failure}, indent=2) + '\n', encoding='utf-8')
+        hosting_passed = finish(hosting, QA, failure, candidate, selected(), apache_http, BASELINE_SOURCE, BASELINE_SHA)
+        if failure is None:
+            assert hosting_passed, 'All four supplemental hosting upgrade scopes are required'
 
 
 if __name__ == '__main__':

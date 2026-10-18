@@ -46,7 +46,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         if($action==='inspect'){
             $j=structure_journal($dir);$result=$j?:structure_plan(__DIR__.'/site',$manifest,$history);
         }elseif($action==='apply')$result=structure_apply(__DIR__.'/site',$manifest,$history,$dir);
-        elseif($action==='recover')$result=structure_recover($dir);
+        elseif($action==='recover'){
+            require_once CWP_CODE_ROOT.'/app/hosting/catalog_recovery.php';
+            $result=hosting_catalog_recover_files($dir,(int)$actor['id'],(string)$actor['auth_version'],$password);
+        }
         else throw new RuntimeException('Unknown update action.');
         log_event('structure.'.$action,'Version '.CWP_VERSION.'; state '.$result['state']);
     }catch(Throwable $e){$error=$e instanceof PDOException?'Database authentication is unavailable. No setup or reset was attempted.':$e->getMessage();}

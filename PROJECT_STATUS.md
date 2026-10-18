@@ -1,3 +1,17 @@
+## 2026-10-18 — installed catalog storefront coverage
+
+Continue `codex/twentyi-catalog-storefront` from `9b450c4b8daafd79f4242c39ddd65e2bdb56b624`, draft [PR223](https://github.com/afterburn25/Cajun_Web/pull/223). The enclosing commit, **test: cover installed catalog import and selected-plan checkout**, adds two actual packaged HTTP/Chromium continuations. Existing main browser, full/focused workflows, native commands and report inventory are unchanged; the new outcomes are required through the existing HTTP reports. Shipping files and published1.25.0 are unchanged.
+
+The prepared journeys cover current-success import navigation, settings/failed-check invalidation, 125-type fixed-window import and retries with retained artwork, then actual image upload/publication, anonymous plan selection, invited-client login, stale-offer refusal and one unpaid invoice. Eight new captures are required. This is test implementation, not completed installed-browser acceptance. [Details and next steps](docs/TWENTYI_CATALOG_STOREFRONT.md#installed-storefront-continuations).
+
+Local artifact preservation checks pass492 named outcomes and the original checkout input/output guards pass52. Final Python syntax and evidence-collision checks pass15, including all four additional checkout image paths. The original9b first focused run39148262109 and full run39148336514 remain queued. Preserve both; the changed test source needs its own first execution, not cancellation or rerun of either original. Next: review the successor's actual Linux native/HTTP outcomes and captures, complete upgrade/recovery and remaining runtime gates, then integrate/release. Complete VPS catalog, automatic provider artwork, SSH and whole-project completion remain open.
+
+## 2026-10-18 — catalog import and shared hosting storefront
+
+The owner's latest catalog flow is implemented on `codex/twentyi-catalog-storefront`, starting at `b7c97953f323004e1fdd527bdef0b2da63f01c71` and normally joining checkout source `1db3235286f915935e4ab621e2be5a2f14288997`. The enclosing commit is **Connect 20i catalog import and shared hosting storefront**. Current-success import navigation, bounded fixed-window draft batches, safe public comparisons, replaceable local artwork and exact-offer login handoff are connected to the dedicated hosting checkout. [Scope and remaining gates](docs/TWENTYI_CATALOG_STOREFRONT.md).
+
+Local checks pass: 932 named portable PHP executions across 16 runs, 40 focused PHP syntax checks, 473 artifact-helper outcomes, 48 synthetic Chromium layout/keyboard checks, canonical shipping/dependency refresh and documentation validation. The real Linux database matrix and installed HTTP/browser/upgrade acceptance remain pending. Complete VPS catalog mapping, automatic provider artwork, remote SSH and whole-platform completion are not claimed. Published1.25.0 stays unchanged. Preserve first original runs; do not cancel or rerun them merely because they are queued. Next: finish local checks, push a draft PR, run first focused/full successor acceptance, and review actual results before release.
+
 ## 2026-10-18 — complete captured-image inventory and StackCP correction
 
 All 340 original captured extents now have finite visual receipts: 324 browser images and 16 Apache images, with no duplicate or unassigned browser images. This closes the captured-image inventory, not the content hidden by overlays or outside scrolling regions. The [review and correction record](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction) retains those limits.
@@ -19,6 +33,126 @@ The complete owner API reference is retained and its hash was rechecked. Officia
 Original candidate `f67b1631683b29096dd8ec1daee405e104dc0b83` has successful build, Apache, native/browser and recovery jobs in [run39098482550](https://github.com/afterburn25/Cajun_Web/actions/runs/39098482550); final acceptance remains queued. The retained browser partition contains 167 reports and 20,749 passing named executions, including 3,149 HTTP checks. These results do not certify all remaining runtime or release gates.
 
 On separate `codex/release126-capture-readiness`, actual image inspection led to test-only corrections: reveal motion content and decode images before the fresh-root capture, prove the image-save button reachable at the original viewport before capturing its complete card, and wait for the mobile domain-search drawer to close. Shipping files are unchanged. Local Chromium root probes pass 25 named checks; a separate domain capture probe preserves ten original viewport outcomes. The existing artifact helper suite passes 262. Corrected full-application captures remain pending. [Evidence, limits and next steps](docs/RELEASE_CAPTURE_READINESS_1.26.0.md). Published 1.25.0 and original candidate runs remain intact; no deployment occurred.
+
+## 2026-10-18 — recovery test startup correction
+
+The hosting first-invoice branch corrects the test server's loopback preflight and retains a bounded startup stage/errno when startup fails. The original application actions and cleanup remain unchanged. Six portable checks and all 466 existing artifact-helper checks pass; two real Linux socket regressions are now mandatory in the focused workflow. Corrected native/application/browser execution is still pending. [Evidence and scope](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes).
+
+The historical 512 run remains failed overall. Its four native matrix lanes have 28 verified reports with 3,168 exact named outcomes; its packaged recovery passed the 66-check absent phase before an OSError in the next phase. The original errno and exact startup stage were not retained, so TIME_WAIT is a hypothesis, not an established cause. Published 1.25, production and all original runs remain unchanged.
+
+## 2026-10-18 — packaged checkout tests and truthful history labels
+
+The client checkout result links now show the actual confirming client and distinguish the application's automatic agreement activation. The old schedule view assumed a staff creator and would emit a PHP warning for checkout schedules; its correction preserves legacy staff history. Actual renderer checks pass 58 cases in each PHP mode, including all 46 preceding cases. [Current checkout scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Packaged owner/client HTTP and Chromium tests are now wired into the focused and full application workflows. They cover publication, owned/new project choice, first invoice now, exact retry, result links, CSRF and other-client/contact-context/support refusals, plus 12 desktop/mobile captures. These are prepared tests, not completed browser outcomes. The native continuation honors the real 30-second refresh cooldown; no clocks or production safeguards are bypassed. Full recipe/report preservation guards retain every preceding test. First source 7703 run 39120172123 and all earlier CI evidence remain unchanged; Linux checkout, visual inspection, upgrade and release acceptance remain pending.
+
+## 2026-10-18 — integrated hosting checkout, runtime acceptance pending
+
+The development checkout now connects explicit owner opt-in, the client project/review/confirmation screens, and one guarded transaction for client consent, a recurring schedule and the first unpaid invoice. Exact completed retries return the original records; inconsistent or missing financial history is refused. Checkout-origin fulfillment requires verified payment and the original provider mapping. Existing request-only offers retain their behavior. [Scope and remaining acceptance](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Actual integrated-source PHP8.4.25 checks pass130 commercial-document,65 subscription,92 billing,46 portal-render/form and119 legacy-publication cases in each default/minimal mode. These are pure/model/renderer checks, not a native checkout or browser run. The first native Linux checkout test is prepared for the focused PHP8.2/8.4 × MariaDB10.11/MySQL8.4 workflow. Its protected provider-key setup cannot run faithfully on this Windows host. Packaged same-clock browser flow, complete-suite wiring, supported upgrade/recovery and release acceptance remain pending. Published1.25 and every original CI source/run remain unchanged.
+
+## 2026-10-18 — recurring checkout storage verified locally
+
+The hosting first-invoice branch now preserves the actual client on checkout schedules and their first invoice. Explicit owner migration retains legacy records, while stored-history validation binds the exact consent, schedule and independent invoice origin. The applied source passes66 native PHP8.4.25/MariaDB10.11.16 checks in a fresh isolated database. [Scope and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The original test stopped after34 checks at a fixture audit lookup; its output and database remain preserved. The corrected fixture keeps all assertions. These checks cover migration and synthetic retained history, not a completed client purchase. Atomic checkout creation, owner/client pages, verified-payment fulfillment integration and full release acceptance remain pending. Published1.25 is unchanged.
+
+## 2026-10-18 — subscription migration verified locally
+
+The hosting first-invoice branch adds an explicit owner migration for actual client/system attribution while preserving legacy subscriptions and audits. The applied source passes58 native PHP8.4.25/MariaDB10.11.16 checks, including interrupted DDL recovery, rollback of the final marker/audit, original-record preservation and actor/history corruption refusals. [Exact scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The first test run exposed a fixture identifier bug after12 checks; its output and database are preserved. The corrected fixture passed in a fresh isolated database. This is bounded migration/history acceptance, using synthetic format2 retained rows. Authenticated checkout composition, first invoice creation, screens, other runtime combinations and release acceptance remain pending. Published1.25 is unchanged.
+
+## 2026-10-18 — hosting first-period billing groundwork
+
+The hosting first-invoice branch now combines client-attributed subscription documents with recurring terms derived from the exact retained consent. Its separate checkout path starts period0 on the accepted local date; legacy activation and later future-period rules remain unchanged. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Parent `e6b97ec3bf6dc7298a63971d371367f98524edec` already records the subscription increment. Applied recurring tests pass92 new,372 existing terms and321 existing schedule cases per PHP mode; legacy outputs match the baseline. This checkpoint does not create an invoice or expose checkout. Native storage, the atomic writer, customer screens and release acceptance remain pending; published1.25 is unchanged.
+
+## 2026-10-18 — client-attributed hosting subscription documents
+
+Starting from `9f4b374682919ff065d5127de914e87fe04eb2c2`, the hosting first-invoice branch now retains the actual client as the checkout subscription creator and separates explicit client consent from automatic local activation. Existing subscription format1 behavior remains unchanged. [Scope and remaining integration](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Applied-source checks pass65 new subscription and67 existing cases in both PHP modes, plus the related130 checkout and119 publication/request cases. The legacy subscription output matches the baseline exactly. This is pure document groundwork: the native schema, atomic invoice writer and customer checkout page are not yet implemented in this checkpoint. Published1.25, original CI sources and live services remain unchanged.
+
+## 2026-10-18 — hosting checkout consent groundwork
+
+Branch `codex/twentyi-hosting-first-invoice` starts at `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf` and adds pure documents for an explicit owner checkout policy and one client service/billing confirmation. Existing request-only publications retain format1 behavior; format2 checkout offers cannot enter the legacy request/conversion path. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The new review fixes local-midnight and skipped-date boundaries, binds the exact plan/price/client/project/date and keeps private provider facts out of the display projection. Applied-source PHP8.4.25 checks pass130 new and119 existing cases in both default and minimal modes. This stage adds no checkout page, database migration, invoice creation, charge or provisioning. Native atomic composition, actual actor storage, same-clock browser acceptance and release gates remain pending. Original full-acceptance0c7, hosting512/10142/f67 runs and published1.25 remain preserved.
+
+## 2026-10-18 — main CI triggers and hosting development remain separate from release approval
+
+This integration combines hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` with main `e397d9a6e293850e8dff61a593e3ba39ee178400`, which normally merged PR218. The ten focused workflow path filters are retained with their original jobs; all hosting shipping files, tests, acceptance contracts and full application workflow remain exact to the development parent. Both histories are preserved by a normal main-to-development merge.
+
+The separate f67 1.26 release candidate, original 512/run39104617939 and 10142/run39108671173 remain their original sources and runs. Dated queue observations below keep their original cutoff; this merge supplies no new runtime result. Published 1.25 assets remain immutable. This is not the f67-to-main release merge, hosting acceptance or publication. Continue the existing original-result reviews and [hosting acceptance gates](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md); Devin correction work remains as recorded below.
+
+## 2026-10-18 — Devin integration review and correction handoff
+
+Starting at hosting acceptance source `fc5a3fc6391a5d85dfee01060b5806d04dae192a`, reviewed current Devin contacts/activity, payment-link and mail restacks. [Concrete findings and invoice restoration proposal](docs/DEVIN_RESTACK_REVIEW_2026-10-18.md) identify missing contact billing authority, dropped main invoice guards/navigation, payment-upgrade prerequisites, overly broad retained-setting exceptions and stale fixture bindings. Previously reported mail defects remain unresolved. No Devin branch is merged or certified by this review.
+
+Source/model and PHP syntax checks pass within their documented scope; native database, HTTP/browser and combined release acceptance remain pending. Original f67 full runs have successful builds and queued remaining jobs; original512/run39104617939 and10142/run39108671173 remain queued at the latest 2026-10-18 check. The hosting source and immutable published1.25 assets are unchanged. Next: Devin corrects owning branches and propagates shared fixes; Codex retains original hosting results and continues exact-source acceptance before integration.
+
+## 2026-10-18 — full hosting acceptance integration in development
+
+Branch `codex/twentyi-hosting-full-acceptance` starts at `10142c7e97c8ba9986e0c18d9ab0190ccc432727` and connects the reviewed hosting offers, recovery, eventual purchase and owner/client handoff tests to the existing complete acceptance workflow. It also extends the real published 1.25 upgrade in the same four Apache contexts. [Exact scope and remaining gates](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md).
+
+The 23 test/CI/contract files pass independent source review and local portable checks: 385 artifact-helper outcomes retain all previous 342, 43 new upgrade guards pass, and touched Python/PHP syntax passes. These results do not establish database, HTTP, Chromium, screenshot or release acceptance. No shipping file, version, schema or live service changes.
+
+Original focused hosting source `28351f71` is separately verified from run39100808137: 18 reports, 2,043 named outcomes and ten reviewed captures. Later original512/run39104617939 and10142/run39108671173 remain queued at the 08:22 UTC observation. Their source branches and runs are preserved. The f67 1.26 release candidate and published1.25 assets remain separate. Next: retain original focused outcomes, fix concrete failures, then run complete acceptance for the final combined source. Full catalog coverage, automatic provider images and immediate first-payment checkout remain unfinished.
+
+## 2026-10-18 — joined hosting purchase and client-access tests
+
+The portal-handoff branch adds a disposable purchase test using actual application wrappers, followed by packaged owner/client browser navigation. The native sequence covers imported offer, client consent, due invoice, verified synthetic receipt, fulfillment, confirmation and explicit package assignment. The browser continuation uses the real owner Unlink form and guided re-link, then checks correct-client visibility and other-client exclusion. [Scope and limitations](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md#joined-purchase-and-browser-continuation).
+
+Starting source `26b57f4412db12117729901280372e2fd58f6cde`. The preparation child alone uses a two-day process clock offset; remaining processes and the database keep real time. This tests eventual recurring purchase, not immediate checkout. Existing focused native/recovery/browser assertions remain intact. Private runtime state is excluded from uploaded evidence.
+
+Source review and local portable/syntax checks pass. Actual Linux clock/database and packaged HTTP/Chromium execution, ten new screenshots, full-suite integration and release gates remain pending. Original 1.26 and hosting512 runs are preserved; published 1.25.0 remains unchanged. Next: retain the first combined run and diagnose its actual outcomes without replacing original evidence.
+
+## 2026-10-18 — preserve the hosting package a client requested
+
+The separate `codex/twentyi-hosting-portal-handoff` branch now binds catalog-origin order preparation and saved-link validation to the provider mapping retained in the original published offer. A later mapping for the same retail plan, or a manual preparation submission, cannot silently replace it. Owners see the original mapping or guidance to create a new offer and client agreement; historical validation does not require that old mapping to remain currently available. Ordinary non-catalog orders and explicit billing project consent retain their existing behavior.
+
+Starting source `bde6cc1c4fa8a4230085ed3e4f99f05d6df0f5da`. Five production files pass syntax and independent source review; 37 modeled checks pass in each PHP mode, and six real fixture dependency loads pass. The canonical installer refresh/full syntax check and 1,912 local documentation links also pass. These are not SQL, browser or complete purchase acceptance. Original release and focused hosting sources/runs are preserved. The joined purchase test is being prepared separately and must measure the repeated historical-read cost. [Behavior and remaining checks](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
+The separate 1.26 candidate now has verified maintained compatibility: 54 reports, 3,280 named checks, all five original jobs passing. Full application/browser, recovery and release acceptance remain pending in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216). Published 1.25.0 remains unchanged.
+
+## 2026-10-18 — client hosting access handoff in development
+
+The separate `codex/twentyi-hosting-portal-handoff` branch adds a saved-assignment card to confirmed hosting orders. It identifies the expected client, shows whether the package is linked or needs review, and opens the existing provider inventory at that package. Existing owner linking and provider refresh actions remain responsible for access changes. [Scope and validation](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
+This starts from hosting successor `512656850e1d9855b921ab4e3b9b4a891b636b16`; it is separate from both the unchanged 1.26 release candidate and the original focused hosting run. Local projection/renderer checks pass in both PHP modes; native database, browser navigation and the joined purchase-through-client-access flow remain pending. Published 1.25.0 remains unchanged.
+
+## 2026-10-18 — packaged owner recovery checks prepared
+
+The hosting successor adds an explicit HTTP-test opt-in after its exact-source COMPLETE and UPDATE packages are built. Four isolated installed copies exercise the real staged owner page with absent, empty, published and withdrawn hosting history. Tests cover package validation, CSRF, current owner/password, backup confirmation, permitted recovery and retained-history refusal. They verify business rows, table definitions, files and private media while separately checking expected authentication/rate/audit bookkeeping. [Scope and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
+All 88 original hosting assertions and the separate 44-case native recovery continuation are preserved. Source/syntax review, 57 portable checks and 18 modeled bookkeeping checks per PHP mode pass; actual packaged SQL/HTTP results remain pending. This uses complete synthetic journals with real same-source packages, not a published-baseline or interrupted-upgrade acceptance result. The 1.26 release candidate remains separate. CI-only [PR218](https://github.com/afterburn25/Cajun_Web/pull/218) is merged on main; its trigger changes do not alter these preserved original runs.
+
+## 2026-10-18 — reduce unrelated CI work
+
+Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
+
+The separate 1.26 candidate remains `f67b1631` in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216). Its first original full run has passed its build job; database/browser, Apache and recovery work was still queued at 06:23 UTC. Hosting offer/recovery source `6cf7a8f8` remains separate and awaits its original focused tests. Neither is published. Published 1.25.0 and production are unchanged.
+
+## 2026-10-18 — protect hosting history during file recovery
+
+The hosting-commerce successor now guards the staged owner updater before restoring files. It rechecks current owner access under the shared account/publication lock and permits absent or validated empty hosting history. Any publication, including a withdrawn offer, or incomplete/unrecognized history blocks automatic file recovery. Historical updater copies and manual file replacement remain outside this safeguard. [Recovery behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
+The 142-case regression passes in normal and minimal PHP with modeled database and recovery seams. The focused Linux matrix now includes 44 separate native recovery checks across four isolated phases while preserving the original 88 hosting assertions. Their actual SQL/filesystem results and staged HTTP acceptance remain pending. Tracking [issue #217](https://github.com/afterburn25/Cajun_Web/issues/217) retains that distinction. This successor is separate from the unchanged 1.26 candidate and published 1.25 release.
+
+## 2026-10-18 — hosting offer screens in development
+
+The separate `codex/twentyi-hosting-commerce` branch now connects owner publication/review, public hosting cards and authenticated client requests to the backend committed at `47fc69f6`. These screens are development work awaiting Linux database and packaged browser acceptance. [Feature scope and verification](docs/TWENTYI_HOSTING_OFFERS.md). The focused workflow now also contains an isolated packaged PHP 8.3/MariaDB HTTP and Chromium job covering image upload, publication, client requests, owner decisions and existing agreement consent. Its ten desktop/mobile captures still require actual pixel review. All runtime results remain pending. The original four-environment run [39098575981](https://github.com/afterburn25/Cajun_Web/actions/runs/39098575981) remains preserved.
+
+Local Windows PHP 8.4.25 with MariaDB 10.11.18 passes all 138 existing service-plan SQL checks. The new hosting fixture stops before its assertions because Windows does not retain the existing required POSIX 0600 permissions. No filesystem safeguard was changed or bypassed. The full supplied 20i reference is already retained; automatic provider images and the cloud catalog still lack a verified response contract.
+
+Hosting UI checkpoint `dfb0ec18` now normally incorporates the browser callback correction from `f67b1631`. The separate 1.26 release candidate remains `f67b1631`, with corrected browser-test ordering and verified Windows packages. Its original full Linux runs remain pending. Published 1.25 assets and the live site are unchanged.
+
+## 2026-10-18 — separate hosting-order connection in progress
+
+`codex/twentyi-hosting-commerce` starts at frozen 1.26 source `6e3dbeff6dc6359a418837d0c95baa43e4c92533`. It prepares [hosting publications and client requests](docs/TWENTYI_HOSTING_OFFERS.md) connected to the existing agreement writer. Pure documents pass 119 checks in normal and minimal PHP; source/syntax review is separate from pending SQL, route, browser and full ordering acceptance. No customer route is enabled. The 1.26 release candidate remains unchanged on its own branch, and published 1.25 assets remain immutable.
 
 ## 2026-10-18 — browser fixture ordering correction
 

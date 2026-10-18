@@ -28,6 +28,22 @@
     "\"$PHP_BINARY\" tests/provider_package_types.php > qa/provider-package-types-default.json",
     "\"$PHP_BINARY\" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json",
     "\"$PHP_BINARY\" tests/provider_package_types_native.php",
+    "\"$PHP_BINARY\" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json",
+    "CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php",
+    "\"$PHP_BINARY\" tests/hosting_checkout_document.php qa/hosting-checkout-document-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_checkout_document.php qa/hosting-checkout-document-minimal.json",
+    "\"$PHP_BINARY\" tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-default.json",
+    "\"$PHP_BINARY\" -n tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-minimal.json",
+    "\"$PHP_BINARY\" tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-default.json",
+    "\"$PHP_BINARY\" -n tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-minimal.json",
+    "\"$PHP_BINARY\" tests/hosting_checkout_views.php > qa/hosting-checkout-views-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_checkout_views.php > qa/hosting-checkout-views-minimal.json",
+    "CWP_TEST_HOSTING_CHECKOUT=1 \"$PHP_BINARY\" tests/hosting_checkout_native.php",
+    "\"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json",
+    ".ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py",
+    ".ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite",
     "\"$PHP_BINARY\" tests/payments_native.php",
     "\"$PHP_BINARY\" tests/attempts_native.php",
     "\"$PHP_BINARY\" tests/notifications_native.php",
@@ -602,7 +618,7 @@
     "source_sha256": {
       "tests/provider_package_types.php": "e5812a35e8e034c3a54c8f90b4011e10dd08eadbe759a6204899cdd224636533",
       "tests/provider_package_types_native.php": "ef3876b71ad15736271d9f9de17b8278a953035a722c81e766d7bf73ed2d2b8d",
-      "tests/provider_package_types_cases.py": "6ec03bc6c389e3ee618499ba691cb3594c4d0ac011bfff5efb47de47c60415ba"
+      "tests/provider_package_types_cases.py": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b"
     },
     "scope": "Direct hosting catalog typed read, durable observations, current-owner refresh and source-aware draft import with synthetic transport; no live provider writes or images."
   },
@@ -688,11 +704,11 @@
       "tests/release_126_catalog_guards.py": "5035b7876a7ac8d21e60a9a2eddb920ed3711ff69a78189b114a24e46e77a6ba",
       "tests/release_126_catalog_records.py": "7171397b84b089453a5372866f25c35dbac221930b5672bd1c4edb57ad33d899",
       "tests/release_126_original_records.py": "a1d91855a559b1911291c59c7a45ffb5903e31af76717ca88aa60e5a38001523",
-      "tests/release_126_provider_fixture.php": "34c75361f491729300a6ab9907c0414f5c888aa26c4319e5e57b83ce271000b1",
+      "tests/release_126_provider_fixture.php": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
       "tests/release_126_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
       "tests/release_126_retention_fixture.php": "556b8f5fa01f32b7de5e58a24e292c324038230f902430a05dff5f54d065c304",
-      "tests/release_126_upgrade_acceptance.py": "89c112a841ae498e6d7a59bddb33700ee90c9bb98241d40f38c8c3e02b4cc899",
-      "tests/release_126_upgrade_cases.py": "7ad6aef9ec11e62853f24309f91cfa1f8fecc2b7723ecb48f5ffd160fcc3a38e",
+      "tests/release_126_upgrade_acceptance.py": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
+      "tests/release_126_upgrade_cases.py": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c",
       "tests/release_126_upgrade_guards.py": "9fba62bccb9ebad671bcf4a98a01db992fb89359deebd789763c7d2423783df3",
       "tests/release_126_upgrade_input_guards.py": "e7f1381a05715d0d84a8508d8ed833f1dfd248098e7ed22d30b5f906f8cc2245"
     },
@@ -738,5 +754,644 @@
       "StackCP-Setup-Unverified Mobile capture is unobscured"
     ],
     "scope": "Preserve original predicates, 1440x1050 and 320x740 checks, provider actions and all report/screenshot names. After original viewport checks, capture five mobile cards at 320x1500 with complete-target, header/skip-link separation and hit-point checks. No content, focus, CSS, runtime or workflow changes."
+  },
+  "hosting_catalog_offers": {
+    "predecessor_source": "10142c7e97c8ba9986e0c18d9ab0190ccc432727",
+    "predecessor_native_count": 155,
+    "predecessor_native_sha256": "d36050549701ce6412b7288cb119d6e6d2d71e40287f33e5308de72fa09665e5",
+    "additions_after": "\"$PHP_BINARY\" tests/provider_package_types_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json",
+      "CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php",
+      "\"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json"
+    ],
+    "browser_commands": [
+      ".ci-venv/bin/python tests/browser_acceptance.py",
+      ".ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite"
+    ],
+    "reports": [
+      "hosting-catalog-document-default.json",
+      "hosting-catalog-document-minimal.json",
+      "hosting-catalog-native-results.json",
+      "hosting-catalog-http-results.json",
+      "hosting-catalog-recovery-guard-default.json",
+      "hosting-catalog-recovery-guard-minimal.json",
+      "hosting-catalog-recovery-native-results.json"
+    ],
+    "screenshots": [
+      "Hosting-Offers-Owner-Preview-Desktop.png",
+      "Hosting-Offers-Owner-Preview-Mobile.png",
+      "Hosting-Offers-Public-Desktop.png",
+      "Hosting-Offers-Public-Mobile.png",
+      "Hosting-Offers-Owner-Request-Desktop.png",
+      "Hosting-Offers-Owner-Request-Mobile.png",
+      "Hosting-Offers-Client-History-Desktop.png",
+      "Hosting-Offers-Client-History-Mobile.png",
+      "Hosting-Offers-Client-Agreement-Desktop.png",
+      "Hosting-Offers-Client-Agreement-Mobile.png"
+    ],
+    "predecessor_reports_sha256": {
+      "browser": "9bc497b3a5c64dac5ee5bcd9eeafafb6ab5fa4ff56190f0f3295989196467a1f",
+      "final": "bda03ec7e38f72bd65781d8bf612cd2a2171167f6183a1489dd27e7cca35e3eb"
+    },
+    "predecessor_workflow_sha256": "b0c5042d6e5dc3d5660f19f64ec0118c59349b16b0a413c92af5291fe9d4d50b",
+    "workflow_delta": [
+      {
+        "before": "          \"$PHP_BINARY\" tests/provider_package_types_native.php\n",
+        "after": "          \"$PHP_BINARY\" tests/provider_package_types_native.php\n          \"$PHP_BINARY\" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json\n          CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php\n          \"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json\n"
+      },
+      {
+        "before": "        run: .ci-venv/bin/python tests/browser_acceptance.py\n",
+        "after": "        run: |\n          .ci-venv/bin/python tests/browser_acceptance.py\n          .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite\n"
+      },
+      {
+        "before": "  recovery:\n",
+        "after": "      - name: Preserve isolated hosting recovery files and child diagnostics\n        if: always()\n        id: hosting_recovery_upload\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02\n        with:\n          name: application-hosting-recovery-files-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}\n          path: |\n            test-runtime/hosting-recovery-absent-*/**\n            test-runtime/hosting-recovery-empty-*/**\n            test-runtime/hosting-recovery-published-*/**\n            test-runtime/hosting-recovery-withdrawn-*/**\n            test-runtime/hosting-recovery-child-output-*/**\n          include-hidden-files: true\n          retention-days: 14\n          if-no-files-found: error\n  recovery:\n"
+      }
+    ],
+    "source_sha256": {
+      "tests/hosting_catalog_document.php": "7897b57e40d7f4cfde599b695ef37a7cc1aec8c33d7474b7fbd9ae05aadd3a70",
+      "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
+      "tests/hosting_catalog_recovery_guard.php": "2518f102c537ca0b0197a49c9243d4454d076ff0081a9a602ae89e80b7f6f7d1",
+      "tests/hosting_catalog_recovery_native.php": "45f16f7c17cc5addbc8a61501732e6a9eb81caf2e4543e2a272d8b6573b520b8",
+      "tests/hosting_catalog_browser.py": "a1cd0c04b686523cd2e8752385bb56497b1342538d8cf8bf15076e14782d2c21",
+      "tests/hosting_catalog_browser_fixture.php": "5708f1fab66c0907bd7abac9c41c289ce55085103352936a36dd2d58cc3e6080",
+      "tests/hosting_catalog_cases.py": "f192e1d8a34240739e2b02beea00feeab0c4ade8658311020aa93769dd07fce1",
+      "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
+      "site/app/hosting/catalog_offers.php": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
+      "site/app/hosting/catalog_offers_context.php": "179354247cacc3533e9896d0ed238b0c3af97d8291ebc692dad7bb92064de3ea",
+      "site/app/hosting/catalog_offers_storage.php": "aa15b723bbe88236dfc0936b4a98cbb9380bb2422e16513e5a736e40dc7b6768",
+      "site/app/hosting/catalog_recovery.php": "bc98280a62deba07b62d5081146139fb610c4d26a90a426969e8e9a2d965b870",
+      "site/app/updates/structure.php": "9085455efdb94ccce41cf8006a6e1137ec35d986f432b3259cb6e6194a71b3d6",
+      "site/database/schema/hosting_catalog_schema.php": "c7251ecd8343d1d24a75d4f3c54f80e6f7cd1c0823b88f7fd5d16539d31158d0",
+      "site/database/migrations/hosting_catalog_migrate.php": "a4a2fdfe11451d8dce9bced966828f02439d91e53d621be61fca998b16c2c30e",
+      "tools/update/owner-update.php": "c9a770d2fca8658616e57050c6163ab564cf9667429f7c85f4bb12ac68d17405",
+      "site/app/staff/accounts.php": "772883771d8b51d4564d50a6363d9723060435fc60cc8910c689cfe2217e3579",
+      "site/app/settings/store.php": "f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564",
+      "tests/hosting_catalog_recovery_http.php": "b6b9e91ecfe29f881a6ad6e8add15cc057cb85fe974f8c82be529bb5e75f551a",
+      "tests/hosting_catalog_recovery_http.py": "87d2561a95c6202cdb13918ddc2eef1e7e40c1828183c8bc10d5ea8ba308886d",
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
+      "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
+      "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5",
+      "site/app/plans/documents.php": "8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c",
+      "tests/service-plans/checkout_documents.php": "e131b2ae0ea2831c55082939a5a32b3cd5fb6743303f7c83be60b39211005f2b",
+      "foundation/recurring-billing/RecurringBillingSchedule.php": "81b1ab31356e24608fd4f4f0a6fb77c72b73a9192fe90f68ec3b908b777d9c10",
+      "foundation/recurring-billing/RecurringBillingTerms.php": "8d267eefc9c5cddf6e75de75df6291334cd40b5c260576393e6ccda25793086b",
+      "site/app/hosting/catalog_checkout_billing_document.php": "8d5b5fefa002017100be553511e851e7ed64a439eabf45f991a041d0f0b02396",
+      "site/includes/foundation/recurring-billing/RecurringBillingSchedule.php": "81b1ab31356e24608fd4f4f0a6fb77c72b73a9192fe90f68ec3b908b777d9c10",
+      "site/includes/foundation/recurring-billing/RecurringBillingTerms.php": "8d267eefc9c5cddf6e75de75df6291334cd40b5c260576393e6ccda25793086b",
+      "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46",
+      "site/app/plans/records.php": "4160cad7ffd18b94f11815405983f2964fbb43a50d7dfbcb9b6c649147915ee4",
+      "site/database/migrations/service_plans_checkout_migrate.php": "6d058be8375efc790ab7d236b40209d7c5e3987720c8f37d2df8790dec69602b",
+      "site/database/migrations/service_plans_migrate.php": "f2795bd9d83d15dc00afdcc5e88a1d7d617a45d0378d31cee2e9782d98cf5e57",
+      "site/database/schema/service_plans_schema.php": "6734d2ab445fe6822df2314395363ba6e21e96252dbd69157b63dfdbe342b2d7",
+      "tests/service_plans_checkout_native.php": "fec99594a17f40fe8d9cdce991b2af6af3a4ef07f87c17d45bc20521de86c1b7",
+      "site/app/billing/recurring_billing.php": "4c950388fe472855458ae8fe84284015c87e3669c6c8b83eee3d9eff8a60383f",
+      "site/app/billing/recurring_billing_invoices.php": "b022b7b452a7f7ac5cd9b7a8c4c5c15e17ed7d0bbfdfa49a56563de61ac678d7",
+      "site/database/migrations/recurring_billing_checkout_migrate.php": "188e8df9b32489866936bbb6f6870bb5caddd0012f6ddfeb080819d4ef5927de",
+      "site/database/migrations/recurring_billing_migrate.php": "9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9",
+      "site/database/schema/recurring_billing_schema.php": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
+      "tests/recurring_billing_checkout_native.php": "99e5b7c4806455fd2ea478d248c4c035f004544c373ce97d1ed7937a153487a1",
+      "site/app/hosting/catalog_checkout.php": "b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2",
+      "site/app/hosting/catalog_checkout_storage.php": "eaf98711efa2de3985fe74ad0b9dd85bc2c2e48a17e4bd4624b1f578e6d61e76",
+      "site/database/migrations/hosting_checkout_migrate.php": "8f605c4b0f3e10faf7e44a057ac382fa3cf164b8242070c50f71180ced9a53c7",
+      "site/database/schema/hosting_checkout_schema.php": "6ff882d6be5c59964761e08b03c0a556814d48c79ad925ac364bfffc83041034",
+      "site/app/hosting/orders.php": "97f40c3621f5736665d5930ec85d83919d3a0b2ff8c295ed04166b0c206f81e8",
+      "site/app/hosting/order_links.php": "9799f79b6fd9f8cc9679041d44070f761b6166c74b3e16ed77460b1513f80717",
+      "site/app/hosting/fulfillment.php": "deb20f0b6d232831aeb507e7222ada982cd8cf4dd1401018bc997a4f7edaac13",
+      "site/app/hosting/catalog_offer_views.php": "a11898876a835aa6808c13dafd600545ae3440c3ef4580ed7ed2f4705925e214",
+      "site/admin/controllers/hosting_catalog.php": "d483cfc2272e49c8936334719ef1c80e869e6e23180aed3c61a4f033e8e37b54",
+      "site/admin/views/hosting_catalog.php": "d56e5bc7ca99f701cd3a9232c06c1be614996284a3070a3007ddc54cec3ad965",
+      "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+      "site/portal/controllers/hosting_catalog.php": "5f176888ba0116eced1677319a0e9a0b61146a81dda68f317635262c071420d5",
+      "site/portal/views/hosting_catalog.php": "bb311d8e70cee7726d4fbb189af7b65f4e10eecae157b9a8ffd14bedcf9026bc",
+      "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
+      "site/portal/views/hosting_checkout.php": "d08933c1a538c06dd5143f6e2e2b5a2edf3aa4facb13df70f13b309169552b18",
+      "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_catalog_recovery_socket_test.py": "1eda38a66123e3e56c647fc8e325b2e55136158d41f313443172bfb339104fc8"
+    },
+    "raw_evidence": {
+      "role": "hosting-recovery-files",
+      "job": "native-and-browser",
+      "step": "hosting_recovery_upload",
+      "artifact_name": "application-hosting-recovery-files-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}",
+      "path": "test-runtime/hosting-recovery-absent-*/**\ntest-runtime/hosting-recovery-empty-*/**\ntest-runtime/hosting-recovery-published-*/**\ntest-runtime/hosting-recovery-withdrawn-*/**\ntest-runtime/hosting-recovery-child-output-*/**",
+      "include_hidden_files": true,
+      "retention_days": 14,
+      "if_no_files_found": "error",
+      "scope": "Separate exact four synthetic native recovery phase trees and child-output only. Excludes hosting-recovery-http, private/session/runtime data. Original artifact collection and phase/report/file reconciliation remain separately required; no full acceptance by presence."
+    },
+    "scope": "Additive offer/request/agreement and opt-in synthetic-root SQL/file recovery coverage. Separate joined purchase reports retain simulated prepare time and synthetic provider/payment limits. Published1.25 upgrade extension is separately proposed; no unpublished baseline claim."
+  },
+  "hosting_joined_purchase": {
+    "source_base": "10142c7e97c8ba9986e0c18d9ab0190ccc432727",
+    "predecessor_native_count": 160,
+    "predecessor_native_sha256": "42b2fac1e53ff177ee9a67c5d6bb39d938f418b7596fc49cb410647e1e3f86f8",
+    "additions_after": "\"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json",
+    "additions": [
+      ".ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py",
+      ".ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite"
+    ],
+    "browser_additions": [
+      ".ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py > qa/hosting-purchase-handoff-guards.json",
+      ".ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite"
+    ],
+    "workflow_delta": [
+      {
+        "before": "          \"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json\n",
+        "after": "          \"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json\n          .ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py\n          .ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite\n"
+      },
+      {
+        "before": "          .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite\n",
+        "after": "          .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite\n          .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py > qa/hosting-purchase-handoff-guards.json\n          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite\n"
+      },
+      {
+        "before": "          sudo apt-get -o Acquire::Retries=5 install -y \"php${CWP_PHP_VERSION}-cli\" \"php${CWP_PHP_VERSION}-mysql\" \"php${CWP_PHP_VERSION}-gd\" \"php${CWP_PHP_VERSION}-zip\" \"php${CWP_PHP_VERSION}-curl\" \"php${CWP_PHP_VERSION}-xml\" \"php${CWP_PHP_VERSION}-mbstring\"\n          export PHP_BINARY=\"/usr/bin/php${CWP_PHP_VERSION}\"\n",
+        "after": "          sudo apt-get -o Acquire::Retries=5 install -y libfaketime \"php${CWP_PHP_VERSION}-cli\" \"php${CWP_PHP_VERSION}-mysql\" \"php${CWP_PHP_VERSION}-gd\" \"php${CWP_PHP_VERSION}-zip\" \"php${CWP_PHP_VERSION}-curl\" \"php${CWP_PHP_VERSION}-xml\" \"php${CWP_PHP_VERSION}-mbstring\"\n          export PHP_BINARY=\"/usr/bin/php${CWP_PHP_VERSION}\"\n"
+      }
+    ],
+    "predecessor_workflow_sha256": "20b95730deb927bd7653abdff0fd6be0c2bc11e7c83d4b2cf157cf05a76b75f1",
+    "reports": [
+      "hosting-purchase-prepare-results.json",
+      "hosting-purchase-due-results.json",
+      "hosting-purchase-portal-own-results.json",
+      "hosting-purchase-portal-other-results.json",
+      "hosting-purchase-joined-results.json",
+      "hosting-purchase-handoff-guards.json",
+      "hosting-purchase-http-results.json"
+    ],
+    "predecessor_reports_sha256": {
+      "browser": "9fe11c9422679ed4d549cb4324214dffaa85980d5d1d42d0b05b79d874ab2da7",
+      "final": "665ebeb2200454d65f0404e9a45e1b863e7ccbbabbed0a8f505b804c1309cc43"
+    },
+    "screenshots": [
+      "Hosting-Purchase-Owner-Linked-Desktop.png",
+      "Hosting-Purchase-Owner-Linked-Mobile.png",
+      "Hosting-Purchase-Owner-Unlinked-Desktop.png",
+      "Hosting-Purchase-Owner-Unlinked-Mobile.png",
+      "Hosting-Purchase-Owner-Package-Desktop.png",
+      "Hosting-Purchase-Owner-Package-Mobile.png",
+      "Hosting-Purchase-Client-Hosting-Desktop.png",
+      "Hosting-Purchase-Client-Hosting-Mobile.png",
+      "Hosting-Purchase-Other-Client-Desktop.png",
+      "Hosting-Purchase-Other-Client-Mobile.png"
+    ],
+    "source_sha256": {
+      "site/app/billing/recurring_billing.php": "4c950388fe472855458ae8fe84284015c87e3669c6c8b83eee3d9eff8a60383f",
+      "site/app/hosting/fulfillment.php": "deb20f0b6d232831aeb507e7222ada982cd8cf4dd1401018bc997a4f7edaac13",
+      "site/app/hosting/fulfillment_confirmation.php": "618ccdc0db47f30b94c8a9e9c4eaae375f9597f3c08d9d8a534d1d1a8b2e5270",
+      "site/app/hosting/fulfillment_views.php": "38f09c7ad49d47dcfa64b8bba44560d4970e4bf101e474dc90d804f5a4774f01",
+      "site/app/hosting/order_link_views.php": "54bb2d422fa6d212b25b6e4b7e9d5b275693c0f71aa602ae5b6e256dff24aa61",
+      "site/app/hosting/order_links.php": "9799f79b6fd9f8cc9679041d44070f761b6166c74b3e16ed77460b1513f80717",
+      "site/app/plans/records.php": "4160cad7ffd18b94f11815405983f2964fbb43a50d7dfbcb9b6c649147915ee4",
+      "site/app/providers/inventory.php": "0e364dc91975fb3b28576ce32edfab34fb3cec4da6733ba4749cc6cb4275e863",
+      "site/app/providers/plan_catalog.php": "f7cea8cfaaba5d7280ccf184199db47954de6e39d3288dc7a7cf0dab04b908c1",
+      "site/includes/layout/hosting_fulfillment.php": "3516014e6f46083b9eba1babde36541a34f6c33f01a85106361e7645d6a2f6b9",
+      "tests/hosting_catalog_purchase.py": "eea7b2ce5b30ad03be3da7acfd661359890ce1184ebd113ff0a83e671431ed0c",
+      "tests/hosting_catalog_purchase_guards.py": "ce89db86d42ec541103cc1e6d129bc83600197cbfc96eb2c4c4d4fadc3225ced",
+      "tests/hosting_catalog_purchase_native.php": "be2c318ace66803a27740d0dc3db11fd3dceea40df5c2a2ce5813b5b71161e20",
+      "tests/hosting_purchase_handoff_browser.py": "9f0a9b2a40fe61d02d6714deead77ef08213e19ecd314b428b7c889003bdb483",
+      "tests/hosting_purchase_handoff_cases.py": "0178e333b27b61065cc1ba258d39c32c1f7eafcec5b030b541dd0369c7931cb1",
+      "tests/hosting_purchase_handoff_fixture.php": "65e6dfbbc51ae0c1af833667c11fcf9d0d19d26ac0c4cc216e8e5c0239b036c7",
+      "tests/hosting_purchase_handoff_guards.py": "d2951c4b20185c4b354e520ec38fbd69db3bf60e3dd5bb19939755758987f7a0"
+    },
+    "runtime": {
+      "php_versions": [
+        "8.2",
+        "8.3",
+        "8.4"
+      ],
+      "database": "cwp_test",
+      "host": "127.0.0.1",
+      "port": "CWP_TEST_PORT assigned by existing native-and-browser service-container setup",
+      "clock": "Only prepare PHP child receives libfaketime -2d; parent, database, due, CLI portal and HTTP/browser remain real time."
+    },
+    "scope": "Actual wrapper-derived commercial rows with synthetic external receipt/provider transport; separate packaged owner unlink/re-link and client isolation. No live provider/payment, immediate purchase, image review or full acceptance inferred from source."
+  },
+  "published125_hosting_extension": {
+    "source_base": "10142c7e97c8ba9986e0c18d9ab0190ccc432727",
+    "predecessor_workflow_sha256": "30d2827075f12b45f582a4eb754183e36c546cee3047925344176f7420b3bf0c",
+    "workflow_delta": {
+      "before": "          .ci-venv/bin/python tests/release_126_upgrade_acceptance.py\n",
+      "after": "          .ci-venv/bin/python -B tests/release_126_hosting_guards.py --report qa/apache-release126-hosting-guards-results.json\n          .ci-venv/bin/python tests/release_126_upgrade_acceptance.py\n"
+    },
+    "source_sha256": {
+      "tests/release_126_hosting_fixture.php": "de12763cb75da029cbe2c6f5573ab197ce6487d11ea34325a4012cb64dd9adf4",
+      "tests/release_126_hosting_guards.py": "5acf9557765591a81cb74797b0c63121d417c32324bbe52a20c300172eb5d09e",
+      "tests/release_126_hosting_records.py": "de25d8bd0e5003e962460fe66097c00f6e90e4eeef975aa85f43e946a4c66196",
+      "tests/release_126_provider_fixture.php": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
+      "tests/release_126_upgrade_acceptance.py": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
+      "tests/release_126_upgrade_cases.py": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c"
+    },
+    "source_delta": {
+      "tests/release_126_upgrade_cases.py": {
+        "predecessor_sha256": "7ad6aef9ec11e62853f24309f91cfa1f8fecc2b7723ecb48f5ffd160fcc3a38e",
+        "current_sha256": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c",
+        "replacements": [
+          {
+            "before": "import os\n",
+            "after": "import os\nimport re\n"
+          },
+          {
+            "before": "def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document_root):",
+            "after": "def target_version(repo):\n    value = (Path(repo) / \"VERSION\").read_text(encoding=\"utf-8\").strip()\n    assert re.fullmatch(r\"[0-9]+\\.[0-9]+\\.[0-9]+\", value), \"Invalid candidate version\"\n    return value\n\n\ndef run(repo, installed, base, prefix, php, check, qa, browser=None, *, document_root, hosting_evidence):"
+          },
+          {
+            "before": "    updates = list((repo / 'dist').glob('CajunWebPro-1.26.0-UPDATE.zip'))\n    assert len(updates) == 1, 'Bind this release fixture only after1.26 scope/version freeze.'",
+            "after": "    candidate_version = target_version(repo)\n    updates = list((repo / 'dist').glob('CajunWebPro-' + candidate_version + '-UPDATE.zip'))\n    assert len(updates) == 1, 'Bind this release fixture only after candidate scope/version freeze.'"
+          },
+          {
+            "before": "        if helper == 'organized_update_fixture.php':",
+            "after": "        if helper == 'release_126_provider_fixture.php' and mode in ('catalog-read', 'catalog-state', 'catalog-replay'):\n            arguments.append(candidate_version)\n        if helper == 'organized_update_fixture.php':"
+          },
+          {
+            "before": "    updater = base + '/cwp-update-1.26.0/owner-update.php'",
+            "after": "    updater = base + '/cwp-update-' + candidate_version + '/owner-update.php'"
+          },
+          {
+            "before": "    ok('First update retains every original table row column and private file', retained(initial, snapshot()))",
+            "after": "    ok('First update retains every original table row column and private file', retained(initial, snapshot()))\n    from release_126_hosting_records import before_setup, continue_after_retention\n    before_setup(repo, installed, base, prefix, php, candidate_version, owner, snapshot, hosting_evidence, qa)"
+          },
+          {
+            "before": "    return checks\n",
+            "after": "    continue_after_retention(repo, installed, base, prefix, php, candidate_version, owner, alice, bob, first, second,\n                             job_id, initial, catalog, private, OWNER, STAFF, fields, submit, snapshot, identity,\n                             browser, hosting_evidence, qa, BASELINE_SOURCE, BASELINE_SHA)\n    return checks\n"
+          }
+        ]
+      },
+      "tests/release_126_upgrade_acceptance.py": {
+        "predecessor_sha256": "89c112a841ae498e6d7a59bddb33700ee90c9bb98241d40f38c8c3e02b4cc899",
+        "current_sha256": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
+        "replacements": [
+          {
+            "before": "from release_126_upgrade_cases import BASELINE_SHA, BASELINE_SOURCE, run, unpack",
+            "after": "from release_126_upgrade_cases import BASELINE_SHA, BASELINE_SOURCE, run, unpack, target_version\nfrom release_126_hosting_records import new_evidence, finish, names, PREFIXES, REPORT"
+          },
+          {
+            "before": "    checks = []; scopes = []; failure = None; apache_http = {}; evidence = {}",
+            "after": "    checks = []; scopes = []; failure = None; apache_http = {}; evidence = {}\n    hosting = new_evidence(); candidate = target_version(ROOT)\n    owned = [REPORT, 'apache-release126-hosting-progress.txt', 'apache-release126-hosting-failure.log']\n    owned += [n for p in PREFIXES for n in [names(p)['retention'], *names(p)['images']]]\n    assert not any((QA / n).exists() for n in owned), 'Never overwrite earlier hosting upgrade evidence'"
+          },
+          {
+            "before": "result = run(ROOT, installed, base, prefix, php, check, QA, browser, document_root=web)",
+            "after": "result = run(ROOT, installed, base, prefix, php, check, QA, browser, document_root=web, hosting_evidence=hosting)"
+          },
+          {
+            "before": "check(prefix + ' final snapshot is from updated1.26', obj['initial']['version'] == '1.25.0' and obj['final']['version'] == '1.26.0')",
+            "after": "check(prefix + ' final snapshot is from updated' + candidate.removesuffix('.0'), obj['initial']['version'] == '1.25.0' and obj['final']['version'] == candidate)"
+          },
+          {
+            "before": "        (QA / 'apache-release126-failure.log').write_text(traceback.format_exc(), encoding='utf-8')",
+            "after": "        (QA / 'apache-release126-failure.log').write_text(traceback.format_exc(), encoding='utf-8')\n        (QA / 'apache-release126-hosting-failure.log').write_text(traceback.format_exc(), encoding='utf-8')"
+          },
+          {
+            "before": "            'candidate_version': '1.26.0',",
+            "after": "            'candidate_version': candidate,"
+          },
+          {
+            "before": "            'cases': scopes, 'checks': checks, 'evidence': evidence, 'failure': failure}, indent=2) + '\\n', encoding='utf-8')",
+            "after": "            'cases': scopes, 'checks': checks, 'evidence': evidence, 'failure': failure}, indent=2) + '\\n', encoding='utf-8')\n        hosting_passed = finish(hosting, QA, failure, candidate, selected(), apache_http, BASELINE_SOURCE, BASELINE_SHA)\n        if failure is None:\n            assert hosting_passed, 'All four supplemental hosting upgrade scopes are required'"
+          }
+        ]
+      },
+      "tests/release_126_provider_fixture.php": {
+        "predecessor_sha256": "34c75361f491729300a6ab9907c0414f5c888aa26c4319e5e57b83ce271000b1",
+        "current_sha256": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
+        "replacements": [
+          {
+            "before": "count($argv)!==3",
+            "after": "!in_array(count($argv),[3,4],true)"
+          },
+          {
+            "before": "if($argv[2]==='seed'){",
+            "after": "if($argv[2]==='seed'){\n    if(count($argv)!==3)exit(2);"
+          },
+          {
+            "before": "if($argv[2]==='replay'){",
+            "after": "if($argv[2]==='replay'){\n    if(count($argv)!==3)exit(2);"
+          },
+          {
+            "before": "if(CWP_VERSION!=='1.26.0')throw new RuntimeException('New catalog actions require actual candidate1.26 files.');",
+            "after": "if(count($argv)!==4||!preg_match('/\\A[0-9]+\\.[0-9]+\\.[0-9]+\\z/',$argv[3])||trim(file_get_contents(__DIR__.'/../VERSION'))!==$argv[3]||CWP_VERSION!==$argv[3])throw new RuntimeException('New catalog actions require actual source-bound candidate files.');"
+          }
+        ]
+      }
+    },
+    "predecessor_upgrade_contract_sha256": "df1f78bb41b5b40c610da4fad4b37b4d02605fb87c2c57d6d1da7ceabe3d01fd",
+    "predecessor_reports_sha256": {
+      "browser": "8bf4ebd1cf62608cb3aaab27caebaf6375bc2ce75dec4f7129bb863d4d551bc3",
+      "final": "3c7889405d3f7fe24db2441cebe99db1f4bb8c6e87b2d565d7218d5146a05886"
+    },
+    "reports": [
+      "apache-release126-hosting-guards-results.json",
+      "apache-release126-hosting-results.json"
+    ],
+    "snapshots": [
+      "apache-release126-hosting-r126_ron_-retention.json",
+      "apache-release126-hosting-r126_son_-retention.json",
+      "apache-release126-hosting-r126_roff_-retention.json",
+      "apache-release126-hosting-r126_soff_-retention.json"
+    ],
+    "screenshots": [
+      "apache-release126-hosting-r126_ron_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_ron_-Upgraded-Hosting-Offers-Mobile.png",
+      "apache-release126-hosting-r126_son_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_son_-Upgraded-Hosting-Offers-Mobile.png",
+      "apache-release126-hosting-r126_roff_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_roff_-Upgraded-Hosting-Offers-Mobile.png",
+      "apache-release126-hosting-r126_soff_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_soff_-Upgraded-Hosting-Offers-Mobile.png"
+    ],
+    "scope": "Real published1.25 baseline in the existing four Apache contexts, explicit owner setup and commercial forms, preserved data and recovery refusals. Runtime acceptance remains required. No payment, provisioning, live provider call, or future published1.26 baseline claim."
+  },
+  "hosting_checkout": {
+    "source_base": "7703cb73172c81e347eaf87885ad71315ae6563c",
+    "predecessor_workflow_sha256": "3109551b662f95dde02e94e61f85d88c511297e93fcd42e357a160fce430a0cd",
+    "predecessor_native_count": 162,
+    "predecessor_native_sha256": "5aca2b4c35977f8d842e50194917dae8c492c1847be57696ec36059cf8af3942",
+    "additions_after": "CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/hosting_checkout_document.php qa/hosting-checkout-document-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_checkout_document.php qa/hosting-checkout-document-minimal.json",
+      "\"$PHP_BINARY\" tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-default.json",
+      "\"$PHP_BINARY\" -n tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-minimal.json",
+      "\"$PHP_BINARY\" tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-default.json",
+      "\"$PHP_BINARY\" -n tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-minimal.json",
+      "\"$PHP_BINARY\" tests/hosting_checkout_views.php > qa/hosting-checkout-views-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_checkout_views.php > qa/hosting-checkout-views-minimal.json",
+      "CWP_TEST_HOSTING_CHECKOUT=1 \"$PHP_BINARY\" tests/hosting_checkout_native.php"
+    ],
+    "browser_additions": [
+      ".ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json",
+      ".ci-venv/bin/python -B tests/hosting_checkout_http_browser.py --full-suite"
+    ],
+    "workflow_delta": [
+      {
+        "before": "          CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php\n",
+        "after": "          CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php\n          \"$PHP_BINARY\" tests/hosting_checkout_document.php qa/hosting-checkout-document-default.json\n          \"$PHP_BINARY\" -n tests/hosting_checkout_document.php qa/hosting-checkout-document-minimal.json\n          \"$PHP_BINARY\" tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-default.json\n          \"$PHP_BINARY\" -n tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-minimal.json\n          \"$PHP_BINARY\" tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-default.json\n          \"$PHP_BINARY\" -n tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-minimal.json\n          \"$PHP_BINARY\" tests/hosting_checkout_views.php > qa/hosting-checkout-views-default.json\n          \"$PHP_BINARY\" -n tests/hosting_checkout_views.php > qa/hosting-checkout-views-minimal.json\n          CWP_TEST_HOSTING_CHECKOUT=1 \"$PHP_BINARY\" tests/hosting_checkout_native.php\n"
+      },
+      {
+        "before": "          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite\n",
+        "after": "          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite\n          .ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json\n          .ci-venv/bin/python -B tests/hosting_checkout_http_browser.py --full-suite\n"
+      }
+    ],
+    "predecessor_reports_sha256": {
+      "browser": "8bf4ebd1cf62608cb3aaab27caebaf6375bc2ce75dec4f7129bb863d4d551bc3",
+      "final": "ffb0e19b327577ec9f9a179960f87fb45214d280169678371ed9b8dee1fb9a28"
+    },
+    "reports": [
+      "hosting-checkout-document-default.json",
+      "hosting-checkout-document-minimal.json",
+      "hosting-checkout-subscription-default.json",
+      "hosting-checkout-subscription-minimal.json",
+      "hosting-checkout-billing-default.json",
+      "hosting-checkout-billing-minimal.json",
+      "hosting-checkout-views-default.json",
+      "hosting-checkout-views-minimal.json",
+      "hosting-checkout-native-results.json",
+      "hosting-checkout-http-guards.json",
+      "hosting-checkout-http-results.json"
+    ],
+    "screenshots": [
+      "Hosting-Checkout-Owner-Publication-Desktop.png",
+      "Hosting-Checkout-Owner-Publication-Mobile.png",
+      "Hosting-Checkout-Project-Desktop.png",
+      "Hosting-Checkout-Project-Mobile.png",
+      "Hosting-Checkout-Review-Desktop.png",
+      "Hosting-Checkout-Review-Mobile.png",
+      "Hosting-Checkout-Result-Desktop.png",
+      "Hosting-Checkout-Result-Mobile.png",
+      "Hosting-Checkout-Invoice-Desktop.png",
+      "Hosting-Checkout-Invoice-Mobile.png",
+      "Hosting-Checkout-New-Project-Desktop.png",
+      "Hosting-Checkout-New-Project-Mobile.png"
+    ],
+    "diagnostics": [
+      "hosting-checkout-http-progress.txt",
+      "hosting-checkout-http-commands.json",
+      "hosting-checkout-http-server.log"
+    ],
+    "source_sha256": {
+      "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5",
+      "tests/service-plans/checkout_documents.php": "e131b2ae0ea2831c55082939a5a32b3cd5fb6743303f7c83be60b39211005f2b",
+      "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46",
+      "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_checkout_http_browser.py": "71bab853fbcf300eee81d21db2de264a6f2d136649fc0d15fd07c3fa5ec06897",
+      "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
+      "tests/hosting_checkout_http_fixture.php": "f3547aad06ff3e197e74e525c0bc240bbeee0689ffce406a411e36ac7266ad67",
+      "tests/hosting_checkout_http_guards.py": "cb3c348d6766a27decd16b28285f123573ee476ac137e4662d704a931e0288b2",
+      "site/includes/layout/plans.php": "c027ce40bf8048ccfb84a70a6b83c6a3bea22a5b87b97cebb9cee980c49cde07",
+      "site/includes/layout/recurring_billing.php": "26745404c2f9d8a4539de4492bd89960542c927c38e5ef0712bb102a294b49b1",
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
+    },
+    "source_delta": {
+      "site/includes/layout/plans.php": {
+        "predecessor_sha256": "716630a1bdcd7e3b2cfd12088060c620c3a648c7f808683883ce7728a1cdb90d",
+        "current_sha256": "c027ce40bf8048ccfb84a70a6b83c6a3bea22a5b87b97cebb9cee980c49cde07",
+        "replacements": [
+          {
+            "before": "    $d=$doc->data();echo '<section class=\"workspace-card\"><h2>Agreement history</h2><p>Offered '.esc(gmdate('Y-m-d H:i:s',$d['created_at'])).' UTC by the studio.</p><ol>';",
+            "after": "    $d=$doc->data();echo '<section class=\"workspace-card\"><h2>Agreement history</h2>';\n    if($d['format']===2)echo '<p>Confirmed '.esc(gmdate('Y-m-d H:i:s',$d['created_at'])).' UTC by Client #'.(int)$d['created_by_client'].'.</p><ol>';\n    else echo '<p>Offered '.esc(gmdate('Y-m-d H:i:s',$d['created_at'])).' UTC by the studio.</p><ol>';"
+          },
+          {
+            "before": "        $actor=str_starts_with($event['actor'],'client:')?'Client':'Studio';",
+            "after": "        $actor=$event['actor']==='system:hosting-checkout'?'Automatic checkout':(str_starts_with($event['actor'],'client:')?'Client':'Studio');"
+          },
+          {
+            "before": "'consent'=>'Service terms accepted','activate'=>'Agreement activated'",
+            "after": "'consent'=>$d['format']===2?'Service terms confirmed at checkout':'Service terms accepted','checkout_activate'=>'Agreement activated after confirmation','activate'=>'Agreement activated'"
+          }
+        ]
+      },
+      "site/includes/layout/recurring_billing.php": {
+        "predecessor_sha256": "583f0396f0402b452e2b7abcca09d0d49b4b75405076b364abe2fbfd4a4aa0dd",
+        "current_sha256": "26745404c2f9d8a4539de4492bd89960542c927c38e5ef0712bb102a294b49b1",
+        "replacements": [
+          {
+            "before": "'issue'=>'Issue this period invoice'][$command]",
+            "after": "'issue'=>'Issue this period invoice','checkout_accept'=>'Billing terms confirmed at checkout'][$command]"
+          },
+          {
+            "before": "    echo '<section class=\"workspace-card\"><h2>Billing history</h2><p>Offered by Studio #'.(int)$data['created_by'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';",
+            "after": "    echo '<section class=\"workspace-card\"><h2>Billing history</h2>';\n    if($data['format']===2)echo '<p>Confirmed by Client #'.(int)$data['created_by_client'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';\n    else echo '<p>Offered by Studio #'.(int)$data['created_by'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';"
+          }
+        ]
+      },
+      "tests/hosting_checkout_views.php": {
+        "predecessor_sha256": "f696d1e46febe39c00d410904b44c284b20b1c81bf1263e2bcdf3d10227c351b",
+        "current_sha256": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+        "replacements": [
+          {
+            "before": "require CWP_CODE_ROOT.'/app/hosting/catalog_checkout_document.php';",
+            "after": "require CWP_CODE_ROOT.'/app/hosting/catalog_checkout_document.php';\nrequire CWP_CODE_ROOT.'/app/hosting/catalog_checkout_billing_document.php';\n// The extracted recurring renderer uses this exact class alias in its source file.\nclass_alias(CajunWebPro\\Foundation\\RecurringBilling\\RecurringBillingTerms::class,'RecurringBillingTerms');"
+          },
+          {
+            "before": "'recurring_ui_number','recurring_ui_hex','recurring_ui_query'",
+            "after": "'recurring_ui_number','recurring_ui_hex','recurring_ui_query','recurring_ui_limits'"
+          },
+          {
+            "before": "    'includes/layout/hosting_catalog.php'=>['hosting_catalog_card'],",
+            "after": "    'includes/layout/hosting_catalog.php'=>['hosting_catalog_card'],\n    'includes/layout/plans.php'=>['service_plans_cadences','service_plans_terms_view','service_plans_agreement_history'],\n    'includes/layout/recurring_billing.php'=>['recurring_ui_money','recurring_ui_hidden','recurring_ui_input','recurring_ui_pages','recurring_ui_terms','recurring_ui_command_label','recurring_ui_invoice_card','recurring_ui_detail'],"
+          },
+          {
+            "before": "function links(string $html):array",
+            "after": "function hcv_render(callable $render):string{ob_start();try{$render();return ob_get_contents();}finally{ob_end_clean();}}\nfunction links(string $html):array"
+          },
+          {
+            "before": "    echo json_encode(['passed'=>true,'checks'=>$checks",
+            "after": "    // Actual linked history renderers, with genuine pure documents and explicitly synthetic view data.\n    $historyAt=(new DateTimeImmutable('2027-06-15T12:00:00Z'))->getTimestamp();$hf=co_fixture($historyAt);\n    $hr=HostingCheckoutReview::create(str_repeat('3',32),$hf['pub'],1,['mode'=>'existing','id'=>1],$historyAt,$hf['c']);\n    $hc=HostingCheckoutConsent::create($hr,$hr->fingerprint(),true,$hf['pub'],$hf['c'],1,1,1,$historyAt);\n    $agreement=ServiceSubscriptionDocument::createCheckout(str_repeat('4',32),$hc,$hf['pub'],1,str_repeat('5',32),str_repeat('6',32));\n    $terms=hosting_checkout_billing_terms(str_repeat('7',32),$agreement);\n    $schedule=CajunWebPro\\Foundation\\RecurringBilling\\RecurringBillingSchedule::createCheckout($terms,str_repeat('8',32));\n    $agreementHtml=hcv_render(fn()=>service_plans_agreement_history($agreement));\n    ok('Checkout agreement creation names the actual confirming client',str_contains($agreementHtml,'Confirmed 2027-06-15 12:00:00 UTC by Client #1.')&&!str_contains($agreementHtml,'by the studio'));\n    ok('Checkout service consent is rendered as client confirmation',str_contains($agreementHtml,'<strong>Service terms confirmed at checkout</strong> \u00b7 Client \u00b7 2027-06-15 12:00:00 UTC'));\n    ok('Checkout activation is rendered as automatic rather than a studio action',str_contains($agreementHtml,'<strong>Agreement activated after confirmation</strong> \u00b7 Automatic checkout \u00b7 2027-06-15 12:00:00 UTC')&&!str_contains($agreementHtml,' \u00b7 Studio \u00b7 '));\n    ok('Checkout agreement history exposes no internal command or retained private source',!str_contains($agreementHtml,'checkout_activate')&&!str_contains($agreementHtml,'system:hosting-checkout')&&!str_contains($agreementHtml,'PRIVATE_')&&!str_contains($agreementHtml,'mapping_json'));\n    $endedAgreement=$agreement->append(str_repeat('9',32),'cancel','client:1',$historyAt+10,['reason'=>'End <script>hosting</script>']);\n    $endedAgreementHtml=hcv_render(fn()=>service_plans_agreement_history($endedAgreement));\n    ok('Later client cancellation preserves checkout attribution and escapes its reason',str_contains($endedAgreementHtml,'UTC by Client #1.')&&str_contains($endedAgreementHtml,'<strong>Agreement ended</strong> \u00b7 Client \u00b7 ')&&str_contains($endedAgreementHtml,'End &lt;script&gt;hosting&lt;/script&gt;')&&!str_contains($endedAgreementHtml,'<script>'));\n    $legacyAgreement=ServiceSubscriptionDocument::create(str_repeat('a',32),1,7,$historyAt,$hf['plan']);\n    $legacyAgreement=$legacyAgreement->append(str_repeat('b',32),'consent','client:1',$historyAt,['terms_hash'=>$hf['plan']->model()->termsHash()])->append(str_repeat('c',32),'activate','staff:7',$historyAt,[]);\n    $legacyAgreementHtml=hcv_render(fn()=>service_plans_agreement_history($legacyAgreement));\n    $legacyExpected='<section class=\"workspace-card\"><h2>Agreement history</h2><p>Offered 2027-06-15 12:00:00 UTC by the studio.</p><ol><li><strong>Service terms accepted</strong> \u00b7 Client \u00b7 2027-06-15 12:00:00 UTC</li><li><strong>Agreement activated</strong> \u00b7 Studio \u00b7 2027-06-15 12:00:00 UTC</li></ol><p class=\"hint\">Accepting service terms does not authorize automatic payments. Review invoices and payment arrangements separately.</p></section>';\n    ok('Legacy agreement history output remains byte exact',$legacyAgreementHtml===$legacyExpected);\n    $historyView=['staff'=>false,'document'=>$schedule,'project'=>['id'=>1],'client'=>['id'=>1,'active'=>true],\n        'source'=>['state'=>'active','plan'=>$hf['plan']],'assessment'=>$schedule->assessment(0,$historyAt),'selected_invoice'=>null,'current'=>false,\n        'history'=>['items'=>$schedule->data()['events'],'page'=>0,'more'=>false],'invoices'=>['items'=>[],'page'=>0,'more'=>false]];\n    $billingHtml=hcv_render(fn()=>recurring_ui_detail($historyView));\n    ok('Actual checkout billing detail renders without warnings and names confirming client',str_contains($billingHtml,'Confirmed by Client #1 on 2027-06-15 12:00:00 UTC.')&&!str_contains($billingHtml,'Offered by Studio'));\n    ok('Checkout billing event renders the client confirmation and original period',str_contains($billingHtml,'<strong>Billing terms confirmed at checkout</strong> \u00b7 Client #1 \u00b7 2027-06-15 12:00:00 UTC')&&str_contains($billingHtml,'Effective 2027-06-15 (UTC).'));\n    ok('Checkout billing history hides internal command and private retained source',!str_contains($billingHtml,'checkout_accept')&&!str_contains($billingHtml,'PRIVATE_')&&!str_contains($billingHtml,'checkout_origin'));\n    $endedSchedule=$schedule->append(str_repeat('e',32),'end','client:1',$historyAt+10,['period_index'=>1,'reason'=>'End <script>billing</script>']);\n    $endedView=$historyView;$endedView['document']=$endedSchedule;$endedView['source']['state']='cancelled';$endedView['assessment']=$endedSchedule->assessment(0,$historyAt+10);$endedView['history']['items']=$endedSchedule->data()['events'];\n    $endedBillingHtml=hcv_render(fn()=>recurring_ui_detail($endedView));\n    ok('Later ended billing preserves confirming creator and escapes the client reason',str_contains($endedBillingHtml,'Confirmed by Client #1 on 2027-06-15 12:00:00 UTC.')&&str_contains($endedBillingHtml,'End &lt;script&gt;billing&lt;/script&gt;')&&!str_contains($endedBillingHtml,'<script>'));\n    $legacyData=$terms->data();unset($legacyData['checkout_origin']);$legacyData['format']=1;$legacyData['anchor']='2027-06-16';$legacyData['source_subscription']=['id'=>$legacyAgreement->data()['id'],'revision'=>2,'sha256'=>$legacyAgreement->fingerprint()];\n    $legacyTerms=RecurringBillingTerms::fromArray($legacyData);\n    $legacySchedule=CajunWebPro\\Foundation\\RecurringBilling\\RecurringBillingSchedule::create($legacyTerms,7,$historyAt)\n        ->append(str_repeat('f',32),'accept','client:1',$historyAt,['terms_sha256'=>$legacyTerms->fingerprint()])\n        ->append(str_repeat('1',32),'activate','staff:7',$historyAt,['period_index'=>0]);\n    $legacyView=$historyView;$legacyView['document']=$legacySchedule;$legacyView['assessment']=$legacySchedule->assessment(0,$historyAt);$legacyView['history']['items']=$legacySchedule->data()['events'];\n    $legacyBillingHtml=hcv_render(fn()=>recurring_ui_detail($legacyView));\n    $legacyHistory='<section class=\"workspace-card\"><h2>Billing history</h2><p>Offered by Studio #7 on 2027-06-15 12:00:00 UTC.</p><ol><li><strong>Accept these billing terms</strong> \u00b7 Client #1 \u00b7 2027-06-15 12:00:00 UTC</li><li><strong>Start billing</strong> \u00b7 Studio #7 \u00b7 2027-06-15 12:00:00 UTC<p>Effective 2027-06-16 (UTC).</p></li></ol></section>';\n    ok('Legacy billing creator and event history remain byte exact',str_contains($legacyBillingHtml,$legacyHistory));\n    ok('Every legacy billing command label remains unchanged',array_map('recurring_ui_command_label',['accept','decline','withdraw','activate','pause','resume','end','issue'])===['Accept these billing terms','Decline these billing terms','Withdraw this offer','Start billing','Pause billing','Resume billing','End future billing','Issue this period invoice']);\n    echo json_encode(['passed'=>true,'checks'=>$checks"
+          }
+        ]
+      },
+      ".github/workflows/hosting-catalog-offers.yml": {
+        "predecessor_sha256": "9fecd40bab5184a76654e4dcd12b7f1870a6cb5bc3182b3d0f8553dcc2ea5845",
+        "current_sha256": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
+        "replacements": [
+          {
+            "before": "      PHP_BINARY: /usr/bin/php8.3\n",
+            "after": "      PHP_BINARY: /usr/bin/php8.3\n      CWP_PHP_VERSION: '8.3'\n"
+          },
+          {
+            "before": "      - name: Actual packaged owner client and agreement browser flow\n",
+            "after": "      - name: Seed actual isolated current-time checkout history\n        run: CWP_TEST_HOSTING_CHECKOUT=1 \"$PHP_BINARY\" tests/hosting_checkout_native.php > qa/hosting-checkout-ui-native.log 2>&1\n      - name: Actual packaged owner client and agreement browser flow\n"
+          },
+          {
+            "before": "          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py\n      - name: Preserve unchanged source\n",
+            "after": "          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py\n      - name: Packaged current-time hosting checkout and exact result links\n        run: |\n          .ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json\n          .ci-venv/bin/python -B tests/hosting_checkout_http_browser.py\n      - name: Preserve unchanged source\n"
+          },
+          {
+            "before": "            qa/hosting-catalog-ui-native.log\n",
+            "after": "            qa/hosting-catalog-ui-native.log\n            qa/hosting-checkout-ui-native.log\n            qa/hosting-checkout-native-results.json\n            qa/hosting-checkout-http-guards.json\n            qa/hosting-checkout-http/\n"
+          },
+          {
+            "before": "      - name: Verify generated deployment and build exact source\n",
+            "after": "      - name: Linux recovery socket regression\n        run: .ci-venv/bin/python -B tests/hosting_catalog_recovery_socket_test.py --require-linux -v\n      - name: Verify generated deployment and build exact source\n"
+          }
+        ]
+      }
+    },
+    "unchanged_source_sha256": {
+      "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
+    },
+    "scope": "Additive current-clock checkout document/native and packaged browser evidence. hcc_ state is retained from the native phase, with no reset. Synthetic local receipt only; no external payment, provider dispatch, provisioning, published-baseline or pixel-review acceptance is implied by source or report presence."
+  },
+  "catalog_storefront": {
+    "parents": [
+      "b7c97953f323004e1fdd527bdef0b2da63f01c71",
+      "1db3235286f915935e4ab621e2be5a2f14288997"
+    ],
+    "predecessor_contract_sha256": "2571e7d7ebff3495a866f85f9ce6e92a24a6a4e44010d637200fcc89d49c6318",
+    "source_sha256": {
+      "site/app/providers/checks.php": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
+      "site/admin/views/providers.php": "7b5aca61817df930873cc51b1fc6b4775d896f8989cc3f7271a5e71b4b838faa",
+      "site/app/providers/catalog_import.php": "e396beb6579888f18640f4847d27a2c468fb8467bf53e8be63216d316c3fe9b6",
+      "site/app/providers/catalog_import_document.php": "8b5e856479a5cd09ebfcd855f9453715bf4db9737214fb256208c040250746d0",
+      "site/admin/controllers/catalog.php": "9369bc90cbb6e1eed6d5320326812fdaeb98ecf2f2bdfac7be57b2468334a08d",
+      "site/admin/views/catalog_import.php": "1525df784e2c1f1e17634895324fcd9f2cd56733002c6354fd379c5908b9f90b",
+      "site/app/hosting/catalog_login.php": "fc18b942f7e32318d0e6124eb0b3fe761f84e95b37f2af2abf8288ef9cb65c23",
+      "site/portal/controllers/actions.php": "40f2ceddd2245a9ce682fcef51b4c91269a82ecad0a6643e172c016c7f67a6fd",
+      "site/portal/views/auth.php": "494679c02972a9c3016013a86beb0dbe7d08ea0b87a4275a255d29b880a3673f",
+      "site/includes/layout/public.php": "4a41b36885dd9da1f7da3f66f1d6a4c3936c7fe735e0d16e17d1a96e4562b14f",
+      "site/includes/urls.php": "4e5ed7e8926d8c7d51e55d558ac7ca05cbc628b63e889aa5cb365f655e55e68a",
+      "site/pages/controller.php": "af453ed8cf2e9ed4d7832384d49fbfa637b0ba1e8fa66f4ce7911ad47fe550dd",
+      "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+      "site/pages/services/hosting.php": "d4a6530f40cd17f34675214afbbf88a852bdde74fedfd3478c7671eb4cf21a8b",
+      "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
+      ".github/workflows/catalog-storefront.yml": "9f9b2113dc966e3ce698339dee8527c8eea2a65bf598a8233cb1f1f95e76913a",
+      "tests/provider_catalog_connection_entry.php": "af57305a2fddd137e5970a4148f148aba7c2f95ffc7a1ef0c17ab4660c0a70bf",
+      "tests/provider_catalog_import_batch.php": "48299dc9aaf55c665d5323baf2478130b5475d453532a77d1a863a7de97eaea3",
+      "tests/provider_catalog_import_batch_views.php": "80dd47177a3404320fad762fac9e239292d05922f8a3504d55c6ec13dd876891",
+      "tests/provider_catalog_import_batch_native.php": "2953b71154fff44bda62e48414ba6a4d4eeedfb7a6427f1f3804062d64b0f6f5",
+      "tests/hosting_catalog_login.php": "67005960cde15fe5fabe3b90c3cc3703cb5e641b2d2fbb2f047f3dd5dc859170",
+      "tests/hosting_catalog_comparison.php": "90a01a115a7c2218ea755a3887f69fe2c8f8ef158b8b539a0196249ed4532293",
+      "tests/hosting_catalog_comparison_browser.py": "9d6ae7e05048ff7a6f1769dcc955e74bc3aff32f134ee2391e239fa47724204a"
+    },
+    "source_delta": {
+      "site/includes/layout/hosting_catalog.php": {
+        "predecessor_sha256": "3ac8c16402fe9a067ce0ed5693ab59b38c6e3d665d1e115be1d4f1775671fdff",
+        "current_sha256": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+        "replacements": [
+          {
+            "before": "    if (($page['has_more']??false)===true) echo '<p class=\"hint\">More available plans can be browsed in the Client Portal.</p>';\n}\n",
+            "after": "    if (($page['has_more']??false)===true) echo '<p class=\"hint\">More available plans can be browsed in the Client Portal.</p>';\n}\n\n\n/** Presentation only: accept a fresh, safe hosting_catalog_public() page, never private documents. */\nfunction hosting_catalog_comparison(array $page): void {\n    if (!is_array($page['offers']??null) || !array_is_list($page['offers']) || count($page['offers'])>20\n        || !is_bool($page['has_more']??null) || !is_bool($page['unavailable']??null)) throw new InvalidArgumentException('Hosting comparison is unavailable.');\n    // Validate the whole bounded page before rendering any link or image.\n    foreach ($page['offers'] as $offer) hosting_catalog_comparison_offer($offer);\n    if ($page['unavailable']) echo '<p class=\"notice\" role=\"status\">Some hosting plans are temporarily unavailable. The plans below are available to review.</p>';\n    if (!$page['offers']) {\n        echo '<div class=\"hosting-comparison-empty\"><h3>'.($page['unavailable']?'We cannot show hosting plans right now.':'Let\u2019s find the right hosting for you.').'</h3><p>'.($page['unavailable']?'Please try again later, or contact us to discuss your website.':'No shared hosting plans are published yet. Tell us about your website and we\u2019ll help you plan the next step.').'</p><a class=\"btn outline\" href=\"'.esc(page_url('consultation')).'\">Discuss your hosting needs</a></div>';\n        return;\n    }\n    echo '<p class=\"hosting-comparison-intro\">Compare the published price, included services and support. Each plan covers one hosting package, with no separate setup fee.</p>';\n    foreach (array_chunk($page['offers'],4) as $index=>$offers) {\n        $id='hosting-compare-'.($index+1);$start=$index*4+1;$end=$start+count($offers)-1;\n        $caption=count($page['offers'])>4?'Shared hosting plans '.$start.'\u2013'.$end:'Shared hosting plan comparison';\n        echo '<div class=\"hosting-comparison-group\"><p id=\"'.$id.'-help\" class=\"hosting-comparison-help\">On a small screen, scroll across to compare plans. Keyboard users can focus the table and use the arrow keys.</p>';\n        echo '<div class=\"hosting-comparison-scroll\" role=\"region\" aria-labelledby=\"'.$id.'-caption\" aria-describedby=\"'.$id.'-help\" tabindex=\"0\"><table class=\"hosting-comparison-table hosting-comparison-cols-'.count($offers).'\"><caption id=\"'.$id.'-caption\">'.esc($caption).'</caption><thead><tr><th scope=\"col\" class=\"hosting-comparison-label\">Your plan</th>';\n        foreach ($offers as $offer) {\n            echo '<th scope=\"col\"><div class=\"hosting-comparison-plan\"><span class=\"hosting-comparison-eyebrow\">Shared hosting</span>';\n            if ($offer['image_id']!==null) echo '<img class=\"hosting-catalog-image hosting-comparison-image\" src=\"'.esc(site_url('media/index.php?id='.$offer['image_id'])).'\" alt=\"\" width=\"240\" height=\"144\" loading=\"lazy\" decoding=\"async\">';\n            echo '<h3>'.esc($offer['title']).'</h3><p>'.nl2br(esc($offer['summary'])).'</p></div></th>';\n        }\n        echo '</tr></thead><tbody><tr><th scope=\"row\">Price &amp; billing period</th>';\n        foreach ($offers as $offer) echo '<td><strong class=\"hosting-comparison-price\">$'.esc(gmoney($offer['amount_cents'])).'</strong><span class=\"hosting-comparison-period\">USD '.($offer['cadence']==='monthly'?'per month':'per year').'</span></td>';\n        echo '</tr>';\n        foreach (['inclusions'=>'Included','exclusions'=>'Not included'] as $field=>$label) {\n            echo '<tr><th scope=\"row\">'.$label.'</th>';\n            foreach ($offers as $offer) {\n                echo '<td>';\n                if (!$offer[$field]) echo '<span class=\"hosting-comparison-muted\">No additional items listed.</span>';\n                else {echo '<ul>';foreach ($offer[$field] as $item) echo '<li>'.esc($item).'</li>';echo '</ul>';}\n                echo '</td>';\n            }\n            echo '</tr>';\n        }\n        $limits=[];foreach ($offers as $offer)foreach ($offer['limits'] as $key=>$value)$limits[$key]=true;\n        ksort($limits,SORT_STRING);\n        if (!$limits) {\n            echo '<tr><th scope=\"row\">Usage limits</th>';\n            foreach ($offers as $offer) echo '<td>No separately metered limits listed. The included scope still applies.</td>';\n            echo '</tr>';\n        } else foreach (array_keys($limits) as $key) {\n            echo '<tr><th scope=\"row\">'.esc(ucfirst(str_replace('_',' ',$key))).'</th>';\n            foreach ($offers as $offer) echo '<td>'.(array_key_exists($key,$offer['limits'])?esc((string)$offer['limits'][$key]):'<span class=\"hosting-comparison-muted\">Not specified</span>').'</td>';\n            echo '</tr>';\n        }\n        echo '<tr><th scope=\"row\">Support</th>';\n        foreach ($offers as $offer) echo '<td>'.nl2br(esc($offer['support'])).'</td>';\n        echo '</tr><tr><th scope=\"row\">How to get started</th>';\n        foreach ($offers as $offer) {\n            echo '<td>';\n            if (isset($offer['checkout_policy'])) {\n                $policy=hosting_checkout_policy($offer['checkout_policy']);\n                echo '<p>Confirm your terms to create the first unpaid invoice. Your full billing period starts that day in '.esc($policy['timezone']).'.</p>';\n                echo '<p>'.($policy['alignment']==='month-end'?'Confirmation is available on the last day of a month.':'Future billing follows the same day, using the last day of shorter months.').'</p><p>Hosting setup follows verified payment and owner approval.</p>';\n                $url=site_url('portal/index.php?'.http_build_query(['hosting'=>'checkout','offer'=>$offer['publication_id'],'offer_sha256'=>$offer['publication_sha256']]));\n                echo '<a class=\"btn gold\" href=\"'.esc($url).'\" aria-label=\"'.esc('Review '.$offer['title'].' and first invoice').'\">Choose this plan</a>';\n            } else {\n                echo '<p>Send a request from your client portal. We\u2019ll review it with you before offering an agreement. A request does not take payment or activate hosting.</p><a class=\"btn outline\" href=\"'.esc(site_url('portal/index.php?hosting=offers')).'\">View request options</a>';\n            }\n            echo '</td>';\n        }\n        echo '</tr></tbody></table></div></div>';\n    }\n    echo '<p class=\"hosting-comparison-note\">A missing limit is not an unlimited allowance. Review the complete terms before confirming. Payment and hosting activation are separate steps.</p>';\n    if ($page['has_more']) echo '<p><a class=\"btn outline\" href=\"'.esc(site_url('portal/index.php?hosting=offers&p=2')).'\">Browse more plans in your portal</a></p>';\n}\n\n/** Reject malformed presentation inputs; this does not establish publication or purchasing authority. */\nfunction hosting_catalog_comparison_offer(array $offer): void {\n    foreach (['publication_id'=>32,'publication_sha256'=>64] as $key=>$length) {\n        if (!is_string($offer[$key]??null)||!preg_match('/\\A[a-f0-9]{'.$length.'}\\z/',$offer[$key])) throw new InvalidArgumentException('Hosting offer identity is unavailable.');\n    }\n    if (($offer['currency']??null)!=='USD'||!in_array($offer['cadence']??null,['monthly','annually'],true)||!is_int($offer['amount_cents']??null)||$offer['amount_cents']<1||$offer['amount_cents']>99999999) throw new InvalidArgumentException('Hosting terms are unavailable.');\n    foreach (['title','summary','support'] as $key) if (!is_string($offer[$key]??null)) throw new InvalidArgumentException('Hosting offer text is unavailable.');\n    if (!array_key_exists('image_id',$offer)||($offer['image_id']!==null&&(!is_string($offer['image_id'])||!preg_match('/\\A[a-f0-9]{32}\\z/',$offer['image_id'])))) throw new InvalidArgumentException('Hosting image is unavailable.');\n    foreach (['inclusions','exclusions'] as $key) {\n        if (!is_array($offer[$key]??null)||!array_is_list($offer[$key])) throw new InvalidArgumentException('Hosting scope is unavailable.');\n        foreach ($offer[$key] as $item) if (!is_string($item)) throw new InvalidArgumentException('Hosting scope is unavailable.');\n    }\n    if (!is_array($offer['limits']??null)) throw new InvalidArgumentException('Hosting limits are unavailable.');\n    foreach ($offer['limits'] as $key=>$value) if (!is_string($key)||!is_int($value)||$value<0) throw new InvalidArgumentException('Hosting limits are unavailable.');\n    if (array_key_exists('checkout_policy',$offer)) {\n        if (!is_array($offer['checkout_policy'])) throw new InvalidArgumentException('Hosting checkout terms are unavailable.');\n        hosting_checkout_policy($offer['checkout_policy']);\n    }\n}\n"
+          }
+        ]
+      }
+    },
+    "unchanged_workflows": {
+      ".github/workflows/application-tests.yml": "2f3c249ca15a32d8d57db20098713983157138e929cc7ae9629b9c9552aea636",
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
+    },
+    "scope": "Separate focused portable/native and synthetic-renderer checks; actual installed application, combined full/upgrade acceptance and provider artwork/VPS mapping remain pending."
+  },
+  "catalog_storefront_http": {
+    "source_predecessor": "9b450c4b8daafd79f4242c39ddd65e2bdb56b624",
+    "predecessor_contract_sha256": "282b0827fbaa535acf67bdd063cb57b229799122460c1ae341178d49a3df3145",
+    "updated_pins": {
+      "tests/provider_package_types_cases.py": "provider_package_types",
+      "tests/hosting_checkout_http_browser.py": "hosting_checkout"
+    },
+    "source_sha256": {
+      "tests/provider_package_types_cases.py": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b",
+      "tests/hosting_checkout_http_browser.py": "71bab853fbcf300eee81d21db2de264a6f2d136649fc0d15fd07c3fa5ec06897",
+      "tests/catalog_storefront_http_cases.py": "6f9c729c655ea6b1bc866738d144aa73989818da30525bae51cb9f34edc50709",
+      "tests/catalog_storefront_checkout_cases.py": "2922860632ec6e5e7302d31399c336a6b75a541675931b800c39b9c395108429"
+    },
+    "source_delta": {
+      "tests/provider_package_types_cases.py": {
+        "predecessor_sha256": "6ec03bc6c389e3ee618499ba691cb3594c4d0ac011bfff5efb47de47c60415ba",
+        "current_sha256": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b",
+        "replacements": [
+          {
+            "before": "    finally:\n        server.package_types, server.package_types_mode = saved_server\n        owner.close()\n",
+            "after": "    finally:\n        server.package_types, server.package_types_mode = saved_server\n        owner.close()\n    from catalog_storefront_http_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES\n    storefront = storefront_browser(env, browser)\n    check('Installed catalog storefront completes connection and fixed-window import coverage',\n          storefront['passed'] is True\n          and tuple(c['name'] for c in storefront['captures']) == STOREFRONT_CAPTURES\n          and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in STOREFRONT_CAPTURES))\n"
+          }
+        ]
+      },
+      "tests/hosting_checkout_http_browser.py": {
+        "predecessor_sha256": "471b24adfd9d5a97fbc2bb869c6e145330042d4e7b4ea6ea4859d801b8887603",
+        "current_sha256": "71bab853fbcf300eee81d21db2de264a6f2d136649fc0d15fd07c3fa5ec06897",
+        "replacements": [
+          {
+            "before": "from hosting_catalog_purchase import clean_environment, runtime_selection, sha\nfrom hosting_purchase_handoff_browser import fresh_directory, extract_package, DISABLED\nfrom hosting_checkout_http_cases import run_browser, CAPTURE_STEMS\n\nROOT = Path(__file__).resolve().parents[1]\nWEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'\nSESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'\nBASE = 'http://127.0.0.1:8091'\nCAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))\nSOURCE_PATHS = [\n    'tests/hosting_checkout_http_browser.py', 'tests/hosting_checkout_http_cases.py', 'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_guards.py',\n    'tests/hosting_checkout_native.php', 'tests/hosting_catalog_purchase.py', 'tests/hosting_purchase_handoff_browser.py',\n    'tests/hosting_purchase_handoff_cases.py', 'tests/hosting_catalog_browser.py', 'tests/browser_acceptance.py',\n",
+            "after": "from hosting_catalog_purchase import clean_environment, runtime_selection, sha\nfrom hosting_purchase_handoff_browser import fresh_directory, extract_package, DISABLED\nfrom hosting_checkout_http_cases import run_browser, CAPTURE_STEMS\nfrom catalog_storefront_checkout_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES\n\nROOT = Path(__file__).resolve().parents[1]\nWEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'\nSESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'\nBASE = 'http://127.0.0.1:8091'\nCAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))\nALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES\nSOURCE_PATHS = [\n    'tests/catalog_storefront_checkout_cases.py',\n    'tests/hosting_checkout_http_browser.py', 'tests/hosting_checkout_http_cases.py', 'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_guards.py',\n    'tests/hosting_checkout_native.php', 'tests/hosting_catalog_purchase.py', 'tests/hosting_purchase_handoff_browser.py',\n    'tests/hosting_purchase_handoff_cases.py', 'tests/hosting_catalog_browser.py', 'tests/browser_acceptance.py',\n"
+          },
+          {
+            "before": "    qa, outputs = output_paths(full_suite)\n    if full_suite:\n        for parent in (qa, *qa.parents): require(not parent.is_symlink() and (not parent.exists() or parent.is_dir()), 'Exact output directory required')\n        require(all(not p.exists() and not p.is_symlink() for p in [*outputs.values(), *(qa/n for n in CAPTURES)]), 'Preserve prior checkout HTTP outputs')\n        qa.mkdir(parents=True, exist_ok=True)\n    else: fresh_directory(qa)\n    fresh_directory(WEB); SITE.mkdir(mode=0o700); fresh_directory(SESSIONS)\n",
+            "after": "    qa, outputs = output_paths(full_suite)\n    if full_suite:\n        for parent in (qa, *qa.parents): require(not parent.is_symlink() and (not parent.exists() or parent.is_dir()), 'Exact output directory required')\n        require(all(not p.exists() and not p.is_symlink() for p in [*outputs.values(), *(qa/n for n in ALL_CAPTURES)]), 'Preserve prior checkout HTTP outputs')\n        qa.mkdir(parents=True, exist_ok=True)\n    else: fresh_directory(qa)\n    fresh_directory(WEB); SITE.mkdir(mode=0o700); fresh_directory(SESSIONS)\n"
+          },
+          {
+            "before": "        check('Checkout server exposes the installed login form', response.status_code == 200 and 'name=\"action\" value=\"login\"' in response.text)\n        with sync_playwright() as p:\n            browser = p.chromium.launch(headless=True)\n            try: result = run_browser({**helpers, 'BASE': BASE, 'QA': qa, 'check': check, 'fixture': fixture, 'seed': seed}, browser)\n            finally: browser.close()\n        check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))\n        complete = True\n    except Exception as error:\n        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py'}\n        locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]\n        failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}\n    finally:\n",
+            "after": "        check('Checkout server exposes the installed login form', response.status_code == 200 and 'name=\"action\" value=\"login\"' in response.text)\n        with sync_playwright() as p:\n            browser = p.chromium.launch(headless=True)\n            try:\n                browser_env = {**helpers, 'BASE': BASE, 'QA': qa, 'check': check, 'fixture': fixture, 'seed': seed}\n                result = run_browser(browser_env, browser)\n                result['catalog_storefront'] = storefront_browser(browser_env, browser)\n                check('Installed storefront completes the selected-plan login and invoice journey',\n                      result['catalog_storefront']['passed'] is True\n                      and tuple(c['name'] for c in result['catalog_storefront']['captures']) == STOREFRONT_CAPTURES\n                      and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in STOREFRONT_CAPTURES))\n            finally: browser.close()\n        check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))\n        complete = True\n    except Exception as error:\n        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py'}\n        locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]\n        failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}\n    finally:\n"
+          },
+          {
+            "before": "        if log is not None:\n            log.close(); clean = re.search(r'PHP (?:Warning|Notice|Fatal error|Parse error|Deprecated):', outputs['server.log'].read_text(encoding='utf-8', errors='replace')) is None\n            checks.append({'name': 'Checkout HTTP server has no PHP diagnostics after shutdown', 'passed': clean}); complete = complete and clean\n        owned = [p for name,p in outputs.items() if name != 'results.json'] + [qa/n for n in CAPTURES]\n        files = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in owned if p.is_file()}\n        report = {'passed': complete and all(c['passed'] is True for c in checks), 'source': source, 'package': package, 'runtime': runtime, 'checks': checks, 'result': result, 'failure': failure, 'files': files, 'full_acceptance': False, 'visual_approval': False, 'scope': 'Actual packaged owner publication and primary-client first unpaid invoice now; separate native synthetic receipt predates this browser. Contact-key denial is not contact-login acceptance. No live payment, charge or provider activation.'}\n        write(outputs['results.json'], report); print(json.dumps({'passed': report['passed'], 'checks': len(checks), 'full_acceptance': False}))\n",
+            "after": "        if log is not None:\n            log.close(); clean = re.search(r'PHP (?:Warning|Notice|Fatal error|Parse error|Deprecated):', outputs['server.log'].read_text(encoding='utf-8', errors='replace')) is None\n            checks.append({'name': 'Checkout HTTP server has no PHP diagnostics after shutdown', 'passed': clean}); complete = complete and clean\n        owned = [p for name,p in outputs.items() if name != 'results.json'] + [qa/n for n in ALL_CAPTURES]\n        files = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in owned if p.is_file()}\n        report = {'passed': complete and all(c['passed'] is True for c in checks), 'source': source, 'package': package, 'runtime': runtime, 'checks': checks, 'result': result, 'failure': failure, 'files': files, 'full_acceptance': False, 'visual_approval': False, 'scope': 'Actual packaged owner publication and primary-client first unpaid invoice now; separate native synthetic receipt predates this browser. Contact-key denial is not contact-login acceptance. No live payment, charge or provider activation.'}\n        write(outputs['results.json'], report); print(json.dumps({'passed': report['passed'], 'checks': len(checks), 'full_acceptance': False}))\n"
+          }
+        ]
+      }
+    },
+    "unchanged_source_sha256": {
+      ".github/workflows/application-tests.yml": "2f3c249ca15a32d8d57db20098713983157138e929cc7ae9629b9c9552aea636",
+      ".github/workflows/catalog-storefront.yml": "9f9b2113dc966e3ce698339dee8527c8eea2a65bf598a8233cb1f1f95e76913a",
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
+      "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
+      "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+      "tools/acceptance-reports.json": "b3742f65c0230f446820d1ff1f94369fe06c0a1056c766c5ab50f112bb9810c6"
+    },
+    "screenshots": [
+      "Catalog-Storefront-Connection-Desktop.png",
+      "Catalog-Storefront-Connection-Mobile.png",
+      "Catalog-Storefront-Batch-Desktop.png",
+      "Catalog-Storefront-Batch-Mobile.png",
+      "Catalog-Storefront-Comparison-Desktop.png",
+      "Catalog-Storefront-Comparison-Mobile.png",
+      "Catalog-Storefront-Selected-Review.png",
+      "Catalog-Storefront-Unpaid-Invoice.png"
+    ]
   }
 }

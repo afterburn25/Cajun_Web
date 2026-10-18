@@ -150,3 +150,9 @@ def run_browser(env, browser):
     finally:
         server.package_types, server.package_types_mode = saved_server
         owner.close()
+    from catalog_storefront_http_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES
+    storefront = storefront_browser(env, browser)
+    check('Installed catalog storefront completes connection and fixed-window import coverage',
+          storefront['passed'] is True
+          and tuple(c['name'] for c in storefront['captures']) == STOREFRONT_CAPTURES
+          and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in STOREFRONT_CAPTURES))

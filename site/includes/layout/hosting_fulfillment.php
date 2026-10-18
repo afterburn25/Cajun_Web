@@ -7,6 +7,24 @@ require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_views.php';
 function hosting_fulfillment_ui_hidden(string $action,array $fields):void {
     foreach($fields as $key=>$value)echo '<input type="hidden" name="'.esc($key).'" value="'.esc(service_orders_ui_value($action,$key,(string)$value,64)).'">';
 }
+/** Saved owner-only assignment status; this card never grants access or submits a write. */
+function hosting_fulfillment_ui_assignment(?array $assignment):void {
+    if($assignment===null)return;
+    $message=match($assignment['state']){
+        'linked'=>'This package is linked to the expected client under the saved provider settings.',
+        'unlinked'=>'Not linked. Refresh the inventory, review ownership, then select the expected client.',
+        'different_client'=>'Linked to a different client. Review the assignment before changing it.',
+        'connection_changed'=>'The provider connection changed. Refresh the inventory and review ownership.',
+        'refresh_required'=>'No saved inventory under the current settings. Refresh to review this package.',
+        'not_observed'=>'Not found in the saved inventory. Refresh to review; absence does not prove removal.',
+        'stale'=>'This link needs re-approval. Refresh the inventory and review ownership.',
+        'client_unavailable'=>'The expected client is unavailable or inactive. Review the client account.',
+        default=>'Inventory storage is unavailable. Review the provider page.',
+    };
+    echo '<div data-hosting-client-handoff><h3>Client hosting access</h3><p>Expected client: <strong>'.esc($assignment['client_name']).'</strong> (#'.(int)$assignment['client_id'].'). Package #'.esc($assignment['package_id']).'.</p><p>'.esc($message).'</p>';
+    if($assignment['observed_at']!==null)echo '<p class="hint">Last saved inventory: '.esc($assignment['observed_at']).' UTC. Saved observation only.</p>';
+    echo '<a class="btn outline" href="'.esc($assignment['url']).'">Review client access</a></div>';
+}
 function hosting_fulfillment_ui(ServiceOrderDocument $order):void {
     $v=hosting_fulfillment_view($order->data()['id'],$order->data()['client_id']);$order=$v['order'];$agreement=$order->data()['agreement']['id'];
     echo '<section class="workspace-card" data-hosting-fulfillment><h2>Provider setup</h2>';
@@ -58,5 +76,6 @@ function hosting_fulfillment_ui(ServiceOrderDocument $order):void {
     }else{
         echo '<p>'.esc(match($v['mode']){'pending_confirmation'=>'20i accepted the request and assigned a package number. The service remains pending until an authenticated check confirms that exact package.','unknown'=>'The provider outcome is unknown. Keep this original attempt for investigation; another setup request is blocked.','unresolved'=>'The original attempt has no completed local result. Preserve its history and investigate the provider response before continuing. Another setup request is blocked.','active'=>'The original package was observed enabled with the accepted domain and type. Its confirmation and setup history are retained.',default=>'The existing hosting lifecycle and original setup history are retained.'}).'</p>';
     }
+    hosting_fulfillment_ui_assignment($v['assignment']??null);
     echo '</section>';
 }

@@ -1,0 +1,116 @@
+name: Catalog import and shared hosting storefront
+on:
+  push:
+    branches: [codex/twentyi-catalog-storefront]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: catalog-storefront-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  catalog:
+    name: Catalog PHP ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify generated shipping inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-catalog-storefront-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Current connection, batch retry, login, comparison and real catalog transactions
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-catalog-storefront-test sh -ec '
+              mkdir -p qa
+              for test in provider_catalog_connection_entry provider_catalog_import_batch provider_catalog_import_batch_views hosting_catalog_login hosting_catalog_comparison provider_catalog_import provider_package_types; do
+                php "tests/$test.php" > "qa/$test-default.json"
+                php -n "tests/$test.php" > "qa/$test-minimal.json"
+              done
+              CWP_TEST_CATALOG_BATCH=1 php tests/provider_catalog_import_batch_native.php
+              php tests/provider_catalog_import_native.php
+              php tests/provider_package_types_native.php
+            '
+      - name: Preserve unchanged source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
+      - name: Preserve actual results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: catalog-storefront-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: qa/*.json
+          if-no-files-found: error
+          retention-days: 14
+  comparison:
+    name: Shared hosting comparison desktop and mobile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare actual PHP renderer and Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php8.3-cli python3-venv
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Synthetic renderer and exact source guards
+        run: |
+          .ci-venv/bin/python -B tests/hosting_catalog_comparison_browser.py --php /usr/bin/php8.3
+          .ci-venv/bin/python -B tests/acceptance_artifacts_test.py --report qa/catalog-storefront-artifact-guards.json
+      - name: Preserve unchanged source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
+      - name: Preserve named results and actual captures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: catalog-storefront-comparison-${{ github.sha }}
+          path: |
+            qa/hosting-catalog-comparison-browser-results.json
+            qa/hosting-catalog-comparison/
+            qa/catalog-storefront-artifact-guards.json
+          if-no-files-found: error
+          retention-days: 14

@@ -85,7 +85,7 @@ function provider_catalog_import_preview(int $page=1,string $source='packages.li
         foreach($types as &$type){$record=one('SELECT * FROM '.table('catalog_provider_imports').' WHERE profile_id=? AND type_ref=?',[$context['profile_id'],$type['type_ref']]);$type['product_id']=$record?(int)$record['product_id']:null;$type['earlier_credentials']=$record&&!hash_equals($record['source_key_fingerprint'],$context['source_key_fingerprint']);if($record)$records[]=$record;}unset($type,$context['source_key_fingerprint']);
         $origins=provider_catalog_import_origins($records);
         foreach($types as &$type)$type+=$type['product_id']!==null?$origins[$type['product_id']]:['origin_operation'=>null,'origin_name'=>null];unset($type);
-        return $context+['types'=>$types,'unnamed'=>$document->unnamed,'page'=>$page,'has_more'=>$more];
+        return $context+['types'=>$types,'unnamed'=>$document->unnamed,'page'=>$page,'has_more'=>$more,'total_types'=>count($document->types)];
     }));
 }
 function provider_catalog_import_create(string $expected,string $type,string $sku,string $term,#[\SensitiveParameter] string $password,string $source='packages.list'): int {
@@ -96,6 +96,12 @@ function provider_catalog_import_create(string $expected,string $type,string $sk
         $document=$context['document'];$selected=$document->type($type);
         $old=one('SELECT product_id FROM '.table('catalog_provider_imports').' WHERE profile_id=? AND type_ref=?',[$context['profile_id'],$type]);
         if($old){$record=provider_catalog_import_record((int)$old['product_id']);if(!hash_equals($record['source_key_fingerprint'],$context['source_key_fingerprint']))throw new RuntimeException('This type already has a draft from earlier credentials. Review its original source; it cannot be reused as an import from the current credentials.');provider_catalog_import_origins([$record]);return (int)$old['product_id'];}
+        return provider_catalog_import_create_locked($context,$actor,$type,$sku,$term);
+    }));
+}
+/** Shared writer: the caller holds the mutex/transaction and freshly reviewed context. */
+function provider_catalog_import_create_locked(array $context,array $actor,string $type,string $sku,string $term): int {
+        provider_catalog_import_transaction();$document=$context['document'];$selected=$document->type($type);
         $product=catalog_save_in_transaction(0,0,$document->draft($type,$sku,$term));
         $sourceHash=hash('sha256',json_encode([$context['profile_id'],$context['revision'],$context['refresh_id'],$context['source_key_fingerprint'],$type,$selected['name']],JSON_THROW_ON_ERROR));
         query('INSERT INTO '.table('catalog_provider_imports').' (profile_id,type_ref,product_id,source_revision,refresh_id,source_key_fingerprint,type_name,source_hash,actor_id,created_at,media_id,media_revision) VALUES (?,?,?,?,?,?,?,?,?,?,NULL,0)',[$context['profile_id'],$type,$product,$context['revision'],$context['refresh_id'],$context['source_key_fingerprint'],$selected['name'],$sourceHash,(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
@@ -104,6 +110,34 @@ function provider_catalog_import_create(string $expected,string $type,string $sk
         save_setting('provider_catalog_import_count',(string)($count+1));
         catalog_audit((int)$actor['id'],'provider_import.create','Product '.$product.' source '.$sourceHash);
         return $product;
+}
+/** At most 50 new local drafts. Preflight all saved identities and SKUs before writing. */
+function provider_catalog_import_batch(string $expected,string $term,string $skuPrefix,#[\SensitiveParameter] string $password,string $source='package.types',int $offset=0): array {
+    if(!preg_match('/^[a-f0-9]{64}$/D',$expected))throw new InvalidArgumentException('Review the current saved hosting observation first.');
+    return staff_locked(fn()=>staff_transaction(function()use($expected,$term,$skuPrefix,$password,$source,$offset):array {
+        $actor=provider_catalog_import_owner($password);$context=provider_catalog_import_context($source);
+        if(!hash_equals($context['hash'],$expected))throw new RuntimeException('The observed hosting types or your access changed. Review the preview again before importing.');
+        $document=$context['document'];$records=[];
+        // Chunk indexed lookups, including identities outside the current UI page/batch.
+        foreach(array_chunk(array_column($document->types,'type_ref'),128) as $ids){
+            $rows=all('SELECT * FROM '.table('catalog_provider_imports').' WHERE profile_id=? AND type_ref IN ('.implode(',',array_fill(0,count($ids),'?')).')',[$context['profile_id'],...$ids]);
+            foreach($rows as $record){
+                if(!hash_equals($record['source_key_fingerprint'],$context['source_key_fingerprint']))throw new RuntimeException('This catalog contains a draft from earlier credentials. Review its original source before importing the remaining types.');
+                $records[]=$record;
+            }
+        }
+        provider_catalog_import_origins($records);
+        $plan=$document->batchPlan(array_column($records,'type_ref'),$term,$skuPrefix,$offset);
+        foreach(array_chunk(array_column($plan['missing'],'sku'),128) as $skus){
+            if(all('SELECT id,sku FROM '.table('catalog_products').' WHERE sku IN ('.implode(',',array_fill(0,count($skus),'?')).')',$skus))throw new RuntimeException('A generated SKU is already used by another product. Choose a different prefix before importing.');
+        }
+        $count=(int)(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_catalog_import_count'])['value']);
+        if($count>999999999-count($plan['selected']))throw new RuntimeException('Import history has reached its supported bound.');
+        // Validate every selected product before the first write, in addition to SKU preflight.
+        foreach($plan['selected'] as $item)catalog_product_input($document->draft($item['type_ref'],$item['sku'],$term));
+        $created=[];
+        foreach($plan['selected'] as $item)$created[]=provider_catalog_import_create_locked($context,$actor,$item['type_ref'],$item['sku'],$term);
+        return ['created_ids'=>$created,'created_count'=>count($created),'existing_count'=>$plan['existing_count'],'remaining_count'=>$plan['remaining_count'],'next_offset'=>$plan['next_offset'],'total_types'=>$plan['total_types'],'source_operation'=>$context['source_operation']];
     }));
 }
 function provider_catalog_import_image(int $product,int $revision,int $imageRevision,bool $remove,#[\SensitiveParameter] string $password): void {

@@ -1,6 +1,24 @@
+## Hosting development integration — main trigger filters only
+
+The normal merge of main `e397d9a6e293850e8dff61a593e3ba39ee178400` into development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` preserves the full hosting acceptance workflow, all test sources and both published-baseline contracts. Main's ten focused workflow changes affect admission paths only; all job bodies, matrices, commands, artifacts, permissions and timeouts remain unchanged. The retained PR218 validation below concerns those triggers, not application acceptance.
+
+This development merge is separate from the f67 release-candidate merge to main. Preserve original 512/10142 focused evidence and the [remaining hosting release gates](TWENTYI_HOSTING_FULL_ACCEPTANCE.md), including a genuine published 1.26 baseline when it exists. Do not replace that future gate with the supplemental real 1.25 upgrade. Published1.25 remains immutable; this merge provides no new runtime, screenshot or publication result.
+
 ## Development candidate —1.26.0
 
 The [direct hosting catalog increment](RELEASE_SCOPE_1.26.0.md) is under acceptance; it is not published. The [candidate update guide](MIGRATION-INSTRUCTIONS-1.26.0.md) uses the new1.26 staging/recovery paths and preserves existing settings, products and private files. Published1.25.0 remains the current verified download. Earlier1.25 instructions below describe that retained release.
+
+## 2026-10-18 — dependency-aware pull-request triggers
+
+Ten focused workflows previously filtered pushes but ran on every eligible pull request: client authority, hosting operations and records, mail drafts and notices, mail receiving and transport, provider operations and settings, and service-plan records. Their PR triggers now use the same paths as their push triggers. Existing branch filters and manual dispatch remain.
+
+The eight native SQL workflows retain their old paths and add shared `site/app/**`, `site/includes/**`, `site/config/**`, `foundation/**` and `tests/invitations/**` dependencies. Receiving additionally watches its transport policy and shipping dependency mirror. Broad existing admin/portal paths remain where already required. This deliberately keeps shared runtime coverage; it is not a complete automatic dependency graph.
+
+All jobs, matrices, commands, reports, artifacts, permissions, timeouts and existing concurrency behavior remain identical. `application-tests.yml` and repository checks are unchanged. Release candidate/main acceptance, actual screenshot review and downloaded-asset verification remain mandatory.
+
+Static evaluation of the retained file lists for PR186, PR188 and PR191 reduces these ten workflows from 26 jobs to 22 jobs for each PR. Documentation-only and isolated CSS changes reduce these ten from 26 jobs to zero; other workflows and repository checks still follow their own triggers. These are path comparisons, not measured runtime savings or a forecast for clearing the queue.
+
+Validation: 119 finite YAML, dependency, exact-inverse and patch-applicability checks passed, followed by independent review and exact application of the ten files. The entire jobs sections and all non-path settings are unchanged. No application tests were rerun solely for this trigger change. Original queued/running/failed evidence is preserved; no cancellation, deletion or duplicate dispatch was performed.
 
 ## Release 1.25.0 evidence and publication boundary
 
