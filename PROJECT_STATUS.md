@@ -1,3 +1,9 @@
+## 2026-10-18 — client hosting access handoff in development
+
+The separate `codex/twentyi-hosting-portal-handoff` branch adds a saved-assignment card to confirmed hosting orders. It identifies the expected client, shows whether the package is linked or needs review, and opens the existing provider inventory at that package. Existing owner linking and provider refresh actions remain responsible for access changes. [Scope and validation](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
+This starts from hosting successor `512656850e1d9855b921ab4e3b9b4a891b636b16`; it is separate from both the unchanged 1.26 release candidate and the original focused hosting run. Local projection/renderer checks pass in both PHP modes; native database, browser navigation and the joined purchase-through-client-access flow remain pending. Published 1.25.0 remains unchanged.
+
 ## 2026-10-18 — packaged owner recovery checks prepared
 
 The hosting successor adds an explicit HTTP-test opt-in after its exact-source COMPLETE and UPDATE packages are built. Four isolated installed copies exercise the real staged owner page with absent, empty, published and withdrawn hosting history. Tests cover package validation, CSRF, current owner/password, backup confirmation, permitted recovery and retained-history refusal. They verify business rows, table definitions, files and private media while separately checking expected authentication/rate/audit bookkeeping. [Scope and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).

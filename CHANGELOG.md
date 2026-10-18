@@ -1,3 +1,7 @@
+## Unreleased — guide confirmed hosting orders to client access
+
+Show saved package assignment status and the expected client on the owner’s confirmed hosting order. Provide a direct link to the matching provider inventory card for the existing password-confirmed assignment action. Keep provider purchases, confirmation, ownership writes, client projections and billing behavior unchanged. Native/browser and full purchase-through-access acceptance remain pending.
+
 ## Unreleased successor — staged owner recovery HTTP checks
 
 Add isolated tests of the real packaged owner updater for authentication, CSRF, package integrity, backup confirmation and hosting-history recovery decisions. Preserve original native/browser assertions and the production recovery algorithm. Portable/model checks pass; Linux SQL/HTTP and release acceptance remain pending. No shipping files or installer inventory changed.

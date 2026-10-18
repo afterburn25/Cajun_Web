@@ -1,3 +1,7 @@
+## Successor follow-through — client hosting access
+
+The separate hosting portal handoff branch connects confirmed orders to the existing owner package-assignment screen with saved-state guidance and exact package navigation. Local renderer/projection checks pass; this does not complete the joined offer, payment, fulfillment and client service-control path. See [remaining acceptance](TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
 ## Successor in progress — hosting offers and client requests
 
 The separate `codex/twentyi-hosting-commerce` branch connects imported shared-hosting products to existing service agreements through owner/public/client screens under development. [Scope and remaining acceptance](TWENTYI_HOSTING_OFFERS.md). Document and isolated existing-agreement SQL checks pass; combined hosting SQL, public/admin/client browser behavior and the complete payment/order/fulfillment path remain unaccepted. Cloud catalog and provider image contracts remain unresolved. The 1.26 release candidate stays separate.
