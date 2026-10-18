@@ -4,6 +4,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+from hosting_purchase_inbox_wiring import previous_source as inbox_source, previous_contract as inbox_contract
 
 COMMANDS = [
     '"$PHP_BINARY" tests/hosting_catalog_plan_setup_document.php qa/hosting-catalog-plan-setup-document-default.json',
@@ -67,11 +68,11 @@ def inverse(raw, delta):
 
 def historical_bytes(root, path):
     """Only the declared finite paths are inverted, after validating their current whole bytes."""
-    raw = root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+    raw = inbox_source(root, path)
     # Existing helper tests use independent temporary source trees with their own pins.
     if root.resolve() != Path(__file__).resolve().parents[1]:
         return raw
-    extension = json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes())['imported_plan_setup']
+    extension = inbox_contract(json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes()))['imported_plan_setup']
     delta = extension['historical_delta'].get(path)
     return inverse(raw, delta) if delta is not None else raw
 
@@ -111,7 +112,7 @@ def browser_checks(a, root, tmp, check, deny, extension):
     """Execute only current runner output guards against temporary files; never start the runner."""
     require(extension['screenshots'] == CAPTURES and extension['http_report'] == 'hosting-checkout-http-results.json', 'Imported-plan browser output boundary changed')
     def constant(path, name):
-        nodes = [node for node in ast.parse(root.joinpath(path).read_text(encoding='utf-8')).body
+        nodes = [node for node in ast.parse(inbox_source(root, path).decode('utf-8')).body
                  if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]
         require(len(nodes) == 1, 'One exact capture constant required')
         values = {};exec(compile(ast.Module(body=nodes, type_ignores=[]), path, 'exec'), values)
@@ -119,7 +120,7 @@ def browser_checks(a, root, tmp, check, deny, extension):
     actual_captures = constant('tests/hosting_catalog_plan_setup_cases.py', 'CAPTURES')
     check('Imported plan callback declares exactly the four required captures', actual_captures == tuple(CAPTURES))
     runner_path = root/'tests/hosting_checkout_http_browser.py'
-    source = runner_path.read_text(encoding='utf-8')
+    source = inbox_source(root, 'tests/hosting_checkout_http_browser.py').decode('utf-8')
     tree = ast.parse(source)
     names = {'require', 'output_paths', 'prepare_outputs'}
     definitions = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]
@@ -175,23 +176,23 @@ def browser_checks(a, root, tmp, check, deny, extension):
           'ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES' in source
           and "[qa/n for n in ALL_CAPTURES]" in source)
     check('Imported plan browser continuation preserves original callback bytes before its append',
-          root.joinpath('tests/catalog_storefront_checkout_cases.py').read_bytes().replace(b'\r\n',b'\n').startswith(historical_bytes(root,'tests/catalog_storefront_checkout_cases.py')))
+          inbox_source(root, 'tests/catalog_storefront_checkout_cases.py').startswith(historical_bytes(root,'tests/catalog_storefront_checkout_cases.py')))
 
 
-def run(a, root, tmp, check, deny, named, contract):
+def run(a, root, tmp, check, deny, named, contract, reports=None):
     ext = contract['imported_plan_setup']
     require(ext['base'] == '460eebfb5d8d87c3816576aeb7289bfa90478668', 'Imported-plan predecessor identity changed')
     require(set(ext['source_sha256']) == SOURCES and set(ext['historical_delta']) == HISTORICAL, 'Imported-plan exact source boundary changed')
     for path, expected in ext['source_sha256'].items():
         a.safe_name(path)
-        require(sha(root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')) == expected, 'Imported-plan current source differs: ' + path)
+        require(sha(inbox_source(root, path)) == expected, 'Imported-plan current source differs: ' + path)
     check('Imported plan setup binds every current production test and wiring source', bool(ext['source_sha256']))
     for path, delta in ext['historical_delta'].items():
-        current = root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        current = inbox_source(root, path)
         check('Imported plan setup retains complete predecessor ' + path, bool(inverse(current, delta)))
         deny('Imported plan setup refuses changed inverse input ' + path, lambda b=current, d=delta: inverse(b+b'\n# changed', d))
     for pin in ext['updated_pins']:
-        require(sha(root.joinpath(pin['path']).read_bytes().replace(b'\r\n', b'\n')) == pin['current_sha256'], 'Serialized imported-plan source pin is stale')
+        require(sha(inbox_source(root, pin['path'])) == pin['current_sha256'], 'Serialized imported-plan source pin is stale')
     prior = previous_contract(contract)
     check('Imported plan setup preserves exact171 commands and complete460 contract', len(prior['native_commands']) == 171)
     for label, commands in [('missing', contract['native_commands'][:-1]), ('duplicate', contract['native_commands']+[COMMANDS[0]]), ('reordered', contract['native_commands'][1:]+contract['native_commands'][:1])]:
@@ -199,10 +200,10 @@ def run(a, root, tmp, check, deny, named, contract):
         deny('Imported plan setup rejects '+label+' recipe', lambda c=wrong: previous_contract(c))
     wrong = copy.deepcopy(contract);wrong['native_commands'][0] += ' altered'
     deny('Imported plan setup cannot alter an original command', lambda: previous_contract(wrong))
-    workflow = root.joinpath('.github/workflows/application-tests.yml').read_text()
+    workflow = inbox_source(root, '.github/workflows/application-tests.yml').decode()
     native = workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     check('Imported plan full workflow executes the exact176-command contract', [line.strip() for line in native.splitlines()] == contract['native_commands'])
-    focused = root.joinpath('.github/workflows/catalog-storefront.yml').read_text()
+    focused = inbox_source(root, '.github/workflows/catalog-storefront.yml').decode()
     focused_commands = [command.replace('"$PHP_BINARY"','php').replace(' -d extension=pdo -d extension=tokenizer ', ' ') for command in COMMANDS]
     check('Imported plan focused four-lane workflow adds each command exactly once', all(focused.count(command)==1 for command in focused_commands) and '\n'.join('              '+c for c in focused_commands) in focused and 'codex/twentyi-imported-plan-setup' in focused)
     check('Imported plan minimal view test loads distro PDO and tokenizer but uses Docker builtins',
@@ -210,7 +211,7 @@ def run(a, root, tmp, check, deny, named, contract):
           and 'php -n tests/hosting_catalog_plan_setup_views.php' in focused
           and '-d extension=tokenizer' not in focused and '-d extension=pdo' not in focused)
     prior_workflow = historical_bytes(root, '.github/workflows/application-tests.yml').decode()
-    reports = a.load(root/'tools/acceptance-reports.json')
+    reports = a.load(root/'tools/acceptance-reports.json') if reports is None else reports
     prior_reports = previous_reports(reports, ext)
     check('Imported plan setup adds five required reports without dropping predecessors', len(prior_reports['browser'])==192 and len(prior_reports['final'])==243)
     for label in ['missing', 'duplicate', 'changed predecessor']:
@@ -227,7 +228,7 @@ def run(a, root, tmp, check, deny, named, contract):
         check('Imported plan report failure remains failure '+name, not a.reports(sample)[name]['passed'])
         (sample/'qa'/name).unlink()
         check('Imported plan missing report remains missing '+name, name not in a.reports(sample))
-    check('Imported plan setup leaves transfer helper and original browser unchanged', all(sha(root.joinpath(p).read_bytes().replace(b'\r\n',b'\n'))==h for p,h in ext['unchanged_source_sha256'].items()))
+    check('Imported plan setup leaves transfer helper and original browser unchanged', all(sha(inbox_source(root, p))==h for p,h in ext['unchanged_source_sha256'].items()))
     deny('Imported plan private key remains refused', lambda:a.evidence_allowed('test-runtime/hosting-catalog-plan-setup-private/provider-master.key','native-browser'))
     browser_checks(a, root, tmp, check, deny, ext)
     return prior, prior_workflow, prior_reports

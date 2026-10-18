@@ -3,7 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 echo '<nav class="studio-tabs" aria-label="Hosting">';
 foreach (['offers'=>'Available plans','requests'=>'My requests'] as $key=>$label) echo '<a href="'.esc(studio_url(['hosting'=>$key])).'"'.($query['tab']===$key?' aria-current="page"':'').'>'.esc($label).'</a>';
-echo '</nav>';
+echo '<a href="'.esc(studio_url(['hosting_purchases'=>1])).'">My hosting purchases</a></nav>';
 if ($unavailable||($page['unavailable']??false)) echo '<p class="notice">Some hosting information is temporarily unavailable. Please try again later or contact the studio.</p>';
 $attemptShown=false;
 if ($query['tab']==='offers') {

@@ -45,6 +45,11 @@
     "\"$PHP_BINARY\" tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-default.json",
     "\"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-minimal.json",
     "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
+    "\"$PHP_BINARY\" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json",
+    "\"$PHP_BINARY\" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json",
+    "\"$PHP_BINARY\" -n -d extension=tokenizer tests/hosting_purchases_views.php > qa/hosting-purchases-views-minimal.json",
+    "CWP_TEST_HOSTING_PURCHASES=1 \"$PHP_BINARY\" tests/hosting_checkout_purchases_native.php",
     "\"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json",
     "\"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json",
     ".ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py",
@@ -833,7 +838,7 @@
       "site/database/schema/hosting_catalog_schema.php": "c7251ecd8343d1d24a75d4f3c54f80e6f7cd1c0823b88f7fd5d16539d31158d0",
       "site/database/migrations/hosting_catalog_migrate.php": "a4a2fdfe11451d8dce9bced966828f02439d91e53d621be61fca998b16c2c30e",
       "tools/update/owner-update.php": "c9a770d2fca8658616e57050c6163ab564cf9667429f7c85f4bb12ac68d17405",
-      "site/app/staff/accounts.php": "772883771d8b51d4564d50a6363d9723060435fc60cc8910c689cfe2217e3579",
+      "site/app/staff/accounts.php": "72da02001db9cbb274234bdf18510525d2d501d322ee2ab7af3d78cee5b05de7",
       "site/app/settings/store.php": "f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564",
       "tests/hosting_catalog_recovery_http.php": "b6b9e91ecfe29f881a6ad6e8add15cc057cb85fe974f8c82be529bb5e75f551a",
       "tests/hosting_catalog_recovery_http.py": "87d2561a95c6202cdb13918ddc2eef1e7e40c1828183c8bc10d5ea8ba308886d",
@@ -868,12 +873,12 @@
       "site/app/hosting/fulfillment.php": "deb20f0b6d232831aeb507e7222ada982cd8cf4dd1401018bc997a4f7edaac13",
       "site/app/hosting/catalog_offer_views.php": "0b664ac7820539fe1f7af6a214f00d580869b3370efc2af6ebc55519254167b5",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
-      "site/admin/views/hosting_catalog.php": "3bb3919d9df557f2280782285cbe245530ad01587b3fb5c52e53e2f35a715e63",
+      "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
       "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
       "site/portal/controllers/hosting_catalog.php": "5f176888ba0116eced1677319a0e9a0b61146a81dda68f317635262c071420d5",
-      "site/portal/views/hosting_catalog.php": "bb311d8e70cee7726d4fbb189af7b65f4e10eecae157b9a8ffd14bedcf9026bc",
+      "site/portal/views/hosting_catalog.php": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
       "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
-      "site/portal/views/hosting_checkout.php": "d08933c1a538c06dd5143f6e2e2b5a2edf3aa4facb13df70f13b309169552b18",
+      "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
       "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
       "tests/hosting_catalog_recovery_socket_test.py": "1eda38a66123e3e56c647fc8e325b2e55136158d41f313443172bfb339104fc8"
@@ -1305,7 +1310,7 @@
       "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
       "site/pages/services/hosting.php": "d4a6530f40cd17f34675214afbbf88a852bdde74fedfd3478c7671eb4cf21a8b",
       "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
-      ".github/workflows/catalog-storefront.yml": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
+      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
       "tests/provider_catalog_connection_entry.php": "af57305a2fddd137e5970a4148f148aba7c2f95ffc7a1ef0c17ab4660c0a70bf",
       "tests/provider_catalog_import_batch.php": "48299dc9aaf55c665d5323baf2478130b5475d453532a77d1a863a7de97eaea3",
       "tests/provider_catalog_import_batch_views.php": "80dd47177a3404320fad762fac9e239292d05922f8a3504d55c6ec13dd876891",
@@ -1327,7 +1332,7 @@
       }
     },
     "unchanged_workflows": {
-      ".github/workflows/application-tests.yml": "5ec0728dc59faebc48b261eeacec50c0f9bbfc548760223b462564ef8c40df54",
+      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
     },
     "scope": "Separate focused portable/native and synthetic-renderer checks; actual installed application, combined full/upgrade acceptance and provider artwork/VPS mapping remain pending."
@@ -1380,13 +1385,13 @@
       }
     },
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "5ec0728dc59faebc48b261eeacec50c0f9bbfc548760223b462564ef8c40df54",
-      ".github/workflows/catalog-storefront.yml": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
+      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
-      "tools/acceptance-reports.json": "87eaa61e8589a40b3a017b7bef303382517990fed14b41fa778c60b639967857"
+      "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
     },
     "screenshots": [
       "Catalog-Storefront-Connection-Desktop.png",
@@ -1426,10 +1431,10 @@
     "predecessor_contract_sha256": "67cb48db157eae0d77f0addbe880659c418d06ed8e01f0e77308ca4c9f7065ef",
     "predecessor_reports_sha256": "383566d49b339c0c0d1ec69947fdab508252ecb553e6a9dc3ef1bab180a669d4",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "5ec0728dc59faebc48b261eeacec50c0f9bbfc548760223b462564ef8c40df54",
-      ".github/workflows/catalog-storefront.yml": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
+      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
-      "site/admin/views/hosting_catalog.php": "3bb3919d9df557f2280782285cbe245530ad01587b3fb5c52e53e2f35a715e63",
+      "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
       "site/app/hosting/catalog_offer_setup.php": "f9be99047dd3aac5a1ce7777b4b5e25705d01d5036fa110525aa0cc33ec43a52",
       "site/app/hosting/catalog_offer_setup_document.php": "cd68fb846661a2a38cb05c4f87501b17b923cf2a27d9e610286358bccb9cdb5c",
       "site/app/hosting/catalog_offer_setup_views.php": "573d00d1f5bdfb0cb2d7cd98ca9edfdeafdea9330976b6c7102d2f78b796c1c2",
@@ -1437,7 +1442,7 @@
       "site/app/hosting/catalog_offers_context.php": "0186d330fc495f3818bec07ba486e6e01a6f6cb10ee3bf36e1b7a6981cf859ab",
       "site/app/plans/records.php": "e97663e3e617334fc1a4aa6d8af18228aa21b898f94ebb3f268fd534a33c68cb",
       "site/app/providers/plan_catalog.php": "86f3a23cadeccd2bfcad88b067bd671d9534ebf8bc17290d6d274301326b4bc3",
-      "tests/acceptance_artifacts_test.py": "73d48149541e9ee5aceb0e2866f107b5ff5a1092b2fcf6d0c86e8471bfcaaac3",
+      "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
       "tests/hosting_catalog_plan_setup_document.php": "aadbf41e64c3157459ebef173170ea35a5ee291f0ebd05bedaae5e6532f2a457",
@@ -1445,8 +1450,8 @@
       "tests/hosting_catalog_plan_setup_views.php": "c15317594664fc32aafb655c90f6f4757373b16bbe62bbe7cd6e3baf408097e6",
       "tests/hosting_checkout_http_browser.py": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
       "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
-      "tests/imported_plan_setup_wiring.py": "59bd670b8ae2fc7b063bd8692e7f1be10b37b9a802c7f5dfe31124a62cfebb8c",
-      "tools/acceptance-reports.json": "87eaa61e8589a40b3a017b7bef303382517990fed14b41fa778c60b639967857"
+      "tests/imported_plan_setup_wiring.py": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268",
+      "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
     },
     "historical_delta": {
       ".github/workflows/application-tests.yml": {
@@ -1834,6 +1839,387 @@
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
+    }
+  },
+  "hosting_purchase_inbox": {
+    "base": "0ddbd23d6489e2b9445304123e214d0a2e188f31",
+    "additions": [
+      "\"$PHP_BINARY\" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json",
+      "\"$PHP_BINARY\" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json",
+      "\"$PHP_BINARY\" -n -d extension=tokenizer tests/hosting_purchases_views.php > qa/hosting-purchases-views-minimal.json",
+      "CWP_TEST_HOSTING_PURCHASES=1 \"$PHP_BINARY\" tests/hosting_checkout_purchases_native.php"
+    ],
+    "additions_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
+    "reports": [
+      "hosting-checkout-purchases-default.json",
+      "hosting-checkout-purchases-minimal.json",
+      "hosting-purchases-views-default.json",
+      "hosting-purchases-views-minimal.json",
+      "hosting-checkout-purchases-native-results.json"
+    ],
+    "screenshots": [],
+    "predecessor_contract_sha256": "a4091c25c3c034a27761db7441aeff508419bb28d3e15cd79fea28860e217431",
+    "predecessor_reports_sha256": "90a9bb0bb73c2129337c8c89e7f8245feaf657d47bacf4532d567e52007608c1",
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+      "site/admin/controllers/hosting_purchases.php": "c45a8ae46cffdac59d269de2e9a1cf56cd6e775f18bd4a0e181fe3c0e3e95c5b",
+      "site/admin/controllers/router.php": "215de3171908b8912b2d2eae7f0d3843a10890499c4e0f425898c57ea04ded89",
+      "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
+      "site/admin/views/hosting_purchases.php": "47c00f6f09a6fb90a9a9120be0470903f0f3892df4c6368e07cffb5e37f35b5a",
+      "site/app/hosting/checkout_purchases.php": "630e8dd1090ed0113285b5708039067d961162277e6d2254d10f472fa0ffa48c",
+      "site/app/hosting/checkout_purchases_views.php": "c4109072983512c9149066515c1a19fbf2d6323e329e604b7d150bf959975f99",
+      "site/app/hosting/order_views.php": "415f65a468c247bdce525dd11bb86b841b8d356e9c38a787d0afcc1f338323eb",
+      "site/app/staff/accounts.php": "72da02001db9cbb274234bdf18510525d2d501d322ee2ab7af3d78cee5b05de7",
+      "site/includes/layout/admin.php": "b4fbd796bbbba5bb6bc53479d1dce242d5a743d47fc95aec31f58ee98be5d93d",
+      "site/portal/controllers/hosting_purchases.php": "3f7eb38a33561b7ee3a1902e4986b67fde76a82ed5e2b8735ee22a5d51738e49",
+      "site/portal/controllers/router.php": "a000a9c7fac2db0668e909a3476bbc3e2e8663e9f93d76129373650c231e5300",
+      "site/portal/views/hosting_catalog.php": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
+      "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
+      "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
+      "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+      "tests/hosting_checkout_purchases_guards.php": "7135eca0924835e125371aaea84f7de56c0ed00c89e3973a2961dc405c12f95a",
+      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/hosting_purchase_inbox_wiring.py": "9ee2909e64eea3a3f061fda701e22b820d720e06b854d25f79ff09371831c1bf",
+      "tests/hosting_purchases_views.php": "9fc5e8354508f6fa83a497ea15bff9d39bcb07d4f0994ac77ee185634a35d742",
+      "tests/imported_plan_setup_wiring.py": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268",
+      "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
+    },
+    "source_delta": {
+      ".github/workflows/application-tests.yml": {
+        "predecessor_sha256": "5ec0728dc59faebc48b261eeacec50c0f9bbfc548760223b462564ef8c40df54",
+        "current_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+        "replacements": [
+          {
+            "before": "    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version]\n",
+            "after": "    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-hosting-purchase-inbox]\n"
+          },
+          {
+            "before": "          CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php\n",
+            "after": "          CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php\n          \"$PHP_BINARY\" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json\n          \"$PHP_BINARY\" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer tests/hosting_purchases_views.php > qa/hosting-purchases-views-minimal.json\n          CWP_TEST_HOSTING_PURCHASES=1 \"$PHP_BINARY\" tests/hosting_checkout_purchases_native.php\n"
+          }
+        ]
+      },
+      ".github/workflows/catalog-storefront.yml": {
+        "predecessor_sha256": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
+        "current_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+        "replacements": [
+          {
+            "before": "    branches: [codex/twentyi-catalog-storefront, codex/twentyi-imported-plan-setup]\n",
+            "after": "    branches: [codex/twentyi-catalog-storefront, codex/twentyi-imported-plan-setup, codex/twentyi-hosting-purchase-inbox]\n"
+          },
+          {
+            "before": "              CWP_TEST_HOSTING_PLAN_SETUP=1 php tests/hosting_catalog_plan_setup_native.php\n",
+            "after": "              CWP_TEST_HOSTING_PLAN_SETUP=1 php tests/hosting_catalog_plan_setup_native.php\n              php tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json\n              php -n tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json\n              php tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json\n              php -n tests/hosting_purchases_views.php > qa/hosting-purchases-views-minimal.json\n              CWP_TEST_HOSTING_PURCHASES=1 php tests/hosting_checkout_purchases_native.php\n"
+          }
+        ]
+      },
+      "site/admin/controllers/router.php": {
+        "predecessor_sha256": "d472323aa3cb2016cb47c7537bc528cf3015ac404d82a0addc01cad1b0acabf6",
+        "current_sha256": "215de3171908b8912b2d2eae7f0d3843a10890499c4e0f425898c57ea04ded89",
+        "replacements": [
+          {
+            "before": "require_once CWP_CODE_ROOT.'/admin/controllers/appointments.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/plans.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/hosting_catalog.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/recurring_billing.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/domain_registration_drafts.php';\nheader('X-Robots-Tag: noindex, nofollow');\nif(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');\n$view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';\n$validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];\n$validViews=array_merge($validViews,['hosting-offers','registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));\nif(!in_array($view,$validViews,true)){$view='dashboard';}\nif(in_array($view,['studio-clients','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_plans_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif($view==='hosting-offers'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\n$error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;\nrequire CWP_CODE_ROOT.'/admin/controllers/actions.php';\nif($view==='staff-setup')staff_setup_render($error);\n",
+            "after": "require_once CWP_CODE_ROOT.'/admin/controllers/appointments.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/plans.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/hosting_catalog.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/hosting_purchases.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/recurring_billing.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/domain_registration_drafts.php';\nheader('X-Robots-Tag: noindex, nofollow');\nif(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');\n$view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';\n$validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];\n$validViews=array_merge($validViews,['hosting-purchases','hosting-offers','registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));\nif(!in_array($view,$validViews,true)){$view='dashboard';}\nif(in_array($view,['studio-clients','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_plans_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\nif(in_array($view,['hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\n$error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;\nrequire CWP_CODE_ROOT.'/admin/controllers/actions.php';\nif($view==='staff-setup')staff_setup_render($error);\n"
+          },
+          {
+            "before": "if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accounts_admin_render($view,$error);\nif(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))service_plans_admin_render($view,$error);\nif($view==='hosting-offers')hosting_catalog_admin_render($error);\nif($view==='recurring-billing')recurring_billing_admin_render($error);\nif($view==='registration-drafts')registration_drafts_admin_render($error);\nif($view==='provider-settings')provider_settings_admin_render($error);\n",
+            "after": "if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accounts_admin_render($view,$error);\nif(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))service_plans_admin_render($view,$error);\nif($view==='hosting-offers')hosting_catalog_admin_render($error);\nif($view==='hosting-purchases')hosting_purchases_admin_render();\nif($view==='recurring-billing')recurring_billing_admin_render($error);\nif($view==='registration-drafts')registration_drafts_admin_render($error);\nif($view==='provider-settings')provider_settings_admin_render($error);\n"
+          }
+        ]
+      },
+      "site/admin/views/hosting_catalog.php": {
+        "predecessor_sha256": "3bb3919d9df557f2280782285cbe245530ad01587b3fb5c52e53e2f35a715e63",
+        "current_sha256": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
+        "replacements": [
+          {
+            "before": "declare(strict_types=1);\nif (!defined('CWP_BOOT')) { http_response_code(404); exit; }\necho '<p>Publish hosting offers from your imported drafts and reviewed service plans. Choose studio-reviewed requests or a client confirmation that creates an unpaid first invoice. Invoice checkout requires verified payment and a separate owner approval before hosting setup.</p>';\necho '<div class=\"button-row\"><a class=\"btn outline\" href=\"'.esc(admin_url('hosting-offers')).'\">Offers</a><a class=\"btn outline\" href=\"'.esc(admin_url('hosting-offers',['tab'=>'requests'])).'\">Client requests</a><a class=\"btn outline\" href=\"'.esc(admin_url('catalog')).'\">Edit products and images</a><a class=\"btn outline\" href=\"'.esc(admin_url('service-plans')).'\">Service plans</a></div>';\nif (!$data['ready']) {\n    echo '<section class=\"workspace-card\"><h2>Enable hosting offers</h2><p>Prepare the offer and request history after setting up your product catalog, service plans and hosting mappings. Existing products stay as drafts.</p><form method=\"post\">';\n    hosting_catalog_admin_fields('hosting_catalog_setup',[]);\n",
+            "after": "declare(strict_types=1);\nif (!defined('CWP_BOOT')) { http_response_code(404); exit; }\necho '<p>Publish hosting offers from your imported drafts and reviewed service plans. Choose studio-reviewed requests or a client confirmation that creates an unpaid first invoice. Invoice checkout requires verified payment and a separate owner approval before hosting setup.</p>';\necho '<div class=\"button-row\"><a class=\"btn outline\" href=\"'.esc(admin_url('hosting-offers')).'\">Offers</a><a class=\"btn outline\" href=\"'.esc(admin_url('hosting-offers',['tab'=>'requests'])).'\">Client requests</a><a class=\"btn outline\" href=\"'.esc(admin_url('hosting-purchases')).'\">Hosting purchases</a><a class=\"btn outline\" href=\"'.esc(admin_url('catalog')).'\">Edit products and images</a><a class=\"btn outline\" href=\"'.esc(admin_url('service-plans')).'\">Service plans</a></div>';\nif (!$data['ready']) {\n    echo '<section class=\"workspace-card\"><h2>Enable hosting offers</h2><p>Prepare the offer and request history after setting up your product catalog, service plans and hosting mappings. Existing products stay as drafts.</p><form method=\"post\">';\n    hosting_catalog_admin_fields('hosting_catalog_setup',[]);\n"
+          }
+        ]
+      },
+      "site/app/hosting/order_views.php": {
+        "predecessor_sha256": "500f21f3b54c0c79d67863d9be03e9239370a69144f4ef88be8dbecf8a023594",
+        "current_sha256": "415f65a468c247bdce525dd11bb86b841b8d356e9c38a787d0afcc1f338323eb",
+        "replacements": [
+          {
+            "before": "        }\n        if(one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? LIMIT 1',['service_orders.offered','% agreement '.$agreement.' invoice %']))throw new RuntimeException('Hosting order history is missing. Restore the original database.');\n        if(!$asClient&&$source->model()->state()==='active'){\n            // Explicit invoice selection is bounded and never infers provider ownership.\n            $rows=all('SELECT i.id,i.reference,i.title FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE j.client_id=? AND i.amount_cents=? AND i.currency=? AND i.status IN (?,?) ORDER BY i.id DESC LIMIT 51',[$client,$source->model()->agreedPrice,$source->model()->plan->currency,'issued','paid']);\n            $more=count($rows)>50;\n            foreach(array_slice($rows,0,50) as $i){\n                if(one('SELECT id FROM '.table('service_orders').' WHERE invoice_id=?',[$i['id']]))continue;\n                try{$binding=service_orders_invoice($source,(int)$i['id']);}\n",
+            "after": "        }\n        if(one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? LIMIT 1',['service_orders.offered','% agreement '.$agreement.' invoice %']))throw new RuntimeException('Hosting order history is missing. Restore the original database.');\n        if(!$asClient&&$source->model()->state()==='active'){\n            // Checkout retains its exact original invoice even after newer invoices exist.\n            if($source->data()['format']===2){\n                require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers_storage.php';\n                $origin=hosting_catalog_agreement_origin($agreement,$client);\n                if($origin===null||!is_int($origin['invoice_id']??null)||$origin['invoice_id']<1)throw new RuntimeException('The original checkout invoice needs recovery.');\n                $rows=all('SELECT i.id,i.reference,i.title FROM '.table('studio_invoices').' i WHERE i.id=?',[$origin['invoice_id']]);\n            }else{\n                // Legacy agreements retain explicit, bounded invoice selection.\n                $rows=all('SELECT i.id,i.reference,i.title FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE j.client_id=? AND i.amount_cents=? AND i.currency=? AND i.status IN (?,?) ORDER BY i.id DESC LIMIT 51',[$client,$source->model()->agreedPrice,$source->model()->plan->currency,'issued','paid']);\n                $more=count($rows)>50;\n            }\n            foreach(array_slice($rows,0,50) as $i){\n                if(one('SELECT id FROM '.table('service_orders').' WHERE invoice_id=?',[$i['id']]))continue;\n                try{$binding=service_orders_invoice($source,(int)$i['id']);}\n"
+          }
+        ]
+      },
+      "site/app/staff/accounts.php": {
+        "predecessor_sha256": "772883771d8b51d4564d50a6363d9723060435fc60cc8910c689cfe2217e3579",
+        "current_sha256": "72da02001db9cbb274234bdf18510525d2d501d322ee2ab7af3d78cee5b05de7",
+        "replacements": [
+          {
+            "before": "    }));\n}\nfunction staff_view_permission(string $view): ?string {\n    if($view==='hosting-offers')return 'staff.manage';\n    if($view==='registration-drafts')return 'staff.manage';\n    if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';\n    if($view==='studio-licenses')return 'staff.manage';\n",
+            "after": "    }));\n}\nfunction staff_view_permission(string $view): ?string {\n    if(in_array($view,['hosting-offers','hosting-purchases'],true))return 'staff.manage';\n    if($view==='registration-drafts')return 'staff.manage';\n    if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';\n    if($view==='studio-licenses')return 'staff.manage';\n"
+          }
+        ]
+      },
+      "site/includes/layout/admin.php": {
+        "predecessor_sha256": "c54eadfce3427468679ba328a9f27b9c8ba8f4e919528f2770c854c926b4121c",
+        "current_sha256": "b4fbd796bbbba5bb6bc53479d1dce242d5a743d47fc95aec31f58ee98be5d93d",
+        "replacements": [
+          {
+            "before": "        'overview'=>['label'=>'Overview','icon'=>'dashboard','items'=>['dashboard'=>['dashboard','Overview']]],\n        'clients'=>['label'=>'Clients & Projects','icon'=>'user','items'=>['studio-clients'=>['user','Client workspace'],'support'=>['shield','Client support'],'deliveries'=>['layers','Website deliveries'],'activity'=>['mail','Workspace activity'],'studio-pipeline'=>['mail','Sales pipeline'],'leads'=>['mail','Inquiries'],'consultations'=>['mail','Consultations']]],\n        'website'=>['label'=>'Website Content','icon'=>'layers','items'=>['projects'=>['layers','Portfolio'],'services'=>['code','Services'],'testimonials'=>['quote','Testimonials'],'studio-content'=>['layers','Sales content'],'studio-portfolio'=>['monitor','Portfolio previews'],'studio-history'=>['layers','Content history']]],\n        'hosting'=>['label'=>'Hosting & Domains','icon'=>'monitor','items'=>['hosting-offers'=>['bag','Hosting offers'],'provider-settings'=>['gear','20i connection'],'provider-operations'=>['shield','20i operations'],'registration-drafts'=>['layers','Registration drafts']]],\n        'billing'=>['label'=>'Billing & Products','icon'=>'bag','items'=>['catalog'=>['bag','Service catalog'],'service-plans'=>['bag','Service agreements'],'recurring-billing'=>['bag','Recurring billing'],'payments'=>['bag','Payment requests'],'invoice-payments'=>['bag','Invoice payments'],'studio-prices'=>['bag','Estimator prices']]],\n        'email'=>['label'=>'Email','icon'=>'mail','items'=>['mailboxes'=>['mail','My email accounts'],'mail-notices'=>['mail','Email notices'],'mail-templates'=>['mail','Email templates'],'mail-accounts'=>['gear','Email accounts'],'email'=>['mail','Email delivery']]],\n        'settings'=>['label'=>'Settings','icon'=>'gear','items'=>['settings'=>['gear','Website settings'],'staff'=>['user','Administrators'],'security'=>['user','Your account'],'health'=>['shield','System health'],'studio-upgrade'=>['shield','Version & database'],'payment-settings'=>['gear','Authorize.net settings']]],\n",
+            "after": "        'overview'=>['label'=>'Overview','icon'=>'dashboard','items'=>['dashboard'=>['dashboard','Overview']]],\n        'clients'=>['label'=>'Clients & Projects','icon'=>'user','items'=>['studio-clients'=>['user','Client workspace'],'support'=>['shield','Client support'],'deliveries'=>['layers','Website deliveries'],'activity'=>['mail','Workspace activity'],'studio-pipeline'=>['mail','Sales pipeline'],'leads'=>['mail','Inquiries'],'consultations'=>['mail','Consultations']]],\n        'website'=>['label'=>'Website Content','icon'=>'layers','items'=>['projects'=>['layers','Portfolio'],'services'=>['code','Services'],'testimonials'=>['quote','Testimonials'],'studio-content'=>['layers','Sales content'],'studio-portfolio'=>['monitor','Portfolio previews'],'studio-history'=>['layers','Content history']]],\n        'hosting'=>['label'=>'Hosting & Domains','icon'=>'monitor','items'=>['hosting-offers'=>['bag','Hosting offers'],'hosting-purchases'=>['bag','Hosting purchases'],'provider-settings'=>['gear','20i connection'],'provider-operations'=>['shield','20i operations'],'registration-drafts'=>['layers','Registration drafts']]],\n        'billing'=>['label'=>'Billing & Products','icon'=>'bag','items'=>['catalog'=>['bag','Service catalog'],'service-plans'=>['bag','Service agreements'],'recurring-billing'=>['bag','Recurring billing'],'payments'=>['bag','Payment requests'],'invoice-payments'=>['bag','Invoice payments'],'studio-prices'=>['bag','Estimator prices']]],\n        'email'=>['label'=>'Email','icon'=>'mail','items'=>['mailboxes'=>['mail','My email accounts'],'mail-notices'=>['mail','Email notices'],'mail-templates'=>['mail','Email templates'],'mail-accounts'=>['gear','Email accounts'],'email'=>['mail','Email delivery']]],\n        'settings'=>['label'=>'Settings','icon'=>'gear','items'=>['settings'=>['gear','Website settings'],'staff'=>['user','Administrators'],'security'=>['user','Your account'],'health'=>['shield','System health'],'studio-upgrade'=>['shield','Version & database'],'payment-settings'=>['gear','Authorize.net settings']]],\n"
+          }
+        ]
+      },
+      "site/portal/controllers/router.php": {
+        "predecessor_sha256": "fe873ae9cf54b4ba86e3cac6542b24b4c20ec500ef48828ad5e5f83a3570beff",
+        "current_sha256": "a000a9c7fac2db0668e909a3476bbc3e2e8663e9f93d76129373650c231e5300",
+        "replacements": [
+          {
+            "before": "if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');\nrequire_once CWP_CODE_ROOT.'/portal/controllers/plans.php';\nrequire_once CWP_CODE_ROOT.'/portal/controllers/hosting_catalog.php';\nif(array_key_exists('hosting',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')))header('Cache-Control: no-store, private');\nrequire_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';\nif(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');\n",
+            "after": "if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');\nrequire_once CWP_CODE_ROOT.'/portal/controllers/plans.php';\nrequire_once CWP_CODE_ROOT.'/portal/controllers/hosting_catalog.php';\nrequire_once CWP_CODE_ROOT.'/portal/controllers/hosting_purchases.php';\nif(array_key_exists('hosting_purchases',$_GET))header('Cache-Control: no-store, private');\nif(array_key_exists('hosting',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')))header('Cache-Control: no-store, private');\nrequire_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';\nif(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');\n"
+          },
+          {
+            "before": " }\n $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;\n}\n$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';\nrequire CWP_CODE_ROOT.'/portal/controllers/actions.php';\nif(isset($_GET['activity']))activity_render('client',$error);\n",
+            "after": " }\n $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;\n}\nif(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_access();}catch(RuntimeException){fail_page('Sign in as the primary client outside support access to view hosting purchases.',403);}}\n$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';\nrequire CWP_CODE_ROOT.'/portal/controllers/actions.php';\nif(isset($_GET['activity']))activity_render('client',$error);\n"
+          },
+          {
+            "before": "if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();\nif(isset($_GET['services']))provider_services_portal_render();\nrequire CWP_CODE_ROOT.'/portal/views/auth.php';\nif(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);\nif(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);\nif(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);\n",
+            "after": "if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();\nif(isset($_GET['services']))provider_services_portal_render();\nrequire CWP_CODE_ROOT.'/portal/views/auth.php';\nif(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);\nif(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);\nif(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);\nif(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);\n"
+          }
+        ]
+      },
+      "site/portal/views/hosting_catalog.php": {
+        "predecessor_sha256": "bb311d8e70cee7726d4fbb189af7b65f4e10eecae157b9a8ffd14bedcf9026bc",
+        "current_sha256": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
+        "replacements": [
+          {
+            "before": "if (!defined('CWP_BOOT')) { http_response_code(404); exit; }\necho '<nav class=\"studio-tabs\" aria-label=\"Hosting\">';\nforeach (['offers'=>'Available plans','requests'=>'My requests'] as $key=>$label) echo '<a href=\"'.esc(studio_url(['hosting'=>$key])).'\"'.($query['tab']===$key?' aria-current=\"page\"':'').'>'.esc($label).'</a>';\necho '</nav>';\nif ($unavailable||($page['unavailable']??false)) echo '<p class=\"notice\">Some hosting information is temporarily unavailable. Please try again later or contact the studio.</p>';\n$attemptShown=false;\nif ($query['tab']==='offers') {\n",
+            "after": "if (!defined('CWP_BOOT')) { http_response_code(404); exit; }\necho '<nav class=\"studio-tabs\" aria-label=\"Hosting\">';\nforeach (['offers'=>'Available plans','requests'=>'My requests'] as $key=>$label) echo '<a href=\"'.esc(studio_url(['hosting'=>$key])).'\"'.($query['tab']===$key?' aria-current=\"page\"':'').'>'.esc($label).'</a>';\necho '<a href=\"'.esc(studio_url(['hosting_purchases'=>1])).'\">My hosting purchases</a></nav>';\nif ($unavailable||($page['unavailable']??false)) echo '<p class=\"notice\">Some hosting information is temporarily unavailable. Please try again later or contact the studio.</p>';\n$attemptShown=false;\nif ($query['tab']==='offers') {\n"
+          }
+        ]
+      },
+      "site/portal/views/hosting_checkout.php": {
+        "predecessor_sha256": "d08933c1a538c06dd5143f6e2e2b5a2edf3aa4facb13df70f13b309169552b18",
+        "current_sha256": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
+        "replacements": [
+          {
+            "before": "if ($result!==null) {\n    echo '<section class=\"workspace-card\"><h2>Your hosting invoice</h2><p>Invoice '.esc($result['invoice_reference']).' is saved for $'.esc(gmoney($result['amount_cents'])).' '.esc($result['currency']).'.</p><p>Invoice status: '.esc(ucfirst($result['invoice_status'])).'. Hosting setup follows verified payment and owner approval.</p><div class=\"button-row\">';\n    foreach (['View invoice'=>['invoice'=>$result['invoice_id']],'View project'=>['job'=>$result['project_id']],'Service agreement'=>['agreement'=>$result['agreement_id']],'Billing schedule'=>['recurring'=>1,'job'=>$result['project_id'],'schedule'=>$result['schedule_id']]] as $label=>$target) echo '<a class=\"btn outline\" href=\"'.esc(studio_url($target)).'\">'.esc($label).'</a>';\n    echo '</div></section>';return;\n}\nif ($review!==null) {\n    $b=$review['billing'];$p=$b['first_period'];\n",
+            "after": "if ($result!==null) {\n    echo '<section class=\"workspace-card\"><h2>Your hosting invoice</h2><p>Invoice '.esc($result['invoice_reference']).' is saved for $'.esc(gmoney($result['amount_cents'])).' '.esc($result['currency']).'.</p><p>Invoice status: '.esc(ucfirst($result['invoice_status'])).'. Hosting setup follows verified payment and owner approval.</p><div class=\"button-row\">';\n    foreach (['View invoice'=>['invoice'=>$result['invoice_id']],'View project'=>['job'=>$result['project_id']],'Service agreement'=>['agreement'=>$result['agreement_id']],'Billing schedule'=>['recurring'=>1,'job'=>$result['project_id'],'schedule'=>$result['schedule_id']]] as $label=>$target) echo '<a class=\"btn outline\" href=\"'.esc(studio_url($target)).'\">'.esc($label).'</a>';\n    echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['hosting_purchases'=>1])).'\">My hosting purchases</a></div></section>';return;\n}\nif ($review!==null) {\n    $b=$review['billing'];$p=$b['first_period'];\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "predecessor_sha256": "73d48149541e9ee5aceb0e2866f107b5ff5a1092b2fcf6d0c86e8471bfcaaac3",
+        "current_sha256": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+        "replacements": [
+          {
+            "before": "from imported_plan_setup_wiring import historical_bytes, run as imported_plan_setup_checks\n",
+            "after": "from imported_plan_setup_wiring import historical_bytes, run as imported_plan_setup_checks\nfrom hosting_purchase_inbox_wiring import run as purchase_inbox_checks\n"
+          },
+          {
+            "before": "    contract=a.load(ROOT/'tools/acceptance-contract.json')\n    contract,plan_workflow,plan_reports=imported_plan_setup_checks(a,ROOT,tmp,check,deny,named,contract)",
+            "after": "    contract=a.load(ROOT/'tools/acceptance-contract.json')\n    contract,inbox_reports=purchase_inbox_checks(a,ROOT,tmp,check,deny,named,contract)\n    contract,plan_workflow,plan_reports=imported_plan_setup_checks(a,ROOT,tmp,check,deny,named,contract,inbox_reports)"
+          }
+        ]
+      },
+      "tests/imported_plan_setup_wiring.py": {
+        "predecessor_sha256": "59bd670b8ae2fc7b063bd8692e7f1be10b37b9a802c7f5dfe31124a62cfebb8c",
+        "current_sha256": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268",
+        "replacements": [
+          {
+            "before": "import hashlib\nimport json\nfrom pathlib import Path\n\nCOMMANDS = [\n    '\"$PHP_BINARY\" tests/hosting_catalog_plan_setup_document.php qa/hosting-catalog-plan-setup-document-default.json',\n",
+            "after": "import hashlib\nimport json\nfrom pathlib import Path\nfrom hosting_purchase_inbox_wiring import previous_source as inbox_source, previous_contract as inbox_contract\n\nCOMMANDS = [\n    '\"$PHP_BINARY\" tests/hosting_catalog_plan_setup_document.php qa/hosting-catalog-plan-setup-document-default.json',\n"
+          },
+          {
+            "before": "\ndef historical_bytes(root, path):\n    \"\"\"Only the declared finite paths are inverted, after validating their current whole bytes.\"\"\"\n    raw = root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')\n    # Existing helper tests use independent temporary source trees with their own pins.\n    if root.resolve() != Path(__file__).resolve().parents[1]:\n        return raw\n    extension = json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes())['imported_plan_setup']\n    delta = extension['historical_delta'].get(path)\n    return inverse(raw, delta) if delta is not None else raw\n\n",
+            "after": "\ndef historical_bytes(root, path):\n    \"\"\"Only the declared finite paths are inverted, after validating their current whole bytes.\"\"\"\n    raw = inbox_source(root, path)\n    # Existing helper tests use independent temporary source trees with their own pins.\n    if root.resolve() != Path(__file__).resolve().parents[1]:\n        return raw\n    extension = inbox_contract(json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes()))['imported_plan_setup']\n    delta = extension['historical_delta'].get(path)\n    return inverse(raw, delta) if delta is not None else raw\n\n"
+          },
+          {
+            "before": "    \"\"\"Execute only current runner output guards against temporary files; never start the runner.\"\"\"\n    require(extension['screenshots'] == CAPTURES and extension['http_report'] == 'hosting-checkout-http-results.json', 'Imported-plan browser output boundary changed')\n    def constant(path, name):\n        nodes = [node for node in ast.parse(root.joinpath(path).read_text(encoding='utf-8')).body\n                 if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]\n        require(len(nodes) == 1, 'One exact capture constant required')\n        values = {};exec(compile(ast.Module(body=nodes, type_ignores=[]), path, 'exec'), values)\n",
+            "after": "    \"\"\"Execute only current runner output guards against temporary files; never start the runner.\"\"\"\n    require(extension['screenshots'] == CAPTURES and extension['http_report'] == 'hosting-checkout-http-results.json', 'Imported-plan browser output boundary changed')\n    def constant(path, name):\n        nodes = [node for node in ast.parse(inbox_source(root, path).decode('utf-8')).body\n                 if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]\n        require(len(nodes) == 1, 'One exact capture constant required')\n        values = {};exec(compile(ast.Module(body=nodes, type_ignores=[]), path, 'exec'), values)\n"
+          },
+          {
+            "before": "    actual_captures = constant('tests/hosting_catalog_plan_setup_cases.py', 'CAPTURES')\n    check('Imported plan callback declares exactly the four required captures', actual_captures == tuple(CAPTURES))\n    runner_path = root/'tests/hosting_checkout_http_browser.py'\n    source = runner_path.read_text(encoding='utf-8')\n    tree = ast.parse(source)\n    names = {'require', 'output_paths', 'prepare_outputs'}\n    definitions = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]\n",
+            "after": "    actual_captures = constant('tests/hosting_catalog_plan_setup_cases.py', 'CAPTURES')\n    check('Imported plan callback declares exactly the four required captures', actual_captures == tuple(CAPTURES))\n    runner_path = root/'tests/hosting_checkout_http_browser.py'\n    source = inbox_source(root, 'tests/hosting_checkout_http_browser.py').decode('utf-8')\n    tree = ast.parse(source)\n    names = {'require', 'output_paths', 'prepare_outputs'}\n    definitions = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]\n"
+          },
+          {
+            "before": "          'ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES' in source\n          and \"[qa/n for n in ALL_CAPTURES]\" in source)\n    check('Imported plan browser continuation preserves original callback bytes before its append',\n          root.joinpath('tests/catalog_storefront_checkout_cases.py').read_bytes().replace(b'\\r\\n',b'\\n').startswith(historical_bytes(root,'tests/catalog_storefront_checkout_cases.py')))\n\n\ndef run(a, root, tmp, check, deny, named, contract):\n    ext = contract['imported_plan_setup']\n    require(ext['base'] == '460eebfb5d8d87c3816576aeb7289bfa90478668', 'Imported-plan predecessor identity changed')\n    require(set(ext['source_sha256']) == SOURCES and set(ext['historical_delta']) == HISTORICAL, 'Imported-plan exact source boundary changed')\n    for path, expected in ext['source_sha256'].items():\n        a.safe_name(path)\n        require(sha(root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')) == expected, 'Imported-plan current source differs: ' + path)\n    check('Imported plan setup binds every current production test and wiring source', bool(ext['source_sha256']))\n    for path, delta in ext['historical_delta'].items():\n        current = root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')\n        check('Imported plan setup retains complete predecessor ' + path, bool(inverse(current, delta)))\n        deny('Imported plan setup refuses changed inverse input ' + path, lambda b=current, d=delta: inverse(b+b'\\n# changed', d))\n    for pin in ext['updated_pins']:\n        require(sha(root.joinpath(pin['path']).read_bytes().replace(b'\\r\\n', b'\\n')) == pin['current_sha256'], 'Serialized imported-plan source pin is stale')\n    prior = previous_contract(contract)\n    check('Imported plan setup preserves exact171 commands and complete460 contract', len(prior['native_commands']) == 171)\n    for label, commands in [('missing', contract['native_commands'][:-1]), ('duplicate', contract['native_commands']+[COMMANDS[0]]), ('reordered', contract['native_commands'][1:]+contract['native_commands'][:1])]:\n",
+            "after": "          'ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES' in source\n          and \"[qa/n for n in ALL_CAPTURES]\" in source)\n    check('Imported plan browser continuation preserves original callback bytes before its append',\n          inbox_source(root, 'tests/catalog_storefront_checkout_cases.py').startswith(historical_bytes(root,'tests/catalog_storefront_checkout_cases.py')))\n\n\ndef run(a, root, tmp, check, deny, named, contract, reports=None):\n    ext = contract['imported_plan_setup']\n    require(ext['base'] == '460eebfb5d8d87c3816576aeb7289bfa90478668', 'Imported-plan predecessor identity changed')\n    require(set(ext['source_sha256']) == SOURCES and set(ext['historical_delta']) == HISTORICAL, 'Imported-plan exact source boundary changed')\n    for path, expected in ext['source_sha256'].items():\n        a.safe_name(path)\n        require(sha(inbox_source(root, path)) == expected, 'Imported-plan current source differs: ' + path)\n    check('Imported plan setup binds every current production test and wiring source', bool(ext['source_sha256']))\n    for path, delta in ext['historical_delta'].items():\n        current = inbox_source(root, path)\n        check('Imported plan setup retains complete predecessor ' + path, bool(inverse(current, delta)))\n        deny('Imported plan setup refuses changed inverse input ' + path, lambda b=current, d=delta: inverse(b+b'\\n# changed', d))\n    for pin in ext['updated_pins']:\n        require(sha(inbox_source(root, pin['path'])) == pin['current_sha256'], 'Serialized imported-plan source pin is stale')\n    prior = previous_contract(contract)\n    check('Imported plan setup preserves exact171 commands and complete460 contract', len(prior['native_commands']) == 171)\n    for label, commands in [('missing', contract['native_commands'][:-1]), ('duplicate', contract['native_commands']+[COMMANDS[0]]), ('reordered', contract['native_commands'][1:]+contract['native_commands'][:1])]:\n"
+          },
+          {
+            "before": "        deny('Imported plan setup rejects '+label+' recipe', lambda c=wrong: previous_contract(c))\n    wrong = copy.deepcopy(contract);wrong['native_commands'][0] += ' altered'\n    deny('Imported plan setup cannot alter an original command', lambda: previous_contract(wrong))\n    workflow = root.joinpath('.github/workflows/application-tests.yml').read_text()\n    native = workflow.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    check('Imported plan full workflow executes the exact176-command contract', [line.strip() for line in native.splitlines()] == contract['native_commands'])\n    focused = root.joinpath('.github/workflows/catalog-storefront.yml').read_text()\n    focused_commands = [command.replace('\"$PHP_BINARY\"','php').replace(' -d extension=pdo -d extension=tokenizer ', ' ') for command in COMMANDS]\n    check('Imported plan focused four-lane workflow adds each command exactly once', all(focused.count(command)==1 for command in focused_commands) and '\\n'.join('              '+c for c in focused_commands) in focused and 'codex/twentyi-imported-plan-setup' in focused)\n    check('Imported plan minimal view test loads distro PDO and tokenizer but uses Docker builtins',\n",
+            "after": "        deny('Imported plan setup rejects '+label+' recipe', lambda c=wrong: previous_contract(c))\n    wrong = copy.deepcopy(contract);wrong['native_commands'][0] += ' altered'\n    deny('Imported plan setup cannot alter an original command', lambda: previous_contract(wrong))\n    workflow = inbox_source(root, '.github/workflows/application-tests.yml').decode()\n    native = workflow.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    check('Imported plan full workflow executes the exact176-command contract', [line.strip() for line in native.splitlines()] == contract['native_commands'])\n    focused = inbox_source(root, '.github/workflows/catalog-storefront.yml').decode()\n    focused_commands = [command.replace('\"$PHP_BINARY\"','php').replace(' -d extension=pdo -d extension=tokenizer ', ' ') for command in COMMANDS]\n    check('Imported plan focused four-lane workflow adds each command exactly once', all(focused.count(command)==1 for command in focused_commands) and '\\n'.join('              '+c for c in focused_commands) in focused and 'codex/twentyi-imported-plan-setup' in focused)\n    check('Imported plan minimal view test loads distro PDO and tokenizer but uses Docker builtins',\n"
+          },
+          {
+            "before": "          and 'php -n tests/hosting_catalog_plan_setup_views.php' in focused\n          and '-d extension=tokenizer' not in focused and '-d extension=pdo' not in focused)\n    prior_workflow = historical_bytes(root, '.github/workflows/application-tests.yml').decode()\n    reports = a.load(root/'tools/acceptance-reports.json')\n    prior_reports = previous_reports(reports, ext)\n    check('Imported plan setup adds five required reports without dropping predecessors', len(prior_reports['browser'])==192 and len(prior_reports['final'])==243)\n    for label in ['missing', 'duplicate', 'changed predecessor']:\n",
+            "after": "          and 'php -n tests/hosting_catalog_plan_setup_views.php' in focused\n          and '-d extension=tokenizer' not in focused and '-d extension=pdo' not in focused)\n    prior_workflow = historical_bytes(root, '.github/workflows/application-tests.yml').decode()\n    reports = a.load(root/'tools/acceptance-reports.json') if reports is None else reports\n    prior_reports = previous_reports(reports, ext)\n    check('Imported plan setup adds five required reports without dropping predecessors', len(prior_reports['browser'])==192 and len(prior_reports['final'])==243)\n    for label in ['missing', 'duplicate', 'changed predecessor']:\n"
+          },
+          {
+            "before": "        check('Imported plan report failure remains failure '+name, not a.reports(sample)[name]['passed'])\n        (sample/'qa'/name).unlink()\n        check('Imported plan missing report remains missing '+name, name not in a.reports(sample))\n    check('Imported plan setup leaves transfer helper and original browser unchanged', all(sha(root.joinpath(p).read_bytes().replace(b'\\r\\n',b'\\n'))==h for p,h in ext['unchanged_source_sha256'].items()))\n    deny('Imported plan private key remains refused', lambda:a.evidence_allowed('test-runtime/hosting-catalog-plan-setup-private/provider-master.key','native-browser'))\n    browser_checks(a, root, tmp, check, deny, ext)\n    return prior, prior_workflow, prior_reports\n",
+            "after": "        check('Imported plan report failure remains failure '+name, not a.reports(sample)[name]['passed'])\n        (sample/'qa'/name).unlink()\n        check('Imported plan missing report remains missing '+name, name not in a.reports(sample))\n    check('Imported plan setup leaves transfer helper and original browser unchanged', all(sha(inbox_source(root, p))==h for p,h in ext['unchanged_source_sha256'].items()))\n    deny('Imported plan private key remains refused', lambda:a.evidence_allowed('test-runtime/hosting-catalog-plan-setup-private/provider-master.key','native-browser'))\n    browser_checks(a, root, tmp, check, deny, ext)\n    return prior, prior_workflow, prior_reports\n"
+          }
+        ]
+      },
+      "tools/acceptance-reports.json": {
+        "predecessor_sha256": "87eaa61e8589a40b3a017b7bef303382517990fed14b41fa778c60b639967857",
+        "current_sha256": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe",
+        "replacements": [
+          {
+            "before": "    \"hosting-catalog-plan-setup-document-minimal.json\",\n    \"hosting-catalog-plan-setup-views-default.json\",\n    \"hosting-catalog-plan-setup-views-minimal.json\",\n    \"hosting-catalog-plan-setup-native-results.json\"\n  ],\n  \"final\": [\n    \"activity-native-results.json\",\n",
+            "after": "    \"hosting-catalog-plan-setup-document-minimal.json\",\n    \"hosting-catalog-plan-setup-views-default.json\",\n    \"hosting-catalog-plan-setup-views-minimal.json\",\n    \"hosting-catalog-plan-setup-native-results.json\",\n    \"hosting-checkout-purchases-default.json\",\n    \"hosting-checkout-purchases-minimal.json\",\n    \"hosting-purchases-views-default.json\",\n    \"hosting-purchases-views-minimal.json\",\n    \"hosting-checkout-purchases-native-results.json\"\n  ],\n  \"final\": [\n    \"activity-native-results.json\",\n"
+          },
+          {
+            "before": "    \"hosting-catalog-plan-setup-document-minimal.json\",\n    \"hosting-catalog-plan-setup-views-default.json\",\n    \"hosting-catalog-plan-setup-views-minimal.json\",\n    \"hosting-catalog-plan-setup-native-results.json\"\n  ],\n  \"provenance\": {\n    \"original_source\": \"faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10\",\n",
+            "after": "    \"hosting-catalog-plan-setup-document-minimal.json\",\n    \"hosting-catalog-plan-setup-views-default.json\",\n    \"hosting-catalog-plan-setup-views-minimal.json\",\n    \"hosting-catalog-plan-setup-native-results.json\",\n    \"hosting-checkout-purchases-default.json\",\n    \"hosting-checkout-purchases-minimal.json\",\n    \"hosting-purchases-views-default.json\",\n    \"hosting-purchases-views-minimal.json\",\n    \"hosting-checkout-purchases-native-results.json\"\n  ],\n  \"provenance\": {\n    \"original_source\": \"faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10\",\n"
+          }
+        ]
+      }
+    },
+    "updated_pins": [
+      {
+        "location": [
+          "hosting_catalog_offers",
+          "source_sha256"
+        ],
+        "path": "site/app/staff/accounts.php",
+        "predecessor_sha256": "772883771d8b51d4564d50a6363d9723060435fc60cc8910c689cfe2217e3579",
+        "current_sha256": "72da02001db9cbb274234bdf18510525d2d501d322ee2ab7af3d78cee5b05de7"
+      },
+      {
+        "location": [
+          "hosting_catalog_offers",
+          "source_sha256"
+        ],
+        "path": "site/admin/views/hosting_catalog.php",
+        "predecessor_sha256": "3bb3919d9df557f2280782285cbe245530ad01587b3fb5c52e53e2f35a715e63",
+        "current_sha256": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1"
+      },
+      {
+        "location": [
+          "hosting_catalog_offers",
+          "source_sha256"
+        ],
+        "path": "site/portal/views/hosting_catalog.php",
+        "predecessor_sha256": "bb311d8e70cee7726d4fbb189af7b65f4e10eecae157b9a8ffd14bedcf9026bc",
+        "current_sha256": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d"
+      },
+      {
+        "location": [
+          "hosting_catalog_offers",
+          "source_sha256"
+        ],
+        "path": "site/portal/views/hosting_checkout.php",
+        "predecessor_sha256": "d08933c1a538c06dd5143f6e2e2b5a2edf3aa4facb13df70f13b309169552b18",
+        "current_sha256": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b"
+      },
+      {
+        "location": [
+          "catalog_storefront",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/catalog-storefront.yml",
+        "predecessor_sha256": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
+        "current_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc"
+      },
+      {
+        "location": [
+          "catalog_storefront",
+          "unchanged_workflows"
+        ],
+        "path": ".github/workflows/application-tests.yml",
+        "predecessor_sha256": "5ec0728dc59faebc48b261eeacec50c0f9bbfc548760223b462564ef8c40df54",
+        "current_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a"
+      },
+      {
+        "location": [
+          "catalog_storefront_http",
+          "unchanged_source_sha256"
+        ],
+        "path": ".github/workflows/application-tests.yml",
+        "predecessor_sha256": "5ec0728dc59faebc48b261eeacec50c0f9bbfc548760223b462564ef8c40df54",
+        "current_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a"
+      },
+      {
+        "location": [
+          "catalog_storefront_http",
+          "unchanged_source_sha256"
+        ],
+        "path": ".github/workflows/catalog-storefront.yml",
+        "predecessor_sha256": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
+        "current_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc"
+      },
+      {
+        "location": [
+          "catalog_storefront_http",
+          "unchanged_source_sha256"
+        ],
+        "path": "tools/acceptance-reports.json",
+        "predecessor_sha256": "87eaa61e8589a40b3a017b7bef303382517990fed14b41fa778c60b639967857",
+        "current_sha256": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/application-tests.yml",
+        "predecessor_sha256": "5ec0728dc59faebc48b261eeacec50c0f9bbfc548760223b462564ef8c40df54",
+        "current_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/catalog-storefront.yml",
+        "predecessor_sha256": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
+        "current_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": "site/admin/views/hosting_catalog.php",
+        "predecessor_sha256": "3bb3919d9df557f2280782285cbe245530ad01587b3fb5c52e53e2f35a715e63",
+        "current_sha256": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": "tests/acceptance_artifacts_test.py",
+        "predecessor_sha256": "73d48149541e9ee5aceb0e2866f107b5ff5a1092b2fcf6d0c86e8471bfcaaac3",
+        "current_sha256": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": "tests/imported_plan_setup_wiring.py",
+        "predecessor_sha256": "59bd670b8ae2fc7b063bd8692e7f1be10b37b9a802c7f5dfe31124a62cfebb8c",
+        "current_sha256": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": "tools/acceptance-reports.json",
+        "predecessor_sha256": "87eaa61e8589a40b3a017b7bef303382517990fed14b41fa778c60b639967857",
+        "current_sha256": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
+      }
+    ],
+    "unchanged_source_sha256": {
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
+      "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
+      "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
+      "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
+      "tests/hosting_checkout_http_browser.py": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+      "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
+      "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     }
   }
 }
