@@ -10,7 +10,7 @@ def run(env):
     drafts_library = url + '/admin/index.php?view=mail-drafts'
     library = url + '/admin/index.php?view=mail-submissions'
     r = session.get(detail)
-    check(label + ' 1.21 draft storage requires owner preparation for the formatted column', 'Prepare local drafts' in r.text and BeautifulSoup(r.text, 'html.parser').select_one('[data-mail-draft-editor]') is None)
+    check(label + ' 1.21 draft storage requires owner preparation for the formatted column', 'Prepare formatted drafts' in r.text and BeautifulSoup(r.text, 'html.parser').select_one('[data-mail-draft-editor]') is None)
     r = session.post(drafts_library, data={'csrf': token(session.get(drafts_library)), 'action': 'mail_drafts_setup', 'current_password': 'Wrong synthetic password'})
     check(label + ' draft upgrade setup refuses wrong password', 'current password' in r.text)
     r = session.post(drafts_library, data={'csrf': token(session.get(drafts_library)), 'action': 'mail_drafts_setup', 'current_password': password})
