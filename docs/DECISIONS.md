@@ -313,3 +313,7 @@ Implementation began at 345b335e, then advanced to reviewed e8ccefc9 with all tw
 ## 2026-10-18 — guided imported hosting plan setup
 
 Compose imported-product plan creation, activation and provider mapping inside the existing staff mutex/transaction. Preserve public writer APIs, original immutable histories and exact source validation. Copy commercial/type/profile facts from saved authenticated source; retain explicit owner service/provider review. Publication remains a separate existing action. No new schema or assumed VPS/image response contract. [Scope and evidence](TWENTYI_IMPORTED_PLAN_SETUP.md).
+
+## 2026-10-18 — committed storefront byte alignment
+
+Packaging follow-up from `787c7f3225dd21757d5fd3a6ec9febb86230d905`, draft [PR228](https://github.com/afterburn25/Cajun_Web/pull/228): the first clean local build refused two shipping files whose Windows working copies had mixed line endings. Their application content already matched Git exactly after LF normalization. Restored only those two local copies to their committed bytes and refreshed the two installer hashes; no feature logic or acceptance source changed. The enclosing commit is **Align installer inventory with committed storefront bytes**. Original source/runs and the failed build receipt remain preserved. Byte comparison verifies all 2,928 non-inventory shipping files against Git and every generated hash; all 21 feature/test pins are unchanged and documentation checks pass. Recheck the exact committed package and first successor CI results before integration or release.
