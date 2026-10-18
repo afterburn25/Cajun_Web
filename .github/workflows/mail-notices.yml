@@ -2,8 +2,9 @@ name: Mail notice storage checks
 on:
   push:
     branches: [main, codex/mail-notices]
-    paths: ['site/app/mail/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_notices*.php', '.github/workflows/mail-notices.yml']
+    paths: ['site/app/mail/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_notices*.php', '.github/workflows/mail-notices.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/app/mail/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_notices*.php', '.github/workflows/mail-notices.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read

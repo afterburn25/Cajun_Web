@@ -1,3 +1,9 @@
+## 2026-10-18 — reduce unrelated CI work
+
+Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
+
+The separate 1.26 candidate remains `f67b1631` in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216). Its first original full run has passed its build job; database/browser, Apache and recovery work was still queued at 06:23 UTC. Hosting offer/recovery source `6cf7a8f8` remains separate and awaits its original focused tests. Neither is published. Published 1.25.0 and production are unchanged.
+
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.
