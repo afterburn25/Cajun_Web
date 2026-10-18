@@ -1,6 +1,6 @@
 """Verify and extract the retained historical fixture, never a deployment source."""
 from pathlib import Path, PurePosixPath
-import hashlib, zipfile, subprocess, shutil, re, json, base64
+import os,hashlib, zipfile, subprocess, shutil, re, json, base64
 from urllib.request import urlopen
 root=Path(__file__).resolve().parents[1]
 archive=root/'tests/fixtures/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip'
@@ -15,7 +15,7 @@ with zipfile.ZipFile(archive) as z:
         assert path.name not in {'config.php','.installed.php','proxy-config.php'}
     z.extractall(destination)
 print('PASS: retained 1.0.8 fixture checksum, archive paths and extraction')
-php=shutil.which('php8.3') or shutil.which('php')
+php=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php')
 code="define('CWP_BOOT',true);require $argv[1];echo json_encode(['schema'=>schema_statements('ci_'),'settings'=>default_settings()],JSON_THROW_ON_ERROR);"
 result=subprocess.run([php,'-r',code,str(destination/'app/schema.php')],check=True,capture_output=True)
 (root/'test-runtime/legacy-schema.json').write_bytes(result.stdout)
@@ -352,3 +352,16 @@ with zipfile.ZipFile(organized_baseline) as z:
         assert (item.external_attr>>16)&0o170000 != 0o120000
     z.extractall(root/'test-runtime/released-1.23.0')
 print('PASS: immutable released 1.23.0 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.24.0/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.24.0')
+print('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')
