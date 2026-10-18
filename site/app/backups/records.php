@@ -9,18 +9,20 @@ use CajunWebPro\Foundation\Backups\{BackupManifest,RestorePlan};
 function backups_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['backups_schema_version'])['value']??'')==='2';}
 function backups_require(): array {if(support_current())throw new RuntimeException('Leave support before managing backups.');if(!backups_ready())throw new RuntimeException('An owner must prepare backups first.');return staff_require('staff.manage');}
 function backups_audit(int $actor,string $action,string $detail): void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'backups.'.$action,$detail,gmdate('Y-m-d H:i:s')]);}
+/** Case- and separator-insensitive path identity for equality/containment checks on Windows and POSIX hosts. */
+function backups_canonical(string $p): string {return strtolower(str_replace('\\','/',rtrim($p,'/\\')));}
 function backups_directory(): string {
     $storage=config()['storage'];$real=realpath($storage);if($real===false||is_link($storage)||!is_dir($real))throw new RuntimeException('Private backup storage is unavailable.');
-    $canonical=fn($p)=>strtolower(str_replace('\\','/',rtrim($p,'/\\')));
-    foreach([CWP_ROOT,$_SERVER['DOCUMENT_ROOT']??''] as $root){if($root===''||($web=realpath($root))===false)continue;$a=$canonical($real);$b=$canonical($web);if($a===$b||str_starts_with($a,$b.'/'))throw new RuntimeException('Backups require private storage outside the web document root.');}
+    foreach([CWP_ROOT,$_SERVER['DOCUMENT_ROOT']??''] as $root){if($root===''||($web=realpath($root))===false)continue;$a=backups_canonical($real);$b=backups_canonical($web);if($a===$b||str_starts_with($a,$b.'/'))throw new RuntimeException('Backups require private storage outside the web document root.');}
     $dir=$real.'/backups';if(is_link($dir))throw new RuntimeException('Backup storage cannot be a symbolic link.');
     if(!is_dir($dir)&&!mkdir($dir,0700))throw new RuntimeException('Backup storage could not be created.');
-    if(($resolved=realpath($dir))===false||$canonical($resolved)!==$canonical($dir))throw new RuntimeException('Backup storage path could not be verified.');return $resolved;
+    if(($resolved=realpath($dir))===false||backups_canonical($resolved)!==backups_canonical($dir))throw new RuntimeException('Backup storage path could not be verified.');return $resolved;
 }
 function backups_row(string $id): array {$row=one('SELECT * FROM '.table('backups').' WHERE id=?',[$id]);if(!$row)throw new InvalidArgumentException('Backup not found.');return $row;}
 function backups_archive_path(array $row): string {
     $path=backups_directory().'/'.$row['archive_file'];
-    if(is_link($path)||realpath($path)!==$path)throw new RuntimeException('Backup archive path could not be verified.');
+    $resolved=realpath($path);
+    if(is_link($path)||$resolved===false||backups_canonical($resolved)!==backups_canonical($path))throw new RuntimeException('Backup archive path could not be verified.');
     return $path;
 }
 function backups_manifest(array $row): BackupManifest {
