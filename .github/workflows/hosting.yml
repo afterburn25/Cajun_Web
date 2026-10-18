@@ -44,6 +44,8 @@ jobs:
             php -n tests/hosting/journal_controls.php > qa/hosting-journal-no-ini.json
             php tests/hosting/reconciliation_controls.php > qa/hosting-reconciliation-default.json
             php -n tests/hosting/reconciliation_controls.php > qa/hosting-reconciliation-no-ini.json
+            php tests/hosting/pending_controls.php > qa/hosting-pending-default.json
+            php -n tests/hosting/pending_controls.php > qa/hosting-pending-no-ini.json
           '
       - name: Record verification scope
         if: always()
