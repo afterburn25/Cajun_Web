@@ -2,10 +2,10 @@ name: Comparison-facts model checks
 
 on:
   pull_request:
-    paths: ['foundation/comparisons/**', 'tests/comparisons/**', '.github/workflows/comparisons.yml']
+    paths: ['foundation/comparisons/**', 'tests/comparisons/**', 'site/app/marketing/comparisons.php', 'site/pages/comparisons/**', '.github/workflows/comparisons.yml']
   push:
     branches: [main, 'devin/non20i-*']
-    paths: ['foundation/comparisons/**', 'tests/comparisons/**', '.github/workflows/comparisons.yml']
+    paths: ['foundation/comparisons/**', 'tests/comparisons/**', 'site/app/marketing/comparisons.php', 'site/pages/comparisons/**', '.github/workflows/comparisons.yml']
   workflow_dispatch:
 
 permissions:
@@ -32,8 +32,9 @@ jobs:
       - name: Syntax and comparison checks using the official PHP image
         run: |
           docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
-            for source in foundation/comparisons/*.php tests/comparisons/*.php; do php -l "$source"; done
+            for source in foundation/comparisons/*.php tests/comparisons/*.php site/app/marketing/comparisons.php; do php -l "$source"; done
             php tests/comparisons/run.php
+            php tests/comparisons/runtime_run.php
           '
       - name: Record verification scope
         if: always()

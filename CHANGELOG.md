@@ -159,6 +159,10 @@ Record reviewedcccf85bf, its first full38927120383, preserved2a/9779 failure evi
 
 Record exact2a focused3,020 checks, matching Windows/Linux packages and289 recovery checks alongside the original full run's tokenizer test-dependency failure and skipped HTTP. Preserve819c's terminal failure/99 missing reports and9779's newly canceled native-and-browser job with failed aggregate, pending diagnosis. Update current entry points and the159/161 correction priority; PRs163–170 are unaccepted proposals/foundations. This documentation-only descendant of82667afb imports no runtime and changes no installer, version, release or deployment.
 
+## Govern public comparison claims with the C-01 registry — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-comparisons-runtime`, stacked on the comparisons foundation. Adds `site/app/marketing/comparisons.php` — the published Wix/Squarespace claims registered as `ComparisonFact` records carrying their primary-source URLs, the documented 13 October 2026 review date and `reviewBy` re-verify dates — and rewires `site/pages/comparisons/index.php` to render each provider's fair-comparison block only while every cited fact is publishable, showing an honest re-verification note otherwise. `tests/comparisons/runtime_run.php` adds 24 adapter checks (registration, citation order, publishability, expiry); the browser sweep asserts registry-rendered claims. No live fetching, admin editing or deployment.
+
 ## Port C-01 comparison-facts contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-comparisons-foundation` from main `595ac9c3`, continuing preserved `devin/comparisons-foundation`. Adds `foundation/comparisons/` — `ComparisonFact`, `ClaimRegistry`, `EvidenceSource` — sourced/date-stamped competitor claims with structural no-guarantee rules, 30 pure checks in `tests/comparisons/run.php`, PHP 8.2/8.4 workflow lane. No rendering, fetching, CMS or comparison content — integration remains future work. No release or deployment.
