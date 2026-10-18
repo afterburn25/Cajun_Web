@@ -1,3 +1,7 @@
+## Unreleased — installed upgrade coverage for website folder history
+
+Add an actual published1.25-to-current installed upgrade scenario covering retained folder requests, exact update retry, complete-journal rollback/reapply, local terminal recovery and refusal to reconstruct lost database evidence. Add the immutable1.25 archive to existing sealed test inputs while retaining the1.24 baseline and all earlier acceptance. Local comparison/input checks pass; installed execution and release remain pending. Application behavior and version are unchanged. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
 ## Unreleased — owner website folder changes
 
 Adds the owner website-folder form, explicit preparation, exact latest-map hostname/current-path review, current account/assignment authority, password confirmation and one-send retained history. The owner confirms that the plan supports the change and the destination directory already exists; this is manual attestation, not an API platform or filesystem check. Matching independent readback records an observation without claiming that the request caused it or that website routing works. Missing/claimed execution history cannot be cleared by a later matching map; local recovery requires the exact finished one-attempt ledger and never resends. Client write controls are not added; an unresolved request makes the separately shared saved map historical.

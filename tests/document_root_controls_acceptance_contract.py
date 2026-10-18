@@ -49,6 +49,30 @@ def run(check, contract, workflow, commands):
     for path, expected in c['source_sha256'].items():
         check('Reviewed folder-control acceptance source retained ' + path, digest(read(path)) == expected)
     reports = json.loads(read('tools/acceptance-reports.json'))
+    upgrade = contract['document_root_controls_upgrade']
+    for path, expected in upgrade['source_sha256'].items():
+        check('Reviewed installed folder-control source retained ' + path, digest(read(path)) == expected)
+    for lane in ('browser', 'final'):
+        upgrade_report_additions = upgrade['reports'] if lane == 'final' else []
+        actual = reports[lane]
+        prior = [x for x in actual if x not in upgrade_report_additions]
+        check('Installed folder-control ' + lane + ' reports preserve predecessor requirements',
+              len(actual) == len(set(actual)) and all(actual.count(x) == 1 for x in upgrade_report_additions)
+              and len(prior) == upgrade['predecessor_reports'][lane]['count']
+              and digest(json.dumps(prior, separators=(',', ':'))) == upgrade['predecessor_reports'][lane]['sha256'])
+        reports[lane] = prior
+    extension = upgrade['apache_additions']
+    check('Installed folder-control commands extend the exact Apache predecessor once',
+          workflow.count(extension) == 1 and upgrade['apache_after'] + extension in workflow
+          and digest(workflow.replace(extension, '', 1)) == upgrade['predecessor_workflow_sha256'])
+    old_guard = upgrade['old_baseline_guard']
+    guard = read('tests/release_125_upgrade_input_guards.py')
+    for edit in reversed(old_guard['edits']):
+        if guard.count(edit['after']) != 1:
+            raise AssertionError('Ambiguous original baseline guard extension')
+        guard = guard.replace(edit['after'], edit['before'], 1)
+    check('Original actual1.24 baseline guards preserve exact predecessor source',
+          digest(guard) == old_guard['before_sha256'])
     for lane in ('browser', 'final'):
         actual = reports[lane]
         check('Folder-control ' + lane + ' reports are additive and required',

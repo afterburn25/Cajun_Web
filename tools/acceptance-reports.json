@@ -169,6 +169,8 @@
   ],
   "final": [
     "activity-native-results.json",
+    "apache-document-root-controls-upgrade-guard-results.json",
+    "apache-document-root-controls-upgrade-results.json",
     "apache-environment-results.json",
     "apache-no-rewrite-root-install.json",
     "apache-no-rewrite-subfolder-install.json",
@@ -390,7 +392,8 @@
       "five private registration contract, encrypted draft/form and native reports; no provider registration or purchase",
       "eight cloud assignment binding, legacy-context, owner-view, native authority and immutable-fixture reports",
       "three observed hosting type import document/native reports; isolated packaged multipart browser assertions and two captures remain in existing HTTP report",
-      "two website folder change native and actual synthetic HTTP handler reports; packaged owner workflow and eight captures are additive to the existing HTTP report"
+      "two website folder change native and actual synthetic HTTP handler reports; packaged owner workflow and eight captures are additive to the existing HTTP report",
+      "two folder-control installed-update guard and actual Apache reports; exact published1.25 original input added alongside preserved1.24"
     ],
     "renewal_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
     "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77",

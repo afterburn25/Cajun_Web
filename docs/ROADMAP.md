@@ -1,3 +1,7 @@
+## 2026-10-18 — folder-history upgrade gate defined, runtime pending
+
+The [folder-control lane](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now has a source-reviewed installed upgrade producer for the actual published1.25 archive, current UPDATE, populated histories, complete-journal rollback/reapply and narrow local recovery. Portable/input checks pass; real Linux Apache/SQL execution, the existing native/browser gates and release integration remain. This advances acceptance implementation and does not mark the feature, full20i or the whole project complete.
+
 ## 2026-10-18 — website folder owner workflow awaiting runtime acceptance
 
 The [folder-control increment](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now implements owner review, exact map membership/current binding, manual plan/directory attestation, one-send history, independent map readback and finished-ledger-only local recovery. Full/native acceptance wiring is additive and source-checked. Installed database/browser/UPDATE/recovery results remain required before release; these are not passing gates merely because test code exists. This does not complete hosting controls, full20i or the whole project. The preceding pure request boundary is preserved in parent642/PR225.

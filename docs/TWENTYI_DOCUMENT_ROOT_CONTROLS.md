@@ -1,5 +1,25 @@
 # Owner website folder changes
 
+## Installed upgrade acceptance addition — 2026-10-18
+
+Parent `8558119bcea66722af4180d6e3db3d1bd923adf2`, enclosing commit **Add installed upgrade preservation checks for website folder history**, same [PR225](https://github.com/afterburn25/Cajun_Web/pull/225). The application workflow below remains unchanged; this increment adds acceptance code and input transport only.
+
+Adds an isolated published1.25 installation followed by the exact current UPDATE, populated resolved and interrupted folder requests, seven real owner update/rollback/reapply actions, narrow terminal recovery, and refusal after an intentionally removed check/audit pair. The defined fixture uses two synthetic provider sends and four reads; later verification/recovery performs no provider calls. It compares original row/column hashes and private-file bytes, allowing only one identified terminal, its audit and the terminal counter increment during explicit local recovery. This covers complete-journal file rollback, not interrupted file application.
+
+`tests/provider_document_root_controls_upgrade.py` installs the exact published1.25 COMPLETE under an Apache subfolder with rewrite enabled, validates the actual PHP runtime, and submits the real owner updater. Its companion `tests/provider_document_root_controls_upgrade_fixture.php` loads installed code, uses the isolated `drcu_` prefix and creates history through the real authority/gateway services with synthetic transport. Snapshot mode works after old files are restored without requiring the new service. Existing configuration, installation guard, original records and private keys are retained. The optional feature tables must remain absent until explicit preparation.
+
+The permitted local recovery difference is identified by exact hashed primary keys: one terminal row, one audit row and terminal counter1→2. Every preexisting value and private byte must remain unchanged. Corruption tests retain their failed database witness and require refusal after retry and rollback/reapply; they do not delete counters or reconstruct missing histories. Seven owner actions stay within the existing updater rate limit. Logs and companion raw output remain private; finite diagnostics and hashed snapshots are the public evidence.
+
+The existing sealed artifact protocol now also requires the actual published1.25 archive and every member hash, without removing published1.24 or any of the27 old fixture trees. Exact target UPDATE source, shipping members, updater and legacy inventory must match Git. Same-version upgrades compare distinct source builds explicitly; this does not publish replacement1.25 assets.
+
+Local results: 272 combined offline helper checks, 23 portable upgrade-comparison tests, 19 actual published1.24 transfer guards, and the source-bound 30-check published1.25 input review pass. The companion passes both PHP syntax modes and refuses Windows execution as required. These results do not execute the installed Apache/SQL scenario or establish native, browser or release acceptance.
+
+The new Apache reports are `apache-document-root-controls-upgrade-guard-results.json` and `apache-document-root-controls-upgrade-results.json`; final requirements increase210→212. A separately hashed retention JSON is diagnostic evidence. Browser166, native154 and the eight existing captures are retained. The first helper failure and its correction are recorded in the handoff and session log.
+
+Next: execute the exact installed scenario and native/browser acceptance on the supported Linux PHP/database combinations, inspect the eight existing folder-control captures, and fix any actual failures before combined/main/release acceptance. Original full39156902592/focused39156902490 and earlier runs remain preserved; do not rerun, cancel or replace them for queue delay. Published1.25 and production remain unchanged.
+
+The following application checkpoint is retained as historical implementation evidence; its instruction to add upgrade coverage is superseded by the defined producer above. Execution remains pending.
+
 Current implementation continues `codex/twentyi-document-root-controls` in [PR225](https://github.com/afterburn25/Cajun_Web/pull/225), parent `642fa02a00d2fe22c9c13a2f4c409aec1f059ca0`. Enclosing commit: **Add owner website folder changes with retained dispatch and separate readback**. Source and portable/model checks exist; native database, packaged browser and installed-upgrade acceptance remain pending. Published 1.25.0 is unchanged.
 
 ## Owner workflow
