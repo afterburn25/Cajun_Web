@@ -1,3 +1,13 @@
+## 2026-10-18 — registrar nameserver boundary, native read next
+
+Parent `e397d9a6e293850e8dff61a593e3ba39ee178400`; enclosing commit **Add restricted registrar nameserver reader and request boundary**, branch `codex/twentyi-registrar-nameservers`. Worktree directory is the reused `work/20i-hosting-dns-contract`; the old `codex/twentyi-hosting-dns-contract` branch at fb2f19d2 remains preserved. [Feature contract and current evidence](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+The reviewed v2 boundary is applied byte-exact, with canonical mirror generation, inventory and focused PHP 8.2/8.4 tests. Local default/minimal PHP 8.4.25 cases pass 144 nameserver, 230 operation, 64 registrar and 87 domain-contract checks per mode; 221 unchanged artifact helpers pass. The original v1 route mismatch and initial patch encoding failure stay retained. Native observation completeness and owner authority are not inferred from pure bindings or caller arrays.
+
+Next: inspect the first exact-source focused CI run, then integrate the owner-only observation lifecycle using the existing registrar/domain-contract flow. Include intent-before-credential, current context rechecks, immutable result/history and failed-latest refusal before adding owner UI. Only later add the separately gated write reservation/fence/readback. Complete application workflow/report, native/HTTP/concurrency/upgrade/recovery and release gates remain pending. Do not import queued hosting/release/PHP-control branches opportunistically or modify published 1.25.
+
+The next application source map is retained at `work/registered-nameservers-application-design/`. Reuse the shared inventory executor and registrar provenance helpers, but add nameserver-specific readiness and latest-intent ordering; do not silently enable renewal-date setup or display an older success after a failed/pending refresh. The proposed tables/services/native fixture are not implemented yet.
+
 ## 2026-10-18 — CI trigger correction
 
 Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

@@ -1,3 +1,9 @@
+## Unreleased — registrar nameserver boundary
+
+- Add a typed read for registered-domain nameservers with exact registrar provenance and closed failure states.
+- Add a restricted full-set request builder while keeping generic write approval denied and uncertain requests non-retryable.
+- Preserve package-domain behavior; add canonical shipping mirrors and focused PHP regression coverage. Admin actions and native observation storage remain pending.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

@@ -1,3 +1,9 @@
+## 2026-10-18 — registrar nameserver boundary
+
+The separate main-based nameserver branch adds a typed registrar read and restricted request builder using the supplied SDK example. It keeps registrar IDs separate from hosting package-domain IDs and refuses unsupported partial changes. Generic write approval remains denied; admin forms, saved observation history and native authority are still pending. [Scope and next application slice](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Actual PHP 8.4.25 checks pass 144 focused and 381 existing cases in each default/minimal mode, plus 221 unchanged acceptance-helper outcomes. These are synthetic/pure checks, not provider or native application results. Focused PHP 8.2/8.4 CI is prepared. The original route-contract finding and patch-encoding failure are preserved. Published 1.25 and the separate 1.26/hosting/PHP-control branches remain unchanged.
+
 ## 2026-10-18 — reduce unrelated CI work
 
 Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

@@ -1,3 +1,7 @@
+## 2026-10-18 — registrar nameserver groundwork
+
+A separate reviewed increment adds typed registrar reads and the documented restricted full-set request boundary. It does not enable a nameserver admin action. [Exact implemented scope, local verification and next application work](TWENTYI_REGISTRAR_NAMESERVERS.md) distinguish synthetic boundary tests from pending native authority/storage/history, UI, readback and release acceptance. Full 20i and automatic catalog images remain unfinished.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.
