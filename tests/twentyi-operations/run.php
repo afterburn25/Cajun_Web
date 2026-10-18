@@ -18,8 +18,8 @@ $register=new TwentyIOperationRegister();
 $builder=new TwentyIRequestBuilder($register);
 
 // ---- catalog shape ----
-check($register->names()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the thirteen documented operations');
-check($register->buildableNames()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
+check($register->names()===['packages.phpversion','packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the fourteen documented operations');
+check($register->buildableNames()===['packages.phpversion','packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
 check($register->get('packages.create')->mayTriggerEmail&&$register->get('packages.create')->mayChargeBilling,'create flags email and billing risk');
 check($register->get('packages.update')->destructive&&$register->get('packages.update')->mayChargeBilling,'update flags mixed delete and billing');
 check($register->get('domains.renew')->mayChargeBilling&&!$register->get('domains.renew')->destructive,'domain renew flags billing only');
@@ -180,9 +180,10 @@ $adapter=__DIR__.'/../../foundation/twentyi/TwentyIAdapter.php';
 check(str_contains(file_get_contents($adapter),'public function supports(string $operation): bool { return false; }'),'adapter still refuses every operation; register is not execution authority');
 
 require __DIR__.'/nameservers.php';
+require __DIR__.'/php-version.php';
 
 if(isset($argv[1])) {
-    $json=json_encode(['passed'=>true,'scope'=>'Synthetic write-boundary only; descriptors, request construction and classification. No HTTP transport, credential, database or provider call','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";
+    $json=json_encode(['passed'=>true,'scope'=>'Offline descriptors, request construction, fixed transport admission and gateway replay with synthetic credentials/transport/in-memory ledger. No network, real credential, database or provider call. Native PHP controls remain separate acceptance.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";
     if(file_put_contents($argv[1],$json)!==strlen($json))throw new RuntimeException('Could not preserve named operation results.');
 }
 echo count($checks)." synthetic 20i operation checks passed\n";

@@ -8,3 +8,24 @@
 .ledger-totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}.ledger-totals>div{padding:18px;border:1px solid rgba(208,173,92,.3);border-radius:10px}.ledger-totals small,.ledger-totals strong{display:block}.ledger-document h1,.ledger-document h2{overflow-wrap:anywhere}.ledger-document h1{font-size:clamp(1.75rem,3.5vw,3rem);line-height:1.2;margin-top:.35em}.ledger-document .workspace-card{max-width:960px;margin:auto}
 @media print{html:has(.ledger-document),body:has(.ledger-document){color-scheme:light;background:#fff!important;color:#111!important}.no-print,body:has(.ledger-document)>header,body:has(.ledger-document)>footer,body:has(.ledger-document)>.growth-subnav,body:has(.ledger-document) .reading-progress,body:has(.ledger-document) .back-top,body:has(.ledger-document) .skip-link{display:none!important}.ledger-document,.ledger-document .workspace-card{background:#fff!important;border:0;box-shadow:none;padding:0}.ledger-document *{color:#111!important;box-shadow:none!important;text-shadow:none!important}.ledger-document .container{width:100%;max-width:none}.ledger-document h1{font-size:28pt}.ledger-document h2{font-size:20pt}.ledger-document .notice,.ledger-document .workspace-version{background:transparent!important;border:1px solid #bbb;padding:12px;break-inside:avoid}.ledger-totals{break-inside:avoid}.ledger-totals>div{border-color:#bbb}}
 html:has(.cwp-site.motion-off){scroll-behavior:auto}.brand{position:relative;overflow:hidden}.brand:after{content:"";position:absolute;top:0;bottom:0;left:-35%;width:26%;transform:skewX(-24deg);background:linear-gradient(90deg,transparent,#fff6d4 50%,transparent);opacity:0;pointer-events:none}.brand:hover:after,.brand:focus-visible:after{animation:brand-sheen 1.5s var(--ease)}@keyframes brand-sheen{0%{left:-35%;opacity:0}12%{opacity:.32}88%{opacity:.32}100%{left:118%;opacity:0}}
+
+/* Single-website PHP settings, shared by owner and client pages. */
+.php-controls{display:grid;gap:1.25rem;max-width:76rem;margin-inline:auto;min-width:0}
+.php-controls .workspace-card{min-width:0;margin:0;overflow-wrap:anywhere}
+.php-controls .php-controls-observations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;margin:0}
+.php-controls form{display:grid;gap:1rem;min-width:0;align-content:start}
+.php-controls form+form{margin-top:1.25rem}
+.php-controls .field-grid form+form{margin-top:0}
+.php-controls label{display:grid;gap:.5rem;min-width:0}
+.php-controls input:not([type=checkbox]),.php-controls select{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.php-controls label.check{display:flex;align-items:flex-start;gap:.65rem;line-height:1.5}
+.php-controls label.check input{flex:none;width:1.1rem;height:1.1rem;margin-top:.2rem}
+.php-controls .btn{justify-self:start;white-space:normal;max-width:100%;text-align:center}
+.php-controls .php-controls-options{padding-left:1.4rem;display:grid;gap:.5rem}
+.php-controls .php-controls-facts{display:grid;grid-template-columns:minmax(9rem,1fr) minmax(0,2fr);gap:.65rem 1rem}
+.php-controls .php-controls-facts dt{font-weight:700}.php-controls .php-controls-facts dd{margin:0;min-width:0}
+.php-controls [data-php-request]{margin-top:1rem}.php-controls [data-php-request] h4{margin-top:0}
+.php-controls [data-php-history] nav{margin-top:1.25rem}
+.admin-body .php-controls label,.admin-body .php-controls .btn{font-size:14px}
+.admin-body .php-controls .hint{font-size:13px}
+@media(max-width:640px){.php-controls .php-controls-observations,.php-controls .field-grid{grid-template-columns:1fr}.php-controls .php-controls-facts{grid-template-columns:1fr;gap:.25rem}.php-controls .php-controls-facts dd{margin-bottom:.75rem}.php-controls .btn{width:100%;justify-self:stretch}}
