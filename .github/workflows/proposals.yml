@@ -2,10 +2,10 @@ name: Proposal version-model checks
 
 on:
   pull_request:
-    paths: ['foundation/proposals/**', 'tests/proposals/**', '.github/workflows/proposals.yml']
+    paths: ['foundation/proposals/**', 'tests/proposals/**', 'site/app/marketing/proposals.php', 'site/includes/layout/proposals.php', 'site/database/schema/proposals_schema.php', 'site/database/migrations/proposals_migrate.php', '.github/workflows/proposals.yml']
   push:
     branches: [main, 'devin/non20i-*']
-    paths: ['foundation/proposals/**', 'tests/proposals/**', '.github/workflows/proposals.yml']
+    paths: ['foundation/proposals/**', 'tests/proposals/**', 'site/app/marketing/proposals.php', 'site/includes/layout/proposals.php', 'site/database/schema/proposals_schema.php', 'site/database/migrations/proposals_migrate.php', '.github/workflows/proposals.yml']
   workflow_dispatch:
 
 permissions:

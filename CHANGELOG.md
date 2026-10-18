@@ -573,6 +573,15 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Proposals runtime (P-02) — devin/non20i-proposals-runtime
+
+- Client proposals: additive `proposals`/`proposal_versions`/`proposal_events`/`proposal_decisions` schema behind owner reauthentication and backup confirmation, with request-key replay protection on creation.
+- Staff author drafts with deliverables, exclusions, schedule and priced milestones (`Admin → Client proposals`); edits always create the next numbered version — sent versions are immutable.
+- Lifecycle enforced by the foundation model replayed from the durable record: draft → sent ⇄ changes-requested → approved; staff withdrawal except once approved.
+- Clients review the exact sent version in the portal (`?proposal=`) and approve or request changes pinned to that version id; superseded versions cannot be decided. Support sessions and other clients are denied. Approvals are commercial confirmations, not legal e-signatures or payment authorization.
+- Append-only attributed event history per proposal; synthetic native MariaDB and HTTP lanes cover setup, replay, permissions, transitions, ownership and retention.
+
+
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
