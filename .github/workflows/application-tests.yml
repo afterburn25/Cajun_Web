@@ -368,6 +368,26 @@ jobs:
           "$PHP_BINARY" tests/twentyi-package-php/run.php > qa/package-php-document-results.json
           "$PHP_BINARY" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
           "$PHP_BINARY" tests/provider_package_php_native.php
+          "$PHP_BINARY" tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_delegation_native.php
+          "$PHP_BINARY" tests/twentyi-package-php/options.php > qa/php-options-document-results.json
+          "$PHP_BINARY" -n tests/twentyi-package-php/options.php > qa/php-options-document-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_reads.php > qa/php-controls-reads-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_changes.php > qa/php-controls-changes-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_screen.php > qa/php-controls-screen-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_views.php qa/php-controls-views-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_views.php qa/php-controls-views-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_http.php > qa/php-controls-http-results.json
+          "$PHP_BINARY" -n tests/provider_php_controls_http.php > qa/php-controls-http-no-ini-results.json
+          "$PHP_BINARY" tests/provider_php_controls_lifecycle_native.php
           "$PHP_BINARY" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
           "$PHP_BINARY" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
           "$PHP_BINARY" tests/provider_document_roots_native.php
@@ -432,7 +452,10 @@ jobs:
           "$PHP_BINARY" tests/license_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser
-        run: .ci-venv/bin/python tests/browser_acceptance.py
+        run: |
+          .ci-venv/bin/python tests/browser_acceptance.py
+          .ci-venv/bin/python tests/provider_php_controls_ui_acceptance_test.py --report qa/php-controls-packaged-ui-bridge-results.json
+          .ci-venv/bin/python tests/provider_php_controls_ui_acceptance.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
@@ -701,6 +724,8 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+          .ci-venv/bin/python tests/provider_php_controls_upgrade_test.py --report qa/apache-php-controls-upgrade-guards-results.json
+          .ci-venv/bin/python tests/provider_php_controls_upgrade.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

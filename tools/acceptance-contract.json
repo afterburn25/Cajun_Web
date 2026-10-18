@@ -555,5 +555,213 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "php_controls_acceptance": {
+    "source_predecessor": "7af25ed5a1b02f1e21fbac666ba4d0ca31852a79",
+    "predecessor_contract_sha256": "6befd2e0c13942673b57264d179c47a1e4e29741e9a7644b142e180c3813041a",
+    "predecessor_reports_sha256": "8f7d5d3f6fd140ecb65b10b7a04eb1d4d8c99c45fa32058f948a7430a798239e",
+    "predecessor_history_sha256": "e28366276c793a7a28ff01cea923217295fe769474fc7ae819dc62875e513017",
+    "native_commands": [
+      "\"$PHP_BINARY\" tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_delegation_native.php",
+      "\"$PHP_BINARY\" tests/twentyi-package-php/options.php > qa/php-options-document-results.json",
+      "\"$PHP_BINARY\" -n tests/twentyi-package-php/options.php > qa/php-options-document-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_reads.php > qa/php-controls-reads-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_changes.php > qa/php-controls-changes-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_screen.php > qa/php-controls-screen-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_views.php qa/php-controls-views-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_views.php qa/php-controls-views-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_http.php > qa/php-controls-http-results.json",
+      "\"$PHP_BINARY\" -n tests/provider_php_controls_http.php > qa/php-controls-http-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/provider_php_controls_lifecycle_native.php"
+    ],
+    "reports": {
+      "browser": [
+        "php-controls-delegation-document-results.json",
+        "php-controls-delegation-document-no-ini-results.json",
+        "provider-php-controls-delegation-native-results.json",
+        "php-options-document-results.json",
+        "php-options-document-no-ini-results.json",
+        "php-controls-lifecycle-document-results.json",
+        "php-controls-lifecycle-document-no-ini-results.json",
+        "php-controls-lifecycle-storage-results.json",
+        "php-controls-lifecycle-storage-no-ini-results.json",
+        "php-controls-reads-results.json",
+        "php-controls-reads-no-ini-results.json",
+        "php-controls-changes-results.json",
+        "php-controls-changes-no-ini-results.json",
+        "php-controls-screen-results.json",
+        "php-controls-screen-no-ini-results.json",
+        "php-controls-views-results.json",
+        "php-controls-views-no-ini-results.json",
+        "php-controls-http-results.json",
+        "php-controls-http-no-ini-results.json",
+        "provider-php-controls-lifecycle-native-results.json",
+        "php-controls-packaged-ui-bridge-results.json",
+        "php-controls-packaged-ui-results.json"
+      ],
+      "final": [
+        "php-controls-delegation-document-results.json",
+        "php-controls-delegation-document-no-ini-results.json",
+        "provider-php-controls-delegation-native-results.json",
+        "php-options-document-results.json",
+        "php-options-document-no-ini-results.json",
+        "php-controls-lifecycle-document-results.json",
+        "php-controls-lifecycle-document-no-ini-results.json",
+        "php-controls-lifecycle-storage-results.json",
+        "php-controls-lifecycle-storage-no-ini-results.json",
+        "php-controls-reads-results.json",
+        "php-controls-reads-no-ini-results.json",
+        "php-controls-changes-results.json",
+        "php-controls-changes-no-ini-results.json",
+        "php-controls-screen-results.json",
+        "php-controls-screen-no-ini-results.json",
+        "php-controls-views-results.json",
+        "php-controls-views-no-ini-results.json",
+        "php-controls-http-results.json",
+        "php-controls-http-no-ini-results.json",
+        "provider-php-controls-lifecycle-native-results.json",
+        "php-controls-packaged-ui-bridge-results.json",
+        "php-controls-packaged-ui-results.json",
+        "apache-php-controls-upgrade-guards-results.json",
+        "apache-php-controls-upgrade-results.json"
+      ]
+    },
+    "screenshots": [
+      "PHP-Controls-Owner-Desktop.png",
+      "PHP-Controls-Owner-Mobile.png",
+      "PHP-Controls-Client-Desktop.png",
+      "PHP-Controls-Client-Mobile.png",
+      "PHP-Controls-Owner-Review-Desktop.png",
+      "PHP-Controls-Owner-Review-Mobile.png",
+      "PHP-Controls-Client-Review-Desktop.png",
+      "PHP-Controls-Client-Review-Mobile.png",
+      "PHP-Controls-Owner-History-Desktop.png",
+      "PHP-Controls-Owner-History-Mobile.png",
+      "PHP-Controls-Client-History-Desktop.png",
+      "PHP-Controls-Client-History-Mobile.png",
+      "PHP-Controls-Owner-Recovery-Desktop.png",
+      "PHP-Controls-Owner-Recovery-Mobile.png",
+      "PHP-Controls-Client-Unavailable-Desktop.png",
+      "PHP-Controls-Client-Unavailable-Mobile.png"
+    ],
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "1fe5bf2a068ba83652de374c648269f844ddcadfb08579a228e44f0e6701cfbe",
+      ".github/workflows/provider-package-php.yml": "2ec78399ddb2eec10694f8a84b9a67ec266251e2d692d96b23a78a1fd2cbbd7d",
+      "tests/acceptance_artifacts_test.py": "797e68f4897c5084412f9504454ee74256f0b08ff2771e0fea3a3d0c3c4d6e92",
+      "tests/acceptance_environment.py": "badcf351f774ac4fa6e55afa695e13e4ed8cb26d35ba04ec27821e178f1a7d1f",
+      "tests/acceptance_environment_test.py": "b18ab06ab1fc2c165400836c9d14614f580481dfbd56fc5568ba19ee265a2a52",
+      "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
+      "tests/provider_php_controls_changes.php": "953302350a68f957bae31cfeef6bfbdb7becc0f1e297f83bfc93d7b74880fedf",
+      "tests/provider_php_controls_delegation.php": "db00de5abdc75adfd85a83879a3ab905428d1d29a0ffb351c253d192d0fbc8b4",
+      "tests/provider_php_controls_delegation_native.php": "0be3620fa7193136eefe0f379ca5e31c1fa9879d1045afd2611ae7d72134a782",
+      "tests/provider_php_controls_http.php": "bd804706abfc8673b8379537d03157fa404f020ae898fec2570adb586a8e4714",
+      "tests/provider_php_controls_lifecycle.php": "fcee77c8d121701f2eb7eaa123e5f07928307d412989d2e7c4a67bfe06d229ae",
+      "tests/provider_php_controls_lifecycle_native.php": "b4a37abfafdc25baa5c89152054c4069e3ebd822715bf58f87737e441734835f",
+      "tests/provider_php_controls_lifecycle_storage.php": "5a71d7295a858ba87351171878cbf2d657490a95267e9a86e163701725faee1d",
+      "tests/provider_php_controls_reads.php": "c618f8d125642fbe47949cf680907d1a91d7bcbf1d37b72329e36c5f136a8b03",
+      "tests/provider_php_controls_screen.php": "37a39e08a4ed4984d6072e3ed733d30037372033ed0820eaaaa68c516cb80ebe",
+      "tests/provider_php_controls_ui_acceptance.py": "4a7e55e05109619c547768e233994d95368688b475586db1119ed34587cc47a9",
+      "tests/provider_php_controls_ui_acceptance_test.py": "0daa7e6dc82317aea3a9660f275d879bed19861c45b9d6b649451f057aeba4f6",
+      "tests/provider_php_controls_ui_browser.py": "19ae4a484bb58e43e965e6f0905ed212b2f19c1834a8bb85945aa5f297830d63",
+      "tests/provider_php_controls_ui_cases.py": "9728cb60c27e313684881abc3f0a7d98d6cb2c52dcfa8efdec85e58c0f12a94f",
+      "tests/provider_php_controls_ui_connector.php": "d6f8145f8c3b2f03ad80b863eaf153e2ac69db0f1566f4768e4035053d46dd89",
+      "tests/provider_php_controls_ui_fixture.php": "384a6ba4566d3f44e80b09a52badf6a2e30cd68a0e24e586d6a6fc6ad4e30e59",
+      "tests/provider_php_controls_ui_guards.py": "6f22e9315fbc38a80f540364b1269b0d8451cdbeb445a98c064b3bda65f52dd0",
+      "tests/provider_php_controls_upgrade.py": "92f2cc1741df863e0f0dc039b12227bec64cd48dd22f65ed1cc41d561d5165ef",
+      "tests/provider_php_controls_upgrade_fixture.php": "92d725ebba6153b51d034157bd0023f42b51cc7043cc0b6e4ee42a2a5337dce7",
+      "tests/provider_php_controls_upgrade_test.py": "88c085e65285b6f3c5d4490bf5c2590eaae10304fdaf2d059a433c96d2110536",
+      "tests/provider_php_controls_views.php": "ae1cb59003188bf8fcaf06fb0f19a8d6ff6a650cf99e9b3fbe89926cb40dd79b",
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
+      "tests/twentyi-package-php/options.php": "59309b6fd41f98e5a46eeca01e652125561252b0c5e204ff1a6953ed9ab11844",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+      "tools/legacy-release-files.json": "4c4c74f156e9e1d12f5dfcc07f21977f8af5a4fea1c17039a2d10148cc269fca"
+    },
+    "source_delta": {
+      ".github/workflows/application-tests.yml": {
+        "predecessor_sha256": "5879a7db5bdecb81716c2509c427e5db3b546f91497dea29bd465165ca3f369f",
+        "current_sha256": "1fe5bf2a068ba83652de374c648269f844ddcadfb08579a228e44f0e6701cfbe",
+        "replacements": [
+          {
+            "before": "          \"$PHP_BINARY\" tests/twentyi-package-php/run.php > qa/package-php-document-results.json\n          \"$PHP_BINARY\" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_package_php_native.php\n          \"$PHP_BINARY\" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json\n          \"$PHP_BINARY\" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json\n          \"$PHP_BINARY\" tests/provider_document_roots_native.php\n",
+            "after": "          \"$PHP_BINARY\" tests/twentyi-package-php/run.php > qa/package-php-document-results.json\n          \"$PHP_BINARY\" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_package_php_native.php\n          \"$PHP_BINARY\" tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_delegation_native.php\n          \"$PHP_BINARY\" tests/twentyi-package-php/options.php > qa/php-options-document-results.json\n          \"$PHP_BINARY\" -n tests/twentyi-package-php/options.php > qa/php-options-document-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_reads.php > qa/php-controls-reads-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_changes.php > qa/php-controls-changes-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_screen.php > qa/php-controls-screen-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_views.php qa/php-controls-views-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_views.php qa/php-controls-views-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_http.php > qa/php-controls-http-results.json\n          \"$PHP_BINARY\" -n tests/provider_php_controls_http.php > qa/php-controls-http-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_php_controls_lifecycle_native.php\n          \"$PHP_BINARY\" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json\n          \"$PHP_BINARY\" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json\n          \"$PHP_BINARY\" tests/provider_document_roots_native.php\n"
+          },
+          {
+            "before": "          \"$PHP_BINARY\" tests/license_native.php\n      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: .ci-venv/bin/python tests/browser_acceptance.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n",
+            "after": "          \"$PHP_BINARY\" tests/license_native.php\n      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: |\n          .ci-venv/bin/python tests/browser_acceptance.py\n          .ci-venv/bin/python tests/provider_php_controls_ui_acceptance_test.py --report qa/php-controls-packaged-ui-bridge-results.json\n          .ci-venv/bin/python tests/provider_php_controls_ui_acceptance.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n"
+          },
+          {
+            "before": "          .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n",
+            "after": "          .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n          .ci-venv/bin/python tests/provider_php_controls_upgrade_test.py --report qa/apache-php-controls-upgrade-guards-results.json\n          .ci-venv/bin/python tests/provider_php_controls_upgrade.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n"
+          }
+        ]
+      },
+      ".github/workflows/provider-package-php.yml": {
+        "predecessor_sha256": "f82fdb6236c963f1e507ddeaeae27f6de79e67bf525fa700b7c89133235ec45d",
+        "current_sha256": "2ec78399ddb2eec10694f8a84b9a67ec266251e2d692d96b23a78a1fd2cbbd7d",
+        "replacements": [
+          {
+            "before": "name: Native assigned-package PHP version checks\non:\n  push:\n    branches: [main, codex/twentyi-package-php-version, codex/twentyi-php-version-controls]\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']\n  pull_request:\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']\n",
+            "after": "name: Native assigned-package PHP version checks\non:\n  push:\n    branches: [main, codex/twentyi-package-php-version]\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']\n  pull_request:\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']\n"
+          }
+        ]
+      },
+      "tests/prepare_legacy.py": {
+        "predecessor_sha256": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
+        "current_sha256": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
+        "replacements": [
+          {
+            "before": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n",
+            "after": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n\n# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n"
+          }
+        ]
+      },
+      "tests/release_125_upgrade_input_guards.py": {
+        "predecessor_sha256": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99",
+        "current_sha256": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
+        "replacements": [
+          {
+            "before": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n",
+            "after": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n"
+          }
+        ]
+      },
+      "tools/acceptance_artifacts.py": {
+        "predecessor_sha256": "adace461adbf6568050e52a54703a030e5d4247ce487bd45c951ed4df92cd2a5",
+        "current_sha256": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+        "replacements": [
+          {
+            "before": "             'native-browser': {'setup', 'input', 'native', 'browser', 'mutation'},\n             'recovery': {'setup', 'input', 'test', 'mutation'}, 'apache': {'setup', 'input', 'test', 'mutation'}}\nBUILD_QA = {'build-results.txt', 'build-guards-results.json', 'parallel-helper-tests.json', 'legacy-preparation.txt', 'build-environment-results.json'}\nVERSIONS = ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '1.11.0', '1.11.1', '1.11.2', '1.12.0', '1.13.0', '1.14.0', '1.15.0', '1.16.0', '1.17.0', '1.18.0', '1.19.0', '1.20.0', '1.21.0', '1.22.0', '1.23.0', '1.24.0')\nFIXTURES = {'legacy', *('released-' + v for v in VERSIONS)}\nFIXTURE_JSON = {'legacy-schema.json', 'organized-shims.json'}\n# One immutable public release archive; this is not a general ZIP input permission.\nPUBLISHED_BASELINE = 'CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'\nPUBLISHED_BASELINE_SHA256 = 'aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'\nPUBLISHED_BASELINE_MEMBERS = 2591\nMAX_FILES = 500_000\nMAX_BYTES = 8 * 1024**3  # Local transfer safeguards, not a provider/application limit.\n\n",
+            "after": "             'native-browser': {'setup', 'input', 'native', 'browser', 'mutation'},\n             'recovery': {'setup', 'input', 'test', 'mutation'}, 'apache': {'setup', 'input', 'test', 'mutation'}}\nBUILD_QA = {'build-results.txt', 'build-guards-results.json', 'parallel-helper-tests.json', 'legacy-preparation.txt', 'build-environment-results.json'}\nVERSIONS = ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '1.11.0', '1.11.1', '1.11.2', '1.12.0', '1.13.0', '1.14.0', '1.15.0', '1.16.0', '1.17.0', '1.18.0', '1.19.0', '1.20.0', '1.21.0', '1.22.0', '1.23.0', '1.24.0', '1.25.0')\nFIXTURES = {'legacy', *('released-' + v for v in VERSIONS)}\nFIXTURE_JSON = {'legacy-schema.json', 'organized-shims.json'}\n# One immutable public release archive; this is not a general ZIP input permission.\nPUBLISHED_BASELINE = 'CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'\nPUBLISHED_BASELINE_SHA256 = 'aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'\nPUBLISHED_BASELINE_MEMBERS = 2591\n# Additional exact public baseline for 1.26; the original 1.24 contract stays intact.\nPUBLISHED_BASELINE_126 = 'CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nPUBLISHED_BASELINE_126_SHA256 = 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\nPUBLISHED_BASELINE_126_MEMBERS = 2895\nMAX_FILES = 500_000\nMAX_BYTES = 8 * 1024**3  # Local transfer safeguards, not a provider/application limit.\n\n"
+          },
+          {
+            "before": "    if len(parts) == 2 and parts[0] == 'qa' and parts[1] in BUILD_QA:\n        return True\n    return len(parts) >= 2 and parts[0] == 'test-runtime' and (\n        (parts[1] in FIXTURES and len(parts) >= 3) or (parts[1] in FIXTURE_JSON | {PUBLISHED_BASELINE} and len(parts) == 2))\n\n\ndef collect(root, paths):\n",
+            "after": "    if len(parts) == 2 and parts[0] == 'qa' and parts[1] in BUILD_QA:\n        return True\n    return len(parts) >= 2 and parts[0] == 'test-runtime' and (\n        (parts[1] in FIXTURES and len(parts) >= 3) or (parts[1] in FIXTURE_JSON | {PUBLISHED_BASELINE, PUBLISHED_BASELINE_126} and len(parts) == 2))\n\n\ndef collect(root, paths):\n"
+          },
+          {
+            "before": "    inspect_archive(path, expected)\n\n\ndef create_inputs(root, context, out):\n    dist_valid(root, context['ci_sha'])\n    paths = [root / 'dist'] + [root / 'test-runtime' / n for n in sorted(FIXTURES | FIXTURE_JSON | {PUBLISHED_BASELINE})]\n    paths += [root / 'qa' / n for n in sorted(BUILD_QA)]\n    require(all(p.exists() for p in paths), 'Pristine input is missing')\n    files = collect(root, paths); require(all(input_allowed(n) for n in files), 'Unapproved pristine input')\n    validate_published_baseline(root, files)\n    archive = out / 'inputs.zip'; facts = pack(root, files, archive)\n    inspect_archive(archive, files)\n    manifest = {'kind': 'inputs', 'identity': context, 'archive': facts, 'files': files}\n",
+            "after": "    inspect_archive(path, expected)\n\n\ndef validate_published_baseline_126(root, files):\n    archive = root / 'test-runtime' / PUBLISHED_BASELINE_126\n    require(archive.is_file() and not archive.is_symlink(), 'Missing original published 1.25 baseline')\n    require(digest(archive) == PUBLISHED_BASELINE_126_SHA256, 'Published 1.25 baseline digest mismatch')\n    prefix = 'test-runtime/released-1.25.0/'\n    expected = {name[len(prefix):]: facts for name, facts in files.items() if name.startswith(prefix)}\n    require(len(expected) == PUBLISHED_BASELINE_126_MEMBERS, 'Published 1.25 baseline member count mismatch')\n    inspect_archive(archive, expected)\n\n\ndef create_inputs(root, context, out):\n    dist_valid(root, context['ci_sha'])\n    paths = [root / 'dist'] + [root / 'test-runtime' / n for n in sorted(FIXTURES | FIXTURE_JSON | {PUBLISHED_BASELINE, PUBLISHED_BASELINE_126})]\n    paths += [root / 'qa' / n for n in sorted(BUILD_QA)]\n    require(all(p.exists() for p in paths), 'Pristine input is missing')\n    files = collect(root, paths); require(all(input_allowed(n) for n in files), 'Unapproved pristine input')\n    validate_published_baseline(root, files)\n    validate_published_baseline_126(root, files)\n    archive = out / 'inputs.zip'; facts = pack(root, files, archive)\n    inspect_archive(archive, files)\n    manifest = {'kind': 'inputs', 'identity': context, 'archive': facts, 'files': files}\n"
+          },
+          {
+            "before": "    require(lane in LANES[1:], 'Unknown input consumer')\n    obj = verify_bundle(folder, 'inputs', context, expected_digest)\n    require(all(input_allowed(n) for n in obj['files']), 'Unapproved pristine input')\n    required = {'test-runtime/' + n for n in FIXTURE_JSON | {PUBLISHED_BASELINE}}\n    require(required <= obj['files'].keys() and all(any(n.startswith('test-runtime/' + f + '/') for n in obj['files']) for f in FIXTURES), 'Missing fixture family')\n    extract(folder / 'inputs.zip', obj['files'], root, lambda n: lane == 'native-browser' or not n.startswith('qa/'))\n    dist_valid(root, context['ci_sha'])\n    validate_published_baseline(root, obj['files'])\n    write(root / '.acceptance/input-receipt.json', {'identity': context, 'input_sha256': expected_digest, 'lane': lane})\n\n\n",
+            "after": "    require(lane in LANES[1:], 'Unknown input consumer')\n    obj = verify_bundle(folder, 'inputs', context, expected_digest)\n    require(all(input_allowed(n) for n in obj['files']), 'Unapproved pristine input')\n    required = {'test-runtime/' + n for n in FIXTURE_JSON | {PUBLISHED_BASELINE, PUBLISHED_BASELINE_126}}\n    require(required <= obj['files'].keys() and all(any(n.startswith('test-runtime/' + f + '/') for n in obj['files']) for f in FIXTURES), 'Missing fixture family')\n    extract(folder / 'inputs.zip', obj['files'], root, lambda n: lane == 'native-browser' or not n.startswith('qa/'))\n    dist_valid(root, context['ci_sha'])\n    validate_published_baseline(root, obj['files'])\n    validate_published_baseline_126(root, obj['files'])\n    write(root / '.acceptance/input-receipt.json', {'identity': context, 'input_sha256': expected_digest, 'lane': lane})\n\n\n"
+          }
+        ]
+      }
+    },
+    "public_output": {
+      "flat_results": "qa/php-controls-packaged-ui-results.json",
+      "preserved_original": "test-runtime/php-controls-ui-acceptance-original",
+      "nested_qa_is_not_evidence": true
+    },
+    "scope": "Pure/model tests, isolated native SQL, packaged HTTP/Chromium and actual published1.25 upgrade are separate required producers. Positive choices and provider traffic are synthetic; production choices remain unavailable. No live provider or release/visual acceptance follows from source tests."
   }
 }

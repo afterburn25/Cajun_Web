@@ -69,6 +69,286 @@ def synthetic_baseline():
     return stream.getvalue()
 
 
+def synthetic_baseline_126():
+    # Deliberately different bytes from the retained 1.24 synthetic baseline.
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, 'w') as archive:
+        for name, body in {'.htaccess': b'Deny public listing', 'includes/public.php': b'public synthetic 1.25 bytes'}.items():
+            archive.writestr(zipfile.ZipInfo(name, date_time=(2026, 10, 12, 0, 0, 0)), body)
+    return stream.getvalue()
+
+
+
+def additional_baseline_checks(tmp, ctx, source, transfer, input_sha):
+    obj = a.verify_bundle(transfer, 'inputs', ctx, input_sha)
+    a.validate_published_baseline(source, obj['files'])
+    a.validate_published_baseline_126(source, obj['files'])
+    check('Both independently pinned published baselines validate in one sealed input',
+          a.PUBLISHED_BASELINE != a.PUBLISHED_BASELINE_126 and synthetic_baseline() != synthetic_baseline_126())
+    check('Additional baseline extends the public fixture set to exactly28 trees',
+          len(a.FIXTURES) == 28 and a.VERSIONS[-2:] == ('1.24.0', '1.25.0'))
+    check('Only the exact added published archive is admitted',
+          a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE_126))
+    for name in ['test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip',
+                 'qa/' + a.PUBLISHED_BASELINE_126,
+                 'test-runtime/' + a.PUBLISHED_BASELINE_126 + '/extra.php',
+                 'test-runtime/private/' + a.PUBLISHED_BASELINE_126]:
+        check('Additional baseline cannot broaden the archive path allowlist ' + name, not a.input_allowed(name))
+    prefix = 'test-runtime/released-1.25.0/'
+    member = prefix + 'includes/public.php'
+    for title, mutation in [
+        ('missing', lambda f: f.pop(member)),
+        ('extra', lambda f: f.update({prefix + 'extra.php': f[member]})),
+        ('changed digest', lambda f: f[member].update(sha256='0' * 64)),
+        ('changed size', lambda f: f[member].update(size=f[member]['size'] + 1)),
+        ('traversal', lambda f: f.update({prefix + '../outside': f.pop(member)})),
+    ]:
+        facts = copy.deepcopy(obj['files']); mutation(facts)
+        deny('Added baseline refuses ' + title + ' member evidence', lambda f=facts: a.validate_published_baseline_126(source, f))
+    archive = source / 'test-runtime' / a.PUBLISHED_BASELINE_126
+    raw = archive.read_bytes()
+    try:
+        archive.write_bytes(synthetic_baseline())
+        deny('Original1.24 raw archive cannot impersonate the added1.25 baseline', lambda: a.validate_published_baseline_126(source, obj['files']))
+        archive.write_bytes(raw[:-1] + bytes([raw[-1] ^ 1]))
+        deny('Added baseline refuses mutated original ZIP bytes', lambda: a.validate_published_baseline_126(source, obj['files']))
+        archive.unlink()
+        deny('Added baseline cannot fall back when its raw original ZIP is absent', lambda: a.validate_published_baseline_126(source, obj['files']))
+    finally:
+        archive.write_bytes(raw)
+    # Correctly re-sealed envelopes still cannot omit either original baseline or new fixture tree.
+    for index, omitted in enumerate(['test-runtime/' + a.PUBLISHED_BASELINE,
+                                     'test-runtime/' + a.PUBLISHED_BASELINE_126, prefix]):
+        facts = {n: f for n, f in obj['files'].items() if n != omitted and not n.startswith(omitted if omitted.endswith('/') else omitted + '/')}
+        folder = tmp / ('baseline-omission-' + str(index)); folder.mkdir()
+        envelope = dict(obj, files=facts, archive=a.pack(source, facts, folder / 'inputs.zip'))
+        a.write(folder / 'inputs.json', envelope)
+        deny('Re-sealed input still requires original baseline family ' + omitted,
+             lambda d=folder, i=index: a.receive_inputs(d, tmp / ('baseline-receive-' + str(i)), ctx, a.digest(d / 'inputs.json'), 'apache'))
+    # Wrong new fixture bytes with coherent outer hashes must fail the immutable inner baseline.
+    changed = tmp / 'baseline-member-changed'; shutil.copytree(source, changed)
+    blob(changed / member, b'wrong but coherently sealed fixture member')
+    facts = copy.deepcopy(obj['files']); facts[member] = a.file_facts(changed / member)
+    folder = tmp / 'baseline-coherent-envelope'; folder.mkdir()
+    envelope = dict(obj, files=facts, archive=a.pack(changed, facts, folder / 'inputs.zip'))
+    a.write(folder / 'inputs.json', envelope)
+    deny('Coherent outer input cannot replace an original1.25 member',
+         lambda: a.receive_inputs(folder, tmp / 'baseline-coherent-child', ctx, a.digest(folder / 'inputs.json'), 'apache'))
+
+
+
+PHP_CONTROLS_NATIVE_REPORTS = (
+    'php-controls-delegation-document-results.json',
+    'php-controls-delegation-document-no-ini-results.json',
+    'provider-php-controls-delegation-native-results.json',
+    'php-options-document-results.json', 'php-options-document-no-ini-results.json',
+    'php-controls-lifecycle-document-results.json', 'php-controls-lifecycle-document-no-ini-results.json',
+    'php-controls-lifecycle-storage-results.json', 'php-controls-lifecycle-storage-no-ini-results.json',
+    'php-controls-reads-results.json', 'php-controls-reads-no-ini-results.json',
+    'php-controls-changes-results.json', 'php-controls-changes-no-ini-results.json',
+    'php-controls-screen-results.json', 'php-controls-screen-no-ini-results.json',
+    'php-controls-views-results.json', 'php-controls-views-no-ini-results.json',
+    'php-controls-http-results.json', 'php-controls-http-no-ini-results.json',
+    'provider-php-controls-lifecycle-native-results.json',
+)
+PHP_CONTROLS_BROWSER_REPORTS = PHP_CONTROLS_NATIVE_REPORTS + (
+    'php-controls-packaged-ui-bridge-results.json', 'php-controls-packaged-ui-results.json',
+)
+PHP_CONTROLS_FINAL_REPORTS = PHP_CONTROLS_BROWSER_REPORTS + (
+    'apache-php-controls-upgrade-guards-results.json', 'apache-php-controls-upgrade-results.json',
+)
+
+
+def php_controls_source_predecessor(raw, delta):
+    a.require(set(delta) == {'predecessor_sha256', 'current_sha256', 'replacements'}, 'Closed PHP source delta required')
+    a.require(hashlib.sha256(raw).hexdigest() == delta['current_sha256'], 'Current PHP producer changed')
+    for edit in reversed(delta['replacements']):
+        a.require(set(edit) == {'before', 'after'} and edit['before'] and edit['after'], 'Exact source replacement required')
+        before, after = edit['before'].encode(), edit['after'].encode()
+        a.require(raw.count(after) == 1, 'Unique PHP source replacement required')
+        raw = raw.replace(after, before, 1)
+    a.require(hashlib.sha256(raw).hexdigest() == delta['predecessor_sha256'], 'Original PHP predecessor changed')
+    return raw
+
+
+def php_controls_report_predecessor(reports, extension):
+    expected = {'browser': list(PHP_CONTROLS_BROWSER_REPORTS), 'final': list(PHP_CONTROLS_FINAL_REPORTS)}
+    a.require(extension['reports'] == expected, 'Exact PHP report additions required')
+    prior = copy.deepcopy(reports)
+    for lane, names in expected.items():
+        a.require(len(reports[lane]) == len(set(reports[lane])) and all(reports[lane].count(n) == 1 for n in names),
+                  'Missing or duplicate PHP report')
+        prior[lane] = [n for n in reports[lane] if n not in names]
+    a.require(hashlib.sha256(a.canonical(prior)).hexdigest() == extension['predecessor_reports_sha256'],
+              'Original report inventory changed')
+    return prior
+
+
+def php_controls_partition_checks(tmp, ctx, lane_roots, input_sha, expected):
+    # Synthetic named files exercise the unchanged real seal/aggregate boundary;
+    # these are not application, SQL, HTTP or visual results.
+    root = tmp / 'php-controls-partitions'
+    incoming, sources, bindings = root / 'complete', {}, {}
+    target_expected = copy.deepcopy(expected)
+    target_expected['browser'].extend(PHP_CONTROLS_BROWSER_REPORTS)
+    target_expected['final'].extend(PHP_CONTROLS_FINAL_REPORTS)
+    for index, lane in enumerate(a.LANES):
+        source = root / ('source-' + lane)
+        sources[lane] = source
+        shutil.copytree(lane_roots[lane] / 'qa', source / 'qa')
+        if lane == 'build': shutil.copytree(lane_roots[lane] / 'dist', source / 'dist')
+        additions = PHP_CONTROLS_BROWSER_REPORTS if lane == 'native-browser' else PHP_CONTROLS_FINAL_REPORTS[-2:] if lane == 'apache' else ()
+        for name in additions: named(source / 'qa' / name)
+        digest = a.seal(source, ctx, incoming / lane, lane, outcomes(lane), input_sha)
+        bindings[lane] = {'result': 'success', 'artifact_id': str(index + 101), 'sha256': digest,
+                          **({'input_sha256': input_sha} if lane == 'build' else {}),
+                          **({'checkpoint_id': '109', 'checkpoint_digest': '6' * 64} if lane == 'native-browser' else {})}
+    aggregate = root / 'aggregate-complete'
+    aggregate.mkdir()
+    result = a.aggregate(aggregate, ctx, incoming, bindings, target_expected, False)
+    check('PHP complete synthetic union passes actual partition aggregation',
+          result['complete'] is True and set(result['reports']) == set(target_expected['final']))
+    cases = [('native-browser', 'php-controls-packaged-ui-results.json'),
+             ('apache', 'apache-php-controls-upgrade-results.json')]
+    for lane, report in cases:
+        for mode in ('missing', 'failed', 'extra'):
+            folder = root / (lane + '-' + mode)
+            source, parts = folder / 'source', folder / 'parts'
+            shutil.copytree(sources[lane] / 'qa', source / 'qa')
+            if mode == 'missing': (source / 'qa' / report).unlink()
+            elif mode == 'failed': named(source / 'qa' / report, False)
+            else:
+                extra = ('apache-' if lane == 'apache' else '') + 'php-controls-extra-results.json'
+                named(source / 'qa' / extra)
+            for other in a.LANES:
+                if other != lane: shutil.copytree(incoming / other, parts / other)
+            bound = copy.deepcopy(bindings)
+            bound[lane]['sha256'] = a.seal(source, ctx, parts / lane, lane, outcomes(lane), input_sha)
+            aggregate = folder / 'aggregate'
+            aggregate.mkdir()
+            result = a.aggregate(aggregate, ctx, parts, bound, target_expected, False)
+            check('PHP actual aggregation refuses ' + mode + ' ' + lane + ' evidence', not result['complete'])
+            if mode == 'failed':
+                check('PHP actual aggregation preserves failed ' + report,
+                      result['reports'][report]['failed_names'] == ['Synthetic exact check']
+                      and a.load(aggregate / 'qa' / report)['passed'] is False)
+
+
+def php_controls_wiring_checks(tmp, contract):
+    extension = contract['php_controls_acceptance']
+    original = copy.deepcopy(contract)
+    del original['php_controls_acceptance']
+    check('PHP controls preserve the entire7af predecessor contract',
+          extension['source_predecessor'] == '7af25ed5a1b02f1e21fbac666ba4d0ca31852a79'
+          and hashlib.sha256(a.canonical(original)).hexdigest() == extension['predecessor_contract_sha256'])
+    delta_paths = {'.github/workflows/application-tests.yml', '.github/workflows/provider-package-php.yml',
+                   'tests/prepare_legacy.py', 'tools/acceptance_artifacts.py',
+                   'tests/release_125_upgrade_input_guards.py'}
+    check('PHP controls have only five declared predecessor source changes', set(extension['source_delta']) == delta_paths)
+    check('PHP controls pin every declared current test and dependency', set(extension['source_sha256']) == set(['.github/workflows/application-tests.yml', '.github/workflows/provider-package-php.yml', 'tests/acceptance_artifacts_test.py', 'tests/acceptance_environment.py', 'tests/acceptance_environment_test.py', 'tests/prepare_legacy.py', 'tests/provider_php_controls_changes.php', 'tests/provider_php_controls_delegation.php', 'tests/provider_php_controls_delegation_native.php', 'tests/provider_php_controls_http.php', 'tests/provider_php_controls_lifecycle.php', 'tests/provider_php_controls_lifecycle_native.php', 'tests/provider_php_controls_lifecycle_storage.php', 'tests/provider_php_controls_reads.php', 'tests/provider_php_controls_screen.php', 'tests/provider_php_controls_ui_acceptance.py', 'tests/provider_php_controls_ui_acceptance_test.py', 'tests/provider_php_controls_ui_browser.py', 'tests/provider_php_controls_ui_cases.py', 'tests/provider_php_controls_ui_connector.php', 'tests/provider_php_controls_ui_fixture.php', 'tests/provider_php_controls_ui_guards.py', 'tests/provider_php_controls_upgrade.py', 'tests/provider_php_controls_upgrade_fixture.php', 'tests/provider_php_controls_upgrade_test.py', 'tests/provider_php_controls_views.php', 'tests/release_125_upgrade_input_guards.py', 'tests/twentyi-package-php/options.php', 'tools/acceptance_artifacts.py', 'tools/legacy-release-files.json']))
+    for path, expected in extension['source_sha256'].items():
+        check('PHP controls current source pin ' + path,
+              hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == expected)
+    restored = {}
+    for path, delta in extension['source_delta'].items():
+        raw = ROOT.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        restored[path] = php_controls_source_predecessor(raw, delta)
+        check('PHP controls preserve complete predecessor source ' + path, True)
+        deny('PHP controls refuse changed source ' + path,
+             lambda data=raw, proof=delta: php_controls_source_predecessor(data + b'\n# changed', proof))
+    changed = copy.deepcopy(extension['source_delta']['tests/prepare_legacy.py'])
+    changed['replacements'][0]['after'] += '# changed suffix'
+    deny('PHP controls refuse changed preparation inverse',
+         lambda: php_controls_source_predecessor(ROOT.joinpath('tests/prepare_legacy.py').read_bytes().replace(b'\r\n', b'\n'), changed))
+    check('PHP controls retain all original browser recovery and Apache producer pins',
+          all(hashlib.sha256(restored.get(p, ROOT.joinpath(p).read_bytes().replace(b'\r\n', b'\n'))).hexdigest() == h
+              for p, h in original['unchanged_test_sha256'].items()))
+    history = a.load(ROOT / 'tools/legacy-release-files.json')
+    preceding_history = copy.deepcopy(history)
+    published = preceding_history.pop('1.25.0')
+    check('PHP upgrade input retains every original published history entry',
+          hashlib.sha256(a.canonical(preceding_history)).hexdigest() == extension['predecessor_history_sha256'])
+    check('PHP upgrade input adds only exact published1.25 inventory',
+          published['archive_sha256'] == 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'
+          and len(published['files']) == 2895)
+    guard_path = 'tests/release_125_upgrade_input_guards.py'
+    check('PHP upgrade preserves original guard except newly admitted1.25 negative becomes unapproved1.26',
+          ROOT.joinpath(guard_path).read_bytes().replace(b'\r\n', b'\n') == restored[guard_path].replace(
+              b'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',
+              b'test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip', 1))
+    workflow = ROOT.joinpath('.github/workflows/application-tests.yml').read_text(encoding='utf-8')
+    marker = '      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n'
+    native = [line.strip() for line in workflow.split(marker, 1)[1].split('      - name: Real HTTP', 1)[0].splitlines()]
+    commands = extension['native_commands']
+    anchor = '"$PHP_BINARY" tests/provider_package_php_native.php'
+    position = original['native_commands'].index(anchor) + 1
+    check('PHP controls add exactly20 commands after existing PHP observation native fixture',
+          len(commands) == len(set(commands)) == 20 and len(native) == 172
+          and native == original['native_commands'][:position] + commands + original['native_commands'][position:]
+          and all(native.count(command) == 1 for command in commands))
+    paths = {command.split(' tests/', 1)[1].split()[0] for command in commands}
+    focused = ROOT.joinpath('.github/workflows/provider-package-php.yml').read_text(encoding='utf-8')
+    selected = [line.strip() for line in focused.splitlines()
+                if re.match(r'^\s+php(?: -n)? tests/', line)
+                and line.strip().split(' tests/', 1)[1].split()[0] in paths]
+    check('PHP controls commands preserve exact focused arguments and default minimal order',
+          commands == ['"$PHP_BINARY"' + command[3:] for command in selected])
+    expected_focus = restored['.github/workflows/provider-package-php.yml'].decode().replace(
+        'branches: [main, codex/twentyi-package-php-version, codex/twentyi-php-version-controls]',
+        'branches: [main, codex/twentyi-package-php-version]', 1)
+    check('PHP focused trigger removes only duplicate feature push and preserves every PR job', focused == expected_focus)
+    browser = ['.ci-venv/bin/python tests/browser_acceptance.py',
+               '.ci-venv/bin/python tests/provider_php_controls_ui_acceptance_test.py --report qa/php-controls-packaged-ui-bridge-results.json',
+               '.ci-venv/bin/python tests/provider_php_controls_ui_acceptance.py']
+    apache = ['.ci-venv/bin/python tests/release_125_upgrade_acceptance.py',
+              '.ci-venv/bin/python tests/provider_php_controls_upgrade_test.py --report qa/apache-php-controls-upgrade-guards-results.json',
+              '.ci-venv/bin/python tests/provider_php_controls_upgrade.py']
+    check('PHP packaged guard and actual runner follow original browser in the dependency venv',
+          all(workflow.count(command + '\n') == 1 for command in browser)
+          and '\n'.join('          ' + command for command in browser) in workflow)
+    check('PHP installed upgrade guard and actual runner follow original release125 upgrade',
+          all(workflow.count(command + '\n') == 1 for command in apache)
+          and '\n'.join('          ' + command for command in apache) in workflow)
+    reports = a.load(ROOT / 'tools/acceptance-reports.json')
+    prior_reports = php_controls_report_predecessor(reports, extension)
+    check('PHP controls extend164 browser and208 final reports to186 and232',
+          len(prior_reports['browser']) == 164 and len(prior_reports['final']) == 208
+          and len(reports['browser']) == 186 and len(reports['final']) == 232)
+    for label in ('missing', 'duplicate', 'extra', 'changed original'):
+        wrong = copy.deepcopy(reports)
+        if label == 'missing': wrong['final'].remove(PHP_CONTROLS_FINAL_REPORTS[-1])
+        elif label == 'duplicate': wrong['browser'].append(PHP_CONTROLS_BROWSER_REPORTS[0])
+        elif label == 'extra': wrong['final'].append('php-controls-unexpected-results.json')
+        else: wrong['final'][0] += '.changed'
+        deny('PHP report union refuses ' + label, lambda value=wrong: php_controls_report_predecessor(value, extension))
+    sample = tmp / 'php-controls-new-reports'
+    for name in PHP_CONTROLS_FINAL_REPORTS:
+        lane = 'apache' if name.startswith('apache-') else 'native-browser'
+        check('PHP report has exactly one owner ' + name,
+              a.evidence_allowed('qa/' + name, lane)
+              and all(not a.evidence_allowed('qa/' + name, other) for other in a.LANES if other != lane))
+        file = sample / 'qa' / name
+        named(file, False)
+        check('PHP failed outcome cannot pass ' + name, not a.reports(sample)[name]['passed'])
+        file.unlink()
+        check('PHP missing outcome remains missing ' + name, name not in a.reports(sample))
+    titles = ('Owner', 'Client', 'Owner-Review', 'Client-Review', 'Owner-History',
+              'Client-History', 'Owner-Recovery', 'Client-Unavailable')
+    captures = ['PHP-Controls-' + title + '-' + size + '.png' for title in titles for size in ('Desktop', 'Mobile')]
+    check('PHP controls retain exactly16 flat native browser capture names',
+          extension['screenshots'] == captures and all(a.evidence_allowed('qa/' + n, 'native-browser')
+          and not a.evidence_allowed('qa/' + n, 'apache') for n in captures))
+    for name in ('qa/php-controls-ui/results.json', 'qa/php-controls-ui/PHP-Controls-Owner-Mobile.png',
+                 'test-runtime/php-controls-ui-acceptance-original/results.json'):
+        check('PHP private or nested runtime stays excluded ' + name, not a.evidence_allowed(name, 'native-browser'))
+    deny('PHP private config remains refused', lambda: a.evidence_allowed('test-runtime/php-controls-ui/config.php', 'native-browser'))
+    a.write(sample / 'qa/apache-php-controls-upgrade-retention.json', {'phases': {}})
+    check('PHP retention diagnostic does not masquerade as a passing report', not a.reports(sample))
+    return restored
+
+
+
+
 def fixtures(root, ctx):
     packages(root, ctx)
     for n in a.FIXTURES:
@@ -76,6 +356,8 @@ def fixtures(root, ctx):
         blob(root / 'test-runtime' / n / 'includes/public.php')
     for n in a.FIXTURE_JSON: a.write(root / 'test-runtime' / n, {'public': True})
     blob(root / 'test-runtime' / a.PUBLISHED_BASELINE, synthetic_baseline())
+    blob(root / 'test-runtime' / a.PUBLISHED_BASELINE_126, synthetic_baseline_126())
+    blob(root / 'test-runtime/released-1.25.0/includes/public.php', b'public synthetic 1.25 bytes')
     for n in a.BUILD_QA:
         if n.endswith('.json'): named(root / 'qa' / n)
         else: blob(root / 'qa' / n)
@@ -120,12 +402,17 @@ def run(tmp):
         check('Rejected output fields never append to the GitHub output file',job_output.read_text()==expected)
     transfer = tmp / 'input'; input_sha = a.create_inputs(source, ctx, transfer)
     obj = a.verify_bundle(transfer, 'inputs', ctx, input_sha)
-    check('Input binds all27 public fixture trees plus exact package/checksum files', len(a.FIXTURES) == 27 and 'dist/SHA256SUMS.txt' in obj['files'])
+    check('Input binds all27 public fixture trees plus exact package/checksum files', len(a.FIXTURES - {'released-1.25.0'}) == 27 and 'dist/SHA256SUMS.txt' in obj['files'])
+    additional_baseline_checks(tmp, ctx, source, transfer, input_sha)
     for lane in a.LANES[1:]:
         target = tmp / ('receive-' + lane); target.mkdir()
         (target / 'qa').mkdir()
         a.receive_inputs(transfer, target, ctx, input_sha, lane)
         check('Exact input materializes safely for ' + lane, (target / 'test-runtime/legacy/.htaccess').read_bytes() == b'Deny public listing')
+        check('Both original published archives and distinct1.25 members reach ' + lane,
+              (target / 'test-runtime' / a.PUBLISHED_BASELINE).read_bytes() == synthetic_baseline()
+              and (target / 'test-runtime' / a.PUBLISHED_BASELINE_126).read_bytes() == synthetic_baseline_126()
+              and (target / 'test-runtime/released-1.25.0/includes/public.php').read_bytes() == b'public synthetic 1.25 bytes')
         check('Only native/browser inherits build QA ' + lane, (target / 'qa/build-results.txt').exists() == (lane == 'native-browser'))
         check('Each child saves same-attempt immutable input receipt ' + lane, a.load(target / '.acceptance/input-receipt.json') == {'identity': ctx, 'input_sha256': input_sha, 'lane': lane})
         deny('Input materialization never overwrites an earlier child ' + lane, lambda t=target,l=lane: a.receive_inputs(transfer,t,ctx,input_sha,l))
@@ -275,10 +562,12 @@ def run(tmp):
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
+    php_controls_partition_checks(tmp, ctx, lane_roots, input_sha, expected)
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    php_predecessor = php_controls_wiring_checks(tmp, contract)
     for path,expected_hash in contract['unchanged_test_sha256'].items():
-        check('Original test source retained '+path, hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
-    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+        check('Original test source retained '+path, hashlib.sha256(php_predecessor.get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))).hexdigest()==expected_hash)
+    workflow=php_predecessor['.github/workflows/application-tests.yml'].decode()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
@@ -369,7 +658,13 @@ def main():
     try:
         # Scoped constants describe this suite's two-file synthetic protocol fixture only.
         # The separate published-baseline guards execute with the unchanged production constants.
-        with patch.object(a, 'PUBLISHED_BASELINE_SHA256', hashlib.sha256(synthetic_baseline()).hexdigest()), patch.object(a, 'PUBLISHED_BASELINE_MEMBERS', 2):
+        check('Production1.24 baseline constants retain exact immutable values',
+              a.PUBLISHED_BASELINE == 'CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'
+              and a.PUBLISHED_BASELINE_SHA256 == 'aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e' and a.PUBLISHED_BASELINE_MEMBERS == 2591)
+        check('Production1.25 baseline constants bind the actual published COMPLETE archive',
+              a.PUBLISHED_BASELINE_126 == 'CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'
+              and a.PUBLISHED_BASELINE_126_SHA256 == 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39' and a.PUBLISHED_BASELINE_126_MEMBERS == 2895)
+        with patch.object(a, 'PUBLISHED_BASELINE_SHA256', hashlib.sha256(synthetic_baseline()).hexdigest()), patch.object(a, 'PUBLISHED_BASELINE_MEMBERS', 2), patch.object(a, 'PUBLISHED_BASELINE_126_SHA256', hashlib.sha256(synthetic_baseline_126()).hexdigest()), patch.object(a, 'PUBLISHED_BASELINE_126_MEMBERS', 2):
             with tempfile.TemporaryDirectory(prefix='cwp-artifact-tests-') as temp:run(Path(temp))
     except Exception as exc:error=exc
     report={'passed':error is None,'scope':'Offline synthetic temporary files and exact transfer helpers; no application, provider, database or CI execution.', 'checks':checks}

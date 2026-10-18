@@ -1,7 +1,7 @@
 name: Native assigned-package PHP version checks
 on:
   push:
-    branches: [main, codex/twentyi-package-php-version, codex/twentyi-php-version-controls]
+    branches: [main, codex/twentyi-package-php-version]
     paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']
   pull_request:
     paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']
