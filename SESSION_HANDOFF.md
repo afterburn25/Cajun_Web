@@ -1,3 +1,9 @@
+## 2026-10-19 — backup export review corrections (non-20i)
+
+Coordinator review corrections landed on `devin/non20i-backup-database-export` (`da85b93e`): protected-path exclusions match at every directory depth in the foundation manifest and its deployed mirror; restore resolves every destination under the canonical source root, refuses linked/reparse parents and escapes, preflights all manifest members before the first write, and preserves recoverable originals through the post-write hash proof; restore records authorized intent plus applied/failed outcomes in separate transactions and refreshes owner authority inside the staff mutex; setup validates the recorded marker/table family before DDL so unknown populated histories refuse; the SQL export checks every fwrite plus flush/close, streams rows with the shared PDO in unbuffered mode and restores its prior buffering state in all outcomes, and binds a versioned `database` section (member, sha256, bytes, tables, rows) into `manifest_hash` — malformed or independently tampered metadata fails closed, and the drill verifies the member hash. Restore never applies the SQL export to the live database.
+
+Local verification: 37 manifest, 24 archive-adapter and 225 acceptance-artifact checks pass; PHP lint clean; installer inventory regenerated. The MariaDB native fixture and packaged HTTP/Apache acceptance run in CI. No merge, deployment, provider action or release.
+
 ## 2026-10-18 — CI trigger correction
 
 Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
