@@ -1,3 +1,7 @@
+## Unreleased — bounded catalog response discovery
+
+Add a separate, owner-scoped two-GET 20i catalog shape diagnostic and offline transport/disclosure tests. It reports only closed field-name/type observations and finite errors; all values and unknown key names remain withheld. It does not change shipped hosting imports, request provider writes or fetch artwork. Execution and actual response evidence are separate from source preparation. Verified 1.25.0 and its assets remain unchanged.
+
 ## 1.25.0 — bounded mature increment
 
 ### Verified publication — 2026-10-18

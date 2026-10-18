@@ -1,3 +1,7 @@
+## 2026-10-18 — catalog schema diagnostic prepared
+
+After verified 1.25.0 publication, root prepared a separate `ops/twentyi-catalog-schema-read` branch from documentation main `bdbdf3e154e09db9c7dcc391e8e8cead2a2c8497`. The [two fixed metadata reads](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md) support the owner's full product import request. The proposed diagnostic exports a closed vocabulary of field spellings and JSON types, withholding all values, unknown keys and URLs. It changes no production adapter or catalog importer. Offline source/transport checks pass; this source checkpoint has not yet executed the provider reads or established complete catalog/image contracts.
+
 # CajunWebPro 1.25.0 scope and release status
 
 ## 2026-10-18 — 1.25.0 published and download-verified

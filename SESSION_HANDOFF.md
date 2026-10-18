@@ -1,3 +1,7 @@
+## 2026-10-18 — next original catalog metadata read
+
+The published release remains immutable b79c6711. Root's `ops/twentyi-catalog-schema-read` branch starts from documentation main bdbdf3e1 and adds the reviewed [catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md). Preserve its first run, checkout identity and shape artifact after execution. Do not rerun automatically or treat lexical field/type observations as proven product/pricing/image semantics. At this source checkpoint the read is pending; no actual provider response is claimed. Owner-requested import work authorizes these two necessary metadata GETs only; this diagnostic performs no provider writes or image download.
+
 # CajunWebPro 1.25.0 release handoff
 
 ## 2026-10-18 — resume after verified publication
