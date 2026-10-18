@@ -556,5 +556,18 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "non20i_native_command_extension": {
+    "additions": [
+      "\"$PHP_BINARY\" tests/backups_native.php"
+    ],
+    "after": {
+      "\"$PHP_BINARY\" tests/backups_native.php": "\"$PHP_BINARY\" tests/delivery_native.php"
+    },
+    "predecessor_native_count": 152,
+    "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
+    "source_sha256": {
+      "tests/backups_native.php": "782fdb862f7140a6a860e95b54119499e198c65918997421a379463c39edc83a"
+    }
   }
 }
