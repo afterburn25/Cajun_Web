@@ -12,6 +12,30 @@ The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#origina
 
 Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/SESSION_HANDOFF.md
 
+## Devin non-20i lane — 2026-10-18 contract/recipe wave
+
+Two further CI defects fixed after the LF-inventory wave. First, main
+integrated `ops/` diagnostic trees but `build.py`'s full-project
+`allowed` set predated them — `'ops'` added on all 51 heads, matching
+the identical fix on `codex/twentyi-direct-hosting-catalog`;
+`tools/build.py --commit` now assembles all archives end-to-end.
+Second, 13 heads wire existing feature-native tests into the
+selected-runtime recipe (153–154 commands vs pinned 152); following
+the `provider_package_types` pattern, each carries a
+`non20i_native_command_extension` contract entry plus a strip-check
+in `tests/acceptance_artifacts_test.py`. All 51 heads pass the full
+artifacts suite locally (221–226 checks) and every stacked pair was
+re-merged after each fix wave. 167 stale-head CI runs were cancelled;
+current-head lanes are queued — results pending.
+
+Latest tips: portal-account `45ba4d97`; client-actions `904604ff`+ops;
+mail chain tip `b9f96940`; ticket-notifications `47e81656`;
+ticket-screenshots `935c634d`; stage-history `1a537618`;
+recurring-billing `88f03ccb`; renewal-notifications `12400816`;
+client-contacts `a49b6409`; contact-decisions `935bfcfa`;
+contact-activity `bb0de709`; staff-notes `362a2365`; milestones
+`828f2720`; activity-prefs `c3c24671`.
+
 ## Devin non-20i lane — 2026-10-18 LF-inventory fix status
 
 Follow-up to the mass restack: CI failures on restacked heads were
