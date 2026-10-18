@@ -110,6 +110,8 @@ final readonly class HostingJournal
         self::integer($value['at']);self::boolean($value['retryable']);
         if($value['at']<$created||$value['at']>$at)throw new InvalidArgumentException('Provider observation time is outside this journal event.');
         return match($value['outcome']){
+            'accepted_pending'=>$value['receipt']===null&&$value['resource_ref']!==null&&$value['error']===null&&$value['retryable']===false
+                ?OperationResult::acceptedPending($value['operation'],$value['resource_ref'],$value['at'],$value['subject_ref'],$value['attempt_ref']):throw new InvalidArgumentException('Invalid pending provisioning observation.'),
             'applied'=>$value['receipt']!==null&&$value['error']===null&&$value['retryable']===false
                 ?OperationResult::applied($value['operation'],$value['receipt'],$value['at'],$value['subject_ref'],$value['resource_ref'],$value['attempt_ref']):throw new InvalidArgumentException('Invalid applied observation.'),
             'failed'=>$value['error']!==null&&$value['receipt']===null&&$value['resource_ref']===null

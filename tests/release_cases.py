@@ -1,14 +1,18 @@
 """Additional saved-state, package-upgrade and real-browser release acceptance."""
-import json, os, subprocess, shutil, time, zipfile, re
+import json, os, subprocess, shutil, time, zipfile, re, hashlib
 from pathlib import Path
 from urllib.parse import urljoin
 import requests
 from playwright.sync_api import expect
 from release_version import VERSION
 
-def db(sql, params=()):
-    result=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps({'sql':sql,'params':params}),text=True,capture_output=True,check=True)
+def fixture_command(request):
+    result=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps(request),text=True,capture_output=True,check=True)
     return json.loads(result.stdout)
+
+
+def db(sql, params=()):
+    return fixture_command({'sql': sql, 'params': params})
 
 def chosen_form(session,url,action,field,value,changes):
     response=session.get(url)
@@ -96,7 +100,7 @@ def run_http(env):
     preserved={p:p.read_bytes() for p in [upgrade/'config.php',upgrade/'.installed.php',upgrade/'unrelated.txt',ROOT/'test-runtime/upgrade-private/media/retained.php']}
     rows_before={t:db('SELECT * FROM upgrade_'+t) for t in ['settings','users','leads','projects']}
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(upgrade)
-    from structure_helpers import apply_file_update
+    from structure_helpers import apply_file_update, removed_setup_unavailable
     apply_file_update(globals(),upgrade)
     check('Actual update ZIP preserves config locks media and unrelated files',all(p.read_bytes()==data for p,data in preserved.items()))
     up=requests.Session();r=submit(up,BASE+'/upgrade/admin/index.php?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
@@ -110,7 +114,7 @@ def run_http(env):
     check('Upgrade preserves original credentials and identity',all(user[k]==old[k] for k in old if k!='last_login'))
     submit(up,BASE+'/upgrade/admin/index.php?view=studio-upgrade','studio_migrate',{'confirm':'1'})
     check('HTTP upgrade can safely repeat',db("SELECT value FROM upgrade_settings WHERE name='studio_schema_version'")[0]['value']=='2')
-    check('Upgraded site never reruns fresh setup',requests.get(BASE+'/upgrade/install.php').status_code==404)
+    check('Upgraded site never reruns fresh setup',removed_setup_unavailable(globals(),upgrade,up))
     # Private invitation is copied from the real admin response; no customer mail.
     clients=BASE+'/existing/admin/index.php?view=studio-clients'
     cid=db("SELECT id FROM ci_studio_clients WHERE email='newclient@example.invalid'")[0]['id']
@@ -130,6 +134,8 @@ def run_http(env):
 def installer_failures(env):
     globals().update({key:env[key] for key in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','form_for','submit','php']})
     check('Filesystem acceptance runs without root',os.geteuid()!=0)
+    boundaries=json.loads(subprocess.check_output([php,str(ROOT/'tests/installer_fresh_input.php')],text=True))
+    for boundary in boundaries['checks']:check(boundary['name'],boundary['passed'])
     missing=WEB/'missing';blocked=WEB/'blocked'
     for dest in [missing,blocked]:
         dest.mkdir()
@@ -143,6 +149,14 @@ def installer_failures(env):
         check('Unprivileged write denial is reported honestly',not result['ok'] and not (blocked/'config.php').exists())
         check('Storage failure leaves setup fields visible',len(soup(session.get(BASE+'/blocked/install.php')).select('#install-form'))==1)
     finally:blocked.chmod(0o755)
+    guard=blocked/'.installed.php';guard.write_bytes(b'<?php exit; ?>retained installed marker')
+    try:
+        for entry in ['index.php','admin/index.php','portal/index.php']:
+            response=requests.get(BASE+'/blocked/'+entry,allow_redirects=False,timeout=15)
+            check('Missing configuration with retained lock shows recovery '+entry,response.status_code==503 and 'Location' not in response.headers and 'Restore the original config.php' in response.text)
+        response=session.post(BASE+'/blocked/install.php',data={'csrf':token(r),'action':'checks','fresh_start':'1'},timeout=15)
+        check('Fresh start cannot bypass retained installed marker',response.status_code==403 and guard.read_bytes()==b'<?php exit; ?>retained installed marker' and not (blocked/'config.php').exists())
+    finally:guard.unlink()
     # Run without extensions against otherwise complete bytes. The form remains usable.
     noext=subprocess.Popen([php,'-n','-S','127.0.0.1:8093','-t',str(blocked)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     try:
@@ -211,21 +225,68 @@ def run_browser(env,browser,fixture):
     # Install another actual extracted COMPLETE package entirely through the browser.
     setup=WEB/'browser-setup';setup.mkdir()
     with zipfile.ZipFile(next((ROOT/'dist').glob('*COMPLETE-UPLOAD.zip'))) as package:package.extractall(setup)
+    old_store=WEB.parent/('cajunwebpro-private-'+hashlib.sha256(str(setup.resolve()).encode()).hexdigest()[:12]);old_store.mkdir(mode=0o700)
+    old_files={'install.lock.php':b'<?php exit; ?>old completed install','retained.php':b'<?php exit; ?>old private data'}
+    for name,contents in old_files.items():(old_store/name).write_bytes(contents)
+    old_rows={name:db('SELECT * FROM ci_'+name+' ORDER BY '+('name' if name=='settings' else 'id')) for name in ['settings','users','studio_clients']}
     install=browser.new_context(viewport={'width':1440,'height':1000});p=install.new_page();p.goto(BASE+'/browser-setup/install.php',wait_until='networkidle')
     check('Browser installer shows the current source build',('ONE-PAGE INSTALLER · '+VERSION) in p.locator('.build').inner_text())
     check('Browser installer loads both original brand images',p.locator('.topbar img,.intro-sign img').count()==2 and p.locator('.topbar img,.intro-sign img').evaluate_all('items=>items.every(e=>e.complete && e.naturalWidth>0)'))
-    values={'db_host':os.getenv('CWP_TEST_HOST','127.0.0.1'),'db_port':os.getenv('CWP_TEST_PORT','3306'),'db_name':'cwp_test','db_user':os.getenv('CWP_TEST_USER','cwp_test'),'db_password':os.getenv('CWP_TEST_PASSWORD','local-ci-only'),'db_prefix':'browser_','owner_name':'Browser owner','owner_email':'browser-owner@example.invalid','owner_password':'Synthetic browser owner passphrase','owner_confirm':'Deliberate mismatch passphrase','site_url':BASE+'/browser-setup'}
+    values={'db_host':os.getenv('CWP_TEST_HOST','127.0.0.1'),'db_port':os.getenv('CWP_TEST_PORT','3306'),'db_name':'cwp_test','db_user':os.getenv('CWP_TEST_USER','cwp_test'),'db_password':os.getenv('CWP_TEST_PASSWORD','local-ci-only'),'db_prefix':'browser_','owner_name':'Browser owner','owner_email':'browser-owner@example.invalid','owner_password':'AdminPass12!','owner_confirm':'Deliberate mismatch passphrase','site_url':BASE+'/browser-setup'}
     for name,value in values.items():p.locator('[name='+name+']').fill(value)
     p.locator('[name=confirm_install]').check();p.locator('#install-button').click();expect(p.locator('#setup-error')).to_contain_text('passwords do not match');expect(p.locator('#install-form')).to_be_visible()
     check('Browser setup validation preserves entered fields',p.locator('[name=owner_email]').input_value()==values['owner_email'] and not (setup/'config.php').exists())
+    check('Retained external storage blocks ordinary fresh setup','Storage from a completed installation remains' in p.locator('#system-checks').inner_text() and not p.locator('#fresh-start').is_checked())
+    p.locator('[name=db_prefix]').fill('ci_');p.locator('#test-database').click();expect(p.locator('#db-result')).to_contain_text('tables with this prefix already exist')
+    p.locator('#fresh-start').check();expect(p.locator('#server-summary')).to_contain_text('Server ready')
+    fresh_prefix=p.locator('[name=db_prefix]').input_value()
+    check('Explicit fresh setup selects a separate read-only prefix',bool(re.fullmatch(r'cwp_fresh_[a-f0-9]{9}_',fresh_prefix)) and p.locator('[name=db_prefix]').evaluate('(e)=>e.readOnly'))
+    p.locator('#test-database').click();expect(p.locator('#db-result')).to_contain_text('Table prefix: '+fresh_prefix)
     p.locator('[name=owner_confirm]').fill(values['owner_password']);p.screenshot(path=str(QA/'Installer-Desktop.png'),full_page=True);p.set_viewport_size({'width':390,'height':844});check('One-page installer fits mobile',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));p.screenshot(path=str(QA/'Installer-Mobile.png'),full_page=True)
     p.locator('#install-button').click();expect(p.locator('#completion')).to_be_visible(timeout=90000)
-    check('Browser single-form install creates native database and removes setup',(setup/'config.php').is_file() and not (setup/'install.php').exists() and bool(db('SELECT id FROM browser_users WHERE email=?',[values['owner_email']])))
-    p.screenshot(path=str(QA/'Installer-Complete.png'),full_page=True);install.close()
+    check('Browser single-form install creates native database and removes setup',(setup/'config.php').is_file() and not (setup/'install.php').exists() and bool(db('SELECT id FROM '+fresh_prefix+'users WHERE email=?',[values['owner_email']])))
+    check('Fresh setup preserves previous tables and private storage',old_rows=={name:db('SELECT * FROM ci_'+name+' ORDER BY '+('name' if name=='settings' else 'id')) for name in old_rows} and all((old_store/name).read_bytes()==contents for name,contents in old_files.items()) and set(x.name for x in old_store.iterdir())==set(old_files))
+    p.screenshot(path=str(QA/'Installer-Complete.png'),full_page=True)
+    preserved_config=(setup/'config.php').read_bytes();preserved_lock=(setup/'.installed.php').read_bytes();preserved_settings=db('SELECT * FROM '+fresh_prefix+'settings ORDER BY name')
+    with zipfile.ZipFile(next((ROOT/'dist').glob('*COMPLETE-UPLOAD.zip'))) as package:package.extractall(setup)
+    response=requests.get(BASE+'/browser-setup/',allow_redirects=False,timeout=15)
+    check('Ordinary COMPLETE file overwrite preserves configuration and settings',response.status_code==200 and 'Location' not in response.headers and (setup/'config.php').read_bytes()==preserved_config and (setup/'.installed.php').read_bytes()==preserved_lock and db('SELECT * FROM '+fresh_prefix+'settings ORDER BY name')==preserved_settings)
+    check('Reuploaded installer remains blocked on an installed site',requests.get(BASE+'/browser-setup/install.php',timeout=15).status_code==403)
+    p.goto(BASE+'/browser-setup/admin/index.php?view=login');p.locator('[name=email]').fill(values['owner_email']);p.locator('[name=password]').fill(values['owner_password']);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard')
+    check('Twelve-character administrator signs in after file overwrite',p.locator('.studio-welcome').is_visible());install.close()
     # Owner controls also run in Chromium, with saved database evidence.
     owner=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=owner.new_page();owner_errors=[];owner_failed=[]
     p.on('pageerror',lambda e:owner_errors.append(str(e)));p.on('console',lambda m:owner_errors.append(m.text) if m.type=='error' else None);p.on('requestfailed',lambda r:owner_failed.append({'url':r.url,'failure':r.failure,'status':r.response().status if r.response() else None}))
-    p.goto(BASE+'/existing/admin/index.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.goto(BASE+'/existing/admin/index.php?view=studio-job&id=1');form=p.locator('form').filter(has=p.locator('[name=action][value=studio_job]'));form.locator('[name=milestones]').fill('Browser-verified milestone update.');form.get_by_role('button',name='Save project').click();expect(form.locator('[name=milestones]')).to_have_value('Browser-verified milestone update.');check('Browser admin change persisted',db('SELECT milestones FROM ci_studio_jobs WHERE id=1')[0]['milestones']=='Browser-verified milestone update.');p.screenshot(path=str(QA/'Admin-Workspace-Desktop.png'),full_page=True);p.set_viewport_size({'width':390,'height':844});check('Admin mobile workspace fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));p.screenshot(path=str(QA/'Admin-Workspace-Mobile.png'),full_page=True)
+    p.goto(BASE+'/existing/admin/index.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.wait_for_url('**/admin/index.php?view=dashboard')
+    expect(p.locator('.studio-welcome')).to_be_visible()
+    expect(p.locator('.metric-grid[aria-label="Website totals"]')).to_be_visible()
+    admin_nav=p.locator('[data-admin-navigation]')
+    check('Grouped owner navigation retains core destinations',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).count()==1 for label in ['Overview','Service catalog','20i connection','Administrators']))
+    billing_group=admin_nav.locator('[data-nav-group=billing]')
+    billing_group.locator('summary').click()
+    expect(billing_group).to_have_attribute('open','')
+    expect(billing_group.get_by_role('link',name='Service catalog',exact=True)).to_be_visible()
+    check('Owner can expand Billing and Products with native controls',True)
+    public_nav_page=owner.new_page()
+    for route,label in [('hosting','Hosting'),('services','Web Design'),('products','Products')]:
+        response=public_nav_page.goto(BASE+'/existing/index.php?page='+route)
+        current=public_nav_page.locator('#site-nav').get_by_role('link',name=label,exact=True)
+        expect(current).to_have_attribute('aria-current','page')
+        check('Public navigation destination responds '+route,response.status==200 and public_nav_page.locator('h1').is_visible())
+    public_nav_page.set_viewport_size({'width':390,'height':844})
+    public_nav_page.get_by_role('button',name='Open navigation',exact=True).click()
+    expect(public_nav_page.locator('#site-nav').get_by_role('link',name='Hosting',exact=True)).to_be_visible()
+    expect(public_nav_page.locator('#site-nav').get_by_role('link',name='Web Design',exact=True)).to_be_visible()
+    expect(public_nav_page.locator('#site-nav').get_by_role('link',name='Products',exact=True)).to_be_visible()
+    public_nav_page.keyboard.press('Escape')
+    expect(public_nav_page.locator('.menu-toggle')).to_have_attribute('aria-expanded','false')
+    check('Public service destinations remain reachable in the mobile menu',True)
+    public_nav_page.close()
+    for width,height,label in [(1440,1000,'Desktop'),(390,844,'Mobile')]:
+        p.set_viewport_size({'width':width,'height':height})
+        check('Admin overview '+label+' fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+        p.screenshot(path=str(QA/('Admin-Overview-'+label+'.png')),full_page=True)
+    p.set_viewport_size({'width':1440,'height':1000});p.goto(BASE+'/existing/admin/index.php?view=studio-job&id=1');form=p.locator('form').filter(has=p.locator('[name=action][value=studio_job]'));form.locator('[name=milestones]').fill('Browser-verified milestone update.');form.get_by_role('button',name='Save project').click();expect(form.locator('[name=milestones]')).to_have_value('Browser-verified milestone update.');check('Browser admin change persisted',db('SELECT milestones FROM ci_studio_jobs WHERE id=1')[0]['milestones']=='Browser-verified milestone update.');p.screenshot(path=str(QA/'Admin-Workspace-Desktop.png'),full_page=True);p.set_viewport_size({'width':390,'height':844});check('Admin mobile workspace fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));p.screenshot(path=str(QA/'Admin-Workspace-Mobile.png'),full_page=True)
     p.get_by_role('button',name='Toggle administration navigation').click();expect(p.locator('.sidebar-toggle')).to_have_attribute('aria-expanded','true');p.keyboard.press('Escape');expect(p.locator('.sidebar-toggle')).to_have_attribute('aria-expanded','false');check('Admin mobile navigation toggles and closes by keyboard',True)
     p.set_viewport_size({'width':1440,'height':1000});p.goto(BASE+'/existing/admin/index.php?view=studio-content');form=p.locator('form').filter(has=p.locator('[name=setting_name][value=growth_intro]'));form.locator('[name=value]').fill('Browser-saved studio introduction.');form.locator('button').click();expect(form.locator('[name=value]')).to_have_value('Browser-saved studio introduction.');check('Browser content edit persisted',db("SELECT value FROM ci_settings WHERE name='growth_intro'")[0]['value']=='Browser-saved studio introduction.')
     p.goto(BASE+'/existing/admin/index.php?view=studio-prices');p.locator('[name=business_min]').fill('1000.00');p.locator('[name=enabled]').uncheck();p.get_by_role('button',name='Save price rules').click();expect(p.locator('[name=enabled]')).not_to_be_checked();check('Browser price-disabled state persisted',json.loads(db("SELECT value FROM ci_settings WHERE name='growth_prices'")[0]['value'])['enabled'] is False)

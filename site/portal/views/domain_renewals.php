@@ -1,0 +1,17 @@
+<?php
+declare(strict_types=1);
+if(!defined('CWP_BOOT')){http_response_code(404);exit;}
+?>
+<p>Ask the studio to review a renewal for a registered domain assigned to you. This request does not place a renewal or payment. The studio must confirm pricing and eligible terms separately.</p>
+<?php if($renewalUnavailable): ?><p class="notice">The studio needs to review the renewal request records. Please contact the studio.</p>
+<?php else: ?>
+<section data-domain-renewal-create><h2>Request review</h2><?php if(!$renewalOptions): ?><p>No new request is currently available. Your domain may already have a pending request, or the studio may need to enable requests and refresh its assignment.</p><?php endif;?>
+<div class="workspace-grid"><?php foreach($renewalOptions as $option):$retry=is_string($_POST['link_id']??null)&&$_POST['link_id']===$option['link_id'];$field=static fn(string $key,string $fallback):string=>$retry&&is_string($_POST[$key]??null)?substr($_POST[$key],0,64):$fallback; ?>
+<article class="workspace-card"><h3 style="overflow-wrap:anywhere"><?=esc($option['domain'])?></h3><form method="post"><?=csrf_field()?><input type="hidden" name="action" value="domain_renewal_create">
+<input type="hidden" name="request_id" value="<?=esc($field('request_id',bin2hex(random_bytes(16))))?>"><input type="hidden" name="link_id" value="<?=esc($option['link_id'])?>"><input type="hidden" name="link_revision" value="<?=esc($field('link_revision',(string)$option['link_revision']))?>"><input type="hidden" name="profile_revision" value="<?=esc($field('profile_revision',(string)$option['profile_revision']))?>"><input type="hidden" name="refresh_id" value="<?=esc($field('refresh_id',$option['refresh_id']))?>">
+<label>Requested years<input type="number" name="requested_years" min="1" max="10" step="1" value="<?=esc($field('requested_years','1'))?>" required></label><p class="hint">Enter your preference (1–10 years). The studio will check which terms your domain allows.</p>
+<label>Privacy renewal preference<select name="renew_privacy"><?php foreach(['ask'=>'Ask the studio','yes'=>'Request privacy renewal','no'=>'Do not request privacy renewal'] as $value=>$label): ?><option value="<?=$value?>"<?=$field('renew_privacy','ask')===$value?' selected':''?>><?=esc($label)?></option><?php endforeach;?></select></label>
+<label><input type="checkbox" name="request_confirm" value="1" required> I am requesting review. This does not renew the domain or authorize a payment.</label><button class="btn gold">Request renewal review</button></form></article><?php endforeach;?></div></section>
+<section data-domain-renewal-history><h2>Your requests</h2><?php if(!$renewalHistory): ?><p>No requests on this page.</p><?php endif;?><?php foreach($renewalHistory as $renewalDoc)domain_renewals_render_history($renewalDoc,false);$renewalPage=max(1,min(10000,(int)($_GET['renewal_page']??1))); ?>
+<nav class="button-row" aria-label="Renewal request pages"><?php if($renewalPage>1): ?><a class="btn outline" href="<?=esc(studio_url(['domain_renewals'=>1,'renewal_page'=>$renewalPage-1]))?>">Newer requests</a><?php endif;?><?php if(count($renewalHistory)===20&&$renewalPage<10000): ?><a class="btn outline" href="<?=esc(studio_url(['domain_renewals'=>1,'renewal_page'=>$renewalPage+1]))?>">Older requests</a><?php endif;?></nav></section>
+<?php endif;?><a class="btn outline" href="<?=esc(studio_url(['domain_renewals'=>1]))?>">Refresh request forms</a>
