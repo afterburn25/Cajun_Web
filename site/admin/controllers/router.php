@@ -29,6 +29,7 @@ if(in_array($view,['studio-clients','service-plans','service-plan','service-agre
 if($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if(in_array($view,['studio-clients','studio-job','studio-upgrade'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
 if($view==='staff-setup')staff_setup_render($error);

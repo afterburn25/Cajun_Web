@@ -37,7 +37,8 @@ if($licenses):?>
 </div>
 <?php endif; }
 else{try{$job=studio_job($jobId,(int)$client['id']);}catch(InvalidArgumentException){http_response_code(404);echo '<p>Project not found or access denied.</p>';site_foot(false);exit;}
-if(delivery_ready())echo '<p><a class="btn gold" href="'.esc(studio_url(['downloads'=>1,'job'=>$jobId])).'">Website releases & downloads →</a></p>';if(!support_current()&&recurring_billing_ready())echo '<p><a class="btn outline" href="'.esc(studio_url(['recurring'=>1,'job'=>$jobId])).'">Project recurring billing</a></p>';?><div class="workspace-card"><span class="workspace-status"><?=esc(studio_stages()[$job['stage']]??$job['stage'])?></span><h2><?=esc($job['title'])?></h2><p><?=nl2br(esc($job['summary']))?></p><h3>Milestones</h3><div class="prose"><?=nl2br(esc($job['milestones']))?></div></div><?php try{
+if(!support_current()&&recurring_billing_ready())echo '<p><a class="btn outline" href="'.esc(studio_url(['recurring'=>1,'job'=>$jobId])).'">Project recurring billing</a></p>';
+if(delivery_ready())echo '<p><a class="btn gold" href="'.esc(studio_url(['downloads'=>1,'job'=>$jobId])).'">Website releases & downloads →</a></p>';?><div class="workspace-card"><span class="workspace-status"><?=esc(studio_stages()[$job['stage']]??$job['stage'])?></span><h2><?=esc($job['title'])?></h2><p><?=nl2br(esc($job['summary']))?></p><h3>Milestones</h3><div class="prose"><?=nl2br(esc($job['milestones']))?></div></div><?php try{
     if(project_progress_mode()){[$progressPage,$progressFocus]=project_progress_query($_GET);$progress=project_progress_client_get($jobId,(int)$client['id'],$progressPage,$progressFocus,$supportRequested?$supportId:null);project_progress_timeline($progress,false,$progressFocus);}
     else echo '<section class="workspace-card"><h2>Project history</h2><p>Dated history is not enabled yet. Your current project details are shown above.</p></section>';
 }

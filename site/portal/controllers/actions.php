@@ -17,6 +17,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif($action==='financial_decide'){if(!$client)throw new RuntimeException('Sign in to continue.');design_financial_client_action($client,$jobId);}
  elseif(str_starts_with($action,'recurring_')){if(!$client)throw new RuntimeException('Sign in to continue.');recurring_ui_action($action,(int)$client['id']);}
  elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}
+ elseif($action==='financial_decide'){if(!$client)throw new RuntimeException('Sign in to continue.');design_financial_client_action($client,$jobId);}
  elseif($action==='activity_mark')activity_post('client');
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
  elseif($action==='login'){studio_login(strtolower(posted('email',190)),posted('password',1000));redirect(studio_url());}

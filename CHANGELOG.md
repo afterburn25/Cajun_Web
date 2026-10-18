@@ -747,6 +747,21 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Unreleased — design payment agreements, schedules and bound invoices (Devin port)
+
+Ported the preserved `codex/design-payment-schedules` + `codex/design-financial-activity` stack onto `devin/non20i-design-payments` (stacked on `devin/non20i-project-planning`). Canonical `DesignPaymentSchedule` model with cent-exact deposit/installment allocation; owner-prepared additive `design_payment_*` storage with immutable offered/withdrawn/accepted/declined events; staff financial editor on the client project; explicit client consent bound to the exact offered fingerprint; one bound invoice per accepted stage guarded inside the existing ledger; `financial:` workspace-activity notices resolving to the exact frozen event. No card checkout is activated; publishing an offer records no payment. No live deployment or release.
+
+## Unreleased — structured project planning (Devin port)
+
+Ported the preserved `codex/project-planning`/`project-planning-storage`/`project-planning-screens` stack onto `devin/non20i-project-planning` (stacked on `devin/non20i-project-progress`, which it extends). Owner-prepared additive `studio_plan_events`/`studio_plan_requests`/`studio_plan_heads` storage; canonical `ProjectPlan`/`ProjectPlanEvent` models with bounded milestone dependencies and immutable revision events; staff planning editor and client dashboard/timeline inside the existing private workspace; `planning:` activity items that open the exact authorized event. Existing project free-text fields, progress history, invoices, files and deliveries remain authoritative — no legacy text is converted. No live deployment or release.
+
+## Unreleased — dated project history and client progress timeline (Devin port)
+
+- Port the preserved `codex/project-progress-screens` slice onto `main` under the 2026-10-16 allocation: `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}` canonical classes with deployment mirrors, additive `studio_progress_{events,requests,heads}` storage behind owner-gated `project_progress_setup`, and immutable hash-linked dated history for existing `studio_job` create/edit forms.
+- Admin: progress editor + bounded timeline on `studio-job`, create-project editor on `studio-clients`, setup form under Version & database; `studio-job`/`studio-upgrade` get private no-store headers and `studio-job` joins the support-session block list.
+- Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
+- Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
+- `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
 
 ## Synchronize release entry points after review — 2026-10-15
 
