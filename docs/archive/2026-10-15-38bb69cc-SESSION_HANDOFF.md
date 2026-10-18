@@ -1,0 +1,43 @@
+Archived source38bb checkpoint; its status is historical. Relative links are adjusted for this directory.
+
+# CajunWebPro handoff — 2026-10-15
+
+Continue the complete 20i P0 scope in [the owner takeover](../TWENTYI_CODEX_TAKEOVER_REQUEST.md) and [requirements checklist](../TWENTYI_REQUIREMENTS_EVIDENCE.md). The goal is active. Published v1.24.0 is unchanged; the prior turn made implementation and verified-evidence progress.
+
+Root worktree: `C:\Users\after\Documents\Codex\2026-10-12\ok-x20\work\Cajun_Web-twentyi-service-orders`. Branch `codex/twentyi-mailbox-controls`, [PR140](https://github.com/afterburn25/Cajun_Web/pull/140), parent cloud integration `25cdc25af0796e8a9d2e87b66e4334f041d61bf7`, normally merging documentation-only main `c3b1a69c3b8162f6cc10bfd8d4289c7b4c8c0ce8`; catalog577b279b and registrarc1585199 are retained. It preserves runtime main `a1e64f81502e8478dcb98152038a219eee1be4dd` and preserves licensing audits inside the existing domain-replacement transaction. Actual isolated PHP8.4/MariaDB fixture `licmerge1015_` passes40 named checks; it is populated and must not be rerun under the same prefix. Catalog agent independently reviewed the conflict resolution. No Website_Core execution.
+
+## Active evidence
+
+- Final shared cloud/catalog/registrar/mailbox source review found no concrete merge defect. Cloud agent also reviewed the corrected capability summary: success verifies hosting-list access, and the remaining list no longer labels implemented domain search/hosting creation unavailable. Browser expectation uses the exact visible replacement text and preserves the navigation wait. Refresh64575 completed before the final copy edit; final refresh81543 completed successfully on the frozen shipping source. Both processes are closed.
+- Catalog integration refresh88009 completed successfully and is closed. Independent catalog integration and domain-agent browser-fixture reviews found no remaining source blocker; combined runtime acceptance is still required.
+- Prior a894 main-integration full application:38821344178; focused mailbox:38821339181 and38821344121. New combined evidence is required after the agent merges. Inspect authoritative current job state; never restart solely because observation expired.
+- Mailbox runtime334c390c: four actual native artifacts in38820306755 verify87 named outcomes each. Full38820312445 remains a distinct prior-source run.
+- Catalog8f7028 / PR141: all four native artifacts verify43 catalog cases within508 combined plus51/51 pure cases. Exact browser artifact12012893088 verifies1794 HTTP/Chromium checks including20 catalog cases, with inspected desktop/mobile captures; full38819685543 recovery/Apache continues.
+- Registrar8b4a / PR142: all four native artifacts in38820338409 verify63 native and64/64 reader cases. Parent2fe checkpoint38819247971 passes1810 HTTP/Chromium checks; desktop/client screenshots inspected. Final725573f0 includes the reviewed owner-mobile capture timing correction; root must inspect the corrected combined screenshot.
+- Cloudce8d4e89 / PR143: native38821117816 passes41 named checks in all four verified combinations; exact browser artifact12014077239 from full38821117748 verifies1792 HTTP/Chromium checks including18 cloud cases, with all four screenshots inspected; recovery/Apache continues. Final docs head33a2a2b0 preserves the same runtime. Parent4aa passes four33-case native combinations and1792 browser checks.2feb's retained MySQL collation failure is fixed with binary audit matching; the shared-preparation transaction guard also has new native regressions.
+- Registrar integration installer refresh86317 completed successfully and is closed; 66528/19827/37690/59233 are also closed. Do not repoll or restart them. No current Windows release build is running.
+- Prior mailbox334 full38820312445 passed native and recovery but failed browser; artifact12012807554 confirms failed capability-text check1126 before mailbox browser cases. Source retains the paragraph and PHP diagnostics are clean; the fixture now waits for navigation and exact visible content, retaining failure HTML/screenshots. A rerun must confirm the likely timing correction. Preserve the original evidence while Apache continues.
+- Parent b09b/0ebc full reports and exact package/member verification are documented in [parallel evidence](../TWENTYI_PARALLEL_WORK.md).
+
+## Next actions
+
+1. Push this final combined branch and inspect its new exact-source native/full CI. Refresh81543 and independent shared reviews passed; mainc3b1a69c adds documentation only. Earlier registrar/catalog intermediate merges deliberately skipped duplicate automatic CI; the final source requires the complete suites. Preserve all source branches and prior runs.
+2. Inspect exact combined native matrices and full packaged browser/recovery/Apache results. New mailbox sequence-order regressions must pass; inspect corrected owner-mobile registrar capture and every new actual desktop/mobile screen. The capability visibility fix retains its original assertion and must be verified by a fresh browser pass.
+3. Download and verify final artifacts, named outcomes, diagnostics, package checksums and exact source/member inventories. Independent combined review and exact-main acceptance precede publication; v1.24.0 remains published until that completes.
+4. Continue remaining complete20i requirements after the increment. Automatic discovery, domain commerce/management, full hosting controls/lifecycle, VPS lifecycle and scoped support/SSH remain implementation work.
+
+Parallel continuation: domain agent preserved725573f0 and pushed documentation-only9ea20f87 on `codex/twentyi-nameserver-observations`. Its [contract guide](https://github.com/afterburn25/Cajun_Web/blob/9ea20f8787085e308bd6a9acd2d3f6be8cfaa2f4/docs/TWENTYI_NAMESERVER_READ_CONTRACT.md) confirms the endpoint/result envelope but records missing exact element/empty/partial semantics; no reader is claimed. Catalog agent will preserve8f7028 and create a new discovery branch after final-artifact verification; exact primary response contracts are required before implementation. Cloud exact full38821117748 now passed recovery and entered Apache. No agent may change the frozen combined root source without coordinating a concrete failure fix.
+
+Keep provider key-file protections; Windows native provider setup still refuses inadequate POSIX-style permissions, so those matrices run in Linux CI. Do not reuse populated native prefixes, relax guards, cancel unrelated runs, move published tags, replace old assets, or infer real provider acceptance from fixtures. Live writes, charges, mail, SSH and deployment retain their existing operation-specific gates.
+
+PR attachment attempts reached the100-attachment limit; use ordinary links and preserve existing attachments. Prior PR comment/review/metadata auto-review rejections must not be bypassed through a different tool. Git source integration and documented local reviews remain separate actions.
+
+[Archived prior handoff](2026-10-15-a894de58-SESSION_HANDOFF.md) preserves older checkpoints and incoming main context. Current summaries should remain concise; archive superseded status instead of prepending contradictory “current” sections.
+
+## Preserved incoming main evidence
+
+The following report is imported from mainc3b1a69c; it describes a1e64f81 and does not certify this combined source.
+
+Acceptance evidence: [run 38817902722](https://github.com/afterburn25/Cajun_Web/actions/runs/38817902722) on `a1e64f81` passes all 15 `native-and-browser` steps including "Application server has no PHP runtime warnings or errors". The preceding cumulative run 38813445946 failed that check on a pre-existing defect unrelated to licensing: `fail_page()` called `http_response_code()` unconditionally, warning whenever an exception fired after `layout/public.php` emitted its header (58 warnings across `existing`/`ledger-upgrade`/`delivery-upgrade`/`activity-upgrade`/`portfolio-upgrade` fixture sites). `a1e64f81` guards the call with `headers_sent()`; the fail page still renders.
+
+Not live-verified: production needs `license_core_dir` pointing at a Website_Core checkout; no real purchase/bundle/install/validation cycle has run. Full details in [LICENSING_IMPLEMENTATION.md](../LICENSING_IMPLEMENTATION.md). This workstream is separate from 20i P0 below.

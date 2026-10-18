@@ -1,13 +1,26 @@
-Current 20i source and acceptance checkpoint, 2026-10-16 14:41 UTC: [corrected StackCP 819c3ea3 and preserved registration full acceptance](TWENTYI_CURRENT_CHECKPOINT.md). Main changes documentation only; candidate runtime remains separate. Earlier status paragraphs below are historical where they conflict with this checkpoint.
+## Post-publication coordination — 2026-10-18
 
-## Current owner allocation - 2026-10-16
+1.25.0 is [published and freshly verified](RELEASE_1.25.0_PUBLICATION.md) at immutable main source `b79c67110829126916e3a65e616191542448bccc`. Root completed normal merge, five original full runs, maintained compatibility, 330-image review, assembly and all-asset draft/public verification. Keep that source/tag/assets unchanged.
 
-**Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is active. Devin [acknowledged the assignment and reported work](https://github.com/afterburn25/Cajun_Web/issues/157#issuecomment-6217621738). Licensing PR #159, tickets #158 and project progress #160 are open; their proposed changes require independent acceptance and sequential integration.
+The release freeze condition is satisfied. Codex resumes the remaining 20i roadmap on separate reviewed branches; Devin continues the separate non-20i assignment. Existing operation-specific authorization and live-operation gates remain. Complete 20i, automatic provider product/image import, remote StackCP login and SSH are not claimed complete.
 
-# Agent coordination — 20i P0
+Future work remains divided by explicit file/task ownership, with shared seams integrated sequentially and tested afresh. Historical lane allocations and pending acceptance statements below are not a new instruction to collect or rerun completed release work. No unaccepted PR is automatically included.
 
-Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly download-verified at immutable source7190b582. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named executions and30 gates; all16 assets, tag, manifests and ZIP contents match accepted source. Previous1.23 assets remain unchanged. [Current status](../PROJECT_STATUS.md), [release evidence](TEST_REPORT_1.24.0.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) define current scope. Complete 20i remains unfinished. Codex stays focused on 20i while Devin continues the non-20i assignment. No live deployment is claimed.
+## Observed product import candidate — 2026-10-17
 
-Cloud #127 remains on`codex/twentyi-cloud-inventory`; #128 is normally merged there. Prepare1.25 from the real1.24 baseline. Commercial #130 remains on`codex/twentyi-order-eligibility`; #132 correction is merged at5d2785cf. Recurring #133 remains on`codex/twentyi-recurring-ui`; correction work is isolated on`codex/twentyi-recurring-recovery` for lost invoice origin review4281512902 and missing project navigation. Preserve exact running heads, evidence and all original source histories; do not overwrite other work.
+The explicit owner addition now has a reviewed [hosting-draft and local-image implementation](TWENTYI_PRODUCT_IMPORT.md), based on navigation source e8ccefc9. Root integrates its shared CI wiring and generated inventory. It preserves prior acceptance requirements and adds three reports and two images. Native/HTTP verification is pending; complete 20i catalogs and automatic provider images remain unresolved. This does not mark the full import roadmap or release complete.
 
-No document proves another external agent has stopped or begun work. Missing full owner API upload was requested once; keep independent implementation moving. [Takeover](TWENTYI_CODEX_TAKEOVER.md) and [previous checkpoint](archive/2026-10-15-pre-1.24-AGENT_COORDINATION.md).
+## Owner additions — 2026-10-17
+
+The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the product-import lane remains separate and incomplete. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.
+
+# Current release coordination
+
+The owner prioritizes verified publication of 1.25.0 before new20i capabilities. Root owns `codex/release-1.25.0`, normal merges, shared conflicts, canonical inventory, current-candidate review, exact-main acceptance and release/download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md) is the boundary.
+
+- Catalog: source/evidence scope and complete supported runtime acceptance proposal.
+- Domains: actual published1.24 populated client/provider/business upgrade and recovery coverage.
+- VPS: reviewed main-preserving licensing corrections and regression evidence.
+- Devin: remaining non-20i implementation on separate branches under [assignment157](https://github.com/afterburn25/Cajun_Web/issues/157). Existing158/159/161 repairs remain; no unaccepted proposal is automatically in this release.
+
+Agents prepare external bounded patches; root applies shared changes sequentially. Preserve all unfinished branches, parent evidence and published versions. No new capability branch or nonessential performance refactor until1.25 is published and downloaded back successfully. [Status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) track remaining gates. No live deployment is authorized.

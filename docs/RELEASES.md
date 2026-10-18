@@ -1,6 +1,36 @@
+## Verified publication — 1.25.0
+
+[CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.
+
+Published at **2026-10-18 02:11:10 UTC** (2026-10-17 21:11:10 CDT), release ID `416184457`. The annotated tag object is `f6459eb56722a7dd6e54c850cfa6ac8cc8fcd46a`. Five original full application runs, maintained compatibility and 330 actual main images were accepted before assembly. Both draft and public fresh-download verification passed all 18 assets and 2,335 evidence members. [Complete publication record](RELEASE_1.25.0_PUBLICATION.md); [exact public verification JSON](evidence/release-1.25.0-public-verification.json).
+
+Existing installations use UPDATE; COMPLETE-UPLOAD is for fresh installation and FULL-PROJECT for development. Follow the same-release instructions and retain original configuration, database, private storage and keys.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
+## Release 1.25.0 evidence and publication boundary
+
+The bounded increment is defined by [scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [acceptance report](TEST_REPORT_1.25.0.md) and [migration instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). The original main/mature20i histories are already normally merged. Preserve every existing acceptance and publication gate; current source integration does not itself publish or deploy the application.
+
+Record complete exact-main outcomes and publication only from their actual receipts. Final release notes/report assets may add those facts after accepted source is frozen. Do not rewrite an accepted commit to claim a future result, and do not replace an immutable released asset with a later source. A publication is verified only after every asset is freshly downloaded and compared with its prepared source-bound bytes.
+
+## Historical source checkpoints
+
+The following dated checkpoints and earlier releases preserve their original status. Their pending-work statements are not current instructions.
+
+### Historical checkpoint: Release acceptance correction checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
+
+### Historical checkpoint: Release priority checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` starts from main35d8 and normally integrates mature3fa. New20i capabilities are frozen until publication and download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [current status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) supersede older current labels below. Source3fa focused38933590118 and Windows packages pass their bounded scopes; the combined release still needs licensing corrections, supported runtime/full browser/actual1.24 upgrade gates, independent review, exact-main acceptance and all-asset verification. Published1.24 remains unchanged; no1.25 release or live deployment exists yet.
+
+## Retained earlier source and release records
+
 # Release records
 
-## Latest verified publication — 1.24.0
+## Historical verified publication — 1.24.0
 
 Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused.
 
