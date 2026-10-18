@@ -618,7 +618,7 @@
     "source_sha256": {
       "tests/provider_package_types.php": "e5812a35e8e034c3a54c8f90b4011e10dd08eadbe759a6204899cdd224636533",
       "tests/provider_package_types_native.php": "ef3876b71ad15736271d9f9de17b8278a953035a722c81e766d7bf73ed2d2b8d",
-      "tests/provider_package_types_cases.py": "6ec03bc6c389e3ee618499ba691cb3594c4d0ac011bfff5efb47de47c60415ba"
+      "tests/provider_package_types_cases.py": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b"
     },
     "scope": "Direct hosting catalog typed read, durable observations, current-owner refresh and source-aware draft import with synthetic transport; no live provider writes or images."
   },
@@ -1178,7 +1178,7 @@
       "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46",
       "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
       "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
-      "tests/hosting_checkout_http_browser.py": "471b24adfd9d5a97fbc2bb869c6e145330042d4e7b4ea6ea4859d801b8887603",
+      "tests/hosting_checkout_http_browser.py": "71bab853fbcf300eee81d21db2de264a6f2d136649fc0d15fd07c3fa5ec06897",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tests/hosting_checkout_http_fixture.php": "f3547aad06ff3e197e74e525c0bc240bbeee0689ffce406a411e36ac7266ad67",
       "tests/hosting_checkout_http_guards.py": "cb3c348d6766a27decd16b28285f123573ee476ac137e4662d704a931e0288b2",
@@ -1326,5 +1326,72 @@
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
     },
     "scope": "Separate focused portable/native and synthetic-renderer checks; actual installed application, combined full/upgrade acceptance and provider artwork/VPS mapping remain pending."
+  },
+  "catalog_storefront_http": {
+    "source_predecessor": "9b450c4b8daafd79f4242c39ddd65e2bdb56b624",
+    "predecessor_contract_sha256": "282b0827fbaa535acf67bdd063cb57b229799122460c1ae341178d49a3df3145",
+    "updated_pins": {
+      "tests/provider_package_types_cases.py": "provider_package_types",
+      "tests/hosting_checkout_http_browser.py": "hosting_checkout"
+    },
+    "source_sha256": {
+      "tests/provider_package_types_cases.py": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b",
+      "tests/hosting_checkout_http_browser.py": "71bab853fbcf300eee81d21db2de264a6f2d136649fc0d15fd07c3fa5ec06897",
+      "tests/catalog_storefront_http_cases.py": "6f9c729c655ea6b1bc866738d144aa73989818da30525bae51cb9f34edc50709",
+      "tests/catalog_storefront_checkout_cases.py": "2922860632ec6e5e7302d31399c336a6b75a541675931b800c39b9c395108429"
+    },
+    "source_delta": {
+      "tests/provider_package_types_cases.py": {
+        "predecessor_sha256": "6ec03bc6c389e3ee618499ba691cb3594c4d0ac011bfff5efb47de47c60415ba",
+        "current_sha256": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b",
+        "replacements": [
+          {
+            "before": "    finally:\n        server.package_types, server.package_types_mode = saved_server\n        owner.close()\n",
+            "after": "    finally:\n        server.package_types, server.package_types_mode = saved_server\n        owner.close()\n    from catalog_storefront_http_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES\n    storefront = storefront_browser(env, browser)\n    check('Installed catalog storefront completes connection and fixed-window import coverage',\n          storefront['passed'] is True\n          and tuple(c['name'] for c in storefront['captures']) == STOREFRONT_CAPTURES\n          and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in STOREFRONT_CAPTURES))\n"
+          }
+        ]
+      },
+      "tests/hosting_checkout_http_browser.py": {
+        "predecessor_sha256": "471b24adfd9d5a97fbc2bb869c6e145330042d4e7b4ea6ea4859d801b8887603",
+        "current_sha256": "71bab853fbcf300eee81d21db2de264a6f2d136649fc0d15fd07c3fa5ec06897",
+        "replacements": [
+          {
+            "before": "from hosting_catalog_purchase import clean_environment, runtime_selection, sha\nfrom hosting_purchase_handoff_browser import fresh_directory, extract_package, DISABLED\nfrom hosting_checkout_http_cases import run_browser, CAPTURE_STEMS\n\nROOT = Path(__file__).resolve().parents[1]\nWEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'\nSESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'\nBASE = 'http://127.0.0.1:8091'\nCAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))\nSOURCE_PATHS = [\n    'tests/hosting_checkout_http_browser.py', 'tests/hosting_checkout_http_cases.py', 'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_guards.py',\n    'tests/hosting_checkout_native.php', 'tests/hosting_catalog_purchase.py', 'tests/hosting_purchase_handoff_browser.py',\n    'tests/hosting_purchase_handoff_cases.py', 'tests/hosting_catalog_browser.py', 'tests/browser_acceptance.py',\n",
+            "after": "from hosting_catalog_purchase import clean_environment, runtime_selection, sha\nfrom hosting_purchase_handoff_browser import fresh_directory, extract_package, DISABLED\nfrom hosting_checkout_http_cases import run_browser, CAPTURE_STEMS\nfrom catalog_storefront_checkout_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES\n\nROOT = Path(__file__).resolve().parents[1]\nWEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'\nSESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'\nBASE = 'http://127.0.0.1:8091'\nCAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))\nALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES\nSOURCE_PATHS = [\n    'tests/catalog_storefront_checkout_cases.py',\n    'tests/hosting_checkout_http_browser.py', 'tests/hosting_checkout_http_cases.py', 'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_guards.py',\n    'tests/hosting_checkout_native.php', 'tests/hosting_catalog_purchase.py', 'tests/hosting_purchase_handoff_browser.py',\n    'tests/hosting_purchase_handoff_cases.py', 'tests/hosting_catalog_browser.py', 'tests/browser_acceptance.py',\n"
+          },
+          {
+            "before": "    qa, outputs = output_paths(full_suite)\n    if full_suite:\n        for parent in (qa, *qa.parents): require(not parent.is_symlink() and (not parent.exists() or parent.is_dir()), 'Exact output directory required')\n        require(all(not p.exists() and not p.is_symlink() for p in [*outputs.values(), *(qa/n for n in CAPTURES)]), 'Preserve prior checkout HTTP outputs')\n        qa.mkdir(parents=True, exist_ok=True)\n    else: fresh_directory(qa)\n    fresh_directory(WEB); SITE.mkdir(mode=0o700); fresh_directory(SESSIONS)\n",
+            "after": "    qa, outputs = output_paths(full_suite)\n    if full_suite:\n        for parent in (qa, *qa.parents): require(not parent.is_symlink() and (not parent.exists() or parent.is_dir()), 'Exact output directory required')\n        require(all(not p.exists() and not p.is_symlink() for p in [*outputs.values(), *(qa/n for n in ALL_CAPTURES)]), 'Preserve prior checkout HTTP outputs')\n        qa.mkdir(parents=True, exist_ok=True)\n    else: fresh_directory(qa)\n    fresh_directory(WEB); SITE.mkdir(mode=0o700); fresh_directory(SESSIONS)\n"
+          },
+          {
+            "before": "        check('Checkout server exposes the installed login form', response.status_code == 200 and 'name=\"action\" value=\"login\"' in response.text)\n        with sync_playwright() as p:\n            browser = p.chromium.launch(headless=True)\n            try: result = run_browser({**helpers, 'BASE': BASE, 'QA': qa, 'check': check, 'fixture': fixture, 'seed': seed}, browser)\n            finally: browser.close()\n        check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))\n        complete = True\n    except Exception as error:\n        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py'}\n        locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]\n        failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}\n    finally:\n",
+            "after": "        check('Checkout server exposes the installed login form', response.status_code == 200 and 'name=\"action\" value=\"login\"' in response.text)\n        with sync_playwright() as p:\n            browser = p.chromium.launch(headless=True)\n            try:\n                browser_env = {**helpers, 'BASE': BASE, 'QA': qa, 'check': check, 'fixture': fixture, 'seed': seed}\n                result = run_browser(browser_env, browser)\n                result['catalog_storefront'] = storefront_browser(browser_env, browser)\n                check('Installed storefront completes the selected-plan login and invoice journey',\n                      result['catalog_storefront']['passed'] is True\n                      and tuple(c['name'] for c in result['catalog_storefront']['captures']) == STOREFRONT_CAPTURES\n                      and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in STOREFRONT_CAPTURES))\n            finally: browser.close()\n        check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))\n        complete = True\n    except Exception as error:\n        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py'}\n        locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]\n        failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}\n    finally:\n"
+          },
+          {
+            "before": "        if log is not None:\n            log.close(); clean = re.search(r'PHP (?:Warning|Notice|Fatal error|Parse error|Deprecated):', outputs['server.log'].read_text(encoding='utf-8', errors='replace')) is None\n            checks.append({'name': 'Checkout HTTP server has no PHP diagnostics after shutdown', 'passed': clean}); complete = complete and clean\n        owned = [p for name,p in outputs.items() if name != 'results.json'] + [qa/n for n in CAPTURES]\n        files = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in owned if p.is_file()}\n        report = {'passed': complete and all(c['passed'] is True for c in checks), 'source': source, 'package': package, 'runtime': runtime, 'checks': checks, 'result': result, 'failure': failure, 'files': files, 'full_acceptance': False, 'visual_approval': False, 'scope': 'Actual packaged owner publication and primary-client first unpaid invoice now; separate native synthetic receipt predates this browser. Contact-key denial is not contact-login acceptance. No live payment, charge or provider activation.'}\n        write(outputs['results.json'], report); print(json.dumps({'passed': report['passed'], 'checks': len(checks), 'full_acceptance': False}))\n",
+            "after": "        if log is not None:\n            log.close(); clean = re.search(r'PHP (?:Warning|Notice|Fatal error|Parse error|Deprecated):', outputs['server.log'].read_text(encoding='utf-8', errors='replace')) is None\n            checks.append({'name': 'Checkout HTTP server has no PHP diagnostics after shutdown', 'passed': clean}); complete = complete and clean\n        owned = [p for name,p in outputs.items() if name != 'results.json'] + [qa/n for n in ALL_CAPTURES]\n        files = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in owned if p.is_file()}\n        report = {'passed': complete and all(c['passed'] is True for c in checks), 'source': source, 'package': package, 'runtime': runtime, 'checks': checks, 'result': result, 'failure': failure, 'files': files, 'full_acceptance': False, 'visual_approval': False, 'scope': 'Actual packaged owner publication and primary-client first unpaid invoice now; separate native synthetic receipt predates this browser. Contact-key denial is not contact-login acceptance. No live payment, charge or provider activation.'}\n        write(outputs['results.json'], report); print(json.dumps({'passed': report['passed'], 'checks': len(checks), 'full_acceptance': False}))\n"
+          }
+        ]
+      }
+    },
+    "unchanged_source_sha256": {
+      ".github/workflows/application-tests.yml": "2f3c249ca15a32d8d57db20098713983157138e929cc7ae9629b9c9552aea636",
+      ".github/workflows/catalog-storefront.yml": "9f9b2113dc966e3ce698339dee8527c8eea2a65bf598a8233cb1f1f95e76913a",
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
+      "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
+      "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+      "tools/acceptance-reports.json": "b3742f65c0230f446820d1ff1f94369fe06c0a1056c766c5ab50f112bb9810c6"
+    },
+    "screenshots": [
+      "Catalog-Storefront-Connection-Desktop.png",
+      "Catalog-Storefront-Connection-Mobile.png",
+      "Catalog-Storefront-Batch-Desktop.png",
+      "Catalog-Storefront-Batch-Mobile.png",
+      "Catalog-Storefront-Comparison-Desktop.png",
+      "Catalog-Storefront-Comparison-Mobile.png",
+      "Catalog-Storefront-Selected-Review.png",
+      "Catalog-Storefront-Unpaid-Invoice.png"
+    ]
   }
 }

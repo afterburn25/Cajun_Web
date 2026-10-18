@@ -1,3 +1,7 @@
+## 2026-10-18 — installed catalog storefront test coverage
+
+Two packaged continuations now require the current-success import entry, fixed-window batches with original artwork, and public plan selection through invited-client login to one unpaid invoice. Eight installed captures are declared; actual Linux execution remains pending. Existing reports, native recipes and workflows remain intact. [Scope and outstanding gates](TWENTYI_CATALOG_STOREFRONT.md#installed-storefront-continuations). Complete provider/VPS catalogs and automatic artwork remain unverified; this does not establish whole-project completion.
+
 ## 2026-10-18 — catalog storefront source integration
 
 Current saved-connection success now links to catalog import; fixed batches preserve existing edits and support safe retries. Shared Hosting compares published prices, terms and local images, with exact checkout selection retained through login. The preserved first-invoice branch is normally integrated; VPS catalog/provider artwork remain unverified and combined runtime/release acceptance remains pending. [Scope and checks](TWENTYI_CATALOG_STOREFRONT.md).

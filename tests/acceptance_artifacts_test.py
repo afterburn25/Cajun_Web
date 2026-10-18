@@ -512,6 +512,48 @@ def hosting_wiring_checks(tmp, workflow, commands, contract, reports=None):
     return original
 
 
+def catalog_storefront_http_predecessor(contract):
+    extension = contract['catalog_storefront_http']
+    prior = copy.deepcopy(contract)
+    del prior['catalog_storefront_http']
+    for path, location in extension['updated_pins'].items():
+        delta = extension['source_delta'][path]
+        a.require(prior[location]['source_sha256'][path] == delta['current_sha256'], 'Storefront HTTP current source pin changed')
+        prior[location]['source_sha256'][path] = delta['predecessor_sha256']
+    a.require(hashlib.sha256(json.dumps(prior, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == extension['predecessor_contract_sha256'], 'Original storefront acceptance contract changed')
+    return prior
+
+
+def catalog_storefront_http_checks(contract):
+    extension = contract['catalog_storefront_http']
+    pins = {'tests/provider_package_types_cases.py': 'provider_package_types',
+            'tests/hosting_checkout_http_browser.py': 'hosting_checkout'}
+    check('Storefront HTTP changes only the two exact callback producer pins', extension['updated_pins'] == pins and set(extension['source_delta']) == set(pins))
+    hosting_source_bytes(ROOT, extension['source_sha256'])
+    check('Storefront HTTP binds both installed case modules and their actual callers', set(extension['source_sha256']) == set(pins) | {'tests/catalog_storefront_http_cases.py', 'tests/catalog_storefront_checkout_cases.py'})
+    for path, delta in extension['source_delta'].items():
+        raw = ROOT.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        check('Storefront HTTP retains the complete prior producer ' + path, bool(hosting_upgrade_source_predecessor(raw, delta)))
+        deny('Storefront HTTP refuses an altered producer ' + path, lambda b=raw, d=delta: hosting_upgrade_source_predecessor(b + b'\n# changed', d))
+    check('Storefront HTTP preserves the entire 9b450 acceptance contract', bool(catalog_storefront_http_predecessor(contract)))
+    wrong = copy.deepcopy(contract); wrong['native_commands'].pop()
+    deny('Storefront HTTP cannot hide removal of prior native coverage', lambda: catalog_storefront_http_predecessor(wrong))
+    wrong = copy.deepcopy(contract); wrong['hosting_checkout']['source_sha256']['tests/hosting_checkout_http_browser.py'] = '0' * 64
+    deny('Storefront HTTP cannot hide a mismatched original producer pin', lambda: catalog_storefront_http_predecessor(wrong))
+    unchanged = {'.github/workflows/application-tests.yml', '.github/workflows/catalog-storefront.yml',
+                 '.github/workflows/hosting-catalog-offers.yml', 'tests/browser_acceptance.py',
+                 'tests/hosting_checkout_http_cases.py', 'tools/acceptance_artifacts.py', 'tools/acceptance-reports.json'}
+    check('Storefront HTTP retains original workflows browser cases report inventory and transfer helper', set(extension['unchanged_source_sha256']) == unchanged)
+    hosting_source_bytes(ROOT, extension['unchanged_source_sha256'])
+    captures = ['Catalog-Storefront-' + stem + '.png' for stem in (
+        'Connection-Desktop', 'Connection-Mobile', 'Batch-Desktop', 'Batch-Mobile',
+        'Comparison-Desktop', 'Comparison-Mobile', 'Selected-Review', 'Unpaid-Invoice')]
+    check('Storefront HTTP inventories exactly eight new installed captures', extension['screenshots'] == captures and len(set(captures)) == 8)
+    for name in captures:
+        check('Storefront installed capture retains native-browser ownership ' + name,
+              a.evidence_allowed('qa/' + name, 'native-browser') and all(not a.evidence_allowed('qa/' + name, lane) for lane in ('build', 'recovery', 'apache')))
+
+
 def catalog_storefront_source_checks(contract):
     extension = contract['catalog_storefront']
     hosting_source_bytes(ROOT, extension['source_sha256'])
@@ -522,7 +564,7 @@ def catalog_storefront_source_checks(contract):
     raw = ROOT.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
     check('Catalog comparison preserves complete predecessor card renderers', bool(hosting_upgrade_source_predecessor(raw, delta)))
     deny('Catalog comparison refuses changed current source', lambda: hosting_upgrade_source_predecessor(raw + b'\n# mutation', delta))
-    prior = copy.deepcopy(contract)
+    prior = catalog_storefront_http_predecessor(contract)
     del prior['catalog_storefront']
     check('Hosting renderer source pin binds the exact appended comparison', prior['hosting_catalog_offers']['source_sha256'][path] == delta['current_sha256'])
     prior['hosting_catalog_offers']['source_sha256'][path] = delta['predecessor_sha256']
@@ -714,6 +756,7 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    catalog_storefront_http_checks(contract)
     catalog_storefront_source_checks(contract)
     driver_paths = {'tests/prepare_legacy.py', 'tests/apache_acceptance.py', 'tests/structure_acceptance.py'}
     check('Published1.25 driver inverse is limited to three explicit original source paths', set(contract['release126_baseline_driver_delta']) == driver_paths)

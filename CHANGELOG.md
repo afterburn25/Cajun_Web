@@ -1,3 +1,7 @@
+## Unreleased — installed catalog storefront tests
+
+Require packaged admin catalog and public-to-client checkout continuations through existing HTTP reports. Cover bounded imports/retries, retained local artwork, exact selected-offer login and one unpaid invoice; retain eight scoped captures. Preserve prior fixtures, assertions, source guards and workflows. Local checks pass; Linux application execution and actual image review remain pending. No shipping behavior or published release changes.
+
 ## 2026-10-18 — catalog storefront source integration
 
 Current saved-connection success now links to catalog import; fixed batches preserve existing edits and support safe retries. Shared Hosting compares published prices, terms and local images, with exact checkout selection retained through login. The preserved first-invoice branch is normally integrated; VPS catalog/provider artwork remain unverified and combined runtime/release acceptance remains pending. [Scope and checks](docs/TWENTYI_CATALOG_STOREFRONT.md).

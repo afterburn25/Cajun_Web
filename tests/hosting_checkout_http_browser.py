@@ -13,13 +13,16 @@ from urllib.parse import urljoin
 from hosting_catalog_purchase import clean_environment, runtime_selection, sha
 from hosting_purchase_handoff_browser import fresh_directory, extract_package, DISABLED
 from hosting_checkout_http_cases import run_browser, CAPTURE_STEMS
+from catalog_storefront_checkout_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'
 SESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'
 BASE = 'http://127.0.0.1:8091'
 CAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))
+ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES
 SOURCE_PATHS = [
+    'tests/catalog_storefront_checkout_cases.py',
     'tests/hosting_checkout_http_browser.py', 'tests/hosting_checkout_http_cases.py', 'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_guards.py',
     'tests/hosting_checkout_native.php', 'tests/hosting_catalog_purchase.py', 'tests/hosting_purchase_handoff_browser.py',
     'tests/hosting_purchase_handoff_cases.py', 'tests/hosting_catalog_browser.py', 'tests/browser_acceptance.py',
@@ -79,7 +82,7 @@ def prepare_outputs(full_suite):
     qa, outputs = output_paths(full_suite)
     if full_suite:
         for parent in (qa, *qa.parents): require(not parent.is_symlink() and (not parent.exists() or parent.is_dir()), 'Exact output directory required')
-        require(all(not p.exists() and not p.is_symlink() for p in [*outputs.values(), *(qa/n for n in CAPTURES)]), 'Preserve prior checkout HTTP outputs')
+        require(all(not p.exists() and not p.is_symlink() for p in [*outputs.values(), *(qa/n for n in ALL_CAPTURES)]), 'Preserve prior checkout HTTP outputs')
         qa.mkdir(parents=True, exist_ok=True)
     else: fresh_directory(qa)
     fresh_directory(WEB); SITE.mkdir(mode=0o700); fresh_directory(SESSIONS)
@@ -148,12 +151,19 @@ def main(full_suite=False):
         check('Checkout server exposes the installed login form', response.status_code == 200 and 'name="action" value="login"' in response.text)
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            try: result = run_browser({**helpers, 'BASE': BASE, 'QA': qa, 'check': check, 'fixture': fixture, 'seed': seed}, browser)
+            try:
+                browser_env = {**helpers, 'BASE': BASE, 'QA': qa, 'check': check, 'fixture': fixture, 'seed': seed}
+                result = run_browser(browser_env, browser)
+                result['catalog_storefront'] = storefront_browser(browser_env, browser)
+                check('Installed storefront completes the selected-plan login and invoice journey',
+                      result['catalog_storefront']['passed'] is True
+                      and tuple(c['name'] for c in result['catalog_storefront']['captures']) == STOREFRONT_CAPTURES
+                      and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in STOREFRONT_CAPTURES))
             finally: browser.close()
         check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))
         complete = True
     except Exception as error:
-        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py'}
+        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py'}
         locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]
         failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}
     finally:
@@ -164,7 +174,7 @@ def main(full_suite=False):
         if log is not None:
             log.close(); clean = re.search(r'PHP (?:Warning|Notice|Fatal error|Parse error|Deprecated):', outputs['server.log'].read_text(encoding='utf-8', errors='replace')) is None
             checks.append({'name': 'Checkout HTTP server has no PHP diagnostics after shutdown', 'passed': clean}); complete = complete and clean
-        owned = [p for name,p in outputs.items() if name != 'results.json'] + [qa/n for n in CAPTURES]
+        owned = [p for name,p in outputs.items() if name != 'results.json'] + [qa/n for n in ALL_CAPTURES]
         files = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in owned if p.is_file()}
         report = {'passed': complete and all(c['passed'] is True for c in checks), 'source': source, 'package': package, 'runtime': runtime, 'checks': checks, 'result': result, 'failure': failure, 'files': files, 'full_acceptance': False, 'visual_approval': False, 'scope': 'Actual packaged owner publication and primary-client first unpaid invoice now; separate native synthetic receipt predates this browser. Contact-key denial is not contact-login acceptance. No live payment, charge or provider activation.'}
         write(outputs['results.json'], report); print(json.dumps({'passed': report['passed'], 'checks': len(checks), 'full_acceptance': False}))
