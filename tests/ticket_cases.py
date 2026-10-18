@@ -82,6 +82,9 @@ def run_browser(env, browser):
     client_url, owner_url = portal+'?ticket='+ticket, admin+'?view=ticket&ticket='+ticket
     check('Actual client opens a scoped escaped ticket', db('SELECT client_id FROM ci_support_tickets WHERE id=?', [ticket])==[{'client_id': cid}] and '&lt;script&gt;' in r.text)
     check('Client ticket page uses private headers and workspace footer', r.headers.get('Cache-Control')=='no-store, private' and r.headers.get('Referrer-Policy')=='no-referrer' and soup(r).select_one('#cta-title') is None)
+    check('Client ticket page loads the registered ticket stylesheet', soup(r).select_one('link[href*="tickets.css"]') is not None)
+    staff_page = owner.get(owner_url)
+    check('Staff ticket page loads the registered ticket stylesheet', soup(staff_page).select_one('link[href*="tickets.css"]') is not None)
     saved = snapshot()
     client.post(new, data=request)
     check('Exact opening replay never duplicates a ticket', snapshot()==saved)
