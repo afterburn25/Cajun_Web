@@ -2076,3 +2076,23 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
   portal-account `c87d1060`. Acceptance dispatched on `c87d1060`
   (run 39084652934); diagnostic-only run 39084434485 (`ee03cfca`)
   remains in flight to confirm the dump mechanics.
+
+## 2026-10-18 — Feed-check fix verified; downstream ordering collision fixed
+
+- Run 39084652934 (`c87d1060`) confirmed the root cause and the fix:
+  `Owner enables workspace activity on the upgraded install` PASSED,
+  `Client activity never surfaces internal notes` PASSED meaningfully,
+  and **`Milestone change enters client activity feed` PASSED** — the
+  milestone row renders in alice's feed once the feature is enabled.
+- New collision: `activity_cases` ran later assuming `/existing/` was
+  un-enabled; its submit-based `activity_setup` probes hit the feed page
+  and raised 'Form missing activity_setup' (run 39084652934 failure).
+- `6136f042` on milestones: `activity_cases`' three setup probes become
+  direct POSTs with state-invariant assertions (bad CSRF / bad password
+  must not change `activity_schema_version`; owner POST must leave the
+  marker at '1') — order-agnostic. staff_cases' enable-submit is guarded
+  so re-entry can't hit 'Form missing' either. The `activityup_`
+  fixture's own setup probe keeps `submit` (always un-enabled there).
+- Propagated: activity-prefs `ef020125` → client-actions `b8a4c369` →
+  portal-account `4ce1cf6a`. Acceptance dispatched on `4ce1cf6a`
+  (run 39086508010).
