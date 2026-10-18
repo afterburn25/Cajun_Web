@@ -2,8 +2,8 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
-function recurring_billing_validate_schema(string $name,string $sql):void {
-    $c=recurring_billing_constraints($name);catalog_validate_schema($name,$sql,$c['unique']);
+function recurring_billing_validate_schema(string $name,string $sql,bool $checkout=false):void {
+    $c=recurring_billing_constraints($name,$checkout);catalog_validate_schema($name,$sql,$c['unique']);
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column){
         $expected=in_array($column['Field'],['id','latest_id','latest_sha256','subscription_id','previous_id','previous_sha256','journal_sha256','schedule_id','before_sha256','after_sha256','schedule_sha256','request_sha256','snapshot_sha256'],true)?'ascii_bin':(str_ends_with($column['Field'],'_json')?'utf8mb4_bin':null);
         if($column['Extra']!==''||$column['Default']!==null||$column['Collation']!==$expected)throw new RuntimeException('Incompatible recurring billing columns. Existing records were preserved.');
@@ -25,6 +25,9 @@ function recurring_billing_validate_schema(string $name,string $sql):void {
 }
 function recurring_billing_migrate(#[\SensitiveParameter] string $password):void {
     if(db()->inTransaction())throw new LogicException('Recurring billing setup cannot inherit a transaction.');
+    if((one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_checkout_schema_version'])['value']??'')!==''){
+        recurring_billing_checkout_migrate($password);return;
+    }
     staff_locked(function()use($password):void{
         recurring_billing_staff(false);$actor=payments_owner($password);service_plans_require_ready();
         if(!ledger_ready())throw new RuntimeException('Prepare the invoice ledger first.');

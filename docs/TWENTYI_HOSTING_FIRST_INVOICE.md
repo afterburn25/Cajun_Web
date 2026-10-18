@@ -38,6 +38,16 @@ Legacy format1 activation remains unchanged and still refuses a same-day start. 
 
 Applied-source tests pass92 new recurring cases,372 existing terms cases and321 existing schedule cases per default/minimal PHP8.4.25. The complete legacy outputs match their baseline. Related65 checkout subscription and130 commercial checkout cases also pass per mode. Run `php tests/recurring-billing/checkout.php`, `php tests/recurring-billing/terms.php` and `php tests/recurring-billing/schedule.php`, repeating with `php -n`. Independent review verifies cold loading, exact derivation and retained-prefix/date boundaries. Full native and checkout-page acceptance is still pending.
 
+## Recurring storage and first-invoice origin
+
+An explicit owner/password migration extends recurring schedules and invoice maps with truthful client attribution. Default legacy schema and marker1 remain exact. A separate marker tracks recognized ordered DDL stages; readiness validates schema, retained records and independently counted origins. Unknown or missing tables, extra columns/indexes, unmarked extensions and incomplete history refuse use instead of recreating financial records.
+
+A checkout schedule stores its complete one-event initial document. Its terms must derive exactly from the retained subscription and consent. Period0 requires an original invoice map and a compact `recurring_billing.checkout_issued` audit witness, with actual client, request, input, consent, schedule, invoice, issuance and accepted-time bindings. Its maximum encoded detail is381 characters within the existing400-character field. Legacy staff-origin syntax and return shape remain unchanged. Staff cannot adopt the client's issuance identity or recreate a lost checkout first invoice.
+
+The applied source passes66 named native PHP8.4.25/MariaDB10.11.16 checks without clock adjustment. These cover real owner migration, interrupted/failing DDL and audit recovery, legacy issuance/replay, schema/history corruption refusals, truthful client attribution, exact invoice origins and missing-map refusal. Format2 rows are synthetic retained history; authenticated atomic project/agreement/invoice creation and HTTP/browser purchase remain untested here.
+
+The first run passed34 checks before a fixture lookup returned null after reading its inserted audit ID too late. The corrected fixture captures the ID immediately and adds one exact fresh database allowance; runtime source and all66 assertions remain unchanged. Failed evidence/database state are preserved. The successful run uses `tests/recurring_billing_checkout_native.php` on the isolated43319/cwp_checkout_recurring_retry1 database. These new fixtures remain separate from the existing full workflow until the coherent checkout increment is ready.
+
 ## Earlier commercial-document validation
 
 Applied-source tests pass130 new checkout-document cases and119 unchanged publication/request cases in both default and minimal PHP8.4.25. The tests cover exact terms, client/project facts, expiration, DST and skipped dates, legacy-route refusal, historical parsing and private-field exclusion. Independent review repeated the original failing Santiago midnight witness against the corrected source; it now expires at the actual next local date and refuses next-day historical consent. Original failure evidence remains retained.
@@ -46,10 +56,10 @@ Run `php tests/hosting_checkout_document.php` and `php tests/hosting_catalog_doc
 
 ## Remaining implementation
 
-1. Finish recurring schedule and invoice-origin native attribution. Subscription storage has passed the bounded local migration/history checks above; complete checkout and cross-runtime acceptance remain separate.
+1. Complete supported-runtime acceptance for the subscription and recurring extensions. Both pass the bounded local migration/history checks above; complete checkout remains separate.
 2. Compose project selection or creation, client consent, explicit automatic local activation and period-zero invoice in one guarded database transaction. Recheck the real client, current publication owner permissions, exact source and project ownership. Roll back the entire operation on failure.
 3. Return the original owned result on exact completed replay. Reject changed input, partial history or missing invoice/audit bindings; do not recreate financial history.
 4. Add owner opt-in and the client review/confirmation page, then prove the complete same-clock journey with native database and packaged browser tests. Keep the existing eventual-purchase test unchanged.
 5. Enforce the accepted verified-payment requirement for checkout-origin fulfillment and retain separate owner approval, exact mapping, client order/domain consent and confirmed package assignment. General payment links and gateways remain in Devin's separate lane.
 
-The [full hosting acceptance work](TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and its original runs remain separate requirements. This document does not certify native, HTTP, browser, upgrade, release or live-provider behavior. Automatic provider product images and full cloud catalog coverage remain unfinished; the saved owner API reference is already available and need not be requested again.
+The [full hosting acceptance work](TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and its original runs remain separate requirements. The bounded native checks above do not certify complete purchase, HTTP, browser, supported-runtime upgrade, release or live-provider behavior. Automatic provider product images and full cloud catalog coverage remain unfinished; the saved owner API reference is already available and need not be requested again.

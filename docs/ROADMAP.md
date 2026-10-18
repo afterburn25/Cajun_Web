@@ -1,3 +1,7 @@
+## 2026-10-18 — recurring checkout attribution and invoice origin
+
+Recurring checkout storage passes66 isolated native checks, following58 subscription migration/history checks. [Exact scope](TWENTYI_HOSTING_FIRST_INVOICE.md). The next increment composes the actual client confirmation transaction, then connects owner/client pages and verified-payment-only fulfillment. Same-clock purchase, supported runtime/browser, upgrade and release acceptance remain outstanding. Synthetic retained rows do not establish a usable purchase flow.
+
 ## 2026-10-18 — native subscription attribution
 
 Checkout subscription migration and stored-history validation pass58 isolated local MariaDB checks. [Scope and limits](TWENTYI_HOSTING_FIRST_INVOICE.md). Remaining work includes recurring/invoice native origins, atomic checkout creation, owner/client pages, complete same-clock and supported-runtime acceptance, and release verification. Synthetic retained checkout rows do not establish a usable purchase flow.

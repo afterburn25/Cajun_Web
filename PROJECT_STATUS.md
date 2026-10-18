@@ -1,3 +1,9 @@
+## 2026-10-18 — recurring checkout storage verified locally
+
+The hosting first-invoice branch now preserves the actual client on checkout schedules and their first invoice. Explicit owner migration retains legacy records, while stored-history validation binds the exact consent, schedule and independent invoice origin. The applied source passes66 native PHP8.4.25/MariaDB10.11.16 checks in a fresh isolated database. [Scope and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The original test stopped after34 checks at a fixture audit lookup; its output and database remain preserved. The corrected fixture keeps all assertions. These checks cover migration and synthetic retained history, not a completed client purchase. Atomic checkout creation, owner/client pages, verified-payment fulfillment integration and full release acceptance remain pending. Published1.25 is unchanged.
+
 ## 2026-10-18 — subscription migration verified locally
 
 The hosting first-invoice branch adds an explicit owner migration for actual client/system attribution while preserving legacy subscriptions and audits. The applied source passes58 native PHP8.4.25/MariaDB10.11.16 checks, including interrupted DDL recovery, rollback of the final marker/audit, original-record preservation and actor/history corruption refusals. [Exact scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).

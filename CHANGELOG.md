@@ -1,3 +1,9 @@
+## Development — recurring checkout storage, 2026-10-18
+
+- Add explicit owner migration for client-attributed recurring checkout schedules and first invoices, preserving legacy SQL defaults and history.
+- Bind the first invoice to exact consent and an independent compact audit origin; refuse missing history or staff recreation of the client obligation.
+- Pass66 isolated native migration/history checks. Atomic checkout, customer screens and release acceptance remain pending.
+
 ## Development — checkout subscription storage, 2026-10-18
 
 - Add an explicit owner migration for checkout client creators and system activation events, preserving old documents, actors and audits.
