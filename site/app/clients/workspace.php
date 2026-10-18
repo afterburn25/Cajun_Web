@@ -14,6 +14,11 @@ require_once CWP_CODE_ROOT.'/app/projects/reviews.php';
 require_once CWP_CODE_ROOT.'/app/clients/files.php';
 function studio_ready(): bool {return setting('studio_schema_version')==='2';}
 
+/** Structured milestones arrive through a later studio_migrate run on older workspace installs. */
+function studio_milestones_ready(): bool {return studio_ready()&&(bool)one('SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'studio_milestones']);}
+function studio_milestone_states(): array {return ['pending'=>'Pending','progress'=>'In progress','done'=>'Done','blocked'=>'Blocked'];}
+function studio_milestones(int $job): array {return studio_milestones_ready()?all('SELECT * FROM '.table('studio_milestones').' WHERE job_id=? ORDER BY id',[$job]):[];}
+
 function studio_stages(): array {return ['discovery'=>'Discovery','design'=>'Design','development'=>'Development','review'=>'Final review','launched'=>'Launched','care'=>'Ongoing care','paused'=>'Paused'];}
 
 function studio_url(array $p=[]): string {if($ctx=support_current())$p=['support'=>$ctx['session']['id']]+$p;return site_url('portal/index.php').($p?'?'.http_build_query($p):'');}

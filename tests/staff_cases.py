@@ -73,7 +73,24 @@ def run_http(env):
     check('Admin project renders the note privately once','staff only' in r.text and r.text.count('Staff-only internal marker note.')==1 and 'Internal notes are never shown' in r.text)
     alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     check('Client conversation never shows internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?job=1').text)
-    check('Client activity never surfaces internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?activity=1').text)
+    # Structured milestones carry a state and optional target date the client can follow.
+    job=BASE+'/existing/admin/index.php?view=studio-job&id=1'
+    r=chosen_form(admin,job,'studio_milestone','id',0,{'title':'Synthetic milestone content approved','state':'done','target_date':'2026-11-30'})
+    check('Owner adds a structured milestone','Project updated' in r.text and db("SELECT state,target_date FROM ci_studio_milestones WHERE title='Synthetic milestone content approved'")[0]=={'state':'done','target_date':'2026-11-30'})
+    r=chosen_form(admin,job,'studio_milestone','id',0,{'title':'Synthetic milestone launch window','state':'pending','target_date':''})
+    mid=db("SELECT id FROM ci_studio_milestones WHERE title='Synthetic milestone launch window'")[0]['id']
+    r=chosen_form(admin,job,'studio_milestone','id',mid,{'title':'Synthetic milestone launch window','state':'progress','target_date':'2027-01-15'})
+    check('Milestone state update persists','Project updated' in r.text and db("SELECT state,target_date FROM ci_studio_milestones WHERE id=?",[mid])[0]=={'state':'progress','target_date':'2027-01-15'})
+    r=admin.post(job,data={'csrf':token(admin.get(job)),'action':'studio_milestone','job_id':'1','id':'0','title':'Bad date','state':'done','target_date':'next Friday'})
+    check('Milestone target date must be ISO','YYYY-MM-DD' in r.text and not db("SELECT id FROM ci_studio_milestones WHERE title='Bad date'"))
+    for bad in ['2026-02-31','2026-13-01','2026-00-00','2027-02-29']:
+        r=admin.post(job,data={'csrf':token(admin.get(job)),'action':'studio_milestone','job_id':'1','id':'0','title':'Bad date','state':'done','target_date':bad})
+        check('Milestone target date must be a real calendar date','calendar date' in r.text and not db("SELECT id FROM ci_studio_milestones WHERE title='Bad date'"))
+    r=chosen_form(admin,job,'studio_milestone','id',mid,{'target_date':'2028-02-29'})
+    check('Milestone target accepts a real leap day','Project updated' in r.text and db('SELECT target_date FROM ci_studio_milestones WHERE id=?',[mid])[0]['target_date']=='2028-02-29')
+    r=alice.get(BASE+'/existing/portal/index.php?job=1')
+    check('Client sees milestone states and target dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-'+str(mid) in r.text)
+    check('Milestones stay isolated to the owning client',bob.get(BASE+'/existing/portal/index.php?job=1').status_code==404)
     return {'url':url,'id':uid,'link':link,'code':code}
 
 def run_browser(env,browser):

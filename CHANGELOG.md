@@ -569,6 +569,10 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — structured project milestones (devin/non20i-milestones)
+
+Projects gain a tracked milestone list alongside the free-form narrative: staff add and update items with a state (pending, in progress, done, blocked) and an optional ISO target date from the project screen. Clients and projects-permission contacts see the states and dates in the workspace; milestone updates surface in workspace activity for both audiences with exact links. Storage is a new additive studio_milestones table created by the existing workspace update on older installs and by fresh setup. Requires clients.manage for writes; milestones cannot be deleted.
+
 ## Unreleased — staff-only project notes (devin/non20i-staff-notes)
 
 Authorized staff (clients.manage) can record internal notes on a project that never reach clients or company contacts. Notes reuse the immutable studio_messages store with author_type=internal attributed to the acting staff member — no schema change. The admin project view lists them under a separate Staff-only card with author names; the portal conversation allow-lists visible author types so internal rows cannot render for clients, contacts or support sessions, and they never create activity events for any audience.
