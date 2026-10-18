@@ -769,7 +769,7 @@
       "tests/hosting_catalog_browser.py": "a1cd0c04b686523cd2e8752385bb56497b1342538d8cf8bf15076e14782d2c21",
       "tests/hosting_catalog_browser_fixture.php": "5708f1fab66c0907bd7abac9c41c289ce55085103352936a36dd2d58cc3e6080",
       "tests/hosting_catalog_cases.py": "f192e1d8a34240739e2b02beea00feeab0c4ade8658311020aa93769dd07fce1",
-      "site/app/hosting/catalog_offers_document.php": "16cea1c9d51665e9f4e586e19c84d6c3f107fa6f520dd9fc75d9d78d8a3a2250",
+      "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
       "site/app/hosting/catalog_offers.php": "a49e7380dd2500fdd8e9de611a6bda11c9908225c393bd628bf834d14afa117e",
       "site/app/hosting/catalog_offers_context.php": "179354247cacc3533e9896d0ed238b0c3af97d8291ebc692dad7bb92064de3ea",
       "site/app/hosting/catalog_offers_storage.php": "4fcd3f257001b78c22a59ea9b5734cef8fca6bc3dbe5e6cdbf567798d1746239",
@@ -782,7 +782,9 @@
       "site/app/settings/store.php": "f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564",
       "tests/hosting_catalog_recovery_http.php": "b6b9e91ecfe29f881a6ad6e8add15cc057cb85fe974f8c82be529bb5e75f551a",
       "tests/hosting_catalog_recovery_http.py": "ba76bcf656e9956ced5e68f893a7c6a9ab9023951472446ab2ac98026ec2afc8",
-      ".github/workflows/hosting-catalog-offers.yml": "1b2762ed8f25ec6535e89c169b449c294c2f0a9b607a03f18320f51d54b4c2f5"
+      ".github/workflows/hosting-catalog-offers.yml": "1b2762ed8f25ec6535e89c169b449c294c2f0a9b607a03f18320f51d54b4c2f5",
+      "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
+      "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5"
     },
     "raw_evidence": {
       "role": "hosting-recovery-files",

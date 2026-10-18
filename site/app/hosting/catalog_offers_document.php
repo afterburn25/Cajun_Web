@@ -61,6 +61,20 @@ function hosting_catalog_matches(array $actual,array $expected): bool {
     return true;
 }
 
+/** Closed opt-in terms only; this value never grants SQL, payment or provider authority. */
+function hosting_checkout_policy(array $policy): array {
+    $fixed=['mode'=>'invoice-on-confirmation','client'=>'primary-only','project'=>'existing-or-new-hosting','collection'=>'invoice-only','first_period'=>'full-period-today',
+        'requires_verified_payment'=>true,'requires_owner_provisioning'=>true];
+    service_plans_keys($policy,[...array_keys($fixed),'timezone','alignment','review_ttl_seconds']);
+    foreach($fixed as $key=>$value)if($policy[$key]!==$value)throw new InvalidArgumentException('Unsupported hosting checkout policy.');
+    if (!is_string($policy['timezone']) || !in_array($policy['timezone'],DateTimeZone::listIdentifiers(DateTimeZone::ALL),true)
+        || !in_array($policy['alignment'],['day-of-month','month-end'],true)
+        || !is_int($policy['review_ttl_seconds']) || $policy['review_ttl_seconds']<1 || $policy['review_ttl_seconds']>900) {
+        throw new InvalidArgumentException('Choose an explicit billing timezone, calendar alignment and bounded review lifetime.');
+    }
+    return $fixed+['timezone'=>$policy['timezone'],'alignment'=>$policy['alignment'],'review_ttl_seconds'=>$policy['review_ttl_seconds']];
+}
+
 final readonly class HostingCatalogPublication {
     public const MAX_BYTES=600000;
     private function __construct(private string $bytes) {}
@@ -70,13 +84,21 @@ final readonly class HostingCatalogPublication {
         $d=['format'=>1,'id'=>$id,'created_at'=>$at,'publisher'=>['id'=>$current['publisher']['id']??null,'auth_version'=>$current['publisher']['auth_version']??null],'product'=>$p,'import'=>$i,'observation'=>hosting_catalog_observation($observation,$i['type_ref']),'plan_json'=>$plan->json(),'mapping_json'=>$mappingJson];
         $result=self::fromJson(service_plans_json($d));$result->checkCurrent($current,$at,true);return $result;
     }
+    /** New owner-reviewed opt-in. Caller must authorize financial/catalog scope under its native guard. */
+    public static function createCheckout(string $id,int $at,array $product,array $import,array $observation,ServicePlanDocument $plan,string $mappingJson,array $current,array $policy): self {
+        $original=self::create($id,$at,$product,$import,$observation,$plan,$mappingJson,$current);
+        $data=$original->data();$data['format']=2;$data['checkout_policy']=hosting_checkout_policy($policy);
+        $result=self::fromJson(service_plans_json($data));$result->checkCurrent($current,$at,true);return $result;
+    }
+    public function checkoutPolicy(): ?array { return $this->data()['checkout_policy']??null; }
     /** Historical parsing never depends on a present login, credential, current clock or publication state. */
     public static function fromJson(string $bytes): self {
         if (strlen($bytes)>self::MAX_BYTES) throw new InvalidArgumentException('Hosting publication exceeds its bound.');
         $d=json_decode($bytes,true,32,JSON_THROW_ON_ERROR);
         if (!is_array($d)) throw new InvalidArgumentException('Invalid hosting publication.');
-        service_plans_keys($d,['format','id','created_at','publisher','product','import','observation','plan_json','mapping_json']);
-        if ($d['format']!==1 || !is_string($d['plan_json']) || !is_string($d['mapping_json'])) throw new InvalidArgumentException('Invalid hosting publication format.');
+        service_plans_keys($d,($d['format']??null)===2?['format','id','created_at','publisher','product','import','observation','plan_json','mapping_json','checkout_policy']:['format','id','created_at','publisher','product','import','observation','plan_json','mapping_json']);
+        if (!in_array($d['format'],[1,2],true) || !is_string($d['plan_json']) || !is_string($d['mapping_json'])) throw new InvalidArgumentException('Invalid hosting publication format.');
+        if ($d['format']===2 && (!is_array($d['checkout_policy']) || hosting_checkout_policy($d['checkout_policy'])!==$d['checkout_policy'])) throw new InvalidArgumentException('Noncanonical hosting checkout policy.');
         service_plans_id($d['id']);service_plans_time($d['created_at']);hosting_catalog_actor($d['publisher']);
         $p=hosting_catalog_product($d['product']);$i=hosting_catalog_import($d['import']);$o=$d['observation'];hosting_catalog_observation_binding($o);
         $plan=ServicePlanDocument::fromJson($d['plan_json']);$model=$plan->model();$m=provider_plan_catalog_document($d['mapping_json']);
@@ -119,7 +141,7 @@ final readonly class HostingCatalogPublication {
     /** Caller checks request ownership. This preserves agreed terms, never current availability or authority. */
     public function historicalProjection(): array {
         $d=$this->data();$p=$d['product'];$m=ServicePlanDocument::fromJson($d['plan_json'])->model();
-        return ['publication_id'=>$d['id'],'publication_sha256'=>$this->fingerprint(),'product_id'=>$p['id'],'product_revision'=>$p['revision'],'sku'=>$p['sku'],'title'=>$m->name,'summary'=>$p['summary'],'amount_cents'=>$m->priceAmount,'currency'=>$m->currency,'cadence'=>$m->cadence,'inclusions'=>$m->inclusions,'exclusions'=>$m->exclusions,'limits'=>$m->limits,'support'=>$m->supportExpectation,'image_id'=>$p['media_id']];
+        return ['publication_id'=>$d['id'],'publication_sha256'=>$this->fingerprint(),'product_id'=>$p['id'],'product_revision'=>$p['revision'],'sku'=>$p['sku'],'title'=>$m->name,'summary'=>$p['summary'],'amount_cents'=>$m->priceAmount,'currency'=>$m->currency,'cadence'=>$m->cadence,'inclusions'=>$m->inclusions,'exclusions'=>$m->exclusions,'limits'=>$m->limits,'support'=>$m->supportExpectation,'image_id'=>$p['media_id']]+($d['format']===2?['checkout_policy'=>$d['checkout_policy']]:[]);
     }
 }
 
@@ -127,6 +149,7 @@ final readonly class HostingCatalogRequest {
     private function __construct(private string $bytes) {}
     /** Client authentication/CSRF and locking belong to the calling service; these are strict supplied facts. */
     public static function create(string $id,HostingCatalogPublication $publication,array $client,int $at,array $current): self {
+        if ($publication->checkoutPolicy()!==null) throw new InvalidArgumentException('Use checkout confirmation for this hosting offer.');
         $publication->assertCurrent($current,$at);self::client($client);
         return self::fromJson(service_plans_json(['format'=>1,'id'=>$id,'publication_id'=>$publication->data()['id'],'publication_sha256'=>$publication->fingerprint(),'client_id'=>$client['id'],'quantity'=>1,'created_at'=>$at]));
     }
@@ -155,6 +178,7 @@ final readonly class HostingCatalogRequest {
         $d=$this->data();return hash('sha256',service_plans_json(['publication_id'=>$d['publication_id'],'publication_sha256'=>$d['publication_sha256'],'client_id'=>$d['client_id'],'quantity'=>1]));
     }
     public function assertPublication(HostingCatalogPublication $publication): void {
+        if ($publication->checkoutPolicy()!==null) throw new RuntimeException('A checkout offer cannot be converted through a legacy hosting request.');
         $d=$this->data();if ($publication->data()['id']!==$d['publication_id'] || !hash_equals($publication->fingerprint(),$d['publication_sha256']) || $d['created_at']<$publication->data()['created_at']) throw new RuntimeException('Hosting request publication differs.');
     }
 }

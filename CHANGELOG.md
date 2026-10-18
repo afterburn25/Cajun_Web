@@ -1,3 +1,9 @@
+## 2026-10-18 — hosting checkout consent groundwork
+
+- Added inactive, versioned hosting checkout publication policy and canonical client review/consent documents. They bind exact commercial terms and a selected existing or new hosting project; no route or database writer is enabled.
+- Preserved format1 requests and blocked checkout publications from their legacy conversion path. Corrected skipped-midnight expiry and historical acceptance-date validation; added pure regressions for date, ownership facts, changed terms, replay identity and private-field exclusion.
+- Refreshed installer inventory and exact source pins for the development branch. Database/invoice/UI integration and release acceptance remain pending.
+
 ## Development — preserve hosting acceptance while integrating main CI triggers
 
 Integrate the reviewed PR218 workflow path filters from main `e397d9a6e293850e8dff61a593e3ba39ee178400` with hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` through a normal merge. Only ten focused workflow triggers and documentation change relative to that development source; shipping files, tests, full acceptance commands and contracts stay exact. This does not merge the separate f67 release candidate to main, certify hosting behavior or change published 1.25.0.

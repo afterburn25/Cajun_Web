@@ -1,3 +1,9 @@
+## 2026-10-18 — hosting checkout consent groundwork
+
+Branch `codex/twentyi-hosting-first-invoice` starts at `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf` and adds pure documents for an explicit owner checkout policy and one client service/billing confirmation. Existing request-only publications retain format1 behavior; format2 checkout offers cannot enter the legacy request/conversion path. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The new review fixes local-midnight and skipped-date boundaries, binds the exact plan/price/client/project/date and keeps private provider facts out of the display projection. Applied-source PHP8.4.25 checks pass130 new and119 existing cases in both default and minimal modes. This stage adds no checkout page, database migration, invoice creation, charge or provisioning. Native atomic composition, actual actor storage, same-clock browser acceptance and release gates remain pending. Original full-acceptance0c7, hosting512/10142/f67 runs and published1.25 remain preserved.
+
 ## 2026-10-18 — main CI triggers and hosting development remain separate from release approval
 
 This integration combines hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` with main `e397d9a6e293850e8dff61a593e3ba39ee178400`, which normally merged PR218. The ten focused workflow path filters are retained with their original jobs; all hosting shipping files, tests, acceptance contracts and full application workflow remain exact to the development parent. Both histories are preserved by a normal main-to-development merge.

@@ -1,3 +1,9 @@
+## 2026-10-18 — hosting checkout consent groundwork
+
+Current implementation branch: `codex/twentyi-hosting-first-invoice`, parent `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf`. [First-invoice scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md) records the pure publication-v2/review/consent interfaces and mandatory native seams. New offers require explicit opt-in; ordinary requests cannot bind a checkout publication. One accepted composite will eventually produce the agreement/calendar/first unpaid invoice atomically; that native path and its UI are not implemented by this checkpoint.
+
+Applied pure checks pass130 new and119 legacy cases in default/minimal PHP8.4.25. Keep the original failed draft date witness and corrected evidence. Next: independently review the separate client-attributed subscription proposal, implement compatible actor migrations and one guarded transaction, then prove replay/rollback and same-clock packaged behavior. Do not impersonate the publication owner, weaken legacy future-date rules, permit a manual-payment bypass for checkout origins or label an unpaid invoice as card checkout. Reuse the saved20i reference; automatic images/cloud contracts remain unverified. The original full-acceptance source and CI runs remain separate and unchanged.
+
 ## 2026-10-18 — continue hosting acceptance after main trigger integration
 
 The intended normal merge has development parent `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` first and main parent `e397d9a6e293850e8dff61a593e3ba39ee178400` second. Main contributes PR218's ten focused workflow path filters and its retained documentation. Preserve all hosting implementation, test fixtures, full acceptance wiring and source-bound contracts from the development parent; this integration changes none of them.

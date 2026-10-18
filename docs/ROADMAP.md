@@ -1,3 +1,7 @@
+## 2026-10-18 — hosting checkout consent groundwork
+
+Immediate first invoice is implementing on `codex/twentyi-hosting-first-invoice`, separate from the preserved full-acceptance branch and 1.26 catalog release candidate. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md) includes reviewed pure commercial confirmation documents. Client-attributed storage, atomic first-invoice creation, actual screens, same-clock native/browser tests and release acceptance remain unfinished. This does not complete hosting checkout, automatic image import, cloud products or the full20i roadmap.
+
 ## Successor follow-through — full hosting acceptance
 
 The separate `codex/twentyi-hosting-full-acceptance` branch integrates reviewed offer/recovery and eventual purchase/client-access tests into the existing full suite, plus a genuine published1.25 upgrade continuation. It is development preparation awaiting original focused outcomes and combined runtime/visual acceptance. [Scope and remaining gates](TWENTYI_HOSTING_FULL_ACCEPTANCE.md). Complete cloud imports, automatic provider images and immediate first-payment checkout remain unfinished.
