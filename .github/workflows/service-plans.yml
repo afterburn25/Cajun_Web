@@ -3,7 +3,7 @@ name: Service-plan contract checks
 on:
   pull_request:
   push:
-    branches: [main, codex/service-plan-integration, codex/service-plan-records, codex/service-plan-screens, 'devin/non20i-*']
+    branches: [main, codex/service-plan-integration, codex/service-plan-records, codex/service-plan-screens, "devin/non20i-*"]
   workflow_dispatch:
 
 permissions:

@@ -139,6 +139,27 @@ Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 o
 
 # Session log
 
+## Port service plans runtime — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157 item 4 — maintenance plans). Recurring billing requires `service_plans_*` helpers, so the runtime slice precedes it.
+
+Starting commit: `devin/non20i-service-plans-foundation` tip — the preserved canonical `ServicePlan`/`PlanSubscription` classes are byte-identical (zero diff vs `codex/service-plan-screens`), so this stacks cleanly.
+
+Files/actions: extracted `site/app/plans/{records,documents,forms,views}.php`, `site/database/{schema,migrations}/service_plans_{schema,migrate}.php`, `site/includes/layout/plans.php`, `site/{admin,portal}/{controllers,views}/plans.php`, `tests/service-plans/*` + `service_plans_native.php` + `service_plan_cases.py`, `.github/workflows/service-plan{,-records}s.yml`, `docs/SERVICE_PLAN_{RECORDS,SCREENS}.md` (ownership updated). Wired: `admin/controllers/router.php` (require + 4 views + no-store + render), `admin/controllers/actions.php` (`service_plans_` dispatch), `app/staff/accounts.php` (view + action → `staff.manage`), `includes/layout/admin.php` (Service agreements nav), `portal/controllers/router.php` (require + `agreements`/`agreement` render + no-store), `portal/controllers/actions.php` (`service_agreements_` dispatch), `portal/views/workspace.php` (Service agreements button), `tools/build.py` sync list, `tests/apache_acceptance.py` integrity list, `tests/browser_acceptance.py` case call. Provider/hosting hunks in the preserved diffs intentionally skipped — Codex's lane.
+
+Tests/verification (local): `php -l` clean; `tests/service-plans/run.php` 76 checks pass on PHP 8.4; `python tools/build.py --refresh` passes — `site/includes/foundation/service-plans/` mirror generated, inventory clean. Native MariaDB + browser lanes are CI-wired.
+
+Next: commit, push, PR targeting the foundation branch, #157 update; then recurring-billing stack.
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-service-plans-foundation`.
+
+Actions: extracted the preserved `devin/service-plans` slice — `ServicePlan`/`PlanSubscription`, `tests/service-plans/run.php`, `service-plans.yml`, `docs/SERVICE_PLANS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording. `devin/service-desk` is already delivered inside the tickets branch's desk foundation, so no separate port is needed.
+
+Tests: `php -l` clean; `php tests/service-plans/run.php` → 76/76 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.

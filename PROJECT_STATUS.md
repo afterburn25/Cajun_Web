@@ -16,6 +16,15 @@ The [original safe shape and interpretation](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOS
 
 ## 2026-10-18 — catalog schema diagnostic prepared
 
+## Devin non-20i branches — 2026-10-16
+
+- `devin/non20i-licensing` (PR #159), `devin/non20i-support-tickets` (PR #158), `devin/non20i-project-progress` (PR #160), `devin/non20i-mail-replies` (PR #161) — application slices documented on their own branches.
+- `devin/non20i-backups-foundation` (PR #162), `devin/non20i-pipeline-foundation` (PR #163), `devin/non20i-proposals-foundation` (PR #164), `devin/non20i-notifications-foundation` (PR #165), `devin/non20i-revisions-foundation` (PR #166), `devin/non20i-support-access-foundation` (PR #167), `devin/non20i-comparisons-foundation` (PR #168) — isolated contract layers, no application wiring.
+- `devin/non20i-service-plans-foundation` ports the P-04 maintenance/service-plan contract layer — `ServicePlan`/`PlanSubscription` plan terms and consent rules with no billing calls.
+
+All are local/CI validation only — no live deployment, mail, provider or customer action.
+
+## Continuity
 After verified 1.25.0 publication, root prepared a separate `ops/twentyi-catalog-schema-read` branch from documentation main `bdbdf3e154e09db9c7dcc391e8e8cead2a2c8497`. The [two fixed metadata reads](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md) support the owner's full product import request. The proposed diagnostic exports a closed vocabulary of field spellings and JSON types, withholding all values, unknown keys and URLs. It changes no production adapter or catalog importer. Offline source/transport checks pass; this source checkpoint has not yet executed the provider reads or established complete catalog/image contracts.
 
 # CajunWebPro 1.25.0 scope and release status

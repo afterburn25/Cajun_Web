@@ -1,3 +1,6 @@
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
 ## Unreleased — record observed cloud null response
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.
@@ -573,6 +576,9 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — service plans and client agreements (Devin port)
+
+Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `devin/non20i-service-plans` (stacked on the foundation port). Additive `service_plans`/`service_subscriptions` event-sourced tables behind owner-password setup; admin Service agreements view (create/edit plans, enroll clients); portal `?agreements` views where clients review and sign exact plan terms; `service-plans` added to the canonical mirror list. No provider, hosting or billing dependency introduced. No live deployment or release.
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
