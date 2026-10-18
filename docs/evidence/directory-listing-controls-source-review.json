@@ -1,0 +1,109 @@
+{
+  "base": "5560635bb2117556de289f0d24c5b170d48e9c77",
+  "branch": "codex/twentyi-directory-listing-controls",
+  "scope": "Source review, local portable boundaries and exact staged installer parity only; native, browser and final package acceptance pending. No live provider operation.",
+  "review_hashes": {
+    "dedicated_manifest": "3ff4f5b5710ff7c8324ac409ee614269d969e83ed28f0bdc03277bff0043d462",
+    "shared_manifest": "cac44b28596fcf614f6a9e7e81f3646ec663574c5635737865f65b64c187bfda",
+    "root_shared": "94923cb6385975f1fb66e8008afcf6adb41105ab1ee17ddf799c767ac01bae09",
+    "domains_history": "77357b02039dda03bf87bac2abc4a5c7c3aae2eff5163498530025cfe01cea65",
+    "domains_wording": "355ee0a2ac884003f623ed22e7e03c51c0bd0e14023c275e4e385fa0feee84b2"
+  },
+  "local_proof_sha256": "493e6fff692c6172940f9a1f7d67dde58fc25919cc490d4657a61544e6ca076b",
+  "syntax_checks": 33,
+  "reports": [
+    {
+      "path": "qa\\directory-controls\\applied-local\\request-default.json",
+      "sha256": "0b7692612a7cc55267136b42c14f630aa4963c5bf31391861b7588c8f04919f8",
+      "checks": 78,
+      "distinct_names": 78
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\request-minimal.json",
+      "sha256": "0b7692612a7cc55267136b42c14f630aa4963c5bf31391861b7588c8f04919f8",
+      "checks": 78,
+      "distinct_names": 78
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\recovery-default.json",
+      "sha256": "4114000f50fbfe894a1056dda28dcf0f7b7643ca4dd1b04bcfbb9aba9d93233e",
+      "checks": 57,
+      "distinct_names": 57
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\recovery-minimal.json",
+      "sha256": "4114000f50fbfe894a1056dda28dcf0f7b7643ca4dd1b04bcfbb9aba9d93233e",
+      "checks": 57,
+      "distinct_names": 57
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\transport-default.json",
+      "sha256": "9e0e6f4be662082bce7f816c8ad0fc8badd3b13fbb71a5731a163fc4a9e7a17c",
+      "checks": 37,
+      "distinct_names": 37
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\transport-minimal.json",
+      "sha256": "9e0e6f4be662082bce7f816c8ad0fc8badd3b13fbb71a5731a163fc4a9e7a17c",
+      "checks": 37,
+      "distinct_names": 37
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\retained-force-ssl-transport-default.json",
+      "sha256": "c38553d5c411af22a52decf157c955eca449ecac1cc2af048af735fc82777a9e",
+      "checks": 37,
+      "distinct_names": 37
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\retained-force-ssl-transport-minimal.json",
+      "sha256": "c38553d5c411af22a52decf157c955eca449ecac1cc2af048af735fc82777a9e",
+      "checks": 37,
+      "distinct_names": 37
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\retained-directory-transport-default.json",
+      "sha256": "126dc488be13762f18b7fd6b9f6fc052868637d3b027d453bba89764e3ce8b80",
+      "checks": 24,
+      "distinct_names": 24
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\retained-directory-transport-minimal.json",
+      "sha256": "126dc488be13762f18b7fd6b9f6fc052868637d3b027d453bba89764e3ce8b80",
+      "checks": 24,
+      "distinct_names": 24
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\retained-roots-transport-default.json",
+      "sha256": "998f6d359c458dbc44bed2296be4a9041c7a101e6eb194d5e0df222659db67f2",
+      "checks": 24,
+      "distinct_names": 24
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\retained-roots-transport-minimal.json",
+      "sha256": "998f6d359c458dbc44bed2296be4a9041c7a101e6eb194d5e0df222659db67f2",
+      "checks": 24,
+      "distinct_names": 24
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\handler.json",
+      "sha256": "c62e0b66fa6c8bb66a19aa82094e7b886100351c7f9d60169251c10ac251e3fc",
+      "checks": 19,
+      "distinct_names": 19
+    },
+    {
+      "path": "qa\\directory-controls\\applied-local\\operations.json",
+      "sha256": "57d872c8a775b71295a8a5bbda387d4fde38207512ebce615330ab1d59433b27",
+      "checks": 230,
+      "distinct_names": 230
+    }
+  ],
+  "root_actual_helper_checks": 111,
+  "expected_native_archive_reports": 20,
+  "expected_browser_reports": 123,
+  "expected_final_reports": 162,
+  "canonical_refresh_exit_code": 0,
+  "staged_shipping_files": 2835,
+  "generated_hashes": 2834,
+  "installer_sha256": "1834778d7d6678e604261251b83438d5c8e11a882e062321fe670e7c64fbf2c2",
+  "prior_session_log_prefix_sha256": "52e5813c63f8f3c1f6eb4e98960d4b328deb4d69f26d204e92538db90062b669"
+}

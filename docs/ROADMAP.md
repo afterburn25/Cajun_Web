@@ -1,12 +1,50 @@
-## Release 1.25.0 priority — 2026-10-16
+## Verified increment and remaining work — 2026-10-18
 
-New20i capabilities and nonessential refactors are frozen until1.25.0 publication and all-asset download verification. Canonical [codex/release-1.25.0](https://github.com/afterburn25/Cajun_Web/tree/codex/release-1.25.0) is published at `b98b96eb2a33e4bdeb72e15217213431885aad67`, normally merging current main35d8 and mature3fa. The [frozen scope](https://github.com/afterburn25/Cajun_Web/blob/codex/release-1.25.0/docs/RELEASE_SCOPE_1.25.0.md) and [integration map](https://github.com/afterburn25/Cajun_Web/blob/codex/release-1.25.0/docs/RELEASE_1.25_INTEGRATION_MAP.md) are also copied into main for discovery. The owner wants the mature increment now, without waiting for complete20i.
+The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.
 
-Root and agents are closing existing licensing defects, extending real populated1.24 root/subfolder client-data upgrades, and preparing complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 application/browser/update runs. Devin continues separate non20i work; Codex owns the narrow release licensing corrections and shared seams. Proposed PRs are not automatically included. Unfinished branches and original failed evidence remain preserved.
+Resume the documented remaining 20i work without treating saved inventory types as a complete product catalog or local uploads as imported provider images. No new capability is implemented by this documentation update.
 
-Merge checkpoint passes canonical installer generation, all shipping PHP/JavaScript syntax, documentation and exact2886-file staged preservation checks. Imported3fa focused38933590118 passes11 reports/1440 executions in each of4 environments and its Windows packages. These are scoped results, not combined release acceptance. Exact-candidate full checks/images, independent review, normal main merge, exact-main full checks, packages, publication and download verification remain required. Published1.24 is unchanged; no1.25 release or live deployment exists.
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
 
-This main checkpoint changes documentation only; runtime remains35d8. Follow the release branch for implementation and acceptance. Earlier current-status labels below are historical where superseded.
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+## 2026-10-17 — observed hosting draft imports and product images
+
+The owner requested admin import of 20i products including images. This bounded increment starts from reviewed navigation source `e8ccefc931829aa9245a71d4ba0d310db2d0add6` on `codex/twentyi-product-import-1.25.0`. It adds an owner-only catalog panel to create hosting drafts from named types in the latest saved 20i inventory, with editable local details and image upload/replacement. Complete provider catalogs, provider pricing/images, hosting publication and ordering remain unfinished. See [scope, setup and evidence](TWENTYI_PRODUCT_IMPORT.md).
+
+Current owner, saved-observation and credential checks protect preview/import; repeated requests preserve the existing draft. The import source is retained, family changes cannot bypass draft restrictions, and media cleanup shares the import lock. Uploaded images retain the existing public-URL behavior, explained in the form. Public catalog and invoice projections remain unchanged.
+
+Actual local checks: 48 document cases in each of default/minimal PHP 8.4.25, changed-source syntax, and 221 offline helper checks with the exact reviewed CI wiring, now applied. Independent owned-source and wiring reviews are clear. Native database, genuine multipart uploads, browser pixels and combined release acceptance remain pending. The source-derived expectations are 65 new native and 24 HTTP checks; these are not passing results. Original 149 native recipes, all earlier reports/assertions and 328 release images are retained; 3 commands/reports and 2 images are additive. Published 1.24.0 is unchanged, 1.25 is unpublished, and no live deployment occurred.
+
+## 2026-10-17 — grouped administration and public service navigation
+
+The owner-requested navigation increment starts from installer correction `345b335eeea8331bba5800aa926a3bc1c7507100` on `codex/admin-navigation-1.25.0`. It groups all 36 existing administrator destinations into collapsible categories with current-account permissions, active-page opening and mobile keyboard controls. The public menu adds Hosting, Web Design and Products; Hosting is consultation-only and Products preserves the existing published service allowlist. See [behavior, evidence and remaining gates](NAVIGATION_1.25.0.md).
+
+Local actual-render PHP/Chromium checks passed: 134 admin and 91 public checks with explicitly synthetic data seams. Native database, combined candidate and exact-main release acceptance remain pending. Installer correction is committed in [PR206](https://github.com/afterburn25/Cajun_Web/pull/206); bounded 20i product import continues separately. Main remains `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`; 1.25 is unpublished and no live deployment occurred.
+
+The release lane now includes the owner-requested installer layout, 12-character administrator password minimum, missing-configuration recovery and explicit fresh-start preservation corrections. Implementation exists on the isolated installer branch; complete candidate/main acceptance and publication are still pending. All held 20i capabilities remain held until verified 1.25 publication.
+
+## Release 1.25.0 scope and evidence
+
+Release 1.25.0 contains the bounded INCLUDE scope in [RELEASE_SCOPE_1.25.0.md](RELEASE_SCOPE_1.25.0.md). The HOLD rows and complete20i roadmap remain unfinished. The [versioned acceptance report](TEST_REPORT_1.25.0.md) records source-specific results and the final release receipts identify publication. Development, release acceptance and live deployment are separate events.
+
+## Historical source checkpoints
+
+The dated blocks and branch-status rows below retain their original evidence and scope; they do not certify later sources or define the current release state.
+
+### Historical checkpoint: Release acceptance correction checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
+
+### Historical checkpoint: 2026-10-16 — freeze and consolidate release 1.25.0
+
+Owner request: publish the mature increment without waiting for complete20i. Start canonical `codex/release-1.25.0` from main `35d8fb7efc94f6f851399d0755fa93097f1fce66`, then normally merge exact mature `3fa72d7b3b447fa3d281cc981ed861c508f850f2`. Fresh ancestry finds all mature capability heads already included, so no duplicate cherry-pick/branch stack is imported. Adopt the26-row scope/dependency map and9 held groups. Resolve shared licensing/deploy/workspace/tests intentionally and preserve both parents' historical records. Generated installer is rebuilt from final source.
+
+Imported-source original focused38933590118 is independently verified successful in all4 environments (11 reports/1,440 named executions each); Windows5890/2885/2872 packages agree with exact source. Existing main licensing defects and release acceptance gaps are explicit blockers, not waived. Catalog prepares complete supported-runtime wiring; Domains extends real1.24 root/subfolder/client-data acceptance; VPS prepares minimal licensing corrections. No combined candidate/native/browser acceptance is claimed by the merge. Required next steps: reviewed corrections, exact-candidate full acceptance and images, independent review, normal main merge, exact-main full acceptance, immutable publication and all-asset download verification. Published1.24/main/production are unchanged; no new feature work until release.
+
+## Retained historical checkpoints from both integration parents
+
+Earlier current-status labels below are historical; the release-priority entry above supersedes them.
 
 ## Current checkpoint - 2026-10-16
 
@@ -26,7 +64,170 @@ Current 20i source and acceptance checkpoint, 2026-10-16 14:41 UTC: [corrected S
 
 **Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
 
+## Current StackCP performance increment - 2026-10-16
+
+On `codex/twentyi-stackcp-read-snapshot`, integrate one owner-view snapshot that retains complete global history validation and every selected package's current authority. [Current status](../PROJECT_STATUS.md) and [guide](TWENTYI_STACKCP_READ_SNAPSHOT.md) describe source review and passing local checks. Native SQL/HTML equivalence, real contention/recovery, full-page timing and combined acceptance remain pending. The first corrected cloud focused run [38931463106](https://github.com/afterburn25/Cajun_Web/actions/runs/38931463106) passed all five jobs; original failed full runs remain preserved. No roadmap feature or release is marked complete by modeled performance counts.
+
+Earlier checkpoints below are historical where superseded.
+
+## Distribution PHP compatibility correction - 2026-10-16 16:18 UTC
+
+Branch `codex/twentyi-cloud-runtime-preflight` continues exact parent [cccf85bf](https://github.com/afterburn25/Cajun_Web/commit/cccf85bf6c3523bca8a0659b5c660915fd67e248). Commit description: **Load PDO for the cloud fixture and verify distro PHP early**. The change loads PDO alongside tokenizer for the one no-INI extracted-function fixture and synchronizes its two acceptance-contract entries. PDO supplies `PDOException`; the fixture opens no database connection and requires no PDO driver. Application shipping files, foundation classes and fixtures are unchanged. Published 1.24.0 remains unchanged; 1.25.0 and full 20i remain unfinished.
+
+Original full [38927120383](https://github.com/afterburn25/Cajun_Web/actions/runs/38927120383), attempt 1, failed the minimal legacy fixture after 28 passing checks with `Class "PDOException" not found`; its default-mode counterpart passed all 34 checks. HTTP/browser was skipped. Earlier original 2a run [38923745296](https://github.com/afterburn25/Cajun_Web/actions/runs/38923745296) failed before that report at missing tokenizer. Both original runs and all seven artifacts per run remain retained. Windows and official Docker PHP include these dependencies differently, so their prior minimal results did not establish Ubuntu distribution-PHP compatibility.
+
+An additive `distro-minimal` job in the cloud-assignment workflow runs the exact six cloud binding/legacy/view commands with Ubuntu 24.04 PHP 8.3. It retains module configuration, verifies PDO/tokenizer identity with no loaded PDO driver, and preserves all six named reports. The existing PHP 8.2/8.4 and MySQL 8.4/MariaDB 10.11 native matrix remains unchanged. The full workflow retains all 147 native commands, 157 browser and 196 final reports; no assertion or production gate is removed. The first corrected-source focused workflow must pass before another full acceptance run.
+
+Parent cccf has independently verified exact Linux/Windows packages (FULL 5,886 / COMPLETE 2,884 / UPDATE 2,871 members; proof a2d1df64), 289 recovery checks (51309606), and 38 Apache reports with 2,707 primary check executions (0a421fa1). These passing partitions do not clear its failed full run or certify this descendant. Original 2a is fully classified as failed with 110 required reports missing (8010c173).
+
+Parallel performance work addresses repeated provider-settings validation: the source-bound StackCP probe found 106 global validations for 20 packages; a private single-request read projection is under review and is not included here. No cross-request authorization cache is proposed. Devin retains non-20i implementation; actionable findings are posted for licensing [159](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878), mail [161](https://github.com/afterburn25/Cajun_Web/pull/161#issuecomment-6219105635), and ticket layouts [158](https://github.com/afterburn25/Cajun_Web/pull/158#issuecomment-6219612932).
+
+Next: verify the local workflow/contract, publish this descendant, run its first focused distro/native workflow, review exact artifacts, then continue performance integration and full application/package/visual acceptance. No live provider operation, deployment, charge, customer mail or SSH action occurs through this correction.
+
+## Current acceptance correction - 2026-10-16 15:46 UTC
+
+Branch `codex/twentyi-cloud-minimal-runtime` continues exact parent [2a86704f](https://github.com/afterburn25/Cajun_Web/commit/2a86704fa0c7775206cf9ac93e27d0457be307fa). Commit description: **Fix minimal PHP extraction and acceptance time budget**. Application shipping files, fixtures, all 147 native commands except one test-extension option, and all 157 browser / 196 final report requirements remain intact. Published 1.24.0 is unchanged; full 20i and 1.25.0 remain unfinished.
+
+Original full [38923745296](https://github.com/afterburn25/Cajun_Web/actions/runs/38923745296), attempt1, failed its native step because Ubuntu PHP8.3 with `-n` lacks `token_get_all()`, used only by the exact-function test extractor. Normal mode passed all34 legacy checks; minimal mode produced no report and HTTP/browser was skipped. The correction explicitly loads the tokenizer extension for that one no-INI test command and synchronizes both command strings in the acceptance contract. It adds no runtime dependency or skipped assertion. Original decoded log and checkpoint remain preserved (proposal79452a4b; root applicationd30f05bf).
+
+Original registration [38909577278](https://github.com/afterburn25/Cajun_Web/actions/runs/38909577278) exceeded GitHub's105-minute native/browser job limit after26m55s native and77m19s HTTP. The annotation confirms a runner timeout; native passed, HTTP was cancelled, and final acceptance failed. Its last10 minutes contained93 completed requests, with no recorded browser assertion or exception. The new finite180-minute budget preserves the stateful native-to-browser sequence and every assertion. It is not acceptance, a retry of unchanged source, or evidence that slow provider-settings reads are resolved; those reads need separate profiling.
+
+Parent2a has separately verified focused3,020 named executions, exact Linux/Windows FULL5886/COMPLETE2884/UPDATE2871 packages (proofe7709ea7), and289 recovery checks (proof2695933b). These certify their parent source and named scopes only. Corrected-source Linux execution, full HTTP/browser/screenshots, combined acceptance, exact-main integration and release checks remain required.
+
+Next: validate the changed workflow/contract locally, commit and push this descendant, then run its first full acceptance and exact-source package verification. Preserve all original failed/cancelled runs and assets. No deployment, provider operation, charge, customer mail or SSH action is performed.
+
+Earlier checkpoint (historical where superseded):
+
+## Current 20i candidate - protected cloud assignments
+
+Cloud assignment authority joins StackCP access and private registration drafts on a descendant of819c. Local source/pure/helper checks pass; first native matrix and combined browser/package/release acceptance are pending. Historical client sharing is separate from current owner-approved operations. Legacy original-account uncertainty and client deactivation at lock entry withhold facts. Full hosting lifecycle, domain commerce, VPS/cloud, provider support and SSH remain incomplete. Devin continues all non-20i work including licensing. [Current status](../PROJECT_STATUS.md), [feature guide](TWENTYI_CLOUD_ASSIGNMENT_AUTHORITY.md).
+
+## Earlier implementation checkpoints
+
+## Current verification correction - 2026-10-16
+
+First StackCP focused run failed at a fixture-only nonexistent-column lookup. The corrected test uses validated assignment status and preserves the security assertion;14 extracted cases per PHP mode pass. Current native/full acceptance remains pending. [Status](../PROJECT_STATUS.md).
+
+## Current20i increment - StackCP access observations,2026-10-16
+
+Membership and whole-user grants reads are integrated onto9779 for first native acceptance. These are authenticated saved observations, not provider login/session permission. Pure/renderer/transport/Handler and169 helper checks pass; native/browser/screenshots/release gates remain pending. Frozen9779 has verified focused registration, Windows/Linux packages and recovery; original full is active. Cloud authority remains separate. Full lifecycle, commerce, VPS/cloud, provider support and SSH remain unfinished. [Status](../PROJECT_STATUS.md), [feature scope](TWENTYI_STACKCP_ACCESS_OBSERVATIONS.md).
+
+Devin owns remaining non20i work including licensing under [assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157). Codex retains complete20i/integration/releases. [Boundaries](DEVIN_NON20I_SITE_COMPLETION.md).
+
+## Historical implementation checkpoints
+
+The following entries retain development context. Current source/run status is in the handoff above; original948 is terminal failed and should not be polled or rerun.
+
+## Combined website-folder and Force SSL observations — 2026-10-16
+
+Native-tested document roots and Force SSL flags join the normal root candidate. Both use explicit owner refresh, saved history and separate client sharing. Exact four-way focused archives are verified; combined packaged browser acceptance remains required. The previous03b browser stopped at a public-reference/provider-ID substring collision in a catalog privacy assertion; the test-only repair has13 passing regressions and independent offline layout review. Original failed evidence remains preserved. [Current handoff](../SESSION_HANDOFF.md).
+
+The parallel next increment is saved directory-listing configuration: documented boolean true/false remains distinct from unavailable. It is source-reviewed and awaiting shared/fixture review and native execution; it does not test public directory exposure. Full hosting controls, commerce, VPS/cloud and support/SSH remain implementation work. Devin retains licensing;1.25.0 remains unreleased.
+
+## Combined domain and PHP observation candidate — 2026-10-16 UTC
+
+The owner's complete20i request continues through a normal merge of domain integration4b78a59b and frozen PHPcfc6ecd0. Exact a132 domain shipping remains; cfc6 PHP scalar observation, current hosting authority, order/credential defenses, explicit client sharing, storage and forms join the candidate. Shared seven-file preview is root/catalog reviewed, preserving positional domainContext read6/refresh8, named packageContext read7/refresh9, exclusive typed writers, all period/cloud/date hooks and scheduler guard. Automatic navigation/router merges are separately checked; transport mirror and installer inventory are regenerated.
+
+Source-focused evidence is complete: domain98+87+87 and PHP99 native executions/98 distinct labels+99+99 in all four PHP/database environments, with actual archives verified. Perioddd116 and PHP85ea7586 dedicated-owner fixtures preserve original authority, every prior intent/audit byte, production20/hour budget and real cooldown. The PHP collision was predicted from source, not observed combined execution. Browser order is dates/cloud/period/PHP/scheduler-last. New combined full acceptance remains mandatory; no additional small-repair standalone full is dispatched.
+
+Original25e full38846792746 is terminal FAILURE and final12025544003 is fully verified:122 reports/10 diagnostics,2130 HTTP passes plus the retained empty-period failure,289 recovery/2167 Apache,all319 earlier files unchanged,11 checksums/exact Git and Windows package agreement. Final source-check was skipped. Original domainf725 browser has the same retained failure; its full and PHPcfc6 full remain preserved through final evidence. Pure expiry139+139 on each PHP version passes separately; domains begins isolated application wiring outside this candidate. Latest mainc0e087 source review retains licensing migration/master-delivery findings and identifies direct full-master-key display; Devin retains ownership. No live call, charge, customer mail, SSH, deployment or publication occurred.
+
+Next: finish exact staged/build checks, commit/push and record one combined full, unchanged independent review, current-main reconciliation and exact-main/download release gates. [Current status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) identify authoritative next actions.
+
+## Current combined discovery integration — 2026-10-15
+
+Root combines registration options, owner-only cloud identifiers and exact client-domain renewal-date observations through sequential normal merges, preserving scheduler guards and all original evidence. Both cloud/date commits are pushed together for fresh combined acceptance. PHP-version1c500566/PR155 remains separate under GitHub native/browser testing; Devin retains licensing. [Authoritative source/evidence/next-action guide](TWENTYI_DISCOVERY_INTEGRATION.md). Full20i and1.25.0 remain unfinished.
+
+## Current cloud-provider integration — 2026-10-15
+
+Root combines accepted owner-only cloud identifier observations with registration periods and the scheduler queue through a normal210+e006 merge. Reviewed date-reader5b is next; push both normal merges together for fresh combined acceptance. Parent210 packages are verified, original full runs remain intact, and the PHP-version lane stays separate under regression work. [Precise source, evidence and remaining gates](TWENTYI_CLOUD_PROVIDERS.md#root-cloud-provider-integration--2026-10-15). Devin owns licensing; full20i remains active.
+
+## Current registration-period integration — 2026-10-15
+
+Verified ee3 registration options join the root queue through a normal merge with9112. Original4f now has downloaded full acceptance; the new combined source needs fresh execution. Root preserves a test-only mobile capture correction, all original failures and exact packages. Domains retains date-reader evidence, VPS retains cloud-provider evidence and implements a separate PHP-version observation lane from9112; Devin owns licensing. [Current scope, sources and next actions](TWENTYI_REGISTRATION_INTEGRATION.md). Published1.24.0 remains unchanged; full20i is unfinished.
+
+## Current browser checkpoint and reader corrections - 2026-10-15
+
+## Incoming PHP-version observation lane — 2026-10-15
+
+VPS owns `codex/twentyi-package-php-version` from `9112cb8c`: exact assigned-package scalar GET, durable evidence and separate owner-approved client sharing. This isolated implementation is pending native/browser acceptance; root integrates the shared executor/router/installer sequentially. No PHP setter, available-version enumeration, schedule or live request. [Contract and scope](TWENTYI_PACKAGE_PHP_VERSION.md). Frozen cloud-provider evidence and Devin licensing remain separate.
+
+Combined4f/PR151 passes packaged HTTP/Chromium with downloaded2,065 passing executions (2,054 distinct labels),75 reports and11 clean diagnostics. Actual forwarding/history/scheduler views are inspected within recorded limits; full Apache/final-artifact acceptance remains pending. Domains owns corrected6ba dates, catalog owns corrected ee3 registration periods (all four native archives pass80+62+62), and VPS owns corrected6eee cloud identifiers. Root integrates only accepted sources and keeps scheduler browser last. Latest main794 fixes the licensing parser in source; migration/master-delivery findings remain separate under Devin. [Exact evidence and handles](TWENTYI_COMBINED_4F_EVIDENCE.md); [authoritative handoff](../SESSION_HANDOFF.md). Earlier entries retain their historical scope.
+
+## Current combined queue — 2026-10-15
+
+Normal forwarding merge4b33d606 is followed by reviewed scheduler2b9 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Installer refresh and exact parent-union checks pass; independent24-check shared-code review is clear; scheduler browser runs last. Fresh combined acceptance remains required. History1759 browser/native artifacts are downloaded and verified; recovery passed and Apache is active. [Current handoff](../SESSION_HANDOFF.md) is authoritative over earlier checkpoints.
+
+Domains owns07817109/PR152 renewal-date observation, with all four native archives verified and full acceptance active. Catalog owns registration periods, independently reviewed by domains. VPS owns cloud-provider identifiers and is correcting root's paired-history-loss/bounded-query findings. Root integrates shared files sequentially. New full reference34e713 is retained; Devin licensing main35dd remains separate with the updated migration/internal-key findings.
+
+## Current forwarding integration and reference intake — 2026-10-15
+
+Root normally merges forwarding1992 into history1759 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), preserving cloud recovery and both original histories. Exact local parent-union, regenerated installer, route/native union and independent glue checks pass; combined runtime acceptance remains required. Frozen a963 full acceptance and final packages are now verified. Scheduler2b9 retains successful corrected554 browser evidence and is next to integrate; the original5fb full remains failed. [Current handoff](../SESSION_HANDOFF.md), [a963 proof](TWENTYI_A963_ACCEPTANCE.md).
+
+The new complete owner API reference34e713 is preserved/indexed separately from oldf7c738. Domains implements a separately sourced date-only contract observation; catalog implements registration-year options; VPS implements cloud-provider identifiers. Their isolated branches share the established executor/recorder under sequential root review. Devin owns licensing. [Source intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md). Older entries below retain their original checkpoint scope.
+
+## Account cloud-provider discovery — implementing, 2026-10-15
+
+New complete-reference lines2666–2672 permit one bounded owner discovery read. Typed parser, shared executor, immutable observations and owner screens are implemented and source-reviewed on an isolated17593061 descendant. Native/browser acceptance remains pending. Specs/zones/pricing and cloud server lifecycle remain separate work; PHP-version scalar evidence is documented for a future hosting reader. [Scope](TWENTYI_CLOUD_PROVIDERS.md).
+
+## Renewal-date acceptance checkpoint — 2026-10-16 UTC
+
+Renewal-date PR152 is ready for root integration from corrected checkpoint `6ba2fb4e9f59fccc0c57d58554f743d55270f19d`, with shipping unchanged from `07817109a562bf716bd021149467dae125a6ede0`. All four exact native combinations pass60 native plus79 normal/79 minimal reader checks each. Actual browser artifact12023065488 verifies2038 HTTP executions/2027 unique labels, including49 date-workflow cases; all four owner/client desktop/mobile captures are inspected without a visual blocker. Full38841973723 is still running recovery; Apache/final source checks remain pending. Original078 full is terminal failure from the preserved fixture-only browser defect, although recovery/Apache passed. No release or live provider acceptance is claimed. [Exact evidence and limits](TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+
+### Preserved previous checkpoint
+
+Renewal-date observation implementation remains awaiting browser acceptance: native078 passes all four combinations, but original full38839208232 failed in fixture setup before date captures. A bounded test-only real-cooldown correction is prepared; no completion/release claim. [Evidence](TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+## Isolated registered-domain date observations — 2026-10-15
+
+Domain agent starts `codex/twentyi-domain-contracts` at175930618ab349246020602e634ce55ee49f176b; PR149 remains frozen. Implements a dedicated typed date reader, exact current registrar/client/account binding, shared refresh intents/results with recovery witnesses, and native owner/client dated observations. Read-only wire contract is the retained20i SDK1.0.6 example, not live account acceptance. New owner reference34e713c3 is inspected and kept distinct from old source. Local pure checks pass; native/browser/package acceptance remains pending. Root owns integration/releases; no live provider call, domain change, payment, mail, SSH, licensing edit or deployment. [Scope, shared interfaces, provenance and required evidence](TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+
+## Current history integration evidence — 2026-10-15
+
+The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.
+
+## Current parallel implementation and combined acceptance — 2026-10-15
+
+Frozen3bbc42bd includes reviewed catalog readiness, renewal intake and cloud confirmation; all have native and browser proof on their own sources. Windows packages and all20 focused matrix archives verify; full combined38829910791 passed package/native/browser and passed unprivileged recovery and is running Apache protection checks. Corrected parent2239 full acceptance and final packages now verify. [Exact evidence](TWENTYI_COMBINED_3BBC_EVIDENCE.md). New isolated lanes implement scheduled inventory refresh, client hosting observation history and forwarding request/review; scheduler recovery corrections remain in progress. Full lifecycle/discovery/native controls/SSH and release gates remain unfinished. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
+## Forwarding intake candidate — 2026-10-15
+
+Implemented locally with verified four-way native and42 packaged browser cases; full isolated recovery/Apache/packages also pass, while root integration/combined acceptance remains pending: separate owner permission; client single-address request/cancel; owner message/decline; immutable local history. Provider forwarding submission/readback and active-delivery confirmation remain incomplete because exact response semantics are unverified. [Contract and acceptance](TWENTYI_FORWARDING_REQUESTS.md).
+
+## Client domain renewal requests — integrated candidate, 2026-10-15
+
+Reviewed/native-verified ed4d1cad is normally merged after the catalog readiness increment. Actual client request/withdrawal and owner review/decline forms retain original registrar assignment and immutable history. Four supported native combinations pass78 request cases plus28 pure cases per mode. Commercial offers, provider renewal execution and completed-renewal verification remain unfinished; combined application acceptance is still required. [Scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
+## Owner catalog readiness — integrated candidate, 2026-10-15
+
+Reviewed catalog872aec34 is normally merged into the integration branch: bounded owner plan summaries, precise local readiness reasons and immutable selected-review details. Four native database/runtime combinations pass with78 catalog cases each; actual browser and new combined acceptance remain pending. Automatic provider catalog discovery remains unfinished. [Scope](TWENTYI_CATALOG_READINESS.md).
+
+# Current20i continuation — 2026-10-15
+
+Combined38bb has four downloaded native matrices and exact Windows packages verified; full38824052505 browser hit a fixture-only token extraction error; its reviewed correction requires fresh descendant acceptance while prior recovery continues. Three next implementation lanes are renewal request/admin review, catalog readiness/history and cloud returned-package observation/explicit client assignment. Complete hosting/domain/VPS lifecycle, discovery and support/SSH remain unfinished. [Current status](../PROJECT_STATUS.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) govern scope; older checkpoints below preserve their historical states. No release or live action in this checkpoint.
+
+# Active 20i parallel work
+
+Root integrates native mailbox creation, provider plan mappings, registrar ownership/client links and existing cloud-server website creation from three parallel agent branches. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Mailbox334 passes87 native cases in each supported combination; the new sequence-order recovery cases and combined runtime/browser/recovery/Apache acceptance remain pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence. Checkpoints below are historical; current status and the requirements checklist govern remaining work.
+
+# Parallel 20i increment - registered domains
+
+2026-10-15: user authorized simultaneous agents. The domain agent owns `codex/twentyi-domain-controls` from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root owns integration/releases. Adds sanitized registrar identity reads through existing inventory, distinct explicit client assignments, latest-attempt freshness, owner/client PHP views and recovery/tests. Hosted-domain links never become registrar authority. Local PHP8.4 synthetic checks pass64 registrar plus139 inventory/28 reader/82 cloud cases per mode; native CI and browser acceptance are pending. Nameserver writes remain disabled pending verified response/authority contracts. No provider operation or release. [Scope, provenance and next steps](TWENTYI_REGISTRAR_INVENTORY.md).
+
+## Current 20i catalog increment — 2026-10-15
+
+Implementing [owner-reviewed provider plan catalog](TWENTYI_PLAN_CATALOG.md): reusable account/type/limit mapping, distinct private provider-cost evidence, expiry/withdrawal and existing hosting preparation selection. Local pure checks pass; native/browser/packaged acceptance pending. Automatic packageTypes discovery, cost feeds and provider entitlement remain unfinished. This does not complete the full20i roadmap.
+
+## 2026-10-15 cloud website increment
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](TWENTYI_CLOUD_WEBSITES.md). No release/live action.
+
+# Active 20i increment — client domain availability
+
+Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Native1fbeb passes106 combined checks including50 client checks in all four combinations, with exact Windows packages verified. Actual browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+
 # Approved roadmap and acceptance criteria
+
+PR 138 connects accepted orders to provider setup and native approval/recovery/confirmation. The newer-main merge `e37517fa` passes all four native combinations and exact Windows package verification. Parent confirmation passes 1,737 HTTP/Chromium checks. A screenshot-discovered stale pending statement is corrected in the current descendant; its browser regression and full merged acceptance remain pending. Continue client domain search, automatic catalog/configuration discovery and all remaining native controls. [Current implementation/evidence](TWENTYI_ORDER_FULFILLMENT.md). Published 1.24 remains unchanged.
 
 Current20i P0 checkpoint:1.24 inventory/ownership/label-operation recovery is published and download-verified. Full platform remains unfinished. [Current requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) and [release evidence](TEST_REPORT_1.24.0.md) supersede older status notes. Cloud1.25 and necessary commercial eligibility continue.
 
@@ -570,6 +771,8 @@ Use the same tokenized Authorize.net payment service, transaction records, verif
 
 ### P-04 — Maintenance/service plans
 
+**20i commercial dependency, integration in progress:** the combined `codex/twentyi-fulfillment` branch preserves exact plan/client consent and the recurring whole-period billing interface through #130/#133/#135 source35a564a1. Its standalone full38750019637 passed; combined acceptance is required. This supplies agreements and invoices, not provider orders, automatic-payment authority or active services. [Commercial dependency](TWENTYI_COMMERCIAL_ELIGIBILITY.md) and [current integration record](TWENTYI_FULFILLMENT_INTEGRATION.md) identify the remaining order/payment/provider mapping work. General finance expansion remains paused.
+
 Owner-defined inclusions, exclusions, limits, support expectations and request workflow. Acceptance: agreed prices and terms, explicit recurring-payment consent where applicable, genuine service status, and no invented 'unlimited support' promise.
 
 ### P-05 — Web-design project progress and delivery workspace
@@ -681,3 +884,35 @@ This increment wires the 20i connection owner page into the existing staff permi
 New packaged HTTP/Chromium fixtures use the existing server-only auto-prepend seam plus an actual loopback HTTPS server. The seam asserts production cURL options before changing only the test destination and CA, and refuses unrecognized DNS. It is outside deployment. Syntax and generated inventory checks are local; combined database/browser/installer acceptance is pending and no screenshots have yet been inspected for this UI. No new release version is reserved, published1.19.0 stays immutable, and no real20i request or secret extraction occurs.
 
 Next: inspect application/native/transport matrices; resolve independent owner-storage and orchestration review; inspect actual desktop/320px screenshots; add latest1.19 upgrade/recovery/private-key retention acceptance before preparing a new release. Continue feasible roadmap work without a release-boundary stop.
+
+### 2026-10-15 —20i hosting mail in implementation
+
+The documented mailbox creation boundary now uses the existing provider gateway, ledger and fixed transport with secret-safe results and replay protection. Native admin/client controls, persistence and acceptance remain required. [Current scope and continuation](TWENTYI_MAILBOX_CONTROLS.md). This does not complete hosting mail or change published1.24.
+
+## 2026-10-15 — Observed cloud package confirmation in development
+
+Owner continued complete20i work with parallel agents. New isolated `codex/twentyi-cloud-confirmation` starts at combined38bb69cc; it preserves original33a2 and frozen root. Implements exact acknowledged-package/approved-name observation plus explicit original client assignment, separate from immutable accepted_pending result, server membership, health or billing. Adds strict additive confirmation storage, immutable evidence/recovery pointer, owner form/controller, safe client projection, and atomic reuse of existing link authority. Native concurrent/rollback/recovery and packaged browser cases are prepared; local PHP/Python syntax checked. Linux native/full acceptance and independent review remain pending. No live calls or deployment. See [contract and evidence](TWENTYI_CLOUD_CONFIRMATION.md), including verified originalce8d full12,067 primary outcomes and separately retained combined mailbox fixture failure. Next: refresh installer, push bounded commit, inspect exact focused/full evidence and review before root integration.
+
+
+## 2026-10-15 owner allocation — software-product licensing
+
+Devin owns license generation and installation licensing for other software products sold by this site. Codex and its three agents continue the complete20i P0. This is ownership, not completion or running-agent evidence. Preserve the current licensing module and merge shared billing/portal/schema changes with reviewed tests. [Coordination](AGENT_COORDINATION.md).
+
+## 2026-10-15 — Hosting observation history
+
+From3bbc42bd on codex/twentyi-service-observations, implement owner-approved client history from retained package snapshots, exact assignment/account visibility anchors, latest-intent states and immutable permission recovery. No new provider contract or persistence hook. Local PHP syntax/Python AST and33pure cases per mode pass; native/browser checks and installer refresh pending at this entry. Root integrates after independent review and exact evidence. No release/deployment. [Contract and next actions](TWENTYI_SERVICE_OBSERVATIONS.md).
+
+
+## 2026-10-16 — Hosting history acceptance checkpoint
+
+The bounded owner-approved client history flow is implemented on shipping e5c8aba8, corrected test65725ad. Downloaded exact-source native run38832431406 verifies 71 native and 33 pure checks per mode in all four combinations. Actual packaged checkpoint38832527134 verifies 1,989 HTTP checks, including 44 history cases, and four inspected full owner/client desktop/mobile captures. Two auxiliary mobile element crops remain documented as capture artifacts. Root integration and combined full recovery/Apache/package acceptance remain required. This is saved provider observation history, not live uptime or completed provisioning. [Contract, source and evidence](TWENTYI_SERVICE_OBSERVATIONS.md).
+
+## 2026-10-15 — Separate hosting-history integration queue
+
+Root normally integrates historybff on codex/twentyi-next-integration from a963, preserving both parent histories. Owner/client visibility remains anchored to current assignment/account context and the approved observation sequence. All four a963 cloud matrices are independently verified at45 creation/87 confirmation each; history parent71native/33pure/1989HTTP evidence remains separate. Combined queue acceptance and publication remain pending. Scheduler/forwarding and Devin licensing remain separate lanes. [Current state](../PROJECT_STATUS.md).
+
+### Scheduled hosting inventory checkpoint - 2026-10-15
+
+HC-13/owner requirement 7: isolated 82302571 descendant adds a real bounded GET/package cron path, owner-bound approval, original credential protection, immutable intent/outcome evidence, concurrent-worker exclusion, backoff and reviewed recovery. Local source/pure verification passes; native/browser and combined release acceptance remain pending. Other inventory schedules and commercial automation remain unfinished. [Implementation/evidence](TWENTYI_SCHEDULED_REFRESH.md).
+
+Registration-period discovery is implementing on isolated`codex/twentyi-registration-periods`: precise new owner reference supports a TLD-to-integer-registration-year map. Explicit owner read, immutable observations and current-policy client planning projection are present with62 pure cases per mode; native/browser/package verification remains required. Pricing, renewal-year eligibility and purchase/fulfillment remain separate incomplete work. [Scope and evidence](TWENTYI_REGISTRATION_PERIODS.md).

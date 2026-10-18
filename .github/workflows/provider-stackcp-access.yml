@@ -1,0 +1,118 @@
+name: Native StackCP access observations
+on:
+  push:
+    branches: [main, codex/twentyi-stackcp-access-observations]
+    paths: ["foundation/twentyi-stackcp-access/**", "site/includes/foundation/twentyi-stackcp-access/**", "foundation/twentyi/FixedHttpTransport.php", "site/includes/foundation/twentyi/FixedHttpTransport.php", "foundation/twentyi-support-handoff/**", "site/includes/foundation/twentyi-support-handoff/**", "site/app/providers/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_access.php", "site/admin/controllers/provider_stackcp_prerequisites.php", "site/admin/views/providers.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "tests/stackcp_*", "tests/provider_http_server.py", "tests/provider_wordpress_installed_http_contract.py", "tests/provider_settings_native.php", "tests/provider_inventory_native.php", "tests/provider_checks_native.php", "tools/build.py", ".github/workflows/provider-stackcp-access.yml"]
+  pull_request:
+    paths: ["foundation/twentyi-stackcp-access/**", "site/includes/foundation/twentyi-stackcp-access/**", "foundation/twentyi/FixedHttpTransport.php", "site/includes/foundation/twentyi/FixedHttpTransport.php", "foundation/twentyi-support-handoff/**", "site/includes/foundation/twentyi-support-handoff/**", "site/app/providers/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_access.php", "site/admin/controllers/provider_stackcp_prerequisites.php", "site/admin/views/providers.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "tests/stackcp_*", "tests/provider_http_server.py", "tests/provider_wordpress_installed_http_contract.py", "tests/provider_settings_native.php", "tests/provider_inventory_native.php", "tests/provider_checks_native.php", "tools/build.py", ".github/workflows/provider-stackcp-access.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: stackcp-access-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-access:
+    name: StackCP access ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify canonical deployment mirrors and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-inventory-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Native protected setup and current-owner history checks
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}
+        run: |
+          mkdir -p qa
+          python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-inventory-test sh -ec '
+              for source in site/app/providers/stackcp*.php site/database/schema/provider_stackcp*.php site/admin/controllers/provider_stackcp_prerequisites.php foundation/twentyi-support-handoff/*.php site/includes/foundation/twentyi-support-handoff/*.php tests/stackcp*.php; do php -l "$source"; done
+              php tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json
+              php -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json
+              php tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json
+              php -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json
+              php tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
+              php -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
+              php tests/stackcp_prerequisites_native.php
+              php tests/provider_settings_native.php
+              php tests/provider_inventory_native.php
+              php tests/provider_checks_native.php
+              php tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json
+              php -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json
+              php tests/stackcp_access_views.php qa/stackcp-access-views-default.json
+              php -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json
+              php tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json
+              php -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json
+              php tests/stackcp_access_native.php
+            '
+      - name: Preserve named native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stackcp-access-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/stackcp-handoff-contract-default.json
+            qa/stackcp-handoff-contract-minimal.json
+            qa/stackcp-prerequisites-contract-default.json
+            qa/stackcp-prerequisites-contract-minimal.json
+            qa/stackcp-prerequisites-views-default.json
+            qa/stackcp-prerequisites-views-minimal.json
+            qa/stackcp-prerequisites-native-results.json
+            qa/provider-settings-native-results.json
+            qa/provider-inventory-native-results.json
+            qa/provider-checks-native-results.json
+            qa/stackcp-access-contract-default.json
+            qa/stackcp-access-contract-minimal.json
+            qa/stackcp-access-views-default.json
+            qa/stackcp-access-views-minimal.json
+            qa/stackcp-access-transport-default.json
+            qa/stackcp-access-transport-minimal.json
+            qa/stackcp-access-http-handler-results.json
+            qa/stackcp-access-native-results.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Explicit owner membership and whole-user grants observations plus retained protected setup. Synthetic disposable SQL, typed fixed GET, original keyed history, real cooldown and separate-process owner revocation. No token, session, provider grant edit, browser or live request.' >> "$GITHUB_STEP_SUMMARY"

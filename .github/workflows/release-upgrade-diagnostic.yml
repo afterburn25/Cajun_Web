@@ -1,0 +1,213 @@
+name: Published 1.24 upgrade diagnostic
+on:
+  push:
+    branches: [codex/release-1.25.0]
+    paths:
+      - '.github/workflows/release-upgrade-diagnostic.yml'
+      - 'tests/release_125_upgrade_acceptance.py'
+      - 'tests/release_125_upgrade_cases.py'
+      - 'tests/release_125_upgrade_guards.py'
+      - 'tests/release_125_upgrade_input_guards.py'
+      - 'tests/release_125_retention.py'
+      - 'tests/release_125_retention_fixture.php'
+      - 'tests/release_125_later_records.py'
+      - 'tests/organized_update_fixture.php'
+      - 'tests/inventory_retention_124_fixture.php'
+      - 'tests/structure_worker.php'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-upgrade-diagnostic-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  CWP_PHP_VERSION: '8.3'
+  CWP_DATABASE: mariadb-10.11
+  CWP_SOURCE_SHA: ${{ github.sha }}
+jobs:
+  published-upgrade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports: ['3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Bind exact diagnostic source
+        id: source
+        run: |
+          mkdir -p qa
+          python3 - <<'PY'
+          import hashlib,json,os,re,subprocess
+          from pathlib import Path
+          source=os.environ['GITHUB_SHA']
+          assert re.fullmatch('[0-9a-f]{40}',source)
+          assert subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()==source
+          subprocess.run(['git','diff','--exit-code','HEAD'],check=True)
+          paths=['.github/workflows/release-upgrade-diagnostic.yml','.github/workflows/application-tests.yml','tools/build.py','tools/acceptance_artifacts.py','tools/acceptance-contract.json','tests/acceptance_environment.py','tests/release_125_upgrade_acceptance.py','tests/release_125_upgrade_cases.py','tests/release_125_upgrade_guards.py','tests/release_125_upgrade_input_guards.py','tests/release_125_retention.py','tests/release_125_retention_fixture.php','tests/release_125_later_records.py','tests/organized_update_fixture.php','tests/inventory_retention_124_fixture.php','tests/structure_worker.php']
+          hashes={p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths}
+          for p in paths:
+              assert Path(p).read_bytes()==subprocess.check_output(['git','show',source+':'+p])
+          report={'schema':1,'source':source,'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}']).decode().strip(),'repository':os.environ['GITHUB_REPOSITORY'],'run':os.environ['GITHUB_RUN_ID'],'attempt':os.environ['GITHUB_RUN_ATTEMPT'],'selected':{'php':'8.3','database':'mariadb-10.11'},'source_hashes':hashes,'scope':'Supplementary published1.24 upgrade diagnostic; not full candidate or main acceptance.'}
+          assert report['repository']=='afterburn25/Cajun_Web'
+          Path('qa/release125-diagnostic-source.json').write_text(json.dumps(report,indent=2)+'\n')
+          PY
+      - name: Prepare selected CLI database Apache and Chromium
+        id: setup
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.mariadb.ports[3306] }}
+        run: |
+          mkdir -p qa
+          printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring apache2-bin libapache2-mod-php8.3
+          export PHP_BINARY=/usr/bin/php8.3
+          test -x "$PHP_BINARY"
+          test -s /usr/lib/apache2/modules/libphp8.3.so
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+          # This existing mode records actual CLI/minimal/PDO/server facts only.
+          # Four actual mod_php responses are recorded by the unchanged upgrade driver.
+          python3 tests/acceptance_environment.py --lane native
+      - name: Build the exact recorded candidate once
+        id: build
+        run: |
+          set -o pipefail
+          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/release125-diagnostic-build.txt
+      - name: Obtain only the immutable published 1.24 baseline
+        id: baseline
+        run: |
+          .ci-venv/bin/python - <<'PY'
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          from urllib.request import urlopen
+          sys.path.insert(0,'tests')
+          from release_125_upgrade_cases import BASELINE_SHA,BASELINE_SOURCE,unpack
+          assert BASELINE_SHA=='aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'
+          assert BASELINE_SOURCE=='7190b582a02be8a1daa501db14b5899cfc1eb5d0'
+          target=Path('test-runtime/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip')
+          assert not target.exists()
+          target.parent.mkdir(exist_ok=True)
+          url='https://github.com/afterburn25/Cajun_Web/releases/download/v1.24.0/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'
+          with urlopen(url,timeout=60) as response:
+              raw=response.read(64*1024*1024+1)
+          assert len(raw)<=64*1024*1024 and hashlib.sha256(raw).hexdigest()==BASELINE_SHA
+          target.write_bytes(raw)
+          unpack(target,Path('test-runtime/released-1.24.0'),BASELINE_SHA)
+          with zipfile.ZipFile(target) as z:
+              assert len(z.namelist())==2591
+              members={i.filename:{'bytes':i.file_size,'sha256':hashlib.sha256(z.read(i)).hexdigest()} for i in z.infolist()}
+          Path('qa/release125-diagnostic-baseline.json').write_text(json.dumps({'url':url,'source':BASELINE_SOURCE,'sha256':BASELINE_SHA,'bytes':len(raw),'members':members},indent=2)+'\n')
+          PY
+      - name: Existing upgrade comparator form and input guards
+        id: guards
+        run: |
+          .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
+          .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
+      - name: Actual published upgrade root and subfolder with and without rewriting
+        id: upgrade
+        run: .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+      - name: Verify source after success or failure
+        if: always()
+        id: mutation
+        run: |
+          python3 tools/acceptance_artifacts.py guard
+          git diff --exit-code HEAD
+      - name: Preserve bounded public evidence and honest diagnostic outcome
+        if: always()
+        id: evidence
+        env:
+          CWP_DIAGNOSTIC_OUTCOMES: >-
+            {"source":"${{ steps.source.outcome }}","setup":"${{ steps.setup.outcome }}","build":"${{ steps.build.outcome }}","baseline":"${{ steps.baseline.outcome }}","guards":"${{ steps.guards.outcome }}","upgrade":"${{ steps.upgrade.outcome }}","mutation":"${{ steps.mutation.outcome }}"}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,re,subprocess,zipfile
+          from pathlib import Path
+          def digest(raw): return hashlib.sha256(raw).hexdigest()
+          def allowed(name):
+              if name=='test-runtime/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip': return True
+              if re.fullmatch(r'qa/(?:release125-diagnostic-[A-Za-z0-9_-]+|apache-release125-[A-Za-z0-9_-]+)\.(?:json|txt|log|png)',name): return True
+              if name=='qa/native-environment-results.json': return True
+              return name in {'dist/manifest.json','dist/START-HERE.txt','dist/SHA256SUMS.txt'} or bool(re.fullmatch(r'dist/CajunWebPro-1\.25\.0-(?:FULL-PROJECT|COMPLETE-UPLOAD|UPDATE)\.(?:zip|manifest\.json|directories\.txt)',name))
+          source=os.environ['GITHUB_SHA'];outcomes=json.loads(os.environ['CWP_DIAGNOSTIC_OUTCOMES'])
+          assert set(outcomes)=={'source','setup','build','baseline','guards','upgrade','mutation'}
+          assert all(value in {'success','failure','cancelled','skipped'} for value in outcomes.values())
+          files={};folded=set()
+          for folder in ['qa','dist']:
+              if Path(folder).exists():
+                  for path in sorted(Path(folder).iterdir()):
+                      name=path.as_posix()
+                      assert not path.is_symlink() and path.is_file() and allowed(name),name
+                      assert name.casefold() not in folded
+                      folded.add(name.casefold());files[name]=path.read_bytes()
+          baseline=Path('test-runtime/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip')
+          if baseline.exists():
+              assert not baseline.is_symlink() and baseline.is_file()
+              assert digest(baseline.read_bytes())=='aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'
+              files[baseline.as_posix()]=baseline.read_bytes()
+          complete=all(value=='success' for value in outcomes.values())
+          validation_error=None
+          try:
+              if complete:
+                  assert baseline.as_posix() in files
+                  report=json.loads(files['qa/apache-release125-results.json'])
+                  expected={'root-rewrite','subfolder-rewrite','root-no-rewrite','subfolder-no-rewrite'}
+                  assert report['passed'] is True and report['failure'] is None and report['candidate_version']=='1.25.0'
+                  assert report['baseline_source']=='7190b582a02be8a1daa501db14b5899cfc1eb5d0'
+                  assert report['baseline_sha256']=='aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'
+                  assert len(report['cases'])==4 and {case['scope'] for case in report['cases']}==expected and all(case['passed'] is True for case in report['cases'])
+                  assert report['checks'] and all(check['passed'] is True for check in report['checks'])
+                  assert set(report['apache_http'])==expected and all(body['sapi']=='apache2handler' and re.fullmatch(r'8\.3\.\d+(?:[-+][A-Za-z0-9.+~-]+)?',body['version']) for body in report['apache_http'].values())
+                  assert len(report['evidence'])==16
+                  for name,facts in report['evidence'].items():
+                      raw=files['qa/'+name];assert facts=={'bytes':len(raw),'sha256':digest(raw)}
+                  for guard_name in ['apache-release125-guards-results.json','apache-release125-input-guards-results.json']:
+                      guard=json.loads(files['qa/'+guard_name]);assert guard['passed'] is True and guard['checks'] and all(check['passed'] is True for check in guard['checks'])
+                  runtime=json.loads(files['qa/native-environment-results.json'])
+                  assert runtime['passed'] is True and runtime['lane']=='native' and runtime['selected']=={'php':'8.3','database':'mariadb-10.11'}
+                  assert all(check['passed'] is True for check in runtime['checks'])
+                  manifest=json.loads(files['dist/manifest.json']);assert manifest['source_commit']==source and manifest['version']=='1.25.0'
+          except (AssertionError,KeyError,ValueError,TypeError) as error:
+              complete=False
+              validation_error={'type':type(error).__name__,'reason':'Diagnostic evidence validation failed.'}
+          receipt={'schema':1,'source':source,'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}']).decode().strip(),'repository':os.environ['GITHUB_REPOSITORY'],'run':os.environ['GITHUB_RUN_ID'],'attempt':os.environ['GITHUB_RUN_ATTEMPT'],'selected':{'php':'8.3','database':'mariadb-10.11'},'step_outcomes':outcomes,'diagnostic_complete':complete,'validation_error':validation_error,'full_acceptance':False,'release_clearance':False,'scope':'Only published1.24 upgrade four-scope diagnostic; complete candidate/main acceptance remains required.','files':{name:{'bytes':len(raw),'sha256':digest(raw)} for name,raw in files.items()}}
+          destination=Path('.release125-diagnostic');destination.mkdir(exist_ok=False)
+          with zipfile.ZipFile(destination/'evidence.zip','w',zipfile.ZIP_DEFLATED) as archive:
+              for name,raw in sorted(files.items()): archive.writestr(name,raw)
+          receipt['archive_sha256']=digest((destination/'evidence.zip').read_bytes())
+          (destination/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          if validation_error is not None: raise RuntimeError('Diagnostic evidence validation failed; exact evidence retained.')
+          PY
+      - name: Upload this attempt's immutable diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release125-upgrade-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .release125-diagnostic/evidence.zip
+            .release125-diagnostic/receipt.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error

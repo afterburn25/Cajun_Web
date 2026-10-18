@@ -33,7 +33,7 @@ final class TwentyIResultClassifier
         // Official provision-hosting-package-api: {"result": allocated package ID}.
         // Retain that ID for reconciliation, never substitute a domain-name match.
         // Mixed/error envelopes cannot silently ignore unvalidated siblings.
-        if ($operation === 'packages.create' && $body instanceof \stdClass
+        if (in_array($operation, ['packages.create','cloudsites.create'], true) && $body instanceof \stdClass
             && array_keys(get_object_vars($body)) === ['result']) {
             $id = $body->result;
             if (is_int($id) && $id > 0 && strlen((string)$id) <= 18) {

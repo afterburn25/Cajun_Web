@@ -158,6 +158,11 @@ final class ProviderGateway
      * resources, non-finite numbers, cycles and oversized graphs are
      * rejected rather than hashed ambiguously.
      */
+    public static function requestFingerprint(string $providerId, string $accountIdentity, ProviderOperation $operation): string
+    {
+        return self::fingerprint($providerId, $accountIdentity, $operation);
+    }
+
     private static function fingerprint(string $providerId, string $accountIdentity, ProviderOperation $operation): string
     {
         $nodes = 0;
