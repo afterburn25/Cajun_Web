@@ -152,6 +152,8 @@ jobs:
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright
           .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Linux recovery socket regression
+        run: .ci-venv/bin/python -B tests/hosting_catalog_recovery_socket_test.py --require-linux -v
       - name: Verify generated deployment and build exact source
         run: |
           PYTHONPATH=tools python3 -B -c 'import build; build.generated(False)'

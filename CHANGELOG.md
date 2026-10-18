@@ -1,3 +1,9 @@
+## Unreleased — hosting recovery test startup
+
+- Match the PHP test server's closed-connection address reuse during loopback preflight; active listeners still cause failure.
+- Retain only a fixed startup stage and bounded errno for preflight/log-open errors.
+- Require real Linux socket regressions before focused packaged hosting tests. Existing application checks, cleanup, complete-suite recipe and release assets are preserved.
+
 ## Development — checkout history and packaged acceptance, 2026-10-18
 
 - Show actual client confirmation and automatic agreement activation in checkout history; retain legacy staff attribution and remove the missing-creator warning.

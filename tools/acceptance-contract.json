@@ -790,8 +790,8 @@
       "site/app/staff/accounts.php": "772883771d8b51d4564d50a6363d9723060435fc60cc8910c689cfe2217e3579",
       "site/app/settings/store.php": "f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564",
       "tests/hosting_catalog_recovery_http.php": "b6b9e91ecfe29f881a6ad6e8add15cc057cb85fe974f8c82be529bb5e75f551a",
-      "tests/hosting_catalog_recovery_http.py": "ba76bcf656e9956ced5e68f893a7c6a9ab9023951472446ab2ac98026ec2afc8",
-      ".github/workflows/hosting-catalog-offers.yml": "bcf16628cad96337ebcfc03827c5db7fc184dfc722b4aefa1f1768fedd34f9de",
+      "tests/hosting_catalog_recovery_http.py": "87d2561a95c6202cdb13918ddc2eef1e7e40c1828183c8bc10d5ea8ba308886d",
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
       "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
       "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5",
       "site/app/plans/documents.php": "8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c",
@@ -829,7 +829,8 @@
       "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
       "site/portal/views/hosting_checkout.php": "d08933c1a538c06dd5143f6e2e2b5a2edf3aa4facb13df70f13b309169552b18",
       "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
-      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef"
+      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_catalog_recovery_socket_test.py": "1eda38a66123e3e56c647fc8e325b2e55136158d41f313443172bfb339104fc8"
     },
     "raw_evidence": {
       "role": "hosting-recovery-files",
@@ -1142,7 +1143,7 @@
       "tests/hosting_checkout_http_guards.py": "cb3c348d6766a27decd16b28285f123573ee476ac137e4662d704a931e0288b2",
       "site/includes/layout/plans.php": "c027ce40bf8048ccfb84a70a6b83c6a3bea22a5b87b97cebb9cee980c49cde07",
       "site/includes/layout/recurring_billing.php": "26745404c2f9d8a4539de4492bd89960542c927c38e5ef0712bb102a294b49b1",
-      ".github/workflows/hosting-catalog-offers.yml": "bcf16628cad96337ebcfc03827c5db7fc184dfc722b4aefa1f1768fedd34f9de"
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
     },
     "source_delta": {
       "site/includes/layout/plans.php": {
@@ -1205,7 +1206,7 @@
       },
       ".github/workflows/hosting-catalog-offers.yml": {
         "predecessor_sha256": "9fecd40bab5184a76654e4dcd12b7f1870a6cb5bc3182b3d0f8553dcc2ea5845",
-        "current_sha256": "bcf16628cad96337ebcfc03827c5db7fc184dfc722b4aefa1f1768fedd34f9de",
+        "current_sha256": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
         "replacements": [
           {
             "before": "      PHP_BINARY: /usr/bin/php8.3\n",
@@ -1222,6 +1223,10 @@
           {
             "before": "            qa/hosting-catalog-ui-native.log\n",
             "after": "            qa/hosting-catalog-ui-native.log\n            qa/hosting-checkout-ui-native.log\n            qa/hosting-checkout-native-results.json\n            qa/hosting-checkout-http-guards.json\n            qa/hosting-checkout-http/\n"
+          },
+          {
+            "before": "      - name: Verify generated deployment and build exact source\n",
+            "after": "      - name: Linux recovery socket regression\n        run: .ci-venv/bin/python -B tests/hosting_catalog_recovery_socket_test.py --require-linux -v\n      - name: Verify generated deployment and build exact source\n"
           }
         ]
       }

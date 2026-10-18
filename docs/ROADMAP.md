@@ -1,3 +1,7 @@
+## 2026-10-18 — hosting acceptance correction
+
+The first-invoice branch has a reviewed recovery startup correction with six passing portable regressions and 466 preserved artifact-helper outcomes. Two mandatory Linux socket regressions and corrected exact-source application/browser acceptance remain pending. The historical 512 native matrix supplies bounded successful evidence, while its whole run remains failed. [Exact scope and next checks](TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes). This does not complete checkout, full 20i, catalog images or a new release.
+
 ## 2026-10-18 — packaged checkout acceptance prepared
 
 Checkout implementation now has truthful linked agreement/billing histories and prepared packaged HTTP/Chromium acceptance, including existing/new projects, first unpaid invoice now, retries and denied authority. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Local 58-case renderer checks pass; the real Linux/browser, screenshot review, supported upgrade/recovery and release gates remain open. Full 20i, cloud catalog completeness and automatic provider images are not claimed complete.

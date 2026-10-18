@@ -1,3 +1,11 @@
+## 2026-10-18 — inspect first corrected recovery run
+
+Starting parent `c38e5b69f93228dad0192d5969b4c4c0a4107db3`, enclosing commit **Correct hosting recovery socket preflight and retain startup diagnostics**, on `codex/twentyi-hosting-first-invoice` / [PR219](https://github.com/afterburn25/Cajun_Web/pull/219). Only tests, focused CI wiring, exact source pins and continuity change; no shipping source changes. [Detailed scope](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes).
+
+Six portable regressions and 466 artifact-helper checks pass. The Linux-required command explicitly refuses Windows; its two real Linux methods and corrected packaged application remain pending. Preserve the original 512 failure and c38 queued run. Inspect the first automatic changed-source focused run, including the verbose Linux step, before crediting runtime acceptance; do not dispatch a duplicate or rerun an original run.
+
+The full owner API reference is already retained. The separate PHP-version options investigation still lacks exact documented response fields/container/setter identity; public version labels do not establish that contract. Only enabled in-app browser/MCP surfaces were inspected and contained no tabs. This is not a claim about sessions in other browsers. Continue the separate registrar nameserver proposal from its verified SDK example without mixing package-domain IDs or claiming live provider acceptance.
+
 ## 2026-10-18 — packaged checkout acceptance source
 
 Branch `codex/twentyi-hosting-first-invoice`, parent `7703cb73172c81e347eaf87885ad71315ae6563c`; enclosing commit: **Verify packaged checkout and preserve client history labels**. Two shared history renderers now support validated checkout documents, and the existing view fixture grows from 46 to 58 checks without replacing old assertions. Four new HTTP/Chromium/fixture/guard test files exercise the actual packaged site. Focused UI wiring seeds its own hcc_ native state before the browser continuation; full acceptance adds the same native tests and final browser/guard commands.

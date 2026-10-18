@@ -1,3 +1,9 @@
+## 2026-10-18 — recovery test startup correction
+
+The hosting first-invoice branch corrects the test server's loopback preflight and retains a bounded startup stage/errno when startup fails. The original application actions and cleanup remain unchanged. Six portable checks and all 466 existing artifact-helper checks pass; two real Linux socket regressions are now mandatory in the focused workflow. Corrected native/application/browser execution is still pending. [Evidence and scope](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes).
+
+The historical 512 run remains failed overall. Its four native matrix lanes have 28 verified reports with 3,168 exact named outcomes; its packaged recovery passed the 66-check absent phase before an OSError in the next phase. The original errno and exact startup stage were not retained, so TIME_WAIT is a hypothesis, not an established cause. Published 1.25, production and all original runs remain unchanged.
+
 ## 2026-10-18 — packaged checkout tests and truthful history labels
 
 The client checkout result links now show the actual confirming client and distinguish the application's automatic agreement activation. The old schedule view assumed a staff creator and would emit a PHP warning for checkout schedules; its correction preserves legacy staff history. Actual renderer checks pass 58 cases in each PHP mode, including all 46 preceding cases. [Current checkout scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).

@@ -75,3 +75,7 @@ The packaged test requires the original successful 79-check native report and it
 Next: inspect the first exact-source Linux/native/browser outcomes and all 12 captured images, then complete application/upgrade/recovery and release acceptance. A passing portable guard or prepared capture name is not a browser result. No new release is published or deployed until the applicable gates and exact downloaded release verification pass.
 
 The [full hosting acceptance work](TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and its original runs remain separate requirements. Automatic provider product images and full cloud catalog coverage remain unfinished; the saved owner API reference is already available and need not be requested again.
+
+## Recovery prerequisite correction
+
+The recovery runner retained from 512 can fail before the next packaged HTTP phase starts. A bounded test-only successor on parent c38 adds closed-connection reuse and safe stage/errno diagnostics, with a mandatory Linux regression step. [Original evidence, verified native scope and limits](TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes) distinguish the historical result from current checkout acceptance. Six portable and 466 artifact-helper checks pass; the two Linux socket methods and corrected exact-source packaged flow remain pending. Checkout behavior, financial records, shipping source and released packages are unchanged by this correction.
