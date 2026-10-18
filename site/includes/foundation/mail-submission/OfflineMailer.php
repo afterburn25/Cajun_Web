@@ -24,6 +24,12 @@ final class OfflineMailer extends PHPMailer
         $this->WordWrap=0;
     }
 
+    /** PHPMailer's empty() check drops a literal "0" plain alternative; the exact snapshot body must survive. */
+    public function alternativeExists()
+    {
+        return is_string($this->AltBody) && $this->AltBody!=='';
+    }
+
     /**
      * Force literal subject text through maintained Q encoding and UTF-8-aware
      * wrapping. This preserves edge spaces and literal encoded-word-looking

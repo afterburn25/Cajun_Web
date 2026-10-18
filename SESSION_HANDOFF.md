@@ -1,6 +1,16 @@
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
-## Active non-20i increment — folder-scoped mailbox browsing
+## Active non-20i increment — sanitized HTML alternative in drafts
+
+`devin/non20i-mail-html-compose` stacks on `devin/non20i-mail-flags` and delivers the mail roadmap's HTML composition item: an optional formatted alternative on saved drafts, sanitized by the new `ComposeHtml` foundation (maintained Symfony sanitizer, fixed email-safe subset, no remote content), stored in an additive `mail_drafts.body_html` column (marker stays `1` for release compatibility; populated version-1 installs ALTER in place via the same owner-gated setup, and edits are gated on the column via `mail_drafts_html_ready()`), fingerprinted in `SubmissionSnapshot` formats 5–8, and emitted by `PreparedMime` as `multipart/alternative` with the exact plain text always included. Editor/send-review/record views show the fragment inside the shared sandboxed `app/mail/document.php` frame; copied reply drafts keep it through `DraftOrigin`'s optional-key JSON. Pure suites green (32 formatted + 39 MIME + retained); native/HTTP/Apache lanes run in CI.
+
+Correction wave applied at `d2768611`+`3be6a7a7`+`ece18ef3`+`ad8bf45f` after coordinator review: marker-1 compatibility, aligned input/output bounds (61440), template-insert clears the alternative, unsaved-HTML recovery card, literal-`0` plain alternative via `OfflineMailer::alternativeExists()`, and canonical-JSON tamper-test fix. Next: CI acceptance on the pushed heads; remaining mail roadmap: OAuth/provider credentials (Codex lane); other non-20i areas per the roadmap.
+
+## Prior increment — explicit server read/unread flags
+
+`devin/non20i-mail-flags` (PR #194, stacked on `devin/non20i-mail-folders`) adds deliberate per-message read/unread sync: `FlagSession`/`FlagWriter` perform a fixed `SELECT "<folder>"` + `UID FETCH` + conditional `UID STORE ±FLAGS.SILENT (\Seen)` with UIDVALIDITY/existence fencing and no-op short-circuit; additive owner-gated `mail_flag_requests`/`mail_flag_results` journals; a mark button on the message view reconciles `mail_notice_items.server_seen`. Push/PR done; merge not claimed.
+
+## Prior increment — folder-scoped mailbox browsing
 
 `devin/non20i-mail-folders` stacks on `devin/non20i-mail-send-attachments` (`213325a4`) and delivers the remaining A-06 folder gap: header and exact-message reads can target any wire-safe server folder (`ReadSession::folder` — printable ASCII ≤64, no quote/backslash/wildcard; `EXAMINE "<name>"` stays read-only). `mail_inbox_reads` gains an additive `folder` column (`DEFAULT 'INBOX'`; storage version 2; version-1 installs ALTER through the same owner-gated `mail_inbox_setup`), `mail_message_reads.folder` journals message/attachment reads, and the transport's claimed folder is verified against the request on every path. A bounded select offers common folders plus the account's configured Sent folder. Bell notices and protected copied-draft origins remain INBOX-bound, so non-INBOX message pages hide Reply/Reply all/Forward. Pure session suite 53 checks; native/HTTP cases extended; `EXAMINE "Sent"` and missing-folder `NO` covered by the synthetic TLS fixture.
 

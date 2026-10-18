@@ -211,6 +211,17 @@ try {
     query('UPDATE '.table('mail_submission_files').' SET data=? WHERE submission_id=? LIMIT 1',['tampered',$attachId2]);
     su_deny('Damaged submission attachment refuses disclosure',fn()=>mail_submissions_get($attachId2));
     query('UPDATE '.table('mail_submission_files').' SET data=? WHERE submission_id=?',[$kept['data'],$attachId2]);
+    // Formatted alternative: prepare/snapshot/persisted-MIME round-trip and damage fence.
+    $richDraft=su_draft($a);mail_drafts_save($richDraft,1,$a,1,new DraftContent(['client@example.invalid'],['copy@example.invalid'],['private@example.invalid'],'Rich draft','Plain body','<p>Formatted <b>part</b></p>'));
+    $richId=mail_submissions_prepare(bin2hex(random_bytes(16)),$richDraft,2,1);
+    $richMessage=mail_submissions_message(mail_submissions_row($richId));
+    su_ok('Formatted alternative uses payload format 5 with exact alternative bytes',$richMessage->snapshot->privatePayload()['format']===5&&$richMessage->snapshot->privatePayload()['body_html']==='<p>Formatted <b>part</b></p>'&&str_contains($richMessage->bytes,'multipart/alternative'));
+    su_ok('Formatted submission reconstructs byte-exactly from private storage',mail_submissions_message(mail_submissions_row($richId))->bytes===$richMessage->bytes&&str_contains($richMessage->bytes,'Content-Type: text/html'));
+    $richPayload=one('SELECT payload_json FROM '.table('mail_submissions').' WHERE id=?',[$richId])['payload_json'];
+    $tampered=$richMessage->snapshot->privatePayload();$tampered['body_html']='<p>tampered</p>';
+    query('UPDATE '.table('mail_submissions').' SET payload_json=? WHERE id=?',[json_encode($tampered,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),$richId]);
+    su_deny('Damaged formatted alternative refuses disclosure',fn()=>mail_submissions_get($richId));
+    query('UPDATE '.table('mail_submissions').' SET payload_json=? WHERE id=?',[$richPayload,$richId]);
     su_actor(2);
     $metadata=json_encode(all('SELECT detail FROM '.table('audit')." WHERE action LIKE 'mail_submissions.%'"));su_ok('Audit omits subject/body and recipient identities',!str_contains($metadata,'SYNTHETIC_SUBMISSION')&&!str_contains($metadata,'private@example.invalid')&&!str_contains($metadata,'client@example.invalid'));
     su_ok('Private original mailbox and provider keys stay exact',file_get_contents($private.'/mail-master.key')===$mailKey&&file_get_contents($private.'/provider-master.key')===$providerKey);

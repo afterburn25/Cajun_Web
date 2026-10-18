@@ -23,7 +23,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <section class="workspace-card"><h2><?=esc($status['title'])?></h2><p><?=esc($status['text'])?></p><p>This saved version already has a submission record. Opening this page does not repeat it.</p><a class="btn outline" href="<?=esc(admin_url('mail-submission',['submission_id'=>$existing['id']]))?>">View the existing submission</a></section>
 <?php else:
 $review=$view==='mail-send';
-$content=$review?['from'=>$data['account']['address'],'to'=>$data['draft']['to'],'cc'=>$data['draft']['cc'],'bcc'=>$data['draft']['bcc'],'subject'=>$data['draft']['subject'],'body'=>$data['draft']['body']]:$data['row']['content'];
+$content=$review?['from'=>$data['account']['address'],'to'=>$data['draft']['to'],'cc'=>$data['draft']['cc'],'bcc'=>$data['draft']['bcc'],'subject'=>$data['draft']['subject'],'body'=>$data['draft']['body'],'body_html'=>$data['draft']['html']??($data['draft']['body_html']??null)]:$data['row']['content'];
 $draft=$review?$data['draft']['id']:$data['row']['draft_id'];
 ?>
 <?php if(!$review): ?><section class="workspace-card" role="status"><h2><?=esc($data['status']['title'])?></h2><p><?=esc($data['status']['text'])?></p><p>Prepared <?=esc($data['row']['created_at'])?> UTC · Saved draft version <?=(int)$data['row']['draft_revision']?></p><?php if($data['row']['result']): ?><p>Result recorded <?=esc($data['row']['result']['finished_at'])?> UTC</p><?php endif; ?></section>
@@ -44,7 +44,9 @@ $draft=$review?$data['draft']['id']:$data['row']['draft_id'];
 <?php $files=$review?($data['files']??[]):($content['attachments']??[]); ?>
 <section aria-label="Message attachments" data-mail-submission-files><h3>Attachments</h3>
 <?php if($files): foreach($files as $file): ?><p><strong><?=esc($file['name'])?></strong> · <?=esc($file['mime'])?> · <?=(int)$file['bytes']?> bytes</p><?php endforeach; else: ?><p class="hint">No files are attached to this saved message.</p><?php endif; ?></section>
-<h3><?=esc($content['subject']!==''?$content['subject']:'No subject')?></h3><div class="formatted" data-mail-submission-body><?=nl2br(esc($content['body']))?></div></section>
+<h3><?=esc($content['subject']!==''?$content['subject']:'No subject')?></h3><div class="formatted" data-mail-submission-body><?=nl2br(esc($content['body']))?></div>
+<?php if(($content['body_html']??null)!==null): ?><p class="hint">This saved message also sends a sanitized formatted alternative:</p>
+<iframe class="message-formatted" data-mail-submission-formatted title="Formatted message alternative" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="<?=esc(mail_message_document($content['body_html']))?>"></iframe><?php endif; ?></section>
 <?php if($review): ?><section class="workspace-card"><h2>Send this saved message</h2><form method="post" action="<?=esc(admin_url('mail-send',['draft_id'=>$draft]))?>" data-mail-submission-confirm>
 <?php admin_action('mail_submissions_send'); ?><input type="hidden" name="submission_id" value="<?=esc($data['submission_id'])?>"><input type="hidden" name="draft_id" value="<?=esc($draft)?>"><input type="hidden" name="draft_revision" value="<?=(int)$data['draft']['revision']?>"><input type="hidden" name="account_revision" value="<?=(int)$data['account']['revision']?>">
 <label><input type="checkbox" name="confirm_send" value="1" required> I reviewed the sending account, To/Cc/Bcc recipients, attachments and saved message above.</label>

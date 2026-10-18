@@ -7,7 +7,15 @@ def run(env):
     check(label + ' original 1.21 edited and discarded drafts survive update and recovery', records('drafts') == prior_drafts and len(prior_drafts['drafts']) == 2 and len(prior_drafts['history']) == 4 and sorted(x['status'] for x in prior_drafts['drafts']) == ['discarded', 'draft'] and prior_retained())
     draft = next(x for x in prior_drafts['drafts'] if x['status'] == 'draft')
     detail = url + '/admin/index.php?view=mail-draft&draft_id=' + draft['id']
+    drafts_library = url + '/admin/index.php?view=mail-drafts'
     library = url + '/admin/index.php?view=mail-submissions'
+    r = session.get(detail)
+    check(label + ' 1.21 draft storage requires owner preparation for the formatted column', 'Prepare formatted drafts' in r.text and BeautifulSoup(r.text, 'html.parser').select_one('[data-mail-draft-editor]') is None)
+    r = session.post(drafts_library, data={'csrf': token(session.get(drafts_library)), 'action': 'mail_drafts_setup', 'current_password': 'Wrong synthetic password'})
+    check(label + ' draft upgrade setup refuses wrong password', 'current password' in r.text)
+    r = session.post(drafts_library, data={'csrf': token(session.get(drafts_library)), 'action': 'mail_drafts_setup', 'current_password': password})
+    expected = [{**row, 'body_html': None} for row in prior_drafts['drafts']]
+    check(label + ' additive draft upgrade preserves every prior draft and revision row', 'Local email drafts are ready' in r.text and records('drafts')['drafts'] == expected and records('drafts')['history'] == prior_drafts['history'] and prior_retained())
     r = session.get(detail)
     check(label + ' original draft remains editable before submission setup', 'Original 1.21 edited text' in r.text and BeautifulSoup(r.text, 'html.parser').select_one('[data-mail-draft-editor]') is not None)
     r = session.get(library)
@@ -15,7 +23,7 @@ def run(env):
     r = session.post(library, data={'csrf': token(r), 'action': 'mail_submissions_setup', 'current_password': 'Wrong synthetic password'})
     check(label + ' submission setup refuses wrong password', 'current password' in r.text and 'Prepare email submissions' in r.text)
     r = session.post(library, data={'csrf': token(r), 'action': 'mail_submissions_setup', 'current_password': password})
-    check(label + ' submission setup is empty additive and keeps prior private records', 'Email submission storage is ready' in r.text and records('submissions') == {'intents': [], 'dispatches': [], 'results': []} and records('drafts') == prior_drafts and prior_retained() and records('provider') == restored)
+    check(label + ' submission setup is empty additive and keeps prior private records', 'Email submission storage is ready' in r.text and records('submissions') == {'intents': [], 'dispatches': [], 'results': []} and records('drafts')['drafts'] == expected and records('drafts')['history'] == prior_drafts['history'] and prior_retained() and records('provider') == restored)
     records('submissions-seed')
     saved = records('submissions'); drafts = records('drafts')
     check(label + ' synthetic accepted uncertain unresolved and abandoned records exist', len(saved['intents']) == 4 and len(saved['dispatches']) == 3 and sorted(x['status'] for x in saved['results']) == ['accepted', 'unknown'])

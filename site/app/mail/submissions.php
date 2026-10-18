@@ -32,18 +32,21 @@ function mail_submissions_message(array $row):PreparedMime {
         $p=json_decode($row['payload_json'],true,16,JSON_THROW_ON_ERROR);
         $base=['format','id','author_id','draft_id','draft_revision','account_id','account_revision','from','message_id','prepared_epoch','to','cc','bcc','subject','body'];
         $format=is_array($p)?($p['format']??null):null;$thread=null;$origin=null;$attachments=[];
-        if($format===1||$format===3) {
-            if($format===1&&array_keys($p)!==$base)throw new InvalidArgumentException('Invalid preparation format.');
-            if($format===3&&array_keys($p)!==[...$base,'attachments'])throw new InvalidArgumentException('Invalid preparation format.');
-        }elseif($format===2||$format===4) {
-            $keys=[...$base,'thread','origin_fingerprint'];
-            if($format===4)$keys[]='attachments';
-            if(array_keys($p)!==$keys)throw new InvalidArgumentException('Invalid preparation format.');
-            $thread=MessageThread::fromStored(is_array($p['thread'])?$p['thread']:[]);
-            if(!is_string($p['origin_fingerprint']))throw new InvalidArgumentException('Invalid copied draft binding.');
+        if(!is_int($format)||$format<1||$format>8)throw new InvalidArgumentException('Invalid preparation format.');
+        // Formats are 1 + thread(1) + attachments(2) + formatted alternative(4).
+        $html=$format>=5;$hasThread=$format%2===0;$hasAttach=in_array($format,[3,4,7,8],true);$keys=$base;
+        if($html)$keys[]='body_html';
+        if(!$hasThread) {
+            if($hasAttach)$keys[]='attachments';
+        }else {
+            $keys[]='thread';$keys[]='origin_fingerprint';
+            if($hasAttach)$keys[]='attachments';
+            if(!is_string($p['origin_fingerprint']??null))throw new InvalidArgumentException('Invalid copied draft binding.');
+            $thread=MessageThread::fromStored(is_array($p['thread']??null)?$p['thread']:[]);
             $origin=$p['origin_fingerprint'];
-        }else throw new InvalidArgumentException('Invalid preparation format.');
-        if($format>=3) {
+        }
+        if(array_keys($p)!==$keys)throw new InvalidArgumentException('Invalid preparation format.');
+        if($hasAttach) {
             if(!is_array($p['attachments'])||!array_is_list($p['attachments']))throw new InvalidArgumentException('Invalid attachment descriptors.');
             $stored=mail_submission_files($row['id']);
             if(count($stored)!==count($p['attachments']))throw new InvalidArgumentException('Invalid attachment set.');
@@ -51,8 +54,9 @@ function mail_submissions_message(array $row):PreparedMime {
             $attachments=$stored;
         }
         foreach(['from','subject','body'] as $field)if(!is_string($p[$field]))throw new InvalidArgumentException('Invalid private text.');
+        if($html&&!is_string($p['body_html']))throw new InvalidArgumentException('Invalid private text.');
         foreach(['to','cc','bcc'] as $field)if(!is_array($p[$field]))throw new InvalidArgumentException('Invalid private recipients.');
-        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch'],$thread,$origin,$attachments);
+        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body'],$html?$p['body_html']:null),(int)$row['prepared_epoch'],$thread,$origin,$attachments);
         if($p!==$snapshot->privatePayload() || $row['payload_json']!==json_encode($snapshot->privatePayload(),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) || !hash_equals($snapshot->fingerprint,$row['snapshot_fingerprint']))throw new InvalidArgumentException('Invalid private fingerprint.');
         $mime=PreparedMime::fromSnapshot($snapshot);
         if(!hash_equals($mime->sha256,$row['mime_sha256']) || !hash_equals($mime->bytes,$row['mime_bytes']))throw new InvalidArgumentException('Invalid saved MIME.');
@@ -152,7 +156,7 @@ function mail_submissions_authorize(array $row,PreparedMime $mime):array {
     }
     // A changed saved row at an unchanged revision is damaged, not a new review.
     $p=$mime->snapshot->content;
-    if([$content->to,$content->cc,$content->bcc,$content->subject,$content->body]!==[$p->to,$p->cc,$p->bcc,$p->subject,$p->body])throw new RuntimeException('The reviewed draft content changed. No message was submitted.');
+    if([$content->to,$content->cc,$content->bcc,$content->subject,$content->body,$content->html]!==[$p->to,$p->cc,$p->bcc,$p->subject,$p->body,$p->html])throw new RuntimeException('The reviewed draft content changed. No message was submitted.');
     // Attachment changes always bump the saved revision; a same-revision
     // difference means damaged storage rather than a reviewed edit.
     if($mime->snapshot->attachments!==[]&&!mail_files_ready())throw new RuntimeException('Saved submission files are unsupported. Existing data was preserved.');

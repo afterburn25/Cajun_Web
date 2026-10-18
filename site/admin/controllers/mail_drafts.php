@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
 require_once CWP_CODE_ROOT.'/app/mail/replies.php';
 require_once CWP_CODE_ROOT.'/app/mail/files.php';
+require_once CWP_CODE_ROOT.'/app/mail/document.php';
 
 use CajunWebPro\Foundation\MailCompose\DraftAttachment;
 use CajunWebPro\Foundation\MailCompose\DraftContent;
@@ -20,13 +21,14 @@ function mail_drafts_form_content(array $input):DraftContent {
         $value=mail_drafts_form_text($input,$key,5600);
         $lists[]=trim($value,' ')===''?[]:explode(',',$value);
     }
-    return new DraftContent(...[...$lists,mail_drafts_form_text($input,'subject',200),mail_drafts_form_text($input,'body',40000)]);
+    $html=mail_drafts_form_text($input,'body_html',65536);
+    return new DraftContent(...[...$lists,mail_drafts_form_text($input,'subject',200),mail_drafts_form_text($input,'body',40000),mail_drafts_html($html)]);
 }
 /** Display only: preserve entered Unicode after byte-limit errors; never use this for persistence. */
 function mail_drafts_form_values(array $input):array {
     $values=[];
     // HTML maxlength measures characters, so allow four UTF-8 bytes per displayed character.
-    foreach(['to'=>22400,'cc'=>22400,'bcc'=>22400,'subject'=>800,'body'=>160000] as $key=>$limit) {
+    foreach(['to'=>22400,'cc'=>22400,'bcc'=>22400,'subject'=>800,'body'=>160000,'body_html'=>262144] as $key=>$limit) {
         $value=$input[$key]??'';$values[$key]=is_string($value)?substr($value,0,$limit):'';
     }
     return $values;
@@ -141,14 +143,15 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
             $rows=$account===''?[]:(mail_replies_ready()?mail_drafts_combined_list($account,$status,$page):mail_drafts_list($account,$status,$page));
             return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$rows];
         }
-        $values=['to'=>'','cc'=>'','bcc'=>'','subject'=>'','body'=>''];$revision=0;
+        $values=['to'=>'','cc'=>'','bcc'=>'','subject'=>'','body'=>'','body_html'=>''];$revision=0;
         if($row) {
             foreach(['to','cc','bcc'] as $key)$values[$key]=implode(', ',$row[$key]);
             foreach(['subject','body'] as $key)$values[$key]=$row[$key];
+            $values['body_html']=$row['html']??($row['body_html']??'');
             $revision=(int)$row['revision'];
         }
         $sender=$account!==''?$account.':'.($row['account_revision']??$accounts[$account]['revision']):'';
-        $editable=!$row||$row['status']==='draft';$unsaved=null;
+        $editable=(!$row||$row['status']==='draft')&&(!empty($row['copied'])||mail_drafts_html_ready());$unsaved=null;
         // A concurrent discard must not erase text submitted from an earlier edit tab.
         // Keep the retained saved record separate, under the same current author/account gate.
         if($post&&$row&&!$editable&&in_array($_POST['action']??null,['mail_drafts_save','mail_drafts_preview','mail_drafts_insert','mail_drafts_accounts','mail_drafts_templates'],true)) {
@@ -169,7 +172,8 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         }
         if($id==='')$id=bin2hex(random_bytes(16));
         if($preview&&($_POST['action']??'')==='mail_drafts_insert') {
-            $values['subject']=$preview->subject;$values['body']=$preview->body;
+            // The template supplies plain content only; replacing the message also clears the formatted alternative.
+            $values['subject']=$preview->subject;$values['body']=$preview->body;$values['body_html']='';
         }
         $templates=[];$templatePage=max(1,min((int)($_POST['template_page']??1),100000));$templateSearch=mail_drafts_form_text($_POST,'template_search',120);
         if(staff_can('mail.templates.manage',$actor)&&mail_templates_ready())$templates=mail_templates_list('active',$templateSearch,$templatePage);
@@ -197,6 +201,12 @@ function mail_drafts_admin_render(string $view,string $error,?DraftContent $prev
         }else echo '<p>An owner must prepare drafts before you can use them.</p>';
         echo '</section>';
     }else {
+        if(!mail_drafts_html_ready()) {
+            echo '<section class="workspace-card"><h2>Prepare formatted drafts</h2><p>Writing drafts and the optional formatted alternative need current draft storage columns. An owner prepares this once; existing drafts and submission history are preserved.</p>';
+            if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare formatted drafts</button></form>';}
+            else echo '<p>An owner must prepare formatted drafts before editing.</p>';
+            echo '</section>';
+        }
         if(!mail_replies_ready()) {
             echo '<section class="workspace-card"><h2>Prepare protected Reply and Forward drafts</h2><p>Replying to or forwarding an inbox message copies it into a protected private draft. An owner prepares this storage once; existing drafts and submission history are preserved.</p>';
             if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_replies_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare Reply and Forward drafts</button></form>';}
