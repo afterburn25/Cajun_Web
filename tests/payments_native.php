@@ -53,7 +53,36 @@ try{
     pay_ok('Synthetic timeout keeps a distinct unverified state',payments_verify('sandbox',2,$password,fn()=>[0,''])==='unavailable');
     pay_deny('Credentials rotated during authentication cannot receive stale success',fn()=>payments_verify('sandbox',2,$password,function() use($password){payments_save('sandbox',2,[],$password);return [200,'{"messages":{"resultCode":"Ok","message":[{"code":"I00001"}]}}'];}));
     pay_ok('Rotation invalidates last check',payments_gateway('sandbox')['validation']==='not_verified'&&payments_gateway('sandbox')['validated_at']===null);
-    pay_deny('Authentication attempts are rate limited',fn()=>payments_verify('sandbox',3,$password,$transport));
+    // This isolated fixture must not depend on the earlier checks sharing a 15-minute bucket.
+    if(config()['db']['prefix']!=='payci_'||(int)payments_owner($password)['id']!==1)throw new LogicException('Unexpected payment rate fixture scope.');
+    $rateOriginal=all('SELECT * FROM '.table('rate_limits').' ORDER BY bucket');$rateSaved=[];
+    $rateWindow=(int)floor(time()/900);$rateBuckets=[];$ratePassed=false;$rateCalls=0;
+    foreach([$rateWindow,$rateWindow+1] as $window){
+        $bucket=hash('sha256','payment-verify-1|'.$window);$rateBuckets[$bucket]=($window+1)*900;
+        $rateSaved[$bucket]=one('SELECT * FROM '.table('rate_limits').' WHERE bucket=?',[$bucket]);
+    }
+    $rateGateway=all('SELECT * FROM '.table('payment_gateways').' ORDER BY id');$rateAudit=all('SELECT * FROM '.table('audit').' ORDER BY id');
+    try{
+        foreach($rateBuckets as $bucket=>$expires)query('INSERT INTO '.table('rate_limits').' (bucket,attempts,expires) VALUES (?,3,?) ON DUPLICATE KEY UPDATE attempts=3,expires=VALUES(expires)',[$bucket,$expires]);
+        $ratePrepared=all('SELECT * FROM '.table('rate_limits').' ORDER BY bucket');$rateDenied=false;
+        try{payments_verify('sandbox',3,$password,function($body) use(&$rateCalls,$transport){$rateCalls++;return $transport($body);});}
+        catch(RuntimeException $e){if($e instanceof PDOException)throw $e;$rateDenied=$e->getMessage()==='Wait 15 minutes before another connection check.';}
+        $rateAfter=all('SELECT * FROM '.table('rate_limits').' ORDER BY bucket');$rateMatches=0;
+        foreach(array_keys($rateBuckets) as $bucket){
+            $expected=$ratePrepared;
+            foreach($expected as &$row)if($row['bucket']===$bucket)$row['attempts']++;
+            unset($row);if($rateAfter===$expected)$rateMatches++;
+        }
+        $ratePassed=$rateDenied&&$rateCalls===0&&$rateMatches===1&&in_array((int)floor(time()/900),[$rateWindow,$rateWindow+1],true)
+            &&all('SELECT * FROM '.table('payment_gateways').' ORDER BY id')===$rateGateway&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$rateAudit;
+    }finally{
+        // Restore only the two temporary fixture rows, including any original attempts/expiry.
+        foreach($rateSaved as $bucket=>$row){
+            if($row===null)query('DELETE FROM '.table('rate_limits').' WHERE bucket=?',[$bucket]);
+            else query('UPDATE '.table('rate_limits').' SET attempts=?,expires=? WHERE bucket=?',[$row['attempts'],$row['expires'],$bucket]);
+        }
+    }
+    pay_ok('Authentication attempts are rate limited',$ratePassed&&all('SELECT * FROM '.table('rate_limits').' ORDER BY bucket')===$rateOriginal);
     payments_save('sandbox',3,[],$password,true);pay_ok('Explicit clear removes only chosen environment',payments_gateway('sandbox')['validation']==='not_configured'&&payments_gateway('production')['validation']==='not_verified');
     $request=pay_request(str_repeat('1',64),'milestone');$r=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$request]);
     pay_ok('Request uses authoritative existing invoice identity and amount',$r['amount_cents']===12510&&$r['client_id']===1&&$r['job_id']===1&&$r['purpose']==='milestone');

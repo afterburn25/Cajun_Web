@@ -38,9 +38,13 @@ foreach([
 check($authorized===0,'all request rejections avoid credential authority callback and network');
 try{$transport->send(new TransportRequest('GET',TwentyIAdapter::URL,$headers));}catch(LogicException){check($authorized===1,'current authority can stop valid request before network');}
 $writeHeaders=$headers+['Content-Type'=>'application/json'];
+$before=$authorized;
+refuses(fn()=>$transport->send(new TransportRequest('POST','https://api.20i.com/reseller/*/renewDomain',$writeHeaders,'{"delete-id":[42]}')),'renewal refuses unrelated write body before authorization');
+check($authorized===$before,'malformed renewal body never reaches authority/network');
 foreach(['addWeb','updatePackage','deleteWeb','renewDomain'] as $endpoint){
     $before=$authorized;
-    try{$transport->send(new TransportRequest('POST','https://api.20i.com/reseller/*/'.$endpoint,$writeHeaders,'{"delete-id":[42]}'));check(false,'write authorization gate '.$endpoint);}
+    $body=$endpoint==='renewDomain'?'{"name":"renew.example","years":2,"renewPrivacy":false}':'{"delete-id":[42]}';
+    try{$transport->send(new TransportRequest('POST','https://api.20i.com/reseller/*/'.$endpoint,$writeHeaders,$body));check(false,'write authorization gate '.$endpoint);}
     catch(LogicException){check($authorized===$before+1,'current authority stops catalogued write before network '.$endpoint);}
 }
 foreach(['../7','0','self','12.3','123?x=1','*/*','foo-bar'] as $id){

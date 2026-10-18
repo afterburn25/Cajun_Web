@@ -53,13 +53,28 @@ final class InventoryRegister
             ),
             InventoryRead::DOMAINS_LIST => new InventoryCapability(
                 InventoryRead::DOMAINS_LIST, 'GET', '/domain',
-                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
-                'Owner-upload L1259-1265: heading says list but prose describes a summary record — shape unresolved; identity-only projection may legitimately return zero ids.'
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
+                '20i-authored SDK 1.0.6 registrar example: list of id/name objects; only those fields projected. Coverage, registration status and entitlements remain unknown.'
             ),
             InventoryRead::SERVICE_CHANGES => new InventoryCapability(
                 InventoryRead::SERVICE_CHANGES, 'GET', '/reseller/{resellerId}/serviceChangeData',
                 InventoryCapability::RISK_SENSITIVE_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
                 'Service-change requests, IDs and statuses for reconciliation (owner-upload L50-56). Schema undocumented; identity-only projection retains ids.'
+            ),
+            InventoryRead::CLOUD_SERVERS_LIST => new InventoryCapability(
+                InventoryRead::CLOUD_SERVERS_LIST, 'GET', '/cloud_server',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
+                'Public Cloud Hosting API guide shows a list with allocated ID, name, location, configuration and package IDs. Bounded metadata projection; ambiguous flags/count are omitted. No authenticated cloud read is claimed.'
+            ),
+            InventoryRead::DOMAIN_REGISTRATION_PERIODS => new InventoryCapability(
+                InventoryRead::DOMAIN_REGISTRATION_PERIODS, 'GET', '/domain-period',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
+                'Owner full reference34e713c3 lines1233-1237 defines dotted TLD keys and integer registration-year arrays. Only observed registration options; no prices, renewal eligibility or live account acceptance.'
+            ),
+            InventoryRead::CLOUD_PROVIDERS_LIST => new InventoryCapability(
+                InventoryRead::CLOUD_PROVIDERS_LIST, 'GET', '/reseller/*/cloudProviders',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
+                'Owner reference SHA25634e713c3, lines2666-2672 documents account-available provider identifiers. Exact list projection only; no specifications, pricing or authenticated read is claimed.'
             ),
         ];
     }
@@ -89,10 +104,10 @@ final class InventoryRegister
         ];
     }
 
-    /** The only operation whose response shape has evidence enough to project fully. */
+    /** Operations with implemented allowlist projections of documented metadata. */
     public static function projectable(string $operation): bool
     {
-        return $operation === InventoryRead::PACKAGES_LIST;
+        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST], true);
     }
 
     /** Operations whose list responses support the identity-only projection. */
