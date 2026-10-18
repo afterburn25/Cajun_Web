@@ -1,3 +1,8 @@
+## 2026-10-17 — stabilize copy-migration foreign-key verification
+
+Commit08600bed makes the sent-copy migration compare relationships order-insensitively. `mail_copy_attempts` declares two single-column foreign keys; `information_schema.KEY_COLUMN_USAGE` reports both at ORDINAL_POSITION1, so ordering by that column left their relative order to engine defaults and the strict per-column check falsely refused fresh storage with `Incompatible copy relationships`. Found rows now order by COLUMN_NAME and the expected relation list is sorted to match; count, referenced table/column and RESTRICT-rule checks are unchanged. The fix is cascaded through reply-all, send-attachments, folders, flags and html-compose after the corrected mail-replies base (a382bed6, bba1e1cb) unmasked it downstream.
+
+## 2026-10-16 — publish the concrete release freeze and branch
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
 ## 2026-10-17 - complete acceptance job allowance
@@ -256,6 +261,16 @@ Actions: `tests/mail_reply_cases.py` now prints the recorded `ci_mail_submission
 Tests: `python -m py_compile` clean; inventory refreshed after the revert. CI reruns will report the outcome directly.
 
 Next: read the diagnostic, fix the real authorize/transport defect, remove the print, re-run full acceptance.
+
+## Sent-folder synchronization for accepted submissions — 2026-10-16
+
+Request: continue #157 non-20i roadmap; the mail roadmap's Sent-folder synchronization gap. Starting commit: `devin/non20i-mail-attachments` tip `921f7c53`, new branch `devin/non20i-mail-sent-sync`.
+
+Actions: added `foundation/mail-receiving/AppendSession.php` and `SentCopy.php` (mirrored to `site/includes/`) — a fixed APPEND-only session (CWA tags, capability negotiation, TLS/STARTTLS identical to the read path, AUTHENTICATE PLAIN, single literal continuation, `fwriteLiteral` bounded write, exact tagged final response) plus `ReadProfile::Append`, `ReceivingStream::fwriteLiteral`, and `folder` added to `ReceivingFailure`'s finite codes; added `site/database/schema/mail_copies_schema.php` + `mail_copies_migrate.php` creating `mail_sent_folders`, `mail_copy_attempts`, `mail_copy_results` under owner-password gated additive migration with strict relation/collation validation; added `site/app/mail/copies.php` — `mail_sent_folder_save` (owner-only, wire-unsafe names refused), `mail_copy_status`, immutable `mail_copy_record` (conflicting results refuse, never rewrite), and `mail_submission_copy` with a durable attempt fence before transport, current-authority revalidation inside the IMAP session at each boundary, dedupe of recorded `appended` results, and 2-second account plus 60/hour actor limits; wired `mail_accounts_sent_setup`/`mail_accounts_sent_folder` and `mail_submissions_copy_sent` controller actions, account settings card and submission detail copy form/result.
+
+Tests: `php -l` clean on all touched PHP; `tests/mail-receiving/append_test.php` 32/32 pass (acceptance, folder refusal, auth/protocol/timeout/authorization-loss boundaries, unsafe names, oversized/malformed/non-ASCII payload refusal, literal-injection refusal, budget bounds); receiving suites unchanged-pass; `tests/mail_submissions_native.php` extended (setup gating, dedupe fence, mid-copy grant loss, folder refusal retry, author isolation); `mail_submissions_cases.py` extended (no silent append on send, folder setup, wire-unsafe names, byte-exact fixture append, dedupe replay, folder refusal, non-author refusal); `mail_inbox_http_server.py` gained `append`/`append-refused` modes; `apache_acceptance.py` and `mail-receiving.yml` updated; attachment test `require` fixed for the now-canonical bootstrap class. Build refresh clean: 2204 receiving files byte-identical, 40 locked packages, pinned PHPMailer and submission bundles verified. Native/HTTP lanes run in CI; no real mailbox, provider or deployment acceptance is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-attachments`, update #157.
 
 ## Receive-side mail attachments — 2026-10-16
 
@@ -2270,6 +2285,7 @@ Original9779 is now classified as a runner105-minute timeout, with140/141 checkp
 
 Continue roadmap and keep the published assignment directly usable. Start main00201b98798f08ea4eee2ffc2336438bf2a74c3e. Commit description: Record StackCP candidate tests and direct Devin repair priorities. Rewrite current status/handoff/checkpoint, updateREADME/roadmap/coordination/changelog/start-here/fullassignment and preserve old detail through immutable Git links. Runtime remains on reviewed3fa72d7b; first focused38933590118 is active. Parent5bfd focused38931463106 passes four755-check native environments plus260distro checks (proofab93db13); original cccf/2a/9779 failures are classified. Fresh PR state158–175 preserves unchanged reviewed158/159/161 findings and stacked dependencies. This commit changes only Markdown; no runtime/installer/version/asset/live state. Documentation validation follows before publication. Next: verify original focused artifacts and actual query profiles, continue bounded PHP-settings work and complete full/combined/release acceptance.
 
+- 2026-10-17 mail-sent-sync: corrected the 'Server folder refusal records a bounded failure without copy claims' expectation (9051a74d). The APPEND literal is always transmitted before the server's NO, so the fixture's `appended` bytes are the refused submission's MIME — comparing to the earlier accepted MIME could never hold. Now asserts the fixture received exactly the refused submission's bytes. Cascaded through reply-all (ff0e120e), send-attachments (a6a74d82), folders (2d19a992), flags (3fe1a281) and html-compose (4fa5d1ae); inventories verified on every branch.
 
 ## 2026-10-15 — Preserve current main and repair replacement rollback during20i integration
 

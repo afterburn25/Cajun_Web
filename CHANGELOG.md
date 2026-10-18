@@ -1,3 +1,7 @@
+## Sent-folder synchronization for accepted mail — 2026-10-16
+
+On `devin/non20i-mail-sent-sync` (stacked on `devin/non20i-mail-attachments`), an owner can name each account's server Sent folder and staff can then save an exact copy of a server-accepted submission into it. A new bounded `AppendSession`/`SentCopy` pair in the canonical mail-receiving foundation performs a fixed IMAP `APPEND "folder" (\Seen) {length}` sequence — capability negotiation, STARTTLS or implicit TLS 1.2/1.3 with pinned verification, AUTHENTICATE PLAIN, one literal continuation, bounded literal write of the already-accepted stored MIME bytes — over the same verified endpoint/TLS policy as receiving. `mail_accounts` is untouched; additive `mail_sent_folders`, `mail_copy_attempts` and `mail_copy_results` tables record owner-set folders and deduplicated finite copy outcomes (`appended` or bounded failure codes including `folder` refusal). The explicit `mail_submissions_copy_sent` POST rechecks current author, send grant, account revision, accepted status, folder setting and exact MIME hash at every boundary; replayed copies refuse without appending twice, and acceptance never appends silently. Coverage: pure append protocol suite, native storage/authorization/failure/retry assertions, HTTP TLS-fixture byte-exact append and refusal cases, Apache denial and CI lane updates.
+
 ## Unreleased — record observed cloud null response
 ## Receive-side mail attachments with authorized downloads — 2026-10-16
 
