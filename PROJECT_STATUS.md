@@ -1,3 +1,9 @@
+## 2026-10-18 — packaged owner recovery checks prepared
+
+The hosting successor adds an explicit HTTP-test opt-in after its exact-source COMPLETE and UPDATE packages are built. Four isolated installed copies exercise the real staged owner page with absent, empty, published and withdrawn hosting history. Tests cover package validation, CSRF, current owner/password, backup confirmation, permitted recovery and retained-history refusal. They verify business rows, table definitions, files and private media while separately checking expected authentication/rate/audit bookkeeping. [Scope and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
+All 88 original hosting assertions and the separate 44-case native recovery continuation are preserved. Source/syntax review, 57 portable checks and 18 modeled bookkeeping checks per PHP mode pass; actual packaged SQL/HTTP results remain pending. This uses complete synthetic journals with real same-source packages, not a published-baseline or interrupted-upgrade acceptance result. The 1.26 release candidate remains separate. CI-only [PR218](https://github.com/afterburn25/Cajun_Web/pull/218) is merged on main; its trigger changes do not alter these preserved original runs.
+
 ## 2026-10-18 — protect hosting history during file recovery
 
 The hosting-commerce successor now guards the staged owner updater before restoring files. It rechecks current owner access under the shared account/publication lock and permits absent or validated empty hosting history. Any publication, including a withdrawn offer, or incomplete/unrecognized history blocks automatic file recovery. Historical updater copies and manual file replacement remain outside this safeguard. [Recovery behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).

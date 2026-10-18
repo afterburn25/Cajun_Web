@@ -1,3 +1,11 @@
+## 2026-10-18 — run packaged owner recovery continuation
+
+Parent `6cf7a8f82bfa87f3bdc3d8565a24ddc3b3072a29`, branch `codex/twentyi-hosting-commerce`: two test helpers and five additive native-fixture hooks enable actual staged-owner HTTP checks only in the focused packaged UI seed step, after building exact-source COMPLETE and UPDATE archives. Original 88 assertions, native SQL recovery opt-in, browser runner and production updater/recovery are unchanged. The artifact also retains the UPDATE package and finite per-phase HTTP results; private configurations, cookies, sessions and saved database rows are excluded.
+
+Source review and 57 portable checks pass; extracted bookkeeping validation passes 18 modeled checks in each normal/minimal PHP mode. Review actual Linux SQL/HTTP results before claiming acceptance. Preserve original run39103179668 and older originals for their own sources. A later run of this commit must pass all four HTTP phases, original native checks and existing browser checks, followed by inspection of the ten real captures. Complete synthetic journals do not replace interrupted or published-baseline upgrade testing.
+
+The full-suite wiring and collision-free fixture namespace are prepared separately but not applied. Keep the corrected 1.26 full runs and release publication gates independent. Main now includes CI trigger correction [PR218](https://github.com/afterburn25/Cajun_Web/pull/218), merge `e397d9a6`; no existing run was canceled. Next: preserve new original results, finish focused acceptance, then integrate full-suite and real upgrade coverage. Published 1.25.0 remains immutable.
+
 ## 2026-10-18 — hosting recovery safeguard checkpoint
 
 Parent `28351f7132b821d4f98a50580ed0e76a34481c7d`, branch `codex/twentyi-hosting-commerce`: `site/app/hosting/catalog_recovery.php` now wraps only the owner updater's recovery call. The generic filesystem engine and its original fixtures remain unchanged. The wrapper rejects inherited transactions, reloads current owner settings/account/password under the staff mutex, validates real hosting history and the exact table namespace, and holds that mutex through permitted file recovery. Existing updater locking, CSRF, password, backup confirmation and rate bookkeeping remain.

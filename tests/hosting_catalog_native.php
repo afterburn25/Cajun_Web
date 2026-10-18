@@ -7,6 +7,7 @@ require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/hosting/catalog_offers.php';
 if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')require_once __DIR__.'/hosting_catalog_recovery_native.php';
+if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')require_once __DIR__.'/hosting_catalog_recovery_http.php';
 use CajunWebPro\Foundation\Provider\TransportResponse;
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventorySnapshot};
 use CajunWebPro\Foundation\TwentyIInventoryReader\PackageTypes;
@@ -92,11 +93,13 @@ try {
     $before=hcn_state();hcn_ok('Hosting readiness is read-only before explicit preparation',!hcn_ready()&&hcn_state()===$before);
     hcn_ok('Unprepared anonymous hosting read validates history once and stays empty',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0&&hcn_state()===$before);
     if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')hcr_phase('absent');
+    if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')hch_phase('absent');
     hcn_deny('Hosting preparation requires the current owner password',fn()=>hosting_catalog_prepare('wrong'));
     hcn_owner(2);hcn_deny('Delegated administrator cannot prepare hosting offer storage',fn()=>hosting_catalog_prepare($password));hcn_owner();
     hosting_catalog_prepare($password);$before=hcn_state();hosting_catalog_prepare($password);hcn_ok('Repeated hosting preparation preserves all database rows',hcn_ready()&&hcn_state()===$before);
     hcn_ok('Prepared empty hosting page validates history once without writes',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0&&hcn_state()===$before);
     if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')hcr_phase('empty');
+    if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')hch_phase('empty');
     hcn_deny('Hosting publication rejects mismatched product and plan price',fn()=>hosting_catalog_preview(hcn_id(20),$product,hcn_id(1)));
     catalog_save($product,2,$input);hcn_deny('Hosting publication rejects a different mapped provider type',fn()=>hosting_catalog_preview(hcn_id(20),$product,hcn_id(1)));
     $configuration['type']='7001';$mapping=provider_plan_catalog_save(hcn_id(11),hcn_id(1),$plan->revision(),$plan->fingerprint(),$mapping['id'],$profile,1,$configuration,7,true,$password);
@@ -110,6 +113,7 @@ try {
     $publication=hosting_catalog_publish(hcn_id(20),$product,hcn_id(1),$review['review_sha256'],$password);$before=hcn_state();
     hcn_ok('Exact publication replay retains one immutable publication',hosting_catalog_publish(hcn_id(20),$product,hcn_id(1),$review['review_sha256'],$password)->json()===$publication->json()&&hcn_state()===$before);
     if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')hcr_phase('published');
+    if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')hch_phase('published');
     $_SESSION=[];$public=hosting_catalog_public();$card=$publication->historicalProjection();
     hcn_ok('Anonymous hosting cards have exactly the closed safe projection',$public===['offers'=>[$card],'has_more'=>false,'unavailable'=>false]&&array_keys($card)===['publication_id','publication_sha256','product_id','product_revision','sku','title','summary','amount_cents','currency','cadence','inclusions','exclusions','limits','support','image_id']);
     $bytes=json_encode($public,JSON_THROW_ON_ERROR);hcn_ok('Hosting public cards expose plan terms without private import or provider values',!str_contains($bytes,$secret)&&!str_contains($bytes,$profile)&&!str_contains($bytes,'PRIVATE_')&&!str_contains($bytes,'credential_sha256')&&!str_contains($bytes,'source_key_fingerprint')&&$card['inclusions']===$terms['inclusions']&&$card['exclusions']===$terms['exclusions']&&$card['support']===$terms['support']);
@@ -192,6 +196,7 @@ try {
     hcn_ok('Offer withdrawal replay preserves exact history',hcn_state()===$before&&hosting_catalog_public()===['offers'=>[],'has_more'=>false,'unavailable'=>false]);
     hcn_ok('Empty withdrawn page still validates all retained history once',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0&&hcn_state()===$before);
     if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')hcr_phase('withdrawn');
+    if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')hch_phase('withdrawn');
     hcn_client();hcn_deny('Withdrawn offer refuses a new client request',fn()=>hosting_catalog_request(hcn_id(107),hcn_id(20),$publication->fingerprint(),1));
     hcn_ok('Own historical request replay survives offer withdrawal',hosting_catalog_request(hcn_id(101),hcn_id(20),$publication->fingerprint(),1)->json()===$request->json());
     $history=hosting_catalog_client_requests(1);$states=array_column($history['requests'],'status','id');hcn_ok('Withdrawal retains exact client terms and prior request outcomes',count($history['requests'])===5&&array_column($history['requests'],'offer')===array_fill(0,5,$card)&&$states[hcn_id(101)]==='offered'&&$states[hcn_id(103)]==='pending'&&$states[hcn_id(104)]==='withdrawn'&&$states[hcn_id(105)]==='declined');

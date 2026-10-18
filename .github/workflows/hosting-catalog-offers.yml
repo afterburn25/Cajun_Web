@@ -139,6 +139,8 @@ jobs:
           mkdir -p qa
           python3 tools/build.py --commit "$GITHUB_SHA" > qa/hosting-catalog-ui-build.log 2>&1
       - name: Seed actual isolated native hosting history
+        env:
+          CWP_TEST_HOSTING_RECOVERY_HTTP: "1"
         run: '"$PHP_BINARY" tests/hosting_catalog_native.php > qa/hosting-catalog-ui-native.log 2>&1'
       - name: Actual packaged owner client and agreement browser flow
         run: .ci-venv/bin/python -B tests/hosting_catalog_browser.py
@@ -155,7 +157,11 @@ jobs:
             qa/hosting-catalog-ui-native.log
             qa/hosting-catalog-native-results.json
             qa/hosting-catalog-http/
+            qa/hosting-catalog-recovery-http-results.json
+            qa/hosting-catalog-recovery-http/
             dist/*-COMPLETE-UPLOAD.zip
             dist/*-COMPLETE-UPLOAD.manifest.json
+            dist/*-UPDATE.zip
+            dist/*-UPDATE.manifest.json
           if-no-files-found: error
           retention-days: 14
