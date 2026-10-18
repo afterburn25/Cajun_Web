@@ -1,3 +1,25 @@
+## 2026-10-18 — complete captured-image inventory and StackCP correction
+
+All 340 original captured extents now have finite visual receipts: 324 browser images and 16 Apache images, with no duplicate or unassigned browser images. This closes the captured-image inventory, not the content hidden by overlays or outside scrolling regions. The [review and correction record](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction) retains those limits.
+
+Two StackCP test fixtures now check the original desktop/mobile layouts first, then capture five tall mobile cards below the header and focused skip link. Five new checks verify complete card bounds and unobscured hit points. Twelve synthetic local Chromium cases and all 262 artifact-helper checks pass; actual corrected application images remain pending. No shipping code or workflow changes. Published 1.25.0 remains the latest verified release.
+
+The owner reference is retained; no resend is needed. Automatic provider artwork and complete cloud catalog mapping remain unresolved. A bounded [Devin PR198 source follow-up](https://github.com/afterburn25/Cajun_Web/pull/198#issuecomment-6251229265) confirms its two previous defects are addressed in source; queued native/HTTP/upgrade acceptance still prevents integration clearance.
+
+## 2026-10-18 — further candidate image review
+
+The direct hosting catalog candidate remains under release verification. First full capture-corrected [run39134909145](https://github.com/afterburn25/Cajun_Web/actions/runs/39134909145) is queued at immutable `78f45bd8cda7df89494c4ecaaa762ea14170227f`; the original f67 final aggregation is also queued. Neither was rerun or replaced. Published 1.25.0 remains the latest verified release.
+
+Another 115 original browser captures have finite visual receipts: StackCP14, mail23, website delivery/licensing12, client/activity/support14 and hosting commerce52. Five StackCP mobile section captures obscure upper content beneath the sticky header; those areas remain unverified. Minor spacing/inner-card overruns and companion-covered section gaps are recorded separately. This is visual progress, not full release acceptance. [Evidence and remaining work](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18).
+
+The complete owner API reference is retained and its hash was rechecked. Official documentation confirms separate HostShop product and image setup without supplying the missing reseller catalog image contract. No resend is needed; automatic provider images and cloud catalog imports remain unfinished. No application, test, workflow, released asset or production setting changes in this checkpoint.
+
+## 2026-10-18 — capture readiness and actual candidate image review
+
+Original candidate `f67b1631683b29096dd8ec1daee405e104dc0b83` has successful build, Apache, native/browser and recovery jobs in [run39098482550](https://github.com/afterburn25/Cajun_Web/actions/runs/39098482550); final acceptance remains queued. The retained browser partition contains 167 reports and 20,749 passing named executions, including 3,149 HTTP checks. These results do not certify all remaining runtime or release gates.
+
+On separate `codex/release126-capture-readiness`, actual image inspection led to test-only corrections: reveal motion content and decode images before the fresh-root capture, prove the image-save button reachable at the original viewport before capturing its complete card, and wait for the mobile domain-search drawer to close. Shipping files are unchanged. Local Chromium root probes pass 25 named checks; a separate domain capture probe preserves ten original viewport outcomes. The existing artifact helper suite passes 262. Corrected full-application captures remain pending. [Evidence, limits and next steps](docs/RELEASE_CAPTURE_READINESS_1.26.0.md). Published 1.25.0 and original candidate runs remain intact; no deployment occurred.
+
 ## 2026-10-18 — browser fixture ordering correction
 
 The original browser checkpoint39093140366 failed after 1,225 successful HTTP checks: the new catalog fixture made six simulated reads before an unchanged provider-setup test required zero prior calls. All 31 catalog HTTP checks passed. The same ordering exists in frozen `6e3dbeff`. Move only the catalog callback after the existing scheduler callback; retain every assertion and original result. Shipping files are unchanged. The corrected descendant still requires complete candidate/main/browser/release acceptance. See [test record](docs/TEST_REPORT_1.26.0.md). Published 1.25.0 remains unchanged; hosting-order backend work stays on a separate branch.

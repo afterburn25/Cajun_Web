@@ -6,6 +6,24 @@ import requests
 from playwright.sync_api import expect
 from release_version import VERSION
 
+def prepare_root_capture(page, check):
+    """Visit actual content so motion and lazy loading cannot leave a blank full-page capture."""
+    page.evaluate('document.fonts.ready')
+    cards = page.locator('.service-card,.project-card,.promise-card,.timeline-item,.content-card')
+    check('Root-domain capture contains real content cards', cards.count() > 0)
+    for card in cards.all():
+        card.scroll_into_view_if_needed()
+        expect(card).to_have_css('opacity', '1')
+    for image in page.locator('img').all():
+        image.scroll_into_view_if_needed()
+        expect(image).to_be_visible()
+        if image.evaluate('async image => {await image.decode();return image.complete && image.naturalWidth > 0;}') is not True:
+            raise AssertionError('Root-domain image did not decode')
+    check('Root-domain capture reveals every content card', cards.evaluate_all("items => items.every(item => getComputedStyle(item).opacity === '1')"))
+    check('Root-domain capture loads every image', page.locator('img').evaluate_all('images => images.length > 0 && images.every(image => image.complete && image.naturalWidth > 0)'))
+    page.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})')
+    page.wait_for_function('window.scrollX === 0 && window.scrollY === 0')
+
 def fixture_command(request):
     result=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps(request),text=True,capture_output=True,check=True)
     return json.loads(result.stdout)
@@ -307,5 +325,7 @@ def run_browser(env,browser,fixture):
             except requests.RequestException:time.sleep(.1)
         root_context=browser.new_context(viewport={'width':390,'height':844});p=root_context.new_page();p.goto('http://127.0.0.1:8092/',wait_until='networkidle')
         check('Root-domain links use the configured root',p.locator('a[href="http://127.0.0.1:8092/index.php?page=services"]').count()>0)
-        check('Root-domain favicon loads',requests.get('http://127.0.0.1:8092/images/icons/favicon.png').content==(ROOT/'site/images/icons/favicon.png').read_bytes());p.screenshot(path=str(QA/'Fresh-Root-Mobile.png'),full_page=True);root_context.close()
+        check('Root-domain favicon loads',requests.get('http://127.0.0.1:8092/images/icons/favicon.png').content==(ROOT/'site/images/icons/favicon.png').read_bytes())
+        prepare_root_capture(p, check)
+        p.screenshot(path=str(QA/'Fresh-Root-Mobile.png'),full_page=True);root_context.close()
     finally:server.terminate();server.wait(timeout=10);root_config.write_bytes(original)

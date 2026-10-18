@@ -99,9 +99,27 @@ def run_browser(env, browser):
         context = browser.new_context(); context.add_cookies([{'name': c.name, 'value': c.value, 'domain': c.domain, 'path': c.path} for c in owner.cookies]); page = context.new_page(); errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))
         for width, height, label in [(1440, 1050, 'Desktop'), (320, 740, 'Mobile')]:
-            page.set_viewport_size({'width': width, 'height': height}); page.goto(url); page.evaluate('document.fonts.ready'); target = page.locator(own); expect(target).to_be_visible(); target.screenshot(path=str(qa / (title + '-' + label + '.png')))
+            page.set_viewport_size({'width': width, 'height': height}); page.goto(url); page.evaluate('document.fonts.ready'); target = page.locator(own); expect(target).to_be_visible(); target.scroll_into_view_if_needed()
             check(title + ' ' + label + ' fits viewport', page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
             check(title + ' ' + label + ' action text fits', target.locator('button').evaluate_all('''buttons => buttons.length > 0 && buttons.every(b => {const r=b.getBoundingClientRect(),f=b.closest('form').getBoundingClientRect(),t=document.createRange();t.selectNodeContents(b);return r.left>=f.left-1&&r.right<=f.right+1&&b.scrollWidth<=b.clientWidth+1&&[...t.getClientRects()].every(x=>x.left>=r.left-1&&x.right<=r.right+1&&x.top>=r.top-1&&x.bottom<=r.bottom+1);})'''))
+            if label == 'Mobile':
+                # Original viewport/action checks above remain at 320x740. Only the capture is taller.
+                page.set_viewport_size({'width': width, 'height': 1500})
+                target.evaluate("el => el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'})")
+                capture_ready = '''el => {
+                    const r=el.getBoundingClientRect(), h=document.querySelector('.admin-topbar').getBoundingClientRect();
+                    const s=document.querySelector('.skip-link').getBoundingClientRect();
+                    const skipOverlaps=s.right>r.left&&s.left<r.right&&s.bottom>r.top&&s.top<r.bottom;
+                    return innerWidth===320&&r.width>0&&r.height>0&&r.left>=0&&r.right<=innerWidth
+                        &&r.top>=h.bottom+1&&r.bottom<=innerHeight-1&&!skipOverlaps
+                        &&[.02,.5,.98].every(x=>[.01,.5,.99].every(y=>{
+                            const hit=document.elementFromPoint(r.left+r.width*x,r.top+r.height*y);
+                            return hit!==null&&(hit===el||el.contains(hit));
+                        }));
+                }'''
+                page.wait_for_function(capture_ready, arg=target.element_handle())
+                check(title + ' Mobile capture is unobscured', target.evaluate(capture_ready))
+            target.screenshot(path=str(qa / (title + '-' + label + '.png')))
         check(title + ' has no script errors', not errors); context.close()
 
     provider.stackcp_membership = [{'identity': 'stack-user:99999', 'email': 'discarded-stackcp@example.invalid'}, {'identity': identity}]

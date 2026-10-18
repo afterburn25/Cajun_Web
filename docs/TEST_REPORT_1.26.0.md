@@ -1,5 +1,23 @@
 # CajunWebPro 1.26.0 candidate test record
 
+## 2026-10-18 — captured inventory closed; StackCP capture correction
+
+A finite receipt union verifies exactly 324 original browser images plus 16 previously reviewed Apache images, with no duplicates or unassigned browser images. The 358 referenced files and original browser image bytes match their receipts. This is closure of already-performed visual reviews, not a new visual or runtime pass and not credit for obscured/off-capture content.
+
+The two StackCP fixtures preserve all original predicates, viewport sizes, provider actions and report/image names. Five mobile captures use 320x1500 only after the original 320x740 checks and add full-target/header/skip-link/hit-point assertions. Twelve actual synthetic file-only Chromium cases passed, including retained keyboard focus; 69 independent source checks confirm the exact inverse and preserved actions. After integration, all 262 artifact-helper checks and Python syntax/source-hash checks pass. No database, HTTP or provider execution is represented by those local results.
+
+[Exact receipts, findings and next acceptance](RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction). The unchanged shipping source needs no installer regeneration. Original source78 full run39134909145 remains queued; the latest changed test source needs its own first full execution. No 1.26 release clearance.
+
+## 2026-10-18 — further visual evidence, original runs queued
+
+First full changed-source run39134909145 is queued at78f45bd8; original f67 run39098482550 still has its four successful partitions and queued final aggregation. No rerun, cancellation or additional dispatch occurred. Separate PHP-controls run39132700033 remains queued. These states are not passing acceptance.
+
+115 additional original browser captures have completed finite captured-extent reviews. The [review guide](RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18) preserves exact receipts, uncovered StackCP headings and qualified companion coverage. The earlier Apache16 receipt was integrity-rechecked against its original artifact and image bytes; no new Apache run or repeated visual pass is claimed. No new application/native/HTTP tests ran for this documentation-only checkpoint.
+
+## 2026-10-18 — actual parent results and capture correction
+
+At f67, original run39098482550 passes build, Apache, native/browser and recovery; final aggregation is still queued. The verified browser partition has 167 reports / 20,749 passing named executions, including 3,149 HTTP executions, and 324 original PNGs. The final required image inventory remains 340 including 16 Apache images. Counts are not complete visual acceptance. [Capture evidence and correction](RELEASE_CAPTURE_READINESS_1.26.0.md) records exact original archive identity, inspected scopes, concrete capture limits and pending successor execution. The 25 local Chromium readiness checks and 262 offline helper checks do not replace native application acceptance.
+
 This records the assembled candidate on `codex/twentyi-direct-hosting-catalog`, parent `12da59d15dfdc4b31fd7859c6e377e66ce8daf09`. It does not certify a release or deployment. [Scope](RELEASE_SCOPE_1.26.0.md) and [update instructions](MIGRATION-INSTRUCTIONS-1.26.0.md) describe the intended increment. Published 1.25.0 remains immutable.
 
 ## Existing feature evidence

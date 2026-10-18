@@ -79,6 +79,8 @@ def run_browser(env,browser):
     check('Chromium domain form reaches the isolated provider exactly once',provider_server.calls==calls+1)
     for width,height,label in [(1440,1050,'Desktop'),(320,740,'Mobile')]:
         page.set_viewport_size({'width':width,'height':height});page.evaluate('document.fonts.ready');page.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})')
+        if label=='Mobile':
+            expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
         page.screenshot(path=str(QA/('Domain-Search-'+label+'.png')),full_page=True)
         check('Domain search '+label+' fits the viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Domain-search browser has no script errors',not errors);context.close()

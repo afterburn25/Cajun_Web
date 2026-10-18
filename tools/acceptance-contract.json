@@ -501,7 +501,7 @@
       }
     },
     "source_sha256": {
-      "tests/release_cases.py": "807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af",
+      "tests/release_cases.py": "ae8ed0e7ed76e09b66683fec602eb75ead10308774f39c335748761b0804876e",
       "tests/license_release_cases.py": "f4734915f8c50afd652bfd352888f363e3144d4ba7f3515a49ff729881fa1599",
       "tests/license_release_browser_fixture.php": "9b0b4f72b1ed9281332afbf3b5060fef98d43501e3685bd4bc3c51c703d91bc9",
       "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
@@ -569,7 +569,7 @@
     "source_sha256": {
       "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
       "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c",
-      "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
+      "tests/provider_catalog_import_cases.py": "5ae2d360360a9f4ce0cedc2bb851282369b62f7db9067595955fde59305472f3"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout.",
     "provenance_fixture_correction": {
@@ -697,5 +697,46 @@
       "tests/release_126_upgrade_input_guards.py": "e7f1381a05715d0d84a8508d8ed833f1dfd248098e7ed22d30b5f906f8cc2245"
     },
     "scope": "Actual published1.25 original with populated business, licensing, inventory imports and images; explicit catalog activation after recovery/reapply; synthetic transport only."
+  },
+  "capture_readiness_correction": {
+    "parent": "f67b1631683b29096dd8ec1daee405e104dc0b83",
+    "source_changes": {
+      "tests/release_cases.py": {
+        "before": "807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af",
+        "after": "ae8ed0e7ed76e09b66683fec602eb75ead10308774f39c335748761b0804876e"
+      },
+      "tests/provider_catalog_import_cases.py": {
+        "before": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5",
+        "after": "5ae2d360360a9f4ce0cedc2bb851282369b62f7db9067595955fde59305472f3"
+      },
+      "tests/provider_domain_search_cases.py": {
+        "before": "145cf9131d668cd4d273daab99b9321b95f4a1010db15e3f1dc03cf72fd12201",
+        "after": "cb9e087de651ada8c24f1cdc4dbc6b7e1b9b4624c55c1431eac11ee89c19ac1b"
+      }
+    },
+    "added_named_outcomes": 7,
+    "scope": "Preserve every original assertion, provider action, report and screenshot name. Add real root-page scroll/reveal/image readiness and original-viewport image-save target checks, then a taller same-width section capture. Wait for the mobile domain-search drawer to leave the viewport. No shipping CSS or runtime changes."
+  },
+  "stackcp_capture_readiness_correction": {
+    "parent": "7a65b9ecd6b5b70fda58258fcb20c8c3f0935554",
+    "source_changes": {
+      "tests/stackcp_access_cases.py": {
+        "before": "bf79b3b87172c01d9e51bd4461a9f2614efc1699c8240333e1a3bd35f394229b",
+        "after": "9c09c2e95b03f940356f0eae31668c7dc2de771b33be5288c0cf705aabfd465c"
+      },
+      "tests/stackcp_prerequisites_cases.py": {
+        "before": "92b4116d89a8d51ea1b926114325f7c4d12130c85e50e88d7807e81b24c2990a",
+        "after": "3147923ed55bc720d064d9ca1c08dc617d63d8e2dd965cbcc2d410957e428c0d"
+      }
+    },
+    "added_named_outcomes": 5,
+    "named_outcomes": [
+      "StackCP-Access-Matched Mobile capture is unobscured",
+      "StackCP-Access-Unavailable Mobile capture is unobscured",
+      "StackCP-Access-Empty Mobile capture is unobscured",
+      "StackCP-Setup-Key Mobile capture is unobscured",
+      "StackCP-Setup-Unverified Mobile capture is unobscured"
+    ],
+    "scope": "Preserve original predicates, 1440x1050 and 320x740 checks, provider actions and all report/screenshot names. After original viewport checks, capture five mobile cards at 320x1500 with complete-target, header/skip-link separation and hit-point checks. No content, focus, CSS, runtime or workflow changes."
   }
 }

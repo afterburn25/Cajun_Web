@@ -1,3 +1,15 @@
+## Unreleased — capture complete mobile StackCP cards
+
+Keep the original layout/action checks at their existing viewports, then capture five tall StackCP mobile cards with complete bounds below the header and skip link. Add five unobscured-capture checks. Close the finite inventory review of all 340 original captured extents while preserving overlay/scrolling limits. These changes affect tests and documentation; shipping behavior and published 1.25.0 remain unchanged.
+
+## Unreleased — expand candidate visual evidence
+
+Record115 additional browser-image reviews and their limits, including five StackCP mobile captures with covered headings. Verify the retained complete20i reference and preserve the original queued test runs. Documentation only; no application, test, workflow or released-package changes.
+
+## Unreleased — wait for release captures to be ready
+
+Scroll the actual fresh-root content into view and decode its images before taking the full-page screenshot. Verify the imported-image Save button is reachable at the original mobile size, then capture the whole card at the same width with additional height. Wait for the domain-search mobile drawer to leave the viewport before capture. Preserve original assertions, report/image names and application behavior. These test corrections address observed capture gaps; corrected application acceptance is pending.
+
 ## Unreleased — isolate direct catalog browser fixture ordering
 
 Run the new catalog browser callback after the existing provider/scheduler callbacks so its six simulated reads do not invalidate older zero-prior-call assertions. Keep all test predicates and deployment bytes unchanged. Original failed evidence remains retained; corrected full acceptance is pending.

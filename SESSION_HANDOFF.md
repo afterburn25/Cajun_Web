@@ -1,3 +1,27 @@
+## 2026-10-18 — complete captured-image inventory and StackCP correction
+
+Continue on `codex/release126-capture-readiness`, starting this correction from `7a65b9ecd6b5b70fda58258fcb20c8c3f0935554`. The enclosing commit is intended as `test: capture complete mobile StackCP cards`. Only two browser fixtures, additive contract metadata and seven continuity documents change. All original assertions, 320x740 layout checks, actions and report/image names remain. Five affected screenshots alone use 320x1500 after those checks.
+
+The [finite image closure](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction) covers all 340 original captured extents. Do not repeat the completed reviews. Fresh-root reveal/image, imported-image card, domain drawer and five StackCP capture corrections still require actual corrected application pixels. Wix/payment/support scrolling limits and companion-covered section overlays remain explicit; hidden content receives no credit.
+
+Local checks pass: 12 synthetic Chromium cases in the proposal, 69 independent source checks and 262 artifact-helper checks after integration. No full application run is claimed. Next: commit/push this coherent correction, dispatch its first full default application test once, preserve the existing original runs and review results when available. Original 78 run39134909145 and f67 aggregation39098482550 were still queued at this checkpoint; f67 runtime39098588864 was executing its browser step. Separate PHP-controls run39132700033 remains independent. Do not cancel or rerun those originals.
+
+Devin PR198 head `f717a118e45003528d79e6656f7f6c5eabdaa103` addresses the prior project-quota lock and missing established binding-history findings in source; [review](https://github.com/afterburn25/Cajun_Web/pull/198#issuecomment-6251229265). Three PHP syntax checks pass. Native/HTTP/upgrade results are still queued and no merge is authorized by this source-only review. The app could not attach the PR because the chat already has 100 attachment identities; GitHub remains available. No production or published asset changed.
+
+## 2026-10-18 — further candidate image review
+
+Continue from `codex/release126-capture-readiness`, code/test source `78f45bd8cda7df89494c4ecaaa762ea14170227f`. Its first full run39134909145 remains queued; original f67 aggregation39098482550 remains queued. The separate PHP-controls first run39132700033 is also queued. Preserve these originals; this documentation follow-up does not justify another application dispatch. Remote main was verified as `e397d9a6e293850e8dff61a593e3ba39ee178400`.
+
+Root completed 63 additional browser-image extents; catalog completed its52-image hosting-commerce scope. [The review record](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18) binds every receipt and the five uncovered StackCP mobile headings. The existing Apache16 receipt and original archive were found and integrity-rechecked; do not repeat that completed visual review. Directory30 and package38 review assignments continue, followed by the remaining provider17, billing17 and public15 groups. Collect their concrete findings before making a consolidated capture-only correction. Full runtime, all-image, integration and publication gates remain.
+
+The owner-supplied 3,116-line API reference is present and checksum-correct. Continue from it and official20i sources; do not ask the owner to resend it. No new cloud provider request or image fetch was performed. Devin retains non-20i implementation ownership; published1.25 and production remain unchanged.
+
+## 2026-10-18 — finish the capture-readiness correction
+
+Work on `codex/release126-capture-readiness`, parent `f67b1631683b29096dd8ec1daee405e104dc0b83`; intended commit: `test: wait for visible content before release captures`. The original direct-hosting branch and PR216 are preserved at f67. Only acceptance tests, their source contract and continuity documentation change. [Detailed evidence](docs/RELEASE_CAPTURE_READINESS_1.26.0.md) distinguishes actual parent images, synthetic Chromium probes and pending corrected application execution.
+
+Independent final source review is clear and final local checks pass. Next: commit/push this bounded correction and execute its first full acceptance workflow. Preserve all original queued/failed/cancelled runs; do not rerun them or substitute their metadata. Full candidate/runtime/main/compatibility/image/download gates remain. Do not infer release clearance from successful parent partitions or local static fixtures. The PHP-version-controls lane is separate at `7af25ed5`; its first native/browser workflow39132700033 remains queued. Complete cloud catalog and automatic image mappings remain unresolved; the saved owner API documentation is available and need not be requested again.
+
 ## 2026-10-18 — resume after browser fixture correction
 
 Parent `6e3dbeff6dc6359a418837d0c95baa43e4c92533` is not accepted: original checkpoint39093140366 exposes a shared simulated-provider call-counter ordering conflict also present in that parent. The enclosing correction only moves the two-line catalog browser invocation after scheduler tests. Preserve the original 39093901565/39093902783/39093904062/39093905330 full runs and PR39093892253; do not treat their successful partitions as full acceptance. Fresh corrected-source runs are required. [Test record and evidence](docs/TEST_REPORT_1.26.0.md). The separate `codex/twentyi-hosting-commerce` backend is not part of this release.
