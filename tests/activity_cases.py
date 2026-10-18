@@ -77,6 +77,8 @@ def run_browser(env,browser):
     check('Other client cannot mark a known event',bob.post(center,data={'csrf':token(bob.get(portal)),'action':'activity_mark','keys':json.dumps([key]),'state':'read'}).status_code==200 and not db("SELECT * FROM ci_activity_reads WHERE actor_type='client' AND actor_id=2"))
     submit(alice,portal+'?job=1','message',{'body':'Client activity reply'});cmid=db("SELECT id FROM ci_studio_messages WHERE body='Client activity reply'")[0]['id'];ckey='message:'+str(cmid)
     check('Staff center includes client replies',ckey in admin.get(url).text and ckey in member.get(url).text)
+    staff_item=soup(admin.get(url)).find('article',attrs={'data-event-key':ckey})
+    check('Staff feed retains real client sender attribution',staff_item is not None and staff_item.select_one('.eyebrow').get_text()=='Client message')
     mark(admin,url,[ckey]);check('One staff read does not mark another staff inbox',ckey not in admin.get(url+'&filter=unread').text and ckey in member.get(url+'&filter=unread').text)
     count=alice.get(endpoint+'?audience=client').json()['count'];db("CREATE TRIGGER ci_activity_fail BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action LIKE 'activity.%' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic activity audit failure'; END IF; END")
     try:
