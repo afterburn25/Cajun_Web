@@ -574,6 +574,10 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — ticket screenshot readiness (Devin port)
+
+Ported `codex/ticket-screenshot-readiness` onto `devin/non20i-ticket-screenshots` (stacked on `devin/non20i-support-tickets`). New `tests/ticket_screenshot.py` helper waits for the real activity-bell fetch to settle and verifies complete footer bounds before full-page captures; `tests/ticket_cases.py` screenshots assert on it. Test-only; no runtime change.
+
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.

@@ -202,6 +202,17 @@ Tests: `python -m py_compile` clean. Full Apache/native acceptance reruns in CI 
 
 Next: push, confirm fresh CI reaches the later recovery/replay checks, then PR #161 verification.
 
+## Port ticket screenshot readiness — 2026-10-16
+
+Request: last preserved non-20i slice — `codex/ticket-screenshot-readiness` (`e29c1c1f`).
+
+Starting commit: `devin/non20i-support-tickets` tip — the change extends `ticket_cases.py` screenshots, so it stacks on the tickets port.
+
+Files/actions: applied `tests/ticket_screenshot.py` (new) + `tests/ticket_cases.py` hunk — full-page captures now wait for the authenticated activity-bell fetch to settle (`document.fonts.ready` + visible `[data-activity-bell]`) and assert the complete footer is inside the captured PNG bounds, fixing clipped screenshots in the packaged browser lane. Test-only; no runtime source changed.
+
+Tests/verification (local): `python -m py_compile` clean on both files. Browser lane runs in CI.
+
+Next: commit, push, PR targeting the tickets branch, #157 update. All nine preserved non-20i slices are now ported; remaining roadmap work is new ground.
 ## Repair tickets.css asset registration from review — 2026-10-16
 
 Request: continue #157; independent review of PR #158 head `3ca4bbb7` found a blocking defect — `tickets.css` was used in shared admin/portal layouts without a closed-map registration, breaking dashboard/portal renders (`urls.php` `Unknown public asset`, corroborated by run 38915585801 dashboard 500).
