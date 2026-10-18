@@ -1,3 +1,7 @@
+## Unreleased — single-website folder request contract
+
+Add a typed one-host request for the documented 20i document-root setter, canonical body/route validation and a narrow relative-path input policy. Keep generic approval closed and unverified replies uncertain. Add synthetic contract, cold-loader, transport and generic-denial checks to the existing focused/full operation suite; retain the saved observation behavior. Dedicated owner/client controls, native acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

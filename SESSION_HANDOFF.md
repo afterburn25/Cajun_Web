@@ -1,3 +1,13 @@
+## 2026-10-18 — website folder request boundary
+
+Parent `e397d9a6e293850e8dff61a593e3ba39ee178400`; branch `codex/twentyi-document-root-controls`; enclosing commit **Add the documented single-website folder request boundary**. The old `codex/twentyi-document-roots-contract` branch is preserved; its clean checkout was reused after confirming its head is already in main. Main was freshly read back at e397 before this work.
+
+The typed `packages.documentroot` request, dedicated builder, exact fixed POST admission and additive operation tests are implemented. Path policy is a narrow relative ASCII subset, not provider grammar or confinement. Generic grant and execution deny the new operation before consumption/DNS/credential/send; the existing map reader and sharing authority remain unchanged. Both local PHP modes pass502 operation,95 mailbox,48 cloud-site,143 reader and24 map-transport cases. The standalone loader defect found during review is fixed. [Contract, limits and next native workflow](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
+Next: add durable owner review with exact latest complete map, existing hostname and old/new path, current assignment/profile/credential binding, one-send ledger and separately authorized readback. Directory existence and platform eligibility still need honest handling; Managed WordPress is excluded by the official guide and cannot be inferred from package labels. Add interrupted-write recovery and native/browser/upgrade acceptance before release. This boundary alone does not enable a usable control.
+
+Preserve original queued acceptance: PHP224/39153672708, nameserver222/39151433485, catalog223/39149766351, corrected1.26/39137551561, originalf67/39098588864 and Devin198/39136048062. The 18:23–18:25UTC review found no new required result or failure; f67 retained four successful producers with final aggregation queued. Do not repeat dispatches or integrate candidates based solely on a queue status. Retained local audit: `work/acceptance-integration-triage-20261018/review.json`. Published1.25 stays immutable.
+
 ## 2026-10-18 — CI trigger correction
 
 Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

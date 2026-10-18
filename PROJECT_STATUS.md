@@ -1,3 +1,11 @@
+## 2026-10-18 — website folder request boundary
+
+Separate branch `codex/twentyi-document-root-controls`, from main `e397d9a6e293850e8dff61a593e3ba39ee178400`, adds the documented one-host `updateDocRoot` request and exact fixed-transport validation. Generic approval/execution remains closed; successful-status replies remain uncertain. The owner/client workflow is still unfinished. [Scope and continuation](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
+Local PHP 8.4.25 passes 502 operation checks per default/minimal mode, including 272 new cases and the preserved 230-case predecessor suite with updated catalog expectations. Existing mailbox95, cloud-site48, document-root reader143 and map-transport24 checks also pass in both modes. These are synthetic request/reader/transport and modeled generic-gate checks, not native database, installed browser or live-provider acceptance. The initially found cold-loader dependency is corrected and covered by a minimal-process test. Independent source review is clear. Canonical build refresh passes PHP/JavaScript syntax; all 2,896 shipping files match staged Git bytes and generated inventory. Documentation checks pass 12 required documents, 272 Markdown files and 1,859 local links.
+
+Published 1.25.0 remains immutable. Catalog PR223, nameserver PR222, PHP-control PR224 and Devin PR198 remain separate pending acceptance; this branch does not import their unaccepted source. Current implementation continues while original GitHub jobs wait. No prior job was rerun or canceled for queue delay.
+
 ## 2026-10-18 — reduce unrelated CI work
 
 Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

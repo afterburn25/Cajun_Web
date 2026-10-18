@@ -54,9 +54,10 @@ final class FixedHttpTransport implements HttpTransport
             $domainRenewal = $path === 'reseller/*/renewDomain';
             $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
             $directoryIndexing = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/directoryIndexing\z~', $path) === 1;
-            $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing;
+            $documentRoot = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/updateDocRoot\z~', $path) === 1;
+            $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing && !$documentRoot;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing && !$documentRoot)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
@@ -72,6 +73,10 @@ final class FixedHttpTransport implements HttpTransport
             if ($directoryIndexing) {
                 require_once __DIR__.'/../twentyi-operations/DirectoryIndexingChange.php';
                 \CajunWebPro\Foundation\TwentyI\Operations\DirectoryIndexingChange::wire($request);
+            }
+            if ($documentRoot) {
+                require_once __DIR__.'/../twentyi-operations/DocumentRootChange.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\DocumentRootChange::wire($request);
             }
             if ($forceSsl) {
                 require_once __DIR__.'/../twentyi-operations/ForceSslChange.php';

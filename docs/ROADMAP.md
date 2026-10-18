@@ -1,3 +1,7 @@
+## 2026-10-18 — document-root changes: request boundary implemented
+
+The [single-host folder request](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now has typed input, exact transport admission and synthetic generic-denial coverage on a separate e397-based branch. It is not a complete hosting control. Durable owner review, latest-map/assignment authority, platform/directory eligibility handling, one-send history, independent readback, interrupted-write recovery and native/browser/upgrade acceptance remain. Full20i and the broader platform are unfinished; no completion percentage follows from endpoint or assertion counts.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.
