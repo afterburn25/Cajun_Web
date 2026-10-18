@@ -2889,7 +2889,7 @@ function setup_expected_files(): array { return [
     'portal/views/plans.php'=>'d3a86b56b3864b26e5c48a36b6f4e4b108340773bc3c7548ca8769c720395b81',
     'portal/views/registered_domains.php'=>'376929c41321666e0101c20d0b987b22ba9ce401cf7ef1cae6c55f6028335c3b',
     'portal/views/service_observations.php'=>'5916d2451dcaa8b3baa6c701e9c6a4cf683a123e392bdb76a5a17b6e3dac4259',
-    'portal/views/workspace.php'=>'bf4acb54d6ed73d74dffd6758baa96bc8846fc67ceec111190a6a4779b5aceb4',
+    'portal/views/workspace.php'=>'5e0500543eec4a217acfa8b2e57372f2521c16a988f73a7166465d4066bc5e94',
     'robots.php'=>'643efa6953174e2ccb0f0ca7d282f5d3f67b07f243b1593f47575bfcc960f567',
     'sitemap.php'=>'e73fd55f7d88bc2a4899bdd1305337b6bcf0110aab164d9e9d4cda56f303a3bd',
     'storage/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
