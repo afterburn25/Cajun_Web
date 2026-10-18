@@ -29,6 +29,7 @@ if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_ma
 require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';
 if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');
+if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_search')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';require_once CWP_CODE_ROOT.'/includes/layout/project_planning.php';require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';
@@ -47,7 +48,6 @@ if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
-if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);

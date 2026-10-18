@@ -159,6 +159,10 @@ Record reviewedcccf85bf, its first full38927120383, preserved2a/9779 failure evi
 
 Record exact2a focused3,020 checks, matching Windows/Linux packages and289 recovery checks alongside the original full run's tokenizer test-dependency failure and skipped HTTP. Preserve819c's terminal failure/99 missing reports and9779's newly canceled native-and-browser job with failed aggregate, pending diagnosis. Update current entry points and the159/161 correction priority; PRs163–170 are unaccepted proposals/foundations. This documentation-only descendant of82667afb imports no runtime and changes no installer, version, release or deployment.
 
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
+
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
 Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
@@ -569,6 +573,31 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — recurring service billing (Devin port)
+
+Ported preserved `codex/recurring-billing-terms` → `records/lifecycle` → `screens` → `activity` onto `devin/non20i-recurring-billing` (a merge of the project progress → planning → design-payments chain with service-plans runtime and billing-calendar, which the slice genuinely requires). Canonical `RecurringBillingTerms`/`RecurringBillingSchedule` computing whole-period eligibility from immutable anchors; additive owner-prepared `recurring_billing_*` storage; staff offer screen bound to an active client service agreement; explicit client accept/decline/end with feedback; one unique whole-period invoice per eligible period inside the existing ledger with a binding guard; `recurring-offer:`/`recurring-event:` activity notices with exact deep links and independent read state. Invoices are issued but card checkout is not activated; no production billing runs. No live deployment or release.
+
+## Unreleased — design payment agreements, schedules and bound invoices (Devin port)
+
+Ported the preserved `codex/design-payment-schedules` + `codex/design-financial-activity` stack onto `devin/non20i-design-payments` (stacked on `devin/non20i-project-planning`). Canonical `DesignPaymentSchedule` model with cent-exact deposit/installment allocation; owner-prepared additive `design_payment_*` storage with immutable offered/withdrawn/accepted/declined events; staff financial editor on the client project; explicit client consent bound to the exact offered fingerprint; one bound invoice per accepted stage guarded inside the existing ledger; `financial:` workspace-activity notices resolving to the exact frozen event. No card checkout is activated; publishing an offer records no payment. No live deployment or release.
+
+## Unreleased — structured project planning (Devin port)
+
+Ported the preserved `codex/project-planning`/`project-planning-storage`/`project-planning-screens` stack onto `devin/non20i-project-planning` (stacked on `devin/non20i-project-progress`, which it extends). Owner-prepared additive `studio_plan_events`/`studio_plan_requests`/`studio_plan_heads` storage; canonical `ProjectPlan`/`ProjectPlanEvent` models with bounded milestone dependencies and immutable revision events; staff planning editor and client dashboard/timeline inside the existing private workspace; `planning:` activity items that open the exact authorized event. Existing project free-text fields, progress history, invoices, files and deliveries remain authoritative — no legacy text is converted. No live deployment or release.
+
+## Unreleased — dated project history and client progress timeline (Devin port)
+
+- Port the preserved `codex/project-progress-screens` slice onto `main` under the 2026-10-16 allocation: `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}` canonical classes with deployment mirrors, additive `studio_progress_{events,requests,heads}` storage behind owner-gated `project_progress_setup`, and immutable hash-linked dated history for existing `studio_job` create/edit forms.
+- Admin: progress editor + bounded timeline on `studio-job`, create-project editor on `studio-clients`, setup form under Version & database; `studio-job`/`studio-upgrade` get private no-store headers and `studio-job` joins the support-session block list.
+- Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
+- Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
+- `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
+## Unreleased — service plans and client agreements (Devin port)
+
+Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `devin/non20i-service-plans` (stacked on the foundation port). Additive `service_plans`/`service_subscriptions` event-sourced tables behind owner-password setup; admin Service agreements view (create/edit plans, enroll clients); portal `?agreements` views where clients review and sign exact plan terms; `service-plans` added to the canonical mirror list. No provider, hosting or billing dependency introduced. No live deployment or release.
+## Unreleased — recurring billing calendar (Devin port)
+
+Ported `codex/billing-calendar` onto `devin/non20i-billing-calendar`. Canonical `foundation/billing-calendar/BillingCalendar.php` derives exact recurring periods (monthly/quarterly/annually × day-of-month/month-end) from an immutable anchor, with direct period/periodAt/window lookups, leap-day/century correctness and year-9999 bounds. Pure `tests/billing-calendar/calendar.php` contract + dedicated workflow. Canonical-only foundation; runtime wiring lands with recurring agreements. No live deployment or release.
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.

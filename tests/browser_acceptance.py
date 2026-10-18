@@ -232,6 +232,12 @@ try:
         client_authority_browser(globals(),browser)
         from service_plan_cases import run_browser as service_plan_browser
         service_plan_browser(globals(),browser)
+        from project_progress_cases import run_browser as progress_browser
+        progress_browser(globals(),browser)
+        from project_planning_cases import run_browser as planning_browser
+        planning_browser(globals(),browser)
+        from design_financial_cases import run_browser as financial_browser
+        financial_browser(globals(),browser)
         from recurring_billing_cases import run_browser as recurring_browser
         recurring_browser(globals(),browser)
         from domain_contracts_cases import run_browser as domain_contracts_browser
@@ -272,12 +278,6 @@ try:
         license_release_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
-        from project_progress_cases import run_browser as progress_browser
-        progress_browser(globals(),browser)
-        from project_planning_cases import run_browser as planning_browser
-        planning_browser(globals(),browser)
-        from design_financial_cases import run_browser as financial_browser
-        financial_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

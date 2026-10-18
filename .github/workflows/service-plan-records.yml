@@ -1,7 +1,7 @@
 name: Service-plan storage and client agreement checks
 on:
   push:
-    branches: [main, codex/service-plan-records, codex/service-plan-screens]
+    branches: [main, codex/service-plan-records, codex/service-plan-screens, "devin/non20i-*"]
     paths: ['site/admin/controllers/plans.php', 'site/admin/views/plans.php', 'site/portal/controllers/**', 'site/portal/views/plans.php', 'site/includes/layout/plans.php', 'site/app/plans/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/service-plans/**', 'site/includes/foundation/service-plans/**', 'tests/service_plans_native.php', '.github/workflows/service-plan-records.yml']
   pull_request:
   workflow_dispatch:
