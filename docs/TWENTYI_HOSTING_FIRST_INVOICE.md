@@ -20,6 +20,14 @@ This is document validation, not a native writer. Database code must still authe
 
 Applied-source tests pass65 new subscription cases and67 existing cases in both default and minimal PHP8.4.25; the complete legacy output is byte-identical to the baseline. Independent review also verifies direct-parser loading without a dependency cycle. Commands: `php tests/service-plans/checkout_documents.php` and `php tests/service-plans/documents.php`, each repeated with `php -n`. The related130 checkout and119 publication/request cases pass again after applying this shared document change.
 
+## First-period billing rules
+
+Recurring terms and schedules now have a separate format2 checkout path. The application derives every commercial field from the exact retained two-event subscription prefix and its composite consent. The initial client decision explicitly starts local period0 on the accepted date; it cannot be replayed as a new activation or silently moved to another date. The first period is eligible for an invoice at the accepted instant. Later pause, resume and end decisions keep the existing future-period rules.
+
+Legacy format1 activation remains unchanged and still refuses a same-day start. Foundation classes accept structural facts without loading application authority or database code. Native readers must bind the exact subscription, request, consent, schedule and independent invoice origin. These rules alone do not create an invoice, charge a card or provision hosting.
+
+Applied-source tests pass92 new recurring cases,372 existing terms cases and321 existing schedule cases per default/minimal PHP8.4.25. The complete legacy outputs match their baseline. Related65 checkout subscription and130 commercial checkout cases also pass per mode. Run `php tests/recurring-billing/checkout.php`, `php tests/recurring-billing/terms.php` and `php tests/recurring-billing/schedule.php`, repeating with `php -n`. Independent review verifies cold loading, exact derivation and retained-prefix/date boundaries. Full native and checkout-page acceptance is still pending.
+
 ## Earlier commercial-document validation
 
 Applied-source tests pass130 new checkout-document cases and119 unchanged publication/request cases in both default and minimal PHP8.4.25. The tests cover exact terms, client/project facts, expiration, DST and skipped dates, legacy-route refusal, historical parsing and private-field exclusion. Independent review repeated the original failing Santiago midnight witness against the corrected source; it now expires at the actual next local date and refuses next-day historical consent. Original failure evidence remains retained.

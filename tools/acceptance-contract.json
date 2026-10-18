@@ -786,7 +786,13 @@
       "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
       "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5",
       "site/app/plans/documents.php": "8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c",
-      "tests/service-plans/checkout_documents.php": "e131b2ae0ea2831c55082939a5a32b3cd5fb6743303f7c83be60b39211005f2b"
+      "tests/service-plans/checkout_documents.php": "e131b2ae0ea2831c55082939a5a32b3cd5fb6743303f7c83be60b39211005f2b",
+      "foundation/recurring-billing/RecurringBillingSchedule.php": "81b1ab31356e24608fd4f4f0a6fb77c72b73a9192fe90f68ec3b908b777d9c10",
+      "foundation/recurring-billing/RecurringBillingTerms.php": "8d267eefc9c5cddf6e75de75df6291334cd40b5c260576393e6ccda25793086b",
+      "site/app/hosting/catalog_checkout_billing_document.php": "8d5b5fefa002017100be553511e851e7ed64a439eabf45f991a041d0f0b02396",
+      "site/includes/foundation/recurring-billing/RecurringBillingSchedule.php": "81b1ab31356e24608fd4f4f0a6fb77c72b73a9192fe90f68ec3b908b777d9c10",
+      "site/includes/foundation/recurring-billing/RecurringBillingTerms.php": "8d267eefc9c5cddf6e75de75df6291334cd40b5c260576393e6ccda25793086b",
+      "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46"
     },
     "raw_evidence": {
       "role": "hosting-recovery-files",

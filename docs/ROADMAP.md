@@ -1,3 +1,7 @@
+## 2026-10-18 — first-period billing model
+
+Pure checkout subscriptions and recurring schedules now retain the client's exact agreement and begin the first billing period on confirmation. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Native attribution, invoice origins, atomic writes, owner/client pages and same-clock acceptance remain unfinished. The legacy future-start flow and existing release gates remain intact.
+
 ## 2026-10-18 — subscription consent retained
 
 The [first-invoice branch](TWENTYI_HOSTING_FIRST_INVOICE.md) now includes pure client-attributed subscriptions with exact retained checkout consent and an explicit automatic local effect. Database migrations, native composition, recurring/invoice origin support, screens and same-clock acceptance remain open. This checkpoint does not complete checkout or change the published release.

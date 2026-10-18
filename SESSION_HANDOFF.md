@@ -1,3 +1,9 @@
+## 2026-10-18 — first-period billing model checkpoint
+
+Branch `codex/twentyi-hosting-first-invoice`, parent `e6b97ec3bf6dc7298a63971d371367f98524edec`; enclosing commit: **Derive first-period billing from exact hosting checkout consent**. Integrate the independently reviewed six-file recurring proposal, exact source pins and canonical installer inventory. Foundation/site mirrors remain identical. [Current contracts](docs/TWENTYI_HOSTING_FIRST_INVOICE.md) separate structural commercial facts from native authority.
+
+Applied default/minimal PHP8.4.25 results:92 new recurring,372 existing terms,321 existing schedule,65 checkout subscription and130 commercial checkout cases per mode; complete legacy recurring outputs match baseline. Artifact-helper checks385 also pass. Native SQL/invoice/HTTP/browser acceptance remains pending. Next: review the subscription and recurring native extension proposals, run the scoped fixture on the already owned disposable43319 database, then implement the complete atomic checkout graph and owner/client screens. Read the preceding subscription checkpoint for local runtime ownership; preserve unrelated services, original CI runs and immutable1.25.
+
 ## 2026-10-18 — subscription attribution checkpoint
 
 Branch `codex/twentyi-hosting-first-invoice`, parent `9f4b374682919ff065d5127de914e87fe04eb2c2`; enclosing commit: **Retain actual client attribution in hosting checkout subscriptions**. Applied the independently reviewed two-file subscription proposal, updated exact source pins and canonical installer inventory. [Current contracts](docs/TWENTYI_HOSTING_FIRST_INVOICE.md) distinguish the actual client decision from automatic local activation.

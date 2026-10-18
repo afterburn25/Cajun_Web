@@ -1,3 +1,9 @@
+## 2026-10-18 — hosting first-period billing groundwork
+
+The hosting first-invoice branch now combines client-attributed subscription documents with recurring terms derived from the exact retained consent. Its separate checkout path starts period0 on the accepted local date; legacy activation and later future-period rules remain unchanged. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Parent `e6b97ec3bf6dc7298a63971d371367f98524edec` already records the subscription increment. Applied recurring tests pass92 new,372 existing terms and321 existing schedule cases per PHP mode; legacy outputs match the baseline. This checkpoint does not create an invoice or expose checkout. Native storage, the atomic writer, customer screens and release acceptance remain pending; published1.25 is unchanged.
+
 ## 2026-10-18 — client-attributed hosting subscription documents
 
 Starting from `9f4b374682919ff065d5127de914e87fe04eb2c2`, the hosting first-invoice branch now retains the actual client as the checkout subscription creator and separates explicit client consent from automatic local activation. Existing subscription format1 behavior remains unchanged. [Scope and remaining integration](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).

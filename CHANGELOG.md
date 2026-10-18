@@ -1,3 +1,9 @@
+## Development — first-period checkout billing rules, 2026-10-18
+
+- Derive checkout billing from exact retained subscription/consent and start its first period on the accepted local date.
+- Preserve legacy activation and future lifecycle boundaries; add92 pure regressions and exact foundation/site mirrors.
+- Actual invoice creation, native checkout storage and customer screens remain pending.
+
 ## Development — client-attributed checkout subscriptions, 2026-10-18
 
 - Retain the exact hosting consent and real client creator in subscription format2, with separate client-consent and automatic local-activation events.
