@@ -2,9 +2,9 @@ name: Native assigned-package PHP version checks
 on:
   push:
     branches: [main, codex/twentyi-package-php-version, codex/twentyi-php-version-controls]
-    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', 'tests/provider_php_controls_ui_*.py', 'tests/php-controls-ui/Dockerfile', '.github/workflows/provider-package-php.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -127,3 +127,66 @@ jobs:
         if: always()
         run: |
           echo 'Exact assigned-package PHP-version scalar read, current explicit package assignment, credential-bound observation, owner-approved sharing, revocation, retained-history recovery and actual PHP forms. Additional PHP change delegation, owner/primary-client authority, durable reads, single-send gateway, separate readback, recovery, audit rollback and mutex/replay checks. Disposable MariaDB/MySQL and synthetic provider only; no real API, available-options wire-schema acceptance, browser or deployment. Native lifecycle tests retain real 30-second read cooldowns. Added screen, rendering and HTTP-dispatch suites use explicit portable models; they do not exercise authenticated browser routes.' >> "$GITHUB_STEP_SUMMARY"
+
+  packaged-ui:
+    name: Packaged PHP settings HTTP and browser
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify current generated inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official isolated PHP and Chromium runtime
+        run: docker build -t cwp-php-ui -f tests/php-controls-ui/Dockerfile tests/php-controls-ui
+      - name: Build exact package and exercise real authenticated forms
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports[3306] }}
+        run: |
+          mkdir -p qa
+          docker run --rm --network host --shm-size=1g --user "$(id -u):$(id -g)" \
+            -v "$PWD:$PWD" -w "$PWD" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            -e CWP_UI_COMMIT="$GITHUB_SHA" cwp-php-ui sh -ec '
+              php -l tests/provider_php_controls_ui_fixture.php
+              php -l tests/provider_php_controls_ui_connector.php
+              python -B tools/build.py --commit "$CWP_UI_COMMIT" > qa/php-controls-ui-build.txt
+              python -B tests/provider_php_controls_ui_guards.py > qa/php-controls-ui-guards.json
+              python -B tests/provider_php_controls_ui_browser.py
+            '
+      - name: Preserve only closed PHP UI reports and captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: php-controls-packaged-ui-${{ github.sha }}
+          path: |
+            qa/php-controls-ui-build.txt
+            qa/php-controls-ui-guards.json
+            qa/php-controls-ui/results.json
+            qa/php-controls-ui/PHP-Controls-*.png
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record exact fixture scope
+        if: always()
+        run: |
+          echo 'Dedicated packaged owner/primary-client HTTP forms with disposable MariaDB, actual browser sessions, strict loopback TLS and genuine cooldowns. Available-option positives are typed synthetic inputs; production default remains unavailable. No real provider, charge, mail, deployment or release acceptance. Private raw logs, session data, config, CA keys and runtime are excluded from uploaded evidence. Screenshots require separate visual review.' >> "$GITHUB_STEP_SUMMARY"

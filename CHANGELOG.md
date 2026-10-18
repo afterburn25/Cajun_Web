@@ -1,3 +1,7 @@
+## 2026-10-18 — packaged PHP settings acceptance prepared
+
+Added isolated exact-package HTTP/browser acceptance for owner and client PHP settings, with separate readback, single-send history, revoked access and recovery after a witnessed audit failure. Added archive and strict local TLS guards, private test fixtures and a separate GitHub job without changing the existing native matrix. Corrected the full-project archive allowance for tracked `ops` source. Local guards and syntax pass; native/package/browser execution remains pending. Production application and published releases are unchanged.
+
 ## 2026-10-18 — PHP settings screens implemented
 
 Added one-website PHP settings pages for owners and explicitly permitted primary clients, with separate review, confirmation, result checks and retained history. Added contextual navigation, responsive forms and safe same-request retries. Contact/support access is rejected before client session normalization. Provider options remain unavailable until their response mapping is verified; this branch is not a published release.

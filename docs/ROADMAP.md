@@ -1,3 +1,9 @@
+## 2026-10-18 — packaged PHP settings acceptance prepared
+
+Starting `01b8bc53`, added exact-package owner/client HTTP and Chromium test preparation with disposable MariaDB and strict local TLS. The intended journey covers actual login/CSRF/password forms, explicit delegation, separate result checks, one-send/replay behavior, retained contact/support refusal, revoked access and owner recovery after a witnessed post-send audit fault. Local archive/TLS guards pass 23 checks, both PHP fixtures pass normal/minimal syntax and refuse Windows before SQL, and generated inventory is unchanged. [Full scope](TWENTYI_PHP_VERSION_CONTROLS.md).
+
+This is test preparation, not native/browser or release acceptance. First automatic execution and review of 16 intended captures remain next, followed by verified provider options mapping and full release gates. The initial certificate failure was corrected without relaxing TLS. Original UI/lifecycle/catalog runs remain preserved and queued at this checkpoint. Full cloud catalog and provider images are still incomplete; published 1.25.0 is unchanged.
+
 ## 2026-10-18 — PHP settings screens implemented
 
 Starting `cab9da6822815baf237915c3e6774b179b50fc9e` on `codex/twentyi-php-version-controls`, added dedicated owner and primary-client PHP settings pages, contextual hosting links, read-only screen projection, exact review/confirmation forms, delegation, separate result checks and owner-only local recovery. Client routes reject retained contact/support context before session normalization. Safe retries retain the same approval identity and never retain passwords. The default options adapter remains unavailable; no versions are guessed.

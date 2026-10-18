@@ -1,5 +1,27 @@
 # PHP version changes — implementation in progress
 
+## Packaged HTTP and browser acceptance preparation
+
+Starting `01b8bc535df614ca4f52a93f0fb0292b5bb358ea`, the separate `packaged-ui` job in [the focused workflow](../.github/workflows/provider-package-php.yml) builds the clean recorded COMPLETE package. The [runner](../tests/provider_php_controls_ui_browser.py) checks its manifest, archive digest, member paths/modes and every member against Git before extraction. It uses a fresh private namespace and refuses an existing test runtime. The existing four-environment `native-history` job is unchanged.
+
+The [CLI bridge](../tests/provider_php_controls_ui_fixture.php) seeds only prerequisites and real credential/assignment records. Real authenticated HTTP forms prepare the stores and create delegation, requests, terminal history and separate result checks. Positive options are supplied through the existing typed test dependency; the production default is exercised as unavailable. The bridge retains the actual 30-second cooldown. A fixture-only trigger witnesses the real terminal-audit path before rollback; owner recovery then uses the genuine completed ledger without resending or replacing the client requester.
+
+The [connector](../tests/provider_php_controls_ui_connector.php) validates the original fixed request policy before directing only the two synthetic package URLs to a local TLS server. CA, hostname/SNI, TLS, proxy, redirects, body bounds and exact request fields remain checked. A setter acknowledgement deliberately leaves the separate reported scalar unchanged until the test explicitly changes it. No production override or real provider request is introduced.
+
+The [HTTP/browser cases](../tests/provider_php_controls_ui_cases.py) cover actual login, contextual links, CSRF/password/confirmation, owner delegation, retained contact/support denial, unavailable/empty choices, review without a send, replay, separate later observations, client revocation and owner recovery. Chromium loads real packaged routes and submits actual review forms. Sixteen intended desktop/mobile captures cover owner/client settings, reviews, histories, recovery and unavailable access; passing capture generation still requires separate visual review.
+
+Run only in a fresh isolated Linux checkout using the [test Docker runtime](../tests/php-controls-ui/Dockerfile), `cwp_test` on loopback and the workflow's disposable database variables:
+
+```text
+python -B tools/build.py --commit <recorded-clean-commit>
+python -B tests/provider_php_controls_ui_guards.py
+python -B tests/provider_php_controls_ui_browser.py
+```
+
+Public evidence is restricted to `qa/php-controls-ui-build.txt`, `qa/php-controls-ui-guards.json`, `qa/php-controls-ui/results.json` and `qa/php-controls-ui/PHP-Controls-*.png`. Private configuration, sessions, keys, bridge errors and raw server logs stay under `test-runtime/php-controls-ui` and are not uploaded. The public report retains source/package hashes and diagnostic counts, without private error text.
+
+Actual integrated local evidence: 23 [archive/Python TLS guards](../tests/provider_php_controls_ui_guards.py) pass; both PHP files pass normal/minimal syntax and the native bridge refuses Windows before bootstrap or SQL. Python syntax, frozen fixture equality and generated inventory pass. The first Python TLS attempt failed because the synthetic certificate lacked required authority identifiers; adding proper certificate extensions corrected it without weakening validation. Separate author receipts cover 42 socket-free connector-policy cases and 60 offline helper checks. Docker build, native PHP/SQL, authenticated HTTP, full browser execution and capture review remain pending. The one-line archive allowance for the existing tracked `ops` folder matches the release-candidate fix and retains all sensitive-file guards. Application shipping bytes and installer inventory are unchanged.
+
 The owner requires native 20i controls for administrators and authorized clients. Work starts from main `e397d9a6e293850e8dff61a593e3ba39ee178400` on `codex/twentyi-php-version-controls`. The separately preserved catalog and checkout candidates retain their original tests and release gates. Published 1.25.0 is unchanged.
 
 ## Implemented request boundary
