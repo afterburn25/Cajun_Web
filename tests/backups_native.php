@@ -12,26 +12,46 @@ function b_deny(string $name,callable $fn): void {try{$fn();}catch(InvalidArgume
 function b_actor(int $id=1): void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
 function b_audit_failure(callable $fn): bool {db()->exec('CREATE TRIGGER backupci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic audit failure'");try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER backupci_fail');}return $failed;}
 $fixtureFile=CWP_CODE_ROOT.'/backups-fixture.txt';
+// Completion guard: an early exit(0) (redirect/die inside an authorization path) must fail the run, not pass silently.
+$GLOBALS['backups_native_complete']=false;
+register_shutdown_function(function(){if(empty($GLOBALS['backups_native_complete'])){fwrite(STDERR,"backups_native exited before completing all checks\n");exit(1);}});
 try{
     foreach(schema_statements('backupci_') as $name=>$sql)db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('staff_schema_version','1');
     $now=gmdate('Y-m-d H:i:s');for($id=1;$id<=3;$id++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Backups staff '.$id,'backups'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);staff_seed_owner(1);
-    foreach([2=>['staff.manage'],3=>['website.manage']] as $id=>$grants)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($grants)]);b_actor();
+    // Actor 2 is a second authorized owner so the cross-actor replay denial reaches the real created_by check; actor 3 is ordinary website-only staff for permission denials.
+    query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'owner',1,'[]')");
+    query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (3,'administrator',1,?)",[json_encode(['website.manage'])]);b_actor();
     file_put_contents($fixtureFile,'original fixture bytes');
     b_deny('Setup requires owner reauthentication',fn()=>backups_migrate('wrong'));
     foreach(backups_schema('backupci_') as $sql)db()->exec($sql);
     query('INSERT INTO '.table('backups')." (id,kind,manifest,manifest_hash,items,archive_file,bytes,request_key,request_hash,status,retain_until,created_by,created_at) VALUES ('".str_repeat('e',32)."','files','{}','".str_repeat('0',64)."',0,'x.zip',0,'".str_repeat('f',64)."','".str_repeat('0',64)."','unknown','2030-01-01',1,?)",[$now]);
     b_deny('Setup refuses unknown populated backup records',fn()=>backups_migrate($password));query('DELETE FROM '.table('backups'));
     b_ok('Setup audit failure rolls back readiness',b_audit_failure(fn()=>backups_migrate($password))&&!backups_ready());backups_migrate($password);b_ok('Setup is additive and prepares private storage',backups_ready()&&is_dir(backups_directory())&&(fileperms(backups_directory())&0777)===0700);backups_migrate($password);b_ok('Repeated setup is safe',backups_ready());
+    db()->exec('DROP TABLE '.table('backups'));b_deny('Setup refuses when recorded backup history is missing',fn()=>backups_migrate($password));b_ok('Missing-history refusal made no changes',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'backups']));
+    db()->exec(backups_schema('backupci_')['backups']);
+    db()->exec('DROP TABLE '.table('backup_drills'));b_deny('Setup refuses when recorded drill history is missing',fn()=>backups_migrate($password));
+    save_setting('backups_schema_version','1');backups_migrate($password);b_ok('v1 to v2 upgrade adds the drill table additively',(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'backup_drills'])&&backups_ready());
+    save_setting('backups_schema_version','9');b_deny('Setup refuses an unrecognized schema marker',fn()=>backups_migrate($password));save_setting('backups_schema_version','2');
     $storage=config()['storage'];$GLOBALS['cwp_config']['storage']=realpath(CWP_CODE_ROOT);b_deny('Backup storage cannot be inside web root',fn()=>backups_directory());$GLOBALS['cwp_config']['storage']=$storage;
     b_deny('Create refuses a malformed request key',fn()=>backups_create([],'short'));
     b_actor(3);b_deny('Website-only staff cannot create backups',fn()=>backups_create([],bin2hex(random_bytes(32))));b_actor();
     db()->exec('CREATE TABLE backupci_probe (id INT PRIMARY KEY, marker VARCHAR(40))');query("INSERT INTO backupci_probe VALUES (1,'MARKER-DATABASE-ROW')");
     query("INSERT INTO ".table('rate_limits')." (bucket,attempts,expires) VALUES ('TRANSIENT-THROTTLE-ROW',1,1)");
+    $bufferBefore=db()->getAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY);
     $key=bin2hex(random_bytes(32));$id=backups_create(['notes'=>'Synthetic snapshot','retain_days'=>30],$key);$row=backups_row($id);
-    b_ok('Create persists manifest, archive and owner attribution',strlen($id)===32&&$row['status']==='ready'&&(int)$row['created_by']===1&&is_file(backups_archive_path($row))&&$row['manifest_hash']===backups_manifest($row)->manifestHash());
-    $section=backups_database($row);$zip=new ZipArchive();$zip->open(backups_archive_path($row));$dump=$zip->getFromName('database/snapshot.sql');$zip->close();
-    b_ok('Backup preserves a consistent database export inside private storage',$section!==null&&$dump!==false&&hash_equals($section['sha256'],hash('sha256',$dump))&&$section['tables']>=2&&$section['rows']>=1);
+    $section=backups_database($row);$expectedIntegrity=backups_manifest_integrity_hash(backups_manifest($row),$section);
+    b_ok('Create persists manifest, archive and owner attribution',strlen($id)===32&&$row['status']==='ready'&&(int)$row['created_by']===1&&is_file(backups_archive_path($row))&&$row['manifest_hash']===$expectedIntegrity);
+    b_ok('Database export restores the shared PDO buffering mode',db()->getAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY)===$bufferBefore);
+    $zip=new ZipArchive();$zip->open(backups_archive_path($row));$dump=$zip->getFromName('database/snapshot.sql');$zip->close();
+    b_ok('Backup preserves a versioned database export inside private storage',$section!==null&&($section['format']??0)===1&&$dump!==false&&hash_equals($section['sha256'],hash('sha256',$dump))&&$section['bytes']===strlen($dump)&&$section['tables']>=2&&$section['rows']>=1);
+    $malformedManifest=json_decode($row['manifest'],true);$malformedManifest['database']=['format'=>9,'file'=>'database/snapshot.sql'];$malformedRow=$row;$malformedRow['manifest']=json_encode($malformedManifest,JSON_UNESCAPED_SLASHES);
+    b_deny('Malformed database metadata fails closed',fn()=>backups_database($malformedRow));
+    $tamperedManifest=json_decode($row['manifest'],true);$tamperedManifest['database']['rows']++;$tamperedRow=$row;$tamperedRow['manifest']=json_encode($tamperedManifest,JSON_UNESCAPED_SLASHES);
+    b_deny('Database metadata is bound to manifest integrity',fn()=>backups_manifest($tamperedRow));
+    $legacyManifest=json_decode($row['manifest'],true);unset($legacyManifest['database']);$legacyObj=new BackupManifest($legacyManifest['id'],$legacyManifest['kind'],$legacyManifest['created_by'],$legacyManifest['created_at'],$legacyManifest['items'],$legacyManifest['retain_until'],$legacyManifest['notes']??'');$legacyRow=$row;$legacyRow['manifest']=json_encode($legacyManifest,JSON_UNESCAPED_SLASHES);$legacyRow['manifest_hash']=$legacyObj->manifestHash();
+    b_ok('Legacy pre-export manifests remain readable',backups_manifest($legacyRow)->id===$id&&backups_database($legacyRow)===null);
+    if(PHP_OS_FAMILY==='Linux'&&file_exists('/dev/full'))b_deny('Database export write failure fails closed',fn()=>backups_dump_database('/dev/full'));else b_ok('Database export write-failure coverage unavailable on this host',true);
     b_ok('Database export contains real rows and skips transient state',str_contains($dump,"INSERT INTO `backupci_probe`")&&str_contains($dump,'MARKER-DATABASE-ROW')&&!str_contains($dump,'TRANSIENT-THROTTLE-ROW'));
     b_ok('Manifest excludes secrets and private storage structurally',!isset(backups_manifest($row)->items['config.php'],backups_manifest($row)->items['.env'])&&!array_filter(array_keys(backups_manifest($row)->items),fn($n)=>str_starts_with($n,'storage/')||str_contains($n,'payment-master')));
     b_ok('Same request returns same record and bytes',backups_create(['notes'=>'Synthetic snapshot','retain_days'=>30],$key)===$id&&(int)query('SELECT COUNT(*) FROM '.table('backups'))->fetchColumn()===1);
@@ -44,7 +64,7 @@ try{
     b_ok('Preview marks the changed file differing',$plan->impact['backups-fixture.txt']['current']==='differs');
     b_deny('Restore refuses the wrong confirmation phrase',fn()=>backups_restore($id,'WRONG PHRASE',$password));
     b_deny('Restore requires the current owner password',fn()=>backups_restore($id,backups_restore_phrase($row),'wrong'));
-    b_actor(2);b_deny('Non-owner staff cannot restore even with the phrase',fn()=>backups_restore($id,backups_restore_phrase($row),$password));b_actor();
+    b_actor(3);b_deny('Non-owner staff cannot restore even with the phrase',fn()=>backups_restore($id,backups_restore_phrase($row),$password));b_actor();
     backups_restore($id,backups_restore_phrase($row),$password);
     b_ok('Authorized restore rewrote only the changed file',file_get_contents($fixtureFile)==='original fixture bytes'&&backups_row($id)['status']==='applied');
     unlink($fixtureFile);$plan=backups_preview(backups_row($id));b_ok('Preview marks a deleted file missing',$plan->impact['backups-fixture.txt']['current']==='missing');
@@ -62,6 +82,7 @@ try{
     b_ok('Corrupt drill attempt is still recorded',(one('SELECT result FROM '.table('backup_drills')." WHERE backup_id=? AND result='corrupt' ORDER BY finished_at DESC LIMIT 1",[$id])['result']??'')==='corrupt');
     file_put_contents($archive,$bytes);
     b_ok('File unchanged after archive rejection',file_get_contents($fixtureFile)==='tampered again');
+    b_ok('Failed restore is recorded with its outcome',backups_row($id)['status']==='failed'&&(int)query("SELECT COUNT(*) FROM ".table('audit')." WHERE action IN ('backups.restore.attempt','backups.restore.failed') AND detail LIKE 'Backup ".substr($id,0,8)."%'")->fetchColumn()>=2);
     $zip=new ZipArchive();$zip->open($archive);$zip->addFromString('backups-fixture.txt','substituted bytes');$zip->close();
     $d2=backups_drill($id);b_ok('Drill flags archive bytes that no longer match the manifest',$d2['result']==='incomplete'&&$d2['mismatched']===1&&$d2['verified']===(int)$row['items']);
     file_put_contents($archive,$bytes);
@@ -76,4 +97,5 @@ try{
     b_ok('Audit records setup, create and restore',(int)query("SELECT COUNT(*) FROM ".table('audit')." WHERE action IN ('backups.setup','backups.create','backups.restore')")->fetchColumn()>=3);
 }catch(Throwable $e){fwrite(STDERR,'backups_native failed: '.$e->getMessage().' at '.$e->getFile().':'.$e->getLine()."\n");exit(1);}
 finally{if(is_file($fixtureFile))unlink($fixtureFile);foreach(glob($private.'/backups/*')?:[] as $f)@unlink($f);}
+$GLOBALS['backups_native_complete']=true;
 echo 'backups_native: '.count($checks).' checks passed'.PHP_EOL;

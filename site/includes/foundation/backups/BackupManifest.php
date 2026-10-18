@@ -18,8 +18,8 @@ final readonly class BackupManifest
 {
     public const FORMAT_VERSION = 1;
 
-    /** Path patterns that must never enter a restorable backup scope. */
-    private const FORBIDDEN = '#^(config\.php|proxy-config\.php|\.installed\.php|\.env|.*\.(key|pem|p12)|storage/|.*payment-master)#i';
+    /** Path patterns that must never enter a restorable backup scope — applied per path component so nested secrets are rejected at any depth. */
+    private const FORBIDDEN = '#(^|/)(config\.php|proxy-config\.php|\.installed\.php|\.env)$|(^|/)[^/]*\.(key|pem|p12)$|(^|/)storage(/|$)|(^|/)[^/]*payment-master#i';
 
     /**
      * @param array<string,string> $items  path/table identifier => sha256 hex
