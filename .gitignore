@@ -3,6 +3,7 @@
 /qa/
 /test-runtime/
 /.ci-venv/
+/.acceptance/
 __pycache__/
 /site/config.php
 /site/proxy-config.php

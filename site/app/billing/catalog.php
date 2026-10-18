@@ -15,19 +15,31 @@ function catalog_audit(int $actor,string $action,string $detail): void {
 }
 require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/catalog_migrate.php';
+require_once CWP_CODE_ROOT.'/app/providers/catalog_import_storage.php';
 function catalog_require(bool $invoices=false): array {
     if(!catalog_ready())throw new RuntimeException('Enable the service catalog first.');
     if(support_current())throw new RuntimeException('Billing changes are unavailable during a support session.');
     $actor=staff_require('catalog.manage');if($invoices)staff_require('clients.manage');return $actor;
 }
-function catalog_save(int $id,int $expected,array $input): int {
+function catalog_product_input(array $input): array {
     $data=[];foreach(['sku'=>60,'title'=>120,'family'=>20,'status'=>20,'term'=>10,'currency'=>3,'provider_ref'=>160,'summary'=>1000,'features'=>4000,'terms'=>4000] as $key=>$limit)$data[$key]=gtext($input,$key,$limit);
     $data['sku']=strtoupper($data['sku']);
     if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$data['sku'])||$data['title']===''||!isset(catalog_families()[$data['family']])||!isset(catalog_terms()[$data['term']])||!in_array($data['status'],['draft','published','retired'],true)||$data['currency']!=='USD')throw new InvalidArgumentException('Enter a unique SKU, title, valid family, status, service period and USD currency.');
     $data['amount_cents']=gcents(gtext($input,'amount',20));$data['setup_cents']=gcents(gtext($input,'setup',20))??0;$data['cost_cents']=gcents(gtext($input,'cost',20));$data['sort_order']=gint($input,'sort_order',0,9999);
     if($data['status']==='published'&&(!in_array($data['family'],['web-design','maintenance','addon'],true)||($data['amount_cents']??0)<=0||$data['amount_cents']+$data['setup_cents']>99999999||$data['summary']===''||$data['terms']===''))throw new InvalidArgumentException('Publish only a configured design, care or additional service with a positive price, summary and agreed service terms. Unit price plus setup cannot exceed 999999.99 USD. Provider products remain draft.');
-    return staff_locked(fn()=>staff_transaction(function() use($id,$expected,$data): int {
+    return $data;
+}
+function catalog_save(int $id,int $expected,array $input): int {
+    catalog_product_input($input); // Preserve validation before taking the existing lock.
+    return staff_locked(fn()=>staff_transaction(fn()=>catalog_save_in_transaction($id,$expected,$input)));
+}
+/** Internal composition point; callers must own the current staff mutex and transaction. */
+function catalog_save_in_transaction(int $id,int $expected,array $input): int {
+    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Catalog saving requires the owning account transaction.');
+    $data=catalog_product_input($input);
         $actor=catalog_require();$old=$id?one('SELECT * FROM '.table('catalog_products').' WHERE id=? FOR UPDATE',[$id]):null;
+        if(provider_catalog_import_ready()&&$id&&provider_catalog_import_record($id)&&($data['family']!=='hosting'||!in_array($data['status'],['draft','retired'],true)))throw new InvalidArgumentException('Imported hosting products must remain hosting drafts or retired products. Changing the family cannot enable publication.');
         if(($id&&!$old)||($old&&(int)$old['revision']!==$expected)||(!$id&&$expected!==0))throw new RuntimeException('This product changed. Reload and review its latest version before saving.');
         if(one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND id<>?',[$data['sku'],$id]))throw new InvalidArgumentException('Another product already uses this SKU.');
         $revision=$old?(int)$old['revision']+1:1;$now=gmdate('Y-m-d H:i:s');$columns=array_keys($data);$values=array_values($data);
@@ -35,7 +47,6 @@ function catalog_save(int $id,int $expected,array $input): int {
         else {query('INSERT INTO '.table('catalog_products').' ('.implode(',',$columns).',revision,created_at,updated_at) VALUES ('.implode(',',array_fill(0,count($columns)+3,'?')).')',[...$values,$revision,$now,$now]);$id=(int)db()->lastInsertId();}
         query('INSERT INTO '.table('catalog_revisions').' (product_id,revision,snapshot,actor_id,created_at) VALUES (?,?,?,?,?)',[$id,$revision,json_encode($data,JSON_THROW_ON_ERROR),$actor['id'],$now]);
         catalog_audit((int)$actor['id'],'save','Product '.$id.' revision '.$revision.' '.$data['status']);return $id;
-    }));
 }
 /** Only customer-safe fields may be used in public cards or invoice snapshots. */
 function catalog_public_fields(): string {return 'id,sku,title,family,term,currency,amount_cents,setup_cents,summary,features,terms,revision';}
