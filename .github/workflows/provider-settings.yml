@@ -2,8 +2,9 @@ name: Provider settings storage checks
 on:
   push:
     branches: [main, codex/provider-settings]
-    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/provider_settings*.php', 'tests/provider_checks*.php', '.github/workflows/provider-settings.yml']
+    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/provider_settings*.php', 'tests/provider_checks*.php', '.github/workflows/provider-settings.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/provider_settings*.php', 'tests/provider_checks*.php', '.github/workflows/provider-settings.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read

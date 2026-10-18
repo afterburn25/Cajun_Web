@@ -3,7 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
 
-function service_plans_validate_schema(string $name,string $sql): void {
+function service_plans_validate_schema(string $name,string $sql,bool $checkout=false): void {
     $unique=match($name) {
         'service_plans','service_subscriptions'=>[],
         'service_plan_events'=>['plan_revision'=>['plan_id','revision']],
@@ -14,7 +14,7 @@ function service_plans_validate_schema(string $name,string $sql): void {
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
         if($column['Extra']!=='' || $column['Default']!==null) throw new RuntimeException('Incompatible service-plan columns. Existing data was preserved.');
         $expected=match($column['Field']) {
-            'id','plan_id','subscription_id','plan_sha256','journal_sha256','before_sha256','after_sha256'=>'ascii_bin',
+            'id','plan_id','subscription_id','plan_sha256','journal_sha256','before_sha256','after_sha256','actor_system'=>'ascii_bin',
             'initial_json','journal_json','input_json'=>'utf8mb4_bin',
             default=>null,
         };
@@ -28,6 +28,7 @@ function service_plans_validate_schema(string $name,string $sql): void {
         'service_subscriptions'=>['plan_id'=>['plan_id'],'client_id'=>['client_id'],'created_by'=>['created_by']],
         'service_subscription_events'=>['actor_staff_id'=>['actor_staff_id'],'actor_client_id'=>['actor_client_id']],
     };
+    if($checkout && $name==='service_subscriptions')$other['created_by_client']=['created_by_client'];
     foreach($other as $key=>$columns)$expected[$key]=[1,$columns];
     $actual=[];
     foreach(all('SHOW INDEX FROM '.table($name)) as $index) {
@@ -44,6 +45,7 @@ function service_plans_validate_schema(string $name,string $sql): void {
         'service_subscriptions'=>['plan_id'=>['service_plans','id'],'client_id'=>['studio_clients','id'],'created_by'=>['users','id']],
         'service_subscription_events'=>['subscription_id'=>['service_subscriptions','id'],'actor_staff_id'=>['users','id'],'actor_client_id'=>['studio_clients','id']],
     };
+    if($checkout && $name==='service_subscriptions')$expected['created_by_client']=['studio_clients','id'];
     $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
     if(count($relations)!==count($expected))throw new RuntimeException('Incompatible service-plan relationships. Existing data was preserved.');
     $seen=[];
@@ -63,9 +65,10 @@ function service_plans_migrate(#[\SensitiveParameter] string $password):void {
         // A prepared installation must recover its original terms and consent history.
         // Check every established table before any CREATE can reconstruct an empty one.
         if($version==='1' && !service_plans_ready())throw new RuntimeException('Service-plan history storage is missing. Restore the original database before continuing; existing records were preserved.');
-        foreach(service_plans_schema(config()['db']['prefix']) as $name=>$sql){
+        $checkout=service_plans_checkout_schema_enabled();
+        foreach(service_plans_schema(config()['db']['prefix'],$checkout) as $name=>$sql){
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
-            service_plans_validate_schema($name,$sql);
+            service_plans_validate_schema($name,$sql,$checkout);
         }
         staff_transaction(function()use($actor):void {
             if(!service_plans_ready()){

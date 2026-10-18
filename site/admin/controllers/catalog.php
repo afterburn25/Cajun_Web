@@ -24,6 +24,15 @@ function catalog_admin_action(string $action,array $user): never {
             flash($state==='complete'?'20i hosting types saved. Review them below before creating local drafts.':'The hosting catalog refresh could not be completed. Existing products are unchanged; refresh again before importing from this catalog.',$state==='complete'?'success':'error');
             redirect(admin_url('catalog',['import_source'=>'package.types']));
         }
+        if($action==='catalog_import_batch'){
+            if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm importing these hosting types as local drafts.');
+            $source=posted('import_source',20)?:'package.types';$term=posted('term',10);$prefix=posted('sku_prefix',40);
+            $result=provider_catalog_import_batch(posted('preview_hash',64),$term,$prefix,posted('owner_password',1000),$source,gint($_POST,'import_offset',0,8192,0));
+            flash($result['created_count'].' draft(s) created. '.$result['existing_count'].' existing product(s) preserved. '.$result['remaining_count'].' type(s) remain to import.');
+            $query=['import_source'=>$source,'batch_term'=>$term,'batch_prefix'=>$prefix];
+            if($result['next_offset']!==null)$query['import_offset']=$result['next_offset'];
+            redirect(admin_url('catalog',$query));
+        }
         if($action==='catalog_import_create'){
             if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm creation of this local draft.');
             $id=provider_catalog_import_create(posted('preview_hash',64),posted('type_ref',18),posted('sku',60),posted('term',10),posted('owner_password',1000),posted('import_source',20)?:'packages.list');

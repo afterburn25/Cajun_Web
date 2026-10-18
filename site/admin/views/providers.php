@@ -31,7 +31,10 @@ admin_input('current_password','Your current owner password','','password','requ
 <input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>">
 <?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Check saved 20i connection</button></form>
 <?php else: ?><p>Save a General API key and allow explicit checks first.</p><?php endif; ?>
-<p class="hint">Wait 30 seconds between checks. Each owner can start up to 20 checks per hour.</p></section>
+<p class="hint">Wait 30 seconds between checks. Each owner can start up to 20 checks per hour.</p>
+<?php if(provider_checks_current_success($profileId)): ?>
+<p><a class="btn gold" href="<?=esc(admin_url('catalog',['import_source'=>'package.types']))?>">Import 20i Catalog</a></p>
+<?php endif; ?></section>
 <section class="workspace-card"><h2>Connection availability</h2>
 <form method="post"><?=csrf_field()?>
 <input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>">
@@ -54,7 +57,7 @@ admin_input('current_password','Your current owner password','','password','requ
 <?php foreach(array_slice($history,0,20) as $snapshot): ?><article><h3>Version <?=(int)$snapshot['revision']?> · <?=esc($snapshot['label'])?></h3><p><?=esc($snapshot['recorded_at'])?> UTC · <?=esc($snapshot['actor_name']??'Former owner')?> · <?=esc(ucfirst($snapshot['action']))?> · <?=esc((int)$snapshot['enabled']===1?'Checks enabled':'Checks disabled')?> · <?=esc((int)$snapshot['has_credentials']===1?'Key was saved':'No key saved')?></p></article><?php endforeach; ?>
 <nav aria-label="Settings history pages"><?php if($historyPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['history_page'=>$historyPage-1]))?>">Newer settings</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['history_page'=>$historyPage+1]))?>">Older settings</a><?php endif; ?></nav></section>
 <?php endif; ?>
-<section class="workspace-card" data-provider-inventory><h2>Hosting package inventory</h2>
+<section class="workspace-card" id="provider-inventory" data-provider-inventory><h2>Hosting package inventory</h2>
 <p>An explicit refresh performs one authenticated package-list read against the saved 20i profile and keeps the validated result. Observations are scoped to this saved profile and never claim to be complete account coverage.</p>
 <?php if(!$record): ?>
 <p>Save your 20i connection above before refreshing inventory.</p>
@@ -81,7 +84,7 @@ $clients=provider_inventory_clients();
 <p><?=esc($observation['started_at'])?> UTC · <?=esc($observation['state'])?> · coverage <?=esc($observation['coverage'])?><?php if($observation['skipped']>0): ?> · <?=(int)$observation['skipped']?> skipped<?php endif; ?></p>
 <?php if($observation['state']==='partial'): ?><p class="hint">Some reported packages were skipped because they did not match the documented shape. Absence from a partial observation does not prove a package was removed.</p><?php endif; ?>
 <?php foreach($packages as $package): $linked=$links[(int)$package['package_id']]??null; ?>
-<article class="workspace-card"><h3><?=esc($package['name'])?> <span class="workspace-status">#<?=(int)$package['package_id']?></span></h3>
+<article class="workspace-card" id="provider-package-<?=(int)$package['package_id']?>"><h3><?=esc($package['name'])?> <span class="workspace-status">#<?=(int)$package['package_id']?></span></h3>
 <p><?=esc($package['package_type_name']??'Type unreported')?> · <?=esc((int)$package['enabled']===1?'Enabled':'Disabled')?> · Created <?=esc($package['created_at'])?><?php if($package['names']): ?> · <?=esc(implode(', ',$package['names']))?><?php endif; ?></p>
 <?php if($package['package_labels']||$package['stack_users']): ?><p class="hint"><?php if($package['package_labels']): ?>Labels: <?=esc(implode(', ',$package['package_labels']))?><?php endif; ?><?php if($package['stack_users']): ?> Stack users: <?=esc(implode(', ',$package['stack_users']))?><?php endif; ?></p><?php endif; ?>
 <?php if($linked): $linkStale=!provider_inventory_link_context_matches($linked,$record,$observation); ?><p><?=badge('linked')?> <?=esc($linked['client_name'])?> · linked <?=esc($linked['linked_at'])?> UTC by <?=esc($linked['linked_by_name']??'Former owner')?><?=$linkStale?' · '.badge('requires re-approval'):''?></p>
@@ -99,7 +102,7 @@ $clients=provider_inventory_clients();
 $staleLinks=[];foreach($links as $linked)if(!isset($observedIds[(int)$linked['package_id']]))$staleLinks[]=$linked;
 if($staleLinks): ?><h3>Linked services not in the latest observation</h3>
 <p class="hint">These mappings were approved earlier but the package was absent from the last good read. Absence does not prove the package was removed; refresh again or unlink the mapping.</p>
-<?php foreach($staleLinks as $linked): ?><article class="workspace-card"><h3>Service #<?=(int)$linked['package_id']?></h3>
+<?php foreach($staleLinks as $linked): ?><article class="workspace-card" id="provider-package-<?=(int)$linked['package_id']?>"><h3>Service #<?=(int)$linked['package_id']?></h3>
 <p><?=badge('linked')?> <?=esc($linked['client_name'])?> · linked <?=esc($linked['linked_at'])?> UTC by <?=esc($linked['linked_by_name']??'Former owner')?><?=(int)$linked['profile_revision']!==(int)$record['revision']?' · '.badge('requires re-approval'):''?></p>
 <?php if((int)$linked['profile_revision']!==(int)$record['revision']): ?><p class="hint">Provider settings changed after this link was approved. It can be re-approved only if the package appears in a current observation; otherwise remove it.</p><?php endif; ?>
 <form method="post"><?php admin_action('provider_inventory_unlink'); ?><input type="hidden" name="link_id" value="<?=esc($linked['id'])?>"><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Unlink service</button></form></article>

@@ -1,3 +1,7 @@
+## 2026-10-18 — catalog storefront source integration
+
+Current saved-connection success now links to catalog import; fixed batches preserve existing edits and support safe retries. Shared Hosting compares published prices, terms and local images, with exact checkout selection retained through login. The preserved first-invoice branch is normally integrated; VPS catalog/provider artwork remain unverified and combined runtime/release acceptance remains pending. [Scope and checks](docs/TWENTYI_CATALOG_STOREFRONT.md).
+
 ## Unreleased — capture complete mobile StackCP cards
 
 Keep the original layout/action checks at their existing viewports, then capture five tall StackCP mobile cards with complete bounds below the header and skip link. Add five unobscured-capture checks. Close the finite inventory review of all 340 original captured extents while preserving overlay/scrolling limits. These changes affect tests and documentation; shipping behavior and published 1.25.0 remain unchanged.
@@ -9,6 +13,100 @@ Record115 additional browser-image reviews and their limits, including five Stac
 ## Unreleased — wait for release captures to be ready
 
 Scroll the actual fresh-root content into view and decode its images before taking the full-page screenshot. Verify the imported-image Save button is reachable at the original mobile size, then capture the whole card at the same width with additional height. Wait for the domain-search mobile drawer to leave the viewport before capture. Preserve original assertions, report/image names and application behavior. These test corrections address observed capture gaps; corrected application acceptance is pending.
+
+## Unreleased — hosting recovery test startup
+
+- Match the PHP test server's closed-connection address reuse during loopback preflight; active listeners still cause failure.
+- Retain only a fixed startup stage and bounded errno for preflight/log-open errors.
+- Require real Linux socket regressions before focused packaged hosting tests. Existing application checks, cleanup, complete-suite recipe and release assets are preserved.
+
+## Development — checkout history and packaged acceptance, 2026-10-18
+
+- Show actual client confirmation and automatic agreement activation in checkout history; retain legacy staff attribution and remove the missing-creator warning.
+- Add packaged owner/client checkout, denied-access, retry and result-link tests with desktop/mobile captures.
+- Wire focused and full acceptance while preserving all preceding recipes and required reports. Runtime, visual and release acceptance are still pending.
+
+## Development — owner-enabled hosting invoice checkout, 2026-10-18
+
+- Add owner opt-in and primary-client project selection, exact price/date review and first-invoice confirmation.
+- Save the project/agreement/schedule/invoice together, preserve completed retries and reject missing financial history.
+- Require verified payment and the accepted provider mapping for checkout-origin fulfillment.
+- Local document and screen checks pass; native Linux, packaged browser and full release acceptance remain pending.
+
+## Development — recurring checkout storage, 2026-10-18
+
+- Add explicit owner migration for client-attributed recurring checkout schedules and first invoices, preserving legacy SQL defaults and history.
+- Bind the first invoice to exact consent and an independent compact audit origin; refuse missing history or staff recreation of the client obligation.
+- Pass66 isolated native migration/history checks. Atomic checkout, customer screens and release acceptance remain pending.
+
+## Development — checkout subscription storage, 2026-10-18
+
+- Add an explicit owner migration for checkout client creators and system activation events, preserving old documents, actors and audits.
+- Validate recognized interrupted migration states and complete retained checkout history; reject missing or inconsistent records.
+- Pass58 isolated native migration/history checks. Checkout creation, invoices, screens and full release acceptance remain pending.
+
+## Development — first-period checkout billing rules, 2026-10-18
+
+- Derive checkout billing from exact retained subscription/consent and start its first period on the accepted local date.
+- Preserve legacy activation and future lifecycle boundaries; add92 pure regressions and exact foundation/site mirrors.
+- Actual invoice creation, native checkout storage and customer screens remain pending.
+
+## Development — client-attributed checkout subscriptions, 2026-10-18
+
+- Retain the exact hosting consent and real client creator in subscription format2, with separate client-consent and automatic local-activation events.
+- Preserve legacy subscription documents and later lifecycle rules; add65 pure regression cases and refresh installer inventory/source pins.
+- Native storage, invoice creation, customer screens and release acceptance remain pending.
+
+## 2026-10-18 — hosting checkout consent groundwork
+
+- Added inactive, versioned hosting checkout publication policy and canonical client review/consent documents. They bind exact commercial terms and a selected existing or new hosting project; no route or database writer is enabled.
+- Preserved format1 requests and blocked checkout publications from their legacy conversion path. Corrected skipped-midnight expiry and historical acceptance-date validation; added pure regressions for date, ownership facts, changed terms, replay identity and private-field exclusion.
+- Refreshed installer inventory and exact source pins for the development branch. Database/invoice/UI integration and release acceptance remain pending.
+
+## Development — preserve hosting acceptance while integrating main CI triggers
+
+Integrate the reviewed PR218 workflow path filters from main `e397d9a6e293850e8dff61a593e3ba39ee178400` with hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` through a normal merge. Only ten focused workflow triggers and documentation change relative to that development source; shipping files, tests, full acceptance commands and contracts stay exact. This does not merge the separate f67 release candidate to main, certify hosting behavior or change published 1.25.0.
+
+## Development — integration review handoff, 2026-10-18
+
+Document current Devin branch corrections for contact billing authority, preserved invoice checks/navigation and payment-upgrade verification. Include an unapplied invoice restoration patch and carry forward unresolved mail findings. No shipping behavior or version changes; application acceptance remains pending.
+
+## Development — full hosting and published upgrade verification, 2026-10-18
+
+Connect existing offer/recovery and eventual purchase/client-access tests to complete acceptance. Add explicit hosting setup, publication, request, consent and recovery protection after upgrading the immutable published1.25 package. Preserve all previous test predicates, private output exclusions and released bytes. Local source/portable checks pass; actual combined runtime and release gates remain pending.
+
+## Development — joined hosting purchase verification, 2026-10-18
+
+Add an isolated eventual purchase test and packaged owner re-link/client visibility checks. Preserve the original focused tests and recurring billing rules; no shipping files or version labels change. Actual Linux database/browser and release acceptance remain pending.
+
+## Development — original hosting mapping continuity, 2026-10-18
+
+- Keep new and saved catalog-origin hosting order links tied to the exact provider mapping in the client's original offer. Reject silent substitutions and manual bypasses; guide owners through a new offer/agreement when the original mapping is no longer eligible.
+- Preserve ordinary order preparation, historical mapping readability and explicit billing project consent. This remains development work awaiting joined SQL/HTTP/browser and release acceptance.
+
+## Unreleased — guide confirmed hosting orders to client access
+
+Show saved package assignment status and the expected client on the owner’s confirmed hosting order. Provide a direct link to the matching provider inventory card for the existing password-confirmed assignment action. Keep provider purchases, confirmation, ownership writes, client projections and billing behavior unchanged. Native/browser and full purchase-through-access acceptance remain pending.
+
+## Unreleased successor — staged owner recovery HTTP checks
+
+Add isolated tests of the real packaged owner updater for authentication, CSRF, package integrity, backup confirmation and hosting-history recovery decisions. Preserve original native/browser assertions and the production recovery algorithm. Portable/model checks pass; Linux SQL/HTTP and release acceptance remain pending. No shipping files or installer inventory changed.
+
+## Unreleased — reduce unrelated pull-request test runs
+
+Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
+
+## 2026-10-18 — hosting successor recovery protection
+
+Guard staged owner file recovery with fresh owner authentication and retained hosting history under the same mutex as publication. Empty, validated history remains eligible; publications, partial/unknown storage and inherited transactions refuse before recovery changes files or the journal. Keep the generic recovery engine intact. Add 142 modeled regression checks per PHP mode and wire 44 separate native recovery cases into the four-environment focused matrix, preserving all 88 earlier hosting cases and the packaged UI job. Native execution and real HTTP acceptance remain pending. [Behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
+## Unreleased successor — hosting offer screens
+
+Add owner offer review/publication and client request handling under Hosting & Domains, public hosting cards with local artwork, and client request history with agreement/project links. Preserve failed submissions, current permissions, support restrictions and explicit confirmation. Correct the product review link to select its imported draft. Runtime/browser acceptance remains pending; these changes are outside the 1.26 release candidate.
+
+## Unreleased successor — hosting offers and client request backend
+
+Connect exact imported hosting drafts to reviewed service plans through explicit local publications, retained client requests and atomic agreement conversion. Add immutable history, current-session and stale-offer checks, and protection for historical product images during media cleanup. Generic hosting catalog invoices remain refused. No route enables the feature yet; focused native SQL, browser and full ordering acceptance are pending. This successor is separate from the frozen 1.26.0 release candidate.
 
 ## Unreleased — isolate direct catalog browser fixture ordering
 

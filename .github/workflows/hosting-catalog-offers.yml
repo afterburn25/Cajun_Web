@@ -1,0 +1,208 @@
+name: Native hosting offers and requests
+on:
+  push:
+    branches: [codex/twentyi-hosting-commerce, codex/twentyi-hosting-first-invoice]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hosting-catalog-offers-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  offers:
+    name: Hosting offers PHP ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify deployment inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-hosting-offers-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Exact documents, native offer requests and existing agreement regression
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-hosting-offers-test sh -ec '
+              mkdir -p qa
+              php tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json
+              php -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json
+              php tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json
+              php -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json
+              CWP_TEST_HOSTING_RECOVERY=1 php tests/hosting_catalog_native.php
+              php tests/service_plans_native.php
+              php tests/hosting_checkout_document.php qa/hosting-checkout-document-default.json
+              php -n tests/hosting_checkout_document.php qa/hosting-checkout-document-minimal.json
+              php tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-default.json
+              php -n tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-minimal.json
+              php tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-default.json
+              php -n tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-minimal.json
+              php tests/hosting_checkout_views.php > qa/hosting-checkout-views-default.json
+              php -n tests/hosting_checkout_views.php > qa/hosting-checkout-views-minimal.json
+              CWP_TEST_HOSTING_CHECKOUT=1 php tests/hosting_checkout_native.php
+            '
+      - name: Preserve unchanged source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
+      - name: Preserve named test results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hosting-catalog-offers-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/hosting-catalog-document-default.json
+            qa/hosting-catalog-document-minimal.json
+            qa/hosting-catalog-native-results.json
+            qa/service-plans-native-results.json
+            qa/hosting-checkout-document-default.json
+            qa/hosting-checkout-document-minimal.json
+            qa/hosting-checkout-subscription-default.json
+            qa/hosting-checkout-subscription-minimal.json
+            qa/hosting-checkout-billing-default.json
+            qa/hosting-checkout-billing-minimal.json
+            qa/hosting-checkout-views-default.json
+            qa/hosting-checkout-views-minimal.json
+            qa/hosting-checkout-native-results.json
+            qa/hosting-catalog-recovery-guard-default.json
+            qa/hosting-catalog-recovery-guard-minimal.json
+            qa/hosting-catalog-recovery-native-results.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve isolated recovery files and child diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hosting-catalog-recovery-files-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: test-runtime/hosting-recovery-*/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+  ui:
+    name: Packaged hosting offers HTTP and Chromium on PHP 8.3 and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      PHP_BINARY: /usr/bin/php8.3
+      CWP_PHP_VERSION: '8.3'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install maintained runtime and real browser dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring python3-venv libfaketime
+          test -x "$PHP_BINARY"
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Linux recovery socket regression
+        run: .ci-venv/bin/python -B tests/hosting_catalog_recovery_socket_test.py --require-linux -v
+      - name: Verify generated deployment and build exact source
+        run: |
+          PYTHONPATH=tools python3 -B -c 'import build; build.generated(False)'
+          mkdir -p qa
+          python3 tools/build.py --commit "$GITHUB_SHA" > qa/hosting-catalog-ui-build.log 2>&1
+      - name: Seed actual isolated native hosting history
+        env:
+          CWP_TEST_HOSTING_RECOVERY_HTTP: "1"
+        run: '"$PHP_BINARY" tests/hosting_catalog_native.php > qa/hosting-catalog-ui-native.log 2>&1'
+      - name: Seed actual isolated current-time checkout history
+        run: CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" tests/hosting_checkout_native.php > qa/hosting-checkout-ui-native.log 2>&1
+      - name: Actual packaged owner client and agreement browser flow
+        run: .ci-venv/bin/python -B tests/hosting_catalog_browser.py
+      - name: Eventual joined purchase with isolated application time
+        run: |
+          .ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py
+          .ci-venv/bin/python -B tests/hosting_catalog_purchase.py
+      - name: Packaged owner re-link and client Hosting continuation
+        run: |
+          .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py
+          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py
+      - name: Packaged current-time hosting checkout and exact result links
+        run: |
+          .ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json
+          .ci-venv/bin/python -B tests/hosting_checkout_http_browser.py
+      - name: Preserve unchanged source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
+      - name: Preserve focused original results and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hosting-catalog-ui-8.3-mariadb-10.11-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/hosting-catalog-ui-build.log
+            qa/hosting-catalog-ui-native.log
+            qa/hosting-checkout-ui-native.log
+            qa/hosting-checkout-native-results.json
+            qa/hosting-checkout-http-guards.json
+            qa/hosting-checkout-http/
+            qa/hosting-catalog-native-results.json
+            qa/hosting-catalog-http/
+            qa/hosting-catalog-recovery-http-results.json
+            qa/hosting-catalog-recovery-http/
+            qa/hosting-purchase/
+            qa/hosting-purchase-http/
+            dist/*-COMPLETE-UPLOAD.zip
+            dist/*-COMPLETE-UPLOAD.manifest.json
+            dist/*-UPDATE.zip
+            dist/*-UPDATE.manifest.json
+          if-no-files-found: error
+          retention-days: 14
