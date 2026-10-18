@@ -2141,3 +2141,26 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
   branch): both INSERTs now supply `feedback`=''.
 - Propagated: portal-account `436e6def`. Acceptance dispatched on
   `436e6def` (run 39089736893).
+
+## 2026-10-18 — Combined acceptance GREEN on the final exact head
+
+- Diagnostic scaffolding removed (`1b272c84`: the conditional
+  ACTIVITY PAGE DEBUG dump is gone from staff_cases.py).
+- Final propagated heads: milestones `1b272c84` → activity-prefs
+  `e9c266d3` → client-actions `73f9e861` → portal-account `1339e29f`
+  (+ docs/handoff commits on top).
+- **[Acceptance run 39092079427](https://github.com/afterburn25/Cajun_Web/actions/runs/39092079427)
+  on `1339e29f`: SUCCESS** — native integration, real HTTP/Chromium
+  (all suites: staff, activity, contacts including the boundary block
+  and both milestone-revision flows), unprivileged recovery, Apache
+  with/without rewriting, source-mutation and evidence preservation.
+- Component lanes: 43/43 (milestones, activity-prefs), 41/41
+  (client-actions), 42/42 (portal-account `1339e29f`). One infra flake
+  (`mariadb:10.11` container init timeout on Hosting records PHP 8.4)
+  passed on rerun 39091599102.
+- Prior evidence: run 39089736893 on `436e6def` also full-green —
+  identical test code plus the inert dump.
+- Review corrections #210/#211/#212/#213 are now exercised end-to-end
+  on the propagated heads. This is branch CI evidence only — no merge,
+  retarget, deployment or release. Codex owns the sequential
+  integration of the chain.
