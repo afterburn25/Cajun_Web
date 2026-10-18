@@ -4010,3 +4010,57 @@ advances were merged into stacked children (8 merges this wave);
 167 queued CI runs on superseded heads were cancelled so runners
 verify current sources. CI re-queued; results pending. No merge,
 deployment, provider action or release claimed.
+
+## 2026-10-18 — #203/#212 integration-review corrections applied and propagated
+
+Request: apply Codex integration-review findings on the restacked contacts
+chain (reviews 6104933952 on #203, 6247843434 on #212 incl. the PR213
+documentation correction). Starting heads: client-contacts `a60db04c`,
+portal-account `467d488d`-era stack.
+
+#203 (client-contacts, head `cefb08d6`): `service_plans_current_client()`
+now rechecks the active contact's `billing` permission plus `auth_version`
+inside the existing lock/transaction via a direct row recheck that throws a
+normal `RuntimeException` (not `contact_can()`/`fail_page`, which would hard
+exit mid-transaction). This chokes every client billing path: portal render,
+subscription reads, consent/cancel/abandon, order-form decide,
+recurring-billing authority and the payment-detail invoice guard.
+`site/portal/views/workspace.php` regains the five main billing navigation
+links gated by `$canBilling`/`$canDownloads` and re-gates invoice links
+behind `recurring_billing_invoice_guard` and
+`domain_renewal_dispatch_invoice_display`. Coverage: native `sn_contact`
+helper, wrong-permission writer refusals and an in-lock revocation worker in
+`tests/service_plans_native.php`; packaged HTTP contact-consent/abandon/
+agreement/order billing checks plus forged-session POST denial in
+`tests/service_plan_cases.py`.
+
+#212 follow-through (applied on the owning branch and merged down):
+`site/app/activity/events.php` `activity_projection()` now unions
+`author_type` (with a default `''` on non-message projections) so
+`site/includes/layout/activity.php` renders Studio/Client/Contact sender
+labels instead of labelling every client-feed message 'Studio message'.
+Fixture-order correction per the review's recorded ordering evidence: the
+early activity-enablement was removed from `tests/staff_cases.py` and the
+two feed assertions moved into `tests/activity_cases.py` after its own
+negative/positive setup sequence, asserting page HTTP 200 and exact
+revision-qualified `milestone:`/`review:`/`message:` keys. New attribution
+checks: contact feed keeps `Client message`/`Studio message`, primary feed
+shows `Contact message`, staff feed retains `Client message` attribution.
+The handoff's earlier "transient card-render" diagnosis was corrected to
+the supported fixture-order explanation.
+
+Propagation: merged down contact-decisions `c6005b4c` -> contact-activity
+`ff145744` -> staff-notes `7795ffcb` -> milestones `2a6808e5` ->
+activity-prefs `e87ff1d4` -> client-actions `5dd2ee47` -> portal-account
+`863ec193`. Each level's own diffs were unioned (staff_notes/events.php
+kept child projections plus the new `author_type` argument; contacts_cases
+kept the child `data-event-key` assertion plus the new attribution block;
+staff_cases unioned the child milestone assertions minus the moved feed
+lines). `php -l` and `py_compile` pass on every edited file;
+`site/install/inventory.generated.php` was regenerated at each level.
+
+Remaining: #202 payment-schema review (start from updated head
+`467d488d`); #194/#195 carried-forward mail items; fresh packaged
+HTTP/browser lanes for the corrected feeds are queued at GitHub runner
+concurrency. Branch-CI state only; Codex owns retarget/integration and no
+merge, deployment, provider action or release is claimed.
