@@ -1,3 +1,7 @@
+## 2026-10-18 — separate hosting-order connection in progress
+
+`codex/twentyi-hosting-commerce` starts at frozen 1.26 source `6e3dbeff6dc6359a418837d0c95baa43e4c92533`. It prepares [hosting publications and client requests](docs/TWENTYI_HOSTING_OFFERS.md) connected to the existing agreement writer. Pure documents pass 119 checks in normal and minimal PHP; source/syntax review is separate from pending SQL, route, browser and full ordering acceptance. No customer route is enabled. The 1.26 release candidate remains unchanged on its own branch, and published 1.25 assets remain immutable.
+
 ## 2026-10-18 — assembled 1.26.0 candidate
 
 The [1.26.0 candidate](docs/RELEASE_SCOPE_1.26.0.md) adds direct hosting catalog imports. Version markers, installer inventory, the real published 1.25 archive, historical baselines and separate populated 1.25-to-1.26 upgrade cases are assembled. Combined local checks pass: 262 transfer/evidence guards and 28 retained plus 42 new portable upgrade guards. These are not installed upgrade or browser acceptance. [Current test record](docs/TEST_REPORT_1.26.0.md).

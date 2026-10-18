@@ -106,7 +106,12 @@ function service_plans_change(string $id,int $revision,string $event,string $com
 }
 /** An offer to a named client; never a payment mandate, invoice or charge. */
 function service_plans_offer(string $id,int $client,string $planId,int $planRevision,string $planFingerprint,#[\SensitiveParameter] string $password):ServiceSubscriptionDocument {
-    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$planId,$planRevision,$planFingerprint,$password):ServiceSubscriptionDocument {
+    return staff_locked(fn()=>staff_transaction(fn()=>service_plans_offer_locked($id,$client,$planId,$planRevision,$planFingerprint,$password)));
+}
+/** Internal composition point: the agreement and its hosting request link commit together. */
+function service_plans_offer_locked(string $id,int $client,string $planId,int $planRevision,string $planFingerprint,#[\SensitiveParameter] string $password):ServiceSubscriptionDocument {
+    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Offering a service agreement requires the owning account transaction.');
         $actor=service_plans_password($password);service_plans_client_row($client);service_plans_id($id);
         $plan=service_plans_validate(service_plans_row($planId,false,true));$old=one('SELECT * FROM '.table('service_subscriptions').' WHERE id=? FOR UPDATE',[$id]);
         $selected=$plan->prefix($planRevision);
@@ -117,7 +122,6 @@ function service_plans_offer(string $id,int $client,string $planId,int $planRevi
         if($old){$current=service_plans_validate($old,true);if($old['initial_json']!==$doc->json())throw new InvalidArgumentException('This subscription identity was already used.');return $current;}
         query('INSERT INTO '.table('service_subscriptions').' (id,plan_id,plan_revision,plan_sha256,client_id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,?,?,?,?,?,?,?,?,?,0)',[$id,$planId,$planRevision,$planFingerprint,$client,$actor['id'],$at,$doc->json(),$doc->json(),$doc->fingerprint()]);
         service_plans_audit((int)$actor['id'],'offered','Subscription '.$id.' plan '.$planId.' revision '.$planRevision.' client '.$client);return $doc;
-    }));
 }
 function service_plans_subscription_change(string $id,int $client,int $revision,string $event,string $command,array $args,#[\SensitiveParameter] string $password,?string $renewalBinding=null):ServiceSubscriptionDocument {
     return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$event,$command,$args,$password,$renewalBinding):ServiceSubscriptionDocument {

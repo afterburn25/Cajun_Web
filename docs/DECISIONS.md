@@ -1,3 +1,7 @@
+## 2026-10-18 — use existing service agreements for imported hosting offers
+
+Imported hosting drafts retain generic catalog publication/invoice refusals. A separate, explicit owner publication binds the exact draft, active retail plan, provider mapping and observed hosting type. A client request preserves those terms and an owner converts it to one existing service agreement atomically with its request link. Existing consent, invoice, payment, order and provisioning gates remain authoritative. Historical images stay retained after replacement. No browser, payment or provider acceptance follows from the backend implementation alone. See [scope](TWENTYI_HOSTING_OFFERS.md).
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 The owner clarified a completely fresh installation after deleting the prior public files. Default setup retains strict existing-table and storage refusals. Explicit fresh-start intent creates separate resources and never drops existing tables or unlocks an installed site. Routine file uploads retain config.php, keys, database and storage. Local retained locks without config lead to recovery, not automatic setup. Administrator passwords use a dedicated 12-character validator; the shared client policy remains unchanged. This supersedes the earlier update-only interpretation of this installer incident.

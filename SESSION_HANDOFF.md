@@ -1,3 +1,9 @@
+## 2026-10-18 — hosting commerce successor preparation
+
+Branch `codex/twentyi-hosting-commerce` begins at `6e3dbeff6dc6359a418837d0c95baa43e4c92533`. Root owns service composition, context and eventual shared routing; Catalog supplies the strict document/projection layer and native fixture; Domains supplies additive schema/setup/history; VPS independently reviews the seams. [Scope and remaining integration](docs/TWENTYI_HOSTING_OFFERS.md).
+
+Current pure document checks: 119 normal and 119 minimal PHP 8.4.25 checks, plus syntax/source review. Four-table storage/setup and historical image retention are integrated; its 85 checks per PHP mode use modeled SQL. Services are unwired and database behavior is unaccepted. Run the focused `hosting-catalog-offers.yml` four-environment matrix before connecting and accepting the screens. Generic hosting catalog invoices stay refused. The original 1.26 candidate/full runs and all published 1.25 bytes are untouched. The owner-supplied API reference is already available; do not ask for it again.
+
 ## 2026-10-18 — assembled 1.26.0 candidate
 
 The [1.26.0 candidate](docs/RELEASE_SCOPE_1.26.0.md) adds direct hosting catalog imports. Version markers, installer inventory, the real published 1.25 archive, historical baselines and separate populated 1.25-to-1.26 upgrade cases are assembled. Combined local checks pass: 262 transfer/evidence guards and 28 retained plus 42 new portable upgrade guards. These are not installed upgrade or browser acceptance. [Current test record](docs/TEST_REPORT_1.26.0.md).
