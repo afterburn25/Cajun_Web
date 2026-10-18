@@ -1,0 +1,199 @@
+{
+  "catalog_import_accepted": false,
+  "image_download_authorized": false,
+  "operations": [
+    {
+      "operation": "package_types",
+      "outcome": "shape_observed",
+      "shape": {
+        "catalog_contract_established": false,
+        "image_contract_established": false,
+        "observations": [
+          {
+            "path_tokens": [
+              "$"
+            ],
+            "types": [
+              "array"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]"
+            ],
+            "types": [
+              "object"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "extraData"
+            ],
+            "types": [
+              "object"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "extraData",
+              "phpVersion"
+            ],
+            "types": [
+              "null",
+              "string"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "extraData",
+              "temporaryUrlDomain"
+            ],
+            "types": [
+              "null",
+              "string"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "extraData",
+              "{withheld-key}"
+            ],
+            "types": [
+              "integer",
+              "null"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "id"
+            ],
+            "types": [
+              "integer"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "installApps"
+            ],
+            "types": [
+              "array"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "label"
+            ],
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "passwordResetEmail"
+            ],
+            "types": [
+              "null"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "platform"
+            ],
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "welcomeEmail"
+            ],
+            "types": [
+              "null",
+              "string"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "{withheld-key}"
+            ],
+            "types": [
+              "object"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "{withheld-key}",
+              "bandwidth"
+            ],
+            "types": [
+              "string"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "{withheld-key}",
+              "{withheld-key}"
+            ],
+            "types": [
+              "array",
+              "boolean",
+              "integer",
+              "object",
+              "string"
+            ]
+          },
+          {
+            "path_tokens": [
+              "$",
+              "[]",
+              "{withheld-key}",
+              "{withheld-key}",
+              "{withheld-key}"
+            ],
+            "types": [
+              "boolean"
+            ]
+          }
+        ],
+        "root_type": "array",
+        "semantics": "lexical_matches_only_unknown_key_paths_collapsed",
+        "unknown_or_dynamic_keys_withheld": true,
+        "whole_bounded_document_traversed": true
+      }
+    },
+    {
+      "operation": "cloud_server_product_data",
+      "outcome": "unexpected_root"
+    }
+  ],
+  "outcome": "incomplete",
+  "raw_values_unknown_keys_urls_headers_and_response_digests_exported": false,
+  "schema": 1
+}

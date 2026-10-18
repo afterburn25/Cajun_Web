@@ -2,17 +2,17 @@ name: 20i write-boundary checks
 
 on:
   pull_request:
-    paths: ['foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   push:
-    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile]
-    paths: ['foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls, codex/twentyi-vps-controls]
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: twentyi-operations-${{ github.ref }}
+  group: twentyi-operations-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -29,6 +29,10 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+      - name: Check shipping mirrors and documentation
+        run: |
+          PYTHONPATH=tools python3 -B -c 'import build; build.generated(False)'
+          python3 -B tools/check_docs.py
       - name: Build the isolated test runtime
         run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/twentyi/Dockerfile -t cwp-twentyi-ops:${{ matrix.php }} tests/twentyi
       - name: Synthetic write-boundary checks without external network access
@@ -39,6 +43,12 @@ jobs:
             for source in foundation/provider/*.php foundation/twentyi-operations/*.php tests/twentyi-operations/*.php; do php -l "$source"; done
             php tests/twentyi-operations/run.php qa/operations-default-results.json
             php -n tests/twentyi-operations/run.php qa/operations-no-ini-results.json
+            php tests/twentyi-operations/mailboxes.php qa/mailbox-default-results.json
+            php -n tests/twentyi-operations/mailboxes.php qa/mailbox-no-ini-results.json
+            php tests/twentyi-operations/cloud-sites.php qa/cloud-sites-default-results.json
+            php -n tests/twentyi-operations/cloud-sites.php qa/cloud-sites-no-ini-results.json
+            cat qa/operations-default-results.json
+            cat qa/operations-no-ini-results.json
           '
       - name: Preserve named results
         if: always()
@@ -50,4 +60,4 @@ jobs:
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Synthetic descriptor/request-builder/classifier checks only. Docker --network none; no HTTP transport, credential, database, application or provider call. Execution requires the separately tested owner grant and durable ledger; this job does not exercise them.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Synthetic contracts, shared gateway/file-ledger mailbox replay and fixed transport admission only. Docker --network none; no real HTTP, production credential/database, native application UI or provider call. Production mailbox authority/storage/forms remain separate implementation and acceptance requirements.' >> "$GITHUB_STEP_SUMMARY"

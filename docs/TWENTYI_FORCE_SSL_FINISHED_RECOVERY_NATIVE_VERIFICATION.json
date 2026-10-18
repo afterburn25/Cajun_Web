@@ -1,0 +1,554 @@
+{
+  "source": "34f35547b2168f617306941b0c00a03129c57ab5",
+  "tree": "0aae428fea73b66294228fe86332e52168f5304e",
+  "branch": "codex/twentyi-force-ssl-finished-recovery",
+  "run_id": 38881177088,
+  "attempt": 1,
+  "event": "push",
+  "conclusion": "success",
+  "scope": "Focused native/pure acceptance only. Packaged browser, combined release and live provider acceptance are not covered. Counts are report executions, not additive unique coverage.",
+  "verification_sha256": "85120bfe78eda355331397b5ef90498cc221c16eedcf9452c8b98b22a5bd02ff",
+  "independent_verification_sha256": "230952f35b6e448c15809b5536edcefbee9a3d97d7329691c5ff1f53517d9c03",
+  "jobs": [
+    {
+      "id": 116908002183,
+      "name": "Force SSL changes 8.2 and mariadb-10.11",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116908002434,
+      "name": "Force SSL changes 8.4 and mysql-8.4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116908002456,
+      "name": "Force SSL changes 8.2 and mysql-8.4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116908002724,
+      "name": "Force SSL changes 8.4 and mariadb-10.11",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": 12038270391,
+      "name": "force-ssl-controls-8.2-mysql-8.4-34f35547b2168f617306941b0c00a03129c57ab5",
+      "size_bytes": 21856,
+      "sha256": "db8e88eb76a5e84b8363a282c4b37ecb3ff18b989780e77c3fdf6da24044699d",
+      "reports": {
+        "force-ssl-control-contract-no-ini-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-contract-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-no-ini-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-no-ini-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "provider-force-ssl-controls-native-results.json": {
+          "sha256": "4bdd3a5a283b8d40a6c296bc1e58071568c0d5bd74043107ce16a42442109f0c",
+          "executions": 137,
+          "unique_names": 137,
+          "all_passed": true
+        },
+        "package-force-ssl-document-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "package-force-ssl-document-no-ini-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119,
+          "all_passed": true
+        },
+        "twentyi-operation-contract-results.json": {
+          "sha256": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+          "executions": 230,
+          "unique_names": 230,
+          "all_passed": true
+        },
+        "provider-operations-native-results.json": {
+          "sha256": "b4fe319771a7f396dc0f1dd39d36a019ed17f017198a03c66ef11a06796c008e",
+          "executions": 92,
+          "unique_names": 92,
+          "all_passed": true
+        },
+        "provider-execution-native-results.json": {
+          "sha256": "07d8bf94a419892b6219efb43343578f07dcc1d02ac5edb1b1177b409fb2eabf",
+          "executions": 107,
+          "unique_names": 107,
+          "all_passed": true
+        },
+        "document-roots-transport-integrated-results.json": {
+          "sha256": "db6b6aec09eabae32fe222a5bc6379405c3a185f13148f5a4347cf055c58b1b2",
+          "executions": 24,
+          "unique_names": 24,
+          "all_passed": true
+        }
+      }
+    },
+    {
+      "artifact_id": 12037762034,
+      "name": "force-ssl-controls-8.4-mysql-8.4-34f35547b2168f617306941b0c00a03129c57ab5",
+      "size_bytes": 21856,
+      "sha256": "9288e6b8527998fb1a0aa4edbf6019cfe1ccb46eb4b96c858214897e0306e630",
+      "reports": {
+        "force-ssl-control-contract-no-ini-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-contract-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-no-ini-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-no-ini-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "provider-force-ssl-controls-native-results.json": {
+          "sha256": "4bdd3a5a283b8d40a6c296bc1e58071568c0d5bd74043107ce16a42442109f0c",
+          "executions": 137,
+          "unique_names": 137,
+          "all_passed": true
+        },
+        "package-force-ssl-document-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "package-force-ssl-document-no-ini-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119,
+          "all_passed": true
+        },
+        "twentyi-operation-contract-results.json": {
+          "sha256": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+          "executions": 230,
+          "unique_names": 230,
+          "all_passed": true
+        },
+        "provider-operations-native-results.json": {
+          "sha256": "b4fe319771a7f396dc0f1dd39d36a019ed17f017198a03c66ef11a06796c008e",
+          "executions": 92,
+          "unique_names": 92,
+          "all_passed": true
+        },
+        "provider-execution-native-results.json": {
+          "sha256": "07d8bf94a419892b6219efb43343578f07dcc1d02ac5edb1b1177b409fb2eabf",
+          "executions": 107,
+          "unique_names": 107,
+          "all_passed": true
+        },
+        "document-roots-transport-integrated-results.json": {
+          "sha256": "db6b6aec09eabae32fe222a5bc6379405c3a185f13148f5a4347cf055c58b1b2",
+          "executions": 24,
+          "unique_names": 24,
+          "all_passed": true
+        }
+      }
+    },
+    {
+      "artifact_id": 12037642434,
+      "name": "force-ssl-controls-8.2-mariadb-10.11-34f35547b2168f617306941b0c00a03129c57ab5",
+      "size_bytes": 21856,
+      "sha256": "493e37f33febd36d4193632d1e55f548cb691d64b25de6aa51ba0e8f78f33201",
+      "reports": {
+        "force-ssl-control-contract-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-contract-no-ini-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-no-ini-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-no-ini-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "provider-force-ssl-controls-native-results.json": {
+          "sha256": "4bdd3a5a283b8d40a6c296bc1e58071568c0d5bd74043107ce16a42442109f0c",
+          "executions": 137,
+          "unique_names": 137,
+          "all_passed": true
+        },
+        "package-force-ssl-document-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "package-force-ssl-document-no-ini-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119,
+          "all_passed": true
+        },
+        "twentyi-operation-contract-results.json": {
+          "sha256": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+          "executions": 230,
+          "unique_names": 230,
+          "all_passed": true
+        },
+        "provider-operations-native-results.json": {
+          "sha256": "b4fe319771a7f396dc0f1dd39d36a019ed17f017198a03c66ef11a06796c008e",
+          "executions": 92,
+          "unique_names": 92,
+          "all_passed": true
+        },
+        "provider-execution-native-results.json": {
+          "sha256": "07d8bf94a419892b6219efb43343578f07dcc1d02ac5edb1b1177b409fb2eabf",
+          "executions": 107,
+          "unique_names": 107,
+          "all_passed": true
+        },
+        "document-roots-transport-integrated-results.json": {
+          "sha256": "db6b6aec09eabae32fe222a5bc6379405c3a185f13148f5a4347cf055c58b1b2",
+          "executions": 24,
+          "unique_names": 24,
+          "all_passed": true
+        }
+      }
+    },
+    {
+      "artifact_id": 12037512358,
+      "name": "force-ssl-controls-8.4-mariadb-10.11-34f35547b2168f617306941b0c00a03129c57ab5",
+      "size_bytes": 21856,
+      "sha256": "fc6e20d7e432bc91b3fc06699d112673c33aad8f30701719b059331f5f62d1a2",
+      "reports": {
+        "force-ssl-control-contract-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-contract-no-ini-results.json": {
+          "sha256": "e38612bc882a5cb6e2fe34df7089d81f1e65d813ce22b1b246bacb891767a585",
+          "executions": 76,
+          "unique_names": 76,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-transport-no-ini-results.json": {
+          "sha256": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+          "executions": 37,
+          "unique_names": 37,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "force-ssl-control-recovery-no-ini-results.json": {
+          "sha256": "537569c223e7437c3d30d4a0d1a5207d86ba1bceb4b46a0cdf0fc0290f4fbd19",
+          "executions": 57,
+          "unique_names": 57,
+          "all_passed": true
+        },
+        "provider-force-ssl-controls-native-results.json": {
+          "sha256": "4bdd3a5a283b8d40a6c296bc1e58071568c0d5bd74043107ce16a42442109f0c",
+          "executions": 137,
+          "unique_names": 137,
+          "all_passed": true
+        },
+        "package-force-ssl-document-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "package-force-ssl-document-no-ini-results.json": {
+          "sha256": "85db687cb0be673ab136634f580bedf2bb3dc76aa298881c251da823aac404c3",
+          "executions": 165,
+          "unique_names": 165,
+          "all_passed": true
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119,
+          "all_passed": true
+        },
+        "twentyi-operation-contract-results.json": {
+          "sha256": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+          "executions": 230,
+          "unique_names": 230,
+          "all_passed": true
+        },
+        "provider-operations-native-results.json": {
+          "sha256": "b4fe319771a7f396dc0f1dd39d36a019ed17f017198a03c66ef11a06796c008e",
+          "executions": 92,
+          "unique_names": 92,
+          "all_passed": true
+        },
+        "provider-execution-native-results.json": {
+          "sha256": "07d8bf94a419892b6219efb43343578f07dcc1d02ac5edb1b1177b409fb2eabf",
+          "executions": 107,
+          "unique_names": 107,
+          "all_passed": true
+        },
+        "document-roots-transport-integrated-results.json": {
+          "sha256": "db6b6aec09eabae32fe222a5bc6379405c3a185f13148f5a4347cf055c58b1b2",
+          "executions": 24,
+          "unique_names": 24,
+          "all_passed": true
+        }
+      }
+    }
+  ],
+  "controls_native_report": "provider-force-ssl-controls-native-results.json",
+  "controls_native_passed_names": [
+    "Never prepared controls remain a read-only no-op",
+    "Control preparation refuses caller transaction before DDL",
+    "Preparation leaves caller transaction and absent tables intact",
+    "Caller preparation rollback works",
+    "Administrator cannot prepare control storage",
+    "Wrong owner preparation password refuses",
+    "Preparation audit failure commits no feature marker",
+    "Control preparation is idempotent without DNS",
+    "Administrator cannot approve a flag change",
+    "Support context cannot approve a flag change",
+    "Wrong change password refuses before DNS",
+    "Missing exact confirmation refuses",
+    "Already reported desired value refuses",
+    "All preapproval refusals are local with no consumed grants",
+    "Approval audit failure rolls back grant and witness before DNS",
+    "Pre-DNS admission has no ledger claim yet",
+    "Active pre-DNS worker cannot be reconciled",
+    "Pre-DNS reconciliation did not issue GET",
+    "Claimed worker cannot reconcile while dispatch is active",
+    "Active worker reconciliation sends no GET",
+    "Separate owner process loses mutex admission with zero DNS or send",
+    "Contending process creates no request claim or GET intent",
+    "Single gateway dispatch remains uncertain after HTTP 200 true",
+    "Completed dispatch captured authorization cannot run later",
+    "Exact request replay returns history without dispatch or new audit",
+    "New nonce cannot repeat uncertain effect",
+    "Request approval creates no client sharing",
+    "Client receives no private request or inherited observation",
+    "Pending request fences prior observation current status",
+    "Exact new shared GET can observe desired flag after request",
+    "Readback does not rewrite the original shared ledger",
+    "Readback releases only the confirmed request fence",
+    "Confirmed request cannot reuse verification for another read",
+    "Client sharing remains an independent explicit owner action",
+    "HTTP 403 is still an attempted uncertain effect",
+    "HTTP rejection cannot reopen a fresh nonce",
+    "Different fresh flag keeps request unresolved",
+    "Null follow-up is saved as unavailable not false",
+    "Later unavailable read supersedes captured matching receipt",
+    "Superseded receipt appends no confirmation unavailable",
+    "Later unfinished read supersedes captured matching receipt",
+    "Superseded receipt appends no confirmation unfinished",
+    "Readback audit failure rolls back check and count",
+    "Exact retained receipt succeeds after rollback without another POST",
+    "SQL PHP exact witness bytes agree request",
+    "SQL PHP exact witness bytes agree terminal",
+    "SQL PHP exact witness bytes agree check",
+    "SQL PHP ledger byte digest agrees",
+    "Lost preparation marker fails closed",
+    "Lost preparation marker fails closed exact restoration",
+    "Modified approval scope fails recovery",
+    "Modified approval scope fails recovery exact restoration",
+    "Lost shared ledger cannot masquerade as no-send",
+    "Lost shared ledger cannot masquerade as no-send exact restoration",
+    "Intended confirmation row was removed",
+    "Intended exact confirmation audit was removed",
+    "Paired confirmation and matching audit loss stays fenced",
+    "Paired confirmation and matching audit loss stays fenced exact restoration",
+    "Independent pre-perform refusal has no operation ledger",
+    "No-send request still requires a newly observed precondition",
+    "Actual post-send record failure retains claimed ledger and attempted terminal",
+    "Record failure cannot authorize a new nonce",
+    "Record-failure replay never dispatches again",
+    "Terminal witnessed record failure permits independent observation without rewriting claim",
+    "Actual terminal audit failure is observed after one send",
+    "Terminal audit rollback retains request and original ledger but no false completion",
+    "Terminal audit failure blocks new nonce",
+    "Terminal audit failure blocks reconciliation",
+    "Terminal failure replay retains ledger and sends nothing",
+    "Missing local witness with a durable finished ledger offers exact owner recovery",
+    "Owner GET offers reviewed recovery without creating evidence",
+    "Recovery requires the current owner password",
+    "Administrator cannot recover a completed dispatch",
+    "Another owner cannot adopt original approval",
+    "Other owner receives no recovery form hash",
+    "Support context cannot recover a completed dispatch",
+    "Changed reviewed ledger hash refuses locally",
+    "Recovery rejects a caller transaction",
+    "Recovery leaves caller transaction intact",
+    "Changed original owner authentication refuses recovery",
+    "Revoked original approval refuses recovery",
+    "Changed sealed provider credential refuses recovery without opening it",
+    "Changed current client assignment refuses captured recovery",
+    "All owner form and authority refusals preserve exact source and evidence",
+    "Recovery terminal audit failure is an actual transactional rollback",
+    "Actual recovery counter failure propagates",
+    "Recovery counter failure rolls back terminal and audit together",
+    "Recovery appends one attempted witness but keeps effect uncertain",
+    "Recovery preserves original request approval ledger sharing and provider counts",
+    "Replayed recovery cannot replace an existing witness",
+    "Recovery replay preserves the exact witness and audit count",
+    "Recovered request still fences a new provider write",
+    "Restored local record alone cannot make the current client flag authoritative",
+    "Delayed original terminal collision is refused",
+    "Delayed terminal collision rolls back without modifying recovered history",
+    "Committed recovery witness was actually removed",
+    "Lost committed witness cannot be reconstructed over retained count and audit",
+    "Denied lost-witness recovery does not repair the missing record",
+    "Exact committed witness restoration restores all original evidence",
+    "Paired recovery loss removes the exact committed witness and audit",
+    "Independent terminal count fences paired committed witness and audit loss",
+    "Exact paired restoration preserves original witness audit and independent count",
+    "Recovered dispatch rejects receipt superseded by unavailable read",
+    "Superseded recovered receipt leaves request unresolved unavailable",
+    "Recovered dispatch rejects receipt superseded by unfinished read",
+    "Superseded recovered receipt leaves request unresolved unfinished",
+    "Recovered attempt needs a separate actual GET before matching observation",
+    "Real finished worker pauses with its actual dispatch mutex",
+    "Real finished worker denies concurrent recovery on the mutex",
+    "Concurrent finished recovery cannot create a witness or provider request",
+    "Exact finished worker has exited before the next local action",
+    "Finished worker interruption permits local witness recovery after exit",
+    "Delayed real gateway entry replays finished row without reaching another adapter",
+    "Independent later receipt resolves only recovered worker request",
+    "Real outstanding worker pauses with its actual dispatch mutex",
+    "Real outstanding worker denies concurrent recovery on the mutex",
+    "Concurrent outstanding recovery cannot create a witness or provider request",
+    "Exact outstanding worker has exited before the next local action",
+    "Stopped outstanding worker has no eligible durable completion",
+    "Outstanding worker remains fenced without history repair or provider traffic",
+    "Interrupted resolver propagates",
+    "Pre-DNS interruption keeps consumed request without terminal or ledger",
+    "No ledger cannot be adopted by local recovery",
+    "Missing ledger history offers no recovery form hash",
+    "Pre-DNS interrupted request cannot reconcile",
+    "Delayed replay never resumes an interrupted pre-DNS worker",
+    "Interrupted pre-DNS request fences a new nonce",
+    "Claimed interruption propagates",
+    "Expired claimed TTL is not dispatch completion",
+    "Claimed interruption cannot reconcile from TTL",
+    "Claimed replay never calls gateway again",
+    "Expired claimed row cannot be adopted by local recovery",
+    "Expired claim history offers no recovery form hash",
+    "Sharing revocation hides saved flags independently of controls",
+    "Owner history explains remaining interrupted recovery limitation",
+    "Control evidence and owner UI retain no credential or password",
+    "All native control evidence finishes internally ready"
+  ],
+  "shipping_inventory": {
+    "files": 2829,
+    "entries": 2828,
+    "sha256": "b481b84d4968e9e089e827f2518512d6a7cff5f50d407d966fb41de5c1ad67d8",
+    "private_paths": 304
+  }
+}
