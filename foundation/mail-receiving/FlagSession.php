@@ -180,7 +180,7 @@ final class FlagSession
         }
         if($exists===null || $validity===null || !$readWrite) throw new ReceivingFailure('protocol');
         // Omitted PERMANENTFLAGS keeps the documented fallback: every flag is permanent.
-        if($permanent!==null) $this->seenPermanent=in_array('\\*',$permanent,true)||in_array('\\SEEN',$permanent,true);
+        if($permanent!==null) $this->seenPermanent=in_array('\\SEEN',$permanent,true);
         return $validity;
     }
 

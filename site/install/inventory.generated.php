@@ -484,7 +484,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/mail-receiving/BodyDecoder.php'=>'72264f89821d291ecb7c61a95aaf33a2a9dfb14acb4aa5f3ebb7548c8229992c',
     'includes/foundation/mail-receiving/BodyHtml.php'=>'701a2b49d87a9b73781499d7775bf401fb133a27d1b2c06ff6aaf355062bd286',
     'includes/foundation/mail-receiving/BoundedTokenizer.php'=>'25399e4edc2ad7d4fd51be9f221b5a942d0360a3b5586b053f940d21bdf45494',
-    'includes/foundation/mail-receiving/FlagSession.php'=>'4c419b4b195e2f60d1f1548d6340630bc9de01e6fdf396cc0efc5fabdca79f73',
+    'includes/foundation/mail-receiving/FlagSession.php'=>'493e7537c392b8e67d1aed1c14ec240d830d8a8c256491e264b7037f951d9705',
     'includes/foundation/mail-receiving/FlagWriter.php'=>'2d8d494f140dfefaf3a35120348de0d087740f21c0291a757cc033d870303af7',
     'includes/foundation/mail-receiving/HeaderDecoder.php'=>'73d41a50838bc35c5730ab4d82bacb5c42cdbb4c6819ee153232324f57790a20',
     'includes/foundation/mail-receiving/HeaderSession.php'=>'86a0e59d3451e78b579e2911791860b19dc170b1f5ebfd224057c2518da14696',
