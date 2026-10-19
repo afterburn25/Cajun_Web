@@ -1,3 +1,7 @@
+## 2026-10-18 — independent additive subdomain requests
+
+Use the documented subdomain-specific endpoint with one `add` name and an empty removal list. Retain the attached parent as local authority and reuse existing website-folder observations for independent readback. No provider acknowledgement or DNS/HTTPS success is invented. Unknown outcomes fence the same hostname on the same package across authority changes; they do not prevent a distinct hostname from receiving its own fresh approval. Shared operation-ledger semantics and original history are retained. [Implementation boundary](TWENTYI_SUBDOMAIN_ADDITIONS.md).
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 The owner clarified a completely fresh installation after deleting the prior public files. Default setup retains strict existing-table and storage refusals. Explicit fresh-start intent creates separate resources and never drops existing tables or unlocks an installed site. Routine file uploads retain config.php, keys, database and storage. Local retained locks without config lead to recovery, not automatic setup. Administrator passwords use a dedicated 12-character validator; the shared client policy remains unchanged. This supersedes the earlier update-only interpretation of this installer incident.

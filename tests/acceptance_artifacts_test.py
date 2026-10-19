@@ -275,10 +275,9 @@ def run(tmp):
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
-    contract=a.load(ROOT/'tools/acceptance-contract.json')
+    contract,workflow,subdomain=subdomain_add_predecessor(ROOT)
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         check('Original test source retained '+path, hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
-    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
@@ -361,6 +360,110 @@ def run(tmp):
         start=workflow.index('  '+job+':\n');pos=workflow.index('      CWP_TEST_HOST: 127.0.0.1\n',start)+len('      CWP_TEST_HOST: 127.0.0.1\n')
         original_bug=workflow[:pos]+'      CWP_TEST_PORT: ${{ job.services.mariadb.ports[3306] }}\n'+workflow[pos:]
         check('Original invalid job-level service context is rejected for '+job, not valid_port_context(original_bug))
+
+    subdomain_add_checks(tmp,subdomain)
+
+def subdomain_add_inverse(data, delta):
+    if hashlib.sha256(data).hexdigest()!=delta['after_sha256']:
+        raise ValueError('Subdomain add current source changed')
+    text=data.decode('utf-8')
+    for item in reversed(delta['replacements']):
+        if text.count(item['after'])!=1:raise ValueError('Subdomain add inverse is not unique')
+        text=text.replace(item['after'],item['before'],1)
+    result=text.encode('utf-8')
+    if hashlib.sha256(result).hexdigest()!=delta['before_sha256']:
+        raise ValueError('Subdomain add predecessor changed')
+    return result
+
+
+def subdomain_add_predecessor(root):
+    current=a.load(root/'tools/acceptance-contract.json');launch=current['subdomain_add']
+    contract=copy.deepcopy(current);del contract['subdomain_add']
+    commands=launch['native_additions'];position=contract['native_commands'].index(launch['native_after'])+1
+    if contract['native_commands'][position:position+7]!=commands or any(contract['native_commands'].count(c)!=1 for c in commands):
+        raise ValueError('Subdomain add native recipe changed')
+    del contract['native_commands'][position:position+7]
+    for path,old_hash in launch['predecessor_test_pins'].items():contract['unchanged_test_sha256'][path]=old_hash
+    if hashlib.sha256(json.dumps(contract,indent=2).encode()+b'\n').hexdigest()!=launch['predecessor_contract_sha256']:
+        raise ValueError('Subdomain add predecessor contract changed')
+    workflow=subdomain_add_inverse((root/'.github/workflows/application-tests.yml').read_bytes().replace(b'\r\n',b'\n'),launch['workflow_delta']).decode()
+    return contract,workflow,launch
+
+
+def subdomain_add_predecessor_source(root,path,launch):
+    data=root.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+    delta=launch['source_deltas'].get(path)
+    return subdomain_add_inverse(data,delta) if delta else data
+
+
+def subdomain_add_checks(tmp,launch):
+    current=a.load(ROOT/'tools/acceptance-contract.json');registry=a.load(ROOT/'tools/acceptance-reports.json')
+    check('Subdomain add retains exact152 original commands before seven additions',len(current['native_commands'])==159 and len(current['native_commands'])-len(launch['native_additions'])==152)
+    for path,digest in launch['source_sha256'].items():
+        check('Subdomain add current source bound '+path,hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==digest)
+    for path,delta in launch['source_deltas'].items():
+        check('Subdomain add exact source inverse '+path,hashlib.sha256(subdomain_add_predecessor_source(ROOT,path,launch)).hexdigest()==delta['before_sha256'])
+    reports=launch['reports'];old=copy.deepcopy(registry)
+    check('Subdomain add has seven unique separately produced reports',len(reports)==len(set(reports))==7 and launch['screenshots']==[])
+    for phase,total,prior in [('browser',171,164),('final',215,208)]:
+        check('Subdomain add '+phase+' exact required report inventory',len(registry[phase])==total and len(set(registry[phase]))==total and all(registry[phase].count(name)==1 for name in reports))
+        old[phase]=[name for name in registry[phase] if name not in reports]
+        check('Subdomain add '+phase+' preserves every predecessor report',len(old[phase])==prior)
+    check('Subdomain add report inverse is exact whole predecessor',hashlib.sha256(json.dumps(old,indent=2).encode()+b'\n').hexdigest()==launch['predecessor_reports_sha256'])
+    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    check('Subdomain add native explicitly opts in without changing selected database environment',launch['native_additions'][-1]=='CWP_TEST_SUBDOMAIN_ADD=1 "$PHP_BINARY" tests/provider_subdomain_add_native.php' and valid_port_context(workflow))
+    focused=(ROOT/launch['focused_path']).read_bytes().replace(b'\r\n',b'\n')
+    prior_focused=subdomain_add_inverse(focused,launch['focused_delta'])
+    check('Subdomain add preserves exact original focused workflow by finite inverse',hashlib.sha256(prior_focused).hexdigest()==launch['focused_delta']['before_sha256'])
+    focused_text=focused.decode()
+    check('Subdomain add reuses four existing PHP/database matrix jobs',"php: ['8.2', '8.4']" in focused_text and "image: 'mariadb:10.11'" in focused_text and "image: 'mysql:8.4'" in focused_text and 'timeout-minutes: 35' in focused_text and 'cancel-in-progress: false' in focused_text)
+    for command in launch['native_additions']:
+        expected=command.replace('"$PHP_BINARY"','php').replace(' -d extension=tokenizer -d extension=pdo','')
+        check('Subdomain add focused exact producer '+expected,focused_text.count(expected)==1)
+    for name in reports:
+        check('Subdomain add focused always retains exact named output '+name,focused_text.count('            qa/'+name+'\n')==1 and 'if: always()' in focused_text)
+    for label,data in [('missing addition',workflow.replace(launch['native_additions'][0],'')),('extra command',workflow+'\n# unreviewed\n'),('changed original recipe',workflow.replace('tests/license_native.php','tests/other_native.php'))]:
+        deny('Subdomain add workflow inverse refuses '+label,lambda data=data:subdomain_add_inverse(data.encode(),launch['workflow_delta']))
+    # Exercise the real seal/aggregate predicates with all required synthetic report names.
+    # These files are deliberately synthetic helper fixtures, never runtime acceptance evidence.
+    root=tmp/'subdomain-add';source=root/'source';ctx=context();fixtures(source,ctx)
+    incoming=root/'partitions';bindings={};job_roots={};input_sha='5'*64
+    for index,lane in enumerate(a.LANES):
+        job=root/('job-'+lane);job.mkdir(parents=True);job_roots[lane]=job
+        if lane=='build':shutil.copytree(source/'dist',job/'dist');shutil.copytree(source/'qa',job/'qa')
+        elif lane=='native-browser':
+            for name in registry['browser']:
+                if name not in a.BUILD_QA:named(job/'qa'/name)
+        else:
+            for name in registry['final']:
+                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane):named(job/'qa'/name)
+        digest=a.seal(job,ctx,incoming/lane,lane,outcomes(lane),input_sha)
+        bindings[lane]={'result':'success','artifact_id':str(index+21),'sha256':digest,**({'input_sha256':input_sha} if lane=='build' else {}),**({'checkpoint_id':'29','checkpoint_digest':'6'*64} if lane=='native-browser' else {})}
+    count=0
+    def combined():
+        nonlocal count
+        count+=1
+        return a.aggregate(root/('combined-'+str(count)),ctx,incoming,bindings,registry)
+    result=combined()
+    check('Subdomain add real aggregation requires all215 named reports',result['complete'] is True and set(result['reports'])==set(registry['final']))
+    def reseal():
+        job=job_roots['native-browser'];checkpoint=job/'.acceptance/checkpoint'
+        if checkpoint.exists():
+            assert checkpoint.resolve().is_relative_to(root.resolve());shutil.rmtree(checkpoint)
+        partition=incoming/'native-browser'
+        assert partition.resolve().is_relative_to(root.resolve());shutil.rmtree(partition)
+        bindings['native-browser']['sha256']=a.seal(job,ctx,incoming/'native-browser','native-browser',outcomes('native-browser'),input_sha)
+    for name in reports:
+        path=job_roots['native-browser']/'qa'/name;path.unlink();reseal();result=combined()
+        check('Subdomain add missing report cannot pass '+name,result['complete'] is False and any('Missing reports: '+name==error for error in result['errors']))
+        named(path,False);reseal();result=combined()
+        check('Subdomain add failed report cannot pass '+name,result['complete'] is False and result['reports'][name]['passed'] is False)
+        named(path)
+    named(job_roots['native-browser']/'qa/subdomain-add-extra-results.json');reseal();result=combined()
+    check('Subdomain add unexpected report cannot pass',result['complete'] is False and 'Unexpected reports: subdomain-add-extra-results.json' in result['errors'])
+    for name in reports:
+        check('Subdomain add report belongs only to native-browser '+name,a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))
+    check('Subdomain add private state remains excluded',not a.evidence_allowed('test-runtime/subdomain-add-private/state.json','native-browser') and not a.evidence_allowed('qa/subdomain-add-private/state.json','native-browser'))
 
 
 def main():

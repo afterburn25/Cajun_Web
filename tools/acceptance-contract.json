@@ -103,6 +103,13 @@
     "\"$PHP_BINARY\" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json",
     "\"$PHP_BINARY\" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json",
     "\"$PHP_BINARY\" tests/provider_document_roots_native.php",
+    "\"$PHP_BINARY\" tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-default.json",
+    "\"$PHP_BINARY\" -n tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-minimal.json",
+    "\"$PHP_BINARY\" tests/subdomain_add_contract.php > qa/subdomain-add-service-default.json",
+    "\"$PHP_BINARY\" -n tests/subdomain_add_contract.php > qa/subdomain-add-service-minimal.json",
+    "\"$PHP_BINARY\" tests/subdomain_add_views.php qa/subdomain-add-views-default.json",
+    "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json",
+    "CWP_TEST_SUBDOMAIN_ADD=1 \"$PHP_BINARY\" tests/provider_subdomain_add_native.php",
     "\"$PHP_BINARY\" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json",
     "\"$PHP_BINARY\" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json",
     "\"$PHP_BINARY\" tests/provider_package_force_ssl_native.php",
@@ -555,5 +562,97 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "subdomain_add": {
+    "base": "f688f79ee838e86e4774bfa5ec71fc7fb79126a5",
+    "scope": "Owner-only subdomain add: explicit approval, uncertain dispatch, independent saved-map observation; native execution pending.",
+    "native_after": "\"$PHP_BINARY\" tests/provider_document_roots_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-default.json",
+      "\"$PHP_BINARY\" -n tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-minimal.json",
+      "\"$PHP_BINARY\" tests/subdomain_add_contract.php > qa/subdomain-add-service-default.json",
+      "\"$PHP_BINARY\" -n tests/subdomain_add_contract.php > qa/subdomain-add-service-minimal.json",
+      "\"$PHP_BINARY\" tests/subdomain_add_views.php qa/subdomain-add-views-default.json",
+      "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json",
+      "CWP_TEST_SUBDOMAIN_ADD=1 \"$PHP_BINARY\" tests/provider_subdomain_add_native.php"
+    ],
+    "reports": [
+      "subdomain-add-contract-default.json",
+      "subdomain-add-contract-minimal.json",
+      "subdomain-add-service-default.json",
+      "subdomain-add-service-minimal.json",
+      "subdomain-add-views-default.json",
+      "subdomain-add-views-minimal.json",
+      "provider-subdomain-add-native-results.json"
+    ],
+    "screenshots": [],
+    "predecessor_contract_sha256": "f7ccac9c27630ecee696dbe0ac44a2ae13f08f895751947282626877e235efb7",
+    "predecessor_reports_sha256": "f77d7dba6762ded822206ca7263d146a26f89d58c4e4b87851a3743e74dd6d2b",
+    "workflow_delta": {
+      "before_sha256": "5879a7db5bdecb81716c2509c427e5db3b546f91497dea29bd465165ca3f369f",
+      "after_sha256": "2f0b061cefc0c6717138c9f764713b9032ecc8cbdca28310f4861849c355fd0b",
+      "replacements": [
+        {
+          "before": "          \"$PHP_BINARY\" tests/provider_document_roots_native.php\n",
+          "after": "          \"$PHP_BINARY\" tests/provider_document_roots_native.php\n          \"$PHP_BINARY\" tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-default.json\n          \"$PHP_BINARY\" -n tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-minimal.json\n          \"$PHP_BINARY\" tests/subdomain_add_contract.php > qa/subdomain-add-service-default.json\n          \"$PHP_BINARY\" -n tests/subdomain_add_contract.php > qa/subdomain-add-service-minimal.json\n          \"$PHP_BINARY\" tests/subdomain_add_views.php qa/subdomain-add-views-default.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json\n          CWP_TEST_SUBDOMAIN_ADD=1 \"$PHP_BINARY\" tests/provider_subdomain_add_native.php\n"
+        }
+      ]
+    },
+    "focused_delta": {
+      "before_sha256": "bbc728b36b201b1fcc1715a907338e3f7cc60df4fb182afd9986b201b53ff8de",
+      "after_sha256": "c3376e25b04ffa3a3ade25bf0bfa5ca4a2ed5d1b33109cbb8065bc418cca7029",
+      "replacements": [
+        {
+          "before": "  push:\n    branches: [main, codex/twentyi-document-roots-observations]\n    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml']",
+          "after": "  push:\n    branches: [main, codex/twentyi-document-roots-observations]\n    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile']"
+        },
+        {
+          "before": "  pull_request:\n    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml']",
+          "after": "  pull_request:\n    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile']"
+        },
+        {
+          "before": "    timeout-minutes: 20\n",
+          "after": "    timeout-minutes: 35\n"
+        },
+        {
+          "before": "              php tests/provider_document_roots_native.php\n",
+          "after": "              php tests/provider_document_roots_native.php\n              php tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-default.json\n              php -n tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-minimal.json\n              php tests/subdomain_add_contract.php > qa/subdomain-add-service-default.json\n              php -n tests/subdomain_add_contract.php > qa/subdomain-add-service-minimal.json\n              php tests/subdomain_add_views.php qa/subdomain-add-views-default.json\n              php -n tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json\n              CWP_TEST_SUBDOMAIN_ADD=1 php tests/provider_subdomain_add_native.php\n"
+        },
+        {
+          "before": "            qa/provider-document-roots-native-results.json\n",
+          "after": "            qa/provider-document-roots-native-results.json\n            qa/subdomain-add-contract-default.json\n            qa/subdomain-add-contract-minimal.json\n            qa/subdomain-add-service-default.json\n            qa/subdomain-add-service-minimal.json\n            qa/subdomain-add-views-default.json\n            qa/subdomain-add-views-minimal.json\n            qa/provider-subdomain-add-native-results.json\n"
+        }
+      ]
+    },
+    "focused_path": ".github/workflows/provider-document-roots.yml",
+    "source_sha256": {
+      "foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
+      "foundation/twentyi-operations/TwentyIOperationRegister.php": "bd6222b411f70c2420558a7f52ecfb67bf37203f12a205c80917907ad83b67a5",
+      "foundation/twentyi-operations/TwentyIRequestBuilder.php": "02edca3fd9427adee3855d27f12ff2389bc97ccdfe19090cb6943d707cb0a832",
+      "foundation/twentyi/FixedHttpTransport.php": "35f866136fa59882322cece25326df47981f122a8c4e45744e36865d2f93eed6",
+      "site/app/providers/subdomain_add.php": "a185b699478072323511df9361614719cd55323b893a008a0a7ce134925760a4",
+      "site/app/providers/subdomain_add_storage.php": "71eddcc2b33e92c95e307f402a29288b52e7fef9158c52b51065fcdfa5971e3a",
+      "site/database/schema/provider_subdomain_add_schema.php": "5da46c0d3f798fd9e2f5a533f930db1bad17f19f8bd40c5c6cd54a1af0486fd1",
+      "site/app/providers/subdomain_add_views.php": "423ca5409f66b0b1b1c4fb153483469280ac1b3df0a1a274801e6e9fde5a9759",
+      "site/admin/controllers/provider_subdomain_add.php": "181769b865dfb956dc786a337a716c21dc9699c7a469b143a00c50d1db2f5864",
+      "site/admin/controllers/actions.php": "562d44b9631f48e2bf425d1e15f3ac3432d8aec50b4eeebb858a8302d58f93f6",
+      "site/admin/controllers/providers.php": "ef72b9bd806f41e0c05d070c96f358608606fe80ad87c1885f36ec2a99989c34",
+      "site/admin/views/providers.php": "9be3f2b1e2758dc4dbad80ad8287a85952449800940acd30fdc533a32d3f6d9f",
+      "site/app/staff/accounts.php": "8463567670be0d6d3d9b7ae233f677d79449e8e0f2cc440d2a4e4f100ca04a13",
+      "site/app/providers/document_roots.php": "56f02eff5e74f30babaea4fd4ee838f90dcbb1b1b58870631fccb080ae71cb15",
+      "tests/twentyi-operations/subdomains.php": "b4d891a3d5922e0a027e8af708d34ce22e1444a4c558f96c124968be9ce4b80e",
+      "tests/twentyi-operations/run.php": "d66d229c7e2392b8642bdc5a235ab6def8432f88eb27fe5611ba6c36e85149b4",
+      "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
+      "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
+      "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
+      "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
+      ".github/workflows/provider-document-roots.yml": "c3376e25b04ffa3a3ade25bf0bfa5ca4a2ed5d1b33109cbb8065bc418cca7029",
+      "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
+      "site/includes/foundation/twentyi-operations/TwentyIOperationRegister.php": "bd6222b411f70c2420558a7f52ecfb67bf37203f12a205c80917907ad83b67a5",
+      "site/includes/foundation/twentyi-operations/TwentyIRequestBuilder.php": "02edca3fd9427adee3855d27f12ff2389bc97ccdfe19090cb6943d707cb0a832",
+      "site/includes/foundation/twentyi/FixedHttpTransport.php": "35f866136fa59882322cece25326df47981f122a8c4e45744e36865d2f93eed6"
+    },
+    "source_deltas": {},
+    "predecessor_test_pins": {}
   }
 }

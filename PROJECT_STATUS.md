@@ -1,3 +1,9 @@
+## 2026-10-18 — subdomain additions in development
+
+Branch `codex/twentyi-subdomain-add`, from main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`, adds an [owner subdomain request and independent readback workflow](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). Requests retain one-use approval and history, and uncertainty prevents another add for the same hostname. Separate names remain eligible for fresh approval. Local verification is recorded in the session log; native SQL, installed application acceptance and release remain pending.
+
+The latest bounded CI inspection found GitHub-hosted jobs waiting for runners while older jobs were starting and finishing. At 2026-10-19 02:25 UTC, GitHub reported 2,500 queued workflows; this is a queue count, not an identified account quota. StackCP [PR233](https://github.com/afterburn25/Cajun_Web/pull/233) originals 39189388126/39189388293 remain intact. Hosting and nameserver candidates, Devin's non-20i branches and published 1.25.0 are preserved.
+
 ## 2026-10-18 — five pure-suite PR filters
 
 Branch `codex/ci-pure-family-pr-filters` starts at main `e397d9a6e293850e8dff61a593e3ba39ee178400`. Five isolated pure suites now watch their own foundation/test directories and workflow file on PRs. All jobs and push/manual triggers remain unchanged. Actual verification: 82 finite producer checks, 44 independent review checks, and root comparison of all five applied hashes and complete inverses to main. [Scope and retained evidence](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This is CI scheduling work, not application acceptance.
