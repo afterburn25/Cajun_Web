@@ -132,6 +132,13 @@
     "\"$PHP_BINARY\" tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
     "\"$PHP_BINARY\" -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
     "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
+    "\"$PHP_BINARY\" tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-default.json",
+    "\"$PHP_BINARY\" -n tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-minimal.json",
+    "\"$PHP_BINARY\" tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-default.json",
+    "\"$PHP_BINARY\" -n tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-minimal.json",
+    "\"$PHP_BINARY\" tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-minimal.json",
+    "CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php",
     "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json",
     "python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json",
     "\"$PHP_BINARY\" tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
@@ -845,27 +852,27 @@
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "1ebb0d53c82ed61de2c49a0bd93ee59bed6b8040109bcf762c84cdc6efb2a015",
-      "site/admin/controllers/actions.php": "8bc5447aa523d96148541b8b2962f5cce29059f6cfaf0a34bdb54f75c0391620",
+      ".github/workflows/application-tests.yml": "6368ae258c520feb0c1d3cdd5239ab321f37ecec9275cd7140e0b758524a5327",
+      "site/admin/controllers/actions.php": "27711c41b6441441edcfd1e8c4e1f8a26c695a2733577228c2abc2cfd35f6f19",
       "site/admin/controllers/force_ssl_requests.php": "eccbe0633e96e9597803bb41e45001f5f8cf8929c103b8b967d9a1fea2ada2a6",
-      "site/admin/controllers/router.php": "58ba5734a9fc55101a4fc67704b3ae175dea64e9d402670cecca29e19812b659",
-      "site/admin/views/providers.php": "01ffa5f74e26c7682bda01e129e815b0ce30963ede80172773e4e41d746130b4",
+      "site/admin/controllers/router.php": "71343f7044aabf1ead15b42bf52ec1de02283d93f1f8ee540a205bb69f5886b9",
+      "site/admin/views/providers.php": "490d9320a9fb5482def174e8524ad641ed9971e9caca2e58e96cd40e287fe736",
       "site/app/providers/force_ssl_controls.php": "4e559c47dcf9f0b58f9266149f1ca78c29f1ef686190b64f1386ef908b005855",
       "site/app/providers/force_ssl_requests.php": "949592f86625e899c576671ecf21a650bdeff74d9a4d36eb4cbf5b926538df69",
       "site/app/providers/force_ssl_requests_document.php": "fa5fb237384a32ec8b4f497a1cc4f374412631c2c810aa2e51c851008a85b85a",
       "site/app/providers/force_ssl_requests_storage.php": "2e471c08a4547dfd6639db97a0233aea40d0b4c6950f9eb09427d12290ca7755",
       "site/app/providers/force_ssl_requests_views.php": "32ba3cb60b8fb5bc6b97f1e4873d3d29702359a95a59c11d103894962f698c73",
-      "site/app/staff/accounts.php": "c8bcc595dbc7622d768f8b3ae7c03afef2a736dbbae8a7f5cafbde3abb046342",
-      "site/assets/css/growth.css": "5bbf95877ed30914c4be8933670f5d03c305bf7ec13fdb4c88cd21449b27bd7e",
+      "site/app/staff/accounts.php": "9cd795db7c2a73dc2c8c31d52838104b0aaa8d0c0a061330a2d8a8f6a7fe1fdd",
+      "site/assets/css/growth.css": "c491d356e0b8e273a6deccf34feacd40d97d323c34ec2133f69b04b434d390dc",
       "site/database/migrations/provider_force_ssl_requests_migrate.php": "57b044d94bdab9bb0290f0f6cff3bb876ec1cc9c0bb0a48511b7ae179552fde6",
       "site/database/schema/provider_force_ssl_requests_schema.php": "3a03a910591e0fa1ef9cd19bc6021df46c3ce454ae41a934284ba386dc7d94cc",
-      "site/includes/layout/admin.php": "69731f41beebf38d29101886e03ea201a72552af52260a1776aebe5a15e81907",
-      "site/includes/layout/provider_services.php": "89ab881a09b0999f3986c93a6c472e1b31a5996a8f476a538cfd736f63e8f6fc",
-      "site/portal/controllers/actions.php": "bdaaa9999cd0a207f2de3cbc3195024e63230fd7a455ce89508e18ec1cbd297c",
+      "site/includes/layout/admin.php": "ba9542bade91491f00d70a7d28c28bde79be207b67957b992af53b1e5ea7ccd6",
+      "site/includes/layout/provider_services.php": "7ff2179cf091f412d0c49caf59d7a72668cd45e329c5773995defbd0bbcac8e6",
+      "site/portal/controllers/actions.php": "103b7d2155744eb4f36198a778136d9e4c53f685f375c0bbba1bf3ea531e27ba",
       "site/portal/controllers/force_ssl_requests.php": "d64df55616f1798ababe29d5596d2ec0d4f2e8f7dd23fd267cd49106beafa873",
-      "site/portal/controllers/router.php": "d7ba9364c61cbf213b15d60b0e68346f988212ab013e40652f3b6f422f6dd8ac",
+      "site/portal/controllers/router.php": "a695896726952d1f9ce8300f7026a02e8efdc2f53ad818c57a42601d7d3d3293",
       "site/portal/views/package_force_ssl.php": "191ae5b940671cf4c0688c9b7036cec780f64eb6dfe9357b72c9e7a7e2d8d9f1",
-      "tests/acceptance_artifacts_test.py": "3a99764a013787e7a8468c1639145d3e5e6ca5f33e4b70046eff710cdfe21bce",
+      "tests/acceptance_artifacts_test.py": "f735c566593a527dd8d1412741d00d161b90c5972e8900c1972e3bd6c2de7323",
       "tests/client_force_ssl_requests_browser.py": "8ede278d7fb4d39580b6027ea270287af11d5db18a7d48802282ebef8484d8a8",
       "tests/client_force_ssl_requests_http_fixture.php": "4d3c3c5f641474b7819ba43366d63aaa43784246213c3d784b48d228e9b4131a",
       "tests/force_ssl_requests_contract.php": "92a3a4eb5bccc0915a27fde018b42997c9d3b64bc64d776773ce0bc501a97a56",
@@ -874,5 +881,430 @@
       "tests/provider_force_ssl_requests_native.php": "2b59bd637ca6cce41e5d69f663735a9e52865c9492a7c8059150e2391649fe92"
     },
     "scope": "Primary-client HTTPS request, owner review and existing Force SSL dispatch/readback. Portable and modeled HTTP/browser evidence is separate from guarded native SQL and installed acceptance; no live provider operation."
+  },
+  "client_directory_requests": {
+    "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
+    "predecessor_contract_sha256": "3f82acb49e75f67e88c565b076d90607719bbd3a9286fe98e023fadbab2acc46",
+    "predecessor_reports_sha256": "c3f49512d6579fd7881fbe0761779f6e05870b5c88f0828ddeef8704bf5caefa",
+    "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-default.json",
+      "\"$PHP_BINARY\" -n tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-minimal.json",
+      "\"$PHP_BINARY\" tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-default.json",
+      "\"$PHP_BINARY\" -n tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-minimal.json",
+      "\"$PHP_BINARY\" tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-minimal.json",
+      "CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php"
+    ],
+    "browser_command": ".ci-venv/bin/python tests/client_directory_listing_requests_browser.py --php \"$PHP_BINARY\" --report qa/client-directory-listing-requests-browser-results.json",
+    "reports": [
+      "directory-listing-requests-document-default.json",
+      "directory-listing-requests-document-minimal.json",
+      "directory-listing-requests-storage-default.json",
+      "directory-listing-requests-storage-minimal.json",
+      "directory-listing-requests-contract-default.json",
+      "directory-listing-requests-contract-minimal.json",
+      "provider-directory-listing-requests-native-results.json",
+      "client-directory-listing-requests-browser-results.json"
+    ],
+    "screenshots": [],
+    "repins": [
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "1ebb0d53c82ed61de2c49a0bd93ee59bed6b8040109bcf762c84cdc6efb2a015",
+        "after": "6368ae258c520feb0c1d3cdd5239ab321f37ecec9275cd7140e0b758524a5327"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/admin/controllers/actions.php"
+        ],
+        "before": "8bc5447aa523d96148541b8b2962f5cce29059f6cfaf0a34bdb54f75c0391620",
+        "after": "27711c41b6441441edcfd1e8c4e1f8a26c695a2733577228c2abc2cfd35f6f19"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/admin/controllers/router.php"
+        ],
+        "before": "58ba5734a9fc55101a4fc67704b3ae175dea64e9d402670cecca29e19812b659",
+        "after": "71343f7044aabf1ead15b42bf52ec1de02283d93f1f8ee540a205bb69f5886b9"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/admin/views/providers.php"
+        ],
+        "before": "01ffa5f74e26c7682bda01e129e815b0ce30963ede80172773e4e41d746130b4",
+        "after": "490d9320a9fb5482def174e8524ad641ed9971e9caca2e58e96cd40e287fe736"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/app/staff/accounts.php"
+        ],
+        "before": "c8bcc595dbc7622d768f8b3ae7c03afef2a736dbbae8a7f5cafbde3abb046342",
+        "after": "9cd795db7c2a73dc2c8c31d52838104b0aaa8d0c0a061330a2d8a8f6a7fe1fdd"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/assets/css/growth.css"
+        ],
+        "before": "5bbf95877ed30914c4be8933670f5d03c305bf7ec13fdb4c88cd21449b27bd7e",
+        "after": "c491d356e0b8e273a6deccf34feacd40d97d323c34ec2133f69b04b434d390dc"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/includes/layout/admin.php"
+        ],
+        "before": "69731f41beebf38d29101886e03ea201a72552af52260a1776aebe5a15e81907",
+        "after": "ba9542bade91491f00d70a7d28c28bde79be207b67957b992af53b1e5ea7ccd6"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/includes/layout/provider_services.php"
+        ],
+        "before": "89ab881a09b0999f3986c93a6c472e1b31a5996a8f476a538cfd736f63e8f6fc",
+        "after": "7ff2179cf091f412d0c49caf59d7a72668cd45e329c5773995defbd0bbcac8e6"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/portal/controllers/actions.php"
+        ],
+        "before": "bdaaa9999cd0a207f2de3cbc3195024e63230fd7a455ce89508e18ec1cbd297c",
+        "after": "103b7d2155744eb4f36198a778136d9e4c53f685f375c0bbba1bf3ea531e27ba"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "site/portal/controllers/router.php"
+        ],
+        "before": "d7ba9364c61cbf213b15d60b0e68346f988212ab013e40652f3b6f422f6dd8ac",
+        "after": "a695896726952d1f9ce8300f7026a02e8efdc2f53ad818c57a42601d7d3d3293"
+      },
+      {
+        "keys": [
+          "client_https_requests",
+          "source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "3a99764a013787e7a8468c1639145d3e5e6ca5f33e4b70046eff710cdfe21bce",
+        "after": "f735c566593a527dd8d1412741d00d161b90c5972e8900c1972e3bd6c2de7323"
+      }
+    ],
+    "source_deltas": {
+      ".github/workflows/application-tests.yml": {
+        "before_sha256": "1ebb0d53c82ed61de2c49a0bd93ee59bed6b8040109bcf762c84cdc6efb2a015",
+        "after_sha256": "6368ae258c520feb0c1d3cdd5239ab321f37ecec9275cd7140e0b758524a5327",
+        "changes": [
+          {
+            "after_start": 402,
+            "after_end": 409,
+            "before": "",
+            "after": "          \"$PHP_BINARY\" tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-default.json\n          \"$PHP_BINARY\" -n tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-minimal.json\n          \"$PHP_BINARY\" tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-default.json\n          \"$PHP_BINARY\" -n tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-minimal.json\n          \"$PHP_BINARY\" tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-minimal.json\n          CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php\n"
+          },
+          {
+            "after_start": 451,
+            "after_end": 452,
+            "before": "",
+            "after": "          .ci-venv/bin/python tests/client_directory_listing_requests_browser.py --php \"$PHP_BINARY\" --report qa/client-directory-listing-requests-browser-results.json\n"
+          }
+        ]
+      },
+      "site/admin/controllers/actions.php": {
+        "before_sha256": "8bc5447aa523d96148541b8b2962f5cce29059f6cfaf0a34bdb54f75c0391620",
+        "after_sha256": "27711c41b6441441edcfd1e8c4e1f8a26c695a2733577228c2abc2cfd35f6f19",
+        "changes": [
+          {
+            "after_start": 18,
+            "after_end": 19,
+            "before": "",
+            "after": "    if(str_starts_with($action,'provider_directory_request_'))provider_directory_indexing_requests_admin_action($action);\n"
+          }
+        ]
+      },
+      "site/admin/controllers/router.php": {
+        "before_sha256": "58ba5734a9fc55101a4fc67704b3ae175dea64e9d402670cecca29e19812b659",
+        "after_sha256": "71343f7044aabf1ead15b42bf52ec1de02283d93f1f8ee540a205bb69f5886b9",
+        "changes": [
+          {
+            "after_start": 12,
+            "after_end": 13,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/admin/controllers/directory_listing_requests.php';\n"
+          },
+          {
+            "after_start": 29,
+            "after_end": 32,
+            "before": "",
+            "after": "$validViews[]='directory-requests';\nif(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'provider_directory_request_'))$view='directory-requests';\nif($view==='directory-requests'){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\n"
+          },
+          {
+            "after_start": 58,
+            "after_end": 59,
+            "before": "",
+            "after": "if($view==='directory-requests')provider_directory_indexing_requests_admin_render($error);\n"
+          }
+        ]
+      },
+      "site/admin/views/providers.php": {
+        "before_sha256": "01ffa5f74e26c7682bda01e129e815b0ce30963ede80172773e4e41d746130b4",
+        "after_sha256": "490d9320a9fb5482def174e8524ad641ed9971e9caca2e58e96cd40e287fe736",
+        "changes": [
+          {
+            "after_start": 163,
+            "after_end": 164,
+            "before": "",
+            "after": "<p><a class=\"btn outline\" href=\"<?=esc(admin_url('directory-requests'))?>\">Review client directory listing requests</a></p>\n"
+          }
+        ]
+      },
+      "site/app/providers/directory_listing_controls.php": {
+        "before_sha256": "de2d9a5ad784662fa36d75b390c0ae6c8fd7eaae7a367b2562c8bcdfad161a7f",
+        "after_sha256": "e01a92bd1e852c1dabd527d012dc54369347cd8543d035c951f0ed7bd247b98c",
+        "changes": [
+          {
+            "after_start": 16,
+            "after_end": 17,
+            "before": "    if(!is_array($d)||($d['version']??null)!==1||provider_directory_indexing_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Directory listing change evidence needs recovery.');\n",
+            "after": "    if(!is_array($d)||!in_array($d['version']??null,$kind==='request'?[1,2]:[1],true)||provider_directory_indexing_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Directory listing change evidence needs recovery.');\n"
+          },
+          {
+            "after_start": 35,
+            "after_end": 38,
+            "before": "    return ['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];\n",
+            "after": "    $request=['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];\n    if($d['version']===2){require_once CWP_CODE_ROOT.'/app/providers/directory_listing_requests.php';provider_directory_indexing_requests_validate_origin($request);}elseif(array_key_exists('client_origin',$d))throw new RuntimeException('Direct Directory listing approval cannot claim a client origin.');\n    return $request;\n"
+          },
+          {
+            "after_start": 89,
+            "after_end": 90,
+            "before": "",
+            "after": "    if($request['document']['version']===2)provider_directory_indexing_requests_origin_current($request);\n"
+          },
+          {
+            "after_start": 100,
+            "after_end": 131,
+            "before": "/** One owning mutex spans admission, DNS, gateway and the immutable terminal witness. */\n",
+            "after": "/** Internal admission; client origin and reciprocal decision commit in the caller transaction. */\nfunction provider_directory_indexing_controls_admit_locked(string $requestId,string $linkId,string $anchorId,string $bindingHash,bool $desired,bool $reviewed,#[SensitiveParameter] string $password,?array $clientOrigin=null):bool {\n    provider_directory_indexing_guard();provider_directory_indexing_id($requestId);provider_directory_indexing_id($linkId);provider_directory_indexing_id($anchorId);\n    if(!$reviewed||!preg_match('/\\A[a-f0-9]{64}\\z/',$bindingHash))throw new InvalidArgumentException('Review this exact Directory listing change first.');\n    $actor=provider_settings_owner($password);if(!provider_directory_indexing_controls_ready())throw new RuntimeException('Prepare Directory listing change storage first.');\n    if(one('SELECT id FROM '.table('provider_directory_changes').' WHERE id=?',[$requestId])){$old=provider_directory_indexing_controls_request($requestId);if(($old['document']['client_origin']??null)!==$clientOrigin)throw new RuntimeException('This Directory listing approval has a different origin.');provider_directory_indexing_controls_context($old['binding']);if($old['row']['link_id']!==$linkId||$old['document']['anchor_id']!==$anchorId||!hash_equals($old['binding']->sha256,$bindingHash)||$old['document']['params']['value']!==$desired||(int)$old['row']['actor_id']!==(int)$actor['id'])throw new RuntimeException('This Directory listing request identifier was already used.');return false;}\n    if($clientOrigin!==null)provider_directory_indexing_requests_admission_origin($clientOrigin,$linkId,$desired);\n    [$binding,$anchor]=provider_directory_indexing_controls_precondition($linkId,$anchorId,$bindingHash);provider_directory_indexing_controls_context($binding);\n    if($desired===$anchor['value'])throw new InvalidArgumentException('The latest saved flag already reports the requested value.');\n    if(provider_directory_indexing_controls_pending($binding->data['profile_id'],$binding->data['package_id']))throw new RuntimeException('A previous Directory listing change is unresolved. It cannot be sent again.');\n    $previous=one('SELECT * FROM '.table('provider_directory_changes').' WHERE profile_id=? AND package_id=? ORDER BY grant_seq DESC LIMIT 1',[$binding->data['profile_id'],$binding->data['package_id']]);\n    if($previous){$old=provider_directory_indexing_controls_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new Directory listing observation before approving another change.');}\n    $params=DirectoryIndexingChange::params(['packageId'=>$binding->data['package_id'],'value'=>$desired]);$now=time();$d=['version'=>$clientOrigin===null?1:2,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_proof'=>$anchor['proof'],'before_value'=>$anchor['value'],'params'=>$params,'reviewed'=>true,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];if($clientOrigin!==null)$d['client_origin']=$clientOrigin;$json=provider_directory_indexing_json($d);if(strlen($json)>4096)throw new LogicException('Directory listing approval exceeds its storage contract.');\n    query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$requestId,$binding->data['profile_id'],DirectoryIndexingChange::OPERATION,provider_operations_scope(DirectoryIndexingChange::OPERATION,$d),$binding->data['profile_revision'],$json,(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'directoryindexing:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);\n    $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$binding->data['profile_id'],'package_id'=>$binding->data['package_id'],'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];provider_directory_indexing_controls_insert('request',provider_directory_indexing_controls_prove('request',$q,$grant));return true;\n}\n/** Owning mutex stays held; network is outside a transaction. */\nfunction provider_directory_indexing_controls_send_locked(string $requestId,?callable $resolver=null,?callable $perform=null):array {\n    if(db()->inTransaction())throw new LogicException('Directory listing dispatch cannot inherit a transaction.');\n    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);if((int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Directory listing dispatch requires the owning staff mutex.');\n    $request=provider_directory_indexing_controls_request($requestId);$entered=false;\n    try{\n    $authorize=static fn()=>provider_directory_indexing_controls_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();\n    $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));\n    try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');$authorize();$op=new ProviderOperation(DirectoryIndexingChange::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);}finally{unset($secret);}\n    }catch(Throwable $e){if($e instanceof PDOException)throw $e;/* Never persist exception text or infer no-send after entry. */}\n    // A failed ledger result, zero attempts or HTTP status cannot turn this phase back into not_sent.\n    staff_transaction(fn()=>provider_directory_indexing_controls_end($request,$entered?'attempted':'not_sent'));\n    return staff_transaction(fn()=>provider_directory_indexing_controls_summary($requestId));\n}\n/** The original direct-owner entry keeps version-one admission and replay behavior. */\n"
+          },
+          {
+            "after_start": 134,
+            "after_end": 137,
+            "before": "    return staff_locked(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$password,$resolver,$perform):array{\n        $fresh=staff_transaction(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$password):bool{\n            $actor=provider_settings_owner($password);if(!provider_directory_indexing_controls_ready())throw new RuntimeException('Prepare Directory listing change storage first.');\n            if(one('SELECT id FROM '.table('provider_directory_changes').' WHERE id=?',[$requestId])){$old=provider_directory_indexing_controls_request($requestId);provider_directory_indexing_controls_context($old['binding']);if($old['row']['link_id']!==$linkId||$old['document']['anchor_id']!==$anchorId||!hash_equals($old['binding']->sha256,$bindingHash)||$old['document']['params']['value']!==$desired||(int)$old['row']['actor_id']!==(int)$actor['id'])throw new RuntimeException('This Directory listing request identifier was already used.');return false;}\n            [$binding,$anchor]=provider_directory_indexing_controls_precondition($linkId,$anchorId,$bindingHash);provider_directory_indexing_controls_context($binding);\n            if($desired===$anchor['value'])throw new InvalidArgumentException('The latest saved flag already reports the requested value.');\n            if(provider_directory_indexing_controls_pending($binding->data['profile_id'],$binding->data['package_id']))throw new RuntimeException('A previous Directory listing change is unresolved. It cannot be sent again.');\n            $previous=one('SELECT * FROM '.table('provider_directory_changes').' WHERE profile_id=? AND package_id=? ORDER BY grant_seq DESC LIMIT 1',[$binding->data['profile_id'],$binding->data['package_id']]);\n            if($previous){$old=provider_directory_indexing_controls_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new Directory listing observation before approving another change.');}\n            $params=DirectoryIndexingChange::params(['packageId'=>$binding->data['package_id'],'value'=>$desired]);$now=time();$d=['version'=>1,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_proof'=>$anchor['proof'],'before_value'=>$anchor['value'],'params'=>$params,'reviewed'=>true,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];$json=provider_directory_indexing_json($d);if(strlen($json)>4096)throw new LogicException('Directory listing approval exceeds its storage contract.');\n            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$requestId,$binding->data['profile_id'],DirectoryIndexingChange::OPERATION,provider_operations_scope(DirectoryIndexingChange::OPERATION,$d),$binding->data['profile_revision'],$json,(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'directoryindexing:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);\n            $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$binding->data['profile_id'],'package_id'=>$binding->data['package_id'],'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];provider_directory_indexing_controls_insert('request',provider_directory_indexing_controls_prove('request',$q,$grant));return true;\n        });\n        if(!$fresh)return staff_transaction(fn()=>provider_directory_indexing_controls_summary($requestId));\n        $request=provider_directory_indexing_controls_request($requestId);$entered=false;\n        try{\n            $authorize=static fn()=>provider_directory_indexing_controls_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();\n            $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));\n            try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');$authorize();$op=new ProviderOperation(DirectoryIndexingChange::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);}finally{unset($secret);}\n        }catch(Throwable $e){if($e instanceof PDOException)throw $e;/* Never persist exception text or infer no-send after entry. */}\n        // A failed ledger result, zero attempts or HTTP status cannot turn this phase back into not_sent.\n        staff_transaction(fn()=>provider_directory_indexing_controls_end($request,$entered?'attempted':'not_sent'));\n        return staff_transaction(fn()=>provider_directory_indexing_controls_summary($requestId));\n",
+            "after": "    return staff_locked(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$reviewed,$password,$resolver,$perform):array {\n        $fresh=staff_transaction(fn()=>provider_directory_indexing_controls_admit_locked($requestId,$linkId,$anchorId,$bindingHash,$desired,$reviewed,$password));\n        return $fresh?provider_directory_indexing_controls_send_locked($requestId,$resolver,$perform):staff_transaction(fn()=>provider_directory_indexing_controls_summary($requestId));\n"
+          },
+          {
+            "after_start": 140,
+            "after_end": 141,
+            "before": "",
+            "after": "    if($request['document']['version']===2)provider_directory_indexing_controls_finished_ledger($request,time());\n"
+          },
+          {
+            "after_start": 150,
+            "after_end": 151,
+            "before": "    provider_directory_indexing_guard();$request=provider_directory_indexing_controls_request($plan['request_id']);[$actor,,$current]=provider_directory_indexing_controls_context($request['binding']);$terminal=provider_directory_indexing_controls_terminal($request);\n",
+            "after": "    provider_directory_indexing_guard();$request=provider_directory_indexing_controls_request($plan['request_id']);if($request['document']['version']===2){provider_directory_indexing_requests_origin_current($request);provider_directory_indexing_controls_finished_ledger($request,time());}[$actor,,$current]=provider_directory_indexing_controls_context($request['binding']);$terminal=provider_directory_indexing_controls_terminal($request);\n"
+          },
+          {
+            "after_start": 195,
+            "after_end": 196,
+            "before": "",
+            "after": "        if($request['document']['version']===2)provider_directory_indexing_requests_origin_current($request);\n"
+          },
+          {
+            "after_start": 218,
+            "after_end": 219,
+            "before": "        $actor=provider_settings_owner($password);if(!provider_directory_indexing_controls_ready())throw new RuntimeException('Prepare Directory listing change storage first.');$request=provider_directory_indexing_controls_request($requestId);[,,$binding]=provider_directory_indexing_controls_context($request['binding']);$terminal=provider_directory_indexing_controls_terminal($request);\n",
+            "after": "        $actor=provider_settings_owner($password);if(!provider_directory_indexing_controls_ready())throw new RuntimeException('Prepare Directory listing change storage first.');$request=provider_directory_indexing_controls_request($requestId);if($request['document']['version']===2){provider_directory_indexing_requests_origin_current($request);provider_directory_indexing_controls_finished_ledger($request,time());}[,,$binding]=provider_directory_indexing_controls_context($request['binding']);$terminal=provider_directory_indexing_controls_terminal($request);\n"
+          },
+          {
+            "after_start": 222,
+            "after_end": 223,
+            "before": "        return ['request_id'=>$requestId,'check_id'=>bin2hex(random_bytes(16)),'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),'binding'=>$binding,'terminal_proof'=>$terminal['row']['proof'],'floor'=>(int)query('SELECT COALESCE(MAX(seq),0) FROM '.table('provider_refreshes'))->fetchColumn()];\n",
+            "after": "        $plan=['request_id'=>$requestId,'check_id'=>bin2hex(random_bytes(16)),'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),'binding'=>$binding,'terminal_proof'=>$terminal['row']['proof'],'floor'=>(int)query('SELECT COALESCE(MAX(seq),0) FROM '.table('provider_refreshes'))->fetchColumn()];if($request['document']['version']===2)$plan['client_origin']=true;return $plan;\n"
+          },
+          {
+            "after_start": 224,
+            "after_end": 225,
+            "before": "    $receipt=provider_directory_indexing_refresh($plan['binding']->data['link_id'],$plan['binding'],$password,$resolver,$transport);\n",
+            "after": "    $receipt=isset($plan['client_origin'])?provider_directory_indexing_requests_refresh($requestId,$plan['binding'],$password,$resolver,$transport):provider_directory_indexing_refresh($plan['binding']->data['link_id'],$plan['binding'],$password,$resolver,$transport);\n"
+          }
+        ]
+      },
+      "site/app/staff/accounts.php": {
+        "before_sha256": "c8bcc595dbc7622d768f8b3ae7c03afef2a736dbbae8a7f5cafbde3abb046342",
+        "after_sha256": "9cd795db7c2a73dc2c8c31d52838104b0aaa8d0c0a061330a2d8a8f6a7fe1fdd",
+        "changes": [
+          {
+            "after_start": 133,
+            "after_end": 134,
+            "before": "",
+            "after": "    if($view==='directory-requests')return 'staff.manage';\n"
+          },
+          {
+            "after_start": 157,
+            "after_end": 158,
+            "before": "",
+            "after": "    if(str_starts_with($action,'provider_directory_request_'))return 'staff.manage';\n"
+          }
+        ]
+      },
+      "site/assets/css/growth.css": {
+        "before_sha256": "5bbf95877ed30914c4be8933670f5d03c305bf7ec13fdb4c88cd21449b27bd7e",
+        "after_sha256": "c491d356e0b8e273a6deccf34feacd40d97d323c34ec2133f69b04b434d390dc",
+        "changes": [
+          {
+            "after_start": 39,
+            "after_end": 52,
+            "before": "",
+            "after": "\n/* Client directory listing requests: readable controls and bounded disclosure. */\n[data-directory-requests]{font-size:16px;line-height:1.6;overflow-wrap:anywhere}\n[data-directory-requests] label,[data-directory-requests] .hint,[data-directory-requests] .btn{font-size:14px;line-height:1.5}\n[data-directory-requests] form input:not([type=\"checkbox\"]),[data-directory-requests] form select,[data-directory-requests] form textarea{font-size:16px;max-width:100%;min-width:0;box-sizing:border-box}\n[data-directory-requests] label.check{font-size:14px;line-height:1.5;align-items:flex-start;gap:10px}\n[data-directory-requests] .check input{flex:none;margin-top:4px;width:18px;height:18px}\n[data-directory-requests] .btn{white-space:normal;max-width:100%;min-height:44px;text-align:center}\n[data-directory-requests] button:disabled{opacity:.55;cursor:not-allowed}\n[data-directory-requests] :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}\n[data-directory-requests] .directory-request-decline{border-top:1px solid #ffffff26;margin-top:24px;padding-top:16px}\n[data-directory-requests] summary{cursor:pointer;font-weight:700;padding:8px 0}\n[data-directory-requests] .directory-request-decline form{margin-top:16px}\n"
+          }
+        ]
+      },
+      "site/includes/layout/admin.php": {
+        "before_sha256": "69731f41beebf38d29101886e03ea201a72552af52260a1776aebe5a15e81907",
+        "after_sha256": "ba9542bade91491f00d70a7d28c28bde79be207b67957b992af53b1e5ea7ccd6",
+        "changes": [
+          {
+            "after_start": 9,
+            "after_end": 10,
+            "before": "        'hosting'=>['label'=>'Hosting & Domains','icon'=>'monitor','items'=>['provider-settings'=>['gear','20i connection'],'provider-operations'=>['shield','20i operations'],'https-requests'=>['shield','HTTPS requests'],'registration-drafts'=>['layers','Registration drafts']]],\n",
+            "after": "        'hosting'=>['label'=>'Hosting & Domains','icon'=>'monitor','items'=>['provider-settings'=>['gear','20i connection'],'provider-operations'=>['shield','20i operations'],'https-requests'=>['shield','HTTPS requests'],'directory-requests'=>['layers','Directory listing requests'],'registration-drafts'=>['layers','Registration drafts']]],\n"
+          }
+        ]
+      },
+      "site/includes/layout/provider_services.php": {
+        "before_sha256": "89ab881a09b0999f3986c93a6c472e1b31a5996a8f476a538cfd736f63e8f6fc",
+        "after_sha256": "7ff2179cf091f412d0c49caf59d7a72668cd45e329c5773995defbd0bbcac8e6",
+        "changes": [
+          {
+            "after_start": 27,
+            "after_end": 28,
+            "before": "",
+            "after": "    if(function_exists('provider_directory_indexing_requests_session_blocked')&&!provider_directory_indexing_requests_session_blocked())echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['directory_requests'=>1])).'\">Directory listing requests</a>';\n"
+          }
+        ]
+      },
+      "site/portal/controllers/actions.php": {
+        "before_sha256": "bdaaa9999cd0a207f2de3cbc3195024e63230fd7a455ce89508e18ec1cbd297c",
+        "after_sha256": "103b7d2155744eb4f36198a778136d9e4c53f685f375c0bbba1bf3ea531e27ba",
+        "changes": [
+          {
+            "after_start": 14,
+            "after_end": 15,
+            "before": "",
+            "after": " elseif(str_starts_with($action,'directory_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_directory_indexing_requests_client_action($action,$client);}\n"
+          }
+        ]
+      },
+      "site/portal/controllers/router.php": {
+        "before_sha256": "d7ba9364c61cbf213b15d60b0e68346f988212ab013e40652f3b6f422f6dd8ac",
+        "after_sha256": "a695896726952d1f9ce8300f7026a02e8efdc2f53ad818c57a42601d7d3d3293",
+        "changes": [
+          {
+            "after_start": 23,
+            "after_end": 29,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/portal/controllers/directory_listing_requests.php';\n$directoryRequestRoute=array_key_exists('directory_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'directory_request_'));\nif($directoryRequestRoute){\n    header('Cache-Control: no-store, private');\n    if(provider_directory_indexing_requests_session_blocked())fail_page('Sign in directly to your primary client account to manage directory-listing requests.',403);\n}\n"
+          },
+          {
+            "after_start": 62,
+            "after_end": 63,
+            "before": "",
+            "after": "if($directoryRequestRoute)provider_directory_indexing_requests_client_render($client,$error);\n"
+          }
+        ]
+      },
+      "site/portal/views/directory_listing.php": {
+        "before_sha256": "baa267f36d10bea425196963bad9a7ae51db97108a58af13f4f1c48ab8206c28",
+        "after_sha256": "4efad35eeefb0b466d909d9e451cb40a0f12a61fd38a9f0d06e50e745dbe7236",
+        "changes": [
+          {
+            "after_start": 5,
+            "after_end": 9,
+            "before": "",
+            "after": "\n<?php if(function_exists('provider_directory_indexing_requests_session_blocked')&&!provider_directory_indexing_requests_session_blocked()): ?>\n<a class=\"btn outline\" href=\"<?=esc(studio_url(['directory_requests'=>1]))?>\">Request a directory listing change</a>\n<?php endif; ?>\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "before_sha256": "3a99764a013787e7a8468c1639145d3e5e6ca5f33e4b70046eff710cdfe21bce",
+        "after_sha256": "f735c566593a527dd8d1412741d00d161b90c5972e8900c1972e3bd6c2de7323",
+        "changes": [
+          {
+            "after_start": 484,
+            "after_end": 603,
+            "before": "",
+            "after": "_run_before_client_directory_requests = run\n\n\ndef client_directory_requests_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Client directory listing requests current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Client directory listing requests inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Client directory listing requests predecessor changed')\n    return result\n\n\ndef client_directory_requests_current():\n    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['client_directory_requests']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Client directory listing requests source changed: '+path)\n    registry = a.load(ROOT/'tools/acceptance-reports.json')\n    prior = copy.deepcopy(current); del prior['client_directory_requests']\n    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Client directory listing requests native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]: cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']: raise ValueError('Client directory listing requests current pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Client directory listing requests predecessor contract changed')\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client directory listing requests report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Client directory listing requests predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef client_directory_requests_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    check('Client directory listing requests preserves all159 native recipes and adds seven', len(current['native_commands']) == 166 and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])\n    check('Client directory listing requests reports are eight unique producers', len(section['reports']) == len(set(section['reports'])) == 8)\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)\n    check('Client directory listing requests browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php \"$PHP_BINARY\"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Client directory listing requests native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php' and valid_port_context(workflow))\n    check('Client directory listing requests adds no unreviewed capture expectations', section['screenshots'] == [])\n    for path, digest in section['source_sha256'].items():\n        check('Client directory listing requests binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Client directory listing requests retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Client directory listing requests modified current source refuses '+path, lambda path=path, delta=delta: client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    for phase, expected in [('browser',180),('final',224)]:\n        check('Client directory listing requests preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'client-directory-requests-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)\n    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job\n        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA: named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Client directory listing requests aggregate requires all224 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()\n        check('Client directory listing requests missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path,False); reseal(); result = combine()\n        check('Client directory listing requests failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Client directory listing requests report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    named(jobs['native-browser']/'qa/client-directory-requests-unexpected-results.json'); reseal(); result = combine()\n    check('Client directory listing requests unexpected report refuses', result['complete'] is False and 'Unexpected reports: client-directory-requests-unexpected-results.json' in result['errors'])\n    check('Client directory listing requests private fixture files remain excluded', not a.evidence_allowed('test-runtime/directory-listing-requests-private/session.json','native-browser') and not a.evidence_allowed('qa/directory-listing-requests-private/session.json','native-browser'))\n\n\ndef run(tmp):\n    current, registry, section, historical = client_directory_requests_current()\n    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path,*args,**kwargs):\n        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)\n    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):\n        _run_before_client_directory_requests(tmp)\n    client_directory_requests_checks(tmp,current,registry,section,historical)\n\n\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "6368ae258c520feb0c1d3cdd5239ab321f37ecec9275cd7140e0b758524a5327",
+      "foundation/provider/ProviderGateway.php": "c6885ca2170ca0ea9d854a237fc160a2f0ca950633dd49a1051b82e0f2eaf753",
+      "foundation/twentyi-directory-listing/DirectoryListingReader.php": "4f90f078f65153c631728d72a35f779a224acf1bbdc77a700bb38251524f1910",
+      "foundation/twentyi-operations/DirectoryIndexingChange.php": "6b2f1b9ada82c1055f834a7e3115e8a7860ef566dc0ba42d035475751e9fb98c",
+      "site/admin/controllers/actions.php": "27711c41b6441441edcfd1e8c4e1f8a26c695a2733577228c2abc2cfd35f6f19",
+      "site/admin/controllers/auth.php": "21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb",
+      "site/admin/controllers/directory_listing_requests.php": "c7317fd6cea68859fecda2868f39f083b57e60805f8f5d479238726d9882028e",
+      "site/admin/controllers/router.php": "71343f7044aabf1ead15b42bf52ec1de02283d93f1f8ee540a205bb69f5886b9",
+      "site/admin/views/providers.php": "490d9320a9fb5482def174e8524ad641ed9971e9caca2e58e96cd40e287fe736",
+      "site/app/clients/accounts.php": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
+      "site/app/providers/directory_listing.php": "f96904b7826b37f487d9ed60a8a3aad46c13e97f20096e667269bbfbc9dccc1c",
+      "site/app/providers/directory_listing_controls.php": "e01a92bd1e852c1dabd527d012dc54369347cd8543d035c951f0ed7bd247b98c",
+      "site/app/providers/directory_listing_controls_storage.php": "4cc6655e2cbd1edc1150837e9831ce75c376bc4feb8eef8285f966a1dfdead01",
+      "site/app/providers/directory_listing_requests.php": "1bcf2b1ca3d7e69e5dc40c569252e62329245f5a329d8d7bbe2bb9c8a2e7dd85",
+      "site/app/providers/directory_listing_requests_document.php": "113c798642dfbfc24cfb3950c057228f4c17d43b07820dae29dbd4cbfe9cae85",
+      "site/app/providers/directory_listing_requests_storage.php": "14aaaa446d587337dd4766261f55407d55f9cd470cdefddb4771e778a2d49887",
+      "site/app/providers/directory_listing_requests_views.php": "ea0250f732b0217963919ca9fdaa8c16903e7c4c5f561c459ba34ef4f4a88c02",
+      "site/app/providers/inventory.php": "5278dd5262dd2cf0f400521b83db70b5583bb8a244201f3c3adf94deb3efd0f6",
+      "site/app/providers/operations.php": "d6b3237c87ccdc5f73390266e8c12a6387978626af807f8302d59e0cf36c07ca",
+      "site/app/providers/settings.php": "15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871",
+      "site/app/staff/accounts.php": "9cd795db7c2a73dc2c8c31d52838104b0aaa8d0c0a061330a2d8a8f6a7fe1fdd",
+      "site/assets/css/admin.css": "655a82d0eaf046b9836b16d8a2887d0ed406d8181e25c329bbdf2721b5300d6f",
+      "site/assets/css/growth.css": "c491d356e0b8e273a6deccf34feacd40d97d323c34ec2133f69b04b434d390dc",
+      "site/assets/css/premium.css": "bde2678d7a655d124491b3041a73bc6f474031c17f18396da0e8d3c994299380",
+      "site/assets/css/site.css": "689e37932d2b51b8c71007964d50ca617d999607f6f7ac0860adb0a70b180861",
+      "site/database/migrations/provider_directory_listing_requests_migrate.php": "4ac3d6e1553d042619deb4ed9b484e6142e9de9f552ff9504a13354e26ed9722",
+      "site/database/schema/provider_directory_listing_requests_schema.php": "27a747d60efe6de1c8158d5392aee2fe9163521b64dea265eb7813b9a5294fe0",
+      "site/includes/layout/admin.php": "ba9542bade91491f00d70a7d28c28bde79be207b67957b992af53b1e5ea7ccd6",
+      "site/includes/layout/provider_services.php": "7ff2179cf091f412d0c49caf59d7a72668cd45e329c5773995defbd0bbcac8e6",
+      "site/includes/security/csrf.php": "cf24bbccd978bd9ac94d289f822deea683624b8093e86b362a4b8e818f9a99de",
+      "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
+      "site/includes/security/input.php": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b",
+      "site/portal/controllers/actions.php": "103b7d2155744eb4f36198a778136d9e4c53f685f375c0bbba1bf3ea531e27ba",
+      "site/portal/controllers/directory_listing_requests.php": "b8f4c368ffee07c47a72c0e8aa3bc0dd191166a8502b907fb49c61a081b3f628",
+      "site/portal/controllers/router.php": "a695896726952d1f9ce8300f7026a02e8efdc2f53ad818c57a42601d7d3d3293",
+      "site/portal/views/directory_listing.php": "4efad35eeefb0b466d909d9e451cb40a0f12a61fd38a9f0d06e50e745dbe7236",
+      "tests/acceptance_artifacts_test.py": "f735c566593a527dd8d1412741d00d161b90c5972e8900c1972e3bd6c2de7323",
+      "tests/client_directory_listing_requests_browser.py": "c55749c88b84aa397f7fdac90d86b8c1896d015a3019b3a6ec07cd67e5461614",
+      "tests/client_directory_listing_requests_http_fixture.php": "47bc14c607aff1c36cc06b2ced90013b9c9cf552b4bca5bbf9950d650a58d749",
+      "tests/directory_listing_requests_contract.php": "6941d3e02317aaaec37e4df6f74beeb06a3184036417550c1d5fc226b7be9a9e",
+      "tests/directory_listing_requests_document.php": "de45b7f81950bffa5625c2df2c6db9e602a1d8d0638344f8eb4f5aa820f68b07",
+      "tests/directory_listing_requests_storage.php": "fe99d96acd03a4a2a3b3d85cafb82b4c1065c788895bc89728881a1bc0d34f76",
+      "tests/provider_directory_listing_controls_native.php": "4cfc7f4eaf62a1aa7fcafc9b9fe7c1eb011543e84d8d8cdbd75c28a61bac37a5",
+      "tests/provider_directory_listing_requests_native.php": "3e5e5e9b58c009b44f46d1eb9decdb5bce5e0411911312ec920969af02e7864a",
+      "tests/provider_force_ssl_requests_native.php": "2b59bd637ca6cce41e5d69f663735a9e52865c9492a7c8059150e2391649fe92",
+      "tools/acceptance_artifacts.py": "adace461adbf6568050e52a54703a030e5d4247ce487bd45c951ed4df92cd2a5"
+    },
+    "scope": "Primary-client directory listing request, owner review and existing DirectoryIndexingChange dispatch/readback. Portable/model HTTP evidence is separate from guarded native SQL and installed acceptance. No live provider or actual file visibility claim."
   }
 }

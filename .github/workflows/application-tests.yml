@@ -400,6 +400,13 @@ jobs:
           "$PHP_BINARY" tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json
           "$PHP_BINARY" -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json
           "$PHP_BINARY" tests/provider_directory_listing_controls_native.php
+          "$PHP_BINARY" tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-default.json
+          "$PHP_BINARY" -n tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-minimal.json
+          "$PHP_BINARY" tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-default.json
+          "$PHP_BINARY" -n tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-minimal.json
+          "$PHP_BINARY" tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-minimal.json
+          CWP_TEST_DIRECTORY_REQUESTS=1 "$PHP_BINARY" tests/provider_directory_listing_requests_native.php
           python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json
           python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json
           "$PHP_BINARY" tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json
@@ -442,6 +449,7 @@ jobs:
         run: |
           .ci-venv/bin/python tests/browser_acceptance.py
           .ci-venv/bin/python tests/client_force_ssl_requests_browser.py --php "$PHP_BINARY" --report qa/client-force-ssl-requests-browser-results.json
+          .ci-venv/bin/python tests/client_directory_listing_requests_browser.py --php "$PHP_BINARY" --report qa/client-directory-listing-requests-browser-results.json
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

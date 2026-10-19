@@ -1,3 +1,15 @@
+## 2026-10-19 — client directory listing requests
+
+Parent `1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab`; branch `codex/twentyi-client-directory-listing`; enclosing commit `feat: add client directory listing requests and owner review`.
+
+Primary clients can request Enabled or Disabled for an explicitly shared directory listing setting, withdraw pending requests and read dated outcomes. Owners review or decline under **Hosting & Domains → Directory listing requests**, approve one change with their current password and separately check the provider's reported flag. Missing history cannot be mistaken for fresh setup when a client-origin approval survives. Existing direct owner records retain their version-1 format; uncertain requests never automatically resend.
+
+Local backend checks pass: document 105, storage 92 and service 62 in default and minimal PHP; unchanged owner controls 78, transport 37 and recovery 57 in both modes. Final-source actual-controller/render HTTP/Chromium checks pass111 with modeled business storage; all416 acceptance-helper checks pass, preserving the original309 outcomes and order. Root verified2910 installer dependency hashes and readable mobile/desktop request panels. Native Linux SQL and full installed application acceptance remain pending. [Behavior and limits](docs/TWENTYI_CLIENT_DIRECTORY_REQUESTS.md), [named local evidence](docs/evidence/client-directory-requests-local.json).
+
+The separately frozen catalog billing options source `e7deced05e0b625994ee2facf628ebe337030081` is in [PR245](https://github.com/afterburn25/Cajun_Web/pull/245); its first full run [39222120206](https://github.com/afterburn25/Cajun_Web/actions/runs/39222120206) remains queued at the latest check. Preserve that source, client HTTPS [PR244](https://github.com/afterburn25/Cajun_Web/pull/244), StackCP [PR243](https://github.com/afterburn25/Cajun_Web/pull/243), the catalog candidate's original run39098578401 and Devin's separate work. None is integrated or certified by this increment. Published1.25.0 stays immutable; full20i and1.26 publication remain unfinished. No live deployment or provider operation occurred.
+
+Next: push the reviewed branch and start its first exact-source full application run; review its original results before normal integration, exact-main acceptance, packaging and release download verification.
+
 ## 2026-10-19 — client HTTPS redirect requests
 
 Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/twentyi-client-force-ssl`; enclosing commit `feat: add client HTTPS redirect requests and owner review`.

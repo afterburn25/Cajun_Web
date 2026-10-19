@@ -37,3 +37,16 @@
 [data-https-requests] .https-request-decline{border-top:1px solid #ffffff26;margin-top:24px;padding-top:16px}
 [data-https-requests] summary{cursor:pointer;font-weight:700;padding:8px 0}
 [data-https-requests] .https-request-decline form{margin-top:16px}
+
+/* Client directory listing requests: readable controls and bounded disclosure. */
+[data-directory-requests]{font-size:16px;line-height:1.6;overflow-wrap:anywhere}
+[data-directory-requests] label,[data-directory-requests] .hint,[data-directory-requests] .btn{font-size:14px;line-height:1.5}
+[data-directory-requests] form input:not([type="checkbox"]),[data-directory-requests] form select,[data-directory-requests] form textarea{font-size:16px;max-width:100%;min-width:0;box-sizing:border-box}
+[data-directory-requests] label.check{font-size:14px;line-height:1.5;align-items:flex-start;gap:10px}
+[data-directory-requests] .check input{flex:none;margin-top:4px;width:18px;height:18px}
+[data-directory-requests] .btn{white-space:normal;max-width:100%;min-height:44px;text-align:center}
+[data-directory-requests] button:disabled{opacity:.55;cursor:not-allowed}
+[data-directory-requests] :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}
+[data-directory-requests] .directory-request-decline{border-top:1px solid #ffffff26;margin-top:24px;padding-top:16px}
+[data-directory-requests] summary{cursor:pointer;font-weight:700;padding:8px 0}
+[data-directory-requests] .directory-request-decline form{margin-top:16px}

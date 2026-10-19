@@ -1,3 +1,7 @@
+## 2026-10-19 — client directory listing requests
+
+Added client directory listing requests with owner review, withdrawal, dated history, separate provider readback, retained failed forms and guarded local recovery. Added portable, native-fixture, browser and acceptance-contract coverage. This is an unreleased proposal; see [scope and evidence](docs/TWENTYI_CLIENT_DIRECTORY_REQUESTS.md).
+
 ## 2026-10-19 — client HTTPS redirect requests (unreleased)
 
 - Add primary-client HTTPS redirect requests, withdrawal, owner review/decline, separately verified provider flags, and client-visible status.
