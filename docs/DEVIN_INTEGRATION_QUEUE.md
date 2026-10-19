@@ -6,9 +6,22 @@ PR snapshot: 152 open PRs read via `gh pr list` at ~16:00Z. Branch recency check
 
 Dispositions: READY = review findings addressed + locally verified, hosted acceptance pending. PENDING-ACCEPTANCE = exists but unverified/unreviewed at current head. FOUNDATION = incomplete slice, preserved. SUPERSEDED = replaced by a named successor/PR. INTEGRATED = ancestor of current main.
 
-## Group A — READY (Devin non-20i, reviews addressed)
+## Group A — MERGED into `devin/full-site-integration` (2026-10-19)
 
-Merge order is dependency-safe; each tip below carries its listed ancestors. Doc-only conflicts expected in SESSION_HANDOFF.md / SESSION_LOG.md (both sides appended); resolve by union.
+All 25 slices merged sequentially with conflict resolution preserving HEAD's
+contact-aware gates, `author_type`/`sort_sequence` union parity, and the full
+native recipe. Each merge regenerated the installer inventory and passed the
+acceptance contract (227–229 checks). Local suites run green; hosted combined
+acceptance is triggered by this branch's push (workflow filter now includes it).
+
+Merge commits: A1 `aad0feea`-era mail chain; A2 `a9`-era contacts; A3 fixture;
+A4 `b6928d7c`; A5 `8992bfea`; A6; A7; A8 stage-history; A9 `ba238981`;
+A10 `575483ed`; A11 `0e11fdab`; A12 `9e073f88`; A13 `2f340c32`; A14 `264ccc53`;
+A15 `d177a539`; A16 `1f217bdd`; A17 `057a74ee`; A18 `5ff2c54e`; A19 `c080ee0f`;
+A20 `f3572e07`; A21 `56fbd8d3`; A22 `a859b397`; A23 `9e17471e`; A24 `c1eef1e7`;
+A25 `9f1f8ae3`.
+
+Original classification retained below for traceability.
 
 | Order | Tip PR / head | Includes | Scope | Disposition |
 |---|---|---|---|---|
