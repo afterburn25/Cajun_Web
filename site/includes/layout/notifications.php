@@ -4,7 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/notifications/feed.php';
 use CajunWebPro\Foundation\Notifications\{Notification,NotificationFeed};
 
-function notification_kind_label(string $kind): string {return ['project-update'=>'Project update','approval-request'=>'Approval decision','download-ready'=>'Website download','support-reply'=>'Support reply','billing'=>'Billing','service-event'=>'New inquiry'][$kind]??$kind;}
+function notification_kind_label(string $kind): string {return ['project-update'=>'Project update','approval-request'=>'Approval decision','download-ready'=>'Website download','support-reply'=>'Support reply','billing'=>'Billing','service-event'=>'Service event'][$kind]??$kind;}
 
 /** Shared feed card list; $links maps notification id => destination URL. */
 function notification_feed_list(NotificationFeed $feed,string $audience,string $markAction='notification_mark'): void {
@@ -37,6 +37,10 @@ function notifications_admin_action(string $action): never {
     if($action==='notification_mark')notification_mark(Notification::AUDIENCE_STAFF,(int)$actor['id'],posted('id',32),posted('read',1)==='1');
     elseif($action==='notification_mark_all')notification_mark_all(Notification::AUDIENCE_STAFF,(int)$actor['id']);
     elseif($action==='notification_prefs')notification_prefs_save(Notification::AUDIENCE_STAFF,(int)$actor['id'],(string)$actor['id']);
+    elseif($action==='notification_announce'){
+        staff_require('clients.manage');if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm this service announcement goes to every active client.');
+        $id=notification_announce(posted('title',200),posted('body',1000),$actor);flash('Announcement sent to every active client.');redirect(admin_url('notifications'));
+    }
     else throw new InvalidArgumentException('Unknown notification action.');
     flash('Saved.');redirect(admin_url('notifications'));
 }
@@ -55,6 +59,12 @@ function notifications_admin_render(array $user,string $error): never {
     notification_feed_list($feed,Notification::AUDIENCE_STAFF);
     echo '</div>';
     notification_prefs_form(Notification::AUDIENCE_STAFF,(int)$user['id'],'notification_prefs');
+    if(staff_can('clients.manage')){
+        echo '<div class="workspace-card"><h2>Service announcements</h2><p>Send a scoped maintenance or service notice to every active client. Each client receives the notification in their portal feed and an email copy unless they opted out of service events. Announcements are informational — they never promise unverified uptime or service changes.</p>';
+        echo '<form method="post">'.csrf_field().'<input type="hidden" name="action" value="notification_announce">';admin_input('title','Announcement title','','text','required maxlength="200"');echo '<label>Message<textarea name="body" maxlength="1000" required></textarea></label>';admin_check('confirm','Send this announcement to every active client.',false);echo '<button class="btn gold">Send announcement</button></form>';
+        foreach(notification_announcements() as $a)echo '<article class="workspace-version read-item"><span class="eyebrow">'.esc($a['actor_name']??'Staff').' · '.esc($a['created_at']).' UTC · '.$a['recipients'].' recipients</span><h3>'.esc($a['title']).'</h3><div class="prose">'.nl2br(esc($a['body'])).'</div></article>';
+        echo '</div>';
+    }
     echo '</div></section>';admin_foot();exit;
 }
 

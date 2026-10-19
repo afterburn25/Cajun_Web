@@ -56,6 +56,14 @@ try{
     $cf=notification_feed('client',1);n_ok('Publishing a pending version notifies the owning client',$cf->unreadCount()===2);
     $top=$cf->page()[0];n_ok('Version notice links to the authorized job',$top->kind==='approval-request'&&$top->ref==='job:1'&&str_contains($top->body,'Homepage draft'));
     n_ok('Staff feeds never receive the client version notice',notification_feed('staff',2)->unreadCount()===1);
+
+
+    n_deny('Announcement requires a client audience scope',fn()=>notification_announce('x','too short',one('SELECT * FROM '.table('users').' WHERE id=1')));
+    query("INSERT INTO ".table('studio_clients')." (name,email,auth_version,active,created_at) VALUES ('Inactive client','inactive@example.invalid',?,0,?)",[str_repeat('d',32),$now]);
+    $aid=notification_announce('Maintenance window','Synthetic maintenance notice for the notification lane.',one('SELECT * FROM '.table('users').' WHERE id=1'));
+    n_ok('Announcement reaches every active client',notification_feed('client',1)->unreadCount()===2&&one('SELECT recipients FROM '.table('notification_announcements').' WHERE id=?',[$aid])['recipients']==='1'&&one('SELECT ref,kind FROM '.table('notification_feed').' WHERE ref=?',['announcement:'.$aid])['kind']==='service-event');
+    n_ok('Inactive clients never receive announcements',one('SELECT f.id FROM '.table('notification_feed').' f JOIN '.table('studio_clients').' c ON c.id=f.recipient_id WHERE f.audience=? AND c.active=0',['client'])===null);
+    n_ok('Announcement history records actor and scope',one('SELECT actor_id,recipients FROM '.table('notification_announcements').' WHERE id=?',[$aid])['actor_id']==='1'&&notification_announcements()[0]['title']==='Maintenance window');
     $GLOBALS['cwp_support']=['session'=>['id'=>'synthetic'],'actor'=>['id'=>1]];
     n_deny('Support sessions cannot run feed setup',fn()=>notification_feed_migrate($password));unset($GLOBALS['cwp_support']);
     $kept=all('SELECT * FROM '.table('notification_feed'));notification_feed_migrate($password);n_ok('Re-running setup preserves every notification',all('SELECT * FROM '.table('notification_feed'))===$kept);

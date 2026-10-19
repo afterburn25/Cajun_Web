@@ -516,6 +516,16 @@ Next: commit, push, open bounded PR, update issue #157; later roadmap work integ
 
 Non-20i increment requested under assignment#157 item2 ("protected previews/uploads"). Starting from main d7153b07 on branch `devin/non20i-protected-previews`. Adds additive `studio_version_files` binding storage (workspace schema marker 2→3, additive migrate, unique version/file bindings), `studio_preview_upload` (staff-attached PDF/PNG/JPEG, same guarded private storage, type/size/executable-content limits and 100 MB project cap as project files), and `studio_preview_download` (integrity-verified inline serving, project-owner client scope, staff or granted support access, no-store). Admin job cards expose attach/open controls; portal version cards show a protected-preview link distinct from the labeled external staging link. Test seeds/marker updated to 3; provider-inventory workspace prerequisite accepts versions 2–3. HTTP cases assert attach/open inline, other-client and anonymous refusal, foreign-version and duplicate-binding rejection. php -l clean on all touched files; Python syntax clean; package HTTP/native acceptance pending on CI. Commit: "Bind protected staff-uploaded previews to published design and proposal versions". No live deployment, customer data or external staging is claimed.
 
+## Port P-07 notification contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.
+
+Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
+
+Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
 ## Synchronize release entry points after review — 2026-10-15
 ## Repair legacy project-create placeholder — 2026-10-16
 
@@ -2540,6 +2550,13 @@ Request: continue remaining non-20i work (issue #157). New branch `devin/non20i-
 ## 2026-10-16 - Devin renewal notification events (merge branch)
 
 Request: continue remaining non-20i work (issue #157). New branch `devin/non20i-renewal-notifications` merges `devin/non20i-recurring-billing` + `devin/non20i-notification-events` (union resolutions across controllers/layout/portal/build/test inventories; docs keep both branches' entries). Adds the last named P-07 emit gap: `recurring_billing_issue` notifies the owning client when a new period invoice is issued — emit runs after the locked issuance transaction, only for non-replayed requests. Native suite extended: feed setup, issuance notification, replay adds no feed row. php -l clean on all touched files; build refresh pending in this commit chain.
+
+
+Tests: `php -l` clean on all touched files; `tests/notifications/run.php` 65 pure checks pass; `tests/notification_feed_native.php` (MariaDB isolation/read-state/preferences/retry/rollback/readiness) and `tests/notification_feed_cases.py` (HTTP setup, feeds, marking, opt-outs, cross-recipient denial) added and wired into `application-tests.yml`/`browser_acceptance.py`; Apache direct-denial inventory extended. Native/HTTP execution runs in CI — not executed locally (no MariaDB/browser host here). No live mail, deployment, provider or customer action. Next: push, open stacked PR, then `MetricSample` producers and polling surfaces.
+
+## 2026-10-16 - Devin scoped service announcements (P-07 continuation)
+
+Request: continue non-20i work without stopping; P-07 names admin-scoped service announcements as a remaining gap. Starting from `devin/non20i-notifications-runtime` tip `9a348bf5` on new branch `devin/non20i-notifications-announcements`. Changes: `notification_announcements` history table added to the feed schema/migration (validator-compatible unique-key map), `notification_announce()` service emitting `service-event` notifications with `announcement:<id>` refs to every active client inside per-recipient failure isolation, `notification_announce` admin action gated by `clients.manage` with explicit confirm + rate limit, announcements card/history on the notifications screen, `announcement` ref mapping for both audiences, `service-event` label corrected to "Service event". Tests: native lane gains announce scoping/history/active-only checks; browser case gains admin announce → both client feeds + cross-post denial. `php -l` clean; Python compile clean; build refresh pending in-session. No live mail/customer action.
 
 ## 2026-10-16 - retain scoped cloud passes and diagnose original full-run failure
 

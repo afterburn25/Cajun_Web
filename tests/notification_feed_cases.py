@@ -57,3 +57,12 @@ def run_browser(env,browser):
     r=admin.get(root+'?view=health')
     check('Health page renders honest freshness metrics','Operational freshness' in r.text and 'notification.deliveries' in r.text and 'absent' in r.text)
     check('Client session cannot open staff health metrics',alice.get(root+'?view=health').status_code==403)
+
+
+    r=submit(admin,url,'notification_announce',{'title':'Synthetic maintenance window','body':'Synthetic service notice for the notification lane.','confirm':'1'})
+    a=db("SELECT * FROM ci_notification_announcements WHERE title='Synthetic maintenance window'")
+    check('Announcement recorded with actor and recipient count',bool(a) and a[0]['recipients']>=2)
+    r=alice.get(portal+'?notifications=1');check('Client feed shows the service announcement','Synthetic maintenance window' in r.text and 'Service' in r.text)
+    r=bob.get(portal+'?notifications=1');check('Second client receives the same announcement','Synthetic maintenance window' in r.text)
+    r=admin.get(url);check('Admin notifications history lists the announcement','Synthetic maintenance window' in r.text and 'recipients' in r.text)
+    r=bob.post(root,data={'action':'notification_announce','csrf':token(bob.get(portal)),'title':'Denied announce','body':'This should be denied for authentication.'});check('A client session cannot announce to clients',db("SELECT COUNT(*) AS n FROM ci_notification_announcements WHERE title='Denied announce'")[0]['n']==0)

@@ -43,7 +43,10 @@ The first persistence/UI slice now exists on the runtime branch:
 `app/notifications/feed.php` adapters, private admin and portal feed
 screens, recipient-only read state, per-kind email opt-outs, read-only
 support-session viewing, and emit hooks on inquiry, message, decision,
-delivery and invoice-paid events. Email copies attempt synchronously
+delivery and invoice-paid events. A stacked announcements slice adds
+scoped `clients.manage`-gated service announcements to all active
+clients with an auditable `notification_announcements` history.
+Email copies attempt synchronously
 after the domain write commits — no daemon. Polling endpoints and
 `MetricSample` producers remain future gates.
 
