@@ -147,6 +147,11 @@
     "\"$PHP_BINARY\" tests/stackcp_access_native.php",
     "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
     "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php",
+    "\"$PHP_BINARY\" tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-default.json",
+    "\"$PHP_BINARY\" -n tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-minimal.json",
+    "\"$PHP_BINARY\" tests/stackcp_launch_views.php qa/stackcp-launch-views-default.json",
+    "\"$PHP_BINARY\" -n tests/stackcp_launch_views.php qa/stackcp-launch-views-minimal.json",
+    "CWP_TEST_STACKCP_LAUNCH=1 \"$PHP_BINARY\" tests/stackcp_launch_native.php",
     "\"$PHP_BINARY\" tests/provider_domain_search_native.php",
     "\"$PHP_BINARY\" tests/provider_mailboxes_native.php",
     "\"$PHP_BINARY\" tests/provider_operations_native.php",
@@ -555,5 +560,169 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "stackcp_launch": {
+    "source_base": "f688f79ee838e86e4774bfa5ec71fc7fb79126a5",
+    "native_after": "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-default.json",
+      "\"$PHP_BINARY\" -n tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-minimal.json",
+      "\"$PHP_BINARY\" tests/stackcp_launch_views.php qa/stackcp-launch-views-default.json",
+      "\"$PHP_BINARY\" -n tests/stackcp_launch_views.php qa/stackcp-launch-views-minimal.json",
+      "CWP_TEST_STACKCP_LAUNCH=1 \"$PHP_BINARY\" tests/stackcp_launch_native.php"
+    ],
+    "browser_command": ".ci-venv/bin/python tests/stackcp_launch_browser.py --php \"$PHP_BINARY\" --report qa/stackcp-launch-browser-results.json",
+    "reports": [
+      "stackcp-launch-transport-default.json",
+      "stackcp-launch-transport-minimal.json",
+      "stackcp-launch-views-default.json",
+      "stackcp-launch-views-minimal.json",
+      "stackcp-launch-native-results.json",
+      "stackcp-launch-browser-results.json"
+    ],
+    "screenshots": [],
+    "predecessor_contract_sha256": "f7ccac9c27630ecee696dbe0ac44a2ae13f08f895751947282626877e235efb7",
+    "predecessor_reports_sha256": "f77d7dba6762ded822206ca7263d146a26f89d58c4e4b87851a3743e74dd6d2b",
+    "predecessor_helper_sha256": "47a152315fbe17e2cb7aa9ed81af4d5046d3ce686f458efce3a3dca1f565382a",
+    "predecessor_test_pins": {},
+    "workflow_delta": {
+      "before_sha256": "5879a7db5bdecb81716c2509c427e5db3b546f91497dea29bd465165ca3f369f",
+      "after_sha256": "adc88f41554488eff05404cb906287f4a466d4016c1e41b53474c3aafa998914",
+      "replacements": [
+        {
+          "before": "          \"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php\n          \"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php\n          \"$PHP_BINARY\" tests/provider_domain_search_native.php\n          \"$PHP_BINARY\" tests/provider_mailboxes_native.php\n",
+          "after": "          \"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php\n          \"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php\n          \"$PHP_BINARY\" tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-default.json\n          \"$PHP_BINARY\" -n tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-minimal.json\n          \"$PHP_BINARY\" tests/stackcp_launch_views.php qa/stackcp-launch-views-default.json\n          \"$PHP_BINARY\" -n tests/stackcp_launch_views.php qa/stackcp-launch-views-minimal.json\n          CWP_TEST_STACKCP_LAUNCH=1 \"$PHP_BINARY\" tests/stackcp_launch_native.php\n          \"$PHP_BINARY\" tests/provider_domain_search_native.php\n          \"$PHP_BINARY\" tests/provider_mailboxes_native.php\n"
+        },
+        {
+          "before": "      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: .ci-venv/bin/python tests/browser_acceptance.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n",
+          "after": "      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: |\n          .ci-venv/bin/python tests/browser_acceptance.py\n          .ci-venv/bin/python tests/stackcp_launch_browser.py --php \"$PHP_BINARY\" --report qa/stackcp-launch-browser-results.json\n      - name: Verify shipping source after this job, including failure\n        if: always()\n"
+        }
+      ]
+    },
+    "source_deltas": {
+      "site/admin/controllers/providers.php": {
+        "before_sha256": "9e8bd468b0d7e063eded803230fc380beae2fe67c3098e2d190deadaaaacec7d",
+        "after_sha256": "94e5b42d941136091b8a8b639862d1fb6bbf809cf4dfcafbbc83c64019012e86",
+        "replacements": [
+          {
+            "before": "require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_prerequisites.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_access.php';\nrequire_once CWP_CODE_ROOT.'/app/providers/operations.php';\nrequire_once CWP_CODE_ROOT.'/app/providers/inventory.php';\n",
+            "after": "require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_prerequisites.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_access.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_launch.php';\nrequire_once CWP_CODE_ROOT.'/app/providers/operations.php';\nrequire_once CWP_CODE_ROOT.'/app/providers/inventory.php';\n"
+          },
+          {
+            "before": "\nfunction provider_inventory_admin_action(string $action):void {\n    if (str_starts_with($action,'provider_inventory_stackcp_access_')) provider_stackcp_access_admin_action($action);\n    if (str_starts_with($action,'provider_inventory_stackcp_')) provider_stackcp_admin_action($action);\n",
+            "after": "\nfunction provider_inventory_admin_action(string $action):void {\n    if (str_starts_with($action,'provider_inventory_stackcp_launch_')) provider_stackcp_launch_admin_action($action);\n    if (str_starts_with($action,'provider_inventory_stackcp_access_')) provider_stackcp_access_admin_action($action);\n    if (str_starts_with($action,'provider_inventory_stackcp_')) provider_stackcp_admin_action($action);\n"
+          },
+          {
+            "before": "    try{$actor=provider_settings_manager(false);}\n    catch(RuntimeException $e){if($e instanceof PDOException)throw $e;http_response_code(403);admin_head('20i access unavailable','security',require_admin());echo '<p class=\"notice error\" role=\"alert\">'.esc($e->getMessage()).'</p>';admin_foot();exit;}\n    admin_head('20i connection','provider-settings',$actor);\n    if($error!=='')echo '<p class=\"notice error\" role=\"alert\">'.esc($error).'</p>';\n",
+            "after": "    try{$actor=provider_settings_manager(false);}\n    catch(RuntimeException $e){if($e instanceof PDOException)throw $e;http_response_code(403);admin_head('20i access unavailable','security',require_admin());echo '<p class=\"notice error\" role=\"alert\">'.esc($e->getMessage()).'</p>';admin_foot();exit;}\n    provider_stackcp_launch_page_headers();\n    admin_head('20i connection','provider-settings',$actor);\n    if($error!=='')echo '<p class=\"notice error\" role=\"alert\">'.esc($error).'</p>';\n"
+          }
+        ]
+      },
+      "site/admin/views/providers.php": {
+        "before_sha256": "de874ce4d6a5c4fee8d3e2617701e30dbb1eeec93784568d068efcd67ff6e25d",
+        "after_sha256": "1506c914f85514b35ddc009a14406eb3215d0361966242f856b79e5fa3cf4e57",
+        "replacements": [
+          {
+            "before": "<?php provider_stackcp_admin_render(); ?>\n<?php provider_stackcp_access_admin_render(); ?>\n",
+            "after": "<?php provider_stackcp_admin_render(); ?>\n<?php provider_stackcp_access_admin_render(); ?>\n<?php provider_stackcp_launch_admin_render(); ?>\n"
+          }
+        ]
+      },
+      "site/app/providers/stackcp_access_views.php": {
+        "before_sha256": "36d256bad83b34229e9cf91a33e815a03acc708fde32f546cd66bf1087f35606",
+        "after_sha256": "6fb91eaaf1c5aeba76b18e0bad8706ae98329212b8a621c78adf84f1f069821a",
+        "replacements": [
+          {
+            "before": "}\nfunction provider_stackcp_access_admin_render():void {\n    provider_settings_manager();echo '<section class=\"workspace-card\" id=\"stackcp-access-observations\"><h2>Check StackCP assignments</h2><p>Read package membership and whole-user grants explicitly. Results are dated observations only. Existing local assignments remain unverified setup; provider login and remote session revocation are unavailable.</p>';\n    try {\n        $raw=$_GET['stackcp_access_page']??'1';$page=is_string($raw)&&preg_match('/\\A[1-9][0-9]{0,3}\\z/',$raw)?min(500,(int)$raw):1;\n",
+            "after": "}\nfunction provider_stackcp_access_admin_render():void {\n    provider_settings_manager();echo '<section class=\"workspace-card\" id=\"stackcp-access-observations\"><h2>Check StackCP assignments</h2><p>Read package membership and whole-user grants explicitly. Results are dated observations only. After both checks match, review the separate Open StackCP action below. Remote session revocation remains unavailable.</p>';\n    try {\n        $raw=$_GET['stackcp_access_page']??'1';$page=is_string($raw)&&preg_match('/\\A[1-9][0-9]{0,3}\\z/',$raw)?min(500,(int)$raw):1;\n"
+          }
+        ]
+      },
+      "site/app/providers/stackcp_prerequisite_views.php": {
+        "before_sha256": "7b0676816bae4423434289a5dc52cdc1aebedfdbdcc8430327d223ec17317219",
+        "after_sha256": "eaf71337dcc3d85fd65ce25c4b2ea7b6fa17a99913d7e3c34441d5c6f89c0674",
+        "replacements": [
+          {
+            "before": "    echo '<article class=\"workspace-card\" data-stackcp-assignment><h3>Package '.(int)$view['package_id'].'</h3><p><strong>'.esc(provider_stackcp_assignment_label($view['status'])).'</strong></p>';\n    if ($view['stack_identity']!=='') echo '<p>Recorded identity: '.esc($view['stack_identity']).' \u00b7 Recorded client #'.(int)$view['client_id'].'</p>';\n    echo '<p>This records the owner\u2019s local choice only. Remote membership and grants have not been verified. No StackCP login is available.</p>';\n    if ($view['can_save_draft']) {\n        $defaults=['profile_id'=>$view['profile_id'],'package_id'=>(string)$view['package_id'],'link_id'=>$view['current_link_id'],'review_sha256'=>$view['review_sha256'],'stack_identity'=>$view['status']==='unverified'?$view['stack_identity']:''];$values=provider_stackcp_form_values('provider_inventory_stackcp_assignment_save',$defaults);$identity=$values['stack_identity'];unset($values['stack_identity']);\n",
+            "after": "    echo '<article class=\"workspace-card\" data-stackcp-assignment><h3>Package '.(int)$view['package_id'].'</h3><p><strong>'.esc(provider_stackcp_assignment_label($view['status'])).'</strong></p>';\n    if ($view['stack_identity']!=='') echo '<p>Recorded identity: '.esc($view['stack_identity']).' \u00b7 Recorded client #'.(int)$view['client_id'].'</p>';\n    echo '<p>This records the owner\u2019s local choice only. Saving a draft does not verify remote membership or grants and does not open StackCP. Complete the assignment checks, then review Open StackCP below.</p>';\n    if ($view['can_save_draft']) {\n        $defaults=['profile_id'=>$view['profile_id'],'package_id'=>(string)$view['package_id'],'link_id'=>$view['current_link_id'],'review_sha256'=>$view['review_sha256'],'stack_identity'=>$view['status']==='unverified'?$view['stack_identity']:''];$values=provider_stackcp_form_values('provider_inventory_stackcp_assignment_save',$defaults);$identity=$values['stack_identity'];unset($values['stack_identity']);\n"
+          }
+        ]
+      },
+      "tests/stackcp_prerequisites_views.php": {
+        "before_sha256": "79edd43a67a28d0a02e2261eaf0728214c4409bbd90d2fa5b22816d8f851b381",
+        "after_sha256": "f4596ebeb32de06f133ec3e87bf634c5d6e1e24c4685f2d0b10af2763be2a3d9",
+        "replacements": [
+          {
+            "before": "$assignment=['prepared'=>true,'status'=>'unverified','login_ready'=>false,'provider_verified'=>false,'profile_id'=>$profile,'package_id'=>701,'assignment_id'=>str_repeat('2',32),'revision'=>1,'stack_identity'=>'stack-user:97','client_id'=>1,'current_link_id'=>$link,'original_link_id'=>$originalLink,'recorded_epoch'=>1760000000,'review_sha256'=>$review,'can_save_draft'=>true];\n$html=sv_html(fn()=>provider_stackcp_auth_render($auth));$inputs=sv_inputs($html);sv_ok('Actual auth renderer has only explicit local save and disable actions',($inputs['action']??[])===['provider_inventory_stackcp_auth_save','provider_inventory_stackcp_auth_disable']);sv_ok('Auth wording distinguishes stored key from verified provider access',str_contains($html,'not checked with 20i')&&str_contains($html,'does not enable login'));sv_ok('Authentication and owner password inputs are blank',($inputs['auth_client_key']??[])===['']&&($inputs['current_password']??[])===['','']);sv_ok('Both local auth forms have the real CSRF field',($inputs['csrf']??[])===[str_repeat('a',64),str_repeat('a',64)]);\n$html=sv_html(fn()=>provider_stackcp_assignment_render($assignment));$inputs=sv_inputs($html);sv_ok('Actual assignment renderer distinguishes draft and revocation',($inputs['action']??[])===['provider_inventory_stackcp_assignment_save','provider_inventory_stackcp_assignment_revoke']);sv_ok('Revoke retains original link while save uses current link',($inputs['link_id']??[])===[$link,$originalLink]);sv_ok('Draft is explicitly unverified and lacks a provider login action',str_contains($html,'No StackCP login is available.')&&!str_contains($html,'href=')&&!str_contains($html,'PHPSESSID')&&!str_contains($html,'access_token'));sv_ok('Revocation wording makes no provider-session claim',str_contains($html,'does not end a provider session'));\nforeach(['stale','revoked','not_assigned'] as $status){$v=$assignment;$v['status']=$status;$v['can_save_draft']=false;$html=sv_html(fn()=>provider_stackcp_assignment_render($v));sv_ok($status.' cannot render an enabled save form',!str_contains($html,'data-stackcp-assignment-save')&&str_contains($html,'data-stackcp-assignment-revoke'));}\n$_POST=['action'=>'provider_inventory_stackcp_auth_save','profile_id'=>$profile,'review_sha256'=>$oldReview,'auth_client_key'=>'PRIVATE_FIXTURE_KEY','current_password'=>'PRIVATE_FIXTURE_PASSWORD'];$html=sv_html(fn()=>provider_stackcp_auth_render($auth));$inputs=sv_inputs($html);sv_ok('Failed auth save retains captured old review instead of refreshing authority',($inputs['review_sha256'][0]??null)===$oldReview);sv_ok('Failed auth save never redisplays key or password',!str_contains($html,'PRIVATE_FIXTURE')&&($inputs['auth_client_key']??[])===['']);\n",
+            "after": "$assignment=['prepared'=>true,'status'=>'unverified','login_ready'=>false,'provider_verified'=>false,'profile_id'=>$profile,'package_id'=>701,'assignment_id'=>str_repeat('2',32),'revision'=>1,'stack_identity'=>'stack-user:97','client_id'=>1,'current_link_id'=>$link,'original_link_id'=>$originalLink,'recorded_epoch'=>1760000000,'review_sha256'=>$review,'can_save_draft'=>true];\n$html=sv_html(fn()=>provider_stackcp_auth_render($auth));$inputs=sv_inputs($html);sv_ok('Actual auth renderer has only explicit local save and disable actions',($inputs['action']??[])===['provider_inventory_stackcp_auth_save','provider_inventory_stackcp_auth_disable']);sv_ok('Auth wording distinguishes stored key from verified provider access',str_contains($html,'not checked with 20i')&&str_contains($html,'does not enable login'));sv_ok('Authentication and owner password inputs are blank',($inputs['auth_client_key']??[])===['']&&($inputs['current_password']??[])===['','']);sv_ok('Both local auth forms have the real CSRF field',($inputs['csrf']??[])===[str_repeat('a',64),str_repeat('a',64)]);\n$html=sv_html(fn()=>provider_stackcp_assignment_render($assignment));$inputs=sv_inputs($html);sv_ok('Actual assignment renderer distinguishes draft and revocation',($inputs['action']??[])===['provider_inventory_stackcp_assignment_save','provider_inventory_stackcp_assignment_revoke']);sv_ok('Revoke retains original link while save uses current link',($inputs['link_id']??[])===[$link,$originalLink]);sv_ok('Draft is explicitly unverified and lacks a provider login action',str_contains($html,'does not open StackCP.')&&!str_contains($html,'href=')&&!str_contains($html,'PHPSESSID')&&!str_contains($html,'access_token'));sv_ok('Revocation wording makes no provider-session claim',str_contains($html,'does not end a provider session'));\nforeach(['stale','revoked','not_assigned'] as $status){$v=$assignment;$v['status']=$status;$v['can_save_draft']=false;$html=sv_html(fn()=>provider_stackcp_assignment_render($v));sv_ok($status.' cannot render an enabled save form',!str_contains($html,'data-stackcp-assignment-save')&&str_contains($html,'data-stackcp-assignment-revoke'));}\n$_POST=['action'=>'provider_inventory_stackcp_auth_save','profile_id'=>$profile,'review_sha256'=>$oldReview,'auth_client_key'=>'PRIVATE_FIXTURE_KEY','current_password'=>'PRIVATE_FIXTURE_PASSWORD'];$html=sv_html(fn()=>provider_stackcp_auth_render($auth));$inputs=sv_inputs($html);sv_ok('Failed auth save retains captured old review instead of refreshing authority',($inputs['review_sha256'][0]??null)===$oldReview);sv_ok('Failed auth save never redisplays key or password',!str_contains($html,'PRIVATE_FIXTURE')&&($inputs['auth_client_key']??[])===['']);\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      "foundation/twentyi-support-handoff/StackCpDefaultBrand.php": "e5517cd4a11b3dbb9d4d6b5e327088950bf4d37f2922db2d13b908c55e7b8239",
+      "foundation/twentyi-support-handoff/StackCpLaunchDelivery.php": "066576c7f55dc4c1c394918542f4b6b81a1b125d1f5e06269031335eaf5dbc19",
+      "foundation/twentyi-support-handoff/StackCpLaunchFailure.php": "ad8c3f9231b79dbab2a1a4cbb8be533b8e29c4843e5ad6c332ce0e9bfec852bf",
+      "foundation/twentyi-support-handoff/StackCpLaunchSender.php": "910dd1e3fbea230715ca68a1316f930aedc02f3cb83645ebb41bba00c722ff3f",
+      "foundation/twentyi-support-handoff/StackCpLaunchTransport.php": "5d67ccb8a7d71fc41c485f670294e1d7473f199df86dc94e5e5e7da2d0efc0d9",
+      "site/admin/controllers/provider_stackcp_launch.php": "9e66c4cf9565059c9592e139ff77177abd6f22af4132367623b9efa3b0a80506",
+      "site/app/providers/stackcp_launch.php": "7a614755dede227b2f0635cc63586ea4ca9a70538112985ac3f76c9c2d4628e5",
+      "site/app/providers/stackcp_launch_document.php": "b667154256c614a466c92f8873f5c18f86061322cb551795fe0d2a66eaa3514b",
+      "site/app/providers/stackcp_launch_http.php": "2d535ca76cbb5e45417fa39b94fc6a45807a8e6b070fdece3d433890eb1ef6f4",
+      "site/app/providers/stackcp_launch_storage.php": "f2fc0d2fd252eaeedf6e8e2f01b4dc8a12b05603acc14d123afd1e56487e909d",
+      "site/app/providers/stackcp_launch_views.php": "0fe313cd48c7f39ade83ea271e6e56d06f14d42d5f408d2902bb38e348dd9bf5",
+      "site/database/schema/provider_stackcp_launch_schema.php": "cdf0f0b865b9d37b049a4ec56c3055172b1998ced2c2631717ca35d081954c31",
+      "tests/stackcp_launch_browser.py": "ba44206c8b293a84ece25501d3294e5e2f92bb61c1c8f6285e2ee71a29b9c6a5",
+      "tests/stackcp_launch_transport.php": "f4bc4c6dcaa0dcddd8b6325f6787f26b7a5fee9df4428697760c262a8449a95b",
+      "tests/stackcp_launch_views.php": "52ae3959b0177444b443d2e738fbf62064fbc450006e2b976fd71c40ca439826",
+      "tests/stackcp_launch_native.php": "c2244d4dbff014b1322aa0d37366713238c0bf5b5ff937a64263d065c7cdf486",
+      "site/admin/controllers/providers.php": "94e5b42d941136091b8a8b639862d1fb6bbf809cf4dfcafbbc83c64019012e86",
+      "site/admin/views/providers.php": "1506c914f85514b35ddc009a14406eb3215d0361966242f856b79e5fa3cf4e57",
+      "site/app/providers/stackcp_access_views.php": "6fb91eaaf1c5aeba76b18e0bad8706ae98329212b8a621c78adf84f1f069821a",
+      "site/app/providers/stackcp_prerequisite_views.php": "eaf71337dcc3d85fd65ce25c4b2ea7b6fa17a99913d7e3c34441d5c6f89c0674",
+      "tests/stackcp_prerequisites_views.php": "f4596ebeb32de06f133ec3e87bf634c5d6e1e24c4685f2d0b10af2763be2a3d9",
+      "tests/acceptance_artifacts_test.py": "3a3adb78f8f8cf4fccbdf6e66b96f7a40a8ef29d301855c4a00f2419830798c4",
+      ".github/workflows/provider-stackcp-launch.yml": "30ca2a96c4dfeccb342c3251228d08e768748d1d4ca089f1d2553ccfc0c31a71",
+      "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
+      "tools/acceptance_artifacts.py": "adace461adbf6568050e52a54703a030e5d4247ce487bd45c951ed4df92cd2a5",
+      "tests/browser_acceptance.py": "2c899d14afa3b0408167ffd3b03cb9817d28789c03b4c0a456e26afe1114ea2c",
+      "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
+      "site/includes/bootstrap.php": "5bce9d17c3179e8654d293ba8d478a000d6255aeba9aad5ba46f9a09e415d409",
+      "foundation/mail-transport/EndpointPolicy.php": "a822181d901627f756ab0dd36d71f8e1436a812f4023e1577eb5e8916e96430a",
+      "foundation/mail-transport/EndpointResolver.php": "e42c0d931a5e9dc702a8ce660b48e61ba88986e3b09f4d28da4d398035003e25",
+      "foundation/mail-transport/ProbeFailure.php": "58aa3e3f3a2a308789943ee7c96751cb9a0285ad5e0daf01af393e37df3a2bf3",
+      "foundation/provider/HttpTransport.php": "4662e6ac0b90f0481e74e672d99814103bf63d7c3716f75ee6c43c9c8194ecec",
+      "foundation/provider/TransportException.php": "05778aef7df8dea1b204b56624b53739561a27a2bd5b897aa64cbb2140c3fb4d",
+      "foundation/provider/TransportRequest.php": "1e100d736c06a36538f6f2ada47369aa89c77da4b0c6bd6d6f4a3cd11074ed81",
+      "foundation/provider/TransportResponse.php": "f1eb6e3dd95a5161a07afa1b716081258e2a2f9a427997f9880c4ea7d63f6c76",
+      "foundation/twentyi-support-handoff/StackCpHandoffContext.php": "f712d03ac7559d2771723dc0da2fccf98162b1ef33a972e80ed1fccc58dc69e1",
+      "foundation/twentyi-support-handoff/StackCpHandoffContract.php": "79db31a0dd3673b76c7ac226482b746ca69957cfe5b2cd65fca283640a4b9706",
+      "foundation/twentyi-support-handoff/StackCpSensitiveResponse.php": "7641ed615c82ab62c8d39204cf47faa0354d7d44f8e51aed6fcef2293f6cf642",
+      "tests/stackcp_handoff_contract.php": "29372cca331ce4c3670f8604398450424826262a9fac0f9c12dc49bba7d43ba8",
+      "site/app/providers/stackcp_access.php": "c99cd1da12949563802750593d0c5b21522f998186a80b6a8475f9b5f2737c57",
+      "site/app/providers/stackcp_access_storage.php": "a2933faa9f29bce4cb57dfbabd9ec4852cf5ae2d06cde61df67b3395a7b806bc",
+      "site/app/providers/stackcp_access_sources.php": "5c580bb94001be81412788a277f61f9681a43c904cdbdaf0513cfd3a88fde6fb",
+      "site/app/providers/stackcp_access_documents.php": "d7e20673674c53e194460ae24f46384f71b288661ad0406840bdf24b8328d4eb",
+      "site/app/providers/stackcp_read_projection.php": "44df918b3411d19f9fa3b98f7825615a649ae4893d4bc82dd9cd88766d5c04c3",
+      "site/app/providers/stackcp_auth.php": "b5873b813c4ae0179ba2889bdbd9061e819ea5013ff04e3bea63dda13d350192",
+      "site/app/providers/stackcp_auth_storage.php": "28fd176fff53828894d9d687834aac149dce1666d8c1c754652eddcbf8f26fe1",
+      "site/app/providers/stackcp_auth_vault.php": "e872c4cdb6c7749f8be7b19e6db807b449f2ce9fe1b99bb614f3bbc1741c2294",
+      "site/app/providers/stackcp_documents.php": "1116431db4ddc4632de4acdd4bd52e3be23267fe51a6803c69d5f14d9e8e4489",
+      "site/app/providers/stackcp_assignments.php": "1b5ecdd4417d48387b32228f4f1270674224ce20b45b1a64b2b3842f951dea03",
+      "site/app/providers/stackcp_assignment_storage.php": "29697161db0fba58189789a1d819c3658457653ed1679bd5c69d32aa0b891dc3",
+      "site/app/providers/inventory.php": "5278dd5262dd2cf0f400521b83db70b5583bb8a244201f3c3adf94deb3efd0f6",
+      "site/app/providers/credentials.php": "a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186",
+      "site/app/providers/settings.php": "15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871",
+      "site/app/providers/service_observations.php": "f6b314e33c019089a41f5ba103f443e9a273eada9425eab52507f077f9b0012a",
+      "site/app/staff/accounts.php": "8463567670be0d6d3d9b7ae233f677d79449e8e0f2cc440d2a4e4f100ca04a13",
+      "site/includes/auth/admin.php": "03bcedc0e4d6b7881d5e765706a2d22a82e95dcb63ba36457893f038e107a7cd",
+      "site/app/support/sessions.php": "faedce8d00f432dd78ec91ab61e56397b31d9fec778281ea02d515469124512d",
+      "site/database/schema/catalog_validate_schema.php": "4cbaf88d46cf9f09e627055866faa59f9a50de44b76d09d1eb7d95b3e639f17f",
+      "site/database/schema/provider_stackcp_access_schema.php": "b563ad7cc4a62224b2513231f697c5029f9e9c110c1d6815e2c2dbba427345ca",
+      "site/database/schema/provider_stackcp_auth_schema.php": "30199acec8a58cdc048cbd9986629a8a307c0879485fe9d319d8e127346252db",
+      "site/database/schema/provider_stackcp_assignment_schema.php": "fcf1fa531cc23679bb9664e32da1327826eee5f9505c28f767beb7eb964b110d",
+      "foundation/twentyi-stackcp-access/StackCpAccessBinding.php": "aaa62c884a87f0a51fb8b503f17350db2f68e3944c7d39eabbdd3d52c6bf7972"
+    },
+    "scope": "Actual fixed transport with offline doubles, pure renderer, isolated owner SQL lifecycle and actual HTTP/Chromium helper with closed synthetic TLS destination. No live provider or remote login success claimed; original application browser captures unchanged."
   }
 }

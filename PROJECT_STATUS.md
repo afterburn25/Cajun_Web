@@ -1,3 +1,9 @@
+## 2026-10-18 — owner StackCP launch candidate
+
+From main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`, `codex/twentyi-stackcp-launch` implements the [owner StackCP exchange and browser handoff](docs/TWENTYI_STACKCP_LAUNCH.md). It adds one-use durable admission, current-authority checks, default-brand-only transport, explicit prior-unknown consent and admin controls. Local portable, renderer and closed-proxy browser checks pass; native SQL and full application acceptance remain pending. No release or live deployment is claimed.
+
+Hosting3042 originals39184742627/39184742510 and nameserver024 originals39182114405/39182118945 remain queued, attempt1, at the latest read. Preserve them and the separate candidates. Devin retains non-20i work. Published1.25 remains immutable.
+
 ## 2026-10-18 — five pure-suite PR filters
 
 Branch `codex/ci-pure-family-pr-filters` starts at main `e397d9a6e293850e8dff61a593e3ba39ee178400`. Five isolated pure suites now watch their own foundation/test directories and workflow file on PRs. All jobs and push/manual triggers remain unchanged. Actual verification: 82 finite producer checks, 44 independent review checks, and root comparison of all five applied hashes and complete inverses to main. [Scope and retained evidence](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This is CI scheduling work, not application acceptance.

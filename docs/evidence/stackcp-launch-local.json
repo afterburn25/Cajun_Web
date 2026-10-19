@@ -1,0 +1,189 @@
+{
+  "base_commit": "f688f79ee838e86e4774bfa5ec71fc7fb79126a5",
+  "scope": "Local PHP8.4.25 portable/render checks, actual PHP HTTP helpers and Chromium through a closed loopback TLS proxy; finite independent source reviews. No native SQL acceptance or verified remote login.",
+  "source_sha256": {
+    "foundation/twentyi-support-handoff/StackCpDefaultBrand.php": "e5517cd4a11b3dbb9d4d6b5e327088950bf4d37f2922db2d13b908c55e7b8239",
+    "foundation/twentyi-support-handoff/StackCpLaunchDelivery.php": "066576c7f55dc4c1c394918542f4b6b81a1b125d1f5e06269031335eaf5dbc19",
+    "foundation/twentyi-support-handoff/StackCpLaunchFailure.php": "ad8c3f9231b79dbab2a1a4cbb8be533b8e29c4843e5ad6c332ce0e9bfec852bf",
+    "foundation/twentyi-support-handoff/StackCpLaunchSender.php": "910dd1e3fbea230715ca68a1316f930aedc02f3cb83645ebb41bba00c722ff3f",
+    "foundation/twentyi-support-handoff/StackCpLaunchTransport.php": "5d67ccb8a7d71fc41c485f670294e1d7473f199df86dc94e5e5e7da2d0efc0d9",
+    "site/admin/controllers/provider_stackcp_launch.php": "9e66c4cf9565059c9592e139ff77177abd6f22af4132367623b9efa3b0a80506",
+    "site/app/providers/stackcp_launch.php": "7a614755dede227b2f0635cc63586ea4ca9a70538112985ac3f76c9c2d4628e5",
+    "site/app/providers/stackcp_launch_document.php": "b667154256c614a466c92f8873f5c18f86061322cb551795fe0d2a66eaa3514b",
+    "site/app/providers/stackcp_launch_http.php": "2d535ca76cbb5e45417fa39b94fc6a45807a8e6b070fdece3d433890eb1ef6f4",
+    "site/app/providers/stackcp_launch_storage.php": "f2fc0d2fd252eaeedf6e8e2f01b4dc8a12b05603acc14d123afd1e56487e909d",
+    "site/app/providers/stackcp_launch_views.php": "0fe313cd48c7f39ade83ea271e6e56d06f14d42d5f408d2902bb38e348dd9bf5",
+    "site/database/schema/provider_stackcp_launch_schema.php": "cdf0f0b865b9d37b049a4ec56c3055172b1998ced2c2631717ca35d081954c31",
+    "tests/stackcp_launch_browser.py": "ba44206c8b293a84ece25501d3294e5e2f92bb61c1c8f6285e2ee71a29b9c6a5",
+    "tests/stackcp_launch_native.php": "c2244d4dbff014b1322aa0d37366713238c0bf5b5ff937a64263d065c7cdf486",
+    "tests/stackcp_launch_transport.php": "f4bc4c6dcaa0dcddd8b6325f6787f26b7a5fee9df4428697760c262a8449a95b",
+    "tests/stackcp_launch_views.php": "52ae3959b0177444b443d2e738fbf62064fbc450006e2b976fd71c40ca439826",
+    "site/admin/controllers/providers.php": "94e5b42d941136091b8a8b639862d1fb6bbf809cf4dfcafbbc83c64019012e86",
+    "site/admin/views/providers.php": "1506c914f85514b35ddc009a14406eb3215d0361966242f856b79e5fa3cf4e57",
+    "site/app/providers/stackcp_access_views.php": "6fb91eaaf1c5aeba76b18e0bad8706ae98329212b8a621c78adf84f1f069821a",
+    "site/app/providers/stackcp_prerequisite_views.php": "eaf71337dcc3d85fd65ce25c4b2ea7b6fa17a99913d7e3c34441d5c6f89c0674",
+    "tests/stackcp_prerequisites_views.php": "f4596ebeb32de06f133ec3e87bf634c5d6e1e24c4685f2d0b10af2763be2a3d9",
+    "site/install/inventory.generated.php": "7b91d2f5f3599aa2b750c2bd2f8fea719a6562e6274e6a30e4fe41ee1930930b",
+    ".github/workflows/application-tests.yml": "adc88f41554488eff05404cb906287f4a466d4016c1e41b53474c3aafa998914",
+    ".github/workflows/provider-stackcp-launch.yml": "30ca2a96c4dfeccb342c3251228d08e768748d1d4ca089f1d2553ccfc0c31a71",
+    "tools/acceptance-contract.json": "df85f28b1c1cc177aaa159b76fe7b14a98918dfd4846a20bff30d24275bc81dd",
+    "tools/acceptance-reports.json": "f735dc1278a1b0de6232eeadd332dbec75669bc2363d82f52689d6f600e1ca87",
+    "tests/acceptance_artifacts_test.py": "3a3adb78f8f8cf4fccbdf6e66b96f7a40a8ef29d301855c4a00f2419830798c4"
+  },
+  "local_reports": [
+    {
+      "name": "transport-default",
+      "passed": true,
+      "checks": 155,
+      "report_sha256": "21c42e3eee5f988c6ed5108963c6306e10e5d45632745f31b8ef6f3c9bef4863"
+    },
+    {
+      "name": "transport-minimal",
+      "passed": true,
+      "checks": 155,
+      "report_sha256": "21c42e3eee5f988c6ed5108963c6306e10e5d45632745f31b8ef6f3c9bef4863"
+    },
+    {
+      "name": "handoff-default",
+      "passed": true,
+      "checks": 315,
+      "report_sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295"
+    },
+    {
+      "name": "handoff-minimal",
+      "passed": true,
+      "checks": 315,
+      "report_sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295"
+    },
+    {
+      "name": "views-default-final",
+      "passed": true,
+      "checks": 46,
+      "report_sha256": "c28579e75fdb05dabf7717d015e9a27b21ccc75e31e56adcf272ad012b4e85a2"
+    },
+    {
+      "name": "views-minimal-final",
+      "passed": true,
+      "checks": 46,
+      "report_sha256": "c28579e75fdb05dabf7717d015e9a27b21ccc75e31e56adcf272ad012b4e85a2"
+    },
+    {
+      "name": "prerequisites-views-default",
+      "passed": true,
+      "checks": 46,
+      "report_sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383"
+    },
+    {
+      "name": "prerequisites-views-minimal",
+      "passed": true,
+      "checks": 46,
+      "report_sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383"
+    },
+    {
+      "name": "access-views-default",
+      "passed": true,
+      "checks": 50,
+      "report_sha256": "c47fc2b00fc0d9c1d7709afe911dd6441ca3d41efacd0eb9d22b066e7afbc436"
+    },
+    {
+      "name": "access-views-minimal",
+      "passed": true,
+      "checks": 50,
+      "report_sha256": "c47fc2b00fc0d9c1d7709afe911dd6441ca3d41efacd0eb9d22b066e7afbc436"
+    },
+    {
+      "name": "http-browser-final",
+      "passed": true,
+      "checks": 30,
+      "report_sha256": "595fa90dbfa3c66ff1026423714d7f200bb1d3d718a2b046880fe62da4b812de"
+    },
+    {
+      "name": "portable-root",
+      "passed": true,
+      "checks": 31,
+      "report_sha256": "e078d09ee25e996e0a17153824dd6ebd6b193230607328746db74399bb336c03"
+    },
+    {
+      "name": "acceptance-helper-final",
+      "passed": true,
+      "checks": 323,
+      "report_sha256": "f37f3fb8b4de4437e095e5df3c5541b582769e5c80af61b06a445a4a9f5d0a90"
+    }
+  ],
+  "canonical_refresh": {
+    "command": "python tools/build.py --refresh",
+    "exit_code": 0,
+    "result": "Refreshed and checked canonical installer; no release built from uncommitted files."
+  },
+  "documentation": {
+    "required_documents": 12,
+    "markdown_files": 272,
+    "local_links": 1868,
+    "heading_links": 36,
+    "passed": true
+  },
+  "independent_review_receipts": {
+    "runtime": "89773ee5e6e0eb90f0b9c6fd590770130794a05d742b680fcee7e90f20cb6272",
+    "transport_ui_correction": "02d0ad69f9844f1f856ded71168c77486832ead840308bd15399272889f4dd3a",
+    "native_fixture_source": "9a1dcd1a646ff21d8c1e35fa2dc3722bfd15396f6b3fd72982104dd205b414b3",
+    "acceptance_wiring": "33577957865c701f3b048979532406d0fe98458d88bf00ceb2079097c4751b33"
+  },
+  "preserved_failures": [
+    {
+      "name": "Initial browser route interception harness",
+      "result": "Timed out waiting for redirected destination; replaced with a closed non-forwarding loopback TLS proxy. This failed attempt is not browser acceptance."
+    },
+    {
+      "name": "Raw numeric brand credential echo",
+      "result": "Original implementation accepted and forwarded a synthetic oversized numeric credential. Exact raw and decoded comparison now rejects it; nine additive transport cases preserve the original146 cases."
+    }
+  ],
+  "not_executed": [
+    "Linux native MariaDB/MySQL fixture",
+    "Installed authenticated application success handoff",
+    "Provider account login",
+    "Complete candidate/main release acceptance"
+  ],
+  "original_runs": [
+    {
+      "id": 39184742627,
+      "source": "3042f24eddc3587d67ac5d10e28df3b3294a3310",
+      "status": "queued",
+      "attempt": 1
+    },
+    {
+      "id": 39184742510,
+      "source": "3042f24eddc3587d67ac5d10e28df3b3294a3310",
+      "status": "queued",
+      "attempt": 1
+    },
+    {
+      "id": 39182114405,
+      "source": "024b50dc31604d5cfdcb104312e9858a5d5e7a45",
+      "status": "queued",
+      "attempt": 1
+    },
+    {
+      "id": 39182118945,
+      "source": "024b50dc31604d5cfdcb104312e9858a5d5e7a45",
+      "status": "queued",
+      "attempt": 1
+    }
+  ],
+  "browser_failure_retention": {
+    "passed": true,
+    "expected_exit_code": 1,
+    "error_class_only": "FileNotFoundError",
+    "report_sha256": "eb7360a88f0a512d06ffb80c5dd74e7b0938ff3a4a2fc936779a5b62c1528269"
+  },
+  "additive_acceptance": {
+    "native_commands_before": 152,
+    "native_commands_after": 157,
+    "native_browser_reports_before": 164,
+    "native_browser_reports_after": 170,
+    "final_reports_before": 208,
+    "final_reports_after": 214,
+    "original_helper_outcomes_preserved": 221,
+    "current_helper_checks": 323
+  }
+}

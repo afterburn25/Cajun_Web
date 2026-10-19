@@ -1,3 +1,11 @@
+## 2026-10-18 — continue owner StackCP launch acceptance
+
+Branch `codex/twentyi-stackcp-launch` starts from main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`; enclosing commit: `feat: add one-use owner StackCP browser handoff`. [Implementation, checks and limits](docs/TWENTYI_STACKCP_LAUNCH.md). Root integrates the independently reviewed sender/runtime, admin controls, guarded native fixture and additive acceptance wiring. The review found and corrected numeric brand credential echoes; the earlier browser harness timeout remains historical failure evidence.
+
+Next: inspect the first exact-candidate PR-triggered focused and full application runs. Do not duplicate/cancel queued jobs or infer native success from portable tests. Resolve original failures, then normal integration and complete release gates. Keep current version/released1.25 bytes intact until the combined release candidate is deliberately versioned. No authenticated provider exchange, remote session, live deployment or SSH was performed as acceptance.
+
+The owner form opens whole-Stack-user access, not an atomically package-restricted session. Unknown outcomes require a new signed review and explicit new-session consent; original admissions never replay. Custom domains, client/delegated launch and remote revocation remain unfinished. Separate hosting3042/nameserver024 originals remain queued attempt1; preserve Devin's separate non-20i branches and posted review findings.
+
 ## 2026-10-18 — pure-suite CI follow-through
 
 Starting main `e397d9a6e293850e8dff61a593e3ba39ee178400`; branch `codex/ci-pure-family-pr-filters`; enclosing commit `ci: limit isolated pure suites to relevant PR paths`. Five workflow files plus continuity/evidence documentation change. No shipping source, generated inventory, application workflow or published asset changes. [Trigger contract, actual checks and policy caveat](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers).
