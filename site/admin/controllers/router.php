@@ -51,6 +51,7 @@ if($view==='backups')backups_admin_render($user,$error);
 if($view==='notifications')notifications_admin_render($user,$error);
 if($view==='recurring-billing')recurring_billing_admin_render($error);
 if(in_array($view,['tickets','ticket','ticket-new'],true))support_tickets_admin_render($view,$error);
+if($view==='notifications')notification_feed_admin_render($user,$error);
 if($view==='registration-drafts')registration_drafts_admin_render($error);
 if($view==='provider-settings')provider_settings_admin_render($error);
 if($view==='domain-renewal-agreements')domain_renewal_agreements_admin_render($error);

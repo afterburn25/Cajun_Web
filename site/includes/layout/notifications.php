@@ -28,7 +28,7 @@ function notification_prefs_save(string $audience,int $recipientId,string $actor
     foreach(Notification::KINDS as $kind)notification_pref_email($audience,$recipientId,$kind,isset($_POST['email_'.$kind]),$actor);
 }
 
-function notifications_admin_action(string $action): never {
+function notification_feed_admin_action(string $action): never {
     if($action==='notifications_setup'){
         if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you saved a current database and private-storage backup.');
         notification_feed_migrate(posted('owner_password',72));flash('Notification center enabled.');redirect(admin_url('notifications'));
@@ -45,7 +45,7 @@ function notifications_admin_action(string $action): never {
     flash('Saved.');redirect(admin_url('notifications'));
 }
 
-function notifications_admin_render(array $user,string $error): never {
+function notification_feed_admin_render(array $user,string $error): never {
     admin_head('Notifications','notifications',$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     echo '<section class="section"><div class="container">';
     if(!notifications_feed_ready()){

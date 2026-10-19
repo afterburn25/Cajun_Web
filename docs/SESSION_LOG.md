@@ -2,6 +2,10 @@
 
 Commit08600bed makes the sent-copy migration compare relationships order-insensitively. `mail_copy_attempts` declares two single-column foreign keys; `information_schema.KEY_COLUMN_USAGE` reports both at ORDINAL_POSITION1, so ordering by that column left their relative order to engine defaults and the strict per-column check falsely refused fresh storage with `Incompatible copy relationships`. Found rows now order by COLUMN_NAME and the expected relation list is sorted to match; count, referenced table/column and RESTRICT-rule checks are unchanged. The fix is cascaded through reply-all, send-attachments, folders, flags and html-compose after the corrected mail-replies base (a382bed6, bba1e1cb) unmasked it downstream.
 
+## 2026-10-17 — correct the corrected-tickets merge and notification-center name collision
+
+The feddd459 merge brought the verified tickets base (5ec3fe9a) into this branch. Browser and Apache acceptance then failed every admin route: admin/views/payment-notifications.php already declares notifications_admin_action/notifications_admin_render for the sandbox payment receiver, and includes/layout/notifications.php redeclared both, so login returned a fatal redeclare. Commit cd44b518 renames the notification-center handlers to notification_feed_admin_action/notification_feed_admin_render and updates actions.php and router.php; installer inventory regenerated. No test weakened; the pre-existing payment-notification handlers are untouched.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
@@ -343,6 +347,7 @@ Actions: extracted the preserved `devin/notifications` slice — five `foundatio
 Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.
@@ -537,6 +542,7 @@ Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass o
 
 Next: commit, push, open bounded PR, update #157.
 
+
 ## Synchronize release entry points after review — 2026-10-15
 ## Repair legacy project-create placeholder — 2026-10-16
 
@@ -645,6 +651,18 @@ Tests/verification so far (local): `php -l` clean on all touched PHP; `python to
 Known limits: service-agreement link resolution is dormant until a plans module exists; licensing branch `devin/non20i-licensing` is a separate increment and its PR remains blocked by GitHub API rate limits.
 
 Next: push branch, open bounded PR when the API recovers, watch CI for the native/browser/upgrade lanes, then continue the next non-20i item (web-design project progress or mail Reply/Forward per the assignment order).
+
+## Port P-07 notification contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.
+
+Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
+
+Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+## Synchronize release entry points after review — 2026-10-15
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.
 
@@ -4704,3 +4722,4 @@ Standing roadmap continuation; parent `750f1ab8f4cf03f92585209e3880298df9b8aa90`
 The correction adds a closed invoice projection and renderer, validates the original project/client and the same invoice snapshot used for displayed details, and leaves terminal links metadata-free. Native cases join the existing payment report; HTTP/browser cases are additive. Owner preparation, schema, token storage, permissions, rate limits, payment execution and Devin's original branch are unchanged. Installer inventory is regenerated. [Detailed scope and evidence](PAYMENT_LINK_VIEW_REVIEW.md).
 
 Local corrected function/model checks and PHP syntax/installer checks are distinct from pending native SQL and installed-browser acceptance. Review actual new-source CI and images before integrating through Devin's branch, then perform normal combined-main release gates. Renewal PR252 stays frozen at632362f6. Current required20i jobs remain unassigned; another original workflow is running. Official20i module/API schema access requires My20i sign-in, requested through the browser without credentials in chat. No live provider request, charge, customer mail, SSH or deployment occurred.
+

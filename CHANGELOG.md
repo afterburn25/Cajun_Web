@@ -85,6 +85,7 @@ Review corrections on `devin/non20i-mail-replies` (PR #161). Saved copied-messag
 Staff can attach one private PDF/PNG/JPEG preview to an exact published design or proposal version. The artifact lives in guarded private storage and is served inline with integrity verification only to the owning client, staff or granted support sessions — never as a public URL. External staging links remain available and labeled external. Workspace storage upgrades additively (marker 3); existing content is preserved. Branch `devin/non20i-protected-previews`; packaged acceptance pending on CI.
 
 ## 2026-10-16 — publish the concrete release freeze and branch
+
 ## Unreleased — record observed cloud null response
 ## Repair tickets.css asset registration from review — 2026-10-16
 
@@ -284,6 +285,10 @@ Devin non-20i increment on `devin/non20i-notification-metrics`, stacked on the n
 ## Add scoped service announcements to the notification feed — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-notifications-announcements`, stacked on the notification-feed runtime. Staff holding `clients.manage` can issue a maintenance/service announcement to every active client from the notifications screen: each recipient gets a `service-event` feed entry linked to the announcements surface plus an email copy only when they have not opted out, with per-recipient failures recorded honestly and the send recorded in `notification_announcements` with actor and recipient count. Portal delivery remains unconditional; confirmations stay informational and never claim unverified service state. Native and HTTP/Chromium cases cover active-only scoping, history, authorization and CSRF. No live mail or customer action.
+
+## Wire support-ticket events into the P-07 notification feed — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-ticket-notifications`, merging `devin/non20i-notifications-runtime` into the tickets branch. `notification_emit` gains a deterministic dedupe key (stable `sha256`-derived ids + `INSERT IGNORE`) so request replays never duplicate rows. Ticket emits run after the ticket transaction releases: staff-created conversations and public staff `reply`/`status` events notify the owning client; client opens/replies/status changes notify every enabled staff member holding `support.tickets`. Private staff `note`/`assign` events and support-session replies emit nothing, and `notification_url` maps `ticket:` refs to the audience-specific ticket screen. Native MariaDB and browser assertions cover recipient sets, privacy and replay dedupe. No live mail, deployment or customer action.
 
 ## Integrate P-07 per-recipient notification feed runtime — 2026-10-16
 
