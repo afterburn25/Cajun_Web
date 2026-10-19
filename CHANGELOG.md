@@ -27,6 +27,11 @@ Limit estimator, email-template, portfolio, review-request and webmail pure-suit
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
 
 ## Unreleased — record observed cloud null response
+## Unreleased — layered homepage depth with measured evidence
+
+A CSS-composed device pair now sits as a nearer parallax plane in the hero, giving real pointer-depth without new image assets; it respects reduced-motion, `motion-off` and small screens. Browser acceptance records measured CLS/LCP/longtask evidence to `qa/homepage-performance.json` with a hard layout-shift bound — evidence recorded before any performance claim. Branch `devin/non20i-homepage-device-depth`; acceptance pending on CI.
+
+## 2026-10-16 — publish the concrete release freeze and branch
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.
 

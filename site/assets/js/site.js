@@ -90,15 +90,18 @@
             });
         });
         const hero = document.querySelector('.hero');
-        const scene = document.querySelector('[data-parallax]');
-        if (hero && scene) {
+        const planes = [
+            {el: document.querySelector('[data-parallax]'), x: 8, y: 6},
+            {el: document.querySelector('[data-parallax-near]'), x: 17, y: 12},
+        ].filter(p => p.el);
+        if (hero && planes.length) {
             hero.addEventListener('pointermove', e => {
                 if (paused() || document.hidden) return;
                 const rect = hero.getBoundingClientRect();
-                scene.style.setProperty('--scene-x', ((e.clientX - rect.left) / rect.width - .5) * 8 + 'px');
-                scene.style.setProperty('--scene-y', ((e.clientY - rect.top) / rect.height - .5) * 6 + 'px');
+                const nx = (e.clientX - rect.left) / rect.width - .5, ny = (e.clientY - rect.top) / rect.height - .5;
+                planes.forEach(p => { p.el.style.setProperty('--scene-x', nx * p.x + 'px'); p.el.style.setProperty('--scene-y', ny * p.y + 'px'); });
             });
-            hero.addEventListener('pointerleave', () => { scene.style.setProperty('--scene-x', '0px'); scene.style.setProperty('--scene-y', '0px'); });
+            hero.addEventListener('pointerleave', () => planes.forEach(p => { p.el.style.setProperty('--scene-x', '0px'); p.el.style.setProperty('--scene-y', '0px'); }));
         }
     }
 
