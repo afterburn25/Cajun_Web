@@ -9,10 +9,11 @@ use CajunWebPro\Foundation\Provider\{HttpTransport,TransportRequest,TransportRes
 /** Executable SDK subset. Native caller owns the mutex, durable phases, and current authority. */
 final class StackCpLaunchSender
 {
-    public static function launch(StackCpHandoffContext|StackCpClientHandoffContext $context, callable $credentials, callable $authorize,
+    public static function launch(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, callable $credentials, callable $authorize,
         callable $beforePhase, callable $afterPhase, ?callable $lookup=null, ?callable $transportFactory=null): StackCpLaunchDelivery
     {
-        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);
+        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)
+            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));
         $secrets = []; $phase = 'brand'; $posted = false;
         $guard = static function() use ($authorize,&$phase,&$posted): void {
             try { $authorize(); }

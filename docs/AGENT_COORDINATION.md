@@ -1,3 +1,7 @@
+## Staff StackCP support — 2026-10-19
+
+Root owns `codex/twentyi-support-stackcp` from frozen client source51938fc8/PR243. Catalog owns support documents/storage/permissions/schema; Domains owns executor/native acceptance; VPS owns support context/shared union/closed browser checks; root owns actual routes/forms/navigation, acceptance wiring, installer inventory and Git delivery. [Exact scope and limits](TWENTYI_SUPPORT_STACKCP.md). Preserve parent branches, separate PR253/254 and all Devin non-20i work. Full acceptance and release are pending; no live provider activation is authorized.
+
 ## Post-publication coordination — 2026-10-18
 
 1.25.0 is [published and freshly verified](RELEASE_1.25.0_PUBLICATION.md) at immutable main source `b79c67110829126916e3a65e616191542448bccc`. Root completed normal merge, five original full runs, maintained compatibility, 330-image review, assembly and all-asset draft/public verification. Keep that source/tag/assets unchanged.

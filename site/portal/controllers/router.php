@@ -3,6 +3,8 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/client_stackcp.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/support_stackcp.php';
+provider_support_stackcp_route_preflight();
 provider_client_stackcp_route_preflight();
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
@@ -42,6 +44,7 @@ if($supportRequested){
 }
 $client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
+if(provider_support_stackcp_requested())provider_support_stackcp_staff_render($supportId,$error);
 if(isset($_GET['activity']))activity_render('client',$error);
 if(isset($_GET['download_release']))delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');
 if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();

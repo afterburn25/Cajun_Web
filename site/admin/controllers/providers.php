@@ -7,6 +7,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_prerequisites.ph
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_access.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_launch.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_client_stackcp.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_support_stackcp.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';

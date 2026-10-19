@@ -1,3 +1,7 @@
+## Unreleased — staff hosting control panel support
+
+Add a separate hosting-support permission, owner approval for named staff and a support-portal StackCP launch with actual staff attribution. Recheck current session/policy/assignment around every effect, preserve one-use admission and failed-form approval, and keep whole-account scope explicit. Native/combined acceptance and release remain pending. [Candidate scope](docs/TWENTYI_SUPPORT_STACKCP.md).
+
 ## Unreleased — primary-client hosting control panel access
 
 Add owner-controlled primary-client StackCP access, fresh membership and whole-user permission checks on explicit launch, and durable one-use admission history. Block contacts, support and mixed staff/client sessions. Keep failed submissions from renewing approval. Default StackCP destination only; no remote session-revocation claim. [Candidate scope](docs/TWENTYI_CLIENT_STACKCP.md). Full application acceptance and release remain pending.

@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 if($_SERVER['REQUEST_METHOD']==='POST'){
  try{if($supportRequested)support_check_csrf($supportId);else check_csrf();if(!studio_ready())throw new RuntimeException('The client workspace has not been enabled. Please contact the studio.');$action=posted('action',40);
  if(support_current()){
+  if($action==='support_stackcp_open')provider_support_stackcp_staff_action($supportId);
   if(!in_array($action,['message','upload'],true)){support_record('action.blocked','portal','','denied');throw new RuntimeException('This action is blocked during support. Client decisions, payments and security changes require the proper independent workflow.');}
   if(!consume_rate('support-action-'.support_current()['actor']['id'],30,3600))throw new RuntimeException('Please wait before making more support changes.');
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
