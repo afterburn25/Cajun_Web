@@ -1,3 +1,13 @@
+## 2026-10-19 — closed queue remainder; preserve candidate heads
+
+Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/roadmap-continuity-2026-10-19`; enclosing commit **docs: record verified queue remainder and candidate handoff**. [Current work and exact gates](docs/ROADMAP_CONTINUATION_2026_10_19.md) supersede historical pending-cleanup statements below.
+
+All 139 previously untouched candidates were freshly reviewed and conditionally cancelled in three new 64/64/11 batches. Independent terminal review and root evidence binding confirm139 cancellations/551 unexecuted jobs. Original totals are466 cancellations/1,848 unexecuted jobs/31 preserved; none remain untouched or unverified. [New receipt](docs/evidence/ci-superseded-queue-remainder.json), SHA256 `df7f3ee715647db45b10417c086fa9ec3f6e15c2c25e3d956eb9b0688b349673`. Original completion 222646 and all old request/error evidence remain unchanged. All operator/verifier processes exited. Do not replay any cancellation or start an old cleanup plan.
+
+Frozen PR249 is 0397a0e4; its exact package verification is complete, installed/native/full acceptance pending. Frozen PR250 is 80050ef8 based on PR203 cefb; it removes one duplicate test DDL statement and awaits its first native/full results. Keep both branches intact. Main has no corresponding application change. Source-bound receipts and thirteen timestamped original gate states are retained in [continuation evidence](docs/evidence/roadmap-continuation-2026-10-19.json).
+
+Next inspect original gates when their states change, integrate only accepted candidates sequentially, then perform exact-main and release-delivery acceptance. Devin retains non-20i ownership; Codex retains 20i/integration. No complete 20i, new publication or production action is claimed.
+
 ## 2026-10-19 — component filters and verified queue cleanup
 
 Parent `847722b4960aa229b8e9b0da282a9424fa620194`; branch `codex/ci-final-component-pr-filters`; enclosing commit `ci: finish component PR filters and verify queue cleanup`. Service-plan and staff-invitation workflows now filter pull requests using their actual source, test and workflow dependencies. Only 13 trigger lines are added; every existing job, command, matrix, push/manual trigger and release gate remains unchanged. This avoids four unrelated jobs per documentation-only PR after integration; it does not cancel existing runs.
