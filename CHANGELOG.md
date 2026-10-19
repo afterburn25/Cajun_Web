@@ -815,6 +815,7 @@ Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `d
 - `Admin → Content history` now renders a line-level diff (added/removed line sets with counts) for each `studio_revisions` row using the foundation `RevisionDiff` contract, instead of only raw before/after blocks; full values remain in a nested section and identical restores report no change.
 
 
+
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
@@ -986,6 +987,10 @@ Ported the preserved `codex/project-planning`/`project-planning-storage`/`projec
 - Compose ticket unread facts into the existing workspace activity bell (`workspace_activity_summary`) without merging the two read models; ticket-only staff can use the activity center without project-administration access.
 - `docs/`: [usage](docs/SUPPORT_TICKETS.md), [contract](docs/SUPPORT_TICKETS_CONTRACT.md), [desk foundation](docs/DESK_FOUNDATION.md). Tests: `tests/desk/*` (114 model checks, default/no-ini), `tests/support_tickets_native.php` + `tests/support_ticket_screen_native_cases.php` (native MariaDB), `tests/ticket_cases.py` (HTTP/Chromium), `tests/ticket_upgrade_cases.py` (1.23 retained-upgrade replay). New `desk.yml` workflow; `application-tests.yml`/`access-policy.yml` cover `devin/non20i-*` pushes.
 
+
+## Unreleased — recurring billing calendar (Devin port)
+
+Ported `codex/billing-calendar` onto `devin/non20i-billing-calendar`. Canonical `foundation/billing-calendar/BillingCalendar.php` derives exact recurring periods (monthly/quarterly/annually × day-of-month/month-end) from an immutable anchor, with direct period/periodAt/window lookups, leap-day/century correctness and year-9999 bounds. Pure `tests/billing-calendar/calendar.php` contract + dedicated workflow. Canonical-only foundation; runtime wiring lands with recurring agreements. No live deployment or release.
 
 ## Synchronize release entry points after review — 2026-10-15
 

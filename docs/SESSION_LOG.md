@@ -423,6 +423,7 @@ Actions: extracted the preserved `devin/revisions-foundation` slice — four `fo
 Tests: `php -l` clean; `php tests/revisions/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.
@@ -782,6 +783,18 @@ Actions: extracted the preserved `devin/comparisons-foundation` slice — three 
 Tests: `php -l` clean; `php tests/comparisons/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
+## Port billing calendar — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157, item 4 recurring/maintenance prerequisites).
+
+Starting commit: `origin/main` `c8382276` — foundation-only slice, no runtime dependencies on the financial stack.
+
+Files/actions: extracted `foundation/billing-calendar/BillingCalendar.php`, `tests/billing-calendar/calendar.php`, `docs/BILLING_CALENDAR_CONTRACT.md` (ownership line updated for the Devin port), `.github/workflows/billing-calendar.yml` (`devin/non20i-*` trigger added). No `site/` mirror or build wiring — runtime consumers land with the recurring-agreements integration slice.
+
+Tests/verification (local): `tests/billing-calendar/calendar.php` — all checks pass on PHP 8.4 (literal/clamped leap-day and century periods, index/window bounds, invalid-input refusals, immutability and timezone independence). `php -l` clean on the class.
+
+Next: commit, push, PR, #157 update; then recurring-billing storage/screens stack, ticket-screenshot-readiness.
 
 ## Synchronize release entry points after review — 2026-10-15
 
