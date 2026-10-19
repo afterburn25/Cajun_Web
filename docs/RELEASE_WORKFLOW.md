@@ -1,3 +1,9 @@
+## 2026-10-19 — superseded component queue checkpoint
+
+[Recorded maintenance](CI_SUPERSEDED_QUEUE_CLEANUP.md) concerns only reviewed superseded component runs.327 acknowledgements include224 independently verified cancellations and103 pending terminal checks;31 candidates were preserved and139 left untouched. No force-cancellation, deletion, repeated cancellation, dispatch or test omission occurred.
+
+Original full application/capture/release runs remain required, including the f67 catalog matrix and PR220 b7 run39137551561. Cancelled runs provide no acceptance credit. Earlier dated statements that no runs were cancelled retain their historical meaning. Do not certify a queued hosted gate from this maintenance record or count acknowledgements as terminal results.
+
 ## 2026-10-18 — pure-suite pull-request triggers
 
 Five additional isolated pure suites filter PR changes: estimator, email-templates, portfolio-catalog, review-requests and webmail. Each includes `foundation/FAMILY/**`, `tests/FAMILY/**` and its exact workflow path; portfolio-catalog uses the `portfolio` directories. Complete directory patterns cover new nested fixtures and helpers. Current PHP tokenization found 31 source files and 28 local import edges, all confined to their respective family. Shared application and native suites do not inherit this assumption.

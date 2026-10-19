@@ -1,3 +1,7 @@
+## 2026-10-19 — superseded component queue checkpoint
+
+Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched. [Evidence and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md). Finish outstanding read-only verification after API recovery, then resume original20i release gates. This maintenance checkpoint completes no product capability and claims no measured elapsed-time saving.
+
 ## 2026-10-18 — original catalog runtime review
 
 The four supported-runtime producer sets for the original1.26 catalog candidate now pass. [Saved-artifact review](RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md) completes all four unchanged local aggregates, package/source comparisons and 16 populated upgrade scopes while retaining the queued hosted final jobs and later capture-correction gate. This is verification progress, not publication or completion of full20i. No new roadmap capability or live operation is claimed.
