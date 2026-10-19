@@ -1,3 +1,17 @@
+## 2026-10-19 — client HTTPS redirect requests
+
+Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/twentyi-client-force-ssl`; enclosing commit `feat: add client HTTPS redirect requests and owner review`.
+
+Primary clients can request On/Off for an explicitly shared HTTPS redirect setting and withdraw a pending request. Owners review or decline from **Hosting & Domains → HTTPS requests**, approve one exact change with their current password, and separately read the reported flag. The request and owner approval retain their original actors and current assignment/sharing authority. Uncertain results never automatically resend. Direct owner controls retain their prior behavior.
+
+Local verification passes: document 105, storage 92 and service 53 named checks in both default and minimal PHP; existing owner controls 76, transport 37 and recovery 57 in both modes; 92 actual-controller/render HTTP/Chromium checks with modeled identities/business storage; 309 acceptance-helper checks. PHP/JavaScript syntax, canonical installer refresh, and documentation checks pass. The guarded native fixture has syntax/Windows-refusal evidence only: Linux SQL execution and full installed application acceptance remain pending. Named results and exact scopes are retained in the evidence receipt.
+
+Independent review corrected a missing v2 verification-ledger check, preserved both assignment-owner and observation-sharing-owner authority, enforced the internal sender mutex, and fixed cold-owner setup guidance. Browser review corrected small inherited form text. Original failed local reports remain retained; no native/provider success is inferred from model checks.
+
+[Feature guide](docs/TWENTYI_CLIENT_HTTPS_REQUESTS.md) and [source-bound local receipt](docs/evidence/client-https-requests-local.json) identify the frozen sources and reports. Root owns routes/rendering/acceptance/release; Catalog owns request runtime and reviewed root wiring; Domains authored guarded native tests and reviewed runtime; VPS owns modeled HTTP/browser tests and reviewed native source. Devin retains non-20i/licensing.
+
+Next: publish this branch as a draft PR and dispatch its first exact-source full application run, then review the original results before normal integration, exact-main acceptance, package creation and download verification. Preserve the frozen StackCP candidate `51938fc8` in PR243 and its original full run 39212294132; the latest read still reports queued. Catalog source `f67b1631` retains original run 39098578401 with its final acceptance job queued. Do not repeat those runs or the completed queue-cleanup work. Published 1.25.0 remains unchanged; full 20i and 1.26 publication remain unfinished. No live deployment or provider operation occurred. The PR description and `work/force-ssl-requests-root-checks/github-delivery.json` record identifiers after this enclosing commit; do not edit a frozen head merely to refresh queue prose.
+
 ## 2026-10-19 — component filters and verified queue cleanup
 
 Parent `847722b4960aa229b8e9b0da282a9424fa620194`; branch `codex/ci-final-component-pr-filters`; enclosing commit `ci: finish component PR filters and verify queue cleanup`. Service-plan and staff-invitation workflows now filter pull requests using their actual source, test and workflow dependencies. Only 13 trigger lines are added; every existing job, command, matrix, push/manual trigger and release gate remains unchanged. This avoids four unrelated jobs per documentation-only PR after integration; it does not cancel existing runs.

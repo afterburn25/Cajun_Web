@@ -1,3 +1,11 @@
+## 2026-10-19 — client HTTPS redirect requests (unreleased)
+
+- Add primary-client HTTPS redirect requests, withdrawal, owner review/decline, separately verified provider flags, and client-visible status.
+- Preserve current client/owner/sharing authority and exact approval identity across errors; refuse v2 verification without an eligible finished operation record.
+- Add readable desktop/mobile forms, cold-owner setup guidance, guarded native scenarios and eight required acceptance reports without removing existing producers.
+
+[Scope and local evidence](docs/TWENTYI_CLIENT_HTTPS_REQUESTS.md). Local verification passes: document 105, storage 92 and service 53 named checks in both default and minimal PHP; existing owner controls 76, transport 37 and recovery 57 in both modes; 92 actual-controller/render HTTP/Chromium checks with modeled identities/business storage; 309 acceptance-helper checks. PHP/JavaScript syntax, canonical installer refresh, and documentation checks pass. The guarded native fixture has syntax/Windows-refusal evidence only: Linux SQL execution and full installed application acceptance remain pending. Named results and exact scopes are retained in the evidence receipt. No release version or published package changes.
+
 ## Unreleased — final component PR filters and verified cleanup
 
 Limit service-plan and staff-invitation PR checks to their actual dependencies while preserving all execution settings. Confirm the remaining103 cleanup outcomes:327 total terminal cancellations,1,297 unexecuted jobs,31 preserved candidates and139 untouched. Keep the partial evidence and original failures. No application, installer, version or released package changes.

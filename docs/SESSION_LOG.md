@@ -3471,3 +3471,18 @@ Read-only verification after API recovery confirms all 327 acknowledged cancella
 Added separate filter/completion receipts and updated status, handoff, changelog, release workflow and cleanup guide. PR240 was normally merged after actual documentation CI success with an identical source/merge tree. At about05:36UTC original capture run39137551561 still had its build queued since2026-10-18T14:47UTC, while three component runs were active; this is observed queue delay, not a diagnosis of account capacity. No source-head change, release or live deployment occurred. Next: normal CI-only integration, then original20i/capture/exact-main/publication gates. Full20i and1.26 remain unfinished.
 
 Documentation checks pass12 required documents,273 Markdown files and1,894 local links, including36 heading links; canonical dependency mirrors and whitespace pass. These results cover documentation/source consistency only.
+
+
+## 2026-10-19 — client HTTPS redirect requests
+
+Request: continue the complete20i roadmap with the three assigned agents. Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/twentyi-client-force-ssl`; enclosing commit `feat: add client HTTPS redirect requests and owner review`.
+
+Primary clients can request On/Off for an explicitly shared HTTPS redirect setting and withdraw a pending request. Owners review or decline from **Hosting & Domains → HTTPS requests**, approve one exact change with their current password, and separately read the reported flag. The request and owner approval retain their original actors and current assignment/sharing authority. Uncertain results never automatically resend. Direct owner controls retain their prior behavior.
+
+Changed the request document/storage/service/schema/migration, existing owner control binding, admin/client routes and views, sidebar and hosting links, scoped CSS, installer inventory, six fixtures, acceptance helper/contract/registry/workflow, and continuity documents.
+
+Local verification passes: document 105, storage 92 and service 53 named checks in both default and minimal PHP; existing owner controls 76, transport 37 and recovery 57 in both modes; 92 actual-controller/render HTTP/Chromium checks with modeled identities/business storage; 309 acceptance-helper checks. PHP/JavaScript syntax, canonical installer refresh, and documentation checks pass. The guarded native fixture has syntax/Windows-refusal evidence only: Linux SQL execution and full installed application acceptance remain pending. Named results and exact scopes are retained in the evidence receipt.
+
+Independent review corrected a missing v2 verification-ledger check, preserved both assignment-owner and observation-sharing-owner authority, enforced the internal sender mutex, and fixed cold-owner setup guidance. Browser review corrected small inherited form text. Original failed local reports remain retained; no native/provider success is inferred from model checks.
+
+[Guide](TWENTYI_CLIENT_HTTPS_REQUESTS.md); [named reports/source receipts](evidence/client-https-requests-local.json). Next: publish this branch as a draft PR and dispatch its first exact-source full application run, then review the original results before normal integration, exact-main acceptance, package creation and download verification. Preserve the frozen StackCP candidate `51938fc8` in PR243 and its original full run 39212294132; the latest read still reports queued. Catalog source `f67b1631` retains original run 39098578401 with its final acceptance job queued. Do not repeat those runs or the completed queue-cleanup work. Published 1.25.0 remains unchanged; full 20i and 1.26 publication remain unfinished. No live deployment or provider operation occurred.

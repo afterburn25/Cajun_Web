@@ -1,3 +1,9 @@
+## 2026-10-19 — client HTTPS redirect requests
+
+**Branch-tested, unreleased:** primary-client HTTPS redirect requests through current assignment/shared observation, owner approval or decline, withdrawal, separate reported-flag verification and request status. This extends existing Force SSL controls using the documented endpoint; it does not certify a certificate or public HTTPS reachability.
+
+[Implementation and named evidence](TWENTYI_CLIENT_HTTPS_REQUESTS.md). Local portable/model/browser/helper checks pass; native SQL, installed application, combined integration and release gates remain. Automatic provider images/cloud catalog, distinct VPS/SSH contracts and the other complete20i items remain separate. Published 1.25.0 is unchanged.
+
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Evidence](evidence/ci-remaining-pure-pr-filters.json). This scheduling correction completes no product feature. PR239's cleanup checkpoint is merged, with103 terminal verifications still pending; continue original20i acceptance after the current CI-only integration.

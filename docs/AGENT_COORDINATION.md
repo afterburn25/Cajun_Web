@@ -1,3 +1,11 @@
+## 2026-10-19 — client HTTPS redirect requests
+
+Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/twentyi-client-force-ssl`; enclosing commit `feat: add client HTTPS redirect requests and owner review`.
+
+Root integrated routes, forms, scoped styling, acceptance registry and documentation. Catalog owns the frozen client request runtime, reciprocal owner-control binding, portable checks and independent root wiring review. Domains owns the guarded native fixture and independent runtime review. VPS owns modeled HTTP/Chromium evidence and independent native source review. All three reviews are sealed; root coordinates final acceptance, draft PR and normal integration.
+
+Devin retains non-20i/licensing. The StackCP PR243 head 51938fc8 and original full runs remain frozen. [Feature/evidence](TWENTYI_CLIENT_HTTPS_REQUESTS.md). This assignment describes completed local work, not a live Devin session or native/full acceptance.
+
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Catalog proposed only access policy, provider contracts and scheduling from main8f734de1; VPS independently verified all29 sources and35 dependency edges atafb24946. Root applied the same three reviewed files after PR239's normal merge7e1507f5 and refreshed policy through read-only GraphQL. [Evidence](evidence/ci-remaining-pure-pr-filters.json).
