@@ -1,3 +1,9 @@
+## 2026-10-19 — isolated VPS correction, current release unchanged
+
+This companion branch, `codex/vps-uncertainty-repair`, starts at preserved [PR45](https://github.com/afterburn25/Cajun_Web/pull/45) source `8dcce53f8998915992a36475cb68f9a315a2b0c7`. It corrects the isolated VPS lifecycle before integration. Its older application tree is not a release candidate. Current main is separately `a86f6f4fa592e6f715a9420aec8de4622258642e`; the latest published and download-verified application remains [1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0), immutable source `b79c67110829126916e3a65e616191542448bccc`.
+
+Codex and its three existing agents own 20i; Devin continues non-20i work. Preserve both parent and companion branches, the current main instructions and all accepted releases. Do not deploy or package this old application tree, and do not infer provider, billing or SSH readiness from a pure lifecycle test. [Current correction and verification](docs/VPS_FOUNDATION.md). Earlier release checkpoints below are historical for this parent.
+
 # Working agreement for CajunWebPro
 
 ## Latest verified publication — 1.22.0

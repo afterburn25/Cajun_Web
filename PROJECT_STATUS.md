@@ -1,3 +1,13 @@
+## 2026-10-19 — preserve uncertain VPS operations
+
+Roadmap continuation found a concrete defect in unintegrated [PR45](https://github.com/afterburn25/Cajun_Web/pull/45): a provisioning timeout could be labeled failed, then retried after losing its original provider reference. Suspend, resume and teardown failures also asserted a stable state without confirmation. Companion `codex/vps-uncertainty-repair` starts at `8dcce53f8998915992a36475cb68f9a315a2b0c7` and corrects these transitions with retained attempts and explicit, identity-bound reconciliation.
+
+This is an isolated component correction. Provider transport, durable application storage, commercial authorization, VPS UI and SSH remain unfinished. [Current evidence and integration requirements](docs/VPS_FOUNDATION.md). Main `a86f6f4fa592e6f715a9420aec8de4622258642e`, published1.25.0 and production remain unchanged; the older application tree on this companion must not be released.
+
+Actual local verification passes 311 named component cases in each default/plain `-n` PHP8.4.25 mode, plus 20 independent adversarial cases in each mode. Root reproduced the original lost-reference defect and the draft history-alias defect, then verified both corrected behaviors. [Named results and source bindings](docs/evidence/vps-uncertainty-local.json). Focused GitHub PHP8.2/8.4 acceptance and normal current-main integration remain pending.
+
+The staged tracked-tree documentation check passes 131 Markdown files and 1,160 local links, including its pinned receiving/submission dependency checks. Local retained diagnostics are excluded from that delivery tree and remain untouched.
+
 # Project status
 
 ## 2026-10-13 — Devin HC-10 VPS lifecycle foundation (unreviewed, unintegrated)

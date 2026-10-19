@@ -1,3 +1,7 @@
+## 2026-10-19 — VPS companion branch
+
+This is an isolated correction to preserved [VPS PR45](https://github.com/afterburn25/Cajun_Web/pull/45), not the current application release. It retains unresolved provider attempts so a timeout cannot erase the server reference or permit another operation. [Scope and verification](docs/VPS_FOUNDATION.md). Published [1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) and current main remain separate and unchanged; the older release details below describe this branch's historical parent.
+
 # CajunWebPro — project source of truth
 
 ## Latest verified publication — 1.22.0

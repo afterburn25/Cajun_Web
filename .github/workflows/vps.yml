@@ -2,15 +2,17 @@ name: VPS contract checks
 
 on:
   pull_request:
+    paths: ['foundation/vps/**', 'tests/vps/**', '.github/workflows/vps.yml']
   push:
     branches: [main, devin/vps-foundation]
+    paths: ['foundation/vps/**', 'tests/vps/**', '.github/workflows/vps.yml']
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: vps-${{ github.ref }}
+  group: vps-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -29,10 +31,19 @@ jobs:
           persist-credentials: false
       - name: Syntax and VPS lifecycle checks using the official PHP image
         run: |
-          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+          mkdir -p "$RUNNER_TEMP/vps-results"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/vps-results:/results" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
             for source in foundation/vps/*.php tests/vps/*.php; do php -l "$source"; done
-            php tests/vps/run.php
+            php tests/vps/run.php /results/default.json
+            php -n tests/vps/run.php /results/no-ini.json
           '
+      - name: Retain named lifecycle results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vps-lifecycle-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/vps-results/
+          if-no-files-found: error
       - name: Record verification scope
         if: always()
         run: |
