@@ -163,6 +163,9 @@ if(!isset($error))try {
     $old=one('SELECT old_value FROM '.table('studio_revisions')." WHERE setting_name='growth_intro' ORDER BY id DESC LIMIT 1")['old_value'];
     studio_revision_save('growth_intro',$old,hash('sha256',setting('growth_intro')));
     ok('Restore creates a new revision without deleting history',setting('growth_intro')==='First saved copy'&&rowcount('studio_revisions')===3);
+    $rev=one('SELECT * FROM '.table('studio_revisions').' ORDER BY id DESC LIMIT 1');$diff=studio_revision_diff($rev);
+    ok('Revision diff reports the changed line sets',!$diff->identical()&&$diff->changedLineCount()>0&&in_array('First saved copy',$diff->added,true));
+    ok('Identical revision content reports no changes',studio_revision_diff(['id'=>0,'setting_name'=>'growth_intro','old_value'=>'same line','new_value'=>'same line','author_id'=>1,'created_at'=>$rev['created_at']])->identical());
     rejected('History rejects arbitrary configuration keys',fn()=>studio_revision_save('smtp_password','bad',hash('sha256','')));
     // Native test fixtures are outside the release source and use reserved .invalid identities.
     query('UPDATE '.table('studio_clients').' SET password_hash=?,invite_hash=NULL,invite_expires=NULL,active=1 WHERE id IN (1,2)',[password_hash('Synthetic client passphrase 2026',PASSWORD_DEFAULT)]);

@@ -390,6 +390,26 @@ Actions: extracted the preserved `devin/proposals-foundation` slice — `Proposa
 Tests: `php -l` clean; `php tests/proposals/run.php` → 35/35 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157; continue remaining contract ports then application layers.
+
+## Revision diff integration (A-02) — 2026-10-16
+
+Request: continue all remaining non-20i work (issue #157). Starting commit: `devin/non20i-revisions-foundation` tip `ced446a4`, new branch `devin/non20i-revisions-runtime`.
+
+Actions: `studio_revision_diff()` adapter wraps a `studio_revisions` row as a foundation `ContentRevision` pair and returns `RevisionDiff`; the `studio-history` view renders added/removed line sets with counts, keeps full values nested, and states identical restores plainly. Added `revisions` to the build mirror, Apache direct-access inventory, workflow path filters, and diff assertions in `tests/native.php` + `tests/release_cases.py`.
+
+Tests: `php -l` clean; `tests/revisions/run.php` 30/30 on PHP 8.4; native/browser suites extended rather than duplicated. `tools/build.py --refresh` clean. Synthetic only.
+
+Next: PR + #157 update; continue remaining foundation runtime gaps (notifications feed depth, comparisons governance).
+
+## Port A-02 content-revision contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-revisions-foundation`.
+
+Actions: extracted the preserved `devin/revisions-foundation` slice — four `foundation/revisions/` classes, `tests/revisions/run.php`, `revisions.yml`, `docs/REVISIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/revisions/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.
@@ -731,6 +751,16 @@ Actions: extracted the preserved `devin/proposals-foundation` slice — `Proposa
 Tests: `php -l` clean; `php tests/proposals/run.php` → 35/35 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157; continue remaining contract ports then application layers.
+
+## Port A-02 content-revision contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-revisions-foundation`.
+
+Actions: extracted the preserved `devin/revisions-foundation` slice — four `foundation/revisions/` classes, `tests/revisions/run.php`, `revisions.yml`, `docs/REVISIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/revisions/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
 
 ## Synchronize release entry points after review — 2026-10-15
 

@@ -318,6 +318,10 @@ Devin non-20i increment on `devin/non20i-pipeline-foundation` from main `595ac9c
 
 Devin non-20i increment on `devin/non20i-proposals-foundation` from main `595ac9c3`, continuing preserved `devin/proposals-foundation`. Adds `foundation/proposals/Proposal.php`, `ProposalVersion.php` and `ApprovalDecision.php` — immutable versioned proposals with deliberate approval/decline states — with 35 pure checks in `tests/proposals/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, mail, signature or UI — integration remains future work. No release or deployment.
 
+## Port A-02 content-revision contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-revisions-foundation` from main `595ac9c3`, continuing preserved `devin/revisions-foundation`. Adds `foundation/revisions/` — `ContentDocument`, `ContentRevision`, `RevisionDiff`, `ApprovalContext` — versioned content with computed diffs and deliberate approval/restore states, 30 pure checks in `tests/revisions/run.php`, PHP 8.2/8.4 workflow lane. No persistence, permissions or compare/restore UI — integration remains future work. No release or deployment.
+
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
 Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
@@ -797,6 +801,10 @@ Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `d
 - Lifecycle enforced by the foundation model replayed from the durable record: draft → sent ⇄ changes-requested → approved; staff withdrawal except once approved.
 - Clients review the exact sent version in the portal (`?proposal=`) and approve or request changes pinned to that version id; superseded versions cannot be decided. Support sessions and other clients are denied. Approvals are commercial confirmations, not legal e-signatures or payment authorization.
 - Append-only attributed event history per proposal; synthetic native MariaDB and HTTP lanes cover setup, replay, permissions, transitions, ownership and retention.
+
+## Revision diffs (A-02) — devin/non20i-revisions-runtime
+
+- `Admin → Content history` now renders a line-level diff (added/removed line sets with counts) for each `studio_revisions` row using the foundation `RevisionDiff` contract, instead of only raw before/after blocks; full values remain in a nested section and identical restores report no change.
 
 
 ## Unreleased — verified confirmation and current-main integration
