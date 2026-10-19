@@ -67,6 +67,18 @@ Independent foundations merged only where a runtime needs them; pure contract-on
 | Renewal invoicing | #252 `632362f6` | PENDING |
 | Reset email template | #254 `95ce538e` | PENDING |
 | Old codex draft stacks #102–#125 (tickets/progress/planning/payments/recurring) | heads on codex/* bases | CLOSED SUPERSEDED — port parity verified (no missing files; codex support-tickets.yml redundant with the pinned native recipe); all closed 2026-10-19 |
+
+Merge preflight vs the integration tip (`git merge-tree` conflict-hunk counts, 2026-10-19):
+catalog `f67b1631` 11 · capture `b7c97953` 11 · first-invoice `1db32352` 16 ·
+nameservers `024b50dc` 15 · runtime `f545cf93` 8 · `b0fe332f` 10 · `0397a0e4` 11 ·
+subdomain `4dc05d8c` 16 · StackCP `ffee2e3a` 14 · renewal `632362f6` 8 ·
+reset-template `95ce538e` 9 · commercial `d2903bfb` 22. All conflicts are the
+known stale-base family (docs/SESSION records, generated inventory, acceptance
+contract, apache/browser test lists, shared routers) — site source merges
+cleanly. Merge order: catalog first (others stack on it), then each stack tip
+in dependency order; stacked tips carry their ancestors so one tip merge covers
+the stack. CI requirement: each head's dispatched application-acceptance run
+must be observed green before its merge.
 | Older codex hosting/service-plan drafts not already integrated | #84–#92 covered; others check per-branch | mixed |
 
 ## Group C — FOUNDATION / INCOMPLETE
