@@ -142,7 +142,41 @@ Starting60bef4d, normally merge domain branch725573f0 with preserved history. Re
 
 Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 operation and95 mailbox synthetic checks pass in both default/no-INI modes. Domain native63 per combination and parent browser1810 are documented in the registrar guide. Catalog exact8f browser1794 and four native matrices are verified; cloud exactce8 has41 native cases per combination. Keep their source branches intact. Canonical installer refresh is required before commit. Intermediate normal merges skip automatic CI to avoid duplicating long work; the final combined source must run complete acceptance. No release, deployment or live provider action. Next: merge ready catalog/cloud increments sequentially, refresh and validate the exact combined source.
 
-# Session log
+
+
+## Provision ext-zip for the backup archive lane — 2026-10-17
+
+Request: continue #157 repairs; `Backup checks` on PHP 8.2/8.4 failed deterministically at `archive_run.php` with the production refusal `Ask your host to enable the PHP ZIP extension`.
+
+Root cause: `04fabe80` added `tests/backups/archive_run.php` to the docker lane, but the stock `php:8.2-cli`/`8.4-cli` images ship without ext-zip; the suite never ran green in CI. The native lane (`php8.3` on the runner) and production host requirement are unaffected.
+
+Fix: `.github/workflows/backups.yml` now builds a throwaway image layer (`apt-get install libzip-dev` + `docker-php-ext-install zip`, asserted via `php -m`) then commits it for the suite run; the test container still executes under `--network none` with the workspace mounted read-only.
+
+Tests: YAML parse clean; lane re-runs in CI on this push.
+
+Next: confirm both `Backup checks` lanes pass; continue monitoring the cascaded mail-stack repairs.
+
+## Implement A-03 backup/restore runtime — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). The foundation supplied only the manifest/restore-plan contract; this slice builds the application runtime on it. Starting commit: `devin/non20i-backups-foundation` tip `b1849208`, new branch `devin/non20i-backups-runtime`.
+
+Actions: added `database/schema/backups_schema.php` (durable `backups` rows — id, kind, manifest JSON + recorded `manifest_hash`, item count, archive filename, bytes, exact-request `request_key`/`request_hash`, status, `retain_until`, creator and restore attribution) and `database/migrations/backups_migrate.php` (owner-authorized, additive, refuses unknown populated records). `app/backups/records.php` adds readiness, private-directory verification outside the web root and non-symlinked, manifest reconstruction with recorded-hash verification, and a no-store guarded download. `app/backups/archive.php` collects the deployable tree deterministically applying the manifest's forbidden-path rules (config, keys, env, `storage/`, payment-master, VCS, traversal), writes private ZIP archives inside a transaction that unlinks on rollback, rebuilds live previews through `RestorePlan`, and applies authorized restores atomically per item (tempnam + rename, post-write hash proof). Admin `?view=backups` renders setup/create/impact-preview/restore/download/prune; `staff.manage` gates the section while setup and restore additionally require the current owner password and the exact `RESTORE <id>` phrase; expired backups refuse authorization. Wired router/actions/permissions/nav, Apache direct-deny list, build mirror sync, and workflows (pure `archive_run.php` in the backups lane, `backups_native.php` in the native lane, `backups_cases.py` in the browser suite, private `backups/` retention in organized-update checks).
+
+Tests: `php -l` clean on every touched PHP file; `php tests/backups/archive_run.php` → 21 checks pass locally on PHP 8.4 (secret exclusion, traversal refusal, unauthorized apply, wrong phrase, expired/unsupported formats, truncated and non-ZIP archives, tampered manifests, missing/differs/identical classification, atomic restore, idempotent re-apply); `php tests/backups/run.php` → 33 checks pass. MariaDB native lane and real-HTTP browser case are CI-wired, not yet executed. `python tools/build.py --refresh` clean — canonical `includes/foundation/backups/` mirror byte-identical, installer inventory regenerated.
+
+Known limits: file-scope only — no database dump/restore, scheduling, or provider backup coordination. New files added after a snapshot are left in place on restore (documented in the view).
+
+Next: commit, push, open bounded PR, update issue #157; then notifications/pipeline/revisions/proposals runtime integration.
+
+## Port A-03 backup/restore contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); backup/recovery is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-backups-foundation`.
+
+Actions: extracted the preserved `devin/backups-foundation` slice — `foundation/backups/BackupManifest.php`, `foundation/backups/RestorePlan.php`, `tests/backups/run.php`, `.github/workflows/backups.yml`, `docs/BACKUPS_FOUNDATION.md` — skipping that branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters to the workflow; corrected the doc's ownership line (application layers remain in Devin's scope) and check count (33, not 31).
+
+Tests: `php -l` clean on all three PHP files; `php tests/backups/run.php` → 33/33 checks pass on local PHP 8.4. CI runs the same suite in official PHP 8.2/8.4 images with `--network none`. No database, filesystem, archive or application paths exist yet — this is the pure contract layer only.
+
+Next: commit, push, open bounded PR, update issue #157; later roadmap work integrates the manifest/restore adapter and the isolated restore-drill acceptance.
 
 ## Fix copied-draft SMTP fixture envelope mismatch — 2026-10-17
 
@@ -360,6 +394,15 @@ Actions: extracted the preserved `codex/mail-replies-forwards` reply slice (`Rep
 Tests: local PHP pure suites — 60 reply-content, 45 thread, 71 draft-compose named checks all pass; `php -l` clean on all touched PHP; `tools/build.py --refresh` passes (40 packages/2188 dependency files no drift; 2201 runtime mirrors byte-identical; installer inventory refreshed). Native MariaDB cases (`tests/mail_replies_native.php` on PHP 8.2/8.4) and packaged Chromium/IMAP/SMTP cases run in CI; their results are pending at documentation time. Known limitation: no local MariaDB here, so native/HTTP evidence is CI-produced only; no live customer mail, provider call, deployment or release.
 
 Next: open the bounded PR, report on issue #157, then continue the remaining roadmap on a fresh `devin/non20i-*` branch.
+## Port A-03 backup/restore contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); backup/recovery is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-backups-foundation`.
+
+Actions: extracted the preserved `devin/backups-foundation` slice — `foundation/backups/BackupManifest.php`, `foundation/backups/RestorePlan.php`, `tests/backups/run.php`, `.github/workflows/backups.yml`, `docs/BACKUPS_FOUNDATION.md` — skipping that branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters to the workflow; corrected the doc's ownership line (application layers remain in Devin's scope) and check count (33, not 31).
+
+Tests: `php -l` clean on all three PHP files; `php tests/backups/run.php` → 33/33 checks pass on local PHP 8.4. CI runs the same suite in official PHP 8.2/8.4 images with `--network none`. No database, filesystem, archive or application paths exist yet — this is the pure contract layer only.
+
+Next: commit, push, open bounded PR, update issue #157; later roadmap work integrates the manifest/restore adapter and the isolated restore-drill acceptance.
 
 ## Synchronize release entry points after review — 2026-10-15
 
@@ -4340,3 +4383,11 @@ Parent `cefb08d6c29f4faca104089bb5941b322418d2ba`, current [PR203](https://githu
 [Named evidence](evidence/service-plan-contact-fixture.json) retains three original artifact digests and the87-pass/1-failure service-plan reports. Nine actual extracted schema/setup guards pass in each default/minimal PHP mode; both syntax modes and independent source review pass. These are not corrected native SQL results. Main, published1.25 and the separate20i candidates do not contain this unintegrated contact extension. Devin retains feature ownership; root supplies this bounded test correction at the earliest affected branch so the downstream stack can inherit it through normal integration.
 
 Next: first corrected-source native/full GitHub acceptance, then sequential integration with PR203 and descendants. Preserve original failed runs; no source or result is replaced and no production action occurred.
+
+## 2026-10-19 — backups-runtime review corrections (non-20i)
+
+Request: resolve coordinator integration-review findings on the A-03 backup runtime (PR176 findings carried in PR196). Starting head: `87a0cfe0` on `devin/non20i-backups-runtime`; enclosing commits `a79e0007` (foundation merge) and `55d4f7bf`.
+
+Changed: merged `devin/non20i-backups-foundation` (`66fe1439`, depth-aware FORBIDDEN pattern in `foundation/backups/BackupManifest.php` + mirror); `site/app/backups/archive.php` (`backups_target` canonical resolution refusing linked/reparse parents and containment escapes, two-pass `backups_apply` preflight validating every target and archive member before the first write, recoverable originals restored on failure with a `rename`-cannot-overwrite unlink fallback, post-write SHA-256 verification, restore status transitions intent/restoring/applied/failed in separate transactions, `staff_owner` re-authentication inside `staff_locked`, create cleans up the uncommitted archive and dump on failure); `site/app/backups/records.php` (canonical storage/archive path identity, private-storage-outside-document-root proof, manifest format/integrity binding); `site/database/migrations/backups_migrate.php` (marker/table-family preflight before DDL, unknown populated records refuse); `site/includes/layout/backups.php` (restore status surfacing); `tests/backups/run.php`, `tests/backups/archive_run.php` (nested secrets, linked parents, missing dirs, traversal, corrupt/truncated/non-ZIP archives, absent members, write failure, original recovery, no-op second restore), `tests/backups_native.php` (authorized/non-owner actors, completion guard). Installer inventory regenerated; contract unchanged (no pinned file changed).
+
+Verification and scope: `php -l` clean; 37 manifest checks; 24 archive-adapter checks (the write-failure injection skips on Windows where ACLs cannot block the write — the Linux CI lane exercises it); 221 acceptance-artifact checks. MariaDB native fixture runs in CI only. Next: CI lanes on `55d4f7bf`; Codex owns integration. No deployment, provider call, merge or release.
