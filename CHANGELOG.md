@@ -1,3 +1,7 @@
+## Unreleased — client website folder requests
+
+Add primary-client website-folder requests and withdrawal, owner review/decline/one-send approval, reciprocal retained history and dated client outcomes. Preserve direct owner changes and exact request replay. Recheck current client, sharing and assignment authority through send/readback/recovery; refuse reconstruction when either original journal is missing. Add dedicated admin/portal navigation and preserve exact failed form values with cleared password/consent. Add local document/storage/service/controller models plus separate native, packaged browser and installed-upgrade acceptance. Linux runtime/release gates remain pending. [Details](docs/TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
+
 ## Unreleased — include retained diagnostic sources in FULL-PROJECT
 
 Reuse the existing reviewed ops source-area correction after the exact package build refused already-tracked diagnostic scripts. Sensitive-file checks and deployment package contents remain unchanged. The original failed build is retained; corrected packaging and installed runtime checks remain required.

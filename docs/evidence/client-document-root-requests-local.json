@@ -1,0 +1,4213 @@
+{
+  "schema": 1,
+  "feature_parent": "3bd43ca891c9faefc6c07a293e4d2d59e00d4a62",
+  "enclosing_commit_message": "Add client website folder requests with owner review",
+  "branch": "codex/twentyi-client-document-roots",
+  "scope": "Retained local source-bound portable and modeled evidence. Counts are named outcomes per actual report; this is not Linux SQL, installed HTTP, Apache upgrade, live 20i or release acceptance.",
+  "source_sha256": {
+    ".github/workflows/provider-document-root-requests.yml": "8d8659033ce8f820e1138ec1ccd81de74b690275e9b72d66f92017dd1804e6a5",
+    "site/admin/controllers/actions.php": "90f712f2bd6c508ee6fc0b53a5ed857be05d8eeead38db0eb7e96c4aa83e05a8",
+    "site/admin/controllers/document_root_requests.php": "f693e0f0c317e6f38d08df2eb5ea335d78795421e7e2f8ed319a1e01c2168295",
+    "site/admin/controllers/router.php": "4afde0ea88bfc8b733e1d6ba23ec72eab1484dfb6306dd9f33c35b511f794208",
+    "site/admin/views/providers.php": "ce22f2aa87bdc709a30f8081b6ac8261056909ebe19974e0cd19a6ae23696477",
+    "site/app/providers/document_root_controls.php": "bc42cfa6761b47a43e432a949e6de544ba8ddc6a8db87c5b75e697adcc0c9d9d",
+    "site/app/providers/document_root_controls_storage.php": "439eb6cabc7a9823a18a7ea63e19f5a5759c8e90e2d97d59af89e7ae82ff7200",
+    "site/app/providers/document_root_requests.php": "d2ed027234301c873201f2ba7919ec50452ce1a3f55670051c868d20ff586265",
+    "site/app/providers/document_root_requests_document.php": "314705fec3083461e3873f07c2cf18911cfebca5b62ad5f3b8c4563534b39ad9",
+    "site/app/providers/document_root_requests_storage.php": "57011802543acf9b6896d1e5cc24be0b842906e2dc1880fb29e22adfdecbf821",
+    "site/app/providers/document_root_requests_views.php": "8cbb40a1e85fd2440adf92fd59871c20f4e123e1396fca9943cea98d346eaff0",
+    "site/app/staff/accounts.php": "d774461631326d5122d5218d0e9a46ad5d9c1f7a7b2af226d6f9ff871ef35de5",
+    "site/assets/css/growth.css": "ddf623c73fb280b19f29690abea62d2f182ee4c8ec10ee0bbb4a18eece6cf975",
+    "site/database/migrations/provider_document_root_requests_migrate.php": "0b44ef42a69df6c427fb87e3df255190502d8478ac025836c107ee52c7a42980",
+    "site/database/schema/provider_document_root_requests_schema.php": "cd287d3db8fb51470895bd1ee649092cbd281a604070a1a13121df375f8bfe3a",
+    "site/includes/layout/admin.php": "302d399ec5be0a9bb0990018ae691ac4705fda3157b2fe6af12aedf4c9e031ac",
+    "site/includes/layout/provider_services.php": "1b870cf393b429dacff80be6945add2a5e937c0e5b25bdbc5fed35641e56796a",
+    "site/install/inventory.generated.php": "56a55196e5daaf4ce9f38ea1dcd2533c6c8aee1ce02b6793bfeaf7b08319c2dd",
+    "site/portal/controllers/actions.php": "93b76759a95785d1ee54eb02f1f57670abaddd7c3110a3a6dfb83ccdcc9f5e5d",
+    "site/portal/controllers/document_root_requests.php": "fc2d43f31032272c38e57c55898f075111ab555cce4c57378f818bfdbb04af5d",
+    "site/portal/controllers/router.php": "c45e40600dbb50ab2c1648b79bb7edc09c2a216db08f4fbbb827e9e7792c1065",
+    "site/portal/views/document_root_requests.php": "a44d16ae781d5a445db593eb046c362d910ef143a32192a6bc8bc3c6dbe4c641",
+    "tests/document_root_requests_acceptance.py": "2ac337c8d1e2bbe2a7cb00b5a02265452a615c59a222fc29add9c407cd196d9b",
+    "tests/document_root_requests_browser.py": "15f591d68a953d8f847e57879870de2f482dd4871a8e96eff1b885cd046d887a",
+    "tests/document_root_requests_contract.php": "f6e3c99773264f325bdb22949b6d3a590bb650a6c9ee3d24e1f03ee7b9116541",
+    "tests/document_root_requests_document.php": "d46c4de8e1adadb53f11835e81a35e28b5006f69a052f51002ec657e1b66333b",
+    "tests/document_root_requests_storage.php": "5f8eda3db3f49170727dbe748b9bb5516e5928237a88f3b48bea58a492826e4e",
+    "tests/document_root_requests_views.php": "b880a282fe8a6f6049065d4b6b140b092644228307bd3652f9980eac20839964",
+    "tests/provider_document_root_requests_cases.py": "8ef5f2346ebddfacf02f32d21a455bc68001848e8fc6275c1b19e51007563eb4",
+    "tests/provider_document_root_requests_native.php": "f30a5ac680059d4a09c7dc81747781956a9cd4524f28a486d2225711f1ae18c5",
+    "tests/provider_document_root_requests_upgrade.py": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
+    "tests/provider_document_root_requests_upgrade_fixture.php": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
+    "tests/provider_document_root_requests_upgrade_test.py": "4c29393bd51978a888a5b075e00f0d58f2eb92a43b797cca82c77443f63deae5"
+  },
+  "frozen_author_receipts": [
+    {
+      "retained_path": "work/client-document-roots-storage-checks/source-review.json",
+      "sha256": "684ab8fda320c96f264b8f4b1f8d2dffc0af1e0a49134cf8fbb4de73b5439e2d",
+      "bytes": 6807
+    },
+    {
+      "retained_path": "work/client-document-root-runtime-proposal/source-review.json",
+      "sha256": "873c29d89d98ea392d7653cb8cff20344ed8ec8136c79646e02811133437389f",
+      "bytes": 13223
+    },
+    {
+      "retained_path": "work/client-document-roots-ui-proposal/source-review.json",
+      "sha256": "fccab31b7636dc0e29756d9210ff32b9ee81a015f21be0d0837a7aaab33138dd",
+      "bytes": 9952
+    },
+    {
+      "retained_path": "work/client-document-roots-upgrade-proposal/source-review.json",
+      "sha256": "9eb385336842829dbd4fc7fabbae089cccb262eee22584ff7c28ba6aa236fda6",
+      "bytes": 10308
+    }
+  ],
+  "independent_source_review_receipts": [
+    {
+      "retained_path": "work/client-document-roots-service-review/review-final.json",
+      "sha256": "3b2eb992023136072e0da2f011b6d9ccd9769358dd91eae9c677585b7cd7bf83",
+      "bytes": 4143
+    },
+    {
+      "retained_path": "work/client-document-roots-ui-proposal/shared-review-initial.json",
+      "sha256": "303021f77e3823089b54a0a5b5669ea2a070d56055e4a89c1260181e4fa604f4",
+      "bytes": 10036
+    },
+    {
+      "retained_path": "work/client-document-roots-ui-proposal/final-binding-review.json",
+      "sha256": "fa3d850102d606bad661a25012afca9f2324722be0c653e819672638ae023471",
+      "bytes": 12605
+    },
+    {
+      "retained_path": "work/client-document-root-runtime-proposal/upgrade-review/review.json",
+      "sha256": "923187278e81f0c0151273e56da39bdfab1b4bba9d442ef94dff5df87a589919",
+      "bytes": 9320
+    }
+  ],
+  "actual_results": [
+    {
+      "scope": "Pure request documents",
+      "reports": [
+        {
+          "retained_path": "work/client-document-roots-storage-checks/document-default-final.json",
+          "sha256": "0b78170a110536070e66775fc884212790dcd753ef3ed1a9d1606fdbb1d72f57",
+          "bytes": 17015
+        },
+        {
+          "retained_path": "work/client-document-roots-storage-checks/document-minimal-final.json",
+          "sha256": "0b78170a110536070e66775fc884212790dcd753ef3ed1a9d1606fdbb1d72f57",
+          "bytes": 17015
+        }
+      ],
+      "checks_per_report": 143,
+      "checks": [
+        {
+          "name": "Canonical original event roundtrip is byte stable",
+          "passed": true
+        },
+        {
+          "name": "Binding restores exact foundation constructor field order",
+          "passed": true
+        },
+        {
+          "name": "Full original assignment source survives canonical ordering",
+          "passed": true
+        },
+        {
+          "name": "Request actor retains auth digest rather than raw auth token",
+          "passed": true
+        },
+        {
+          "name": "Initial projection has exact documented keys",
+          "passed": true
+        },
+        {
+          "name": "Local request is pending with original event and empty later history",
+          "passed": true
+        },
+        {
+          "name": "Empty local graph is explicitly empty",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses version",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses id",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses subject_id",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses client_id",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses kind",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses recorded_epoch",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses ordinal",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses previous",
+          "passed": true
+        },
+        {
+          "name": "Malformed request refuses payload",
+          "passed": true
+        },
+        {
+          "name": "Local signed32 bound refuses recorded_epoch",
+          "passed": true
+        },
+        {
+          "name": "Local signed32 bound refuses ordinal",
+          "passed": true
+        },
+        {
+          "name": "Unknown top-level fields refuse",
+          "passed": true
+        },
+        {
+          "name": "Wrong original client actor refuses kind",
+          "passed": true
+        },
+        {
+          "name": "Wrong original client actor refuses id",
+          "passed": true
+        },
+        {
+          "name": "Wrong original client actor refuses auth_sha256",
+          "passed": true
+        },
+        {
+          "name": "Raw auth-version actor field refuses",
+          "passed": true
+        },
+        {
+          "name": "Confirmation must be exact true 0",
+          "passed": true
+        },
+        {
+          "name": "Confirmation must be exact true 1",
+          "passed": true
+        },
+        {
+          "name": "Confirmation must be exact true 2",
+          "passed": true
+        },
+        {
+          "name": "Confirmation must be exact true 3",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 0",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 1",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 2",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 3",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 4",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 5",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 6",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 7",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 8",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 9",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 10",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 11",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 12",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 13",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 14",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 15",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 16",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 17",
+          "passed": true
+        },
+        {
+          "name": "Requested path uses the unchanged typed write boundary 18",
+          "passed": true
+        },
+        {
+          "name": "Observed old path remains exact opaque text 0",
+          "passed": true
+        },
+        {
+          "name": "Observed old path remains exact opaque text 1",
+          "passed": true
+        },
+        {
+          "name": "Observed old path remains exact opaque text 2",
+          "passed": true
+        },
+        {
+          "name": "Observed old path remains exact opaque text 3",
+          "passed": true
+        },
+        {
+          "name": "Observed old path remains exact opaque text 4",
+          "passed": true
+        },
+        {
+          "name": "Invalid old observed path refuses 0",
+          "passed": true
+        },
+        {
+          "name": "Invalid old observed path refuses 1",
+          "passed": true
+        },
+        {
+          "name": "Invalid old observed path refuses 2",
+          "passed": true
+        },
+        {
+          "name": "Invalid old observed path refuses 3",
+          "passed": true
+        },
+        {
+          "name": "Invalid old observed path refuses 4",
+          "passed": true
+        },
+        {
+          "name": "Invalid old observed path refuses 5",
+          "passed": true
+        },
+        {
+          "name": "New path accepts exact unchanged1024-byte boundary",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected path refuses",
+          "passed": true
+        },
+        {
+          "name": "Unsupported hostname refuses 0",
+          "passed": true
+        },
+        {
+          "name": "Unsupported hostname refuses 1",
+          "passed": true
+        },
+        {
+          "name": "Unsupported hostname refuses 2",
+          "passed": true
+        },
+        {
+          "name": "Unsupported hostname refuses 3",
+          "passed": true
+        },
+        {
+          "name": "Unsupported hostname refuses 4",
+          "passed": true
+        },
+        {
+          "name": "Unsupported hostname refuses 5",
+          "passed": true
+        },
+        {
+          "name": "Full observed map is not part of request payload",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required profile_id",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required profile_revision",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required key_fingerprint",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required credential_sha256",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required package_id",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required client_id",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required link_id",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required link_sha256",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required event_id",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required event_sha256",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required audit_id",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required audit_sha256",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required source_id",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required source_seq",
+          "passed": true
+        },
+        {
+          "name": "Every original binding field is required source_sha256",
+          "passed": true
+        },
+        {
+          "name": "Invalid typed binding refuses package_id",
+          "passed": true
+        },
+        {
+          "name": "Invalid typed binding refuses client_id",
+          "passed": true
+        },
+        {
+          "name": "Invalid typed binding refuses source_seq",
+          "passed": true
+        },
+        {
+          "name": "Invalid typed binding refuses profile_revision",
+          "passed": true
+        },
+        {
+          "name": "Invalid typed binding refuses source_sha256",
+          "passed": true
+        },
+        {
+          "name": "Invalid static resource witness refuses owner_auth_sha256",
+          "passed": true
+        },
+        {
+          "name": "Invalid static resource witness refuses owner_id",
+          "passed": true
+        },
+        {
+          "name": "Invalid sharing authority refuses id",
+          "passed": true
+        },
+        {
+          "name": "Invalid sharing authority refuses revision",
+          "passed": true
+        },
+        {
+          "name": "Invalid sharing authority refuses sha256",
+          "passed": true
+        },
+        {
+          "name": "Invalid sharing authority refuses owner_id",
+          "passed": true
+        },
+        {
+          "name": "Invalid sharing authority refuses owner_auth_sha256",
+          "passed": true
+        },
+        {
+          "name": "Wrong nested binding envelope refuses operation",
+          "passed": true
+        },
+        {
+          "name": "Wrong nested binding envelope refuses package",
+          "passed": true
+        },
+        {
+          "name": "Invalid submission observation refuses id",
+          "passed": true
+        },
+        {
+          "name": "Invalid submission observation refuses seq",
+          "passed": true
+        },
+        {
+          "name": "Invalid submission observation refuses proof",
+          "passed": true
+        },
+        {
+          "name": "Closed nested evidence refuses extra sharing",
+          "passed": true
+        },
+        {
+          "name": "Closed nested evidence refuses extra observation",
+          "passed": true
+        },
+        {
+          "name": "Large Unicode old path and maximum write path retain complete canonical evidence",
+          "passed": true
+        },
+        {
+          "name": "Valid alternate resource changes original canonical hash owner_auth_sha256",
+          "passed": true
+        },
+        {
+          "name": "Changed client auth changes retained request hash",
+          "passed": true
+        },
+        {
+          "name": "Owner admission records dispatched but never succeeded",
+          "passed": true
+        },
+        {
+          "name": "Approving owner remains distinct from original assignment owner",
+          "passed": true
+        },
+        {
+          "name": "Changed dispatch origin refuses owner_request_id",
+          "passed": true
+        },
+        {
+          "name": "Changed dispatch origin refuses owner_request_sha256",
+          "passed": true
+        },
+        {
+          "name": "Changed dispatch origin refuses previous_event",
+          "passed": true
+        },
+        {
+          "name": "Client cannot dispatch",
+          "passed": true
+        },
+        {
+          "name": "Circular extra dispatch identity field refuses",
+          "passed": true
+        },
+        {
+          "name": "Owner approval hash is pinned data rather than self-authenticating authority",
+          "passed": true
+        },
+        {
+          "name": "Terminal local state cancelled",
+          "passed": true
+        },
+        {
+          "name": "Terminal local state declined",
+          "passed": true
+        },
+        {
+          "name": "Invalid decision note refuses 0",
+          "passed": true
+        },
+        {
+          "name": "Invalid decision note refuses 1",
+          "passed": true
+        },
+        {
+          "name": "Invalid decision note refuses 2",
+          "passed": true
+        },
+        {
+          "name": "Invalid decision note refuses 3",
+          "passed": true
+        },
+        {
+          "name": "Invalid decision note refuses 4",
+          "passed": true
+        },
+        {
+          "name": "Invalid decision note refuses 5",
+          "passed": true
+        },
+        {
+          "name": "Another client cannot cancel",
+          "passed": true
+        },
+        {
+          "name": "Decision cannot change original client",
+          "passed": true
+        },
+        {
+          "name": "Decision note exact1000-byte boundary is accepted",
+          "passed": true
+        },
+        {
+          "name": "Note normalizer preserves printable markup for escaped rendering",
+          "passed": true
+        },
+        {
+          "name": "Terminal request cannot transition again 0",
+          "passed": true
+        },
+        {
+          "name": "Terminal request cannot transition again 1",
+          "passed": true
+        },
+        {
+          "name": "Terminal request cannot transition again 2",
+          "passed": true
+        },
+        {
+          "name": "Second pending request for same hosting package refuses",
+          "passed": true
+        },
+        {
+          "name": "Reassignment cannot bypass same-resource pending history",
+          "passed": true
+        },
+        {
+          "name": "Different resource may have independent pending request package_id",
+          "passed": true
+        },
+        {
+          "name": "Different resource may have independent pending request profile_id",
+          "passed": true
+        },
+        {
+          "name": "Terminal local request permits later separately approved intake",
+          "passed": true
+        },
+        {
+          "name": "Missing ordinal refuses",
+          "passed": true
+        },
+        {
+          "name": "Backward event time refuses",
+          "passed": true
+        },
+        {
+          "name": "Missing original request refuses",
+          "passed": true
+        },
+        {
+          "name": "Reordered history refuses",
+          "passed": true
+        },
+        {
+          "name": "Associative event list refuses",
+          "passed": true
+        },
+        {
+          "name": "Repeated event identity refuses",
+          "passed": true
+        },
+        {
+          "name": "Another hostname cannot bypass the pending package request",
+          "passed": true
+        },
+        {
+          "name": "Longest supported prefix fits table and explicit FK identifiers",
+          "passed": true
+        },
+        {
+          "name": "Request table is outside existing owner lifecycle tables",
+          "passed": true
+        },
+        {
+          "name": "Schema retains unique sequence and actual client FK",
+          "passed": true
+        },
+        {
+          "name": "Schema refuses injected prefix",
+          "passed": true
+        },
+        {
+          "name": "Pure document execution loads no database or provider authority",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "Storage models; no native SQL",
+      "reports": [
+        {
+          "retained_path": "work/client-document-roots-storage-checks/storage-default-final.json",
+          "sha256": "48337ded84171c9b9d740d3540347c0950def35529f843f292fcda9ace3a5935",
+          "bytes": 11105
+        },
+        {
+          "retained_path": "work/client-document-roots-storage-checks/storage-minimal-final.json",
+          "sha256": "48337ded84171c9b9d740d3540347c0950def35529f843f292fcda9ace3a5935",
+          "bytes": 11105
+        }
+      ],
+      "checks_per_report": 92,
+      "checks": [
+        {
+          "name": "Clean absent local history returns null",
+          "passed": true
+        },
+        {
+          "name": "Clean absent readiness is false",
+          "passed": true
+        },
+        {
+          "name": "Read-only absence creates no state",
+          "passed": true
+        },
+        {
+          "name": "Exact empty table before marker is resumable",
+          "passed": true
+        },
+        {
+          "name": "Empty-table resume does not repeat DDL",
+          "passed": true
+        },
+        {
+          "name": "Preparation checks fresh owner after clearing cache",
+          "passed": true
+        },
+        {
+          "name": "Preparation retains exact marker and independent head",
+          "passed": true
+        },
+        {
+          "name": "Preparation audit uses actual owner and fixed detail",
+          "passed": true
+        },
+        {
+          "name": "Prepared retry changes no business state",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite owner",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL owner",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite staff",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL staff",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite studio",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL studio",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite inventory",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL inventory",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite operations",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL operations",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite changes",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL changes",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite changes_bad",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL changes_bad",
+          "passed": true
+        },
+        {
+          "name": "Preparation rejects current prerequisite password",
+          "passed": true
+        },
+        {
+          "name": "Prerequisite refusal precedes DDL password",
+          "passed": true
+        },
+        {
+          "name": "Readiness requires owning mutex",
+          "passed": true
+        },
+        {
+          "name": "Prepare refuses inherited transaction",
+          "passed": true
+        },
+        {
+          "name": "Inherited transaction creates no DDL",
+          "passed": true
+        },
+        {
+          "name": "Nontransactional shared storage refuses settings",
+          "passed": true
+        },
+        {
+          "name": "Nontransactional shared storage refuses audit",
+          "passed": true
+        },
+        {
+          "name": "Unknown owned namespace refuses table",
+          "passed": true
+        },
+        {
+          "name": "Unknown namespace never creates DDL table",
+          "passed": true
+        },
+        {
+          "name": "Unknown owned namespace refuses setting",
+          "passed": true
+        },
+        {
+          "name": "Unknown namespace never creates DDL setting",
+          "passed": true
+        },
+        {
+          "name": "Unknown owned namespace refuses audit",
+          "passed": true
+        },
+        {
+          "name": "Unknown namespace never creates DDL audit",
+          "passed": true
+        },
+        {
+          "name": "Empty incompatible schema refuses column",
+          "passed": true
+        },
+        {
+          "name": "Incompatible schema is not repaired column",
+          "passed": true
+        },
+        {
+          "name": "Empty incompatible schema refuses index",
+          "passed": true
+        },
+        {
+          "name": "Incompatible schema is not repaired index",
+          "passed": true
+        },
+        {
+          "name": "Empty incompatible schema refuses foreign",
+          "passed": true
+        },
+        {
+          "name": "Incompatible schema is not repaired foreign",
+          "passed": true
+        },
+        {
+          "name": "Empty incompatible schema refuses engine",
+          "passed": true
+        },
+        {
+          "name": "Incompatible schema is not repaired engine",
+          "passed": true
+        },
+        {
+          "name": "Unprepared residue refuses head",
+          "passed": true
+        },
+        {
+          "name": "Unprepared residue refuses audit",
+          "passed": true
+        },
+        {
+          "name": "Unprepared residue refuses rows",
+          "passed": true
+        },
+        {
+          "name": "Unprepared residue refuses empty_marker",
+          "passed": true
+        },
+        {
+          "name": "Unprepared residue refuses unknown_marker",
+          "passed": true
+        },
+        {
+          "name": "Preparation transaction fault propagates audit_fail",
+          "passed": true
+        },
+        {
+          "name": "DDL survives but marker head and audit roll back audit_fail",
+          "passed": true
+        },
+        {
+          "name": "Exact empty interrupted preparation retries audit_fail",
+          "passed": true
+        },
+        {
+          "name": "Preparation transaction fault propagates head_fail",
+          "passed": true
+        },
+        {
+          "name": "DDL survives but marker head and audit roll back head_fail",
+          "passed": true
+        },
+        {
+          "name": "Exact empty interrupted preparation retries head_fail",
+          "passed": true
+        },
+        {
+          "name": "Local ready does not recurse into owner history",
+          "passed": true
+        },
+        {
+          "name": "Append requires transaction",
+          "passed": true
+        },
+        {
+          "name": "Append transaction alone is insufficient",
+          "passed": true
+        },
+        {
+          "name": "Append transaction fault propagates audit_fail",
+          "passed": true
+        },
+        {
+          "name": "Caller rollback preserves exact row audit and head audit_fail",
+          "passed": true
+        },
+        {
+          "name": "Append transaction fault propagates head_fail",
+          "passed": true
+        },
+        {
+          "name": "Caller rollback preserves exact row audit and head head_fail",
+          "passed": true
+        },
+        {
+          "name": "Actual appended document authenticates through complete reader",
+          "passed": true
+        },
+        {
+          "name": "Client audit is actual client convention user0",
+          "passed": true
+        },
+        {
+          "name": "Independent head binds actual ordinal and HMAC",
+          "passed": true
+        },
+        {
+          "name": "Reader works between transactions under mutex",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses marker",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses head",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses table",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses row",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses audit",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses row_audit",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses prep_audit",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses prep_detail",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses prep_actor",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses extra_audit",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses event_actor",
+          "passed": true
+        },
+        {
+          "name": "Established history loss or alteration refuses audit_order",
+          "passed": true
+        },
+        {
+          "name": "Exact stored projection refuses changed id",
+          "passed": true
+        },
+        {
+          "name": "Exact stored projection refuses changed ordinal",
+          "passed": true
+        },
+        {
+          "name": "Exact stored projection refuses changed subject_id",
+          "passed": true
+        },
+        {
+          "name": "Exact stored projection refuses changed client_id",
+          "passed": true
+        },
+        {
+          "name": "Exact stored projection refuses changed kind",
+          "passed": true
+        },
+        {
+          "name": "Exact stored projection refuses changed fingerprint",
+          "passed": true
+        },
+        {
+          "name": "Authenticated document tampering refuses canonical",
+          "passed": true
+        },
+        {
+          "name": "Authenticated document tampering refuses json",
+          "passed": true
+        },
+        {
+          "name": "Authenticated document tampering refuses payload",
+          "passed": true
+        },
+        {
+          "name": "Authenticated document tampering refuses previous",
+          "passed": true
+        },
+        {
+          "name": "Owner dispatch appends original actual owner audit",
+          "passed": true
+        },
+        {
+          "name": "Dispatch projection stays local and preserves exact owner association",
+          "passed": true
+        },
+        {
+          "name": "Append refuses second terminal without changing graph",
+          "passed": true
+        },
+        {
+          "name": "Rejected transition preserves exact graph",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "Extracted service models; no native SQL or provider",
+      "reports": [
+        {
+          "retained_path": "work/client-document-root-runtime-proposal/contract-default-final-02.json",
+          "sha256": "0d146497c564463ea5b30eb2ec11821d545126beff86847a158efcf761e822c9",
+          "bytes": 9047
+        },
+        {
+          "retained_path": "work/client-document-root-runtime-proposal/contract-minimal-final-02.json",
+          "sha256": "0d146497c564463ea5b30eb2ec11821d545126beff86847a158efcf761e822c9",
+          "bytes": 9047
+        }
+      ],
+      "checks_per_report": 69,
+      "checks": [
+        {
+          "name": "Original direct owner wrapper still creates version one without client origin",
+          "passed": true
+        },
+        {
+          "name": "Original version-one direct replay changes no modeled row or transport counter",
+          "passed": true
+        },
+        {
+          "name": "Only assigned shared complete map and opaque review are projected",
+          "passed": true
+        },
+        {
+          "name": "Stale saved sharing permits a local client request without provider effects",
+          "passed": true
+        },
+        {
+          "name": "Stale owner map has no approval and has safe explanation",
+          "passed": true
+        },
+        {
+          "name": "Raw session provenance blocked before normalization uid",
+          "passed": true
+        },
+        {
+          "name": "Raw session provenance blocked before normalization contact_id",
+          "passed": true
+        },
+        {
+          "name": "Raw session provenance blocked before normalization contact_auth",
+          "passed": true
+        },
+        {
+          "name": "Raw session provenance blocked before normalization support",
+          "passed": true
+        },
+        {
+          "name": "Raw support URL or body blocked get",
+          "passed": true
+        },
+        {
+          "name": "Raw support URL or body blocked post",
+          "passed": true
+        },
+        {
+          "name": "Foreign current client cannot access screen",
+          "passed": true
+        },
+        {
+          "name": "Unshared service has no client options",
+          "passed": true
+        },
+        {
+          "name": "Second pending request cannot change the same package",
+          "passed": true
+        },
+        {
+          "name": "Exact create replay is inert",
+          "passed": true
+        },
+        {
+          "name": "Withdraw records client decision without sending",
+          "passed": true
+        },
+        {
+          "name": "Exact withdrawal replay stays inert",
+          "passed": true
+        },
+        {
+          "name": "Owner decline requires current password",
+          "passed": true
+        },
+        {
+          "name": "Decline stores trimmed useful owner note",
+          "passed": true
+        },
+        {
+          "name": "Account auth change invalidates original request client",
+          "passed": true
+        },
+        {
+          "name": "Account auth change invalidates original request assigner",
+          "passed": true
+        },
+        {
+          "name": "Account auth change invalidates original request sharer",
+          "passed": true
+        },
+        {
+          "name": "Current authority change invalidates request sharing",
+          "passed": true
+        },
+        {
+          "name": "Current authority change invalidates request link",
+          "passed": true
+        },
+        {
+          "name": "Current authority change invalidates request key",
+          "passed": true
+        },
+        {
+          "name": "Already saved desired path cannot generate owner approval",
+          "passed": true
+        },
+        {
+          "name": "Dispatch event audit failure rolls back reciprocal owner admission",
+          "passed": true
+        },
+        {
+          "name": "Late failure reached both owner grant and request before rollback",
+          "passed": true
+        },
+        {
+          "name": "No approval or request survives failed reciprocal transaction",
+          "passed": true
+        },
+        {
+          "name": "One approved synthetic operation remains unknown",
+          "passed": true
+        },
+        {
+          "name": "Version two owner consent binds exact immutable client request",
+          "passed": true
+        },
+        {
+          "name": "Original client actor is never replaced with owner",
+          "passed": true
+        },
+        {
+          "name": "Exact approval replay never resends",
+          "passed": true
+        },
+        {
+          "name": "Client projection excludes owner approval tokens and identity",
+          "passed": true
+        },
+        {
+          "name": "Separate map readback projects truthful different",
+          "passed": true
+        },
+        {
+          "name": "Separate map readback projects truthful unavailable",
+          "passed": true
+        },
+        {
+          "name": "Separate map readback projects truthful observed",
+          "passed": true
+        },
+        {
+          "name": "Missing entire local journal cannot hide a retained owner client origin",
+          "passed": true
+        },
+        {
+          "name": "Absent reciprocal journal refuses without network or key access",
+          "passed": true
+        },
+        {
+          "name": "Reciprocal owner digest mismatch refuses history",
+          "passed": true
+        },
+        {
+          "name": "Direct v2 owner authority also rechecks original client",
+          "passed": true
+        },
+        {
+          "name": "Internal send without mutex refuses before effects",
+          "passed": true
+        },
+        {
+          "name": "No extra send from internal misuse",
+          "passed": true
+        },
+        {
+          "name": "Version two cannot widen existing terminal documents",
+          "passed": true
+        },
+        {
+          "name": "Version two cannot widen existing check documents",
+          "passed": true
+        },
+        {
+          "name": "Crafted v2 verify refuses ineligible ledger before any read 0",
+          "passed": true
+        },
+        {
+          "name": "Ineligible verify leaves effects untouched 0",
+          "passed": true
+        },
+        {
+          "name": "Post-read save rechecks finished v2 ledger 0",
+          "passed": true
+        },
+        {
+          "name": "Crafted v2 verify refuses ineligible ledger before any read 1",
+          "passed": true
+        },
+        {
+          "name": "Ineligible verify leaves effects untouched 1",
+          "passed": true
+        },
+        {
+          "name": "Post-read save rechecks finished v2 ledger 1",
+          "passed": true
+        },
+        {
+          "name": "Client-origin verification delegates only to the typed full-map reader",
+          "passed": true
+        },
+        {
+          "name": "Client authority changed after read response refuses receipt admission",
+          "passed": true
+        },
+        {
+          "name": "Read revalidation ran after response and before receipt completion",
+          "passed": true
+        },
+        {
+          "name": "Ordinary newer package observation preserves exact static client intent",
+          "passed": true
+        },
+        {
+          "name": "Re-enabled sharing revision does not revive an old request",
+          "passed": true
+        },
+        {
+          "name": "Damaged latest map cannot become friendly unavailable approval",
+          "passed": true
+        },
+        {
+          "name": "Never-used local journal and clean owner history stay unprepared",
+          "passed": true
+        },
+        {
+          "name": "Actual cold owner readiness obtains and releases its own mutex without a transaction",
+          "passed": true
+        },
+        {
+          "name": "Owner readiness refuses acquiring mutex under unrelated inherited transaction",
+          "passed": true
+        },
+        {
+          "name": "Surviving prepared empty client journal blocks recreation of lost owner history",
+          "passed": true
+        },
+        {
+          "name": "Surviving pending client intent blocks recreation of lost owner history",
+          "passed": true
+        },
+        {
+          "name": "Damaged client journal cannot be treated as never prepared owner storage",
+          "passed": true
+        },
+        {
+          "name": "Actual folder write sends exact hostname and path public_html/new",
+          "passed": true
+        },
+        {
+          "name": "Actual folder write sends exact hostname and path public_html/annual",
+          "passed": true
+        },
+        {
+          "name": "Actual folder reader distinguishes null",
+          "passed": true
+        },
+        {
+          "name": "Actual folder reader distinguishes {}",
+          "passed": true
+        },
+        {
+          "name": "Actual folder reader distinguishes {\"example.invalid\":\"\"}",
+          "passed": true
+        },
+        {
+          "name": "Actual folder reader distinguishes {\"example.invalid\":\"public_html/new\"}",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "View and controller models",
+      "reports": [
+        {
+          "retained_path": "work/client-document-roots-ui-proposal/checks/views-default-final.json",
+          "sha256": "122cecc77cb999b20d081e86306229b2bd8642b8fc7c6cc1c4427abcbc3e4707",
+          "bytes": 9818
+        },
+        {
+          "retained_path": "work/client-document-roots-ui-proposal/checks/views-minimal-final.json",
+          "sha256": "122cecc77cb999b20d081e86306229b2bd8642b8fc7c6cc1c4427abcbc3e4707",
+          "bytes": 9818
+        }
+      ],
+      "checks_per_report": 83,
+      "checks": [
+        {
+          "name": "Client form uses exact explicit folder route",
+          "passed": true
+        },
+        {
+          "name": "Client form includes CSRF field",
+          "passed": true
+        },
+        {
+          "name": "Client hidden assignment and review are exact",
+          "passed": true
+        },
+        {
+          "name": "New client request has one exact generated identity",
+          "passed": true
+        },
+        {
+          "name": "Client selects only shared hostnames",
+          "passed": true
+        },
+        {
+          "name": "Shared opaque paths are escaped without normalization",
+          "passed": true
+        },
+        {
+          "name": "Empty saved path is distinguishable",
+          "passed": true
+        },
+        {
+          "name": "Client never receives owner approval forms or proof",
+          "passed": true
+        },
+        {
+          "name": "Client cannot see requesting client identity",
+          "passed": true
+        },
+        {
+          "name": "Owner requesting client identity is escaped",
+          "passed": true
+        },
+        {
+          "name": "Owner original and current paths remain separate",
+          "passed": true
+        },
+        {
+          "name": "Owner approval exact original review identities",
+          "passed": true
+        },
+        {
+          "name": "Owner attests eligibility and existing destination",
+          "passed": true
+        },
+        {
+          "name": "Owner password blank and consent unchecked",
+          "passed": true
+        },
+        {
+          "name": "Readback limitation never promises protection",
+          "passed": true
+        },
+        {
+          "name": "History card exposes safe status and exact identity",
+          "passed": true
+        },
+        {
+          "name": "Empty complete map has no create form",
+          "passed": true
+        },
+        {
+          "name": "Client absent state offers no preparation mutation",
+          "passed": true
+        },
+        {
+          "name": "Owner absent state exposes explicit preparation",
+          "passed": true
+        },
+        {
+          "name": "Unavailable approval explains safe next step",
+          "passed": true
+        },
+        {
+          "name": "Known state pending has a specific label",
+          "passed": true
+        },
+        {
+          "name": "Known state cancelled has a specific label",
+          "passed": true
+        },
+        {
+          "name": "Known state declined has a specific label",
+          "passed": true
+        },
+        {
+          "name": "Known state interrupted has a specific label",
+          "passed": true
+        },
+        {
+          "name": "Known state not_sent has a specific label",
+          "passed": true
+        },
+        {
+          "name": "Known state unknown has a specific label",
+          "passed": true
+        },
+        {
+          "name": "Known state observed has a specific label",
+          "passed": true
+        },
+        {
+          "name": "Changed client authority hides original shared path",
+          "passed": true
+        },
+        {
+          "name": "Client follow-up ignores arbitrary path fields",
+          "passed": true
+        },
+        {
+          "name": "Observed result remains historical not causal",
+          "passed": true
+        },
+        {
+          "name": "Unknown without finished ledger has no readback form",
+          "passed": true
+        },
+        {
+          "name": "Eligible unknown has separate readback form",
+          "passed": true
+        },
+        {
+          "name": "Interrupted without ledger hash has no recovery",
+          "passed": true
+        },
+        {
+          "name": "Interrupted exact ledger recovery is explicit and local",
+          "passed": true
+        },
+        {
+          "name": "Changed authority hides owner follow-up mutations",
+          "passed": true
+        },
+        {
+          "name": "Valid exact route survives",
+          "passed": true
+        },
+        {
+          "name": "Invalid route safely defaults []",
+          "passed": true
+        },
+        {
+          "name": "Invalid route safely defaults \"0\"",
+          "passed": true
+        },
+        {
+          "name": "Invalid route safely defaults \"501\"",
+          "passed": true
+        },
+        {
+          "name": "Invalid route safely defaults \"01\"",
+          "passed": true
+        },
+        {
+          "name": "Invalid route safely defaults \"1x\"",
+          "passed": true
+        },
+        {
+          "name": "Pagination retains folder route",
+          "passed": true
+        },
+        {
+          "name": "Detail return link drops only exact selection",
+          "passed": true
+        },
+        {
+          "name": "Failed create retains raw request_id",
+          "passed": true
+        },
+        {
+          "name": "Failed create retains raw link_id",
+          "passed": true
+        },
+        {
+          "name": "Failed create retains raw review_sha256",
+          "passed": true
+        },
+        {
+          "name": "Failed create retains raw desired_path",
+          "passed": true
+        },
+        {
+          "name": "Failed invalid hostname retained as escaped selected choice",
+          "passed": true
+        },
+        {
+          "name": "Failed POST clears consent and never echoes password",
+          "passed": true
+        },
+        {
+          "name": "Lost option retains original form without fresh admission",
+          "passed": true
+        },
+        {
+          "name": "Raw path parser 1025",
+          "passed": true
+        },
+        {
+          "name": "Raw path parser array",
+          "passed": true
+        },
+        {
+          "name": "Raw path parser 4",
+          "passed": true
+        },
+        {
+          "name": "Failed approval retains exact request_id",
+          "passed": true
+        },
+        {
+          "name": "Failed approval retains exact expected_event",
+          "passed": true
+        },
+        {
+          "name": "Failed approval retains exact request_sha256",
+          "passed": true
+        },
+        {
+          "name": "Failed approval retains exact owner_request_id",
+          "passed": true
+        },
+        {
+          "name": "Failed approval retains exact anchor_id",
+          "passed": true
+        },
+        {
+          "name": "Failed approval retains exact binding_sha256",
+          "passed": true
+        },
+        {
+          "name": "Failed approval does not replace fresh map or consent",
+          "passed": true
+        },
+        {
+          "name": "Failed original approval survives unavailable new preview",
+          "passed": true
+        },
+        {
+          "name": "Approval forwards only exact retained signed identities",
+          "passed": true
+        },
+        {
+          "name": "Successful owner action returns exact detail and page",
+          "passed": true
+        },
+        {
+          "name": "Create uses primary client plus exact immutable request choices",
+          "passed": true
+        },
+        {
+          "name": "Malformed client confirmation never becomes true",
+          "passed": true
+        },
+        {
+          "name": "Oversized request is refused before create",
+          "passed": true
+        },
+        {
+          "name": "Actor refusal precedes malformed POST parsing",
+          "passed": true
+        },
+        {
+          "name": "Client withdrawal cannot pass owner note or credentials",
+          "passed": true
+        },
+        {
+          "name": "Owner decline forwards raw note for service validation",
+          "passed": true
+        },
+        {
+          "name": "Owner readback forwards reciprocal request pair",
+          "passed": true
+        },
+        {
+          "name": "Recovery confirmation required before service",
+          "passed": true
+        },
+        {
+          "name": "Recovery exact ledger and pair preserved",
+          "passed": true
+        },
+        {
+          "name": "Prepare is explicit owner mutation",
+          "passed": true
+        },
+        {
+          "name": "Cold owner shell uses manager false and friendly unavailable content",
+          "passed": true
+        },
+        {
+          "name": "Cold fallback points to actual provider settings route",
+          "passed": true
+        },
+        {
+          "name": "PDO content is private and keeps owner shell",
+          "passed": true
+        },
+        {
+          "name": "Raw owner contact_id presence refuses before manager",
+          "passed": true
+        },
+        {
+          "name": "Raw owner contact_auth presence refuses before manager",
+          "passed": true
+        },
+        {
+          "name": "Raw owner support presence refuses before manager",
+          "passed": true
+        },
+        {
+          "name": "Nonowner shell refuses 403",
+          "passed": true
+        },
+        {
+          "name": "Client renderer actor refusal becomes 403",
+          "passed": true
+        },
+        {
+          "name": "Client screen database failure is private and retryable",
+          "passed": true
+        },
+        {
+          "name": "Actual portal view calls shared renderer and escapes error",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "Modeled Chromium layout; not installed application",
+      "reports": [
+        {
+          "retained_path": "work/client-document-roots-ui-proposal/checks/layout-04.json",
+          "sha256": "0c43945cf21cb3c12dcb9238a5438d63f4f730cf955d8d2e03d273ec6a602b4a",
+          "bytes": 10210
+        }
+      ],
+      "checks_per_report": 72,
+      "checks": [
+        {
+          "name": "Actual PHP renderer exports exactly four modeled scenes",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop confirmation starts blank",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop actual form requires client consent",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop completed form is valid",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Desktop capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile confirmation starts blank",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile actual form requires client consent",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile completed form is valid",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Client-Pending Mobile capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop owner password and review start blank",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop owner form requires consent and password",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Desktop capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile owner password and review start blank",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile owner form requires consent and password",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Owner-Review Mobile capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop readback is separate from approval",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Desktop capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile readback is separate from approval",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Owner-Readback Mobile capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop observed client result has no owner controls",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Desktop capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile renders one actual application panel",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile original viewport fits without horizontal scrolling",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile labels and hints are readable",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile opaque paths wrap within card bounds",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile observed client result has no owner controls",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile capture height stays bounded",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile full capture panel is unobscured",
+          "passed": true
+        },
+        {
+          "name": "Client-Observed Mobile capture has actual PNG bytes",
+          "passed": true
+        },
+        {
+          "name": "Eight modeled captures are exact and distinct from installed captures",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "Portable upgrade comparison and archive guards; no Apache or SQL",
+      "reports": [
+        {
+          "retained_path": "work/client-document-roots-upgrade-proposal/guards-02.json",
+          "sha256": "292124d1687131b4db4d9c34ee7ba10a41039d1e0d574b681d066b54e84732d9",
+          "bytes": 3226
+        }
+      ],
+      "checks_per_report": 30,
+      "checks": [
+        {
+          "name": "test_actual_archive_guards_reject_duplicates_and_aliases",
+          "passed": true
+        },
+        {
+          "name": "test_actual_archive_guards_reject_unsafe_members",
+          "passed": true
+        },
+        {
+          "name": "test_added_original_row_column_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_archive_hash_and_exact_members",
+          "passed": true
+        },
+        {
+          "name": "test_counter_advances_exactly_once",
+          "passed": true
+        },
+        {
+          "name": "test_counter_original_must_be_two",
+          "passed": true
+        },
+        {
+          "name": "test_duplicate_counter_identity_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_each_recovery_row_identity_must_match",
+          "passed": true
+        },
+        {
+          "name": "test_every_original_column_is_retained",
+          "passed": true
+        },
+        {
+          "name": "test_exact_recovery_is_nonmutating",
+          "passed": true
+        },
+        {
+          "name": "test_extra_recovery_row_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_feature_files_bind_to_exact_git_and_archive",
+          "passed": true
+        },
+        {
+          "name": "test_file_action_allows_only_exact_apply_or_recovery_audit",
+          "passed": true
+        },
+        {
+          "name": "test_file_action_refuses_unknown_owner_and_wrong_restored_version",
+          "passed": true
+        },
+        {
+          "name": "test_file_action_rejects_columns_added_to_original_or_new_audit",
+          "passed": true
+        },
+        {
+          "name": "test_file_action_rejects_missing_extra_or_changed_original_audits",
+          "passed": true
+        },
+        {
+          "name": "test_file_action_rejects_wrong_actor_action_or_detail",
+          "passed": true
+        },
+        {
+          "name": "test_file_action_retains_client_journal_and_original_private_bytes",
+          "passed": true
+        },
+        {
+          "name": "test_fresh_path_rejects_existing_path_and_parent_escape",
+          "passed": true
+        },
+        {
+          "name": "test_log_summary_never_returns_raw_error",
+          "passed": true
+        },
+        {
+          "name": "test_missing_recovery_row_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_missing_transition_field_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_new_private_file_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_original_row_loss_is_not_replacement",
+          "passed": true
+        },
+        {
+          "name": "test_private_key_drift_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_runtime_change_during_local_recovery_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_same_version_file_retry_is_supported",
+          "passed": true
+        },
+        {
+          "name": "test_transition_identity_must_be_a_digest",
+          "passed": true
+        },
+        {
+          "name": "test_unknown_transition_field_refuses",
+          "passed": true
+        },
+        {
+          "name": "test_unrelated_table_addition_refuses",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "Combined offline acceptance helper; includes 272 unchanged predecessor outcomes",
+      "reports": [
+        {
+          "retained_path": "work/client-document-roots-root-checks/helper-first.json",
+          "sha256": "614965b0f240d85c5c784d3285ba28e2b0d6193f8b0818cea0929e02400bc425",
+          "bytes": 34750
+        }
+      ],
+      "checks_per_report": 360,
+      "checks": [
+        {
+          "name": "Production1.24 baseline constants retain exact immutable values",
+          "passed": true
+        },
+        {
+          "name": "Production1.25 baseline constants bind the actual published COMPLETE archive",
+          "passed": true
+        },
+        {
+          "name": "Actual pack-inputs entry point writes its sha256 manifest digest to GitHub output",
+          "passed": true
+        },
+        {
+          "name": "Actual seal entry point appends its sha256 manifest digest to GitHub output",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses empty name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses digit prefix name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses line break name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses assignment name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses line feed injection",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses carriage return injection",
+          "passed": true
+        },
+        {
+          "name": "Rejected output fields never append to the GitHub output file",
+          "passed": true
+        },
+        {
+          "name": "Input binds all27 public fixture trees plus exact package/checksum files",
+          "passed": true
+        },
+        {
+          "name": "Both independently pinned published baselines validate in one sealed input",
+          "passed": true
+        },
+        {
+          "name": "Additional baseline extends the public fixture set to exactly28 trees",
+          "passed": true
+        },
+        {
+          "name": "Only the exact added published archive is admitted",
+          "passed": true
+        },
+        {
+          "name": "Additional baseline cannot broaden the archive path allowlist test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip",
+          "passed": true
+        },
+        {
+          "name": "Additional baseline cannot broaden the archive path allowlist qa/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+          "passed": true
+        },
+        {
+          "name": "Additional baseline cannot broaden the archive path allowlist test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip/extra.php",
+          "passed": true
+        },
+        {
+          "name": "Additional baseline cannot broaden the archive path allowlist test-runtime/private/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+          "passed": true
+        },
+        {
+          "name": "Added baseline refuses missing member evidence",
+          "passed": true
+        },
+        {
+          "name": "Added baseline refuses extra member evidence",
+          "passed": true
+        },
+        {
+          "name": "Added baseline refuses changed digest member evidence",
+          "passed": true
+        },
+        {
+          "name": "Added baseline refuses changed size member evidence",
+          "passed": true
+        },
+        {
+          "name": "Added baseline refuses traversal member evidence",
+          "passed": true
+        },
+        {
+          "name": "Original1.24 raw archive cannot impersonate the added1.25 baseline",
+          "passed": true
+        },
+        {
+          "name": "Added baseline refuses mutated original ZIP bytes",
+          "passed": true
+        },
+        {
+          "name": "Added baseline cannot fall back when its raw original ZIP is absent",
+          "passed": true
+        },
+        {
+          "name": "Re-sealed input still requires original baseline family test-runtime/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip",
+          "passed": true
+        },
+        {
+          "name": "Re-sealed input still requires original baseline family test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+          "passed": true
+        },
+        {
+          "name": "Re-sealed input still requires original baseline family test-runtime/released-1.25.0/",
+          "passed": true
+        },
+        {
+          "name": "Coherent outer input cannot replace an original1.25 member",
+          "passed": true
+        },
+        {
+          "name": "Exact input materializes safely for native-browser",
+          "passed": true
+        },
+        {
+          "name": "Both original published archives and distinct1.25 members reach native-browser",
+          "passed": true
+        },
+        {
+          "name": "Only native/browser inherits build QA native-browser",
+          "passed": true
+        },
+        {
+          "name": "Each child saves same-attempt immutable input receipt native-browser",
+          "passed": true
+        },
+        {
+          "name": "Input materialization never overwrites an earlier child native-browser",
+          "passed": true
+        },
+        {
+          "name": "Exact input materializes safely for recovery",
+          "passed": true
+        },
+        {
+          "name": "Both original published archives and distinct1.25 members reach recovery",
+          "passed": true
+        },
+        {
+          "name": "Only native/browser inherits build QA recovery",
+          "passed": true
+        },
+        {
+          "name": "Each child saves same-attempt immutable input receipt recovery",
+          "passed": true
+        },
+        {
+          "name": "Input materialization never overwrites an earlier child recovery",
+          "passed": true
+        },
+        {
+          "name": "Exact input materializes safely for apache",
+          "passed": true
+        },
+        {
+          "name": "Both original published archives and distinct1.25 members reach apache",
+          "passed": true
+        },
+        {
+          "name": "Only native/browser inherits build QA apache",
+          "passed": true
+        },
+        {
+          "name": "Each child saves same-attempt immutable input receipt apache",
+          "passed": true
+        },
+        {
+          "name": "Input materialization never overwrites an earlier child apache",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched attempt",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched run_id",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched ci_sha",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched source_sha",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched tree",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched repository",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched workflow_sha256",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched reports_sha256",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched runtime {\"database\": \"mariadb-10.11\", \"php\": \"8.2\"}",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched runtime {\"database\": \"mysql-8.4\", \"php\": \"8.3\"}",
+          "passed": true
+        },
+        {
+          "name": "Input refuses missing expected digest",
+          "passed": true
+        },
+        {
+          "name": "Input refuses changed manifest bytes",
+          "passed": true
+        },
+        {
+          "name": "Input refuses corrupt outer bytes before extraction",
+          "passed": true
+        },
+        {
+          "name": "Duplicate JSON keys cannot hide competing identities",
+          "passed": true
+        },
+        {
+          "name": "Actual input packing rejects private configuration inside public tree",
+          "passed": true
+        },
+        {
+          "name": "Rehashed outer ZIP still refuses member content mismatch",
+          "passed": true
+        },
+        {
+          "name": "Rehashed ZIP still refuses missing member",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused '../escaped'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused '/absolute'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a/../b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a\\\\b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'C:/outside'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a//b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused './a'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a/./b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a\\x00b'",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/private/key.txt",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/config-fixture.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/legacy/config.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/legacy/.installed.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/legacy/server.key",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused qa/session.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/build-guards-private/fake.php",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses duplicate independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses case collision independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses traversal independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses symlink independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "Complete exact four-partition run assembles all named reports",
+          "passed": true
+        },
+        {
+          "name": "Final carries exact browser screenshot bytes",
+          "passed": true
+        },
+        {
+          "name": "Checkpoint is the same immutable QA snapshot used by final",
+          "passed": true
+        },
+        {
+          "name": "Final packages remain exact original build",
+          "passed": true
+        },
+        {
+          "name": "Final records every immutable partition ID and digest",
+          "passed": true
+        },
+        {
+          "name": "Deliberate checkpoint has complete limited evidence, never full acceptance",
+          "passed": true
+        },
+        {
+          "name": "Checkpoint does not disguise cancellation as intentional skip",
+          "passed": true
+        },
+        {
+          "name": "Non-successful build failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful build cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful build skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing build artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Non-successful native-browser failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful native-browser cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful native-browser skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing native-browser artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Non-successful recovery failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful recovery cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful recovery skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing recovery artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Non-successful apache failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful apache cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful apache skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing apache artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Corrupt partition digest is refused while other evidence survives",
+          "passed": true
+        },
+        {
+          "name": "Different input generation cannot mix into final",
+          "passed": true
+        },
+        {
+          "name": "Duplicate artifact IDs never masquerade as independent jobs",
+          "passed": true
+        },
+        {
+          "name": "Missing checkpoint upload cannot pass final acceptance",
+          "passed": true
+        },
+        {
+          "name": "Internally hashed cross-attempt partition is refused",
+          "passed": true
+        },
+        {
+          "name": "Internally hashed missing steps partition is refused",
+          "passed": true
+        },
+        {
+          "name": "Internally hashed wrong lane partition is refused",
+          "passed": true
+        },
+        {
+          "name": "Named failure beats successful job labels and remains available",
+          "passed": true
+        },
+        {
+          "name": "Missing expected named report cannot pass",
+          "passed": true
+        },
+        {
+          "name": "Unexpected named report forces expectation review",
+          "passed": true
+        },
+        {
+          "name": "Changed duplicate build evidence cannot silently overwrite",
+          "passed": true
+        },
+        {
+          "name": "Cross-partition case alias is refused by explicit global ownership before extraction",
+          "passed": true
+        },
+        {
+          "name": "Existing integer aggregate report accepts exact passing execution count",
+          "passed": true
+        },
+        {
+          "name": "Incorrect integer aggregate count cannot mask named outcomes",
+          "passed": true
+        },
+        {
+          "name": "Integer aggregate with failure detail remains failed",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses apache qa/http-results.json",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses recovery qa/apache-results.json",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses native-browser qa/structure-results.json",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses build test-runtime/private/key.txt",
+          "passed": true
+        },
+        {
+          "name": "Finite access snapshot seed stays diagnostic metadata beside its required report",
+          "passed": true
+        },
+        {
+          "name": "Successful seed cannot mask a failed access snapshot native report",
+          "passed": true
+        },
+        {
+          "name": "Delivery evidence uses one actual synthetic archive generator",
+          "passed": true
+        },
+        {
+          "name": "Actual synthetic delivery has exactly three public regular members",
+          "passed": true
+        },
+        {
+          "name": "Native/browser admits exact synthetic delivery member qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Synthetic delivery evidence cannot become pristine input qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser build qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser recovery qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser apache qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser unknown qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Native/browser admits exact synthetic delivery member qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Synthetic delivery evidence cannot become pristine input qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser build qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser recovery qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser apache qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser unknown qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Native/browser admits exact synthetic delivery member qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Synthetic delivery evidence cannot become pristine input qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser build qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser recovery qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser apache qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser unknown qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/extra.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.php'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/config.php'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/.installed.php'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/.env'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/provider-master.key'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/secret.pem'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/database.sql'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/sub/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/other-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/INDEX.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/Client-website-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'QA/client-website-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.html/'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted//index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/../index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted\\\\index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member '/qa/client-website-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.html:stream'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.html\\x00'",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery allowlist cannot bypass the original private-name guard",
+          "passed": true
+        },
+        {
+          "name": "Actual seal records all three exact member digests",
+          "passed": true
+        },
+        {
+          "name": "Immutable browser checkpoint preserves actual extracted public bytes",
+          "passed": true
+        },
+        {
+          "name": "Actual four-lane aggregation retains exact public delivery bytes and named reports",
+          "passed": true
+        },
+        {
+          "name": "Final retains native/browser ownership for every public delivery member",
+          "passed": true
+        },
+        {
+          "name": "Actual seal rejects public delivery extraction in build",
+          "passed": true
+        },
+        {
+          "name": "Actual seal rejects public delivery extraction in recovery",
+          "passed": true
+        },
+        {
+          "name": "Actual seal rejects public delivery extraction in apache",
+          "passed": true
+        },
+        {
+          "name": "Actual native seal refuses a fourth file beside the allowlisted members",
+          "passed": true
+        },
+        {
+          "name": "Rehashed outer archive cannot hide changed allowlisted delivery bytes",
+          "passed": true
+        },
+        {
+          "name": "Allowlisted delivery pathname does not admit a ZIP symlink",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.2/mariadb-10.11",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.2/mysql-8.4",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.3/mariadb-10.11",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.3/mysql-8.4",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.4/mariadb-10.11",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.4/mysql-8.4",
+          "passed": true
+        },
+        {
+          "name": "Unsupported PHP selector is refused",
+          "passed": true
+        },
+        {
+          "name": "Unsupported database selector is refused",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses wrong version",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses prefix version",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses web SAPI",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses missing extension",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses relative binary",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses wrong version",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses missing PDO",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses missing tokenizer",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses unexpected PDO driver",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server 10.11.15-MariaDB",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server 8.3.1",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server 8.40.1",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server None",
+          "passed": true
+        },
+        {
+          "name": "Database-free lane refuses invented database connection",
+          "passed": true
+        },
+        {
+          "name": "Runtime report has exact partition owner native-browser",
+          "passed": true
+        },
+        {
+          "name": "Runtime report has exact partition owner recovery",
+          "passed": true
+        },
+        {
+          "name": "Runtime report has exact partition owner apache",
+          "passed": true
+        },
+        {
+          "name": "Actual HTTP evidence refuses wrong module or shape {\"sapi\": \"apache2handler\", \"version\": \"8.3.99\"}",
+          "passed": true
+        },
+        {
+          "name": "Actual HTTP evidence refuses wrong module or shape {\"sapi\": \"cli\", \"version\": \"8.4.8\"}",
+          "passed": true
+        },
+        {
+          "name": "Actual HTTP evidence refuses wrong module or shape {\"extra\": true, \"sapi\": \"apache2handler\", \"version\": \"8.4.8\"}",
+          "passed": true
+        },
+        {
+          "name": "One Apache mode remains incomplete",
+          "passed": true
+        },
+        {
+          "name": "Duplicate Apache mode refuses evidence reuse",
+          "passed": true
+        },
+        {
+          "name": "Both exact Apache HTTP modes complete runtime report",
+          "passed": true
+        },
+        {
+          "name": "Changed selected runtime cannot reuse Apache report",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/structure_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/apache_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/prepare_legacy.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/stackcp_access_read_snapshot_native.php",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/fixtures/stackcp_access_read_original.json",
+          "passed": true
+        },
+        {
+          "name": "Folder-control commands are each inserted once after saved-root observations",
+          "passed": true
+        },
+        {
+          "name": "Folder controls preserve all 152 original native recipes in order",
+          "passed": true
+        },
+        {
+          "name": "Exact folder-control source extension preserves predecessor tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Exact folder-control source extension preserves predecessor tests/provider_http_server.py",
+          "passed": true
+        },
+        {
+          "name": "Exact folder-control source extension preserves predecessor tests/prepare_legacy.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed folder-control acceptance source retained tests/provider_document_root_controls_native.php",
+          "passed": true
+        },
+        {
+          "name": "Reviewed folder-control acceptance source retained tests/provider_document_root_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed folder-control acceptance source retained tests/provider_document_root_controls_http_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed folder-control acceptance source retained tests/document_root_controls_acceptance_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed folder-control acceptance source retained .github/workflows/provider-document-root-controls.yml",
+          "passed": true
+        },
+        {
+          "name": "Reviewed installed folder-control source retained tools/acceptance_artifacts.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed installed folder-control source retained tools/legacy-release-files.json",
+          "passed": true
+        },
+        {
+          "name": "Reviewed installed folder-control source retained tests/prepare_legacy.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed installed folder-control source retained tests/release_125_upgrade_input_guards.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed installed folder-control source retained tests/provider_document_root_controls_upgrade.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed installed folder-control source retained tests/provider_document_root_controls_upgrade_test.py",
+          "passed": true
+        },
+        {
+          "name": "Reviewed installed folder-control source retained tests/provider_document_root_controls_upgrade_fixture.php",
+          "passed": true
+        },
+        {
+          "name": "Installed folder-control browser reports preserve predecessor requirements",
+          "passed": true
+        },
+        {
+          "name": "Installed folder-control final reports preserve predecessor requirements",
+          "passed": true
+        },
+        {
+          "name": "Installed folder-control commands extend the exact Apache predecessor once",
+          "passed": true
+        },
+        {
+          "name": "Original actual1.24 baseline guards preserve exact predecessor source",
+          "passed": true
+        },
+        {
+          "name": "Folder-control browser reports are additive and required",
+          "passed": true
+        },
+        {
+          "name": "Folder-control final reports are additive and required",
+          "passed": true
+        },
+        {
+          "name": "Folder-control browser callback follows the complete saved-map callback",
+          "passed": true
+        },
+        {
+          "name": "Folder-control browser requires eight distinct desktop and mobile captures",
+          "passed": true
+        },
+        {
+          "name": "Folder-control native acceptance requires explicit isolated-database opt-in",
+          "passed": true
+        },
+        {
+          "name": "Folder-control focused acceptance retains all four supported combinations",
+          "passed": true
+        },
+        {
+          "name": "Import additions retain the complete selected-runtime recipe",
+          "passed": true
+        },
+        {
+          "name": "Three import commands occur once after the existing catalog native fixture",
+          "passed": true
+        },
+        {
+          "name": "Import additions preserve the exact149 predecessor commands",
+          "passed": true
+        },
+        {
+          "name": "Import fixture source retained tests/provider_catalog_import.php",
+          "passed": true
+        },
+        {
+          "name": "Import fixture source retained tests/provider_catalog_import_native.php",
+          "passed": true
+        },
+        {
+          "name": "Import fixture source retained tests/provider_catalog_import_cases.py",
+          "passed": true
+        },
+        {
+          "name": "All149 native commands equal the exact current selected-runtime recipe",
+          "passed": true
+        },
+        {
+          "name": "Access snapshot comparison occurs exactly once after prerequisite snapshot",
+          "passed": true
+        },
+        {
+          "name": "Access snapshot addition retains exact148 source-bound commands",
+          "passed": true
+        },
+        {
+          "name": "All148 native commands retain exact selected-runtime order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Only explicit executable selection changes all148 predecessor commands",
+          "passed": true
+        },
+        {
+          "name": "Snapshot native comparison is inserted exactly once after StackCP access",
+          "passed": true
+        },
+        {
+          "name": "Snapshot addition retains all147 predecessor native commands exactly",
+          "passed": true
+        },
+        {
+          "name": "All139 pre-cloud-assignment native commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Eight cloud assignment commands occur once immediately after cloud confirmation",
+          "passed": true
+        },
+        {
+          "name": "All131 pre-StackCP-access commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Eight StackCP access commands occur once after prerequisite native checks",
+          "passed": true
+        },
+        {
+          "name": "All126 pre-registration-draft commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Five registration contract draft pure and native commands occur once after renewal dispatch",
+          "passed": true
+        },
+        {
+          "name": "All119 pre-StackCP native commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Seven StackCP reports cover pure handoff prerequisites views and native once",
+          "passed": true
+        },
+        {
+          "name": "All105 predecessor native commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Six renewal native commands occur once immediately after agreement checks",
+          "passed": true
+        },
+        {
+          "name": "Eight directory control commands occur once immediately after Force SSL controls",
+          "passed": true
+        },
+        {
+          "name": "Public fixture preparation runs only once in the build job",
+          "passed": true
+        },
+        {
+          "name": "Only one exact source package build remains",
+          "passed": true
+        },
+        {
+          "name": "Assigned ports use permitted step context and GITHUB_ENV in both DB jobs",
+          "passed": true
+        },
+        {
+          "name": "Original invalid job-level service context is rejected for native-and-browser",
+          "passed": true
+        },
+        {
+          "name": "Original invalid job-level service context is rejected for apache",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests retain all154 predecessor native recipes in order",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests workflow changes only exact additional test commands",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests native fixture keeps explicit isolated runtime opt in",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests modeled browser uses selected PHP after Python setup",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests retain every original browser report and require new producers",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests retain every original final report and require new producers",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding .github/workflows/provider-document-root-requests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/admin/controllers/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/admin/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/admin/views/providers.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/app/providers/document_root_controls.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/app/providers/document_root_controls_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/app/providers/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/app/providers/document_root_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/app/providers/document_root_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/app/providers/document_root_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/assets/css/growth.css",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/database/migrations/provider_document_root_requests_migrate.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/database/schema/provider_document_root_requests_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/includes/layout/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/includes/layout/provider_services.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/install/inventory.generated.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/portal/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/portal/controllers/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/portal/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding site/portal/views/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/document_root_requests_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/document_root_requests_browser.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/document_root_requests_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/document_root_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/document_root_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/document_root_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/provider_document_root_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/provider_document_root_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/provider_document_root_requests_upgrade.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/provider_document_root_requests_upgrade_fixture.php",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests source binding tests/provider_document_root_requests_upgrade_test.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests preserve complete predecessor .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests reject changed current .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests preserve complete predecessor tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests reject changed current tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests preserve complete predecessor tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests reject changed current tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests preserve complete predecessor tools/acceptance-reports.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder requests reject changed current tools/acceptance-reports.json",
+          "passed": true
+        },
+        {
+          "name": "Installed client folder callback follows original owner controls and requires captures",
+          "passed": true
+        },
+        {
+          "name": "Installed client folder captures have eight exact distinct names",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion accepts its finite synthetic output contract",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses false overall",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses numeric overall",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses empty checks",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses false check",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses numeric check",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses duplicate check",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses missing capture",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses duplicate capture",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses empty file",
+          "passed": true
+        },
+        {
+          "name": "Installed folder completion refuses missing file",
+          "passed": true
+        },
+        {
+          "name": "Installed folder retention accepts additions and rejects mutated history",
+          "passed": true
+        },
+        {
+          "name": "Client folder aggregate requires all current reports",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-document-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-document-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-document-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-document-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-storage-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-storage-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-storage-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-storage-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-contract-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-contract-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-contract-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-contract-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-views-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-views-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-views-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-views-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses provider-document-root-requests-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses provider-document-root-requests-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses document-root-requests-modeled-browser-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses document-root-requests-modeled-browser-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses apache-document-root-requests-upgrade-guard-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses apache-document-root-requests-upgrade-guard-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder missing report refuses apache-document-root-requests-upgrade-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder failed report refuses apache-document-root-requests-upgrade-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client folder unexpected report refuses",
+          "passed": true
+        },
+        {
+          "name": "Client folder private fixture state stays excluded",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "Final source and predecessor review; no suite rerun",
+      "reports": [
+        {
+          "retained_path": "work/client-document-roots-ui-proposal/final-binding-review.json",
+          "sha256": "fa3d850102d606bad661a25012afca9f2324722be0c653e819672638ae023471",
+          "bytes": 12605
+        }
+      ],
+      "checks_per_report": 28,
+      "checks": [
+        {
+          "name": "Final section identifies exact shared parent",
+          "passed": true
+        },
+        {
+          "name": "All33 declared current source pins match raw bytes",
+          "passed": true
+        },
+        {
+          "name": "All current source pins are LF stable",
+          "passed": true
+        },
+        {
+          "name": "Current inverse input binds .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Whole inverse equals exact Git parent .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Current inverse input binds tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Whole inverse equals exact Git parent tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Current inverse input binds tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Whole inverse equals exact Git parent tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Current inverse input binds tools/acceptance-reports.json",
+          "passed": true
+        },
+        {
+          "name": "Whole inverse equals exact Git parent tools/acceptance-reports.json",
+          "passed": true
+        },
+        {
+          "name": "Exactly four whole-file inverses",
+          "passed": true
+        },
+        {
+          "name": "Whole predecessor contract equals actual Git parent",
+          "passed": true
+        },
+        {
+          "name": "All17 source files in initial semantic review unchanged",
+          "passed": true
+        },
+        {
+          "name": "All33 initial semantic checks passed",
+          "passed": true
+        },
+        {
+          "name": "Frozen authored sources still match client-document-roots-ui-proposal",
+          "passed": true
+        },
+        {
+          "name": "Frozen authored sources still match client-document-root-runtime-proposal",
+          "passed": true
+        },
+        {
+          "name": "Frozen authored sources still match client-document-roots-storage-checks",
+          "passed": true
+        },
+        {
+          "name": "Frozen authored sources still match client-document-roots-upgrade-proposal",
+          "passed": true
+        },
+        {
+          "name": "Actual retained parent helper passed272",
+          "passed": true
+        },
+        {
+          "name": "Actual final helper passed360",
+          "passed": true
+        },
+        {
+          "name": "All272 original helper outcome objects are exact ordered prefix",
+          "passed": true
+        },
+        {
+          "name": "All final helper checks have distinct names",
+          "passed": true
+        },
+        {
+          "name": "Native154 to163 preserves prior recipes order and exact nine additions once",
+          "passed": true
+        },
+        {
+          "name": "Browser166 to176 preserves every predecessor report in order",
+          "passed": true
+        },
+        {
+          "name": "Final212 to224 preserves every predecessor report in order",
+          "passed": true
+        },
+        {
+          "name": "Every new required report occurs once in its lane",
+          "passed": true
+        },
+        {
+          "name": "Exactly eight installed capture names remain required",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scope": "Independent upgrade source review; no installed execution",
+      "reports": [
+        {
+          "retained_path": "work/client-document-root-runtime-proposal/upgrade-review/review.json",
+          "sha256": "923187278e81f0c0151273e56da39bdfab1b4bba9d442ef94dff5df87a589919",
+          "bytes": 9320
+        }
+      ],
+      "checks_per_report": 54,
+      "checks": [
+        {
+          "name": "Frozen upgrade descriptor",
+          "passed": true
+        },
+        {
+          "name": "Applied upgrade bytes: tests/provider_document_root_requests_upgrade.py",
+          "passed": true
+        },
+        {
+          "name": "Retained upgrade copy: tests/provider_document_root_requests_upgrade.py",
+          "passed": true
+        },
+        {
+          "name": "Applied upgrade bytes: tests/provider_document_root_requests_upgrade_fixture.php",
+          "passed": true
+        },
+        {
+          "name": "Retained upgrade copy: tests/provider_document_root_requests_upgrade_fixture.php",
+          "passed": true
+        },
+        {
+          "name": "Applied upgrade bytes: tests/provider_document_root_requests_upgrade_test.py",
+          "passed": true
+        },
+        {
+          "name": "Retained upgrade copy: tests/provider_document_root_requests_upgrade_test.py",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_root_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_root_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_root_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/database/schema/provider_document_root_requests_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/database/migrations/provider_document_root_requests_migrate.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_root_controls.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_root_controls_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/admin/controllers/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/portal/controllers/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/portal/views/document_root_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_roots.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/document_roots_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/inventory.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/operations.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: foundation/twentyi-operations/TwentyIOperationAdapter.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/settings.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/providers/credentials.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/clients/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/includes/database.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/includes/auth/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/app/settings/store.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/database/schema/base.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/database/schema/provider_document_root_controls_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: site/database/schema/provider_document_roots_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: tools/update/owner-update.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: tools/legacy-release-files.json",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: foundation/twentyi-operations/DocumentRootChange.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: foundation/twentyi-document-roots/DocumentRootsBinding.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: foundation/twentyi-document-roots/DocumentRootsObservation.php",
+          "passed": true
+        },
+        {
+          "name": "Current reviewed dependency: foundation/twentyi-document-roots/DocumentRootsReader.php",
+          "passed": true
+        },
+        {
+          "name": "Original helper remains byte-equivalent: tests/provider_document_root_controls_upgrade.py",
+          "passed": true
+        },
+        {
+          "name": "Original helper remains byte-equivalent: tests/provider_document_root_controls_upgrade_fixture.php",
+          "passed": true
+        },
+        {
+          "name": "Original helper remains byte-equivalent: tests/provider_document_root_controls_upgrade_test.py",
+          "passed": true
+        },
+        {
+          "name": "Original helper remains byte-equivalent: tests/release_125_upgrade_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Original helper remains byte-equivalent: tests/release_125_upgrade_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original helper remains byte-equivalent: tests/release_125_retention.py",
+          "passed": true
+        },
+        {
+          "name": "Original helper remains byte-equivalent: tests/acceptance_environment.py",
+          "passed": true
+        },
+        {
+          "name": "Retained evidence binding: patch",
+          "passed": true
+        },
+        {
+          "name": "Retained evidence binding: validation",
+          "passed": true
+        },
+        {
+          "name": "Retained evidence binding: actual_portable_result",
+          "passed": true
+        },
+        {
+          "name": "Retained evidence binding: initial_portable_result",
+          "passed": true
+        },
+        {
+          "name": "Retained evidence binding: receipt_preparation_correction",
+          "passed": true
+        },
+        {
+          "name": "Peer retained portable report passes thirty named outcomes",
+          "passed": true
+        },
+        {
+          "name": "Seven original owner actions remain in exact program order",
+          "passed": true
+        },
+        {
+          "name": "Runtime descriptor remains bound to independently reviewed current service",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "final_syntax": {
+    "report": {
+      "retained_path": "work/client-document-roots-root-checks/root-syntax-final.json",
+      "sha256": "bab111b2783df38b14942da01794214f8150acffe6de288fb77fbb04b1dcc6e1",
+      "bytes": 9567
+    },
+    "checks": [
+      {
+        "name": "PHP syntax site/admin/controllers/actions.php",
+        "passed": true,
+        "sha256": "90f712f2bd6c508ee6fc0b53a5ed857be05d8eeead38db0eb7e96c4aa83e05a8",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/admin/controllers/document_root_requests.php",
+        "passed": true,
+        "sha256": "f693e0f0c317e6f38d08df2eb5ea335d78795421e7e2f8ed319a1e01c2168295",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/admin/controllers/router.php",
+        "passed": true,
+        "sha256": "4afde0ea88bfc8b733e1d6ba23ec72eab1484dfb6306dd9f33c35b511f794208",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/admin/views/providers.php",
+        "passed": true,
+        "sha256": "ce22f2aa87bdc709a30f8081b6ac8261056909ebe19974e0cd19a6ae23696477",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/app/providers/document_root_controls.php",
+        "passed": true,
+        "sha256": "bc42cfa6761b47a43e432a949e6de544ba8ddc6a8db87c5b75e697adcc0c9d9d",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/app/providers/document_root_controls_storage.php",
+        "passed": true,
+        "sha256": "439eb6cabc7a9823a18a7ea63e19f5a5759c8e90e2d97d59af89e7ae82ff7200",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/app/providers/document_root_requests.php",
+        "passed": true,
+        "sha256": "d2ed027234301c873201f2ba7919ec50452ce1a3f55670051c868d20ff586265",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/app/providers/document_root_requests_document.php",
+        "passed": true,
+        "sha256": "314705fec3083461e3873f07c2cf18911cfebca5b62ad5f3b8c4563534b39ad9",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/app/providers/document_root_requests_storage.php",
+        "passed": true,
+        "sha256": "57011802543acf9b6896d1e5cc24be0b842906e2dc1880fb29e22adfdecbf821",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/app/providers/document_root_requests_views.php",
+        "passed": true,
+        "sha256": "8cbb40a1e85fd2440adf92fd59871c20f4e123e1396fca9943cea98d346eaff0",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/app/staff/accounts.php",
+        "passed": true,
+        "sha256": "d774461631326d5122d5218d0e9a46ad5d9c1f7a7b2af226d6f9ff871ef35de5",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/database/migrations/provider_document_root_requests_migrate.php",
+        "passed": true,
+        "sha256": "0b44ef42a69df6c427fb87e3df255190502d8478ac025836c107ee52c7a42980",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/database/schema/provider_document_root_requests_schema.php",
+        "passed": true,
+        "sha256": "cd287d3db8fb51470895bd1ee649092cbd281a604070a1a13121df375f8bfe3a",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/includes/layout/admin.php",
+        "passed": true,
+        "sha256": "302d399ec5be0a9bb0990018ae691ac4705fda3157b2fe6af12aedf4c9e031ac",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/includes/layout/provider_services.php",
+        "passed": true,
+        "sha256": "1b870cf393b429dacff80be6945add2a5e937c0e5b25bdbc5fed35641e56796a",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/install/inventory.generated.php",
+        "passed": true,
+        "sha256": "56a55196e5daaf4ce9f38ea1dcd2533c6c8aee1ce02b6793bfeaf7b08319c2dd",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/portal/controllers/actions.php",
+        "passed": true,
+        "sha256": "93b76759a95785d1ee54eb02f1f57670abaddd7c3110a3a6dfb83ccdcc9f5e5d",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/portal/controllers/document_root_requests.php",
+        "passed": true,
+        "sha256": "fc2d43f31032272c38e57c55898f075111ab555cce4c57378f818bfdbb04af5d",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/portal/controllers/router.php",
+        "passed": true,
+        "sha256": "c45e40600dbb50ab2c1648b79bb7edc09c2a216db08f4fbbb827e9e7792c1065",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax site/portal/views/document_root_requests.php",
+        "passed": true,
+        "sha256": "a44d16ae781d5a445db593eb046c362d910ef143a32192a6bc8bc3c6dbe4c641",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "Python syntax tests/acceptance_artifacts_test.py",
+        "passed": true,
+        "sha256": "90a007855a9e7cdf2a2ea3635cb7724d2bd93f1a46cb4594cdd114105e623d37",
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "Python syntax tests/browser_acceptance.py",
+        "passed": true,
+        "sha256": "b3f87e1ea599d8bcac904c803dbd93da2d646cfa7cc33e0f2900623f8ee8f7d7",
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "Python syntax tests/document_root_requests_acceptance.py",
+        "passed": true,
+        "sha256": "2ac337c8d1e2bbe2a7cb00b5a02265452a615c59a222fc29add9c407cd196d9b",
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "Python syntax tests/document_root_requests_browser.py",
+        "passed": true,
+        "sha256": "15f591d68a953d8f847e57879870de2f482dd4871a8e96eff1b885cd046d887a",
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax tests/document_root_requests_contract.php",
+        "passed": true,
+        "sha256": "f6e3c99773264f325bdb22949b6d3a590bb650a6c9ee3d24e1f03ee7b9116541",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax tests/document_root_requests_document.php",
+        "passed": true,
+        "sha256": "d46c4de8e1adadb53f11835e81a35e28b5006f69a052f51002ec657e1b66333b",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax tests/document_root_requests_storage.php",
+        "passed": true,
+        "sha256": "5f8eda3db3f49170727dbe748b9bb5516e5928237a88f3b48bea58a492826e4e",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax tests/document_root_requests_views.php",
+        "passed": true,
+        "sha256": "b880a282fe8a6f6049065d4b6b140b092644228307bd3652f9980eac20839964",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "Python syntax tests/provider_document_root_requests_cases.py",
+        "passed": true,
+        "sha256": "8ef5f2346ebddfacf02f32d21a455bc68001848e8fc6275c1b19e51007563eb4",
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax tests/provider_document_root_requests_native.php",
+        "passed": true,
+        "sha256": "f30a5ac680059d4a09c7dc81747781956a9cd4524f28a486d2225711f1ae18c5",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "Python syntax tests/provider_document_root_requests_upgrade.py",
+        "passed": true,
+        "sha256": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "PHP syntax tests/provider_document_root_requests_upgrade_fixture.php",
+        "passed": true,
+        "sha256": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
+        "exit": 0,
+        "verification": "Exact source hash matches earlier passing syntax result"
+      },
+      {
+        "name": "Python syntax tests/provider_document_root_requests_upgrade_test.py",
+        "passed": true,
+        "sha256": "4c29393bd51978a888a5b075e00f0d58f2eb92a43b797cca82c77443f63deae5",
+        "verification": "Exact source hash matches earlier passing syntax result"
+      }
+    ]
+  },
+  "build_refresh": {
+    "command": "python tools/build.py --refresh",
+    "exit_code": 0,
+    "observed_output": "PASS: 40 locked packages; 2188 exact dependency/license files; no drift.\nPASS: 2201 receiving runtime files match the canonical bundle byte-for-byte.\nPASS:6 pinned original PHPMailer7.1.1 source/license/metadata files match recorded hashes\nPASS:15 submission runtime files match the canonical bundle byte-for-byte\nRefreshed and checked canonical installer; no release built from uncommitted files.\n",
+    "inventory_sha256": "56a55196e5daaf4ce9f38ea1dcd2533c6c8aee1ce02b6793bfeaf7b08319c2dd",
+    "scope": "Canonical dependency/inventory refresh and all shipping PHP/JavaScript syntax; no archives generated."
+  },
+  "visual_review": {
+    "scope": "Modeled renderings only",
+    "agent": "All eight desktop/mobile modeled captures reviewed",
+    "root": [
+      "Modeled-Website-Folder-Requests-Client-Pending-Mobile.png",
+      "Modeled-Website-Folder-Requests-Owner-Review-Mobile.png"
+    ],
+    "result": "Readable text and wrapped opaque paths; approval controls remain accessible."
+  },
+  "corrections": [
+    "Legacy owner readiness now acquires the owning mutex outside an inherited mutation and refuses acquiring it within an inherited transaction.",
+    "Surviving prepared client history prevents recreation of missing owner journals before any DDL.",
+    "New focused workflow paths include its Docker context, shared bootstrap and original executed native tests.",
+    "Installed browser callback now requires exact unchanged snapshots of six existing financial tables.",
+    "Original test-authoring failures, Windows encoding errors and missing local Chromium setup are retained separately; final reports do not overwrite them."
+  ],
+  "remaining": [
+    "First exact-source focused Linux PHP/database matrix",
+    "First exact-source full packaged acceptance",
+    "Actual installed eight-image review",
+    "Populated published-1.25 upgrade, retry, rollback, recovery and reapply execution",
+    "Sequential integration and combined exact-main release gates"
+  ],
+  "release": "Published1.25.0 remains immutable. No live provider operation, charge, customer message, SSH or deployment was performed."
+}

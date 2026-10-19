@@ -1,3 +1,9 @@
+## 2026-10-19 — client website-folder requests
+
+Root coordinates `codex/twentyi-client-document-roots` from f545 plus main maintenance merge3bd43ca8. Domains owns the new document/storage/schema/migration and separate upgrade companion. VPS owns the request service, bounded existing owner-control changes, native lifecycle and extracted-service tests. Catalog owns new owner/client controllers, shared views and modeled renderer/browser tests. Root owns routers/actions, navigation, staff permission mapping, styles, actual packaged browser callback, acceptance workflow/registry/helper, generated inventory and continuity documentation. Cross-reviews preserve exact original v1 behavior and all predecessor acceptance producers. No agent switches or commits the shared checkout.
+
+Preserve frozen billing PR248/d2903bfb and every original queued run. Devin remains assigned to non-20i/licensing; this entry does not claim an active Devin session. Feature integration and release remain root-coordinated and gated by current runtime evidence. [Current scope](TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
+
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Catalog proposed only access policy, provider contracts and scheduling from main8f734de1; VPS independently verified all29 sources and35 dependency edges atafb24946. Root applied the same three reviewed files after PR239's normal merge7e1507f5 and refreshed policy through read-only GraphQL. [Evidence](evidence/ci-remaining-pure-pr-filters.json).

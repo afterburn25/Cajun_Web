@@ -10,6 +10,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
+ elseif(str_starts_with($action,'folder_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_document_root_requests_client_action($action,$client);}
  elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'domain_renewal_')){if(!$client)throw new RuntimeException('Sign in to continue.');domain_renewals_client_action($action,$client);}
  elseif($action==='client_mailbox_create'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_mailbox_client_action($client);}

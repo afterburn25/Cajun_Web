@@ -680,5 +680,181 @@
     "baseline_bytes": 15843208,
     "baseline_members": 2895,
     "scope": "One real published1.25 subfolder/rewrite installation followed by exact candidate UPDATE and populated folder-control retry, complete-journal rollback, reapply and narrow local terminal recovery. No native/installed outcome follows from portable checks."
+  },
+  "client_document_root_requests": {
+    "parent": "3bd43ca891c9faefc6c07a293e4d2d59e00d4a62",
+    "native_after": "CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 \"$PHP_BINARY\" tests/provider_document_root_controls_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json",
+      "\"$PHP_BINARY\" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json",
+      "\"$PHP_BINARY\" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json",
+      "\"$PHP_BINARY\" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json",
+      "\"$PHP_BINARY\" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json",
+      "\"$PHP_BINARY\" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json",
+      "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json",
+      "CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 \"$PHP_BINARY\" tests/provider_document_root_requests_native.php"
+    ],
+    "browser_command": ".ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json",
+    "browser_step": "      - name: Website folder request layout models\n        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json\n",
+    "browser_after": "        document_root_controls_browser(globals(),browser)\n",
+    "browser_hook": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n",
+    "apache_after": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
+    "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py\n",
+    "reports": [
+      "document-root-requests-document-default-results.json",
+      "document-root-requests-document-minimal-results.json",
+      "document-root-requests-storage-default-results.json",
+      "document-root-requests-storage-minimal-results.json",
+      "document-root-requests-contract-default-results.json",
+      "document-root-requests-contract-minimal-results.json",
+      "document-root-requests-views-default-results.json",
+      "document-root-requests-views-minimal-results.json",
+      "provider-document-root-requests-native-results.json",
+      "document-root-requests-modeled-browser-results.json"
+    ],
+    "apache_reports": [
+      "apache-document-root-requests-upgrade-guard-results.json",
+      "apache-document-root-requests-upgrade-results.json"
+    ],
+    "predecessor_contract_sha256": "34aa96f9ed22969c902227412c062278748dfd3fc7ce4fb84bb48f32c18d4fd8",
+    "source_deltas": {
+      ".github/workflows/application-tests.yml": {
+        "before_sha256": "cb51a74c10a0a46e7f2216c7e101b086f9fa668a625be84ed74c5915af86659a",
+        "after_sha256": "a359d42fa7547c3bda819e57b8a60fce6063054b005be1ab71bda43eeb5b39fb",
+        "changes": [
+          {
+            "after_start": 374,
+            "after_end": 383,
+            "before": "",
+            "after": "          \"$PHP_BINARY\" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json\n          CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 \"$PHP_BINARY\" tests/provider_document_root_requests_native.php\n"
+          },
+          {
+            "after_start": 446,
+            "after_end": 448,
+            "before": "",
+            "after": "      - name: Website folder request layout models\n        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json\n"
+          },
+          {
+            "after_start": 718,
+            "after_end": 720,
+            "before": "",
+            "after": "          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py\n"
+          }
+        ]
+      },
+      "tests/browser_acceptance.py": {
+        "before_sha256": "2cbd4f2c94fc792b93a48e773e953513549e85041477121b35a5cfb761c524db",
+        "after_sha256": "b3f87e1ea599d8bcac904c803dbd93da2d646cfa7cc33e0f2900623f8ee8f7d7",
+        "changes": [
+          {
+            "after_start": 250,
+            "after_end": 253,
+            "before": "",
+            "after": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "before_sha256": "e7c9caba2592584656ac025d962bf2dce8c7696dba5c3900a372bc03ce116d2b",
+        "after_sha256": "90a007855a9e7cdf2a2ea3635cb7724d2bd93f1a46cb4594cdd114105e623d37",
+        "changes": [
+          {
+            "after_start": 442,
+            "after_end": 449,
+            "before": "",
+            "after": "_run_before_client_document_root_requests = run\n\ndef run(tmp):\n    from document_root_requests_acceptance import run as client_folder_acceptance\n    client_folder_acceptance(globals(), tmp, _run_before_client_document_root_requests)\n\n\n"
+          }
+        ]
+      },
+      "tools/acceptance-reports.json": {
+        "before_sha256": "45684289a4b1c23846c62cb203ccb835a051d813eb9d8deb8d284768032bcd77",
+        "after_sha256": "3233465b3f5cf31a620e1225865200e9085947e2930270e235a2f9a21238014a",
+        "changes": [
+          {
+            "after_start": 31,
+            "after_end": 40,
+            "before": "",
+            "after": "    \"document-root-requests-contract-default-results.json\",\n    \"document-root-requests-contract-minimal-results.json\",\n    \"document-root-requests-document-default-results.json\",\n    \"document-root-requests-document-minimal-results.json\",\n    \"document-root-requests-modeled-browser-results.json\",\n    \"document-root-requests-storage-default-results.json\",\n    \"document-root-requests-storage-minimal-results.json\",\n    \"document-root-requests-views-default-results.json\",\n    \"document-root-requests-views-minimal-results.json\",\n"
+          },
+          {
+            "after_start": 119,
+            "after_end": 120,
+            "before": "",
+            "after": "    \"provider-document-root-requests-native-results.json\",\n"
+          },
+          {
+            "after_start": 183,
+            "after_end": 185,
+            "before": "",
+            "after": "    \"apache-document-root-requests-upgrade-guard-results.json\",\n    \"apache-document-root-requests-upgrade-results.json\",\n"
+          },
+          {
+            "after_start": 223,
+            "after_end": 232,
+            "before": "",
+            "after": "    \"document-root-requests-contract-default-results.json\",\n    \"document-root-requests-contract-minimal-results.json\",\n    \"document-root-requests-document-default-results.json\",\n    \"document-root-requests-document-minimal-results.json\",\n    \"document-root-requests-modeled-browser-results.json\",\n    \"document-root-requests-storage-default-results.json\",\n    \"document-root-requests-storage-minimal-results.json\",\n    \"document-root-requests-views-default-results.json\",\n    \"document-root-requests-views-minimal-results.json\",\n"
+          },
+          {
+            "after_start": 343,
+            "after_end": 344,
+            "before": "",
+            "after": "    \"provider-document-root-requests-native-results.json\",\n"
+          },
+          {
+            "after_start": 417,
+            "after_end": 419,
+            "before": "      \"two folder-control installed-update guard and actual Apache reports; exact published1.25 original input added alongside preserved1.24\"\n",
+            "after": "      \"two folder-control installed-update guard and actual Apache reports; exact published1.25 original input added alongside preserved1.24\",\n      \"ten client website-folder document/storage/service/view/native/modeled reports plus two installed-upgrade reports; actual packaged client-to-owner workflow and eight distinct captures remain additive in the HTTP report\"\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      ".github/workflows/provider-document-root-requests.yml": "8d8659033ce8f820e1138ec1ccd81de74b690275e9b72d66f92017dd1804e6a5",
+      "site/admin/controllers/actions.php": "90f712f2bd6c508ee6fc0b53a5ed857be05d8eeead38db0eb7e96c4aa83e05a8",
+      "site/admin/controllers/document_root_requests.php": "f693e0f0c317e6f38d08df2eb5ea335d78795421e7e2f8ed319a1e01c2168295",
+      "site/admin/controllers/router.php": "4afde0ea88bfc8b733e1d6ba23ec72eab1484dfb6306dd9f33c35b511f794208",
+      "site/admin/views/providers.php": "ce22f2aa87bdc709a30f8081b6ac8261056909ebe19974e0cd19a6ae23696477",
+      "site/app/providers/document_root_controls.php": "bc42cfa6761b47a43e432a949e6de544ba8ddc6a8db87c5b75e697adcc0c9d9d",
+      "site/app/providers/document_root_controls_storage.php": "439eb6cabc7a9823a18a7ea63e19f5a5759c8e90e2d97d59af89e7ae82ff7200",
+      "site/app/providers/document_root_requests.php": "d2ed027234301c873201f2ba7919ec50452ce1a3f55670051c868d20ff586265",
+      "site/app/providers/document_root_requests_document.php": "314705fec3083461e3873f07c2cf18911cfebca5b62ad5f3b8c4563534b39ad9",
+      "site/app/providers/document_root_requests_storage.php": "57011802543acf9b6896d1e5cc24be0b842906e2dc1880fb29e22adfdecbf821",
+      "site/app/providers/document_root_requests_views.php": "8cbb40a1e85fd2440adf92fd59871c20f4e123e1396fca9943cea98d346eaff0",
+      "site/app/staff/accounts.php": "d774461631326d5122d5218d0e9a46ad5d9c1f7a7b2af226d6f9ff871ef35de5",
+      "site/assets/css/growth.css": "ddf623c73fb280b19f29690abea62d2f182ee4c8ec10ee0bbb4a18eece6cf975",
+      "site/database/migrations/provider_document_root_requests_migrate.php": "0b44ef42a69df6c427fb87e3df255190502d8478ac025836c107ee52c7a42980",
+      "site/database/schema/provider_document_root_requests_schema.php": "cd287d3db8fb51470895bd1ee649092cbd281a604070a1a13121df375f8bfe3a",
+      "site/includes/layout/admin.php": "302d399ec5be0a9bb0990018ae691ac4705fda3157b2fe6af12aedf4c9e031ac",
+      "site/includes/layout/provider_services.php": "1b870cf393b429dacff80be6945add2a5e937c0e5b25bdbc5fed35641e56796a",
+      "site/install/inventory.generated.php": "56a55196e5daaf4ce9f38ea1dcd2533c6c8aee1ce02b6793bfeaf7b08319c2dd",
+      "site/portal/controllers/actions.php": "93b76759a95785d1ee54eb02f1f57670abaddd7c3110a3a6dfb83ccdcc9f5e5d",
+      "site/portal/controllers/document_root_requests.php": "fc2d43f31032272c38e57c55898f075111ab555cce4c57378f818bfdbb04af5d",
+      "site/portal/controllers/router.php": "c45e40600dbb50ab2c1648b79bb7edc09c2a216db08f4fbbb827e9e7792c1065",
+      "site/portal/views/document_root_requests.php": "a44d16ae781d5a445db593eb046c362d910ef143a32192a6bc8bc3c6dbe4c641",
+      "tests/document_root_requests_acceptance.py": "2ac337c8d1e2bbe2a7cb00b5a02265452a615c59a222fc29add9c407cd196d9b",
+      "tests/document_root_requests_browser.py": "15f591d68a953d8f847e57879870de2f482dd4871a8e96eff1b885cd046d887a",
+      "tests/document_root_requests_contract.php": "f6e3c99773264f325bdb22949b6d3a590bb650a6c9ee3d24e1f03ee7b9116541",
+      "tests/document_root_requests_document.php": "d46c4de8e1adadb53f11835e81a35e28b5006f69a052f51002ec657e1b66333b",
+      "tests/document_root_requests_storage.php": "5f8eda3db3f49170727dbe748b9bb5516e5928237a88f3b48bea58a492826e4e",
+      "tests/document_root_requests_views.php": "b880a282fe8a6f6049065d4b6b140b092644228307bd3652f9980eac20839964",
+      "tests/provider_document_root_requests_cases.py": "8ef5f2346ebddfacf02f32d21a455bc68001848e8fc6275c1b19e51007563eb4",
+      "tests/provider_document_root_requests_native.php": "f30a5ac680059d4a09c7dc81747781956a9cd4524f28a486d2225711f1ae18c5",
+      "tests/provider_document_root_requests_upgrade.py": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
+      "tests/provider_document_root_requests_upgrade_fixture.php": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
+      "tests/provider_document_root_requests_upgrade_test.py": "4c29393bd51978a888a5b075e00f0d58f2eb92a43b797cca82c77443f63deae5"
+    },
+    "screenshots": [
+      "Website-Folder-Requests-Client-Pending-Desktop.png",
+      "Website-Folder-Requests-Client-Pending-Mobile.png",
+      "Website-Folder-Requests-Owner-Review-Desktop.png",
+      "Website-Folder-Requests-Owner-Review-Mobile.png",
+      "Website-Folder-Requests-Owner-Readback-Desktop.png",
+      "Website-Folder-Requests-Owner-Readback-Mobile.png",
+      "Website-Folder-Requests-Client-Observed-Desktop.png",
+      "Website-Folder-Requests-Client-Observed-Mobile.png"
+    ],
+    "scope": "Exact additive client request and owner dispatch acceptance. Portable/model checks do not certify Linux SQL, installed browser, populated upgrade, live20i or release."
   }
 }

@@ -1,3 +1,9 @@
+## 2026-10-19 — client website-folder request lane
+
+Implemented on separate `codex/twentyi-client-document-roots`: explicitly shared hostname selection, immutable destination request, client withdrawal, owner decline or fresh-map approval, one provider attempt and separate outcome readback. Existing direct owner controls remain available. Current authority and reciprocal history survive across the two workflows; client history never reports provider acknowledgement as confirmed effect. Local verification and prepared native/installed/upgrade checks are separate from full acceptance and release. [Scope](TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
+
+This is one remaining client hosting capability. Complete20i, hosting database management, remaining CMS/security controls, domain purchase/transfer, full VPS/SSH and the broader site roadmap remain open under [the requirements checklist](TWENTYI_REQUIREMENTS_EVIDENCE.md).
+
 ## 2026-10-18 — retained diagnostic source packaging correction
 
 The exact local build of `d345eb5a29cc490341fb0c659d721b3d8369cbda` reached shipping syntax checks, then refused the existing tracked `ops/twentyi-catalog-schema/diagnostic.py` because FULL-PROJECT did not admit the ops directory. Its original failed build/logs are retained under `work/document-root-controls-upgrade-validation/`. Parent `d345eb5a29cc490341fb0c659d721b3d8369cbda`; enclosing correction **Reuse source-package correction for retained diagnostics** reuses only the one-line `tools/build.py` change from reviewed catalog commit `9f0b83fd1f18b9075f7d141f9a1d00b2646f4ebe`. It adds ops to FULL-PROJECT's source-area list; existing sensitive-file/symlink exclusions and COMPLETE/UPDATE payload selection remain unchanged. The four tracked ops files are diagnostic/test source, not credentials or generated results. No diagnostic is executed by packaging.

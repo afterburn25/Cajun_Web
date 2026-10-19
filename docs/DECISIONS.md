@@ -1,3 +1,7 @@
+## 2026-10-19 — independent client folder journal and reciprocal approval
+
+Keep client website-folder requests in `provider_website_folder_requests_events`, outside the owner's closed document-root lifecycle namespace. Preserve direct owner v1 documents, existing terminal/check formats and compact grant schema. A client-origin owner v2 approval commits atomically with a reciprocal dispatch event before the existing single-send path. Original sharing/client authority remains binding even when the owner reviews a newer map. Either missing journal refuses actions and preparation rather than reconstructing lost consent. This extends the documented owner workflow without inventing another20i request format. [Implementation and verification scope](TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
+
 ## 2026-10-19 — superseded component queue checkpoint
 
 The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).
