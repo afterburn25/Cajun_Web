@@ -207,7 +207,11 @@
     "hosting-catalog-variants-contract-default.json",
     "hosting-catalog-variants-contract-minimal.json",
     "hosting-catalog-variants-native-results.json",
-    "hosting-catalog-variants-browser-results.json"
+    "hosting-catalog-variants-browser-results.json",
+    "hosting-catalog-billing-default.json",
+    "hosting-catalog-billing-minimal.json",
+    "hosting-catalog-billing-native-results.json",
+    "hosting-catalog-billing-browser-results.json"
   ],
   "final": [
     "activity-native-results.json",
@@ -468,7 +472,11 @@
     "hosting-catalog-variants-contract-default.json",
     "hosting-catalog-variants-contract-minimal.json",
     "hosting-catalog-variants-native-results.json",
-    "hosting-catalog-variants-browser-results.json"
+    "hosting-catalog-variants-browser-results.json",
+    "hosting-catalog-billing-default.json",
+    "hosting-catalog-billing-minimal.json",
+    "hosting-catalog-billing-native-results.json",
+    "hosting-catalog-billing-browser-results.json"
   ],
   "provenance": {
     "original_source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",

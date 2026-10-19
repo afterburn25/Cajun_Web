@@ -1075,6 +1075,197 @@ def run(tmp):
     retail_variants_checks(tmp, current, registry, section, historical)
 
 
+_run_before_billing_selector = run
+
+
+def billing_selector_inverse(data, delta):
+    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:
+        raise ValueError('Billing selector current source changed')
+    lines = data.decode().splitlines(keepends=True)
+    for change in reversed(delta['changes']):
+        start, end = change['after_start'], change['after_end']
+        if ''.join(lines[start:end]) != change['after']:
+            raise ValueError('Billing selector inverse range changed')
+        lines[start:end] = change['before'].splitlines(keepends=True)
+    result = ''.join(lines).encode()
+    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:
+        raise ValueError('Billing selector predecessor changed')
+    return result
+
+
+def billing_selector_current(current=None, registry=None):
+    if current is None:
+        current = a.load(ROOT/'tools/acceptance-contract.json')
+    if registry is None:
+        registry = a.load(ROOT/'tools/acceptance-reports.json')
+    section = current['hosting_billing_selector']
+    for path, digest in section['source_sha256'].items():
+        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() != digest:
+            raise ValueError('Billing selector current source changed: '+path)
+    prior = copy.deepcopy(current)
+    del prior['hosting_billing_selector']
+    additions = section['native_additions']
+    position = prior['native_commands'].index(section['native_after'])+1
+    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):
+        raise ValueError('Billing selector native recipe changed')
+    del prior['native_commands'][position:position+len(additions)]
+    for pin in section['repins']:
+        cursor = prior
+        for key in pin['keys'][:-1]:
+            cursor = cursor[key]
+        key = pin['keys'][-1]
+        if cursor[key] != pin['after']:
+            raise ValueError('Billing selector current serialized pin changed')
+        cursor[key] = pin['before']
+    dump = lambda value: json.dumps(value, indent=2).encode()+b'\n'
+    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:
+        raise ValueError('Billing selector predecessor contract changed')
+    old_reports = copy.deepcopy(registry)
+    for phase in ('browser', 'final'):
+        if any(old_reports[phase].count(name) != 1 for name in section['reports']):
+            raise ValueError('Billing selector report missing or duplicated')
+        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]
+    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:
+        raise ValueError('Billing selector predecessor reports changed')
+    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}
+    for path, delta in section['source_deltas'].items():
+        historical[path] = billing_selector_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n'), delta)
+    return current, registry, section, historical
+
+
+def billing_selector_checks(tmp, current, registry, section, historical):
+    prior = json.loads(historical['tools/acceptance-contract.json'])
+    check('Billing selector retains all186 native commands and adds three exact producers',
+          len(current['native_commands']) == 189 and len(section['native_additions']) == 3
+          and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
+    check('Billing selector requires four unique report producers and no new captures',
+          len(section['reports']) == len(set(section['reports'])) == 4 and section['screenshots'] == [])
+    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()
+    previous = historical['.github/workflows/application-tests.yml'].decode()
+    inserted = ''.join('          '+command+'\n' for command in section['native_additions'])
+    browser = '          '+section['browser_command']+'\n'
+    check('Billing selector workflow changes only the three native recipes and local browser command',
+          workflow.count(inserted) == 1 and workflow.count(browser) == 1
+          and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)
+    check('Billing selector browser uses selected PHP after existing Python browser setup',
+          section['browser_command'] == '.ci-venv/bin/python -B tests/hosting_catalog_billing_browser.py --php "$PHP_BINARY" --report qa/hosting-catalog-billing-browser-results.json'
+          and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))
+    check('Billing selector native preserves explicit Linux isolated opt-in and mapped port selection',
+          section['native_additions'][-1] == 'CWP_TEST_HOSTING_BILLING=1 "$PHP_BINARY" tests/hosting_catalog_billing_native.php' and valid_port_context(workflow))
+    for path, digest in section['source_sha256'].items():
+        check('Billing selector binds current source '+path,
+              hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
+    for path, delta in section['source_deltas'].items():
+        check('Billing selector preserves complete parent source '+path,
+              hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])
+        deny('Billing selector refuse modified current source '+path,
+             lambda path=path, delta=delta: billing_selector_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n')+b'\n', delta))
+    wrong = copy.deepcopy(current)
+    wrong['native_commands'].pop(0)
+    deny('Billing selector refuse a removed original command', lambda: billing_selector_current(wrong, registry))
+    wrong = copy.deepcopy(current)
+    wrong['native_commands'][0] += ' changed'
+    deny('Billing selector refuse an altered original command', lambda: billing_selector_current(wrong, registry))
+    wrong = copy.deepcopy(current)
+    first = next(iter(section['source_deltas']))
+    wrong['hosting_billing_selector']['source_deltas'][first]['before_sha256'] = '0'*64
+    deny('Billing selector refuse a substituted predecessor source', lambda: billing_selector_current(wrong, registry))
+    wrong = copy.deepcopy(registry)
+    wrong['final'].remove(next(n for n in wrong['final'] if n not in section['reports']))
+    deny('Billing selector refuse removing an original report', lambda: billing_selector_current(current, wrong))
+    for pin in section['repins']:
+        wrong = copy.deepcopy(current)
+        cursor = wrong
+        for key in pin['keys'][:-1]:
+            cursor = cursor[key]
+        cursor[pin['keys'][-1]] = pin['before']
+        try:
+            billing_selector_current(wrong, registry)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Stale billing selector source pin passed')
+    check('Billing selector refuse every stale serialized current pin', True)
+    for phase, expected in [('browser', 212), ('final', 263)]:
+        check('Billing selector preserves exact original '+phase+' reports',
+              len(registry[phase]) == len(set(registry[phase])) == expected
+              and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
+    root = tmp/'billing-selector-artifacts'
+    source = root/'source'
+    ctx = context()
+    fixtures(source, ctx)
+    incoming = root/'partitions'
+    bindings = {}
+    jobs = {}
+    input_sha = '7'*64
+    for index, lane in enumerate(a.LANES):
+        job = root/('job-'+lane)
+        job.mkdir(parents=True)
+        jobs[lane] = job
+        if lane == 'build':
+            shutil.copytree(source/'dist', job/'dist')
+            shutil.copytree(source/'qa', job/'qa')
+        elif lane == 'native-browser':
+            for name in registry['browser']:
+                if name not in a.BUILD_QA:
+                    named(job/'qa'/name)
+        else:
+            for name in registry['final']:
+                if name not in registry['browser'] and a.evidence_allowed('qa/'+name, lane):
+                    named(job/'qa'/name)
+        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)
+        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}
+    seq = 0
+    def combine():
+        nonlocal seq
+        seq += 1
+        return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)
+    def reseal():
+        job = jobs['native-browser']
+        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):
+            if path.exists():
+                assert path.resolve().is_relative_to(root.resolve())
+                shutil.rmtree(path)
+        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
+    result = combine()
+    check('Billing selector aggregate requires all263 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    for name in section['reports']:
+        path = jobs['native-browser']/'qa'/name
+        path.unlink()
+        reseal()
+        result = combine()
+        check('Billing selector missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])
+        named(path, False)
+        reseal()
+        result = combine()
+        check('Billing selector failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)
+        named(path)
+        check('Billing selector report stays in native-browser '+name,
+              a.evidence_allowed('qa/'+name, 'native-browser') and not any(a.evidence_allowed('qa/'+name, lane) for lane in ('build', 'apache', 'recovery')))
+    named(jobs['native-browser']/'qa/billing-selector-unexpected-results.json')
+    reseal()
+    result = combine()
+    check('Billing selector unexpected report refuses', result['complete'] is False and 'Unexpected reports: billing-selector-unexpected-results.json' in result['errors'])
+    for path in ('test-runtime/hosting-catalog-billing-private/provider-master.key', 'qa/hosting-catalog-billing-private/provider-master.key'):
+        deny('Billing selector private fixture file refuses '+path,
+             lambda path=path: a.evidence_allowed(path, 'native-browser'))
+
+
+def run(tmp):
+    current, registry, section, historical = billing_selector_current()
+    originals = {str((ROOT/path).resolve()):data for path, data in historical.items()}
+    read_bytes, read_text = Path.read_bytes, Path.read_text
+    def previous_bytes(path):
+        key = str(path.resolve())
+        return originals[key] if key in originals else read_bytes(path)
+    def previous_text(path, *args, **kwargs):
+        key = str(path.resolve())
+        return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path, *args, **kwargs)
+    with patch.object(Path, 'read_bytes', previous_bytes), patch.object(Path, 'read_text', previous_text):
+        _run_before_billing_selector(tmp)
+    billing_selector_checks(tmp, current, registry, section, historical)
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None

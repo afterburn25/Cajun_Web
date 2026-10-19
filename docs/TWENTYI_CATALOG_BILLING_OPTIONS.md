@@ -37,3 +37,7 @@ The canonical installer refresh and shipping PHP/JavaScript checks pass. All 2,9
 The additive acceptance helper passes 758 outcomes, retaining all 642 predecessor outcome objects in their original order. It preserves 181 prior native recipes and adds five, and preserves the original 202 browser / 253 final reports while adding six required reports. It adds no screenshot credit. Both earlier helper-composition failures remain preserved; independent review and exact source checks bind the final configuration.
 
 Native Linux execution, installed application journeys, combined upgrade and release acceptance remain required before integration or publication. Preserve predecessor runs and their failures; queued work is not a passing result.
+
+## Customer billing-period selection
+
+The successor [hosting billing selector](TWENTYI_HOSTING_BILLING_SELECTOR.md) lets customers browse All plans, Monthly or Annual in Shared Hosting and their portal. Selection preserves independently published offer identities, images and full charges. Native/installed acceptance and integration remain pending.

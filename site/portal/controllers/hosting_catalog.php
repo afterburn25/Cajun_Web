@@ -9,9 +9,8 @@ require_once CWP_CODE_ROOT.'/includes/layout/hosting_catalog.php';
 function hosting_catalog_portal_query(array $query):array {
     $tab=$query['hosting']??null;
     if (!is_string($tab)||!in_array($tab,['offers','requests','checkout'],true)) throw new InvalidArgumentException('Choose available plans or your requests.');
-    $page=service_plans_form_number(['page'=>$query['p']??'1'],'page',100000);
-    if ($page<1) throw new InvalidArgumentException('Choose an available page.');
-    return ['tab'=>$tab,'page'=>$page];
+    $browse=hosting_catalog_billing_query($query);
+    return ['tab'=>$tab,'page'=>$browse['page'],'billing'=>$browse['billing']];
 }
 /** Allowlisted redisplay values only; no password, arbitrary field, array or secret is retained. */
 function hosting_catalog_portal_values(array $input):array {
@@ -48,12 +47,13 @@ function hosting_catalog_portal_action(string $action,array $client):void {
     redirect(studio_url(['hosting'=>'requests']));
 }
 /** Fixed client actions only; identity bytes are escaped but never replaced with current hashes. */
-function hosting_catalog_portal_form(array $values,bool $enabled=true,int $page=1):void {
+function hosting_catalog_portal_form(array $values,bool $enabled=true,int $page=1,string $billing='all'):void {
     if ($page<1||$page>100000) throw new InvalidArgumentException('Choose an available page.');
     $action=$values['action']??'';
     if (!in_array($action,['hosting_catalog_request','hosting_catalog_withdraw_request'],true)) return;
     $request=$action==='hosting_catalog_request';$tab=$request?'offers':'requests';
-    echo '<form method="post" action="'.esc(studio_url(['hosting'=>$tab,'p'=>$page])).'">'.csrf_field().'<input type="hidden" name="action" value="'.esc($action).'">';
+    $billing=hosting_catalog_billing($billing);
+    echo '<form method="post" action="'.esc(studio_url(['hosting'=>$tab,'p'=>$page]+($request?['billing'=>$billing]:[]))).'">'.csrf_field().'<input type="hidden" name="action" value="'.esc($action).'">';
     foreach ($request?['request_id','publication_id','publication_sha256']:['decision_id','request_id','request_sha256'] as $key) echo '<input type="hidden" name="'.esc($key).'" value="'.esc($values[$key]??'').'">';
     if (!$request) echo '<label>Reason (optional)<textarea name="reason" maxlength="1000" rows="3">'.esc($values['reason']??'').'</textarea></label>';
     echo '<label class="check"><input type="checkbox" name="confirm" value="1" required'.($enabled?'':' disabled').'>'.($request?'I request one package on the displayed terms.':'Withdraw this pending request. This does not cancel an existing service agreement.').'</label>';
@@ -70,7 +70,7 @@ function hosting_catalog_portal_render(array $client,string $error):never {
     try {$query=hosting_catalog_portal_query($_GET);}
     catch (InvalidArgumentException) {fail_page('Hosting page not found.',404);}
     $attempt=hosting_catalog_portal_attempt();$unavailable=false;
-    try {$page=$query['tab']==='offers'?hosting_catalog_public($query['page']):hosting_catalog_client_requests((int)$client['id'],$query['page']);}
+    try {$page=$query['tab']==='offers'?hosting_catalog_public($query['page'],$query['billing']):hosting_catalog_client_requests((int)$client['id'],$query['page']);}
     catch (Throwable $e) {report_error($e);$page=['offers'=>[],'requests'=>[],'has_more'=>false,'unavailable'=>true];$unavailable=true;}
     site_head('Your hosting plans','portal');
     echo '<section class="page-hero compact"><div class="container"><span class="eyebrow">YOUR CLIENT WORKSPACE</span><h1>Hosting <span class="gold-text">plans</span></h1><p>Review a plan, send a request and follow the studio’s response.</p><a class="btn outline" href="'.esc(studio_url()).'">All projects</a></div></section><section class="section"><div class="container narrow">';show_flash();

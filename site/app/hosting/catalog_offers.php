@@ -156,8 +156,8 @@ function hosting_catalog_close_request(string $id,string $requestId,string $requ
     });
 }
 /** Closed public cards only. This read has no authentication mutation or provider transport. */
-function hosting_catalog_public(int $page=1): array {
-    return HostingCatalogRead::publicPage($page);
+function hosting_catalog_public(int $page=1,string $billing='all'): array {
+    return HostingCatalogRead::publicPage($page,$billing);
 }
 /** Own request history survives later catalog edits, withdrawal and credential replacement. */
 function hosting_catalog_client_requests(int $client,int $page=1): array {

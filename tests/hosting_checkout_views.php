@@ -4,6 +4,7 @@ declare(strict_types=1);
 define('CWP_BOOT',true);define('CWP_CODE_ROOT',getenv('CWP_TEST_CODE_ROOT')?:__DIR__.'/../site');
 require CWP_CODE_ROOT.'/app/hosting/catalog_checkout_document.php';
 require CWP_CODE_ROOT.'/app/hosting/catalog_checkout_billing_document.php';
+require CWP_CODE_ROOT.'/app/hosting/catalog_billing.php';
 // The extracted recurring renderer uses this exact class alias in its source file.
 class_alias(CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::class,'RecurringBillingTerms');
 $sourceFragments=[];
