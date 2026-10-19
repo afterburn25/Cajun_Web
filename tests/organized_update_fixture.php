@@ -34,6 +34,15 @@ if(in_array($argv[2]??'',['owner-rate-exhaust','owner-rate-reset'],true)){
     }
     echo json_encode(['isolated_owner_window'=>true],JSON_THROW_ON_ERROR);exit;
 }
+if(($argv[2]??'')==='payments'){
+    $saved=['marker'=>(one('SELECT value FROM '.table('settings')." WHERE name='payments_schema_version'")['value']??null),'tables'=>[]];
+    foreach(['payment_gateways','payment_requests','invoice_payments'] as $name){
+        if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])){
+            $saved['tables'][$name]=all('SELECT * FROM '.table($name).' ORDER BY id');
+        }
+    }
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='plans'){
     $saved=[];
     foreach(['service_plans','service_plan_events','service_subscriptions','service_subscription_events'] as $name){

@@ -18,9 +18,11 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Original 1.5 update preserves config guard private files and external master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/trial-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    r=submit(up,url+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Original 1.5 payment schema upgrades to link-ready version','Payment preparation enabled' in r.text and db("SELECT value FROM trialup_settings WHERE name='payments_schema_version'")==[{'value':'2'}])
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'wrong','confirm':'1'});check('Trial upgrade refuses wrong owner password','current password' in r.text.lower())
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Original 1.5 upgrade enables additive sandbox history','Sandbox trial history enabled' in r.text)
-    check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(db('SELECT * FROM trialup_'+t)==v for t,v in before.items()))
+    after={t:db('SELECT * FROM trialup_'+t) for t in tables}
+    check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(len(after[t])==len(v) and all(row[k]==v[i][k] for i,row in enumerate(after[t]) for k in v[i]) for t,v in before.items()))
     check('Upgraded trial schema empty and real payment remains disabled',db('SELECT * FROM trialup_payment_attempts')==[] and 'Production and client checkout remain disabled' in r.text)
     r=submit(up,url+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Retained encrypted credentials remain readable for blank retention','Credentials protected and saved' in r.text and 'RetainedSandboxFixture' not in r.text)
 

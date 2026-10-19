@@ -20,9 +20,10 @@ def upgrade():
     check('Actual 1.9 update preserves configuration guards private ZIPs media and master key',all(p.read_bytes()==b for p,b in preserved.items()))
     owner=requests.Session();root=BASE+'/activity-upgrade/admin/index.php';url=root+'?view=activity';portal=BASE+'/activity-upgrade/portal/index.php'
     submit(owner,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    r=submit(owner,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Payment schema upgrade precedes the feature migration','Payment preparation enabled' in r.text)
     r=submit(owner,url,'activity_setup',{'password':'Synthetic upgrade passphrase 2026'});check('Actual 1.9 owner enables empty per-person read state','Workspace activity is enabled' in r.text and db('SELECT * FROM activityup_activity_reads')==[])
-    check('Actual 1.9 activity setup preserves retained business and delivery records',all(db('SELECT * FROM activityup_'+t)==rows for t,rows in before.items()))
-    after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings))
+    after={t:db('SELECT * FROM activityup_'+t) for t in before};check('Actual 1.9 activity setup preserves retained business and delivery records',all(len(after[t])==len(rows) and all(row[k]==rows[i][k] for i,row in enumerate(after[t]) for k in rows[i]) for t,rows in before.items()))
+    after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings if s['name'] not in ('payments_schema_version','activity_schema_version')) and after['payments_schema_version']=='2' and after['activity_schema_version']=='1')
     check('Actual 1.9 activity setup preserves passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM activityup_users'),users)))
     client=requests.Session();submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'})
     r=client.get(portal+'?activity=1');published=next(v for v in before['website_releases'] if v['status']=='published');draft=next(v for v in before['website_releases'] if v['status']=='draft')

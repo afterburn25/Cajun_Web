@@ -18,10 +18,11 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.6 update preserves config locks private files and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/notification-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    r=submit(up,url+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Payment schema upgrade precedes the feature migration','Payment preparation enabled' in r.text)
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'wrong','confirm':'1'});check('Notification upgrade refuses wrong password','current password' in r.text.lower())
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.6 additive notification upgrade succeeds','Sandbox notification inbox enabled' in r.text)
-    check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(db('SELECT * FROM notifyup_'+t)==v for t,v in before.items()))
-    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings))
+    after={t:db('SELECT * FROM notifyup_'+t) for t in before};check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(len(after[t])==len(v) and all(row[k]==v[i][k] for i,row in enumerate(after[t]) for k in v[i]) for t,v in before.items()))
+    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings if s['name'] not in ('payments_schema_version','payment_notifications_schema_version')) and now['payments_schema_version']=='2' and now['payment_notifications_schema_version']=='1')
     check('Actual 1.6 upgraded inbox empty with receiver disabled',db('SELECT * FROM notifyup_payment_notifications')==[] and 'Disabled' in r.text)
     r=submit(up,url+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Actual 1.6 protected key still decrypts original saved credentials','Credentials protected and saved' in r.text and 'RetainedSandboxFixture' not in r.text)
 

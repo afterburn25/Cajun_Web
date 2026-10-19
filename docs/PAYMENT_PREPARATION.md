@@ -41,11 +41,15 @@ Issue an invoice for the agreed amount first, using existing manual invoices or 
 
 Confirmation rechecks the active client, issued/unpaid invoice and invoice fingerprint, including saved amount, currency, title, instructions and any catalog snapshot. A changed invoice requires fresh review. Duplicate identical submissions, including concurrent processes, return one record. A deliberate new request supersedes earlier prepared requests for that invoice. Requests can be revoked, expire, and become unavailable when their invoice is paid/void or client is inactive. No request changes the invoice's financial status. Strict audit failure rolls back both new records and replacement/revocation.
 
-Administrators see the latest 100 invoices/requests. The owning signed-in client can see the latest request within the existing project invoice, with a clear preparation-only notice. There is no guest payment link, card form or payment action. Client ownership is checked again for request display; a support view remains read-only. No automatic mail is sent.
+Administrators see the latest 100 invoices/requests and can copy the current shareable link for a prepared request. The owning signed-in client can open the same link from the project invoice, with a clear preparation-only notice. There is still no card form or payment action. Client ownership is checked again for request display; a support view remains read-only. No automatic mail is sent.
+
+## Shareable payment links
+
+Every prepared request mints a 256-bit bearer token. The database stores only its SHA-256 hash plus the token sealed with the payment master key, so a database copy alone cannot redeem links. The public `index.php?page=pay&t=` page resolves the token without any portal session, is `noindex`/`no-referrer`/`no-store`, rate-limits lookups per IP, and shows the invoice reference, purpose, authoritative amount, expiry and the invoice's own instructions. Revoked, superseded, expired, already-paid, invoice-changed and unknown links each render an honest terminal state; the link records no payment. Requests prepared before schema 2 have no link — revoke and prepare a new request to issue one.
 
 ## Remaining M2 acceptance
 
-Next: tokenized sandbox checkout, payment attempts serialized across manual and gateway transitions, uncertain-response reconciliation, verified webhook signatures and replay protection, accurate receipts/refunds/balances, narrowly scoped expiring/revocable guest payment links and explicit subscription consent. HTTPS, merchant-specific PCI review and authorized provider tests are required before live activation. Hosted-form tradeoffs remain a merchant decision. No 20i provisioning, webmail, ZIP handover or SSH work is implied by this foundation.
+Next: tokenized sandbox checkout, payment attempts serialized across manual and gateway transitions, uncertain-response reconciliation, verified webhook signatures and replay protection, accurate receipts/refunds/balances, and explicit subscription consent. Shareable expiring/revocable request links are delivered on `devin/non20i-payment-links`. HTTPS, merchant-specific PCI review and authorized provider tests are required before live activation. Hosted-form tradeoffs remain a merchant decision. No 20i provisioning, webmail, ZIP handover or SSH work is implied by this foundation.
 
 ## Provider references
 

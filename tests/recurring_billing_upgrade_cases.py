@@ -37,6 +37,24 @@ def run(env):
             for name in ['mail-master.key', 'provider-master.key', 'retained-customer.php']}
     check(label + ' recurring upgrade requires explicit owner preparation',
           'Prepare recurring billing' in owner.get(listing).text)
+    payments = records('payments')
+    check(label + ' organized upgrade retains payment marker 1 before owner migration',
+          payments['marker'] == '1' and 'payment_requests' in payments['tables']
+          and all('link_hash' not in row and 'link_secret' not in row
+                  for row in payments['tables']['payment_requests']))
+    response = submit(owner, admin + '?view=payments', 'payments_migrate',
+                      {'owner_password': password, 'confirm': '1'})
+    migrated = records('payments')
+    check(label + ' owner payment migration sets marker 2 retaining requests credentials receipts',
+          response.status_code == 200 and 'Payment preparation enabled' in response.text
+          and migrated['marker'] == '2'
+          and migrated['tables'].get('payment_gateways') == payments['tables'].get('payment_gateways')
+          and migrated['tables'].get('invoice_payments') == payments['tables'].get('invoice_payments')
+          and len(migrated['tables']['payment_requests']) == len(payments['tables']['payment_requests'])
+          and all(row['link_hash'] is None and row['link_secret'] is None
+                  and {k: v for k, v in row.items() if k not in ('link_hash', 'link_secret')}
+                      == payments['tables']['payment_requests'][i]
+                  for i, row in enumerate(migrated['tables']['payment_requests'])))
     submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})
     empty = records('recurring')
     check(label + ' recurring additive setup preserves existing invoices and starts empty',
@@ -94,7 +112,8 @@ def run(env):
     stable = records()
     earlier = {name: records(name) for name in ['plans', 'submissions', 'drafts', 'provider',
                                                'mail-accounts', 'templates', 'notices', 'messages',
-                                               'inbox', 'mail-checks', 'appointments', 'reviews']}
+                                               'inbox', 'mail-checks', 'appointments', 'reviews',
+                                               'payments']}
 
     def retained(expected):
         current = {name: records(name) for name in earlier}
