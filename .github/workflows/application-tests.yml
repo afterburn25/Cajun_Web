@@ -388,6 +388,10 @@ jobs:
           "$PHP_BINARY" -n -d extension=pdo tests/subdomain_requests_views.php > qa/subdomain-requests-views-minimal-results.json
           CWP_TEST_SUBDOMAIN_REQUESTS=1 "$PHP_BINARY" tests/provider_subdomain_requests_native.php
           python -B tests/subdomain_requests_http_contract.py --report qa/subdomain-requests-http-contract-results.json
+          "$PHP_BINARY" tests/subdomain_activity.php > qa/subdomain-activity-default-results.json
+          "$PHP_BINARY" -n -d extension=pdo tests/subdomain_activity.php > qa/subdomain-activity-minimal-results.json
+          "$PHP_BINARY" tests/activity_provider_merge.php > qa/activity-provider-merge-default-results.json
+          "$PHP_BINARY" -n tests/activity_provider_merge.php > qa/activity-provider-merge-minimal-results.json
           "$PHP_BINARY" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
           "$PHP_BINARY" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
           "$PHP_BINARY" tests/provider_package_force_ssl_native.php

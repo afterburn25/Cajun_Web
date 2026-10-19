@@ -1,3 +1,9 @@
+## 2026-10-19 — subdomain request notifications candidate
+
+Branch `codex/twentyi-subdomain-notifications` builds on frozen PR237 source `d1493f77f4c32d49b62256df1645dc60b9768cb9`. It adds [owner/client subdomain notices](docs/TWENTYI_SUBDOMAIN_NOTIFICATIONS.md) to the existing activity center and bell, with exact-request links, current authority checks and independent read state. Uncertain sends remain distinct from later hostname observations. Local checks and independent source review are recorded in the [receipt](docs/evidence/subdomain-notifications-local.json); native SQL and installed browser execution remain required. No release or live deployment is claimed.
+
+Root owns the shared activity integration and documentation; the existing three agents supplied provider projection, native/browser extensions, acceptance wiring and independent review. Original PR237/PR220/catalog full runs remain queued at the latest read and are preserved. Main is `dcd6966c4e0c209d15f9d88c8832ef601765c336`; published1.25.0 remains immutable, and Devin retains non-20i work. Next: submit the stacked draft and its first exact-head full acceptance, inspect actual results and captures, then integrate ready work sequentially.
+
 ## 2026-10-18 — installed subdomain workflow coverage
 
 Branch `codex/twentyi-client-subdomain-browser` starts from [PR236](https://github.com/afterburn25/Cajun_Web/pull/236), source `af956844690b1ed3be93a9a83574f06127fa8763`. It adds [packaged owner/client HTTP and Chromium coverage](docs/TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md) for the submitted subdomain workflow. The original PR236 focused/full runs remain queued on their first attempts. Source preparation and offline fixture checks are separate from the installed results that remain required. Published 1.25.0 and the live site are unchanged.

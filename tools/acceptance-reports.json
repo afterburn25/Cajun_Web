@@ -1,6 +1,8 @@
 {
   "browser": [
     "activity-native-results.json",
+    "activity-provider-merge-default-results.json",
+    "activity-provider-merge-minimal-results.json",
     "appointments-native-results.json",
     "attempts-native-results.json",
     "build-environment-results.json",
@@ -161,6 +163,8 @@
     "stackcp-prerequisites-views-minimal.json",
     "stackcp-read-snapshot-native-results.json",
     "staff-native-results.json",
+    "subdomain-activity-default-results.json",
+    "subdomain-activity-minimal-results.json",
     "subdomain-add-contract-default.json",
     "subdomain-add-contract-minimal.json",
     "subdomain-add-service-default.json",
@@ -185,6 +189,8 @@
   ],
   "final": [
     "activity-native-results.json",
+    "activity-provider-merge-default-results.json",
+    "activity-provider-merge-minimal-results.json",
     "apache-environment-results.json",
     "apache-no-rewrite-root-install.json",
     "apache-no-rewrite-subfolder-install.json",
@@ -389,6 +395,8 @@
     "stackcp-read-snapshot-native-results.json",
     "staff-native-results.json",
     "structure-results.json",
+    "subdomain-activity-default-results.json",
+    "subdomain-activity-minimal-results.json",
     "subdomain-add-contract-default.json",
     "subdomain-add-contract-minimal.json",
     "subdomain-add-service-default.json",

@@ -1,3 +1,7 @@
+## 2026-10-19 — unreleased subdomain notices
+
+The [subdomain request notification candidate](TWENTYI_SUBDOMAIN_NOTIFICATIONS.md) adds owner requests/withdrawals and original-client review, send and separate hosting-check notices to this center and bell. Existing read-state controls apply, and each notice opens its exact request. Contact/support restrictions, current authority checks and explicit partial-feed failures are documented with its acceptance limits. This addition is not yet released; the older release scope below remains historical evidence.
+
 # Workspace activity notifications
 
 Claim, 2026-10-13: Codex implements bounded P-07 on `codex/workspace-activity` from main `552ccb7d8c73194e7304af4f903074b0032e53b2` / published v1.9.0. Own additive per-person read state, authorized source projections, activity center/bell, exact-item navigation, installer, tests and continuity. Devin retains W-01 / PR #7. This is workspace activity; A-06/A-07/A-08 webmail, templates and unread-email bells remain separate and incomplete.

@@ -1,3 +1,7 @@
+## Unreleased — subdomain request activity
+
+Show owner request/withdrawal notices and primary-client review, send and later-check updates in the existing workspace activity center and bell. Add exact-request navigation, independent read state and explicit unavailability when provider history cannot be verified. [Scope and pending acceptance](docs/TWENTYI_SUBDOMAIN_NOTIFICATIONS.md). No released version or live-site change.
+
 ## Unreleased — installed subdomain workflow acceptance
 
 Add packaged client/owner HTTP and browser coverage for subdomain requests, with a strict loopback provider fixture, separate approval/readback checks and required desktop/mobile evidence. [Scope and execution status](docs/TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md). This test increment does not claim an installed pass or a release.
