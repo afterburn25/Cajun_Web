@@ -2,6 +2,10 @@ name: Email-template contract checks
 
 on:
   pull_request:
+    paths:
+      - 'foundation/email-templates/**'
+      - 'tests/email-templates/**'
+      - '.github/workflows/email-templates.yml'
   push:
     branches: [main]
   workflow_dispatch:

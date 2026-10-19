@@ -1,3 +1,13 @@
+## 2026-10-19 — independent client folder journal and reciprocal approval
+
+Keep client website-folder requests in `provider_website_folder_requests_events`, outside the owner's closed document-root lifecycle namespace. Preserve direct owner v1 documents, existing terminal/check formats and compact grant schema. A client-origin owner v2 approval commits atomically with a reciprocal dispatch event before the existing single-send path. Original sharing/client authority remains binding even when the owner reviews a newer map. Either missing journal refuses actions and preparation rather than reconstructing lost consent. This extends the documented owner workflow without inventing another20i request format. [Implementation and verification scope](TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
+
+## 2026-10-19 — superseded component queue checkpoint
+
+The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).
+
+Never replay an ambiguous cancellation. A preflight-only failure may be reconsidered in a new reviewed plan only when durable evidence proves no request occurred; absence of a request file alone is insufficient. Stop on observation failure and preserve uncertainty. Current runs, recorded originals, full application/capture/release/diagnostic work, and assigned/executed/artifact-bearing candidates stay excluded. No acceptance or production gate changes.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 The owner clarified a completely fresh installation after deleting the prior public files. Default setup retains strict existing-table and storage refusals. Explicit fresh-start intent creates separate resources and never drops existing tables or unlocks an installed site. Routine file uploads retain config.php, keys, database and storage. Local retained locks without config lead to recovery, not automatic setup. Administrator passwords use a dedicated 12-character validator; the shared client policy remains unchanged. This supersedes the earlier update-only interpretation of this installer incident.
@@ -295,3 +305,7 @@ Honor the subsequent explicit owner requests within the release lane: preserve e
 ## 2026-10-17 — bounded 20i hosting product import
 
 Implementation began at 345b335e, then advanced to reviewed e8ccefc9 with all twelve owned source/test files unchanged. Owner requested product/image import. Only documented saved typeRef/packageTypeName data becomes a local hosting draft; owner supplies local terms, prices and artwork. No provider image schema or price was invented. Nine runtime files, three test files and the reviewed five shared acceptance files implement the bounded path. 48 default + 48 minimal pure checks and 221 offline wiring checks passed; 65 native / 24 HTTP checks and two pixel captures await execution. Source review found and corrected same-profile changed-credential dedup and cleanup serialization before freezing; an alleged upload-helper audit throw was disproved and its unnecessary edit withdrawn. Root coordinates generated inventory, exact-source CI, normal merge and complete release acceptance. See [the guide](TWENTYI_PRODUCT_IMPORT.md); no production deployment or 1.25 publication.
+
+## 2026-10-18 — filter only proven isolated pure suites
+
+For estimator, email-templates, portfolio, review-requests and webmail, PR paths cover each complete foundation/test directory and its workflow. Current PHP imports close within each family; all existing jobs and push/manual events are retained. Do not extend this narrow dependency assumption to application/native suites. [Evidence and required-check caveat](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). Future required-check settings must be reviewed together with skipped-workflow behavior. Existing queued runs and all release gates are preserved.

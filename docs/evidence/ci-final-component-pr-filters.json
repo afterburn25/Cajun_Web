@@ -1,0 +1,1247 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-19T05:37:53.789693+00:00",
+  "parent": "847722b4960aa229b8e9b0da282a9424fa620194",
+  "branch": "codex/ci-final-component-pr-filters",
+  "scope": "Thirteen additive PR path-filter lines in service-plans and staff-invitations; no existing execution settings or test/application source changed.",
+  "records": [
+    {
+      "source_review": {
+        "base": "847722b4960aa229b8e9b0da282a9424fa620194",
+        "files": [
+          {
+            "path": ".github/workflows/service-plans.yml",
+            "before_sha256": "6625f8fff7a8e8fd8a2afaa7eea522fff5229d9b76ae5bbdd6330c12a3cff220",
+            "after_sha256": "8bbf62e78f669bc5a2392eb8af074271128639826fe0dbda48aa5f3ef0d3bfa7",
+            "before_git_blob": "9519966bc844580eaab2cc3acee8d76650816e48",
+            "filters": [
+              "site/**",
+              "foundation/service-plans/**",
+              "foundation/estimator/**",
+              "foundation/review-requests/**",
+              "tests/service-plans/**",
+              ".github/workflows/service-plans.yml"
+            ],
+            "inverse_remove_exactly_once": "    paths:\n      - site/**\n      - foundation/service-plans/**\n      - foundation/estimator/**\n      - foundation/review-requests/**\n      - tests/service-plans/**\n      - .github/workflows/service-plans.yml\n"
+          }
+        ],
+        "patch_sha256": "c298dd4ef646cfa11e70ba212ae5f156061ed011f6eece299ec36d131d24627e",
+        "dependencies_sha256": "815411bbbdea735fd1e8e624a8cb53d742325baa5726621e78b5ab929a8eae66",
+        "checks_sha256": "4fc7f55b59c2cd7c3e5d6d80a2a4b0abfa364880e96583262aab9b915185c43d",
+        "actual_checks": 28,
+        "scope": "One additive pull_request.paths block only; broad site coverage intentionally includes actual application/deployed dependencies. Canonical estimator/review-request counterparts included conservatively.",
+        "preserved": "Whole-byte inverse restores original workflow: all jobs, commands, ten reports, artifact upload, push/manual events, matrices, permissions and concurrency unchanged.",
+        "limitations": [
+          "External proposal only. No checkout/branch/remote mutation, API calls or application test rerun.",
+          "No final CI/application acceptance claim.",
+          "Broad site/** intentionally still runs this suite for unrelated application changes; benefit is avoiding documentation/unrelated family-only PR runs.",
+          "Root must review current required-check/rule policy before applying. Path-filtered required checks can remain pending. No fresh policy/API check was performed.",
+          "Future dependency outside these roots requires a matching filter update."
+        ]
+      },
+      "source_review_sha256": "786a2d95489e03c87bf9019228d34723a7194c00a4858a91268ab710bad7cabc",
+      "producer_checks": {
+        "passed": true,
+        "scope": "Actual local source/dependency/path applicability and whole-inverse checks only. No application suite execution.",
+        "checks": [
+          {
+            "name": "Exact requested main commit resolves",
+            "passed": true
+          },
+          {
+            "name": "Service-plan pull_request is currently unfiltered",
+            "passed": true
+          },
+          {
+            "name": "Unique PR insertion anchor",
+            "passed": true
+          },
+          {
+            "name": "Removing only the new paths restores every original byte",
+            "passed": true
+          },
+          {
+            "name": "All job step command and artifact bytes are unchanged",
+            "passed": true
+          },
+          {
+            "name": "Only pull_request.paths differs in parsed workflow",
+            "passed": true
+          },
+          {
+            "name": "Push branches and manual trigger remain exact",
+            "passed": true
+          },
+          {
+            "name": "Permission concurrency and matrix remain exact",
+            "passed": true
+          },
+          {
+            "name": "Both runtimes and all10 existing report commands remain",
+            "passed": true
+          },
+          {
+            "name": "Always-upload exact artifact glob and missing-file error remain",
+            "passed": true
+          },
+          {
+            "name": "All30 actual test/lint/eager include sources exist",
+            "passed": true
+          },
+          {
+            "name": "estimator: exact finite class enumeration remains",
+            "passed": true
+          },
+          {
+            "name": "review-requests: exact finite class enumeration remains",
+            "passed": true
+          },
+          {
+            "name": "Exact two deployed-review branches are source-bound",
+            "passed": true
+          },
+          {
+            "name": "All22 include expressions are fixed paths or reviewed closed branches",
+            "passed": true
+          },
+          {
+            "name": "All32 eager/default/deployed edges close over retained sources",
+            "passed": true
+          },
+          {
+            "name": "No other file-read process autoloader or network invocation in read sources",
+            "passed": true
+          },
+          {
+            "name": "All15 canonical counterparts match deployed source bytes",
+            "passed": true
+          },
+          {
+            "name": "Every actual read and canonical counterpart edit triggers",
+            "passed": true
+          },
+          {
+            "name": "Application form document security and layout edits trigger",
+            "passed": true
+          },
+          {
+            "name": "Indirect growth and deployed estimator/review edits trigger",
+            "passed": true
+          },
+          {
+            "name": "Future site dependencies and nested family tests conservatively trigger",
+            "passed": true
+          },
+          {
+            "name": "Workflow-only edit triggers its own suite",
+            "passed": true
+          },
+          {
+            "name": "Unrelated documentation test and pure-family edits do not trigger",
+            "passed": true
+          },
+          {
+            "name": "Sibling similarly named roots cannot accidentally match",
+            "passed": true
+          },
+          {
+            "name": "No tracked QA artifact files are hidden workflow inputs",
+            "passed": true
+          },
+          {
+            "name": "Existing syntax globs read only the six covered canonical/test files",
+            "passed": true
+          },
+          {
+            "name": "Resolved workflow is UTF8 LF with no BOM or trailing whitespace",
+            "passed": true
+          }
+        ]
+      },
+      "dependencies": {
+        "base": "847722b4960aa229b8e9b0da282a9424fa620194",
+        "actual_read_sources": [
+          {
+            "path": "foundation/service-plans/PlanSubscription.php",
+            "sha256": "d36a2f69eb88de50097a60bfb013357fa20c9f93194192ac7ef6c8526d8a6b18"
+          },
+          {
+            "path": "foundation/service-plans/ServicePlan.php",
+            "sha256": "400e64634e9b70bd1faf5d639883cdd1a2ee752427e72ded82dc4240261f5304"
+          },
+          {
+            "path": "site/app/marketing/estimator.php",
+            "sha256": "e20ba646dd9882a8c2ac34bec250a4e4a2a57649d837e8776f69d96bd06c25d4"
+          },
+          {
+            "path": "site/app/marketing/growth.php",
+            "sha256": "d9bfd1968fa6bf7700cb9f9a843805a03fc0d2e0c603016983b0913039ab160f"
+          },
+          {
+            "path": "site/app/marketing/review_content.php",
+            "sha256": "413fcf7ac6f6b47d9f3b20d8cdc4187c82f224e03e34512b5f38c5a76c807388"
+          },
+          {
+            "path": "site/app/plans/documents.php",
+            "sha256": "975204f8b70387190b3a94d4f3f409c79ac21e26e58132af3670d74c11432edb"
+          },
+          {
+            "path": "site/app/plans/forms.php",
+            "sha256": "3fb646a0bfe944299b4111d977ca1deb46b630e77ff99423233ece4a08ddcd42"
+          },
+          {
+            "path": "site/includes/foundation/estimator/EstimateLine.php",
+            "sha256": "70faffd4f07329f586799dccb8c957e55672d85d92a0151b2381c8e3879ab07d"
+          },
+          {
+            "path": "site/includes/foundation/estimator/EstimateRequest.php",
+            "sha256": "f1c7baef0c9325d20da5fda2198a41367b9e9ec47e8c36767adf9a1bde999e56"
+          },
+          {
+            "path": "site/includes/foundation/estimator/EstimateResult.php",
+            "sha256": "f52988484dac2c841dda63689df3e2a64b6dda5e4bcfcdd3656d2f15f862aeb4"
+          },
+          {
+            "path": "site/includes/foundation/estimator/EstimateRuleSet.php",
+            "sha256": "cafd1fef89ec9c645fb367b551e7fc2204f56a027734cea70201e746a6b4d606"
+          },
+          {
+            "path": "site/includes/foundation/estimator/Estimator.php",
+            "sha256": "36f337a5a82c88cb7aa380ec7ab5c861fbbd98bde4f83d65af920ac89c01ebce"
+          },
+          {
+            "path": "site/includes/foundation/estimator/PriceRule.php",
+            "sha256": "4fa87d8c08c5157bf4e211199d8f59d7be758491d15d95a4542bbd2c79b77c3a"
+          },
+          {
+            "path": "site/includes/foundation/review-requests/ReviewContact.php",
+            "sha256": "26ae67c93b5ec1a865e10982d428ffc4995e9d377fd04e57782eccffc9f3e644"
+          },
+          {
+            "path": "site/includes/foundation/review-requests/ReviewFinding.php",
+            "sha256": "1811e21b347076c8dbf22d5de1970b06d5f11a843ccbd51b86b0b9a8d2e739ad"
+          },
+          {
+            "path": "site/includes/foundation/review-requests/ReviewInbox.php",
+            "sha256": "039d8e2335662e6e152ab788bf97dc86e04abed5b727872f83ccfe0255e34597"
+          },
+          {
+            "path": "site/includes/foundation/review-requests/ReviewReport.php",
+            "sha256": "ea3f1f8d7b18be14c3ca1b525e78a36148e85bb4d01fa0b071e211bfeead6171"
+          },
+          {
+            "path": "site/includes/foundation/review-requests/ReviewRequest.php",
+            "sha256": "f3f8135c05c06409b94f72b7dea83ceba52462098b1b836dd1bed9ddb3f2967f"
+          },
+          {
+            "path": "site/includes/foundation/review-requests/ReviewStage.php",
+            "sha256": "3167dbe7b9c6912e62f6518589efc2c457f7a5e3ed984edca3c3fb50edd6f574"
+          },
+          {
+            "path": "site/includes/foundation/review-requests/WebsiteAddress.php",
+            "sha256": "50524a4e79273b2f293c992c311205c2e7c1d64d320a21ac1211035795047e0d"
+          },
+          {
+            "path": "site/includes/foundation/service-plans/PlanSubscription.php",
+            "sha256": "d36a2f69eb88de50097a60bfb013357fa20c9f93194192ac7ef6c8526d8a6b18"
+          },
+          {
+            "path": "site/includes/foundation/service-plans/ServicePlan.php",
+            "sha256": "400e64634e9b70bd1faf5d639883cdd1a2ee752427e72ded82dc4240261f5304"
+          },
+          {
+            "path": "site/includes/layout/growth_home.php",
+            "sha256": "2fb80089be9d96ac7eed8a9fcd5590572f80472f87b04d2cf77482b9cdc3d6bd"
+          },
+          {
+            "path": "site/includes/layout/growth_portfolio_view.php",
+            "sha256": "5d78fcd5158e1774d12752641c087ecac62cc727a5734683ea91c3fdec224af1"
+          },
+          {
+            "path": "site/includes/layout/plans.php",
+            "sha256": "716630a1bdcd7e3b2cfd12088060c620c3a648c7f808683883ce7728a1cdb90d"
+          },
+          {
+            "path": "site/includes/security/input.php",
+            "sha256": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b"
+          },
+          {
+            "path": "tests/service-plans/documents.php",
+            "sha256": "2323544b82a63567095d6e7367cbb3437d5996a338658a5d89fe68b5b2d43d64"
+          },
+          {
+            "path": "tests/service-plans/forms.php",
+            "sha256": "93e58aa89f901bb99a4fc4e9396b02af5869803501af89e3ffcea546043c3672"
+          },
+          {
+            "path": "tests/service-plans/review_controls.php",
+            "sha256": "409b2d54457cccf6c1fe621ae49311ec53bd1120099677e86cf1ee92e618fe97"
+          },
+          {
+            "path": "tests/service-plans/run.php",
+            "sha256": "7a7962d36120bdbc3da86994e71fdc419c65dd211c6df1710eca297e8e504024"
+          }
+        ],
+        "edges": [
+          {
+            "source": "tests/service-plans/run.php",
+            "target": "foundation/service-plans/ServicePlan.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "tests/service-plans/review_controls.php",
+            "target": "foundation/service-plans/ServicePlan.php",
+            "kind": "review_controls default branch"
+          },
+          {
+            "source": "tests/service-plans/review_controls.php",
+            "target": "site/includes/foundation/service-plans/ServicePlan.php",
+            "kind": "review_controls --deployment branch"
+          },
+          {
+            "source": "site/app/plans/documents.php",
+            "target": "site/includes/foundation/service-plans/ServicePlan.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "tests/service-plans/run.php",
+            "target": "foundation/service-plans/PlanSubscription.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "tests/service-plans/review_controls.php",
+            "target": "foundation/service-plans/PlanSubscription.php",
+            "kind": "review_controls default branch"
+          },
+          {
+            "source": "tests/service-plans/review_controls.php",
+            "target": "site/includes/foundation/service-plans/PlanSubscription.php",
+            "kind": "review_controls --deployment branch"
+          },
+          {
+            "source": "site/app/plans/documents.php",
+            "target": "site/includes/foundation/service-plans/PlanSubscription.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "tests/service-plans/forms.php",
+            "target": "site/app/plans/forms.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "tests/service-plans/forms.php",
+            "target": "site/includes/security/input.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "tests/service-plans/forms.php",
+            "target": "site/includes/layout/plans.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "tests/service-plans/documents.php",
+            "target": "site/app/plans/documents.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/app/plans/forms.php",
+            "target": "site/app/plans/documents.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/app/plans/forms.php",
+            "target": "site/app/marketing/growth.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/includes/layout/plans.php",
+            "target": "site/app/plans/forms.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "target": "site/app/marketing/estimator.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "target": "site/app/marketing/review_content.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "target": "site/includes/layout/growth_home.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "target": "site/includes/layout/growth_portfolio_view.php",
+            "kind": "eager literal include"
+          },
+          {
+            "source": "site/app/marketing/estimator.php",
+            "target": "site/includes/foundation/estimator/PriceRule.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/estimator.php",
+            "target": "site/includes/foundation/estimator/EstimateLine.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/estimator.php",
+            "target": "site/includes/foundation/estimator/EstimateRequest.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/estimator.php",
+            "target": "site/includes/foundation/estimator/EstimateRuleSet.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/estimator.php",
+            "target": "site/includes/foundation/estimator/EstimateResult.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/estimator.php",
+            "target": "site/includes/foundation/estimator/Estimator.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "target": "site/includes/foundation/review-requests/WebsiteAddress.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "target": "site/includes/foundation/review-requests/ReviewContact.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "target": "site/includes/foundation/review-requests/ReviewFinding.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "target": "site/includes/foundation/review-requests/ReviewStage.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "target": "site/includes/foundation/review-requests/ReviewRequest.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "target": "site/includes/foundation/review-requests/ReviewReport.php",
+            "kind": "closed literal class-list eager include"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "target": "site/includes/foundation/review-requests/ReviewInbox.php",
+            "kind": "closed literal class-list eager include"
+          }
+        ],
+        "reviewed_require_expressions": [
+          {
+            "source": "site/app/marketing/estimator.php",
+            "expression": "CWP_CODE_ROOT.'/includes/foundation/estimator/'.$class.'.php'"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "expression": "CWP_CODE_ROOT.'/app/marketing/estimator.php'"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "expression": "CWP_CODE_ROOT.'/app/marketing/review_content.php'"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "expression": "CWP_CODE_ROOT.'/app/marketing/reviews.php'"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "expression": "CWP_CODE_ROOT.'/app/marketing/appointments.php'"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "expression": "CWP_CODE_ROOT.'/app/mail/transport.php'"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "expression": "CWP_CODE_ROOT.'/includes/layout/growth_home.php'"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "expression": "CWP_CODE_ROOT.'/includes/layout/growth_portfolio_view.php'"
+          },
+          {
+            "source": "site/app/marketing/review_content.php",
+            "expression": "CWP_CODE_ROOT.'/includes/foundation/review-requests/'.$class.'.php'"
+          },
+          {
+            "source": "site/app/plans/documents.php",
+            "expression": "CWP_CODE_ROOT.'/includes/foundation/service-plans/ServicePlan.php'"
+          },
+          {
+            "source": "site/app/plans/documents.php",
+            "expression": "CWP_CODE_ROOT.'/includes/foundation/service-plans/PlanSubscription.php'"
+          },
+          {
+            "source": "site/app/plans/forms.php",
+            "expression": "CWP_CODE_ROOT.'/app/plans/documents.php'"
+          },
+          {
+            "source": "site/app/plans/forms.php",
+            "expression": "CWP_CODE_ROOT.'/app/marketing/growth.php'"
+          },
+          {
+            "source": "site/includes/layout/plans.php",
+            "expression": "CWP_CODE_ROOT.'/app/plans/forms.php'"
+          },
+          {
+            "source": "tests/service-plans/documents.php",
+            "expression": "CWP_CODE_ROOT.'/app/plans/documents.php'"
+          },
+          {
+            "source": "tests/service-plans/forms.php",
+            "expression": "CWP_CODE_ROOT.'/app/plans/forms.php'"
+          },
+          {
+            "source": "tests/service-plans/forms.php",
+            "expression": "CWP_CODE_ROOT.'/includes/security/input.php'"
+          },
+          {
+            "source": "tests/service-plans/forms.php",
+            "expression": "CWP_CODE_ROOT.'/includes/layout/plans.php'"
+          },
+          {
+            "source": "tests/service-plans/review_controls.php",
+            "expression": "$base.'ServicePlan.php'"
+          },
+          {
+            "source": "tests/service-plans/review_controls.php",
+            "expression": "$base.'PlanSubscription.php'"
+          },
+          {
+            "source": "tests/service-plans/run.php",
+            "expression": "__DIR__ . '/../../foundation/service-plans/ServicePlan.php'"
+          },
+          {
+            "source": "tests/service-plans/run.php",
+            "expression": "__DIR__ . '/../../foundation/service-plans/PlanSubscription.php'"
+          }
+        ],
+        "canonical_counterparts": [
+          {
+            "path": "foundation/service-plans/ServicePlan.php",
+            "deployed": "site/includes/foundation/service-plans/ServicePlan.php",
+            "sha256": "400e64634e9b70bd1faf5d639883cdd1a2ee752427e72ded82dc4240261f5304",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/service-plans/PlanSubscription.php",
+            "deployed": "site/includes/foundation/service-plans/PlanSubscription.php",
+            "sha256": "d36a2f69eb88de50097a60bfb013357fa20c9f93194192ac7ef6c8526d8a6b18",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/estimator/PriceRule.php",
+            "deployed": "site/includes/foundation/estimator/PriceRule.php",
+            "sha256": "4fa87d8c08c5157bf4e211199d8f59d7be758491d15d95a4542bbd2c79b77c3a",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/estimator/EstimateLine.php",
+            "deployed": "site/includes/foundation/estimator/EstimateLine.php",
+            "sha256": "70faffd4f07329f586799dccb8c957e55672d85d92a0151b2381c8e3879ab07d",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/estimator/EstimateRequest.php",
+            "deployed": "site/includes/foundation/estimator/EstimateRequest.php",
+            "sha256": "f1c7baef0c9325d20da5fda2198a41367b9e9ec47e8c36767adf9a1bde999e56",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/estimator/EstimateRuleSet.php",
+            "deployed": "site/includes/foundation/estimator/EstimateRuleSet.php",
+            "sha256": "cafd1fef89ec9c645fb367b551e7fc2204f56a027734cea70201e746a6b4d606",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/estimator/EstimateResult.php",
+            "deployed": "site/includes/foundation/estimator/EstimateResult.php",
+            "sha256": "f52988484dac2c841dda63689df3e2a64b6dda5e4bcfcdd3656d2f15f862aeb4",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/estimator/Estimator.php",
+            "deployed": "site/includes/foundation/estimator/Estimator.php",
+            "sha256": "36f337a5a82c88cb7aa380ec7ab5c861fbbd98bde4f83d65af920ac89c01ebce",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/review-requests/WebsiteAddress.php",
+            "deployed": "site/includes/foundation/review-requests/WebsiteAddress.php",
+            "sha256": "50524a4e79273b2f293c992c311205c2e7c1d64d320a21ac1211035795047e0d",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/review-requests/ReviewContact.php",
+            "deployed": "site/includes/foundation/review-requests/ReviewContact.php",
+            "sha256": "26ae67c93b5ec1a865e10982d428ffc4995e9d377fd04e57782eccffc9f3e644",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/review-requests/ReviewFinding.php",
+            "deployed": "site/includes/foundation/review-requests/ReviewFinding.php",
+            "sha256": "1811e21b347076c8dbf22d5de1970b06d5f11a843ccbd51b86b0b9a8d2e739ad",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/review-requests/ReviewStage.php",
+            "deployed": "site/includes/foundation/review-requests/ReviewStage.php",
+            "sha256": "3167dbe7b9c6912e62f6518589efc2c457f7a5e3ed984edca3c3fb50edd6f574",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/review-requests/ReviewRequest.php",
+            "deployed": "site/includes/foundation/review-requests/ReviewRequest.php",
+            "sha256": "f3f8135c05c06409b94f72b7dea83ceba52462098b1b836dd1bed9ddb3f2967f",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/review-requests/ReviewReport.php",
+            "deployed": "site/includes/foundation/review-requests/ReviewReport.php",
+            "sha256": "ea3f1f8d7b18be14c3ca1b525e78a36148e85bb4d01fa0b071e211bfeead6171",
+            "identical_to_deployed": true
+          },
+          {
+            "path": "foundation/review-requests/ReviewInbox.php",
+            "deployed": "site/includes/foundation/review-requests/ReviewInbox.php",
+            "sha256": "039d8e2335662e6e152ab788bf97dc86e04abed5b727872f83ccfe0255e34597",
+            "identical_to_deployed": true
+          }
+        ],
+        "conditional_includes_not_executed_by_suite": [
+          {
+            "source": "site/app/marketing/growth.php",
+            "target": "site/app/marketing/reviews.php",
+            "scope": "Inside growth_submit; not called by this suite, conservatively covered by site/**"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "target": "site/app/marketing/appointments.php",
+            "scope": "Inside growth_submit; not called by this suite, conservatively covered by site/**"
+          },
+          {
+            "source": "site/app/marketing/growth.php",
+            "target": "site/app/mail/transport.php",
+            "scope": "Inside growth_submit; not called by this suite, conservatively covered by site/**"
+          }
+        ],
+        "outputs_not_inputs": [
+          "Ten stdout redirect files under qa/service-plans-*; existing artifact upload glob remains unchanged.",
+          "GITHUB_STEP_SUMMARY is an output. Official PHP image and runtime selected by the unchanged workflow are external execution dependencies."
+        ],
+        "scope_note": "This suite loads application forms/documents/security/layout plus deployed models. It is not isolated to foundation/service-plans. No SQL, live provider, installed HTTP or mail action is executed by the modeled test entry points; no such tests were rerun for this proposal."
+      },
+      "independent_review": {
+        "schema": 1,
+        "recorded_utc": "2026-10-19T05:36:12.997128+00:00",
+        "verdict": "Clear within bounded source/filter review; no material blocker.",
+        "base": "847722b4960aa229b8e9b0da282a9424fa620194",
+        "head": "847722b4960aa229b8e9b0da282a9424fa620194",
+        "scope": "Read-only local source/token/YAML/hash/inverse inspection; no PHP suite/application/API/Git mutation.",
+        "proposal": {
+          "path": "C:/Users/after/Documents/Codex/2026-10-12/ok-x20/work/ci-service-plans-pr-filter-2026-10-19/source-review.json",
+          "sha256": "786a2d95489e03c87bf9019228d34723a7194c00a4858a91268ab710bad7cabc"
+        },
+        "patch_sha256": "c298dd4ef646cfa11e70ba212ae5f156061ed011f6eece299ec36d131d24627e",
+        "workflow": {
+          "path": ".github/workflows/service-plans.yml",
+          "before_sha256": "6625f8fff7a8e8fd8a2afaa7eea522fff5229d9b76ae5bbdd6330c12a3cff220",
+          "after_sha256": "8bbf62e78f669bc5a2392eb8af074271128639826fe0dbda48aa5f3ef0d3bfa7",
+          "before_git_blob": "9519966bc844580eaab2cc3acee8d76650816e48",
+          "filters": [
+            "site/**",
+            "foundation/service-plans/**",
+            "foundation/estimator/**",
+            "foundation/review-requests/**",
+            "tests/service-plans/**",
+            ".github/workflows/service-plans.yml"
+          ],
+          "inverse_remove_exactly_once": "    paths:\n      - site/**\n      - foundation/service-plans/**\n      - foundation/estimator/**\n      - foundation/review-requests/**\n      - tests/service-plans/**\n      - .github/workflows/service-plans.yml\n"
+        },
+        "dependency_proof_sha256": "815411bbbdea735fd1e8e624a8cb53d742325baa5726621e78b5ab929a8eae66",
+        "actual_read_sources_verified": 30,
+        "canonical_counterparts_verified": 15,
+        "actual_tokenized_include_expressions": 22,
+        "reviewed_eager_default_deployed_edges": 32,
+        "producer_named_checks_inspected": 28,
+        "producer_suite_rerun": false,
+        "findings": [],
+        "coverage": "Broad site/** covers actual forms/documents/input/layout and growth.php imports, deployed estimator/review-request models, conditional growth_submit includes and CSS/assets. Canonical service-plan/estimator/review-request source roots and full test family included. Current test CWP_CODE_ROOT is fixed to site. No uncovered current repository input found.",
+        "preservation": "Seven additive lines only; removing the one exact block reconstructs the entire Git predecessor. All jobs/commands/ten report redirects/uploads, matrices, push/manual events, permissions, concurrency, network and mount settings unchanged.",
+        "limitations": [
+          "This intentionally still runs for unrelated site changes; documentation/unrelated-family-only PRs are excluded.",
+          "Required-check/rules policy was not read; the proposal already retains that separate root consideration.",
+          "Future imports outside covered roots must extend filters when introduced. No application acceptance credit."
+        ]
+      },
+      "independent_review_sha256": "6a14ae8b511c17126581b88aad1166179cb163c0f36bd3e510a542016e75e8d9",
+      "root_checks": [
+        {
+          "name": "Applied reviewed bytes and exact whole-file inverse: .github/workflows/service-plans.yml",
+          "passed": true
+        },
+        {
+          "name": "All reviewed source inputs match the current parent",
+          "input_bindings": 45,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "source_review": {
+        "base": "847722b4960aa229b8e9b0da282a9424fa620194",
+        "scope": "One additive native component pull_request.paths filter; external proposal only.",
+        "files": [
+          {
+            "path": ".github/workflows/staff-invitations.yml",
+            "before_sha256": "8f53961184779739f42f460caa38d9af8226372868716275ecd9730f7b0680e4",
+            "after_sha256": "de8da78f25f0b75c215b91fe491f49c5b82cbb264271973427155c3f2bacf046",
+            "before_git_blob": "d529ba4f70bdf84cac95076ec3509ccb173bf2b0",
+            "filters": [
+              "foundation/access/**",
+              "foundation/invitations/**",
+              "tests/access/**",
+              "tests/invitations/**",
+              ".github/workflows/staff-invitations.yml"
+            ],
+            "inverse_remove_exactly_once": "    paths:\n      - foundation/access/**\n      - foundation/invitations/**\n      - tests/access/**\n      - tests/invitations/**\n      - .github/workflows/staff-invitations.yml\n"
+          }
+        ],
+        "patch_sha256": "df73ac2657026bca8f5d0084bc9a649871df0c2eda3a0b1eac235af56aff0ae7",
+        "dependencies_sha256": "e32b0c90bf91b5f7597011c5ba33aae1b1483bd8960ab14fda52eee8d90e2d9c",
+        "checks_sha256": "dbc39eb2bd6aa17c354a1654fd3f6348d884ce822ba5969bf2dce9f7636b69d4",
+        "tokenizer_output_sha256": "9404dc1213c0962d176592f3a6dff8c5d349222f063e6006cb0bafd28866f7f4",
+        "source_check_count": 42,
+        "php_sources": 8,
+        "docker_context_files": 2,
+        "literal_imports": 7,
+        "fixed_self_worker_edges": 1,
+        "preserved": [
+          "All original job/step/command assertions, PHP matrix, MariaDB service, Docker build/context/runtime options, timeout and fixture guards.",
+          "Push/manual triggers, branches, permissions, concurrency and cancellation settings.",
+          "All other workflows and all application/runtime/fixture source bytes."
+        ],
+        "limitations": [
+          "Native suite was inspected, not rerun; no native/database/application acceptance claim.",
+          "No GitHub or required-check policy read was made. Root must retain its separate required-check policy consideration for path-filtered workflows.",
+          "Future repository inputs outside the four covered roots require expanding this filter when introduced.",
+          "Official image/runtime dependencies are unchanged; changes to workflow image/service/runtime configuration trigger via the workflow-self path."
+        ]
+      },
+      "source_review_sha256": "c17b524595750a70d769e7e79f2f0a59a901500b1224b8796466937432d5fe6a",
+      "producer_checks": {
+        "passed": true,
+        "scope": "Named local source/token/YAML/inverse/applicability checks only; no suite, SQL, container or GitHub execution.",
+        "checks": [
+          {
+            "name": "Exact reviewed main commit resolves",
+            "passed": true
+          },
+          {
+            "name": "Complete current repository input inventory is eight PHP files and one Dockerfile",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: foundation/access/AccessContext.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: foundation/access/AuthorizationVersion.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: foundation/access/MailboxGrant.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: foundation/access/PermissionPolicy.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: foundation/invitations/IssuedInvitation.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: foundation/invitations/StaffInvitationStore.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: tests/access/run.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: tests/invitations/Dockerfile",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: tests/invitations/native.php",
+            "passed": true
+          },
+          {
+            "name": "Current Git input equals reviewed main: .github/workflows/staff-invitations.yml",
+            "passed": true
+          },
+          {
+            "name": "Actual PHP tokenizer completes without executing source bodies",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in foundation/access/AccessContext.php",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in foundation/access/AuthorizationVersion.php",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in foundation/access/MailboxGrant.php",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in foundation/access/PermissionPolicy.php",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in foundation/invitations/IssuedInvitation.php",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in foundation/invitations/StaffInvitationStore.php",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in tests/access/run.php",
+            "passed": true
+          },
+          {
+            "name": "No source evaluation in tests/invitations/native.php",
+            "passed": true
+          },
+          {
+            "name": "All seven tokenized imports resolve to covered source files",
+            "passed": true
+          },
+          {
+            "name": "Only native fixture reads environment/temp gate or starts a worker",
+            "passed": true
+          },
+          {
+            "name": "Worker is exactly this covered native file via PHP_BINARY",
+            "passed": true
+          },
+          {
+            "name": "Only external file read is freshly created temporary concurrency gate",
+            "passed": true
+          },
+          {
+            "name": "All runtime configuration is four explicit workflow-supplied environment values",
+            "passed": true
+          },
+          {
+            "name": "Both fixture schemas are defined in covered native/store PHP source",
+            "passed": true
+          },
+          {
+            "name": "Disposable database and explicit allow guard remain exact source inputs",
+            "passed": true
+          },
+          {
+            "name": "Dockerfile has no additional context import or external script",
+            "passed": true
+          },
+          {
+            "name": "Unique unfiltered PR anchor",
+            "passed": true
+          },
+          {
+            "name": "Exact single-insertion inverse recovers all predecessor bytes",
+            "passed": true
+          },
+          {
+            "name": "Only pull_request.paths changes parsed workflow",
+            "passed": true
+          },
+          {
+            "name": "Every job/step/service/matrix body remains byte-identical",
+            "passed": true
+          },
+          {
+            "name": "Original native MariaDB service and PHP matrix retained",
+            "passed": true
+          },
+          {
+            "name": "Complete original Docker build context covered",
+            "passed": true
+          },
+          {
+            "name": "Unchanged native environment provides every read configuration key",
+            "passed": true
+          },
+          {
+            "name": "Original host network, read-only mount and both test commands retained",
+            "passed": true
+          },
+          {
+            "name": "All current lint/runtime/context inputs trigger",
+            "passed": true
+          },
+          {
+            "name": "Future nested sources, fixtures and Docker ignore files remain included",
+            "passed": true
+          },
+          {
+            "name": "Unrelated docs/application/sibling workflows excluded only from this component trigger",
+            "passed": true
+          },
+          {
+            "name": "Push/manual/permissions/concurrency settings unchanged",
+            "passed": true
+          },
+          {
+            "name": "Exactly six additive lines, no deleted lines",
+            "passed": true
+          }
+        ]
+      },
+      "dependencies": {
+        "base": "847722b4960aa229b8e9b0da282a9424fa620194",
+        "inventory": [
+          {
+            "path": "foundation/access/AccessContext.php",
+            "sha256": "b0009bb6db9b74f25af990f4d2fb812d46762d2c5a5a5addc7c40a106344fab0",
+            "git_blob": "43dc19759196059122d85585a8cc03cdfbe689aa"
+          },
+          {
+            "path": "foundation/access/AuthorizationVersion.php",
+            "sha256": "92ddb6d3e15f57fe4dc7682052977376ef0c3362da076b0d609113e9a16e6e62",
+            "git_blob": "2e397168b08aeaf7cd114b79d5f3ca17896ceea9"
+          },
+          {
+            "path": "foundation/access/MailboxGrant.php",
+            "sha256": "2afb2bcda28572845ccea514180f6c5b67904a64eeb5a0bdb277eb338dd97027",
+            "git_blob": "dae17eee3d0cbd13950d7e3ef88eca5fb14a0d38"
+          },
+          {
+            "path": "foundation/access/PermissionPolicy.php",
+            "sha256": "800b44f481271b467bef5f2719aeba5608cc6fc6da57e90fd415de967fa58632",
+            "git_blob": "3e86a8dc8f2c1e53f0aa882a78804cdb4b9e4c13"
+          },
+          {
+            "path": "foundation/invitations/IssuedInvitation.php",
+            "sha256": "f91a7e5ae461744ac189784debd107f7bc6b05618c0a2e2a32e13e84f1a34ccb",
+            "git_blob": "3bee3f8d5a763e98011c864998607b1962777281"
+          },
+          {
+            "path": "foundation/invitations/StaffInvitationStore.php",
+            "sha256": "71b43312f2257be1952705c1bbde557019e55be39b549fdc331eb90767197ec4",
+            "git_blob": "4d99797c9b91fbda534ed5223cf0a189dbe1a136"
+          },
+          {
+            "path": "tests/access/run.php",
+            "sha256": "ac6dd1888acf89c703e51ffc05b8c1ae25e4644c5084fda53ec4e807cb7177cd",
+            "git_blob": "06c6313fba73c2481d8b55db4a23f8d7dc66f524"
+          },
+          {
+            "path": "tests/invitations/Dockerfile",
+            "sha256": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
+            "git_blob": "86c402208f528334b910bae4e3705c2dbaff947c"
+          },
+          {
+            "path": "tests/invitations/native.php",
+            "sha256": "80ae25bb1436098d4f71625295dbe653df3a0fc76324bd4a9d8ca27f99a6f3ad",
+            "git_blob": "e34b16bd21aaa35cf1e987485b24401b12541326"
+          },
+          {
+            "path": ".github/workflows/staff-invitations.yml",
+            "sha256": "8f53961184779739f42f460caa38d9af8226372868716275ecd9730f7b0680e4",
+            "git_blob": "d529ba4f70bdf84cac95076ec3509ccb173bf2b0"
+          }
+        ],
+        "php_import_edges": [
+          {
+            "source": "tests/access/run.php",
+            "line": 8,
+            "target": "foundation/access/AuthorizationVersion.php",
+            "kind": "literal PHP import"
+          },
+          {
+            "source": "tests/access/run.php",
+            "line": 9,
+            "target": "foundation/access/MailboxGrant.php",
+            "kind": "literal PHP import"
+          },
+          {
+            "source": "tests/access/run.php",
+            "line": 10,
+            "target": "foundation/access/AccessContext.php",
+            "kind": "literal PHP import"
+          },
+          {
+            "source": "tests/access/run.php",
+            "line": 11,
+            "target": "foundation/access/PermissionPolicy.php",
+            "kind": "literal PHP import"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 7,
+            "target": "foundation/access/AuthorizationVersion.php",
+            "kind": "literal PHP import"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 8,
+            "target": "foundation/invitations/IssuedInvitation.php",
+            "kind": "literal PHP import"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 9,
+            "target": "foundation/invitations/StaffInvitationStore.php",
+            "kind": "literal PHP import"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 206,
+            "target": "tests/invitations/native.php",
+            "kind": "fixed self-worker"
+          }
+        ],
+        "configuration_calls": [
+          {
+            "source": "tests/invitations/native.php",
+            "line": 13,
+            "name": "getenv"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 14,
+            "name": "getenv"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 17,
+            "name": "getenv"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 17,
+            "name": "getenv"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 58,
+            "name": "file_get_contents"
+          },
+          {
+            "source": "tests/invitations/native.php",
+            "line": 206,
+            "name": "proc_open"
+          }
+        ],
+        "runtime_environment": [
+          "CWP_INVITATION_TEST_DSN",
+          "CWP_INVITATION_TEST_ALLOW",
+          "CWP_INVITATION_TEST_USER",
+          "CWP_INVITATION_TEST_PASSWORD"
+        ],
+        "schema_sources": [
+          "tests/invitations/native.php (account table)",
+          "foundation/invitations/StaffInvitationStore.php::createTableSql (invitation table)"
+        ],
+        "docker_context": "tests/invitations (entire directory)",
+        "external_runtime_inputs": [
+          "Unchanged official PHP CLI image and docker-php-ext-install pdo_mysql",
+          "Unchanged MariaDB11.4 service and inline synthetic environment",
+          "Fresh runtime temp gate, synthetic DB tables and random invitation data"
+        ],
+        "inspection": "No application bootstrap/config/schema, Composer/autoloader or outside repository fixture is read. Native worker executes this same included file, with the same imports and workflow environment. Full repository mount does not create an additional read dependency."
+      },
+      "independent_review": {
+        "scope": "Independent read-only staff-invitations pull_request path-filter source review; no suite, SQL, Docker, Git mutation or API execution.",
+        "base": "847722b4960aa229b8e9b0da282a9424fa620194",
+        "proposal_manifest": "work/ci-staff-invitations-pr-filter-2026-10-19/source-review.json",
+        "proposal_manifest_sha256": "c17b524595750a70d769e7e79f2f0a59a901500b1224b8796466937432d5fe6a",
+        "workflow": ".github/workflows/staff-invitations.yml",
+        "before_sha256": "8f53961184779739f42f460caa38d9af8226372868716275ecd9730f7b0680e4",
+        "after_sha256": "de8da78f25f0b75c215b91fe491f49c5b82cbb264271973427155c3f2bacf046",
+        "patch_sha256": "df73ac2657026bca8f5d0084bc9a649871df0c2eda3a0b1eac235af56aff0ae7",
+        "result": "source-clear",
+        "material_findings": [],
+        "dependency_review": [
+          "Read all eight PHP inputs and Dockerfile from the exact base. Seven literal imports are confined to foundation/access and foundation/invitations; no application bootstrap, configuration, deployed mirror, autoloader or external repository schema is loaded.",
+          "Native account schema is inline in tests/invitations/native.php; invitation schema is StaffInvitationStore::createTableSql. Both are covered. Database connection uses only four existing workflow-supplied synthetic environment variables.",
+          "Concurrency worker executes PHP_BINARY plus the same native.php file. Its gate is freshly allocated with tempnam and passed directly; no repository-external worker or schema input exists.",
+          "Docker context is the entire tests/invitations directory; it contains Dockerfile and native.php at the base. The Dockerfile only installs pdo_mysql in the official PHP image. Nested/future context inputs and Docker ignore files match tests/invitations/**.",
+          "Removing the six-line PR paths insertion restores the full original workflow bytes, preserving push/manual events, concurrency, permissions, matrix, service, all commands and every step."
+        ],
+        "verification": {
+          "local_comparisons": [
+            {
+              "name": "Proposal targets exact main 847722b4",
+              "passed": true
+            },
+            {
+              "name": "Sealed descriptor matches proposal.patch",
+              "passed": true
+            },
+            {
+              "name": "Sealed descriptor matches dependencies.json",
+              "passed": true
+            },
+            {
+              "name": "Sealed descriptor matches checks.json",
+              "passed": true
+            },
+            {
+              "name": "Sealed descriptor matches tokenizer-output.json",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency foundation/access/AccessContext.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency foundation/access/AuthorizationVersion.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency foundation/access/MailboxGrant.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency foundation/access/PermissionPolicy.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency foundation/invitations/IssuedInvitation.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency foundation/invitations/StaffInvitationStore.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency tests/access/run.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency tests/invitations/Dockerfile",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency tests/invitations/native.php",
+              "passed": true
+            },
+            {
+              "name": "Exact base dependency .github/workflows/staff-invitations.yml",
+              "passed": true
+            },
+            {
+              "name": "Exact before and proposed workflow hashes",
+              "passed": true
+            },
+            {
+              "name": "One additive PR paths insertion recovers every original byte",
+              "passed": true
+            },
+            {
+              "name": "Only parsed PR paths differ",
+              "passed": true
+            },
+            {
+              "name": "Jobs and entire later workflow remain byte identical",
+              "passed": true
+            },
+            {
+              "name": "Patch is exact one-file unified diff",
+              "passed": true
+            },
+            {
+              "name": "Complete nine-file input tree is inventoried",
+              "passed": true
+            },
+            {
+              "name": "Every actual dependency matches filter",
+              "passed": true
+            },
+            {
+              "name": "Nested fixture and Docker ignore additions remain covered",
+              "passed": true
+            },
+            {
+              "name": "Unrelated application invoice edits do not trigger component",
+              "passed": true
+            },
+            {
+              "name": "Retained 42 local source checks are explicitly successful",
+              "passed": true
+            }
+          ],
+          "retained_author_checks": 42,
+          "reviewer_suite_reruns": 0
+        },
+        "limitations": [
+          "This review establishes source/filter coverage, not successful native database behavior or CI runtime.",
+          "No current GitHub required-check policy was queried. Root must preserve the separate policy review; a newly required path-filtered workflow can remain pending when skipped.",
+          "Future repository dependencies outside these four family roots require updating this filter at the same time. Runtime image changes made in this workflow are covered by its self path."
+        ]
+      },
+      "independent_review_sha256": "3564d17015af051d6e9c62aa9e1857c456dfeacb0bf3c978b73137c5dc6b0701",
+      "root_checks": [
+        {
+          "name": "Applied reviewed bytes and exact whole-file inverse: .github/workflows/staff-invitations.yml",
+          "passed": true
+        },
+        {
+          "name": "All reviewed source inputs match the current parent",
+          "input_bindings": 10,
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "policy": {
+    "method": "Read-only GitHub GraphQL",
+    "observed_utc": "2026-10-19T05:35:05Z",
+    "repository": "afterburn25/Cajun_Web",
+    "includeParents": true,
+    "branchProtectionRules": {
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "rulesets": {
+      "totalCount": 0,
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "policy_changed": false
+  },
+  "limitations": [
+    "Source/dependency/trigger review only; no application acceptance result.",
+    "Future dependencies outside the selected roots require extending filters.",
+    "Existing queued runs, main pushes, manual runs and all release gates remain unchanged."
+  ]
+}

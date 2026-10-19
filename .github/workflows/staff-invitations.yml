@@ -2,6 +2,12 @@ name: Staff invitation checks
 
 on:
   pull_request:
+    paths:
+      - foundation/access/**
+      - foundation/invitations/**
+      - tests/access/**
+      - tests/invitations/**
+      - .github/workflows/staff-invitations.yml
   push:
     branches: [main, codex/platform-foundation]
   workflow_dispatch:

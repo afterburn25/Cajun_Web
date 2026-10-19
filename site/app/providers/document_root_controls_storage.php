@@ -41,6 +41,13 @@ function provider_document_root_controls_ledger_sql():string {
 }
 /** No schema repair on GET. An absent, never-used feature is the only no-op case. */
 function provider_document_root_controls_ready():bool {
+    // Legacy owner renderers call readiness outside a mutation scope. Authenticate the
+    // new reciprocal graph under the same mutex without weakening its storage guard.
+    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if((int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1){
+        if(db()->inTransaction())throw new LogicException('Website folder readiness cannot acquire a mutex inside an inherited transaction.');
+        return staff_locked(fn()=>provider_document_root_controls_ready());
+    }
     $marker='provider_document_root_control_schema_version';$settingPrefix='provider_document_root_control_';$settings=[];$allowed=[$marker];
     foreach(array_keys(provider_document_root_controls_tables()) as $kind)$allowed[]=$settingPrefix.$kind.'_count';
     foreach(all('SELECT name,value FROM '.table('settings').' WHERE BINARY LEFT(name,?)=BINARY ?',[strlen($settingPrefix),$settingPrefix]) as $row){
@@ -56,7 +63,12 @@ function provider_document_root_controls_ready():bool {
         foreach($present as $name)if($count('SELECT COUNT(*) FROM '.table($name))>0)$used=true;
         // A lost common marker must not hide a surviving approval or claim.
         foreach(['provider_operation_grants'=>"BINARY operation='packages.documentroot'",'provider_operations'=>"BINARY operation='packages.documentroot' OR BINARY idempotency_key LIKE 'documentroot:%'"] as $name=>$where)if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])&&one('SELECT id FROM '.table($name).' WHERE '.$where.' LIMIT 1'))$used=true;
-        if($used)throw new RuntimeException('Restore the original Document-root change history.');return false;
+        if($used)throw new RuntimeException('Restore the original Document-root change history.');
+        // Client preparation itself records that owner controls already existed. Never
+        // recreate lost owner storage while any authenticated client journal survives.
+        require_once CWP_CODE_ROOT.'/app/providers/document_root_requests.php';
+        if(provider_document_root_requests_graph()!==null)throw new RuntimeException('Restore the original website folder controls before using retained client requests.');
+        return false;
     }
     if($version!=='1'||!provider_operations_ready()||!provider_document_roots_ready())throw new RuntimeException('Document-root change storage needs recovery.');
     if(count($settings)!==count($allowed)||$present!==array_values($tables))throw new RuntimeException('Document-root change storage needs recovery.');
@@ -78,6 +90,8 @@ function provider_document_root_controls_ready():bool {
     if(one("SELECT t.id FROM $t t LEFT JOIN $q q ON q.id=t.id LEFT JOIN $p p ON BINARY p.idempotency_key=BINARY CONCAT(BINARY 'documentroot:',t.id) WHERE q.id IS NULL OR BINARY t.disposition NOT IN ('not_sent','attempted') OR (BINARY t.disposition='not_sent' AND p.id IS NOT NULL) OR BINARY t.ledger_sha256<>BINARY IF(p.id IS NULL,REPEAT('0',64),$ledger) LIMIT 1"))throw new RuntimeException('Document-root dispatch completion needs recovery.');
     if(one("SELECT c.id FROM $c c LEFT JOIN $q q ON q.id=c.request_id LEFT JOIN $t t ON t.id=q.id LEFT JOIN ".table('provider_refreshes')." f ON f.id=c.receipt_id WHERE q.id IS NULL OR t.id IS NULL OR BINARY t.disposition<>'attempted' OR f.id IS NULL OR BINARY f.operation<>'package.document-roots' OR BINARY c.disposition NOT IN ('observed','different','unavailable') LIMIT 1"))throw new RuntimeException('Document-root verification history needs recovery.');
     provider_document_root_controls_authenticated_history();
+    require_once CWP_CODE_ROOT.'/app/providers/document_root_requests.php';
+    provider_document_root_requests_owner_history();
     return true;
 }
 /** Immutable evidence and independent counter commit with the exact audit. */

@@ -440,6 +440,13 @@ def run(tmp):
         check('Original invalid job-level service context is rejected for '+job, not valid_port_context(original_bug))
 
 
+_run_before_client_document_root_requests = run
+
+def run(tmp):
+    from document_root_requests_acceptance import run as client_folder_acceptance
+    client_folder_acceptance(globals(), tmp, _run_before_client_document_root_requests)
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None
