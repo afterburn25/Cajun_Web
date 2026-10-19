@@ -14,6 +14,12 @@ require_once CWP_CODE_ROOT.'/portal/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_php.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/document_roots.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_force_ssl.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/force_ssl_requests.php';
+$httpsRequestRoute=array_key_exists('https_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'https_request_'));
+if($httpsRequestRoute){
+    header('Cache-Control: no-store, private');
+    if(provider_force_ssl_requests_session_blocked())fail_page('Sign in directly to your primary client account to manage HTTPS requests.',403);
+}
 require_once CWP_CODE_ROOT.'/portal/controllers/directory_listing.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_wordpress_installed.php';
 if(array_key_exists('force_ssl',$_GET))header('Cache-Control: no-store, private');
@@ -47,6 +53,7 @@ if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403)
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
 require CWP_CODE_ROOT.'/portal/views/auth.php';
+if($httpsRequestRoute)provider_force_ssl_requests_client_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);

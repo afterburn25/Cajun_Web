@@ -118,6 +118,13 @@
     "\"$PHP_BINARY\" tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json",
     "\"$PHP_BINARY\" -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json",
     "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
+    "\"$PHP_BINARY\" tests/force_ssl_requests_document.php > qa/force-ssl-requests-document-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_document.php > qa/force-ssl-requests-document-minimal.json",
+    "\"$PHP_BINARY\" tests/force_ssl_requests_storage.php > qa/force-ssl-requests-storage-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_storage.php > qa/force-ssl-requests-storage-minimal.json",
+    "\"$PHP_BINARY\" tests/force_ssl_requests_contract.php > qa/force-ssl-requests-contract-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_contract.php > qa/force-ssl-requests-contract-minimal.json",
+    "CWP_TEST_FORCE_SSL_REQUESTS=1 \"$PHP_BINARY\" tests/provider_force_ssl_requests_native.php",
     "\"$PHP_BINARY\" tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
     "\"$PHP_BINARY\" -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
     "\"$PHP_BINARY\" tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
@@ -555,5 +562,317 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "client_https_requests": {
+    "predecessor_commit": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
+    "predecessor_contract_sha256": "f7ccac9c27630ecee696dbe0ac44a2ae13f08f895751947282626877e235efb7",
+    "predecessor_reports_sha256": "f77d7dba6762ded822206ca7263d146a26f89d58c4e4b87851a3743e74dd6d2b",
+    "native_after": "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/force_ssl_requests_document.php > qa/force-ssl-requests-document-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_document.php > qa/force-ssl-requests-document-minimal.json",
+      "\"$PHP_BINARY\" tests/force_ssl_requests_storage.php > qa/force-ssl-requests-storage-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_storage.php > qa/force-ssl-requests-storage-minimal.json",
+      "\"$PHP_BINARY\" tests/force_ssl_requests_contract.php > qa/force-ssl-requests-contract-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_contract.php > qa/force-ssl-requests-contract-minimal.json",
+      "CWP_TEST_FORCE_SSL_REQUESTS=1 \"$PHP_BINARY\" tests/provider_force_ssl_requests_native.php"
+    ],
+    "browser_command": ".ci-venv/bin/python tests/client_force_ssl_requests_browser.py --php \"$PHP_BINARY\" --report qa/client-force-ssl-requests-browser-results.json",
+    "reports": [
+      "force-ssl-requests-document-default.json",
+      "force-ssl-requests-document-minimal.json",
+      "force-ssl-requests-storage-default.json",
+      "force-ssl-requests-storage-minimal.json",
+      "force-ssl-requests-contract-default.json",
+      "force-ssl-requests-contract-minimal.json",
+      "provider-force-ssl-requests-native-results.json",
+      "client-force-ssl-requests-browser-results.json"
+    ],
+    "screenshots": [],
+    "repins": [],
+    "source_deltas": {
+      ".github/workflows/application-tests.yml": {
+        "before_sha256": "5879a7db5bdecb81716c2509c427e5db3b546f91497dea29bd465165ca3f369f",
+        "after_sha256": "1ebb0d53c82ed61de2c49a0bd93ee59bed6b8040109bcf762c84cdc6efb2a015",
+        "changes": [
+          {
+            "after_start": 388,
+            "after_end": 395,
+            "before": "",
+            "after": "          \"$PHP_BINARY\" tests/force_ssl_requests_document.php > qa/force-ssl-requests-document-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_document.php > qa/force-ssl-requests-document-minimal.json\n          \"$PHP_BINARY\" tests/force_ssl_requests_storage.php > qa/force-ssl-requests-storage-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_storage.php > qa/force-ssl-requests-storage-minimal.json\n          \"$PHP_BINARY\" tests/force_ssl_requests_contract.php > qa/force-ssl-requests-contract-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/force_ssl_requests_contract.php > qa/force-ssl-requests-contract-minimal.json\n          CWP_TEST_FORCE_SSL_REQUESTS=1 \"$PHP_BINARY\" tests/provider_force_ssl_requests_native.php\n"
+          },
+          {
+            "after_start": 441,
+            "after_end": 444,
+            "before": "        run: .ci-venv/bin/python tests/browser_acceptance.py\n",
+            "after": "        run: |\n          .ci-venv/bin/python tests/browser_acceptance.py\n          .ci-venv/bin/python tests/client_force_ssl_requests_browser.py --php \"$PHP_BINARY\" --report qa/client-force-ssl-requests-browser-results.json\n"
+          }
+        ]
+      },
+      "site/admin/controllers/actions.php": {
+        "before_sha256": "562d44b9631f48e2bf425d1e15f3ac3432d8aec50b4eeebb858a8302d58f93f6",
+        "after_sha256": "8bc5447aa523d96148541b8b2962f5cce29059f6cfaf0a34bdb54f75c0391620",
+        "changes": [
+          {
+            "after_start": 17,
+            "after_end": 18,
+            "before": "",
+            "after": "    if(str_starts_with($action,'provider_https_'))provider_force_ssl_requests_admin_action($action);\n"
+          }
+        ]
+      },
+      "site/admin/controllers/router.php": {
+        "before_sha256": "a28d32976b88bfba9e4e0f24ebb7c4eb5e8b57eb08497faafbdcbcdd5e6313ee",
+        "after_sha256": "58ba5734a9fc55101a4fc67704b3ae175dea64e9d402670cecca29e19812b659",
+        "changes": [
+          {
+            "after_start": 11,
+            "after_end": 12,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/admin/controllers/force_ssl_requests.php';\n"
+          },
+          {
+            "after_start": 25,
+            "after_end": 26,
+            "before": "",
+            "after": "if(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'provider_https_'))$view='https-requests';\n"
+          },
+          {
+            "after_start": 27,
+            "after_end": 29,
+            "before": "",
+            "after": "$validViews[]='https-requests';\nif($view==='https-requests'){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}\n"
+          },
+          {
+            "after_start": 53,
+            "after_end": 54,
+            "before": "",
+            "after": "if($view==='https-requests')provider_force_ssl_requests_admin_render($error);\n"
+          }
+        ]
+      },
+      "site/admin/views/providers.php": {
+        "before_sha256": "de874ce4d6a5c4fee8d3e2617701e30dbb1eeec93784568d068efcd67ff6e25d",
+        "after_sha256": "01ffa5f74e26c7682bda01e129e815b0ce30963ede80172773e4e41d746130b4",
+        "changes": [
+          {
+            "after_start": 161,
+            "after_end": 162,
+            "before": "",
+            "after": "<p><a class=\"btn outline\" href=\"<?=esc(admin_url('https-requests'))?>\">Review client HTTPS requests</a></p>\n"
+          }
+        ]
+      },
+      "site/app/providers/force_ssl_controls.php": {
+        "before_sha256": "73c83ebb2667b5c48188cdb6f8e5ca12429ba58e61683c868623a8940f848172",
+        "after_sha256": "4e559c47dcf9f0b58f9266149f1ca78c29f1ef686190b64f1386ef908b005855",
+        "changes": [
+          {
+            "after_start": 16,
+            "after_end": 17,
+            "before": "    if(!is_array($d)||($d['version']??null)!==1||provider_force_ssl_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Force SSL change evidence needs recovery.');\n",
+            "after": "    if(!is_array($d)||!in_array($d['version']??null,$kind==='request'?[1,2]:[1],true)||provider_force_ssl_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Force SSL change evidence needs recovery.');\n"
+          },
+          {
+            "after_start": 35,
+            "after_end": 38,
+            "before": "    return ['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];\n",
+            "after": "    $request=['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];\n    if($d['version']===2){require_once CWP_CODE_ROOT.'/app/providers/force_ssl_requests.php';provider_force_ssl_requests_validate_origin($request);}elseif(array_key_exists('client_origin',$d))throw new RuntimeException('Direct Force SSL approval cannot claim a client origin.');\n    return $request;\n"
+          },
+          {
+            "after_start": 89,
+            "after_end": 90,
+            "before": "",
+            "after": "    if($request['document']['version']===2)provider_force_ssl_requests_origin_current($request);\n"
+          },
+          {
+            "after_start": 100,
+            "after_end": 131,
+            "before": "/** One owning mutex spans admission, DNS, gateway and the immutable terminal witness. */\n",
+            "after": "/** Internal admission; client origin and reciprocal decision commit in the caller transaction. */\nfunction provider_force_ssl_controls_admit_locked(string $requestId,string $linkId,string $anchorId,string $bindingHash,bool $desired,bool $reviewed,#[SensitiveParameter] string $password,?array $clientOrigin=null):bool {\n    provider_force_ssl_guard();provider_force_ssl_id($requestId);provider_force_ssl_id($linkId);provider_force_ssl_id($anchorId);\n    if(!$reviewed||!preg_match('/\\A[a-f0-9]{64}\\z/',$bindingHash))throw new InvalidArgumentException('Review this exact Force SSL change first.');\n    $actor=provider_settings_owner($password);if(!provider_force_ssl_controls_ready())throw new RuntimeException('Prepare Force SSL change storage first.');\n    if(one('SELECT id FROM '.table('provider_force_ssl_changes').' WHERE id=?',[$requestId])){$old=provider_force_ssl_controls_request($requestId);if(($old['document']['client_origin']??null)!==$clientOrigin)throw new RuntimeException('This Force SSL approval has a different origin.');provider_force_ssl_controls_context($old['binding']);if($old['row']['link_id']!==$linkId||$old['document']['anchor_id']!==$anchorId||!hash_equals($old['binding']->sha256,$bindingHash)||$old['document']['params']['value']!==$desired||(int)$old['row']['actor_id']!==(int)$actor['id'])throw new RuntimeException('This Force SSL request identifier was already used.');return false;}\n    if($clientOrigin!==null)provider_force_ssl_requests_admission_origin($clientOrigin,$linkId,$desired);\n    [$binding,$anchor]=provider_force_ssl_controls_precondition($linkId,$anchorId,$bindingHash);provider_force_ssl_controls_context($binding);\n    if($desired===$anchor['value'])throw new InvalidArgumentException('The latest saved flag already reports the requested value.');\n    if(provider_force_ssl_controls_pending($binding->data['profile_id'],$binding->data['package_id']))throw new RuntimeException('A previous Force SSL change is unresolved. It cannot be sent again.');\n    $previous=one('SELECT * FROM '.table('provider_force_ssl_changes').' WHERE profile_id=? AND package_id=? ORDER BY grant_seq DESC LIMIT 1',[$binding->data['profile_id'],$binding->data['package_id']]);\n    if($previous){$old=provider_force_ssl_controls_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new Force SSL observation before approving another change.');}\n    $params=ForceSslChange::params(['packageId'=>$binding->data['package_id'],'value'=>$desired]);$now=time();$d=['version'=>$clientOrigin===null?1:2,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_proof'=>$anchor['proof'],'before_value'=>$anchor['value'],'params'=>$params,'reviewed'=>true,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];if($clientOrigin!==null)$d['client_origin']=$clientOrigin;$json=provider_force_ssl_json($d);if(strlen($json)>4096)throw new LogicException('Force SSL approval exceeds its storage contract.');\n    query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$requestId,$binding->data['profile_id'],ForceSslChange::OPERATION,provider_operations_scope(ForceSslChange::OPERATION,$d),$binding->data['profile_revision'],$json,(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'forcessl:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);\n    $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$binding->data['profile_id'],'package_id'=>$binding->data['package_id'],'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];provider_force_ssl_controls_insert('request',provider_force_ssl_controls_prove('request',$q,$grant));return true;\n}\n/** Owning mutex stays held; network is outside a transaction. */\nfunction provider_force_ssl_controls_send_locked(string $requestId,?callable $resolver=null,?callable $perform=null):array {\n    if(db()->inTransaction())throw new LogicException('Force SSL dispatch cannot inherit a transaction.');\n    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);if((int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Force SSL dispatch requires the owning staff mutex.');\n    $request=provider_force_ssl_controls_request($requestId);$entered=false;\n    try{\n    $authorize=static fn()=>provider_force_ssl_controls_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();\n    $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));\n    try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');$authorize();$op=new ProviderOperation(ForceSslChange::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);}finally{unset($secret);}\n    }catch(Throwable $e){if($e instanceof PDOException)throw $e;/* Never persist exception text or infer no-send after entry. */}\n    // A failed ledger result, zero attempts or HTTP status cannot turn this phase back into not_sent.\n    staff_transaction(fn()=>provider_force_ssl_controls_end($request,$entered?'attempted':'not_sent'));\n    return staff_transaction(fn()=>provider_force_ssl_controls_summary($requestId));\n}\n/** The original direct-owner entry keeps version-one admission and replay behavior. */\n"
+          },
+          {
+            "after_start": 134,
+            "after_end": 137,
+            "before": "    return staff_locked(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$password,$resolver,$perform):array{\n        $fresh=staff_transaction(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$password):bool{\n            $actor=provider_settings_owner($password);if(!provider_force_ssl_controls_ready())throw new RuntimeException('Prepare Force SSL change storage first.');\n            if(one('SELECT id FROM '.table('provider_force_ssl_changes').' WHERE id=?',[$requestId])){$old=provider_force_ssl_controls_request($requestId);provider_force_ssl_controls_context($old['binding']);if($old['row']['link_id']!==$linkId||$old['document']['anchor_id']!==$anchorId||!hash_equals($old['binding']->sha256,$bindingHash)||$old['document']['params']['value']!==$desired||(int)$old['row']['actor_id']!==(int)$actor['id'])throw new RuntimeException('This Force SSL request identifier was already used.');return false;}\n            [$binding,$anchor]=provider_force_ssl_controls_precondition($linkId,$anchorId,$bindingHash);provider_force_ssl_controls_context($binding);\n            if($desired===$anchor['value'])throw new InvalidArgumentException('The latest saved flag already reports the requested value.');\n            if(provider_force_ssl_controls_pending($binding->data['profile_id'],$binding->data['package_id']))throw new RuntimeException('A previous Force SSL change is unresolved. It cannot be sent again.');\n            $previous=one('SELECT * FROM '.table('provider_force_ssl_changes').' WHERE profile_id=? AND package_id=? ORDER BY grant_seq DESC LIMIT 1',[$binding->data['profile_id'],$binding->data['package_id']]);\n            if($previous){$old=provider_force_ssl_controls_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new Force SSL observation before approving another change.');}\n            $params=ForceSslChange::params(['packageId'=>$binding->data['package_id'],'value'=>$desired]);$now=time();$d=['version'=>1,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_proof'=>$anchor['proof'],'before_value'=>$anchor['value'],'params'=>$params,'reviewed'=>true,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];$json=provider_force_ssl_json($d);if(strlen($json)>4096)throw new LogicException('Force SSL approval exceeds its storage contract.');\n            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$requestId,$binding->data['profile_id'],ForceSslChange::OPERATION,provider_operations_scope(ForceSslChange::OPERATION,$d),$binding->data['profile_revision'],$json,(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'forcessl:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);\n            $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$binding->data['profile_id'],'package_id'=>$binding->data['package_id'],'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];provider_force_ssl_controls_insert('request',provider_force_ssl_controls_prove('request',$q,$grant));return true;\n        });\n        if(!$fresh)return staff_transaction(fn()=>provider_force_ssl_controls_summary($requestId));\n        $request=provider_force_ssl_controls_request($requestId);$entered=false;\n        try{\n            $authorize=static fn()=>provider_force_ssl_controls_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();\n            $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));\n            try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');$authorize();$op=new ProviderOperation(ForceSslChange::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);}finally{unset($secret);}\n        }catch(Throwable $e){if($e instanceof PDOException)throw $e;/* Never persist exception text or infer no-send after entry. */}\n        // A failed ledger result, zero attempts or HTTP status cannot turn this phase back into not_sent.\n        staff_transaction(fn()=>provider_force_ssl_controls_end($request,$entered?'attempted':'not_sent'));\n        return staff_transaction(fn()=>provider_force_ssl_controls_summary($requestId));\n",
+            "after": "    return staff_locked(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$reviewed,$password,$resolver,$perform):array {\n        $fresh=staff_transaction(fn()=>provider_force_ssl_controls_admit_locked($requestId,$linkId,$anchorId,$bindingHash,$desired,$reviewed,$password));\n        return $fresh?provider_force_ssl_controls_send_locked($requestId,$resolver,$perform):staff_transaction(fn()=>provider_force_ssl_controls_summary($requestId));\n"
+          },
+          {
+            "after_start": 140,
+            "after_end": 141,
+            "before": "",
+            "after": "    if($request['document']['version']===2)provider_force_ssl_controls_finished_ledger($request,time());\n"
+          },
+          {
+            "after_start": 150,
+            "after_end": 151,
+            "before": "    provider_force_ssl_guard();$request=provider_force_ssl_controls_request($plan['request_id']);[$actor,,$current]=provider_force_ssl_controls_context($request['binding']);$terminal=provider_force_ssl_controls_terminal($request);\n",
+            "after": "    provider_force_ssl_guard();$request=provider_force_ssl_controls_request($plan['request_id']);if($request['document']['version']===2){provider_force_ssl_requests_origin_current($request);provider_force_ssl_controls_finished_ledger($request,time());}[$actor,,$current]=provider_force_ssl_controls_context($request['binding']);$terminal=provider_force_ssl_controls_terminal($request);\n"
+          },
+          {
+            "after_start": 195,
+            "after_end": 196,
+            "before": "",
+            "after": "        if($request['document']['version']===2)provider_force_ssl_requests_origin_current($request);\n"
+          },
+          {
+            "after_start": 218,
+            "after_end": 219,
+            "before": "        $actor=provider_settings_owner($password);if(!provider_force_ssl_controls_ready())throw new RuntimeException('Prepare Force SSL change storage first.');$request=provider_force_ssl_controls_request($requestId);[,,$binding]=provider_force_ssl_controls_context($request['binding']);$terminal=provider_force_ssl_controls_terminal($request);\n",
+            "after": "        $actor=provider_settings_owner($password);if(!provider_force_ssl_controls_ready())throw new RuntimeException('Prepare Force SSL change storage first.');$request=provider_force_ssl_controls_request($requestId);if($request['document']['version']===2){provider_force_ssl_requests_origin_current($request);provider_force_ssl_controls_finished_ledger($request,time());}[,,$binding]=provider_force_ssl_controls_context($request['binding']);$terminal=provider_force_ssl_controls_terminal($request);\n"
+          },
+          {
+            "after_start": 222,
+            "after_end": 223,
+            "before": "        return ['request_id'=>$requestId,'check_id'=>bin2hex(random_bytes(16)),'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),'binding'=>$binding,'terminal_proof'=>$terminal['row']['proof'],'floor'=>(int)query('SELECT COALESCE(MAX(seq),0) FROM '.table('provider_refreshes'))->fetchColumn()];\n",
+            "after": "        $plan=['request_id'=>$requestId,'check_id'=>bin2hex(random_bytes(16)),'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),'binding'=>$binding,'terminal_proof'=>$terminal['row']['proof'],'floor'=>(int)query('SELECT COALESCE(MAX(seq),0) FROM '.table('provider_refreshes'))->fetchColumn()];if($request['document']['version']===2)$plan['client_origin']=true;return $plan;\n"
+          },
+          {
+            "after_start": 224,
+            "after_end": 225,
+            "before": "    $receipt=provider_force_ssl_refresh($plan['binding']->data['link_id'],$plan['binding'],$password,$resolver,$transport);\n",
+            "after": "    $receipt=isset($plan['client_origin'])?provider_force_ssl_requests_refresh($requestId,$plan['binding'],$password,$resolver,$transport):provider_force_ssl_refresh($plan['binding']->data['link_id'],$plan['binding'],$password,$resolver,$transport);\n"
+          }
+        ]
+      },
+      "site/app/staff/accounts.php": {
+        "before_sha256": "8463567670be0d6d3d9b7ae233f677d79449e8e0f2cc440d2a4e4f100ca04a13",
+        "after_sha256": "c8bcc595dbc7622d768f8b3ae7c03afef2a736dbbae8a7f5cafbde3abb046342",
+        "changes": [
+          {
+            "after_start": 132,
+            "after_end": 133,
+            "before": "",
+            "after": "    if($view==='https-requests')return 'staff.manage';\n"
+          },
+          {
+            "after_start": 155,
+            "after_end": 156,
+            "before": "",
+            "after": "    if(str_starts_with($action,'provider_https_'))return 'staff.manage';\n"
+          }
+        ]
+      },
+      "site/assets/css/growth.css": {
+        "before_sha256": "ae77e9bca33094ef3b1d7036e6cc10be65b42cc2ad20328314b63ed8e9632d91",
+        "after_sha256": "5bbf95877ed30914c4be8933670f5d03c305bf7ec13fdb4c88cd21449b27bd7e",
+        "changes": [
+          {
+            "after_start": 26,
+            "after_end": 39,
+            "before": "",
+            "after": "\n/* HTTPS request forms use readable type in both admin and client layouts. */\n[data-https-requests]{font-size:16px;line-height:1.6;overflow-wrap:anywhere}\n[data-https-requests] label,[data-https-requests] .hint,[data-https-requests] .btn{font-size:14px;line-height:1.5}\n[data-https-requests] form input:not([type=\"checkbox\"]),[data-https-requests] form select,[data-https-requests] form textarea{font-size:16px;max-width:100%;min-width:0;box-sizing:border-box}\n[data-https-requests] label.check{font-size:14px;line-height:1.5;align-items:flex-start;gap:10px}\n[data-https-requests] .check input{flex:none;margin-top:4px;width:18px;height:18px}\n[data-https-requests] .btn{white-space:normal;max-width:100%;min-height:44px;text-align:center}\n[data-https-requests] button:disabled{opacity:.55;cursor:not-allowed}\n[data-https-requests] :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}\n[data-https-requests] .https-request-decline{border-top:1px solid #ffffff26;margin-top:24px;padding-top:16px}\n[data-https-requests] summary{cursor:pointer;font-weight:700;padding:8px 0}\n[data-https-requests] .https-request-decline form{margin-top:16px}\n"
+          }
+        ]
+      },
+      "site/includes/layout/admin.php": {
+        "before_sha256": "799cf93e847b97ed868c40ef829016bae5861752247df2dc176e345474ef1d86",
+        "after_sha256": "69731f41beebf38d29101886e03ea201a72552af52260a1776aebe5a15e81907",
+        "changes": [
+          {
+            "after_start": 9,
+            "after_end": 10,
+            "before": "        'hosting'=>['label'=>'Hosting & Domains','icon'=>'monitor','items'=>['provider-settings'=>['gear','20i connection'],'provider-operations'=>['shield','20i operations'],'registration-drafts'=>['layers','Registration drafts']]],\n",
+            "after": "        'hosting'=>['label'=>'Hosting & Domains','icon'=>'monitor','items'=>['provider-settings'=>['gear','20i connection'],'provider-operations'=>['shield','20i operations'],'https-requests'=>['shield','HTTPS requests'],'registration-drafts'=>['layers','Registration drafts']]],\n"
+          }
+        ]
+      },
+      "site/includes/layout/provider_services.php": {
+        "before_sha256": "ab178466c36e57414c6c7643a1a3b3b0bd1c7b1d559e45788f6c3a6a236e0a84",
+        "after_sha256": "89ab881a09b0999f3986c93a6c472e1b31a5996a8f476a538cfd736f63e8f6fc",
+        "changes": [
+          {
+            "after_start": 26,
+            "after_end": 27,
+            "before": "",
+            "after": "    if(function_exists('provider_force_ssl_requests_session_blocked')&&!provider_force_ssl_requests_session_blocked())echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['https_requests'=>1])).'\">HTTPS redirect requests</a>';\n"
+          }
+        ]
+      },
+      "site/portal/controllers/actions.php": {
+        "before_sha256": "f38d615117fd161cbdc98d2eaa0f7d180ce895b8bab03c69fa6368bd2f2f281b",
+        "after_sha256": "bdaaa9999cd0a207f2de3cbc3195024e63230fd7a455ce89508e18ec1cbd297c",
+        "changes": [
+          {
+            "after_start": 13,
+            "after_end": 14,
+            "before": "",
+            "after": " elseif(str_starts_with($action,'https_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_force_ssl_requests_client_action($action,$client);}\n"
+          }
+        ]
+      },
+      "site/portal/controllers/router.php": {
+        "before_sha256": "788242f6f8a8c2e5fe69707ecac3ef053af25e9e4de3ededacd3570e19c1ae25",
+        "after_sha256": "d7ba9364c61cbf213b15d60b0e68346f988212ab013e40652f3b6f422f6dd8ac",
+        "changes": [
+          {
+            "after_start": 16,
+            "after_end": 22,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/portal/controllers/force_ssl_requests.php';\n$httpsRequestRoute=array_key_exists('https_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'https_request_'));\nif($httpsRequestRoute){\n    header('Cache-Control: no-store, private');\n    if(provider_force_ssl_requests_session_blocked())fail_page('Sign in directly to your primary client account to manage HTTPS requests.',403);\n}\n"
+          },
+          {
+            "after_start": 55,
+            "after_end": 56,
+            "before": "",
+            "after": "if($httpsRequestRoute)provider_force_ssl_requests_client_render($client,$error);\n"
+          }
+        ]
+      },
+      "site/portal/views/package_force_ssl.php": {
+        "before_sha256": "1f8000df35a57e5b26487a767aa5fd89a44f751114141b3e75e75f5b507300dd",
+        "after_sha256": "191ae5b940671cf4c0688c9b7036cec780f64eb6dfe9357b72c9e7a7e2d8d9f1",
+        "changes": [
+          {
+            "after_start": 5,
+            "after_end": 8,
+            "before": "",
+            "after": "<?php if(function_exists('provider_force_ssl_requests_session_blocked')&&!provider_force_ssl_requests_session_blocked()): ?>\n<a class=\"btn outline\" href=\"<?=esc(studio_url(['https_requests'=>1]))?>\">Request an HTTPS redirect change</a>\n<?php endif; ?>\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "before_sha256": "47a152315fbe17e2cb7aa9ed81af4d5046d3ce686f458efce3a3dca1f565382a",
+        "after_sha256": "3a99764a013787e7a8468c1639145d3e5e6ca5f33e4b70046eff710cdfe21bce",
+        "changes": [
+          {
+            "after_start": 365,
+            "after_end": 484,
+            "before": "",
+            "after": "_run_before_client_https_requests = run\n\n\ndef client_https_requests_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Client HTTPS requests current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Client HTTPS requests inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Client HTTPS requests predecessor changed')\n    return result\n\n\ndef client_https_requests_current():\n    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['client_https_requests']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Client HTTPS requests source changed: '+path)\n    registry = a.load(ROOT/'tools/acceptance-reports.json')\n    prior = copy.deepcopy(current); del prior['client_https_requests']\n    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Client HTTPS requests native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]: cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']: raise ValueError('Client HTTPS requests current pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Client HTTPS requests predecessor contract changed')\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client HTTPS requests report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Client HTTPS requests predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = client_https_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef client_https_requests_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    check('Client HTTPS requests preserves all152 native recipes and adds seven', len(current['native_commands']) == 159 and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])\n    check('Client HTTPS requests reports are eight unique producers', len(section['reports']) == len(set(section['reports'])) == 8)\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    check('Client HTTPS requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace('        run: |\\n          .ci-venv/bin/python tests/browser_acceptance.py\\n'+browser, '        run: .ci-venv/bin/python tests/browser_acceptance.py\\n', 1) == previous)\n    check('Client HTTPS requests browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php \"$PHP_BINARY\"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Client HTTPS requests native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_FORCE_SSL_REQUESTS=1 \"$PHP_BINARY\" tests/provider_force_ssl_requests_native.php' and valid_port_context(workflow))\n    check('Client HTTPS requests adds no unreviewed capture expectations', section['screenshots'] == [])\n    for path, digest in section['source_sha256'].items():\n        check('Client HTTPS requests binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Client HTTPS requests retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Client HTTPS requests modified current source refuses '+path, lambda path=path, delta=delta: client_https_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    for phase, expected in [('browser',172),('final',216)]:\n        check('Client HTTPS requests preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'client-https-requests-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)\n    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job\n        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA: named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Client HTTPS requests aggregate requires all216 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()\n        check('Client HTTPS requests missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path,False); reseal(); result = combine()\n        check('Client HTTPS requests failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Client HTTPS requests report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    named(jobs['native-browser']/'qa/client-https-requests-unexpected-results.json'); reseal(); result = combine()\n    check('Client HTTPS requests unexpected report refuses', result['complete'] is False and 'Unexpected reports: client-https-requests-unexpected-results.json' in result['errors'])\n    check('Client HTTPS requests private fixture files remain excluded', not a.evidence_allowed('test-runtime/client-https-requests-private/session.json','native-browser') and not a.evidence_allowed('qa/client-https-requests-private/session.json','native-browser'))\n\n\ndef run(tmp):\n    current, registry, section, historical = client_https_requests_current()\n    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path,*args,**kwargs):\n        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)\n    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):\n        _run_before_client_https_requests(tmp)\n    client_https_requests_checks(tmp,current,registry,section,historical)\n\n\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "1ebb0d53c82ed61de2c49a0bd93ee59bed6b8040109bcf762c84cdc6efb2a015",
+      "site/admin/controllers/actions.php": "8bc5447aa523d96148541b8b2962f5cce29059f6cfaf0a34bdb54f75c0391620",
+      "site/admin/controllers/force_ssl_requests.php": "eccbe0633e96e9597803bb41e45001f5f8cf8929c103b8b967d9a1fea2ada2a6",
+      "site/admin/controllers/router.php": "58ba5734a9fc55101a4fc67704b3ae175dea64e9d402670cecca29e19812b659",
+      "site/admin/views/providers.php": "01ffa5f74e26c7682bda01e129e815b0ce30963ede80172773e4e41d746130b4",
+      "site/app/providers/force_ssl_controls.php": "4e559c47dcf9f0b58f9266149f1ca78c29f1ef686190b64f1386ef908b005855",
+      "site/app/providers/force_ssl_requests.php": "949592f86625e899c576671ecf21a650bdeff74d9a4d36eb4cbf5b926538df69",
+      "site/app/providers/force_ssl_requests_document.php": "fa5fb237384a32ec8b4f497a1cc4f374412631c2c810aa2e51c851008a85b85a",
+      "site/app/providers/force_ssl_requests_storage.php": "2e471c08a4547dfd6639db97a0233aea40d0b4c6950f9eb09427d12290ca7755",
+      "site/app/providers/force_ssl_requests_views.php": "32ba3cb60b8fb5bc6b97f1e4873d3d29702359a95a59c11d103894962f698c73",
+      "site/app/staff/accounts.php": "c8bcc595dbc7622d768f8b3ae7c03afef2a736dbbae8a7f5cafbde3abb046342",
+      "site/assets/css/growth.css": "5bbf95877ed30914c4be8933670f5d03c305bf7ec13fdb4c88cd21449b27bd7e",
+      "site/database/migrations/provider_force_ssl_requests_migrate.php": "57b044d94bdab9bb0290f0f6cff3bb876ec1cc9c0bb0a48511b7ae179552fde6",
+      "site/database/schema/provider_force_ssl_requests_schema.php": "3a03a910591e0fa1ef9cd19bc6021df46c3ce454ae41a934284ba386dc7d94cc",
+      "site/includes/layout/admin.php": "69731f41beebf38d29101886e03ea201a72552af52260a1776aebe5a15e81907",
+      "site/includes/layout/provider_services.php": "89ab881a09b0999f3986c93a6c472e1b31a5996a8f476a538cfd736f63e8f6fc",
+      "site/portal/controllers/actions.php": "bdaaa9999cd0a207f2de3cbc3195024e63230fd7a455ce89508e18ec1cbd297c",
+      "site/portal/controllers/force_ssl_requests.php": "d64df55616f1798ababe29d5596d2ec0d4f2e8f7dd23fd267cd49106beafa873",
+      "site/portal/controllers/router.php": "d7ba9364c61cbf213b15d60b0e68346f988212ab013e40652f3b6f422f6dd8ac",
+      "site/portal/views/package_force_ssl.php": "191ae5b940671cf4c0688c9b7036cec780f64eb6dfe9357b72c9e7a7e2d8d9f1",
+      "tests/acceptance_artifacts_test.py": "3a99764a013787e7a8468c1639145d3e5e6ca5f33e4b70046eff710cdfe21bce",
+      "tests/client_force_ssl_requests_browser.py": "8ede278d7fb4d39580b6027ea270287af11d5db18a7d48802282ebef8484d8a8",
+      "tests/client_force_ssl_requests_http_fixture.php": "4d3c3c5f641474b7819ba43366d63aaa43784246213c3d784b48d228e9b4131a",
+      "tests/force_ssl_requests_contract.php": "92a3a4eb5bccc0915a27fde018b42997c9d3b64bc64d776773ce0bc501a97a56",
+      "tests/force_ssl_requests_document.php": "2d0512f7bd6b783fe3b81de71bab15bd5651f6a816efff333002b576c817ac7d",
+      "tests/force_ssl_requests_storage.php": "d1417c61a5077bb24200508058de24192dcd4cc7030b13570ed2266d334574c1",
+      "tests/provider_force_ssl_requests_native.php": "2b59bd637ca6cce41e5d69f663735a9e52865c9492a7c8059150e2391649fe92"
+    },
+    "scope": "Primary-client HTTPS request, owner review and existing Force SSL dispatch/readback. Portable and modeled HTTP/browser evidence is separate from guarded native SQL and installed acceptance; no live provider operation."
   }
 }

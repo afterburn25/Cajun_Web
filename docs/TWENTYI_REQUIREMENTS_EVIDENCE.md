@@ -1,3 +1,11 @@
+## 2026-10-19 — client HTTPS redirect requests
+
+| Capability | Current scope | Evidence / remaining work |
+|---|---|---|
+| Client HTTPS requests | Branch-tested client intake/withdrawal, owner review/decline, exact existing Force SSL dispatch and separately checked reported flag | [Guide](TWENTYI_CLIENT_HTTPS_REQUESTS.md); [named local reports](evidence/client-https-requests-local.json). Default/minimal portable and modeled HTTP/browser checks pass. Guarded native SQL, installed application and full candidate/main/release gates remain. No certificate or public-site health claim. |
+
+Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/twentyi-client-force-ssl`; enclosing commit `feat: add client HTTPS redirect requests and owner review`. Published 1.25.0 and other frozen candidates remain unchanged. Historical release and checkpoint statements below retain their original scope.
+
 ## Release 1.25.0 scope and evidence
 
 Release 1.25.0 contains the bounded INCLUDE scope in [RELEASE_SCOPE_1.25.0.md](RELEASE_SCOPE_1.25.0.md). The HOLD rows and complete20i roadmap remain unfinished. The [versioned acceptance report](TEST_REPORT_1.25.0.md) records source-specific results and the final release receipts identify publication. Development, release acceptance and live deployment are separate events.
