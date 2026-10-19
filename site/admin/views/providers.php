@@ -167,3 +167,4 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php provider_stackcp_access_admin_render(); ?>
 <?php provider_stackcp_launch_admin_render(); ?>
 <?php provider_client_stackcp_owner_render(); ?>
+<?php provider_support_stackcp_owner_render(); ?>

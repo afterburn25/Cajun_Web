@@ -1,3 +1,7 @@
+## 2026-10-19 — staff hosting support candidate
+
+The [staff StackCP increment](TWENTYI_SUPPORT_STACKCP.md) extends the existing support portal with separately delegated whole-account access and truthful staff audit history. It is a companion to client-access PR243 awaiting native/combined acceptance, integration and release. Local revocation does not end a remote session. VPS SSH, full catalog/images and complete20i remain unfinished.
+
 ## 2026-10-19 — primary-client StackCP candidate
 
 The [client hosting control panel increment](TWENTYI_CLIENT_STACKCP.md) extends frozen owner launch on a separate branch with explicit owner delegation, actual client identity, fresh provider permission checks and one-use launch. This is a candidate awaiting native/combined acceptance and release. Whole-user access, custom-brand limitations, no remote revocation and independent support/SSH scope remain explicit. Full20i is not complete.

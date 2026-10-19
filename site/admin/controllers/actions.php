@@ -7,6 +7,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     require CWP_CODE_ROOT.'/admin/controllers/auth.php';
     $user=require_admin();
     $permission=staff_action_permission($action);if($permission!==null)staff_require($permission);
+    if(str_starts_with($action,'provider_support_stackcp_'))provider_support_stackcp_admin_action($action);
     if(in_array($action,['staff_migrate','staff_save','staff_invite'],true))staff_admin_action($action);
     if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);
     if(str_starts_with($action,'registration_drafts_'))registration_drafts_admin_action($action);

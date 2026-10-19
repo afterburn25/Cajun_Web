@@ -181,7 +181,19 @@
     "twentyi-cloud-sites-integrated-results.json",
     "twentyi-mailboxes-integrated-results.json",
     "twentyi-operations-integrated-results.json",
-    "wordpress-installed-http-handler-results.json"
+    "wordpress-installed-http-handler-results.json",
+    "support-stackcp-documents-default.json",
+    "support-stackcp-documents-minimal.json",
+    "support-stackcp-permissions-default.json",
+    "support-stackcp-permissions-minimal.json",
+    "support-stackcp-context-default.json",
+    "support-stackcp-context-minimal.json",
+    "support-stackcp-executor-default.json",
+    "support-stackcp-executor-minimal.json",
+    "support-stackcp-views-default.json",
+    "support-stackcp-views-minimal.json",
+    "support-stackcp-native-results.json",
+    "support-stackcp-http-results.json"
   ],
   "final": [
     "activity-native-results.json",
@@ -409,7 +421,19 @@
     "twentyi-cloud-sites-integrated-results.json",
     "twentyi-mailboxes-integrated-results.json",
     "twentyi-operations-integrated-results.json",
-    "wordpress-installed-http-handler-results.json"
+    "wordpress-installed-http-handler-results.json",
+    "support-stackcp-documents-default.json",
+    "support-stackcp-documents-minimal.json",
+    "support-stackcp-permissions-default.json",
+    "support-stackcp-permissions-minimal.json",
+    "support-stackcp-context-default.json",
+    "support-stackcp-context-minimal.json",
+    "support-stackcp-executor-default.json",
+    "support-stackcp-executor-minimal.json",
+    "support-stackcp-views-default.json",
+    "support-stackcp-views-minimal.json",
+    "support-stackcp-native-results.json",
+    "support-stackcp-http-results.json"
   ],
   "provenance": {
     "original_source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",

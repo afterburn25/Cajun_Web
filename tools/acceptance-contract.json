@@ -163,6 +163,17 @@
     "\"$PHP_BINARY\" tests/client_stackcp_views.php qa/client-stackcp-views-default.json",
     "\"$PHP_BINARY\" -n -d extension=pdo tests/client_stackcp_views.php qa/client-stackcp-views-minimal.json",
     "CWP_TEST_CLIENT_STACKCP=1 \"$PHP_BINARY\" tests/client_stackcp_native.php",
+    "\"$PHP_BINARY\" tests/support_stackcp_documents.php qa/support-stackcp-documents-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_documents.php qa/support-stackcp-documents-minimal.json",
+    "\"$PHP_BINARY\" tests/support_stackcp_permissions.php qa/support-stackcp-permissions-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_permissions.php qa/support-stackcp-permissions-minimal.json",
+    "\"$PHP_BINARY\" tests/support_stackcp_context.php qa/support-stackcp-context-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_context.php qa/support-stackcp-context-minimal.json",
+    "\"$PHP_BINARY\" tests/support_stackcp_executor.php qa/support-stackcp-executor-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_executor.php qa/support-stackcp-executor-minimal.json",
+    "\"$PHP_BINARY\" tests/support_stackcp_views.php qa/support-stackcp-views-default.json",
+    "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_views.php qa/support-stackcp-views-minimal.json",
+    "CWP_TEST_SUPPORT_STACKCP=1 \"$PHP_BINARY\" tests/support_stackcp_native.php",
     "\"$PHP_BINARY\" tests/provider_domain_search_native.php",
     "\"$PHP_BINARY\" tests/provider_mailboxes_native.php",
     "\"$PHP_BINARY\" tests/provider_operations_native.php",
@@ -1112,5 +1123,381 @@
       "tests/client_stackcp_views.php": "13e55776c73b021c4839a0e91cb0603c26d789eed0d5b069583fcda594fa052a"
     },
     "scope": "Primary-client permission, fresh read and one-use launch candidate. Portable execution and modeled HTTP/browser checks are separate from guarded native SQL acceptance. No live provider or installed production success claimed."
+  },
+  "support_stackcp": {
+    "parent_commit": "51938fc80110931e80ebfd097066f2e4e1377df2",
+    "predecessor_contract_sha256": "b662bd1e6de2599a436abfca5d83cc80867fa725982f5a39239deb03dd8a32c0",
+    "predecessor_reports_sha256": "29a7fc68769b0ea2a981a8f79bb224b49db92a8dbab8bccbbb6e23396fdd4962",
+    "native_after": "CWP_TEST_CLIENT_STACKCP=1 \"$PHP_BINARY\" tests/client_stackcp_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/support_stackcp_documents.php qa/support-stackcp-documents-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_documents.php qa/support-stackcp-documents-minimal.json",
+      "\"$PHP_BINARY\" tests/support_stackcp_permissions.php qa/support-stackcp-permissions-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_permissions.php qa/support-stackcp-permissions-minimal.json",
+      "\"$PHP_BINARY\" tests/support_stackcp_context.php qa/support-stackcp-context-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_context.php qa/support-stackcp-context-minimal.json",
+      "\"$PHP_BINARY\" tests/support_stackcp_executor.php qa/support-stackcp-executor-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_executor.php qa/support-stackcp-executor-minimal.json",
+      "\"$PHP_BINARY\" tests/support_stackcp_views.php qa/support-stackcp-views-default.json",
+      "\"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_views.php qa/support-stackcp-views-minimal.json",
+      "CWP_TEST_SUPPORT_STACKCP=1 \"$PHP_BINARY\" tests/support_stackcp_native.php"
+    ],
+    "browser_command": ".ci-venv/bin/python tests/support_stackcp_http.py --php \"$PHP_BINARY\" --report qa/support-stackcp-http-results.json",
+    "reports": [
+      "support-stackcp-documents-default.json",
+      "support-stackcp-documents-minimal.json",
+      "support-stackcp-permissions-default.json",
+      "support-stackcp-permissions-minimal.json",
+      "support-stackcp-context-default.json",
+      "support-stackcp-context-minimal.json",
+      "support-stackcp-executor-default.json",
+      "support-stackcp-executor-minimal.json",
+      "support-stackcp-views-default.json",
+      "support-stackcp-views-minimal.json",
+      "support-stackcp-native-results.json",
+      "support-stackcp-http-results.json"
+    ],
+    "screenshots": [],
+    "repins": [],
+    "source_deltas": {
+      ".github/workflows/application-tests.yml": {
+        "before_sha256": "0db3c1c7a9871afe19279c2dc9f9f416c8f2bddd10c3d9bb5fa15ba1d5e8a532",
+        "after_sha256": "51025debbebdc519158652ba36891e3a2a74ea7b3f0402f58abcd00361587473",
+        "changes": [
+          {
+            "after_start": 433,
+            "after_end": 444,
+            "before": "",
+            "after": "          \"$PHP_BINARY\" tests/support_stackcp_documents.php qa/support-stackcp-documents-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_documents.php qa/support-stackcp-documents-minimal.json\n          \"$PHP_BINARY\" tests/support_stackcp_permissions.php qa/support-stackcp-permissions-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_permissions.php qa/support-stackcp-permissions-minimal.json\n          \"$PHP_BINARY\" tests/support_stackcp_context.php qa/support-stackcp-context-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_context.php qa/support-stackcp-context-minimal.json\n          \"$PHP_BINARY\" tests/support_stackcp_executor.php qa/support-stackcp-executor-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_executor.php qa/support-stackcp-executor-minimal.json\n          \"$PHP_BINARY\" tests/support_stackcp_views.php qa/support-stackcp-views-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/support_stackcp_views.php qa/support-stackcp-views-minimal.json\n          CWP_TEST_SUPPORT_STACKCP=1 \"$PHP_BINARY\" tests/support_stackcp_native.php\n"
+          },
+          {
+            "after_start": 465,
+            "after_end": 466,
+            "before": "",
+            "after": "          .ci-venv/bin/python tests/support_stackcp_http.py --php \"$PHP_BINARY\" --report qa/support-stackcp-http-results.json\n"
+          }
+        ]
+      },
+      "foundation/access/PermissionPolicy.php": {
+        "before_sha256": "800b44f481271b467bef5f2719aeba5608cc6fc6da57e90fd415de967fa58632",
+        "after_sha256": "500521ac342a09a43e08261f4475417cff26325b0d9101f8b70a250fc1061405",
+        "changes": [
+          {
+            "after_start": 27,
+            "after_end": 28,
+            "before": "",
+            "after": "        'support.stackcp',\n"
+          }
+        ]
+      },
+      "foundation/twentyi-support-handoff/StackCpLaunchDelivery.php": {
+        "before_sha256": "af76414c199468a3b766420fb62c74e022eaa9e0861564178b09b6f5afc3534f",
+        "after_sha256": "aed57e185229b5007c2511b36aeabb1c1e1a7bae8f62f24f36544d560d15d796",
+        "changes": [
+          {
+            "after_start": 12,
+            "after_end": 13,
+            "before": "    public static function fromSession(StackCpHandoffContext|StackCpClientHandoffContext $context, StackCpSensitiveResponse $session): self\n",
+            "after": "    public static function fromSession(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, StackCpSensitiveResponse $session): self\n"
+          },
+          {
+            "after_start": 14,
+            "after_end": 16,
+            "before": "        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);\n",
+            "after": "        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)\n            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));\n"
+          }
+        ]
+      },
+      "foundation/twentyi-support-handoff/StackCpLaunchSender.php": {
+        "before_sha256": "f0631db822f1fd51c4444cdb042501d01e64fe2f2d9392ba1b81e2fe12327abc",
+        "after_sha256": "cdf45e3cd2146b90a14d093177cc41f91668eddffcf5ab97737fc9e1507cad6a",
+        "changes": [
+          {
+            "after_start": 11,
+            "after_end": 12,
+            "before": "    public static function launch(StackCpHandoffContext|StackCpClientHandoffContext $context, callable $credentials, callable $authorize,\n",
+            "after": "    public static function launch(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, callable $credentials, callable $authorize,\n"
+          },
+          {
+            "after_start": 14,
+            "after_end": 16,
+            "before": "        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);\n",
+            "after": "        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)\n            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));\n"
+          }
+        ]
+      },
+      "foundation/twentyi-support-handoff/StackCpSensitiveResponse.php": {
+        "before_sha256": "90c218181af349383409df7c5bbad6e6cc6d131c175065ea89b6ba3604621550",
+        "after_sha256": "4e89577ebdc549c8083c869f439e50f274ff4a1c800401ab3d9ff45f2682a9db",
+        "changes": [
+          {
+            "after_start": 6,
+            "after_end": 7,
+            "before": "",
+            "after": "require_once __DIR__.'/StackCpSupportHandoffContext.php';\n"
+          },
+          {
+            "after_start": 23,
+            "after_end": 24,
+            "before": "    public static function parseToken(StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,\n",
+            "after": "    public static function parseToken(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, int $status,\n"
+          },
+          {
+            "after_start": 27,
+            "after_end": 28,
+            "before": "    public static function parseSession(StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,\n",
+            "after": "    public static function parseSession(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, int $status,\n"
+          },
+          {
+            "after_start": 31,
+            "after_end": 32,
+            "before": "    private static function parse(string $phase, StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,\n",
+            "after": "    private static function parse(string $phase, StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, int $status,\n"
+          },
+          {
+            "after_start": 34,
+            "after_end": 36,
+            "before": "        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);\n",
+            "after": "        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)\n            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));\n"
+          }
+        ]
+      },
+      "site/admin/controllers/actions.php": {
+        "before_sha256": "562d44b9631f48e2bf425d1e15f3ac3432d8aec50b4eeebb858a8302d58f93f6",
+        "after_sha256": "fa9a602a996246864843ba194b11cc11e8354699885f8e2f93c5b01bcd04ed28",
+        "changes": [
+          {
+            "after_start": 9,
+            "after_end": 10,
+            "before": "",
+            "after": "    if(str_starts_with($action,'provider_support_stackcp_'))provider_support_stackcp_admin_action($action);\n"
+          }
+        ]
+      },
+      "site/admin/controllers/providers.php": {
+        "before_sha256": "46d500acee44af7ddeade701583650fc007b71fa3e89b9504cf00145624f07f0",
+        "after_sha256": "b751c51b8dd5ff59bb631bd056cf0b536628bd58c81c3938996eab49aa45efc0",
+        "changes": [
+          {
+            "after_start": 9,
+            "after_end": 10,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/admin/controllers/provider_support_stackcp.php';\n"
+          }
+        ]
+      },
+      "site/admin/views/providers.php": {
+        "before_sha256": "6d990abf9d8c18fc5a0cab6b72e4554aac4cd60ecd146f054a61a672a3e6c354",
+        "after_sha256": "7d2060006797609530a3a5225f0277d739bb1ba8aa12ee213028de313748c93e",
+        "changes": [
+          {
+            "after_start": 169,
+            "after_end": 170,
+            "before": "",
+            "after": "<?php provider_support_stackcp_owner_render(); ?>\n"
+          }
+        ]
+      },
+      "site/app/staff/accounts.php": {
+        "before_sha256": "8463567670be0d6d3d9b7ae233f677d79449e8e0f2cc440d2a4e4f100ca04a13",
+        "after_sha256": "ec29bc72543d8e2eb38676f385cbe33d1c6a3874327992d20e327a2e2f878d79",
+        "changes": [
+          {
+            "after_start": 14,
+            "after_end": 15,
+            "before": "function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Review and send saved drafts from explicitly assigned email accounts', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }\n",
+            "after": "function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Review and send saved drafts from explicitly assigned email accounts', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support','support.stackcp'=>'Open explicitly delegated hosting control panels during client support']; }\n"
+          },
+          {
+            "after_start": 154,
+            "after_end": 155,
+            "before": "",
+            "after": "    if(str_starts_with($action,'provider_support_stackcp_'))return 'staff.manage';\n"
+          }
+        ]
+      },
+      "site/includes/foundation/access/PermissionPolicy.php": {
+        "before_sha256": "800b44f481271b467bef5f2719aeba5608cc6fc6da57e90fd415de967fa58632",
+        "after_sha256": "500521ac342a09a43e08261f4475417cff26325b0d9101f8b70a250fc1061405",
+        "changes": [
+          {
+            "after_start": 27,
+            "after_end": 28,
+            "before": "",
+            "after": "        'support.stackcp',\n"
+          }
+        ]
+      },
+      "site/includes/foundation/twentyi-support-handoff/StackCpLaunchDelivery.php": {
+        "before_sha256": "af76414c199468a3b766420fb62c74e022eaa9e0861564178b09b6f5afc3534f",
+        "after_sha256": "aed57e185229b5007c2511b36aeabb1c1e1a7bae8f62f24f36544d560d15d796",
+        "changes": [
+          {
+            "after_start": 12,
+            "after_end": 13,
+            "before": "    public static function fromSession(StackCpHandoffContext|StackCpClientHandoffContext $context, StackCpSensitiveResponse $session): self\n",
+            "after": "    public static function fromSession(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, StackCpSensitiveResponse $session): self\n"
+          },
+          {
+            "after_start": 14,
+            "after_end": 16,
+            "before": "        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);\n",
+            "after": "        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)\n            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));\n"
+          }
+        ]
+      },
+      "site/includes/foundation/twentyi-support-handoff/StackCpLaunchSender.php": {
+        "before_sha256": "f0631db822f1fd51c4444cdb042501d01e64fe2f2d9392ba1b81e2fe12327abc",
+        "after_sha256": "cdf45e3cd2146b90a14d093177cc41f91668eddffcf5ab97737fc9e1507cad6a",
+        "changes": [
+          {
+            "after_start": 11,
+            "after_end": 12,
+            "before": "    public static function launch(StackCpHandoffContext|StackCpClientHandoffContext $context, callable $credentials, callable $authorize,\n",
+            "after": "    public static function launch(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, callable $credentials, callable $authorize,\n"
+          },
+          {
+            "after_start": 14,
+            "after_end": 16,
+            "before": "        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);\n",
+            "after": "        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)\n            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));\n"
+          }
+        ]
+      },
+      "site/includes/foundation/twentyi-support-handoff/StackCpSensitiveResponse.php": {
+        "before_sha256": "90c218181af349383409df7c5bbad6e6cc6d131c175065ea89b6ba3604621550",
+        "after_sha256": "4e89577ebdc549c8083c869f439e50f274ff4a1c800401ab3d9ff45f2682a9db",
+        "changes": [
+          {
+            "after_start": 6,
+            "after_end": 7,
+            "before": "",
+            "after": "require_once __DIR__.'/StackCpSupportHandoffContext.php';\n"
+          },
+          {
+            "after_start": 23,
+            "after_end": 24,
+            "before": "    public static function parseToken(StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,\n",
+            "after": "    public static function parseToken(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, int $status,\n"
+          },
+          {
+            "after_start": 27,
+            "after_end": 28,
+            "before": "    public static function parseSession(StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,\n",
+            "after": "    public static function parseSession(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, int $status,\n"
+          },
+          {
+            "after_start": 31,
+            "after_end": 32,
+            "before": "    private static function parse(string $phase, StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,\n",
+            "after": "    private static function parse(string $phase, StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, int $status,\n"
+          },
+          {
+            "after_start": 34,
+            "after_end": 36,
+            "before": "        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);\n",
+            "after": "        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)\n            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));\n"
+          }
+        ]
+      },
+      "site/includes/layout/provider_services.php": {
+        "before_sha256": "4c7c9d87f166fcabc15592ce6c1cc213e79d9a9441dcdd33b9f55c0712080a1d",
+        "after_sha256": "1279477b42b88ee067b1b2f70fa0c811173843573a760b07609d6d267cbe441b",
+        "changes": [
+          {
+            "after_start": 24,
+            "after_end": 25,
+            "before": "",
+            "after": "    if(function_exists('provider_support_stackcp_navigation')&&provider_support_stackcp_navigation())echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['support_hosting_panel'=>1])).'\">Hosting support</a>';\n"
+          },
+          {
+            "after_start": 49,
+            "after_end": 50,
+            "before": "",
+            "after": "        if(function_exists('provider_support_stackcp_navigation')&&provider_support_stackcp_navigation()&&!$service['context_changed'])echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['support_hosting_panel'=>1,'service_link'=>$service['link']['id']])).'\">Support this hosting account</a>';\n"
+          }
+        ]
+      },
+      "site/portal/controllers/actions.php": {
+        "before_sha256": "ad6bd93ac49e1085e000fc245b7ae68637be35890d0863a5c9124f72d0ab4eb8",
+        "after_sha256": "3bec1862a1d5ceb4f7667f3d73c47364bed02c2ed9670367518fd31fc7b0089d",
+        "changes": [
+          {
+            "after_start": 6,
+            "after_end": 7,
+            "before": "",
+            "after": "  if($action==='support_stackcp_open')provider_support_stackcp_staff_action($supportId);\n"
+          }
+        ]
+      },
+      "site/portal/controllers/router.php": {
+        "before_sha256": "f8fb9ee75561b0dac2a86c27aafed863897395d855f2fc55099a922d4c14ff5a",
+        "after_sha256": "7ed5c4c731a3f1f536c40eb2bc9a989cd813058ce045cbdba319b6c50fd9ac90",
+        "changes": [
+          {
+            "after_start": 5,
+            "after_end": 7,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/portal/controllers/support_stackcp.php';\nprovider_support_stackcp_route_preflight();\n"
+          },
+          {
+            "after_start": 46,
+            "after_end": 47,
+            "before": "",
+            "after": "if(provider_support_stackcp_requested())provider_support_stackcp_staff_render($supportId,$error);\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "before_sha256": "78fdf064271e2284402e78d8e1beda8fe5230e0b23fd90c2ddf08228c8cc7910",
+        "after_sha256": "2db4d489b40e7e100728dac1c76724204c6266c1b4960b37344678973bc89e71",
+        "changes": [
+          {
+            "after_start": 581,
+            "after_end": 700,
+            "before": "",
+            "after": "_run_before_support_stackcp = run\n\n\ndef support_stackcp_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Support StackCP current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Support StackCP inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Support StackCP predecessor changed')\n    return result\n\n\ndef support_stackcp_current():\n    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['support_stackcp']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Support StackCP source changed: '+path)\n    registry = a.load(ROOT/'tools/acceptance-reports.json')\n    prior = copy.deepcopy(current); del prior['support_stackcp']\n    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Support StackCP native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]: cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']: raise ValueError('Support StackCP current pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Support StackCP predecessor contract changed')\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Support StackCP report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Support StackCP predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = support_stackcp_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef support_stackcp_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    check('Support StackCP preserves all168 native recipes and adds eleven', len(current['native_commands']) == 179 and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])\n    check('Support StackCP reports are twelve unique producers', len(section['reports']) == len(set(section['reports'])) == 12)\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    check('Support StackCP workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)\n    check('Support StackCP browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php \"$PHP_BINARY\"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Support StackCP native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_SUPPORT_STACKCP=1 \"$PHP_BINARY\" tests/support_stackcp_native.php' and valid_port_context(workflow))\n    check('Support StackCP adds no unreviewed capture expectations', section['screenshots'] == [])\n    for path, digest in section['source_sha256'].items():\n        check('Support StackCP binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Support StackCP retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Support StackCP modified current source refuses '+path, lambda path=path, delta=delta: support_stackcp_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    for phase, expected in [('browser',194),('final',238)]:\n        check('Support StackCP preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'support-stackcp-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)\n    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job\n        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA: named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Support StackCP aggregate requires all238 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()\n        check('Support StackCP missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path,False); reseal(); result = combine()\n        check('Support StackCP failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Support StackCP report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    named(jobs['native-browser']/'qa/support-stackcp-unexpected-results.json'); reseal(); result = combine()\n    check('Support StackCP unexpected report refuses', result['complete'] is False and 'Unexpected reports: support-stackcp-unexpected-results.json' in result['errors'])\n    check('Support StackCP private fixture files remain excluded', not a.evidence_allowed('test-runtime/support-stackcp-private/session.json','native-browser') and not a.evidence_allowed('qa/support-stackcp-private/session.json','native-browser'))\n\n\ndef run(tmp):\n    current, registry, section, historical = support_stackcp_current()\n    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path,*args,**kwargs):\n        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)\n    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):\n        _run_before_support_stackcp(tmp)\n    support_stackcp_checks(tmp,current,registry,section,historical)\n\n\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "51025debbebdc519158652ba36891e3a2a74ea7b3f0402f58abcd00361587473",
+      "foundation/access/PermissionPolicy.php": "500521ac342a09a43e08261f4475417cff26325b0d9101f8b70a250fc1061405",
+      "foundation/twentyi-support-handoff/StackCpLaunchDelivery.php": "aed57e185229b5007c2511b36aeabb1c1e1a7bae8f62f24f36544d560d15d796",
+      "foundation/twentyi-support-handoff/StackCpLaunchSender.php": "cdf45e3cd2146b90a14d093177cc41f91668eddffcf5ab97737fc9e1507cad6a",
+      "foundation/twentyi-support-handoff/StackCpSensitiveResponse.php": "4e89577ebdc549c8083c869f439e50f274ff4a1c800401ab3d9ff45f2682a9db",
+      "foundation/twentyi-support-handoff/StackCpSupportHandoffContext.php": "9c5bdc06a83b5a0943b04b2f282e71df233383e43a3cf2b3f29bdc17dec5cfce",
+      "site/admin/controllers/actions.php": "fa9a602a996246864843ba194b11cc11e8354699885f8e2f93c5b01bcd04ed28",
+      "site/admin/controllers/provider_support_stackcp.php": "462d0a3db3636200a77ad79f617881841d24fcfb8d56316594a8cfa4e8974ebf",
+      "site/admin/controllers/providers.php": "b751c51b8dd5ff59bb631bd056cf0b536628bd58c81c3938996eab49aa45efc0",
+      "site/admin/views/providers.php": "7d2060006797609530a3a5225f0277d739bb1ba8aa12ee213028de313748c93e",
+      "site/app/providers/support_stackcp_documents.php": "7a63756bedf810669d478e6571d9973f8a1082acea9d330eae1b34a6163367ba",
+      "site/app/providers/support_stackcp_launch.php": "d807afd44b5b0b52f1f142cc74518f171bbaa14e2434f17865bb58c63bfb593d",
+      "site/app/providers/support_stackcp_permissions.php": "472cd086a25b7270c8edfd46f845101dadcd1a940275e658e6761df2c33fa9f7",
+      "site/app/providers/support_stackcp_storage.php": "231698163a520fd60e1c2713a277d5f1a421808be4c8ac6be1b834ddab262268",
+      "site/app/providers/support_stackcp_views.php": "75ed7b8b485cea6485df0eb7ba6d5fa0db27135a967087725385d7d026103c1a",
+      "site/app/staff/accounts.php": "ec29bc72543d8e2eb38676f385cbe33d1c6a3874327992d20e327a2e2f878d79",
+      "site/database/schema/provider_support_stackcp_schema.php": "444ca98001744e982406b29ead55c877cdc629e38fd0b36a408e1a661debb098",
+      "site/includes/foundation/access/PermissionPolicy.php": "500521ac342a09a43e08261f4475417cff26325b0d9101f8b70a250fc1061405",
+      "site/includes/foundation/twentyi-support-handoff/StackCpLaunchDelivery.php": "aed57e185229b5007c2511b36aeabb1c1e1a7bae8f62f24f36544d560d15d796",
+      "site/includes/foundation/twentyi-support-handoff/StackCpLaunchSender.php": "cdf45e3cd2146b90a14d093177cc41f91668eddffcf5ab97737fc9e1507cad6a",
+      "site/includes/foundation/twentyi-support-handoff/StackCpSensitiveResponse.php": "4e89577ebdc549c8083c869f439e50f274ff4a1c800401ab3d9ff45f2682a9db",
+      "site/includes/foundation/twentyi-support-handoff/StackCpSupportHandoffContext.php": "9c5bdc06a83b5a0943b04b2f282e71df233383e43a3cf2b3f29bdc17dec5cfce",
+      "site/includes/layout/provider_services.php": "1279477b42b88ee067b1b2f70fa0c811173843573a760b07609d6d267cbe441b",
+      "site/portal/controllers/actions.php": "3bec1862a1d5ceb4f7667f3d73c47364bed02c2ed9670367518fd31fc7b0089d",
+      "site/portal/controllers/router.php": "7ed5c4c731a3f1f536c40eb2bc9a989cd813058ce045cbdba319b6c50fd9ac90",
+      "site/portal/controllers/support_stackcp.php": "29abf1e8499baa29fc71b33cf279e3ce0ef90fb2ca0ffb0be17f547e02626844",
+      "tests/acceptance_artifacts_test.py": "2db4d489b40e7e100728dac1c76724204c6266c1b4960b37344678973bc89e71",
+      "tests/support_stackcp_context.php": "9df467b19d27e3401c9a917fc8514d8ca403b9dd52586a57c7a6fedff851c5e8",
+      "tests/support_stackcp_documents.php": "24143b3adb2bd962eb1f2c2a6fe26d33ccac8f9a7346c1c4a1cc4a3a5d3785a3",
+      "tests/support_stackcp_executor.php": "a824613b338947542d32e772348e33ad809a98cd24b6e2d2d33a666192010848",
+      "tests/support_stackcp_http.py": "509acc94ac230d141a2b038dd6cb3c8d528511db37d640a782079ea441e50bb4",
+      "tests/support_stackcp_http_fixture.php": "4c902310e251c12972c5bb62da28c81812e9fda7abf39a1a21d274fd8ce884fd",
+      "tests/support_stackcp_native.php": "bc22b88f871d3866cc7abcdd486392fa4370217d32fb039cb693dab22525f11b",
+      "tests/support_stackcp_permissions.php": "63cced5e543e277d3f5d419820b4bfc2cffaf7f03f3cbeff3b90b899acecd5b6",
+      "tests/support_stackcp_views.php": "c62ff25a54e9680e65c416533a90bee03eccd8b9f7b3829327850983ab7a6ecb"
+    },
+    "scope": "Staff-specific owner delegation and one-use StackCP support launch. Source, portable and modeled HTTP checks are separate from native SQL and installed full acceptance; no real provider login is exercised."
   }
 }

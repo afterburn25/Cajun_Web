@@ -10,9 +10,10 @@ final class StackCpLaunchDelivery implements \JsonSerializable
 {
     private bool $consumed = false;
     private function __construct(private StackCpSensitiveResponse $session) {}
-    public static function fromSession(StackCpHandoffContext|StackCpClientHandoffContext $context, StackCpSensitiveResponse $session): self
+    public static function fromSession(StackCpHandoffContext|StackCpClientHandoffContext|StackCpSupportHandoffContext $context, StackCpSensitiveResponse $session): self
     {
-        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);
+        $context = $context instanceof StackCpSupportHandoffContext ? StackCpSupportHandoffContext::validated($context)
+            : ($context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context));
         if ($session->phase !== 'session' || $session->state !== 'accepted_subset'
             || !hash_equals($context->sha256,$session->contextSha256)) throw new \InvalidArgumentException('Invalid StackCP delivery.');
         return new self($session);

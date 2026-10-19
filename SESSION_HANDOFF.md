@@ -1,3 +1,11 @@
+## 2026-10-19 — staff StackCP support access candidate
+
+Branch `codex/twentyi-support-stackcp` starts at frozen client-access source `51938fc80110931e80ebfd097066f2e4e1377df2` ([PR243](https://github.com/afterburn25/Cajun_Web/pull/243)). It adds owner-approved access for named staff to a client's assigned whole StackCP account through the existing support portal, a separate staff permission, current-session checks and an actual-staff audit trail. [Implementation and limits](docs/TWENTYI_SUPPORT_STACKCP.md); [named local verification](docs/evidence/support-stackcp-local.json).
+
+Native SQL and full installed acceptance, integration and release remain pending. The closed browser fixture is modeled business-boundary evidence. Published1.25.0 stays immutable. Preserve separate reset-template95ce538e ([PR254](https://github.com/afterburn25/Cajun_Web/pull/254)), payment privacyb1948eeb ([PR253](https://github.com/afterburn25/Cajun_Web/pull/253)) and Devin's non-20i work. Complete20i, full catalog/images and VPS SSH remain unfinished. No live deployment or provider session was performed.
+
+Next: follow the first exact-source full application run, resolve original failures, then perform normal reviewed integration and release gates. Do not infer native success from local models or duplicate/cancel queued runs. Enclosing commit: `feat: open delegated StackCP accounts during client support`. The feature uses bound actual staff support authority; existing client-launch exclusions remain intact. Local access revocation does not terminate an existing remote session.
+
 ## 2026-10-19 — primary-client StackCP access candidate
 
 Branch `codex/twentyi-client-stackcp` starts at frozen owner-launch source `3d449d79be02b5e19958bc1d44bddb0371309e46` ([PR233](https://github.com/afterburn25/Cajun_Web/pull/233)). It adds explicit owner enable/disable controls and a primary-client hosting control panel page. Each launch checks fresh package membership and whole-user grants before a one-use session exchange. Local access removal does not revoke an existing remote session. [Scope and verification](docs/TWENTYI_CLIENT_STACKCP.md).

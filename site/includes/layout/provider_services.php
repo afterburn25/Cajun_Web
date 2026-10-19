@@ -22,6 +22,7 @@ function provider_services_portal_render(): never {
         echo '<p>Your services will appear here once the studio enables hosting inventory.</p></div></section>';site_foot(false);exit;
     }
     if(function_exists('provider_mailbox_client_navigation')&&!support_current()&&provider_mailbox_client_navigation((int)$client['id']))echo '<a class="btn outline" href="'.esc(studio_url(['hosting_mail'=>1])).'">Hosting mailboxes</a>';
+    if(function_exists('provider_support_stackcp_navigation')&&provider_support_stackcp_navigation())echo '<a class="btn outline" href="'.esc(studio_url(['support_hosting_panel'=>1])).'">Hosting support</a>';
     if(!support_current())echo '<a class="btn outline" href="'.esc(studio_url(['domain_expiry'=>1])).'">Expiry observations</a> <a class="btn outline" href="'.esc(studio_url(['domain_dates'=>1])).'">Renewal dates</a> <a class="btn outline" href="'.esc(studio_url(['domain_renewals'=>1])).'">Domain renewal requests</a><a class="btn outline" href="'.esc(studio_url(['service_history'=>1])).'">Service history</a><a class="btn outline" href="'.esc(studio_url(['forwarding'=>1])).'">Email forwarding requests</a>';
     $services=provider_inventory_client_services((int)$client['id']);
     $domains=provider_inventory_client_domains((int)$client['id']);
@@ -46,6 +47,7 @@ function provider_services_portal_render(): never {
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['directory_indexing'=>1,'service_link'=>$service['link']['id']])).'">Directory listing setting</a>';
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['wp_installed'=>1,'service_link'=>$service['link']['id']])).'">WordPress installation</a>';
         if(function_exists('provider_client_stackcp_session_blocked')&&!provider_client_stackcp_session_blocked()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['hosting_panel'=>1,'service_link'=>$service['link']['id']])).'">Hosting control panel</a>';
+        if(function_exists('provider_support_stackcp_navigation')&&provider_support_stackcp_navigation()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['support_hosting_panel'=>1,'service_link'=>$service['link']['id']])).'">Support this hosting account</a>';
         echo '</article>';
     }
     foreach($domains as $domain) {

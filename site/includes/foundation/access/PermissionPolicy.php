@@ -25,6 +25,7 @@ final class PermissionPolicy
         'support.login',
         'support.write',
         'support.download',
+        'support.stackcp',
         self::STAFF_MANAGE,
         self::STAFF_GRANT,
         self::MAIL_ACCOUNTS_MANAGE,

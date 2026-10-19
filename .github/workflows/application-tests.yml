@@ -431,6 +431,17 @@ jobs:
           "$PHP_BINARY" tests/client_stackcp_views.php qa/client-stackcp-views-default.json
           "$PHP_BINARY" -n -d extension=pdo tests/client_stackcp_views.php qa/client-stackcp-views-minimal.json
           CWP_TEST_CLIENT_STACKCP=1 "$PHP_BINARY" tests/client_stackcp_native.php
+          "$PHP_BINARY" tests/support_stackcp_documents.php qa/support-stackcp-documents-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/support_stackcp_documents.php qa/support-stackcp-documents-minimal.json
+          "$PHP_BINARY" tests/support_stackcp_permissions.php qa/support-stackcp-permissions-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/support_stackcp_permissions.php qa/support-stackcp-permissions-minimal.json
+          "$PHP_BINARY" tests/support_stackcp_context.php qa/support-stackcp-context-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/support_stackcp_context.php qa/support-stackcp-context-minimal.json
+          "$PHP_BINARY" tests/support_stackcp_executor.php qa/support-stackcp-executor-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/support_stackcp_executor.php qa/support-stackcp-executor-minimal.json
+          "$PHP_BINARY" tests/support_stackcp_views.php qa/support-stackcp-views-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/support_stackcp_views.php qa/support-stackcp-views-minimal.json
+          CWP_TEST_SUPPORT_STACKCP=1 "$PHP_BINARY" tests/support_stackcp_native.php
           "$PHP_BINARY" tests/provider_domain_search_native.php
           "$PHP_BINARY" tests/provider_mailboxes_native.php
           "$PHP_BINARY" tests/provider_operations_native.php
@@ -452,6 +463,7 @@ jobs:
           .ci-venv/bin/python tests/browser_acceptance.py
           .ci-venv/bin/python tests/stackcp_launch_browser.py --php "$PHP_BINARY" --report qa/stackcp-launch-browser-results.json
           .ci-venv/bin/python tests/client_stackcp_browser.py --php "$PHP_BINARY" --report qa/client-stackcp-browser-results.json
+          .ci-venv/bin/python tests/support_stackcp_http.py --php "$PHP_BINARY" --report qa/support-stackcp-http-results.json
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
