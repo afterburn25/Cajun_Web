@@ -314,6 +314,10 @@ Devin non-20i increment on `devin/non20i-pipeline-runtime` from `devin/non20i-pi
 
 Devin non-20i increment on `devin/non20i-pipeline-foundation` from main `595ac9c3`, continuing preserved `devin/pipeline-foundation`. Adds `foundation/pipeline/PipelineBoard.php` (ordered stages, validated transitions, duplicate/dangling build errors, non-drag control parity), `PipelineStage.php` and `LeadRecord.php` with 31 pure checks in `tests/pipeline/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, permissions, notifications, search or board UI — integration remains future work. No release or deployment.
 
+## Port proposal/approval contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-proposals-foundation` from main `595ac9c3`, continuing preserved `devin/proposals-foundation`. Adds `foundation/proposals/Proposal.php`, `ProposalVersion.php` and `ApprovalDecision.php` — immutable versioned proposals with deliberate approval/decline states — with 35 pure checks in `tests/proposals/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, mail, signature or UI — integration remains future work. No release or deployment.
+
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
 Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
@@ -785,6 +789,16 @@ Ported `codex/ticket-screenshot-readiness` onto `devin/non20i-ticket-screenshots
 ## Unreleased — service plans and client agreements (Devin port)
 
 Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `devin/non20i-service-plans` (stacked on the foundation port). Additive `service_plans`/`service_subscriptions` event-sourced tables behind owner-password setup; admin Service agreements view (create/edit plans, enroll clients); portal `?agreements` views where clients review and sign exact plan terms; `service-plans` added to the canonical mirror list. No provider, hosting or billing dependency introduced. No live deployment or release.
+
+## Proposals runtime (P-02) — devin/non20i-proposals-runtime
+
+- Client proposals: additive `proposals`/`proposal_versions`/`proposal_events`/`proposal_decisions` schema behind owner reauthentication and backup confirmation, with request-key replay protection on creation.
+- Staff author drafts with deliverables, exclusions, schedule and priced milestones (`Admin → Client proposals`); edits always create the next numbered version — sent versions are immutable.
+- Lifecycle enforced by the foundation model replayed from the durable record: draft → sent ⇄ changes-requested → approved; staff withdrawal except once approved.
+- Clients review the exact sent version in the portal (`?proposal=`) and approve or request changes pinned to that version id; superseded versions cannot be decided. Support sessions and other clients are denied. Approvals are commercial confirmations, not legal e-signatures or payment authorization.
+- Append-only attributed event history per proposal; synthetic native MariaDB and HTTP lanes cover setup, replay, permissions, transitions, ownership and retention.
+
+
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.

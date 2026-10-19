@@ -311,6 +311,9 @@ try:
         schedule_browser(globals(),browser)
         from contacts_cases import run_browser as contacts_browser
         contacts_browser(globals(),browser)
+
+        from proposals_cases import run_browser as proposals_browser
+        proposals_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

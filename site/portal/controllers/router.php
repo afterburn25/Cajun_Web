@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';require_once CWP_CODE_ROOT.'/includes/layout/notifications.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';require_once CWP_CODE_ROOT.'/includes/layout/notifications.php';require_once CWP_CODE_ROOT.'/includes/layout/proposals.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
 require_once CWP_CODE_ROOT.'/portal/controllers/tickets.php';
 require CWP_CODE_ROOT.'/includes/layout/notifications.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
@@ -49,6 +49,7 @@ if(isset($_GET['download_release'])){if($client&&!contact_can('downloads'))fail_
 if(isset($_GET['downloads'])||isset($_GET['release'])){if($client&&!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);delivery_portal_render();}
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);if(!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['preview'])){if(!$client)fail_page('Sign in to view this preview.',403);if(!contact_can('projects'))fail_page('Your contact permissions do not include project workspace.',403);studio_preview_download(is_string($_GET['preview'])&&ctype_digit($_GET['preview'])?(int)$_GET['preview']:0,(int)$client['id']);}
+if(isset($_GET['proposal'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include proposals.',403);proposals_portal_render($error);}
 if(isset($_GET['invoice'])||isset($_GET['receipt'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);ledger_portal_render();}
 if(isset($_GET['services'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);provider_services_portal_render();}
 if(isset($_GET['account'])&&$client){require CWP_CODE_ROOT.'/portal/views/account.php';exit;}

@@ -152,7 +152,7 @@ function staff_view_permission(string $view): ?string {
     if($view==='support')return 'support.login';
     if(in_array($view,['catalog','catalog-invoice'],true))return 'catalog.manage';
     if(in_array($view,['email','health','studio-upgrade'],true))return 'staff.manage';
-    if(in_array($view,['studio-clients','studio-job','deliveries','activity'],true))return 'clients.manage';
+    if(in_array($view,['studio-clients','studio-job','deliveries','activity','proposals','proposal'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
@@ -204,6 +204,9 @@ function staff_action_permission(string $action): ?string {
     if($action==='notifications_setup')return 'staff.manage';
     if($action==='notification_announce')return 'clients.manage';
     if(in_array($action,['notification_mark','notification_mark_all','notification_prefs'],true))return null; // Recipient-scoped; the feed model enforces actor==recipient.
+
+    if($action==='proposal_setup')return 'staff.manage';
+    if(str_starts_with($action,'proposal_'))return 'clients.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';

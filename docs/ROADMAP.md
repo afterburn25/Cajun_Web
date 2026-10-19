@@ -780,6 +780,8 @@ The portal is the single customer workspace for design and all supported 20i-bac
 
 Freeze the exact design/proposal version under review; capture authorized approval or change requests against that version. Proposals contain approved deliverables, exclusions, revisions, schedule assumptions and payment milestones. Acceptance: immutable approved snapshots/audit history, clear superseded versions, ownership checks, deliberate confirmation, and no implied legal e-signature compliance without separate review.
 
+> Runtime status: `devin/non20i-proposals-runtime` adds persistent proposals (draft → sent ⇄ changes-requested → approved/withdrawn) with immutable numbered versions, staff authoring/revise/send/withdraw under `clients.manage`, client-scoped version-pinned approval/change-request in the portal, append-only event history, and deliberate owner setup. Job design-review versions (`studio_versions`) already cover per-job approvals; this covers standalone commercial proposals. Still absent: PDF rendering, proposal notification delivery and any payment/e-signature linkage — all separately gated.
+
 ### P-03 — Web-design payment forms, deposits, invoices and maintenance payments
 
 Provide dedicated CajunWebPro-styled payment forms for web-design services through the selected Authorize.net integration. Support full payment for an admin-published fixed-price service, a fixed-amount or percentage deposit against an approved quote, milestone invoices, final balance, and separately consented recurring maintenance. A customer must be able to pay for design work without buying hosting, a domain or VPS, and without a configured 20i account.

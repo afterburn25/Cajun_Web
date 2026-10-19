@@ -2,7 +2,7 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "ae9d05adbf923a6b03ab56430c3be519a5a19ffa0a66e25ddf3eac6d521e3cac",
+    "tests/browser_acceptance.py": "f2a40ef1b16620052b6f8933867183ed5cd7d100776d14ecad2d26a0b10a81bc",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "9ab28480115119cb01d085e1465cb1920729a2721498dc2bb43c2a58feb413e2",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",

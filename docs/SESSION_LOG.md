@@ -371,6 +371,25 @@ Tests: `php -l` clean; `php tests/backups/../pipeline/run.php` → 31/31 checks 
 
 Next: commit, push, open bounded PR, update #157; continue with proposals/notifications/revisions contract ports, then application layers.
 
+## Proposals runtime integration (P-02) — 2026-10-16
+
+Request: continue all remaining non-20i work (issue #157). Starting commit: `devin/non20i-proposals-foundation` tip `dd3abe81` (contract layer), new branch `devin/non20i-proposals-runtime`.
+
+Actions: implemented the missing proposal runtime — `proposals`/`proposal_versions`/`proposal_events`/`proposal_decisions` additive schema + `proposals_migrate` (owner reauth + backup confirmation, refuses populated unrecognized tables); `site/app/marketing/proposals.php` rebuilding the foundation `Proposal` state machine from the durable record for every transition; request-key replay on create; admin list/detail/create/revise/send/withdraw at `?view=proposals`/`?view=proposal`; portal `?proposal=` review + `proposal_decide` client action pinned to the exact version id; `clients.manage`/`staff.manage` permission mapping, nav, build mirror, Apache direct-access inventory, `proposals.yml` path filters, `application-tests.yml` native lane.
+
+Tests: `php -l` clean on all touched PHP; foundation suite `tests/proposals/run.php` 35/35 on PHP 8.4; `tests/proposals_native.php` (26 checks: setup gating, replay protection, permissions, transitions, version-pinned decisions, ownership denial, support-session denial, atomic rollback, re-migrate retention); `tests/proposals_cases.py` HTTP suite wired into `browser_acceptance.py`. `tools/build.py --refresh` clean; canonical mirror byte-identical. Synthetic lanes only — no live client, mail or payment operation.
+
+Next: PR + #157 update; remaining foundation runtime integrations (notifications feed, support-access formalization) per roadmap order.
+
+## Port proposal/approval contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); proposal/approval workflow is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-proposals-foundation`.
+
+Actions: extracted the preserved `devin/proposals-foundation` slice — `Proposal`, `ProposalVersion`, `ApprovalDecision`, `tests/proposals/run.php`, `proposals.yml`, `docs/PROPOSALS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/proposals/run.php` → 35/35 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157; continue remaining contract ports then application layers.
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.
@@ -702,6 +721,16 @@ Actions: extracted the preserved `devin/pipeline-foundation` slice — `Pipeline
 Tests: `php -l` clean; `php tests/backups/../pipeline/run.php` → 31/31 checks pass on local PHP 8.4; CI covers PHP 8.2/8.4 offline. No persistence/permissions/UI exists yet — pure contract layer.
 
 Next: commit, push, open bounded PR, update #157; continue with proposals/notifications/revisions contract ports, then application layers.
+
+## Port proposal/approval contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); proposal/approval workflow is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-proposals-foundation`.
+
+Actions: extracted the preserved `devin/proposals-foundation` slice — `Proposal`, `ProposalVersion`, `ApprovalDecision`, `tests/proposals/run.php`, `proposals.yml`, `docs/PROPOSALS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/proposals/run.php` → 35/35 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157; continue remaining contract ports then application layers.
 
 ## Synchronize release entry points after review — 2026-10-15
 
