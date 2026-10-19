@@ -1,3 +1,7 @@
+## 2026-10-18 — imported-hosting checkout guidance correction
+
+The checkout successor aligns owner forms with the existing verified-receipt policy while retaining legacy manual fulfillment. The regression covers the real agreement/order/provider renderers; installed purchase navigation remains a required gate. [Details](TWENTYI_HOSTING_PURCHASE_INBOX.md#checkout-fulfillment-controls). This fixes a user-visible dead end in the existing hosting purchase journey; it does not complete the cloud catalog, provider image import or whole 20i roadmap.
+
 ## 2026-10-19 — installed hosting purchase navigation
 
 The existing hosting purchase inbox gains an installed owner/client navigation continuation, preserving the preceding five purchases and their original billing and setup records. [Verification scope](TWENTYI_HOSTING_PURCHASE_INBOX.md#installed-purchase-navigation) separates portable checks from pending Linux database, authenticated browser and release acceptance. Full cloud catalog, automatic provider images, remote access and the broader project remain open.

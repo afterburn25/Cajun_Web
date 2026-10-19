@@ -14,6 +14,8 @@ function service_orders_ui_fields(string $action,string $agreement,?ServiceOrder
 }
 function service_orders_ui(ServiceSubscriptionDocument $agreement,bool $owner):void {
     $source=$agreement->data();$id=$source['id'];$client=$source['client_id'];$prefix=$owner?'service_plans_order_':'service_agreements_order_';
+    // Presentation follows the validated agreement origin; native receipt enforcement is unchanged.
+    $requiresVerifiedPayment=$source['format']===2;
     if(!service_orders_ready()){
         $storage=service_orders_storage();
         if($storage['version']!==''||one('SELECT id FROM '.table('audit').' WHERE action=? LIMIT 1',['service_orders.setup'])){
@@ -54,8 +56,10 @@ function service_orders_ui(ServiceSubscriptionDocument $agreement,bool $owner):v
         }
     }
     echo '<p class="hint">This records an initial hosting request. It does not register the domain, authorize automatic payment, or delete existing services. Ending the request preserves invoices and history.</p></section>';
-    hosting_order_links_ui($doc,$owner,$ctx['assessment']);
+    if($owner&&$phase==='accepted'&&$requiresVerifiedPayment)echo '<p data-checkout-fulfillment-policy>This checkout requires a verified payment receipt. Once payment and commercial review are ready, continue with Prepare hosting service or Provider setup below.</p>';
+    hosting_order_links_ui($doc,$owner,$ctx['assessment'],$requiresVerifiedPayment);
     $commands=match($phase){'offered'=>$owner?['withdraw'=>'Withdraw hosting offer']:['accept'=>'Confirm hosting request','decline'=>'Decline hosting offer'],'accepted'=>$owner?['allow_manual'=>'Permit manual fulfillment','revoke_manual'=>'Revoke manual permission','cancel'=>'Cancel hosting request']:['cancel'=>'Cancel hosting request'],default=>[]};
+    if($requiresVerifiedPayment)unset($commands['allow_manual'],$commands['revoke_manual']);
     if($state['manual']===null)unset($commands['revoke_manual']);
     foreach($commands as $command=>$label){
         $action=$prefix.$command;echo '<section class="workspace-card"><h3>'.esc($label).'</h3><form method="post">';service_orders_ui_fields($action,$id,$doc);

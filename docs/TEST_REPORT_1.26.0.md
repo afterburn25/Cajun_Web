@@ -1,3 +1,9 @@
+## 2026-10-18 — checkout manual-control regression
+
+Successor of `3042f24eddc3587d67ac5d10e28df3b3294a3310`, branch `codex/twentyi-checkout-fulfillment-controls`. Exact predecessor shipping source fails the new renderer case at check85 in default/minimal PHP; corrected source passes all94 with the original80 outcome objects and order preserved. Real format1/format2 documents and actual renderer bodies execute with modeled storage/context. One additive assertion extends the existing installed owner purchase journey without another write, report or capture.
+
+[Local named results](evidence/hosting-checkout-fulfillment-controls-local.json) and [scope](TWENTYI_HOSTING_PURCHASE_INBOX.md#checkout-fulfillment-controls). Linux native/HTTP/browser execution, exact-candidate combined acceptance and release remain pending. Historical capture or parent test results below do not certify this successor.
+
 # CajunWebPro 1.26.0 candidate test record
 
 ## 2026-10-18 — captured inventory closed; StackCP capture correction

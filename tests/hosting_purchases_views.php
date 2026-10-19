@@ -3,7 +3,7 @@
 declare(strict_types=1);
 define('CWP_BOOT',true);define('CWP_CODE_ROOT',getenv('CWP_TEST_CODE_ROOT')?:__DIR__.'/../site');
 require CWP_CODE_ROOT.'/app/hosting/checkout_purchases_views.php';
-function hpv_load(string $path,string $name): void {
+function hpv_load(string $path,string $name,?string $alias=null): void {
     $tokens=token_get_all(file_get_contents($path));$n=count($tokens);
     for($i=0;$i<$n;$i++) {
         if(!is_array($tokens[$i])||$tokens[$i][0]!==T_FUNCTION)continue;
@@ -11,6 +11,7 @@ function hpv_load(string $path,string $name): void {
         if(!is_array($tokens[$j])||$tokens[$j][0]!==T_STRING||$tokens[$j][1]!==$name)continue;
         $text='';$depth=0;$started=false;
         for($k=$i;$k<$n;$k++) {$t=$tokens[$k];$text.=is_array($t)?$t[1]:$t;if($t==='{'){$depth++;$started=true;}elseif($t==='}'&&--$depth===0&&$started)break;}
+        if($alias!==null){if(!preg_match('/\A[a-zA-Z_][a-zA-Z0-9_]*\z/',$alias))throw new LogicException('Invalid test alias.');$text=preg_replace('/\Afunction\s+'.preg_quote($name,'/').'\b/','function '.$alias,$text,1);}
         eval($text);return;
     }
     throw new LogicException('Missing actual controller function '.$name);
@@ -110,9 +111,12 @@ try {
     function service_orders_ready(): bool {return true;}
     function service_orders_context(string $agreement,int $client,bool $asClient=false): array {
         $GLOBALS['order_contexts'][]=[$agreement,$client,$asClient];
-        return ['document'=>$GLOBALS['order_document'],'assessment'=>null,'warning'=>null];
+        return ['document'=>$GLOBALS['order_document'],'assessment'=>$GLOBALS['order_assessment']??null,'warning'=>null];
     }
-    function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment): never {throw new HpvOrderCardReached();}
+    function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment,bool $requiresVerifiedPayment=false): void {
+        if($GLOBALS['hpv_complete_order_ui']??false){hpv_actual_order_links_ui($order,$owner,$assessment,$requiresVerifiedPayment);return;}
+        throw new HpvOrderCardReached();
+    }
     function payments_ready(): bool {return false;}
     function staff_ready(): bool {return false;}
     function admin_foot(): never {throw new HpvWrongInvoiceRoute();}
@@ -140,6 +144,59 @@ try {
     hpv_ok('Owner setup card retains the exact invoice-payments route and query',$ownerSetup['Review invoice']===admin_url('invoice-payments',['invoice_id'=>7]));
     hpv_ok('Client setup Review invoice retains its existing owned portal destination',$clientSetup['Review invoice']===studio_url(['invoice'=>7]));
     hpv_ok('Setup link rendering preserves exact documents and owning context',$originalDocuments===[$agreement->json(),$order_document->json()]&&$order_contexts===[[$agreement->data()['id'],42,false],[$agreement->data()['id'],42,true]]);
+    // Complete actual order/progress/provider renderers, with only native read seams modeled.
+    // The original80 assertions above and their stopped-card boundary are preserved.
+    $hpv_complete_order_ui=true;
+    foreach(['service_orders_ui_value','service_orders_ui_fields'] as $fn)hpv_load(CWP_CODE_ROOT.'/includes/layout/service_orders.php',$fn);
+    hpv_load(CWP_CODE_ROOT.'/includes/layout/hosting_order_links.php','hosting_order_links_ui','hpv_actual_order_links_ui');
+    foreach(['hosting_fulfillment_ui_hidden','hosting_fulfillment_ui_assignment','hosting_fulfillment_ui'] as $fn)hpv_load(CWP_CODE_ROOT.'/includes/layout/hosting_fulfillment.php',$fn);
+    hpv_load(CWP_CODE_ROOT.'/includes/layout/plans.php','service_plans_confirmation');
+    function csrf_field(): string {return '<input type="hidden" name="csrf" value="synthetic-ui-csrf">';}
+    function hosting_order_links_context(string $id,int $client,bool $asClient=false): array {return $GLOBALS['progress_context'];}
+    function hosting_fulfillment_view(string $id,int $client): array {$GLOBALS['fulfillment_reads'][]=[$id,$client];return $GLOBALS['fulfillment_context'];}
+    function hpv_complete(ServiceSubscriptionDocument $source,bool $owner): string {ob_start();try{service_orders_ui($source,$owner);return ob_get_contents();}finally{ob_end_clean();}}
+    function hpv_action(string $html,string $action): bool {return str_contains($html,'name="action" value="'.$action.'"');}
+    $progress_context=['progress'=>['status'=>'pending','account_id'=>str_repeat('9',32),'created_at'=>110,'order_cancelled'=>false,
+        'package'=>['label'=>'Reviewed local package','provider_type'=>'811','region'=>'Reviewed location'],'profile_current'=>true]];
+    $fulfillment_context=['ready'=>true,'confirmation_ready'=>true,'order'=>$order_document,'link_hash'=>str_repeat('a',64),'account_id'=>str_repeat('9',32),
+        'profile_current'=>true,'package'=>$progress_context['progress']['package'],'reseller_id'=>42,'eligible'=>false,'mode'=>'approve','hosting_revision'=>0,'dispatch'=>null,'assignment'=>null];
+    $legacyAgreement=$agreement;$legacyOrder=$order_document;$legacyDocuments=[$legacyAgreement->json(),$legacyOrder->json()];
+    $fulfillment_reads=[];$legacy=hpv_complete($legacyAgreement,true);
+    hpv_ok('Legacy accepted owner still sees manual approval and legacy eligibility explanation',hpv_action($legacy,'service_plans_order_allow_manual')&&!hpv_action($legacy,'service_plans_order_revoke_manual')&&str_contains($legacy,'active manual fulfillment policy'));
+    $order_document=$legacyOrder->append(str_repeat('e',32),'allow_manual','staff:4',107,['reason'=>'Reviewed legacy service exception','expires_at'=>1000]);
+    $fulfillment_context['order']=$order_document;
+    $legacyWithPolicy=hpv_complete($legacyAgreement,true);
+    hpv_ok('Legacy accepted owner can revoke an actual retained manual policy',hpv_action($legacyWithPolicy,'service_plans_order_allow_manual')&&hpv_action($legacyWithPolicy,'service_plans_order_revoke_manual'));
+    $legacyClient=hpv_complete($legacyAgreement,false);
+    hpv_ok('Legacy client never receives owner manual policy or provider setup forms',!hpv_action($legacyClient,'service_plans_order_allow_manual')&&!hpv_action($legacyClient,'service_plans_order_revoke_manual')&&!str_contains($legacyClient,'data-hosting-fulfillment')&&hpv_action($legacyClient,'service_agreements_order_cancel'));
+    $order_document=$legacyOrder->append(str_repeat('f',32),'cancel','staff:4',108,['reason'=>'Reviewed legacy cancellation']);$fulfillment_context['order']=$order_document;
+    $closed=hpv_complete($legacyAgreement,true);
+    hpv_ok('Closed legacy order has no manual policy actions',!hpv_action($closed,'service_plans_order_allow_manual')&&!hpv_action($closed,'service_plans_order_revoke_manual'));
+
+    // Reuse the existing pure fixture factory, not a fabricated format flag.
+    require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout_document.php';
+    hpv_load(dirname(CWP_CODE_ROOT).'/tests/hosting_checkout_document.php','co_fixture');
+    $at=1801396800;$f=co_fixture($at);
+    $review=HostingCheckoutReview::create(str_repeat('3',32),$f['pub'],42,['mode'=>'new-hosting'],$at,$f['c']);
+    $consent=HostingCheckoutConsent::create($review,$review->fingerprint(),true,$f['pub'],$f['c'],42,null,null,$at+1);
+    $checkoutAgreement=ServiceSubscriptionDocument::createCheckout(str_repeat('4',32),$consent,$f['pub'],99,str_repeat('5',32),str_repeat('6',32));
+    $checkoutOrder=ServiceOrderDocument::create(str_repeat('7',32),42,4,$at+2,
+        ['id'=>$checkoutAgreement->data()['id'],'revision'=>$checkoutAgreement->revision(),'sha256'=>$checkoutAgreement->fingerprint(),'terms_hash'=>$f['plan']->model()->termsHash()],
+        ['id'=>7,'project_id'=>99,'sha256'=>str_repeat('a',64),'amount_cents'=>2500,'currency'=>'USD','basis'=>'initial-recurring-period','schedule_id'=>str_repeat('8',32),'period_index'=>0]);
+    $checkoutOrder=$checkoutOrder->append(str_repeat('9',32),'accept','client:42',$at+3,['domain_name'=>'checkout.example','review_sha256'=>$checkoutOrder->fingerprint()]);
+    $checkoutDocuments=[$checkoutAgreement->json(),$checkoutOrder->json()];$order_document=$checkoutOrder;$fulfillment_context['order']=$checkoutOrder;
+    foreach([false,true] as $paid){
+        $fulfillment_context['eligible']=$paid;$fulfillment_reads=[];$checkout=hpv_complete($checkoutAgreement,true);$label=$paid?'paid':'unpaid';
+        hpv_ok('Checkout '.$label.' owner has no manual approval or revoke controls',!hpv_action($checkout,'service_plans_order_allow_manual')&&!hpv_action($checkout,'service_plans_order_revoke_manual'));
+        hpv_ok('Checkout '.$label.' owner sees verified receipt and supported setup guidance',str_contains($checkout,'data-checkout-fulfillment-policy')&&str_contains($checkout,'verified payment receipt')&&str_contains($checkout,'Prepare hosting service or Provider setup')&&!str_contains($checkout,'manual fulfillment policy'));
+        hpv_ok('Checkout '.$label.' retains actual provider setup and original order',str_contains($checkout,'data-hosting-fulfillment')&&$fulfillment_reads===[[$checkoutOrder->data()['id'],42]]&&hpv_action($checkout,'service_plans_order_cancel'));
+        if(!$paid)hpv_ok('Unpaid checkout provider fallback requires original invoice receipt and exposes no dispatch form',str_contains($checkout,'verified payment receipt for the original checkout invoice')&&!hpv_action($checkout,'service_plans_order_fulfill_service'));
+        else hpv_ok('Eligible checkout still exposes separate owner approval with blank password and unchecked reviews',hpv_action($checkout,'service_plans_order_fulfill_service')&&str_contains($checkout,'name="review_account_type"')&&str_contains($checkout,'name="review_defaults"')&&str_contains($checkout,'name="review_costs"')&&str_contains($checkout,'name="current_password"')&&!preg_match('/<input[^>]*type="password"[^>]*value="[^\"]+"/',$checkout)&&!str_contains($checkout,' checked'));
+    }
+    $fulfillment_reads=[];$clientCheckout=hpv_complete($checkoutAgreement,false);
+    hpv_ok('Checkout client retains progress and cancellation without owner policy or dispatch',str_contains($clientCheckout,'Hosting record prepared')&&hpv_action($clientCheckout,'service_agreements_order_cancel')&&!str_contains($clientCheckout,'data-checkout-fulfillment-policy')&&!str_contains($clientCheckout,'data-hosting-fulfillment')&&!hpv_action($clientCheckout,'service_plans_order_allow_manual')&&$fulfillment_reads===[]);
+    hpv_ok('Full rendering never changes either authoritative document format or retained events',$legacyDocuments===[$legacyAgreement->json(),$legacyOrder->json()]&&$checkoutDocuments===[$checkoutAgreement->json(),$checkoutOrder->json()]&&$legacyAgreement->data()['format']===1&&$checkoutAgreement->data()['format']===2);
+
     echo json_encode(['passed'=>true,'count'=>count($checks),'checks'=>$checks,'scope'=>'Actual PHP renderer and extracted controller functions; modeled reader/session seams, no SQL or HTTP.'],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
 } catch(Throwable $e) {
     while(ob_get_level()>0)ob_end_clean();

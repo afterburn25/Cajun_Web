@@ -241,6 +241,15 @@ def run_browser(env, browser):
                         progress = page.locator('[data-hosting-progress]')
                         check('Inbox ' + actor + ' inherited hosting remains accepted and locally prepared', order.count() == 1 and 'checkout.example' in order.inner_text() and 'Hosting request accepted' in order.inner_text()
                               and progress.count() == 1 and 'Hosting record prepared' in progress.inner_text() and 'Hosting service active' not in progress.inner_text())
+                        if is_owner:
+                            policy = page.locator('[data-checkout-fulfillment-policy]')
+                            check('Checkout owner uses verified-payment setup without legacy manual controls',
+                                  policy.count() == 1 and 'verified payment receipt' in policy.inner_text()
+                                  and 'Provider setup' in policy.inner_text()
+                                  and form(page, 'service_plans_order_allow_manual').count() == 0
+                                  and form(page, 'service_plans_order_revoke_manual').count() == 0
+                                  and page.locator('[data-hosting-fulfillment]').count() == 1
+                                  and 'active manual fulfillment policy' not in page.inner_text('body'))
                         invoice = order.get_by_role('link', name='Review invoice', exact=True)
                         expected = {'view': 'invoice-payments', 'invoice_id': row['invoice_id']} if is_owner else {'invoice': row['invoice_id']}
                         check('Inherited ' + actor + ' order invoice handoff selects original paid invoice', invoice.count() == 1 and destination(invoice.get_attribute('href'), endpoint, expected)
