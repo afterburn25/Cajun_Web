@@ -1,3 +1,7 @@
+## 2026-10-19 — installed monthly and annual purchase coverage
+
+Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
+
 ## 2026-10-19 — monthly and annual hosting plan browsing
 
 Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](TWENTYI_HOSTING_BILLING_SELECTOR.md).

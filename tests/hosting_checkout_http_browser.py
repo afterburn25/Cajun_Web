@@ -16,14 +16,19 @@ from hosting_checkout_http_cases import run_browser, CAPTURE_STEMS
 from catalog_storefront_checkout_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES
 from hosting_catalog_plan_setup_cases import CAPTURES as PLAN_SETUP_CAPTURES
 from hosting_purchase_inbox_cases import run_browser as inbox_browser, CAPTURES as INBOX_CAPTURES
+from hosting_billing_options_cases import run_browser as billing_options_browser, CAPTURES as BILLING_OPTIONS_CAPTURES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'
 SESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'
 BASE = 'http://127.0.0.1:8091'
 CAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))
-ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES + INBOX_CAPTURES
+ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES + INBOX_CAPTURES + BILLING_OPTIONS_CAPTURES
 SOURCE_PATHS = [
+    'tests/hosting_billing_options_cases.py', 'tests/hosting_billing_options_wiring.py',
+    'site/app/providers/catalog_variants.php', 'site/app/providers/catalog_variants_storage.php',
+    'site/admin/controllers/catalog_variants.php', 'site/admin/views/catalog_variants.php',
+    'site/app/hosting/catalog_billing.php',
     'tests/hosting_purchase_inbox_cases.py',
     'site/app/hosting/checkout_purchases.php', 'site/app/hosting/checkout_purchases_views.php',
     'site/admin/controllers/hosting_purchases.php', 'site/admin/views/hosting_purchases.php',
@@ -49,6 +54,25 @@ SOURCE_PATHS = [
 
 def require(value, message):
     if not value: raise RuntimeError(message)
+
+
+def billing_options_complete(value, qa):
+    """Validate the actual appended journey result; malformed or partial evidence never passes."""
+    if not isinstance(value, dict) or value.get('passed') is not True:
+        return False
+    checks = value.get('checks')
+    if not isinstance(checks, list) or not checks:
+        return False
+    if any(not isinstance(c, dict) or set(c) != {'name', 'passed'}
+           or not isinstance(c['name'], str) or not c['name'].strip() or c['passed'] is not True for c in checks):
+        return False
+    if len({c['name'] for c in checks}) != len(checks):
+        return False
+    captures = value.get('captures')
+    if not isinstance(captures, list) or any(not isinstance(c, dict) for c in captures):
+        return False
+    return (tuple(c.get('name') for c in captures) == BILLING_OPTIONS_CAPTURES
+            and all(not (qa/n).is_symlink() and (qa/n).is_file() and (qa/n).stat().st_size > 0 for n in BILLING_OPTIONS_CAPTURES))
 
 
 def write(path, value):
@@ -179,11 +203,14 @@ def main(full_suite=False):
                       result['purchase_inbox']['passed'] is True
                       and tuple(c['name'] for c in result['purchase_inbox']['captures']) == INBOX_CAPTURES
                       and all(not (qa/n).is_symlink() and (qa/n).is_file() and (qa/n).stat().st_size > 0 for n in INBOX_CAPTURES))
+                result['billing_options'] = billing_options_browser({**browser_env, 'plan_setup': result['catalog_storefront']['plan_setup']}, browser)
+                check('Installed monthly and annual billing options preserve exact invoices and prior history',
+                      billing_options_complete(result['billing_options'], qa))
             finally: browser.close()
         check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))
         complete = True
     except Exception as error:
-        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py', 'hosting_catalog_plan_setup_cases.py', 'hosting_purchase_inbox_cases.py'}
+        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py', 'hosting_catalog_plan_setup_cases.py', 'hosting_purchase_inbox_cases.py', 'hosting_billing_options_cases.py'}
         locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]
         failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}
     finally:

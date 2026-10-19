@@ -1,5 +1,11 @@
 # Original 1.26 runtime evidence review
 
+## Update — 2026-10-19
+
+The original default PHP 8.3/MariaDB [hosted full run39098482550](https://github.com/afterburn25/Cajun_Web/actions/runs/39098482550/job/117675017917) completed successfully at08:50:43UTC. Downloaded final artifact12174160354 passes its API size/SHA256 check, all762 member checks and the unchanged full aggregate:216 reports,28,873 passing executions, no PHP or unexpected browser diagnostics. Actual CI source `ee131c1f65ecf2fe3ac8faaf55d04485d8edec71` has the exact candidatef67 tree. [New final receipt](evidence/catalog126-default-hosted-final.json) records the hosted outputs, immutable identities and independent1029/root6 named verification checks. This supersedes only the default run's earlier queued observation below.
+
+The four supported-runtime final jobs and corrected-capture run39137551561 remained queued on attempt1 at09:19:46UTC. Their original successful producer reviews remain valid; they do not replace hosted completion or certify later sources. No queue-driven retry, cancellation, release or live operation occurred. The remaining integration and publication gates below are unchanged.
+
 Recorded 2026-10-18. This is evidence for catalog candidate `f67b1631683b29096dd8ec1daee405e104dc0b83`, tree `a24876428ada7d4f7c764d28650d208b8eddf8f2`, in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216). It is not publication, deployment or acceptance of a later source. Published [1.25.0](RELEASE_1.25.0_PUBLICATION.md) remains immutable.
 
 ## What has finished

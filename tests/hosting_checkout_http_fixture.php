@@ -2,7 +2,7 @@
 /** Disposable packaged checkout bridge: explicit current synthetic refresh, safe state reads, contact-context negative only. */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY!=='Linux'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOSTING_CHECKOUT_HTTP')!=='1')exit(2);
-$operation=$argv[1]??'';if(!in_array($operation,['prepare','state','contact-context'],true))exit(2);
+$operation=$argv[1]??'';if(!in_array($operation,['prepare','state','contact-context','billing-state'],true))exit(2);
 set_exception_handler(static function(Throwable $e)use($operation):never{
     $safe=['operation'=>$operation,'class'=>get_class($e),'message'=>'Disposable fixture precondition or application guard failed.','file'=>basename($e->getFile()),'line'=>$e->getLine()];
     if($e instanceof PDOException){$s=$e->errorInfo[0]??null;$c=$e->errorInfo[1]??null;$safe['sqlstate']=is_string($s)&&preg_match('/\A[A-Z0-9]{5}\z/',$s)?$s:null;$safe['driver_code']=is_int($c)?$c:null;}
@@ -82,6 +82,61 @@ if($operation==='prepare'){
     echo json_encode($safe,JSON_THROW_ON_ERROR);exit;
 }
 if(!is_file($marker)||is_link($marker))throw new RuntimeException('Prepare first');
+if($operation==='billing-state'){
+    // Separate bounded read contract; the original state response below is unchanged.
+    $result=hosting_checkout_locked(function():array{
+        hosting_checkout_require();
+        if(!provider_catalog_import_ready())throw new RuntimeException('Original catalog required');
+        $variantsReady=provider_catalog_variant_ready();
+        $counts=[];foreach(['reviews'=>'hosting_checkout_reviews','results'=>'hosting_checkout_results','jobs'=>'studio_jobs','invoices'=>'studio_invoices','receipts'=>'invoice_payments','attempts'=>'payment_attempts','publications'=>'hosting_catalog_publications','products'=>'catalog_products','media'=>'media','plans'=>'service_plans','plan_events'=>'service_plan_events','mappings'=>'provider_plan_catalog','provider_refreshes'=>'provider_refreshes','provider_checks'=>'provider_checks']as$key=>$name){
+            $counts[$key]=hch_count($name);if($counts[$key]>128)throw new RuntimeException('Disposable billing fixture exceeded its bound');
+        }
+        $counts['variants']=$variantsReady?hch_count('catalog_provider_variants'):0;
+        if($counts['variants']>128)throw new RuntimeException('Disposable variants exceeded their bound');
+        $products=[];
+        foreach(all('SELECT id,revision,sku,title,term,amount_cents,status FROM '.table('catalog_products').' ORDER BY id LIMIT 129')as$p){
+            $id=(int)$p['id'];$origin=provider_catalog_import_record($id);if(!$origin)continue;
+            $canonical=provider_catalog_import_canonical_record($origin);
+            $variant=$variantsReady?one('SELECT id FROM '.table('catalog_provider_variants').' WHERE product_id=?',[$id]):null;
+            $products[(string)$id]=['id'=>$id,'revision'=>(int)$p['revision'],'sku'=>$p['sku'],'title'=>$p['title'],'term'=>$p['term'],'amount_cents'=>$p['amount_cents']===null?null:(int)$p['amount_cents'],'status'=>$p['status'],
+                'canonical_import_id'=>(int)$canonical['id'],'canonical_product_id'=>(int)$canonical['product_id'],'variant_id'=>$variant['id']??null,'media_id'=>$origin['media_id'],'media_revision'=>(int)$origin['media_revision']];
+        }
+        $publications=[];foreach(all('SELECT id FROM '.table('hosting_catalog_publications').' ORDER BY seq LIMIT 129')as$row){
+            $publication=hosting_catalog_publication($row['id']);$plan=ServicePlanDocument::fromJson($publication->data()['plan_json']);
+            $publications[$row['id']]=$publication->historicalProjection()+['plan_id'=>$plan->data()['id']];
+        }
+        $reviews=[];foreach(all('SELECT * FROM '.table('hosting_checkout_reviews').' ORDER BY id LIMIT 129')as$row){
+            $review=hosting_checkout_review_row($row);$r=$review->data();
+            $reviews[$row['id']]=['request_id'=>$r['request_id'],'review_sha256'=>$review->fingerprint(),'publication_id'=>$r['publication_id'],'publication_sha256'=>$r['publication_sha256'],'client_id'=>$r['client_id'],'project'=>$r['project'],'billing'=>$r['billing']];
+        }
+        $results=[];foreach(all('SELECT * FROM '.table('hosting_checkout_results').' ORDER BY id LIMIT 129')as$row){
+            $validated=hosting_checkout_result_row($row);$d=$validated['document'];
+            $map=one('SELECT snapshot_json FROM '.table('recurring_billing_invoices').' WHERE id=?',[$d['issuance_id']]);
+            $snapshot=json_decode($map['snapshot_json'],true,8,JSON_THROW_ON_ERROR);
+            $results[$row['id']]=hosting_checkout_projection($validated,true)+['publication_id'=>$d['publication_id'],'publication_sha256'=>$d['publication_sha256'],'client_id'=>$d['client_id'],'billing'=>$reviews[$row['id']]['billing'],'issued_period'=>$snapshot['period']];
+        }
+        // Hash original financial rows without exporting their contents. Fixed namespace, no caller selectors.
+        $retained=[];$total=0;
+        foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,4)=BINARY ? ORDER BY TABLE_NAME',['hcc_'])as$t){
+            if(!preg_match('/\Ahcc_[a-z0-9_]+\z/',$t['name']))throw new LogicException('Unknown table');$n=substr($t['name'],4);
+            if(!preg_match('/\A(?:service_|recurring_|payment_)/',$n)&&!in_array($n,['studio_jobs','studio_invoices','invoice_payments','hosting_checkout_reviews','hosting_checkout_results','catalog_provider_imports','hosting_catalog_publications','media'],true))continue;
+            $rows=all('SELECT * FROM `'.$t['name'].'` LIMIT 129');$total+=count($rows);
+            if(count($rows)>128||$total>1500)throw new RuntimeException('Disposable retained history exceeded its bound');
+            $hashes=array_map(static fn(array$r):string=>hash('sha256',json_encode($r,JSON_THROW_ON_ERROR)),$rows);sort($hashes,SORT_STRING);$retained[$n]=$hashes;
+        }
+        $audits=all('SELECT * FROM '.table('audit')." WHERE action LIKE 'hosting_checkout.%' OR action LIKE 'hosting_catalog.%' OR action LIKE 'recurring_billing.%' OR action LIKE 'service_plans.%' OR action LIKE 'payments.%' ORDER BY id LIMIT 129");
+        if(count($audits)>128)throw new RuntimeException('Disposable business audit exceeded its bound');
+        $hashes=array_map(static fn(array$r):string=>hash('sha256',json_encode($r,JSON_THROW_ON_ERROR)),$audits);sort($hashes,SORT_STRING);$retained['business_audits']=$hashes;
+        $io=[];foreach(['provider_refreshes','provider_refresh_results','provider_checks','provider_check_results','provider_operations','provider_operation_grants']as$name){
+            $exists=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['hcc_'.$name])!==null;
+            if(!$exists){if(!in_array($name,['provider_operations','provider_operation_grants'],true))throw new RuntimeException('Original provider read history missing');$io[$name]=['exists'=>false,'rows'=>[]];continue;}
+            $rows=all('SELECT * FROM '.table($name).' LIMIT 129');if(count($rows)>128)throw new RuntimeException('Disposable provider history exceeded its bound');
+            $hashes=array_map(static fn(array$r):string=>hash('sha256',json_encode($r,JSON_THROW_ON_ERROR)),$rows);sort($hashes,SORT_STRING);$io[$name]=['exists'=>true,'rows'=>$hashes];
+        }
+        return['counts'=>$counts,'variants_ready'=>$variantsReady,'products'=>$products,'publications'=>$publications,'reviews'=>$reviews,'results'=>$results,'retained_rows'=>$retained,'provider_io_sha256'=>hash('sha256',json_encode($io,JSON_THROW_ON_ERROR))];
+    });
+    $encoded=json_encode($result,JSON_THROW_ON_ERROR);if(strlen($encoded)>262144)throw new RuntimeException('Disposable billing state exceeded its output bound');echo $encoded;exit;
+}
 $result=hosting_checkout_locked(function():array{
     hosting_checkout_require();$rows=[];foreach(all('SELECT * FROM '.table('hosting_checkout_results').' ORDER BY id')as$r){$v=hosting_checkout_result_row($r);$rows[$r['id']]=hosting_checkout_projection($v,true);}
     $latest=one('SELECT id,document_sha256 FROM '.table('hosting_catalog_publications').' ORDER BY seq DESC LIMIT 1');
