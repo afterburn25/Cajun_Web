@@ -1,0 +1,437 @@
+{
+  "schema": 1,
+  "scope": "Observed hosted failure, exact source correction and local extracted setup guards; corrected native/full execution remains pending.",
+  "parent": "cefb08d6c29f4faca104089bb5941b322418d2ba",
+  "enclosing_commit_message": "Fix duplicate contacts setup in service-plan fixture",
+  "branch": "codex/contacts-native-fixture",
+  "target_pr": 203,
+  "observed_run": 39130068128,
+  "observed_trigger_head": "6f0072dd0bad7075ef4974d292b16c2882ee5794",
+  "observed_merge": "11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+  "finding": {
+    "file": "tests/service_plans_native.php",
+    "line": 103,
+    "error": "SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'spln_studio_contacts' already exists",
+    "cause": "Fixture line45 executes schema_statements, whose base.php line35 already adds contacts_schema; fixture line103 then executes the same unconditional CREATE TABLE again.",
+    "applicability": "Exact failing fixture/base bytes remain in current PR210 head. Main, accepted release1.25, catalog126 f67 and frozen PR249 do not include this unintegrated contact extension, so this is not a currentmain/release regression.",
+    "correction": "External one-line deletion of redundant contacts DDL, retaining contacts_schema_version marker and every original assertion/worker/guard. Apply only to the Devin successor after root coordination; do not replace its fixture with main and lose new contact checks."
+  },
+  "hosted_evidence": [
+    {
+      "artifact_id": 12178667920,
+      "name": "domain-renewal-agreements-8.2-mariadb-10.11-11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+      "sha256": "c6ffd8889b9fe2f24a91f1addd490ea47a7886fa53cba5bf9d7dd31417df5755",
+      "reports": {
+        "domain-renewal-agreements-document-default.json": {
+          "passed": true,
+          "checks": 69,
+          "passing": 69,
+          "failed": [],
+          "sha256": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878"
+        },
+        "domain-renewal-agreements-document-minimal.json": {
+          "passed": true,
+          "checks": 69,
+          "passing": 69,
+          "failed": [],
+          "sha256": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878"
+        },
+        "domain-renewal-agreements-native-results.json": {
+          "passed": true,
+          "checks": 71,
+          "passing": 71,
+          "failed": [],
+          "sha256": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901"
+        },
+        "domain-renewals-native-results.json": {
+          "passed": true,
+          "checks": 78,
+          "passing": 78,
+          "failed": [],
+          "sha256": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24"
+        },
+        "service-plans-native-results.json": {
+          "passed": false,
+          "checks": 88,
+          "passing": 87,
+          "failed": [
+            "Unexpected failure: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'spln_studio_contacts' already exists"
+          ],
+          "sha256": "70e925be98d24a4b3515b3147d690bd3c872351814fa49896663c686eb35d527"
+        }
+      }
+    },
+    {
+      "artifact_id": 12178253752,
+      "name": "domain-renewal-agreements-8.4-mysql-8.4-11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+      "sha256": "2d9052619c3d7a6c97a569d44ff2ddc98a275699afc3274fbee3248ff4545eb5",
+      "reports": {
+        "domain-renewal-agreements-document-default.json": {
+          "passed": true,
+          "checks": 69,
+          "passing": 69,
+          "failed": [],
+          "sha256": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878"
+        },
+        "domain-renewal-agreements-native-results.json": {
+          "passed": true,
+          "checks": 71,
+          "passing": 71,
+          "failed": [],
+          "sha256": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901"
+        },
+        "domain-renewal-agreements-document-minimal.json": {
+          "passed": true,
+          "checks": 69,
+          "passing": 69,
+          "failed": [],
+          "sha256": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878"
+        },
+        "domain-renewals-native-results.json": {
+          "passed": true,
+          "checks": 78,
+          "passing": 78,
+          "failed": [],
+          "sha256": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24"
+        },
+        "service-plans-native-results.json": {
+          "passed": false,
+          "checks": 88,
+          "passing": 87,
+          "failed": [
+            "Unexpected failure: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'spln_studio_contacts' already exists"
+          ],
+          "sha256": "70e925be98d24a4b3515b3147d690bd3c872351814fa49896663c686eb35d527"
+        }
+      }
+    },
+    {
+      "artifact_id": 12178033380,
+      "name": "domain-renewal-agreements-8.2-mysql-8.4-11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+      "sha256": "1311333c4fd4424082c0321717c92d6061726897ccbcf523cd7a57fb32fd39db",
+      "reports": {
+        "domain-renewal-agreements-document-default.json": {
+          "passed": true,
+          "checks": 69,
+          "passing": 69,
+          "failed": [],
+          "sha256": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878"
+        },
+        "domain-renewal-agreements-native-results.json": {
+          "passed": true,
+          "checks": 71,
+          "passing": 71,
+          "failed": [],
+          "sha256": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901"
+        },
+        "domain-renewal-agreements-document-minimal.json": {
+          "passed": true,
+          "checks": 69,
+          "passing": 69,
+          "failed": [],
+          "sha256": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878"
+        },
+        "domain-renewals-native-results.json": {
+          "passed": true,
+          "checks": 78,
+          "passing": 78,
+          "failed": [],
+          "sha256": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24"
+        },
+        "service-plans-native-results.json": {
+          "passed": false,
+          "checks": 88,
+          "passing": 87,
+          "failed": [
+            "Unexpected failure: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'spln_studio_contacts' already exists"
+          ],
+          "sha256": "70e925be98d24a4b3515b3147d690bd3c872351814fa49896663c686eb35d527"
+        }
+      }
+    }
+  ],
+  "before_sha256": "4b095ac6c5c4e4bce2c53c4ad372ecd5b854f44a5329d39ebfa0c640506806f1",
+  "after_sha256": "1d571654476c9edce730b9ba25d0b8be07d53f41c057d4574fce19beb71044ac",
+  "exact_change": {
+    "before": "foreach(contacts_schema(config()['db']['prefix']) as $sql)db()->exec($sql);save_setting('contacts_schema_version','1');",
+    "after": "save_setting('contacts_schema_version','1');"
+  },
+  "local_checks_per_mode": [
+    {
+      "name": "Executed merge and latest PR head retain the same exact failing fixture",
+      "passed": true
+    },
+    {
+      "name": "Actual canonical base schema includes exact contact DDL",
+      "passed": true
+    },
+    {
+      "name": "Actual first fixture setup already creates the contacts table",
+      "passed": true
+    },
+    {
+      "name": "Original actual later setup repeats contacts DDL and fails",
+      "passed": true
+    },
+    {
+      "name": "Original failure occurs before the later contacts marker",
+      "passed": true
+    },
+    {
+      "name": "Correction changes exactly one known DDL prefix and preserves every other byte",
+      "passed": true
+    },
+    {
+      "name": "Corrected actual setup keeps the exact canonical tables without another DDL",
+      "passed": true
+    },
+    {
+      "name": "Corrected actual setup preserves the contacts schema marker",
+      "passed": true
+    },
+    {
+      "name": "Canonical schema continues rejecting invalid fixture prefixes",
+      "passed": true
+    }
+  ],
+  "local_modes": {
+    "default_sha256": "f3bdea19626030a92349fd80bc0f8be8fce6f1ca56377467eded2715f3acf985",
+    "minimal_sha256": "f3bdea19626030a92349fd80bc0f8be8fce6f1ca56377467eded2715f3acf985"
+  },
+  "independent_review": {
+    "sha256": "60d3d887cfbecd49e43fb6ebd209313d0db5b7c0d196c6b1dc77427098612fbb",
+    "checks": [
+      {
+        "name": "Frozen author receipt and proposal match announced bytes",
+        "passed": true
+      },
+      {
+        "name": "Exact current PR210 failing and proposed fixture hashes match",
+        "passed": true
+      },
+      {
+        "name": "Correction removes exactly the repeated DDL prefix and nothing else",
+        "passed": true
+      },
+      {
+        "name": "Runtime assertions worker branches gates and result writer remain byte-identical",
+        "passed": true
+      },
+      {
+        "name": "Contacts marker and actual contacts schema include remain",
+        "passed": true
+      },
+      {
+        "name": "Earlier fixture setup executes the canonical schema once",
+        "passed": true
+      },
+      {
+        "name": "Canonical base imports and adds the actual contacts schema",
+        "passed": true
+      },
+      {
+        "name": "Retained executed-merge tests/service_plans_native.php REST response matches author receipt",
+        "passed": true
+      },
+      {
+        "name": "Retained executed-merge tests/service_plans_native.php binds exact ref decoded source and Git blob",
+        "passed": true
+      },
+      {
+        "name": "Retained executed-merge site/database/schema/base.php REST response matches author receipt",
+        "passed": true
+      },
+      {
+        "name": "Retained executed-merge site/database/schema/base.php binds exact ref decoded source and Git blob",
+        "passed": true
+      },
+      {
+        "name": "executed-merge retains exact failing fixture/base pair",
+        "passed": true
+      },
+      {
+        "name": "Retained original-head tests/service_plans_native.php REST response matches author receipt",
+        "passed": true
+      },
+      {
+        "name": "Retained original-head tests/service_plans_native.php binds exact ref decoded source and Git blob",
+        "passed": true
+      },
+      {
+        "name": "Retained original-head site/database/schema/base.php REST response matches author receipt",
+        "passed": true
+      },
+      {
+        "name": "Retained original-head site/database/schema/base.php binds exact ref decoded source and Git blob",
+        "passed": true
+      },
+      {
+        "name": "original-head retains exact failing fixture/base pair",
+        "passed": true
+      },
+      {
+        "name": "Retained current-pr210 tests/service_plans_native.php REST response matches author receipt",
+        "passed": true
+      },
+      {
+        "name": "Retained current-pr210 tests/service_plans_native.php binds exact ref decoded source and Git blob",
+        "passed": true
+      },
+      {
+        "name": "Retained current-pr210 site/database/schema/base.php REST response matches author receipt",
+        "passed": true
+      },
+      {
+        "name": "Retained current-pr210 site/database/schema/base.php binds exact ref decoded source and Git blob",
+        "passed": true
+      },
+      {
+        "name": "current-pr210 retains exact failing fixture/base pair",
+        "passed": true
+      },
+      {
+        "name": "Retained main tests/service_plans_native.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "Retained main site/database/schema/base.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "main has no unintegrated duplicate contacts setup",
+        "passed": true
+      },
+      {
+        "name": "Retained release125 tests/service_plans_native.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "Retained release125 site/database/schema/base.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "release125 has no unintegrated duplicate contacts setup",
+        "passed": true
+      },
+      {
+        "name": "Retained catalog126 tests/service_plans_native.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "Retained catalog126 site/database/schema/base.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "catalog126 has no unintegrated duplicate contacts setup",
+        "passed": true
+      },
+      {
+        "name": "Retained current249 tests/service_plans_native.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "Retained current249 site/database/schema/base.php equals exact local Git source",
+        "passed": true
+      },
+      {
+        "name": "current249 has no unintegrated duplicate contacts setup",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178667920 exact retained envelope",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178667920 records exact duplicate-table failure",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178667920 does not contain downstream billing success",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178253752 exact retained envelope",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178253752 records exact duplicate-table failure",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178253752 does not contain downstream billing success",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178033380 exact retained envelope",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178033380 records exact duplicate-table failure",
+        "passed": true
+      },
+      {
+        "name": "Hosted artifact 12178033380 does not contain downstream billing success",
+        "passed": true
+      },
+      {
+        "name": "Actual hosted log locates failing PDO call at fixture line103",
+        "passed": true
+      },
+      {
+        "name": "Retained actual extracted default guard has nine passing outcomes",
+        "passed": true
+      },
+      {
+        "name": "Retained default lint passes without hidden errors",
+        "passed": true
+      },
+      {
+        "name": "Retained actual extracted minimal guard has nine passing outcomes",
+        "passed": true
+      },
+      {
+        "name": "Retained minimal lint passes without hidden errors",
+        "passed": true
+      }
+    ]
+  },
+  "root_verification": [
+    "PR203 introduces the exact same failing fixture/base schema as reviewed PR210",
+    "Applied file equals exact reviewed corrected bytes",
+    "PHP default and minimal syntax passed",
+    "No shipping file, schema or assertion changed"
+  ],
+  "remaining": [
+    "Fresh corrected service-plan and domain-renewal native matrix",
+    "Full corrected-source acceptance",
+    "Sequential contacts and downstream stack integration",
+    "Combined release acceptance"
+  ],
+  "published_release_changed": false,
+  "earliest_source_applicability": {
+    "receipt_sha256": "452ed1952834d41f4ff0e637b0b74536276a65f59fef470e2f5f05048e7a2fd8",
+    "checks": [
+      {
+        "name": "tests/service_plans_native.php at PR203 supplied head equals reviewed PR210 bytes",
+        "passed": true
+      },
+      {
+        "name": "site/database/schema/base.php at PR203 supplied head equals reviewed PR210 bytes",
+        "passed": true
+      },
+      {
+        "name": "site/database/schema/contacts_schema.php at PR203 supplied head equals reviewed PR210 bytes",
+        "passed": true
+      },
+      {
+        "name": "Exact reviewed one-line correction applies identically to PR203 fixture",
+        "passed": true
+      },
+      {
+        "name": "Original independent review remains byte-identical",
+        "passed": true
+      }
+    ],
+    "source": "cefb08d6c29f4faca104089bb5941b322418d2ba"
+  }
+}

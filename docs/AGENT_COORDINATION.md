@@ -1,3 +1,7 @@
+## 2026-10-19 — bounded contacts test correction
+
+Root owns `codex/contacts-native-fixture` from PR203/cefb08d6. VPS traced three real hosted failures and prepared the one-line fixture correction; Domains independently verified no setup dependency or assertion is lost. Devin retains all contacts/milestones feature work. The correction targets the earliest affected source, with fresh native/full acceptance required before integration. [Evidence](evidence/service-plan-contact-fixture.json).
+
 ## Post-publication coordination — 2026-10-18
 
 1.25.0 is [published and freshly verified](RELEASE_1.25.0_PUBLICATION.md) at immutable main source `b79c67110829126916e3a65e616191542448bccc`. Root completed normal merge, five original full runs, maintained compatibility, 330-image review, assembly and all-asset draft/public verification. Keep that source/tag/assets unchanged.
