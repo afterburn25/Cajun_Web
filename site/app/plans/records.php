@@ -33,7 +33,15 @@ function service_plans_current_client(int $id):array {
     if(!studio_ready() || support_current() || array_key_exists('support',$_GET) || (int)($_SESSION['client_id']??0)!==$id)throw new RuntimeException('Sign in as the selected client outside support access.');
     $client=service_plans_client_row($id);$now=time();
     if($now-(int)($_SESSION['client_last']??0)>1800 || $now-(int)($_SESSION['client_login']??0)>28800 || !hash_equals($client['auth_version'],(string)($_SESSION['client_auth']??'')))throw new RuntimeException('Your client session is no longer current. Sign in again.');
-    $_SESSION['client_last']=$now;return $client;
+    $_SESSION['client_last']=$now;
+    // Contacts share the parent client session; recheck the live contact row here so a revoked or non-billing contact is denied inside this lock.
+    if(!empty($_SESSION['contact_id'])){
+        require_once CWP_CODE_ROOT.'/app/clients/contacts.php';
+        $contact=contacts_ready()?one('SELECT enabled,auth_version,permissions FROM '.table('studio_contacts').' WHERE id=?',[(int)$_SESSION['contact_id']]):null;
+        if(!$contact||!(int)$contact['enabled']||!hash_equals($contact['auth_version'],(string)($_SESSION['contact_auth']??''))||!in_array('billing',contact_perms_decode($contact['permissions']),true))
+            throw new RuntimeException('Your contact permissions do not include billing.');
+    }
+    return $client;
 }
 function service_plans_row(string $id,bool $subscription=false,bool $lock=false):array {
     service_plans_id($id);$row=one('SELECT * FROM '.table($subscription?'service_subscriptions':'service_plans').' WHERE id=?'.($lock?' FOR UPDATE':''),[$id]);

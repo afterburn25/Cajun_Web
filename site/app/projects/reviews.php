@@ -16,7 +16,8 @@ function studio_decide(int $clientId,int $versionId,string $choice,string $feedb
   $latest=(int)query('SELECT MAX(version_no) FROM '.table('studio_versions').' WHERE job_id=? AND kind=?',[$v['job_id'],$v['kind']])->fetchColumn();
   if($v['decision']!=='pending'||(int)$v['version_no']!==$latest)throw new InvalidArgumentException('This review is already decided or has been superseded. Refresh the project.');
   query('UPDATE '.table('studio_versions').' SET decision=?,feedback=?,decided_by=?,decided_at=? WHERE id=?',[$choice,$feedback,$clientId,gmdate('Y-m-d H:i:s'),$versionId]);
-  query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$v['job_id'],'client',$clientId,$v['kind'].' version '.$v['version_no'].': '.$choice."\n".$feedback,gmdate('Y-m-d H:i:s')]);db()->commit();
+  $contact=function_exists('studio_contact')?studio_contact():null;
+  query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$v['job_id'],$contact!==null?'contact':'client',$contact!==null?(int)$contact['id']:$clientId,$v['kind'].' version '.$v['version_no'].': '.$choice."\n".$feedback,gmdate('Y-m-d H:i:s')]);db()->commit();
  }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
 }
 

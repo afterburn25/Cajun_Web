@@ -66,6 +66,34 @@ def run_http(env):
     check('Client identity cannot create administrator accounts',r.status_code==303 and 'login' in r.headers.get('Location',''))
     r=chosen_form(admin,url,'staff_save','id',1,{'role':'administrator','owner_password':OWNER})
     check('HTTP cannot demote last activated owner','at least one active owner' in r.text and db('SELECT role FROM ci_staff_profiles WHERE user_id=1')[0]['role']=='owner')
+    # Staff-only project notes never reach clients or staff without client grants.
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_note',{'body':'Staff-only internal marker note.'})
+    check('Owner saves an internal staff note','Project updated' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Staff-only internal marker note.'")[0]['author_type']=='internal')
+    r=admin.get(BASE+'/existing/admin/index.php?view=studio-job&id=1')
+    check('Admin project renders the note privately once','staff only' in r.text and r.text.count('Staff-only internal marker note.')==1 and 'Internal notes are never shown' in r.text)
+    alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    check('Client conversation never shows internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?job=1').text)
+    # Structured milestones carry a state and optional target date the client can follow.
+    job=BASE+'/existing/admin/index.php?view=studio-job&id=1'
+    r=chosen_form(admin,job,'studio_milestone','id',0,{'title':'Synthetic milestone content approved','state':'done','target_date':'2026-11-30'})
+    check('Owner adds a structured milestone','Project updated' in r.text and db("SELECT state,target_date FROM ci_studio_milestones WHERE title='Synthetic milestone content approved'")[0]=={'state':'done','target_date':'2026-11-30'})
+    r=chosen_form(admin,job,'studio_milestone','id',0,{'title':'Synthetic milestone launch window','state':'pending','target_date':''})
+    mid=db("SELECT id FROM ci_studio_milestones WHERE title='Synthetic milestone launch window'")[0]['id']
+    r=chosen_form(admin,job,'studio_milestone','id',mid,{'title':'Synthetic milestone launch window','state':'progress','target_date':'2027-01-15'})
+    check('Milestone state update persists','Project updated' in r.text and db("SELECT state,target_date FROM ci_studio_milestones WHERE id=?",[mid])[0]=={'state':'progress','target_date':'2027-01-15'})
+    r=admin.post(job,data={'csrf':token(admin.get(job)),'action':'studio_milestone','job_id':'1','id':'0','title':'Bad date','state':'done','target_date':'next Friday'})
+    check('Milestone target date must be ISO','YYYY-MM-DD' in r.text and not db("SELECT id FROM ci_studio_milestones WHERE title='Bad date'"))
+    r=chosen_form(admin,job,'studio_milestone','id',0,{'title':'Synthetic milestone awaiting client content','state':'blocked','target_date':''})
+    check('Blocked milestone persists',db("SELECT state FROM ci_studio_milestones WHERE title='Synthetic milestone awaiting client content'")[0]['state']=='blocked')
+    for bad in ['2026-02-31','2026-13-01','2026-00-00','2027-02-29']:
+        r=admin.post(job,data={'csrf':token(admin.get(job)),'action':'studio_milestone','job_id':'1','id':'0','title':'Bad date','state':'done','target_date':bad})
+        check('Milestone target date must be a real calendar date','calendar date' in r.text and not db("SELECT id FROM ci_studio_milestones WHERE title='Bad date'"))
+    r=chosen_form(admin,job,'studio_milestone','id',mid,{'target_date':'2028-02-29'})
+    check('Milestone target accepts a real leap day','Project updated' in r.text and db('SELECT target_date FROM ci_studio_milestones WHERE id=?',[mid])[0]['target_date']=='2028-02-29')
+    r=alice.get(BASE+'/existing/portal/index.php?job=1')
+    check('Client sees milestone states and target dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-'+str(mid) in r.text)
+    check('Client sees open blockers and the needed-actions section','Open blockers' in r.text and 'What we need from you' in r.text)
+    check('Milestones stay isolated to the owning client',bob.get(BASE+'/existing/portal/index.php?job=1').status_code==404)
     return {'url':url,'id':uid,'link':link,'code':code}
 
 def run_browser(env,browser):
@@ -109,6 +137,8 @@ def run_browser(env,browser):
     count=db('SELECT COUNT(*) AS n FROM ci_studio_clients')[0]['n']
     r=web.get(BASE+'/existing/admin/index.php?view=security');r=web.post(r.url,data={'csrf':token(r),'action':'studio_client','id':'0','name':'Forbidden','email':'forbidden@example.invalid'})
     check('POST authorization cannot be bypassed through own-account page','does not have access' in r.text and db('SELECT COUNT(*) AS n FROM ci_studio_clients')[0]['n']==count)
+    r=web.get(BASE+'/existing/admin/index.php?view=security');r=web.post(r.url,data={'csrf':token(r),'action':'studio_note','job_id':'1','body':'Unauthorized note attempt.'})
+    check('Website staff cannot write internal project notes','does not have access' in r.text and not db("SELECT id FROM ci_studio_messages WHERE body='Unauthorized note attempt.'"))
     # The second administrator activates without JavaScript and gets the correct landing page.
     plain=browser.new_context(java_script_enabled=False);c=plain.new_page();c.goto(client_link);c.locator('[data-setup-token]').fill(parse_qs(urlparse(client_link).fragment)['token'][0]);c.locator('[name=password]').fill(STAFF);c.locator('[name=confirm_password]').fill(STAFF);c.get_by_role('button',name='Set up account').click();expect(c.locator('[name=email]')).to_be_visible()
     c.locator('[name=email]').fill('client-staff@example.invalid');c.locator('[name=password]').fill(STAFF);c.locator('form button').click();c.wait_for_url('**/admin/index.php?view=studio-clients')

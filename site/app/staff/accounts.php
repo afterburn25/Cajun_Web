@@ -185,13 +185,15 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'payments_'))return 'payments.manage';
     if(in_array($action,['delivery_setup','delivery_publish'],true))return 'staff.manage';
     if($action==='activity_setup')return 'staff.manage';
-    if($action==='activity_mark')return 'clients.manage';
+    if(in_array($action,['activity_mark','activity_prefs'],true))return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
+    if($action==='studio_contacts_setup')return 'staff.manage';
+    if(in_array($action,['studio_contact','studio_contact_invite'],true))return 'clients.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
     if(str_starts_with($action,'staff_')||in_array($action,['email_save','email_test','installer_cleanup','storage_repair','clear_limits','media_cleanup','studio_migrate'],true))return 'staff.manage';
-    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';
+    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_note','studio_milestone','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_home(array $user): string {

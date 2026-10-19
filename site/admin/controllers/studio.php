@@ -17,6 +17,17 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_invite'){
         $id=gint($_POST,'id',1,2147483647);
         $_SESSION['studio_invite_link']=studio_new_invite($id,is_string($_POST['expected']??null)?$_POST['expected']:'');flash('New private invitation created. Share it directly with this client; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
+    }elseif($action==='studio_contacts_setup'){
+        contacts_migrate(posted('current_password',200));flash('Client contacts storage prepared.');redirect(admin_url('studio-upgrade'));
+    }elseif($action==='studio_contact'){
+        if(!contacts_ready())throw new RuntimeException('Prepare contacts storage under Version & database first.');
+        $id=gint($_POST,'id',0,2147483647);$clientId=gint($_POST,'client_id',1,2147483647);$perms=array_filter(array_map('strval',(array)($_POST['perms']??[])));
+        contact_save($id,$clientId,is_string($_POST['expected']??null)?$_POST['expected']:'',posted('name',120),strtolower(posted('email',190)),$perms,isset($_POST['enabled']));
+        flash('Contact saved. Its sessions and outstanding invitations were revoked.');redirect(admin_url('studio-clients'));
+    }elseif($action==='studio_contact_invite'){
+        if(!contacts_ready())throw new RuntimeException('Prepare contacts storage under Version & database first.');
+        $id=gint($_POST,'id',1,2147483647);$clientId=gint($_POST,'client_id',1,2147483647);
+        $_SESSION['studio_invite_link']=contact_invite($id,$clientId,is_string($_POST['expected']??null)?$_POST['expected']:'');flash('New private contact invitation created. Share it directly with this contact; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
     }elseif($action==='studio_job'){
         $id=gint($_POST,'id',0,2147483647);$client=gint($_POST,'client_id',1,2147483647);$title=posted('title',160);$stage=posted('stage',30);
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$client])||$title===''||!isset(studio_stages()[$stage]))throw new InvalidArgumentException('Choose a client, title and valid stage.');
@@ -24,9 +35,13 @@ function studio_admin_action(string $action,array $user): never {
         if($id){$old=studio_job($id);if((int)$old['client_id']!==$client)throw new InvalidArgumentException('Project ownership cannot be transferred through this form. Create a separate project.');query('UPDATE '.table('studio_jobs').' SET title=?,summary=?,stage=?,milestones=?,updated_at=? WHERE id=?',[$title,$summary,$stage,$milestones,$now,$id]);}
         else{query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[$client,$title,$summary,$stage,$milestones,$now,$now]);$id=(int)db()->lastInsertId();}
         log_event($action,'Project '.$id);flash('Project saved.');redirect(admin_url('studio-job',['id'=>$id]));
-    }elseif(in_array($action,['studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true)){
+    }elseif(in_array($action,['studio_message','studio_note','studio_milestone','studio_publish','studio_upload','studio_invoice','studio_paid'],true)){
         $id=gint($_POST,'job_id',1,2147483647);studio_job($id);
         if($action==='studio_message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'admin\',?,?,?)',[$id,$user['id'],$body,gmdate('Y-m-d H:i:s')]);}
+        if($action==='studio_note'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a staff note.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'internal\',?,?,?)',[$id,$user['id'],$body,gmdate('Y-m-d H:i:s')]);}
+        if($action==='studio_milestone'){if(!studio_milestones_ready())throw new RuntimeException('Run the workspace database update before tracking milestones.');$mid=gint($_POST,'id',0,2147483647);$title=posted('title',160);$state=posted('state',20);$target=posted('target_date',10);if($title===''||!isset(studio_milestone_states()[$state]))throw new InvalidArgumentException('Enter a milestone title and valid state.');if($target!==''&&(!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/D',$target,$dm)||!checkdate((int)$dm[2],(int)$dm[3],(int)$dm[1])))throw new InvalidArgumentException('Target dates use a valid YYYY-MM-DD calendar date.');$now=gmdate('Y-m-d H:i:s');
+            if($mid){if(!one('SELECT id FROM '.table('studio_milestones').' WHERE id=? AND job_id=?',[$mid,$id]))throw new InvalidArgumentException('Milestone not found on this project.');query('UPDATE '.table('studio_milestones').' SET title=?,state=?,target_date=?,updated_at=? WHERE id=?',[$title,$state,$target,$now,$mid]);}
+            else query('INSERT INTO '.table('studio_milestones').' (job_id,title,state,target_date,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,$title,$state,$target,$now,$now]);}
         if($action==='studio_publish')studio_publish($id,posted('kind',20),posted('title',160),posted('body',30000),posted('preview_url',500));
         if($action==='studio_upload')studio_upload($id,'admin');
         if($action==='studio_invoice'){$amount=gcents(posted('amount',20));$title=posted('title',160);if($amount===null||$amount<=0||$title==='')throw new InvalidArgumentException('Enter an invoice title and positive amount.');query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (?,?,?,?,?,?)',[$id,'INV-'.strtoupper(bin2hex(random_bytes(6))),$title,$amount,posted('instructions',6000),gmdate('Y-m-d H:i:s')]);}

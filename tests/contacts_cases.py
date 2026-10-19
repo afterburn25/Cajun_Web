@@ -1,0 +1,281 @@
+"""Scoped additional-contact HTTP/browser acceptance; synthetic identities only."""
+import json
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
+import requests
+from playwright.sync_api import expect
+from release_cases import db,chosen_form
+from staff_cases import OWNER
+
+CPASS='Synthetic contact passphrase 2026'
+
+def run_browser(env,browser):
+    globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','form_data','submit','inbox_server','provider_server']})
+    db('DELETE FROM ci_rate_limits')
+    root=BASE+'/existing/admin/index.php'
+    clients=root+'?view=studio-clients'
+    upgrade=root+'?view=studio-upgrade'
+    portal=BASE+'/existing/portal/index.php'
+    owner=requests.Session()
+    submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
+    capture=(QA/'mail-capture.txt').read_bytes()
+    connections,calls=inbox_server.connections,provider_server.calls
+    cid=db("SELECT id FROM ci_studio_clients WHERE email='alice@example.invalid'")[0]['id']
+
+    def find_form(action,field,value):
+        for f in soup(owner.get(clients)).select('form'):
+            a,i=f.select_one('[name=action]'),f.select_one('[name='+field+']')
+            if a and i and a['value']==action and i['value']==str(value):return form_data(f)
+        raise AssertionError('Missing contact form '+action+' '+field+'='+str(value))
+
+    def add_form(c):
+        for f in soup(owner.get(clients)).select('form'):
+            a,i,d=f.select_one('[name=action]'),f.select_one('[name=client_id]'),f.select_one('[name=id]')
+            if a and i and d and a['value']=='studio_contact' and i['value']==str(c) and d['value']=='0':return form_data(f)
+        raise AssertionError('Missing add-contact form for client '+str(c))
+
+    # Explicit owner preparation, never silent adoption.
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':'wrong'})
+    check('Contacts setup reauthenticates the owner','current password is not correct' in r.text)
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':OWNER})
+    check('Owner prepares contacts storage','contacts storage prepared' in r.text and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==[{'value':'1'}])
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':OWNER})
+    check('Contacts setup is idempotent','contacts storage prepared' in r.text)
+    db("UPDATE ci_settings SET value='bogus' WHERE name='contacts_schema_version'")
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':OWNER})
+    check('Unknown contacts marker refuses to adopt data','Unrecognized contacts schema version' in r.text)
+    db("UPDATE ci_settings SET value='1' WHERE name='contacts_schema_version'")
+
+    # Create a project-review-only contact on Alice's account.
+    data=add_form(cid);data.update(name='Review Only Contact',email='review-contact@example.invalid',**{'perms[]':'projects'})
+    r=owner.post(clients,data=data)
+    check('Scoped contact created','Contact saved' in r.text)
+    row=db("SELECT * FROM ci_studio_contacts WHERE email='review-contact@example.invalid'")[0]
+    ctid=row['id']
+    check('Contact starts credential-less with exact permissions',row['password_hash']=='' and row['permissions']=='["projects"]' and int(row['client_id'])==int(cid))
+    bad=add_form(cid);bad.update(name='Email Collision',email='alice@example.invalid',**{'perms[]':'projects'})
+    r=owner.post(clients,data=bad)
+    check('Contact email cannot collide with the primary account','belongs to the primary client account' in r.text and not db("SELECT id FROM ci_studio_contacts WHERE email='alice@example.invalid'"))
+    none=add_form(cid);none.update(name='No Permissions',email='none-contact@example.invalid')
+    none.pop('perms[]',None);none.pop('enabled',None)
+    r=owner.post(clients,data=none)
+    check('Contact requires at least one permission','at least one contact permission' in r.text and not db("SELECT id FROM ci_studio_contacts WHERE email='none-contact@example.invalid'"))
+
+    # Private one-time invitation; hash at rest only.
+    r=owner.post(clients,data=find_form('studio_contact_invite','id',ctid))
+    link=soup(r).select_one('.notice.info a[href*="cinvite="]')
+    check('Contact invitation displays a private one-time URL',link is not None and 'No email was sent' in r.text)
+    link=link['href']
+    raw=parse_qs(urlparse(link).query)['cinvite'][0]
+    stored=db("SELECT invite_hash FROM ci_studio_contacts WHERE id=?",[ctid])[0]['invite_hash']
+    check('Contact invitation stores only the token digest',len(raw)==64 and stored!=raw and raw not in json.dumps(db('SELECT * FROM ci_studio_contacts WHERE id=?',[ctid])))
+    visitor=requests.Session()
+    r=visitor.get(link);activation=form_data(soup(r).select_one('form'));activation.update(password=CPASS,confirm_password=CPASS)
+    r=visitor.post(link,data=dict(activation,csrf='invalid'))
+    check('Contact activation retains CSRF protection','session expired' in r.text.lower() and db("SELECT password_hash FROM ci_studio_contacts WHERE id=?",[ctid])[0]['password_hash']=='')
+    r=visitor.post(link,data=activation)
+    check('Contact invitation establishes credentials once','Your password is saved' in r.text and db("SELECT password_hash,invite_hash FROM ci_studio_contacts WHERE id=?",[ctid])[0]['invite_hash'] is None)
+    r=visitor.post(link,data=activation)
+    check('Used contact invitation cannot reset the password','already been used' in r.text)
+
+    # Scoped portal access: project review without billing or downloads.
+    contact=requests.Session()
+    submit(contact,portal,'login',{'email':'review-contact@example.invalid','password':CPASS})
+    r=contact.get(portal)
+    check('Contact portal identifies the additional contact','Additional contact' in r.text and 'Review Only Contact' in r.text)
+    r=contact.get(portal+'?job=1')
+    check('Project contact sees reviews files and conversation','Designs & proposals' in r.text and 'Private project files' in r.text and 'Project conversation' in r.text)
+    check('Project-only contact never sees invoice details','Invoices & payment instructions' not in r.text and 'HTTP manual invoice' not in r.text)
+    invoice=db('SELECT id FROM ci_studio_invoices WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]['id']
+    r=contact.get(portal+'?invoice='+str(invoice))
+    check('Project-only contact cannot open invoice ledger',r.status_code==403 and 'HTTP manual invoice' not in r.text)
+    file_id=db('SELECT id FROM ci_studio_files WHERE job_id=1 ORDER BY created_at DESC LIMIT 1')[0]['id']
+    r=contact.get(portal+'?file='+file_id)
+    check('Project-only contact cannot download project files',r.status_code==403)
+    r=contact.get(portal+'?downloads=1')
+    check('Project-only contact cannot open deliveries',r.status_code==403)
+    r=contact.get(portal+'?job=1');post={'csrf':token(r),'action':'license_domain_add','license_id':'1','domain':'forged.example.invalid'}
+    r=contact.post(portal+'?job=1',data=post)
+    check('Project-only contact cannot manage license domains','do not include billing' in r.text)
+    r=contact.post(portal+'?job=1',data={'csrf':token(r),'action':'message','body':'Contact-scoped review message.'})
+    check('Contact project message saved with contact attribution','Contact-scoped review message' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['author_type']=='contact')
+    r=contact.get(portal+'?job=1')
+    check('Contact attribution renders on the message','Review Only Contact' in r.text)
+    check('Contact conversation never shows internal staff notes','Staff-only internal marker note.' not in r.text)
+    check('Projects-permission contact sees milestone states and dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-' in r.text)
+    with open(Path(__file__).resolve().parents[1]/'site/images/icons/favicon.png','rb') as f:
+        r=submit(contact,portal+'?job=1','upload',files={'document':('contact-capture.png',f,'image/png')})
+    check('Projects-permission contact uploads with contact attribution','File saved' in r.text and db("SELECT author_type FROM ci_studio_files WHERE original_name='contact-capture.png'")[0]['author_type']=='contact' and db("SELECT * FROM ci_audit WHERE action='file.upload.contact'"))
+    r=contact.get(BASE+'/existing/api/bundle-download.php?id=1')
+    check('Project-only contact cannot download license bundles',r.status_code==403)
+
+    # A contact decision keeps the client as the deciding account but attributes the person.
+    jobAdmin=root+'?view=studio-job&id=1'
+    r=submit(owner,jobAdmin,'studio_publish',{'kind':'design','title':'Decision fixture','body':'Synthetic scope for decision attribution'})
+    check('Owner publishes a version for the decision check','Decision fixture' in r.text)
+    vid=db('SELECT id FROM ci_studio_versions WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]['id']
+    r=contact.get(portal+'?job=1')
+    check('Pending decision appears in the needed-actions list','What we need from you' in r.text and 'Review and approve or request changes on design version' in r.text)
+    check('Action link navigates through focus_review to reach its review','focus_review='+str(vid) in r.text)
+    dec=None
+    for f in soup(contact.get(portal+'?job=1')).select('form'):
+        a,v=f.select_one('[name=action]'),f.select_one('[name=version]')
+        if a and v and a['value']=='decision' and v['value']==str(vid):dec=form_data(f)
+    check('Project contact sees the pending decision form',dec is not None)
+    dec.update(choice='approved',confirm='1')
+    r=contact.post(portal+'?job=1',data=dec)
+    row=db('SELECT decision,decided_by FROM ci_studio_versions WHERE id=?',[vid])[0]
+    msg=db('SELECT author_type,author_id FROM ci_studio_messages WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]
+    check('Contact decision keeps client as decider and attributes the contact',row['decision']=='approved' and int(row['decided_by'])==int(cid) and msg['author_type']=='contact' and int(msg['author_id'])==int(ctid))
+    r=owner.get(jobAdmin)
+    check('Admin conversation attributes the decision to the contact','Review Only Contact (contact)' in r.text)
+
+    # Workspace activity routes to each contact by permission, with per-contact read state.
+    r=submit(owner,jobAdmin,'studio_message',{'body':'Routing marker admin message.'})
+    mid=db("SELECT id FROM ci_studio_messages WHERE body='Routing marker admin message.'")[0]['id']
+    cmsg=db("SELECT id FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['id']
+    r=submit(owner,jobAdmin,'studio_invoice',{'title':'Routing check invoice','amount':'25.00','instructions':'Synthetic routing instructions'})
+    iid=db("SELECT id FROM ci_studio_invoices WHERE title='Routing check invoice' ORDER BY id DESC LIMIT 1")[0]['id']
+    r=contact.get(portal+'?activity=1')
+    check('Project contact feed shows project events without billing items','data-event-key="message:'+str(mid)+'"' in r.text and 'data-event-key="review:'+str(vid)+'"' in r.text and 'data-event-key="invoice:'+str(iid)+'"' not in r.text)
+    check('Contact feed excludes contact-authored messages','data-event-key="message:'+str(cmsg)+'"' not in r.text)
+    r=submit(contact,portal+'?activity=1','activity_mark',{'keys':json.dumps(['message:'+str(mid)]),'state':'read'})
+    check('Contact read state is stored per contact identity',bool(db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,'message:'+str(mid)])))
+    check('Contact read state leaves the client account unread',not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND event_key=?',['client','message:'+str(mid)]))
+    r=chosen_form(owner,jobAdmin,'studio_milestone','id',0,{'title':'Contact milestone revision fixture','state':'pending','target_date':''})
+    mmid=db("SELECT id FROM ci_studio_milestones WHERE title='Contact milestone revision fixture'")[0]['id']
+    mkey=[n['data-event-key'] for n in soup(contact.get(portal+'?activity=1')).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
+    r=submit(contact,portal+'?activity=1','activity_mark',{'keys':json.dumps([mkey]),'state':'read'})
+    check('Contact acknowledges the exact milestone revision','read status was saved' in r.text and bool(db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,mkey])))
+    r=chosen_form(owner,jobAdmin,'studio_milestone','id',mmid,{'state':'blocked','target_date':'2027-03-01'})
+    feed=contact.get(portal+'?activity=1');mkey2=[n['data-event-key'] for n in soup(feed).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
+    check('Contact sees the later milestone update as a new unread event','data-event-key="'+mkey+'"' not in feed.text and mkey2!=mkey and 'data-event-key="'+mkey2+'"' in contact.get(portal+'?activity=1&filter=unread').text)
+    check('Older contact acknowledgement cannot consume the later update',not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,mkey2]))
+    r=contact.post(portal+'?activity=1',data={'csrf':token(contact.get(portal+'?activity=1')),'action':'activity_mark','keys':json.dumps([mkey]),'state':'read'})
+    check('Submitted stale milestone key is rejected for the contact','read status was saved' not in r.text and not db('SELECT * FROM ci_activity_reads WHERE event_key=?',[mkey2]))
+
+    # Billing-only contact: invoices without project review or files.
+    data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})
+    r=owner.post(clients,data=data)
+    btid=db("SELECT id FROM ci_studio_contacts WHERE email='billing-contact@example.invalid'")[0]['id']
+    r=owner.post(clients,data=find_form('studio_contact_invite','id',btid))
+    blink=soup(r).select_one('.notice.info a[href*="cinvite="]')['href']
+    visitor=requests.Session();r=visitor.get(blink);activation=form_data(soup(r).select_one('form'));activation.update(password=CPASS,confirm_password=CPASS)
+    visitor.post(blink,data=activation)
+    billing=requests.Session()
+    submit(billing,portal,'login',{'email':'billing-contact@example.invalid','password':CPASS})
+    r=billing.get(portal+'?job=1')
+    check('Billing contact sees invoices not project material','Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text and 'Designs & proposals' not in r.text and 'Private project files' not in r.text)
+    r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'message','body':'Billing contact must not post.'})
+    check('Billing-only contact cannot post project messages','do not include project access' in r.text and not db("SELECT id FROM ci_studio_messages WHERE body='Billing contact must not post.'"))
+    r=billing.get(portal+'?file='+file_id)
+    check('Billing-only contact cannot download files',r.status_code==403)
+    with open(Path(__file__).resolve().parents[1]/'site/images/icons/favicon.png','rb') as f:
+        r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'upload'},files={'document':('billing-forged.png',f,'image/png')})
+    check('Billing-only contact cannot upload project files','do not include project access' in r.text and not db("SELECT id FROM ci_studio_files WHERE original_name='billing-forged.png'"))
+    r=billing.get(portal+'?activity=1')
+    check('Billing-only contact feed shows billing events without project items',r.status_code==200 and 'data-event-key="invoice:'+str(iid)+'"' in r.text and 'data-event-key="message:'+str(mid)+'"' not in r.text and 'data-event-key="review:' not in r.text)
+    r=submit(billing,portal+'?activity=1','activity_mark',{'keys':json.dumps(['message:'+str(mid)]),'state':'read'})
+    check('Billing contact cannot mark out-of-scope events','unavailable' in r.text.lower())
+    check('Out-of-scope mark did not write read state',not db('SELECT * FROM ci_activity_reads WHERE actor_id=? AND event_key=?',[btid,'message:'+str(mid)]))
+    r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'decision','version':str(vid),'choice':'approved','confirm':'1'})
+    check('Billing-only contact cannot record a decision','do not include project access' in r.text)
+
+    # Primary client account remains unaffected by contact rows.
+    alice=requests.Session()
+    submit(alice,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    r=alice.get(portal+'?job=1')
+    check('Primary account keeps full project access','Designs & proposals' in r.text and 'Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text)
+    check('Outstanding invoice appears in the needed-actions list','Outstanding invoice' in r.text)
+    r=alice.get(portal+'?activity=1')
+    check('Primary account feed stays company-wide','data-event-key="invoice:'+str(iid)+'"' in r.text and 'data-event-key="message:'+str(mid)+'"' in r.text and 'data-event-key="review:'+str(vid)+'"' in r.text)
+    r=alice.post(portal+'?job=1',data={'csrf':token(alice.get(portal+'?job=1')),'action':'message','body':'Primary client attribution marker.'})
+    amid=db("SELECT id FROM ci_studio_messages WHERE body='Primary client attribution marker.'")[0]['id']
+    feed=soup(contact.get(portal+'?activity=1'))
+    items={n['data-event-key']:n.select_one('.eyebrow').get_text() for n in feed.select('[data-event-key]')}
+    check('Contact feed keeps real sender attribution',items.get('message:'+str(amid))=='Client message' and items.get('message:'+str(mid))=='Studio message')
+    primary_feed=soup(alice.get(portal+'?activity=1'))
+    pitems={n['data-event-key']:n.select_one('.eyebrow').get_text() for n in primary_feed.select('[data-event-key]')}
+    check('Primary feed attributes the contact-authored message',pitems.get('message:'+str(cmsg))=='Contact message')
+
+    # A pending review pushed outside the 100-version window must still reach its decision form.
+    r=submit(owner,jobAdmin,'studio_publish',{'kind':'proposal','title':'Boundary proposal','body':'Pending proposal outside the display window'})
+    old_vid=db("SELECT id FROM ci_studio_versions WHERE job_id=1 AND kind='proposal' ORDER BY id DESC LIMIT 1")[0]['id']
+    for n in range(101):
+        db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,feedback,decision,created_at) VALUES (1,'design',?,?,?,'','approved',NOW())",[900+n,'Window filler '+str(n),'filler'])
+    r=contact.get(portal+'?job=1')
+    link=[a.get('href') for a in soup(r).select('a[href]') if 'focus_review='+str(old_vid) in (a.get('href') or '')]
+    check('Pending review outside the 100-row window is still offered',len(link)==1)
+    r=contact.get(link[0])
+    article=soup(r).select_one('#review-'+str(old_vid))
+    check('Action link reaches the exact pending decision form',article is not None and article.select_one('form [name=action][value=decision]') is not None)
+    db("INSERT INTO ci_studio_jobs (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,NOW(),NOW())",[cid,'Other job','s','m'])
+    other_job=db('SELECT MAX(id) m FROM ci_studio_jobs')[0]['m']
+    db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,feedback,decision,created_at) VALUES (?,?,?,?,?,'','pending',NOW())",[other_job,'proposal',1,'Other job review','other'])
+    other_vid=db('SELECT MAX(id) m FROM ci_studio_versions')[0]['m']
+    r=contact.get(portal+'?job=1&focus_review='+str(other_vid))
+    check('focus_review cannot pull another job review into this project',soup(r).select_one('#review-'+str(other_vid)) is None)
+    r=submit(owner,jobAdmin,'studio_publish',{'kind':'proposal','title':'Boundary proposal v2','body':'Newer pending proposal'})
+    new_vid=db("SELECT id FROM ci_studio_versions WHERE job_id=1 AND kind='proposal' ORDER BY id DESC LIMIT 1")[0]['id']
+    r=contact.get(portal+'?job=1&focus_review='+str(old_vid))
+    article=soup(r).select_one('#review-'+str(old_vid))
+    check('Superseded pending review renders without a decision form',article is not None and article.select_one('form [name=action][value=decision]') is None)
+    r=contact.get(portal+'?job=1')
+    check('Action list now targets only the latest pending review','focus_review='+str(new_vid)+'#' in r.text and 'focus_review='+str(old_vid)+'#' not in r.text)
+    r=contact.get(portal+'?job=1')
+    check('Decided version leaves the needed-actions list','Review and approve or request changes on design version' not in r.text)
+
+    # Disabling or editing a contact revokes its session and outstanding invitation.
+    edit=find_form('studio_contact','id',ctid);edit.pop('enabled',None)
+    r=owner.post(clients,data=edit)
+    check('Disabled contact loses its session immediately',soup(contact.get(portal)).select_one('[name=action][value=login]') is not None)
+    r=contact.post(portal,data={'csrf':token(contact.get(portal)),'action':'login','email':'review-contact@example.invalid','password':CPASS})
+    check('Disabled contact cannot sign back in','Email or password not recognized' in r.text)
+    r=contact.post(portal+'?job=1',data={'csrf':token(contact.get(portal)),'action':'message','body':'Revoked contact must not write.'})
+    check('Revoked contact session cannot write as the client',not db("SELECT id FROM ci_studio_messages WHERE body='Revoked contact must not write.'"))
+    reenable=find_form('studio_contact','id',ctid);reenable['enabled']='1'
+    r=owner.post(clients,data=reenable)
+    check('Contact re-enable uses the refreshed version','Contact saved' in r.text)
+    submit(contact,portal,'login',{'email':'review-contact@example.invalid','password':CPASS})
+    check('Reenabled contact signs in again',soup(contact.get(portal)).select_one('[name=action][value=logout]') is not None)
+    r=owner.post(clients,data=find_form('studio_contact_invite','id',ctid))
+    check('New contact invitation revokes the contact session',soup(contact.get(portal)).select_one('[name=action][value=login]') is not None)
+
+    # Fresh installations ship the storage prepared and empty.
+    check('Fresh install ships contacts schema ready',db("SELECT value FROM fresh_settings WHERE name='contacts_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_studio_contacts'))
+
+    # Contact login through a real browser, scoped page rendered.
+    context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
+    page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+    page.goto(portal);page.locator('[name=email]').fill('billing-contact@example.invalid');page.locator('[name=password]').fill(CPASS);page.locator('form button').click()
+    page.wait_for_url('**/portal/index.php');page.goto(portal+'?job=1')
+    page.screenshot(path=str(QA/'Contact-Billing-Desktop.png'),full_page=True)
+    check('Browser contact session renders scoped workspace','Invoices & payment instructions' in page.evaluate('document.body.innerText') and 'Designs & proposals' not in page.evaluate('document.body.innerText'))
+    check('Contact browser session has no page errors',not errors)
+    context.close()
+
+    # Self-service account password change for client and contact.
+    acct=portal+'?account=1'
+    r=alice.get(acct)
+    check('Account page renders identity','Your account.' in r.text and 'alice@example.invalid' in r.text)
+    prev=db('SELECT auth_version FROM ci_studio_clients WHERE id=?',[cid])[0]['auth_version']
+    r=alice.post(acct,data={'csrf':token(alice.get(acct)),'action':'account_password','current_password':'not-the-real-pass','password':'New client passphrase 2026!!','confirm_password':'New client passphrase 2026!!'})
+    check('Wrong current password is rejected','current password is not correct' in r.text)
+    r=alice.post(acct,data={'csrf':token(alice.get(acct)),'action':'account_password','current_password':'Synthetic client passphrase 2026','password':'New client passphrase 2026!!','confirm_password':'New client passphrase 2026!!'})
+    check('Client changes own password','password is updated' in r.text and db('SELECT auth_version FROM ci_studio_clients WHERE id=?',[cid])[0]['auth_version']!=prev)
+    check('Session survives own password change',alice.get(portal+'?job=1').status_code==200)
+    stale=requests.Session();r=stale.post(portal,data={'csrf':token(stale.get(portal)),'action':'login','email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    check('Old client password no longer signs in','not recognized' in r.text)
+    contactHash=db("SELECT password_hash FROM ci_studio_contacts WHERE id=?",[btid])[0]['password_hash']
+    check('Client credential rotation revokes the contact session',soup(billing.get(acct)).select_one('[name=action][value=login]') is not None)
+    r=billing.post(acct,data={'csrf':token(billing.get(acct)),'action':'account_password','current_password':CPASS,'password':'New billing passphrase 2026!!','confirm_password':'New billing passphrase 2026!!'})
+    check('Revoked contact session cannot change its password',db("SELECT password_hash FROM ci_studio_contacts WHERE id=?",[btid])[0]['password_hash']==contactHash)
+    submit(billing,portal,'login',{'email':'billing-contact@example.invalid','password':CPASS})
+    r=billing.post(acct,data={'csrf':token(billing.get(acct)),'action':'account_password','current_password':CPASS,'password':'New billing passphrase 2026!!','confirm_password':'New billing passphrase 2026!!'})
+    check('Contact changes own password after signing back in','password is updated' in r.text)
+    fresh=requests.Session();r=fresh.post(portal,data={'csrf':token(fresh.get(portal)),'action':'login','email':'billing-contact@example.invalid','password':'New billing passphrase 2026!!'})
+    check('New contact password signs in','billing-contact@example.invalid' in fresh.get(acct).text)
+
+    for path in ['app/clients/contacts.php','database/schema/contacts_schema.php','database/migrations/contacts_migrate.php']:
+        check('Direct HTTP access denies contacts internal '+path,requests.get(BASE+'/existing/'+path).status_code==404)
+    check('Contact fixtures send no mail or provider requests',inbox_server.connections==connections and provider_server.calls==calls and (QA/'mail-capture.txt').read_bytes()==capture)

@@ -20,6 +20,13 @@ if (!$client || support_current()) {
     exit;
 }
 
+if (!contact_can('downloads')) {
+    http_response_code(403);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Download permission required']);
+    exit;
+}
+
 if (!license_ready()) {
     http_response_code(404);
     exit;

@@ -49,6 +49,16 @@ On `devin/non20i-mail-reply-all` (stacked on `devin/non20i-mail-sent-sync`), the
 
 On `devin/non20i-mail-sent-sync` (stacked on `devin/non20i-mail-attachments`), an owner can name each account's server Sent folder and staff can then save an exact copy of a server-accepted submission into it. A new bounded `AppendSession`/`SentCopy` pair in the canonical mail-receiving foundation performs a fixed IMAP `APPEND "folder" (\Seen) {length}` sequence — capability negotiation, STARTTLS or implicit TLS 1.2/1.3 with pinned verification, AUTHENTICATE PLAIN, one literal continuation, bounded literal write of the already-accepted stored MIME bytes — over the same verified endpoint/TLS policy as receiving. `mail_accounts` is untouched; additive `mail_sent_folders`, `mail_copy_attempts` and `mail_copy_results` tables record owner-set folders and deduplicated finite copy outcomes (`appended` or bounded failure codes including `folder` refusal). The explicit `mail_submissions_copy_sent` POST rechecks current author, send grant, account revision, accepted status, folder setting and exact MIME hash at every boundary; replayed copies refuse without appending twice, and acceptance never appends silently. Coverage: pure append protocol suite, native storage/authorization/failure/retry assertions, HTTP TLS-fixture byte-exact append and refusal cases, Apache denial and CI lane updates.
 
+## Unreleased - Devin non-20i stacked increments (PRs #209-#212)
+
+- #209 `devin/non20i-staff-notes`: staff-only internal project notes via `studio_messages.author_type='internal'` (no schema change); admin-only rendering, excluded from client/contact feeds and activity projections.
+- #210 `devin/non20i-milestones`: additive `studio_milestones` (title, state, optional YYYY-MM-DD target date) via `studio_schema`/`studio_migrate`; admin create/update with job-ownership validation, client/contact visibility, milestone activity events.
+- #211 `devin/non20i-activity-prefs`: additive `activity_prefs`; per-actor hide/show of permitted update kinds filtered centrally in `activity_projection` (feeds, unread counts, `?open=` destinations, mark-read); CSRF+authorization+audit; upgrade hint re-provisions via `activity_migrate`.
+- #212 `devin/non20i-client-actions`: read-only derived "What we need from you" (pending latest-version decisions; outstanding issued invoices when billing access applies) and "Open blockers" (blocked milestones) on the portal project dashboard; no schema.
+
+- #213 `devin/non20i-portal-account`: portal Account page; client/contact self-service password change with current-password verification, auth_version session rotation, rate limiting, audit and support-session denial; no schema.
+
+## 2026-10-16 — publish the concrete release freeze and branch
 ## Unreleased — record observed cloud null response
 ## Receive-side mail attachments with authorized downloads — 2026-10-16
 
@@ -633,6 +643,29 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — per-actor update preferences (devin/non20i-activity-prefs)
+
+Clients, company contacts and staff can each hide chosen update types (messages, files, reviews, milestones, invoices, payments, releases, decisions) from their own activity feed and unread count through a preferences card on the activity page. Storage is the additive activity_prefs table created by re-running workspace-activity setup; hidden updates cannot be opened or marked but stay in the project record, and preferences never affect other accounts.
+
+## Unreleased — structured project milestones (devin/non20i-milestones)
+
+Projects gain a tracked milestone list alongside the free-form narrative: staff add and update items with a state (pending, in progress, done, blocked) and an optional ISO target date from the project screen. Clients and projects-permission contacts see the states and dates in the workspace; milestone updates surface in workspace activity for both audiences with exact links. Storage is a new additive studio_milestones table created by the existing workspace update on older installs and by fresh setup. Requires clients.manage for writes; milestones cannot be deleted.
+
+## Unreleased — staff-only project notes (devin/non20i-staff-notes)
+
+Authorized staff (clients.manage) can record internal notes on a project that never reach clients or company contacts. Notes reuse the immutable studio_messages store with author_type=internal attributed to the acting staff member — no schema change. The admin project view lists them under a separate Staff-only card with author names; the portal conversation allow-lists visible author types so internal rows cannot render for clients, contacts or support sessions, and they never create activity events for any audience.
+
+## Unreleased — per-contact workspace activity routing (devin/non20i-contact-activity)
+
+Company contacts now get their own workspace activity feed filtered to assigned permissions: project events (messages, files, published reviews) require projects, invoice/payment events require billing, and website release events require downloads. Read state is recorded per contact identity (actor_type=contact) rather than shared with the client account, contact-authored events never notify contacts, and the ?activity=1 route plus mark-read action accept any routed permission. Primary client feeds remain company-wide and the primary account is unchanged when contacts are unused. No email, provider call, schema change or new notification channel is added.
+
+## Unreleased — contact-attributed version decisions (devin/non20i-contact-decisions)
+
+When an additional company contact records a version decision, the decision message in the project conversation is attributed to that contact (author_type=contact) while studio_versions.decided_by stays the client account as the company-level artifact. The same contact permission gate (projects) protects the decision action against forged POSTs; no schema change is required because attribution rides the existing contact-authored message model.
+
+## Unreleased — additional company contacts with scoped permissions (devin/non20i-client-contacts)
+
+Client accounts can carry additional company contacts: separate sign-in identities with independent project-review, billing and download permissions (P-05). Storage is a new additive `contacts_schema_version=1` (`studio_contacts`), prepared explicitly by the owner under Version & database with password reauthentication; unknown schema markers and non-empty unrecognized tables refuse adoption. Staff create/edit/disable contacts and issue 24-hour private one-time invitations shown once; raw tokens are never stored. Contact sessions ride the client session model (same idle/absolute limits) but revalidate contact enabled state, auth version and owning client on every request; disabling, editing or re-inviting a contact revokes it immediately. Portal routes and writes enforce scope server-side — `projects` gates job pages, messages, decisions, uploads and activity; `billing` gates invoices, receipts, license actions and hosting services; `downloads` gates `?file=`, releases and deliveries. Messages/uploads attribute to the contact identity and admin/client views render the contact name. Primary client accounts are unchanged when the feature is unused. No email is sent and no portal access is granted beyond the assigned permissions.
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.

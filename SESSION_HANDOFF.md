@@ -11,6 +11,9 @@ This supersedes old non-20i-only and Codex-only integration/release restrictions
 Integration branch `devin/full-site-integration` (from main `1067757d`). Merged in dependency order:
 
 - **Mail chain** (`devin/non20i-mail-html-compose` tip `cf837f65`, PRs #161/#189–#195): complete webmail reply/forward on protected copied drafts, receive/send attachments, Sent-folder synchronization, reply-all, folder-scoped browsing, explicit read/unread flag marking, and optional sanitized HTML alternatives on drafts/submissions. All coordinator review findings addressed including PERMANENTFLAGS `\Seen` correctness and marker-1 draft compatibility.
+- **Contacts/account chain** (`devin/non20i-portal-account` tip `0a919545`, PRs #203/#204/#205/#209–#213): scoped company contacts, version-decision attribution, per-contact activity routing, staff-only project notes, structured milestones, per-actor preferences, client action items, and the portal account page. All integration-review findings propagated through the chain.
+
+Branch-specific session history remains on each source branch and in `docs/SESSION_LOG.md`.
 
 ## Starting source and actions taken
 

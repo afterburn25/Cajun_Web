@@ -2347,8 +2347,548 @@ Continue roadmap and keep the published assignment directly usable. Start main00
 - 2026-10-17 mail-folders: fixed `mail_inbox_admin_action` folder default and the notice-migration version guard. `posted('folder',70)` returns `''` (not null) for the folderless POST used by the upgraded-1.16 Apache baseline, so `??'INBOX'` never fired and `mail_inbox_folder('')` threw before the endpoint-policy check — switched to `?:` (1bbc91d5). The v1->v2 notice rewrite also silently adopted any populated storage with an unrecognized schema-version marker; it now requires empty/'1'/'2' and refuses otherwise, matching the flags-side fix. Installer inventory regenerated; cascaded through flags (579b3d64) and html-compose (c6bfff6e).
 
 - 2026-10-17 mail-sent-sync: corrected the 'Server folder refusal records a bounded failure without copy claims' expectation (9051a74d). The APPEND literal is always transmitted before the server's NO, so the fixture's `appended` bytes are the refused submission's MIME — comparing to the earlier accepted MIME could never hold. Now asserts the fixture received exactly the refused submission's bytes. Cascaded through reply-all (ff0e120e), send-attachments (a6a74d82), folders (2d19a992), flags (3fe1a281) and html-compose (4fa5d1ae); inventories verified on every branch.
+## 2026-10-16 - scoped additional company contacts (P-05)
 
-## 2026-10-15 — Preserve current main and repair replacement rollback during20i integration
+Request: continue Devin non-20i roadmap work; selected P-05's named gap - company contacts with separate project-review, billing and download permissions. Branch devin/non20i-client-contacts from main.
+
+Changed: new additive contacts schema v1 (studio_contacts: client_id FK scope, unique email, password_hash, auth_version, JSON permissions, enabled, hashed 24-hour invite) + versioned contacts_migrate (owner reauthentication, validate-or-create, refuse unknown markers and non-empty unrecognized tables). contacts.php app layer: studio_contact(), contact_can(), contact_save/contact_invite/contact_activate mirroring client identity patterns. identity.php: contact fallback in studio_login (same rate limits and dummy-hash path) and per-request contact revalidation in studio_client(). Portal router/actions gate activity, downloads, releases, files, invoices, receipts, services, license actions, message/decision/upload/activity_mark by permission; message/upload rows attribute author_type='contact'. workspace.php renders scoped sections per permission with contact indicator; auth.php adds cinvite activation. Admin: contacts_setup + studio_contact + contact_invite actions, permission map, clients view contact forms, upgrade view setup card; admin job view joins contact names. Activity feed includes contact-authored messages/files for admin. deploy.php seeds contacts_schema_version=1. tests/contacts_cases.py + browser_acceptance.py wiring: owner setup/idempotency/unknown-marker refusal, create/collision/permission-required, invite hash-at-rest/one-time, scoped views, denied routes/writes, disable/invite session revocation, fresh-install readiness, guard 404s, no mail/provider calls, Chromium scoped render.
+
+Tests so far: php -l on all 17 touched PHP files pass; python compile of both test files pass; installer inventory refreshed and canonical checks pass (2188 dependencies, 2201+15 runtime files byte-identical). Packaged HTTP/browser/native acceptance pending on CI; no live deployment, mail, payment or provider operation.
+
+Known limits: decisions still record the client account as decided_by (company-level artifact); per-contact notification routing and stage history remain pending elsewhere.
+
+Next: commit, open PR, monitor CI.
+
+## 2026-10-17 - P-05 contacts verified green; two CI repairs
+
+Request: continue without stopping; verify PR #203 acceptance on branch devin/non20i-client-contacts (head c025e501).
+
+Changed (test/dispatch only, no runtime contract change): contacts_setup/contact_invite renamed to studio_contacts_setup/studio_contact_invite in permission map, upgrade+clients forms, controller branches and contacts_cases.py - the admin dispatcher only routes studio_* actions to studio_admin_action so the original names fell through to Unknown administration action (d6d77b9d). Installer inventory refreshed after the rename (8f27e213). Re-enable flow in contacts_cases.py now fetches a freshly rendered form instead of reusing the pre-disable expected auth_version, which the rotation guard correctly rejected (c025e501).
+
+Tests and results: PR #203 48/48 checks pass including the native-and-browser lane - owner setup reauthentication/idempotency/unknown-marker refusal, contact create/collision/permission-required, one-time hashed invite with subfolder URL, activation CSRF/one-use, scoped project/billing/download views and denied routes/writes (403 + inline errors), disable/invite session revocation, support-session isolation, fresh-install marker, guard 404s, no mail/provider traffic, Chromium scoped render.
+
+Known limits: PR open at c025e501, not merged; Codex coordinates integration. Decisions still record the client account as decided_by.
+
+Next: integrate via Codex sequencing; continue next non-20i increment.
+
+## 2026-10-17 - P-05 contact-attributed version decisions
+
+Request: continue non-20i roadmap after PR #203 verified green (48/48); selected the remaining per-contact decision attribution gap. Stacked branch devin/non20i-contact-decisions on devin/non20i-client-contacts (c025e501+) because the feature depends on the contacts model.
+
+Changed: studio_decide now attributes the auto-inserted decision message to the acting contact (author_type=contact, author_id=contact id) when a contact session decides; decided_by stays the client account (company artifact). No schema change - studio_versions is validated with exact columns by studio_migrate, so adding a column would collide with the previews/stage-history marker stack; the message row is already the durable attribution record rendered with the contact name in admin and portal conversations. tests/contacts_cases.py gains: owner publishes a decision fixture version, project-permission contact approves it, decided_by stays the client while the message attributes the contact id, admin conversation renders the contact name, and a billing-only forged decision POST is refused.
+
+Tests so far: php -l reviews.php clean; contacts_cases.py compiles; no shipping-file signature changes needed beyond reviews.php (inventory refresh pending in commit). Packaged acceptance pending on the stacked PR.
+
+Known limits: decided_by remains client-level by design; per-contact notification routing still pending.
+
+Next: commit, refresh inventory if needed, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-05 contact notification routing (stacked)
+
+Request: continue non-20i roadmap; close the remaining named P-05 gap "notification routing" for company contacts. Starting commit c70dc0e0 on devin/non20i-contact-activity, stacked on devin/non20i-contact-decisions.
+
+Changed: activity_actor now resolves a signed-in company contact (studio_contact revalidation) and returns a contact actor carrying the owning client id plus the contact's current permissions. activity_projection scopes the contact feed by permission — messages/files/reviews only with projects, invoices/payments only with billing, releases only with downloads — and contact events exclude contact authors entirely (no self-notification or cross-contact noise). activity_reads keeps per-contact read state via actor_type='contact' with no schema change (VARCHAR(10)). The ?activity=1 portal route, activity_mark action and workspace activity link now accept any routed permission instead of requiring projects. Empty-permission projections return an inert empty result instead of malformed SQL. tests/contacts_cases.py gains: project contact sees message/review events but not the seeded invoice, contact-authored messages are absent, marking read writes actor_type='contact' without touching the client account's read state, billing-only contact sees only the invoice event and cannot mark an out-of-scope event, and the primary client feed remains company-wide.
+
+Tests so far: php -l on the four touched PHP files; contacts_cases.py compiles. Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: stage history remains a separate P-05/P-07 increment; contact feeds exclude other contacts' authored events by design.
+
+Next: commit, refresh installer inventory, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-05 staff-only project notes (stacked)
+
+Request: continue non-20i roadmap; implement "staff-note privacy" named in the P-05 acceptance ("distinguish staff-only notes from published client updates"). New branch devin/non20i-staff-notes stacked on devin/non20i-contact-activity.
+
+Changed: studio_messages gains author_type='internal' semantics — no schema change because studio_migrate validates exact columns. New admin action studio_note (mapped to clients.manage) appends an internal note attributed to the acting staff account. The admin job view gets a Staff-only notes card with per-author staff names; the client portal conversation (and its contacts-aware variant) now allow-lists author_type to admin/client/contact so internal rows can never render, including through support-session portal views. Activity projections needed no change — client/contact feeds only surface admin/client-authored message events and admin feeds only client/contact-authored. tests/staff_cases.py gains: unauthorized staff POST refusal, owner note save, single private render in admin view, and client portal/activity absence; tests/contacts_cases.py asserts the contact conversation never shows the internal note.
+
+Tests so far: php -l on the four touched PHP files; staff_cases.py and contacts_cases.py compile; canonical installer checks pass (40 packages, 2,188 dependency, 2,201 runtime, 6 PHPMailer, 15 submission files; no drift). Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: notes are append-only immutable rows like messages; they never create activity events for any audience.
+
+Next: commit, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-05 structured project milestones (stacked)
+
+Request: continue non-20i roadmap; P-05 requires a milestone list with states, target dates and an admin capability to "change milestone state" — previously only a free-form narrative field existed. New branch devin/non20i-milestones stacked on devin/non20i-staff-notes.
+
+Changed: new additive studio_milestones table inside studio_schema() — created on fresh installs via the merged base schema and on older installs by re-running the existing studio_migrate (no marker change; the table is exact-column validated when present). studio_milestones_ready() gates the feature on workspace readiness plus table presence so upgraded installs that have not re-run the update degrade cleanly, and the upgrade card says "current; run again to add milestone tracking". New admin action studio_milestone (clients.manage) adds/updates a milestone with a state (pending/progress/done/blocked) and optional YYYY-MM-DD target date; admin project view renders per-milestone save forms plus an add form. The portal shows the list with state chips and target dates inside the existing projects-permission gate, so clients and permitted contacts see it and other audiences cannot. Activity projects milestone updates (kind 'milestone') under the projects scope for every audience, keyed milestone:<id>, anchored to #milestone-<id> on both job views; the feed label map gains the new kind. tests/staff_cases.py covers add/state update/invalid date/client visibility/activity entry/cross-client isolation; tests/contacts_cases.py covers the projects-permission contact view. Also corrects the staff-note flash assertion to 'Project updated' (the shared action group's actual flash text).
+
+Tests so far: php -l on all seven touched PHP files; staff_cases.py and contacts_cases.py compile; canonical installer checks pass. Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: milestones have no deletion path; the free-form narrative field is retained unchanged.
+
+Next: commit, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-07 per-actor update preferences (stacked)
+
+Request: continue non-20i roadmap; P-07 names "preferences" among pending notification work. New branch devin/non20i-activity-prefs stacked on devin/non20i-milestones.
+
+Changed: new additive activity_prefs table (actor_type, actor_id, kind) inside activity_schema(); the existing idempotent activity_setup re-run creates it on installs that already enabled activity — activity_migrate now validates per-table unique keys and the activity page offers an "Enable update preferences" card to staff.manage when the table is missing. activity_prefs_ready()/activity_kinds()/activity_disabled()/activity_prefs_save() model the feature; activity_projection skips hidden kinds per actor so feeds, unread counts, exact-open and mark endpoints all respect preferences; hidden sources stay in the project record. New activity_prefs action wired through the admin activity_* dispatcher (clients.manage) and the portal's permission-gated activity route; preferences render per audience and are keyed per actor identity — a contact's choices never touch the client account. tests/activity_cases.py covers additive upgrade storage, hiding a kind (feed, open, mark denied), per-account isolation, record preservation and re-enable.
+
+Tests so far: php -l on six touched PHP files; activity_cases.py compiles; canonical installer checks pass. Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: preferences are portal/bell visibility only — no outbound email delivery exists yet; the upgrade path requires an owner to re-run activity setup once.
+
+Next: commit, open stacked PR, monitor CI.
+
+## 2026-10-17 — Devin lane: stacked increments #209-#212
+
+- Request: continue non-20i roadmap (issue #157). Working chain stacked on `devin/non20i-contact-activity` tip: staff-notes → milestones → activity-prefs → client-actions.
+- #212 `devin/non20i-client-actions`: portal project dashboard gains derived "What we need from you" (latest pending-version decisions; issued invoices when billing access applies) and "Open blockers" (blocked milestones). Read-only, no schema. Files: `site/portal/views/workspace.php`, `tests/staff_cases.py`, `tests/contacts_cases.py`, `site/install/inventory.generated.php` (refreshed), docs.
+- Verified: `php -l` on workspace.php; `py_compile` both test modules; canonical inventory check PASS (no drift).
+- Known limits: read-only derivation only; admin "request feedback" remains covered by `studio_message`. CI lanes for #209-#211 queued behind release-capacity runners; #212's will queue likewise. Long lanes run after Codex retargets each parent to main.
+- Next: open PR #212, keep monitoring CI waves, fix failures on exact new commits.
+
+## 2026-10-17 — Devin lane: #213 portal account self-service
+
+- #213 `devin/non20i-portal-account`: new `site/portal/views/account.php` + `account_password` action; clients and contacts change their own password with current-password proof; `auth_version` bump signs out other sessions while the current session is refreshed (`session_regenerate_id`); rate-limited (`client-password` bucket), audited (`studio_client_audit`), CSRF-protected; support sessions remain blocked by the existing action gate. No schema change. Files: `identity.php`, `actions.php`, `router.php`, `views/account.php`, `views/workspace.php` (Account button), `tests/contacts_cases.py`, inventory refresh, docs.
+- Verified: `php -l` all touched PHP; `py_compile` contacts_cases; canonical inventory PASS.
+- Next: open stacked PR #213 on `devin/non20i-client-actions`; monitor remaining CI.
+
+## 2026-10-17 — CI wave complete; #213 verified
+
+- All stacked lanes resolved green: #209 `3e6db257` (43/43), #210 `868e967c` (43/43), #211 `3b8b5ffd` (43/43), #212 `bfb96f93` (41/41), #213 `b8ff2791` (41/41). Docs-continuity cp1252-byte failure fixed on #212.
+- Chain base is current `origin/main` `d7153b07` — zero drift.
+- Remaining named roadmap items are Codex-owned (provider/hosting monitoring, VPS) or already green on preserved PRs (#158 tickets, #178 proposals, #188 outbox) awaiting Codex integration; "assigned contact" on the dashboard would need a new `studio_jobs` column and was skipped as poor ROI on a 10-deep stacked chain.
+- Next: Codex sequential retarget/integration; Devin fixes failures on exact new commits.
+
+## Review corrections, 2026-10-17 (round 2)
+
+Owner review surfaced four acceptance findings; all corrected and pushed:
+
+- #203 `52f524bc` (48/48 incl. native-and-browser): a revoked/disabled contact no longer degrades to
+  primary-account identity - contact lookup failure ends the request and
+  invalidates the complete authentication context. Bundle download requires
+  explicit `contact_can('downloads')`; multipart upload accepts and
+  attributes `author_type='contact'`. Tests cover all three.
+- #202 `40eb7f29` (48/48 incl. native-and-browser): `payments_master(true)`
+  now refuses generating a replacement key when retained payment-request
+  sealed-link history exists (previously only gateway credentials blocked
+  it). Native test preserves the original key + history and proves sealed
+  links still open. `40eb7f29` also fixes a bound-parameter bug found by
+  native CI: `table()` returns a backtick-quoted identifier which never
+  matched `information_schema` table_name - now uses the unquoted
+  prefixed name like the migration probes.
+- #209 `82c62c98` (43/43): refreshed the stale `admin/views/studio/job.php`
+  inventory pin.
+- #212 `b85d87db` (41/41): review action links navigate through `focus_review`,
+  so a pending decision outside the 100-row display window still lands on
+  its exact decision form.
+
+All correction heads verified green on full component matrices.
+
+## Review corrections, 2026-10-17 (round 3)
+
+Follow-up reviews produced three more work items; all corrected and pushed:
+
+- #203 `53a60482`: upload write boundary — `studio_upload` now commits
+  client/contact uploads under the shared `staff_locked` account mutex and
+  re-reads the active client, enabled contact, current auth versions and
+  projects permission FOR UPDATE inside the transaction before any write;
+  the project is locked with its expected client id. Native coverage:
+  four committed interleavings (disable, rotation, permission removal,
+  client deactivation) via a worker process, plus permitted control.
+- #213 `9e898a4a`: `studio_password_change` is atomic — re-reads the
+  active actor (+ contact's active parent) FOR UPDATE under `staff_locked`,
+  verifies session auth versions and the current password against fresh
+  rows, commits credential + audit together; session rotates only after
+  commit. HTTP test asserts the client rotation revokes the contact
+  session, re-signs it, uses one session for CSRF GET+POST and verifies
+  signed-in identity. Native coverage: three committed interleavings,
+  audit-failure rollback, both success paths.
+- #212 `91f4599e`: boundary regression now retains a pending proposal,
+  adds 101 newer design versions, follows the generated action link and
+  asserts the exact pending review renders with its decision form;
+  controls cover another job's review and superseded pending rows.
+
+CI is re-running on all three heads at this writing.
+## Review corrections, 2026-10-17 (round 3 status)
+
+- #212 `5e1e043d`: component matrix green 41/41 (native-and-browser runs post-retarget per stacked-chain convention; the boundary regression itself is verified code-reviewed and will exercise then).
+- #213 `de343e95`: the branch went CONFLICTING when `91f4599e` landed on its base (`tests/contacts_cases.py` touched by both) which suppressed check runs entirely; resolved by merging the updated base into the branch (auto-merge kept both test changes; inventory pin regenerated for the merged `workspace.php`). Manually dispatched `Client authority` on `9e898a4a` passed — new password-worker interleavings and audit-failure rollback coverage green on the exact fix head. Full matrix queued on `de343e95`.
+- #203 `9015ef8f` — **fully green 48/48 including native-and-browser.** Two lane failures were diagnosed and resolved:
+  - `Form missing upload`: my own test bug — `submit(billing,...,'upload')` requires a rendered upload form, but a billing-only contact legitimately has none (no projects permission), so `form_for` raised before the POST ran. `fcebfd08` switched to a forged direct POST matching the neighboring denial checks.
+  - `rewrite 1.17.0 prior organized version actually cached`: deterministic across two runs but outside the diff (GET/render path untouched); bisect dispatch on previously-green `40eb7f29` (run 39067511358) later passed the same suite, confirming environmental pressure. `9015ef8f` added a bounded warm-up + decomposed probe print (assertion unchanged); every fixture probed `{"enabled":true,"timestamps":"0","cached":true}` and the lane passed.
+- #213 `3411de28`: **fully green 41/41** on the restacked head (docs follow-up after `de343e95`).
+- #212 `5e1e043d`: **fully green 41/41**.
+
+## Review corrections, 2026-10-17 (round 4 — #212 fixture interaction)
+
+Owner review (comment 6239686025) found a real latent defect in the
+`91f4599e` boundary regression: its 101 newer approved `design` filler
+versions generate `review:` activity events that permanently displace
+the earlier `review:<vid>` event expected by the later contact/alice
+feed assertions (the feed pages at 30 rows ordered by
+`occurred_at DESC, event_key DESC`). Broad `review:<id>` substrings can
+also falsely match a different numeric id.
+
+`6bf64fce` on `devin/non20i-client-actions` moves the whole boundary
+block (pending proposal + 101 fillers + focus_review link assertions +
+other-job/superseded controls + action-list checks) to after every
+activity-feed assertion, so feed checks observe only events that
+predate the fixture. Feed assertions now match exact rendered
+`data-event-key="kind:id"` attributes instead of bare `kind:<id>`
+substrings. Boundary, ownership, superseded and actionable-link
+coverage is unchanged. `py_compile` passes; no deployed source or
+installer bytes changed.
+
+Propagated to the stacked descendant by merging the updated base into
+`devin/non20i-portal-account` (`f4835eda`) so the inherited fixture
+defect noted in the #213 review is fixed through the stack; the test
+file auto-merged cleanly and the canonical installer check passes.
+
+Round-3 review confirmations received this round: #203 source fix
+accepted (`9015ef8f`), #213 implementation accepted (`3411de28`) — its
+remaining combined HTTP/browser acceptance exercises this repaired
+fixture on the retargeted base per the stacked-chain convention.
+
+## Stacked-chain restack, 2026-10-17
+
+`82c62c98` landing on `devin/non20i-staff-notes` left #210 CONFLICTING
+(inventory pin for merged `admin/views/studio/job.php`), which
+suppresses its check runs — the same suppression seen earlier on #213.
+Restacked each descendant by merging the updated base upward and
+regenerating `site/install/inventory.generated.php` so pins match the
+merged source:
+
+- #210 `devin/non20i-milestones` `e3a7e800` — merge `250f1d4a` + pin
+  refresh; **green 19/19**.
+- #211 `devin/non20i-activity-prefs` `71a900bb` — merge `19fc4fe7` +
+  pin refresh; **green 19/19**.
+- #212 `devin/non20i-client-actions` `1c47854a` — clean merge;
+  **green 18/18**.
+- #213 `devin/non20i-portal-account` `4eedb8cc` — clean merge;
+  **green 18/18** after rerunning a Docker port-binding infra failure
+  (`0.0.0.0:33306` address already in use) in Provider inventory.
+
+Each merge reduced the PR's effective diff to its own feature; the
+chain is MERGEABLE end to end again.
+
+## Review corrections, 2026-10-17 (round 4 — milestones/prefs + stack propagation)
+
+Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
+
+- #210 `devin/non20i-milestones` `2e06f185` — two P2 corrections:
+  - `studio.php` milestone targets now require a real calendar date via
+    `checkdate()` (ledger idiom), not just the YYYY-MM-DD shape;
+    `2026-02-31`, `2026-13-01`, `2026-00-00`, `2027-02-29` refused,
+    `2028-02-29` accepted, empty still optional.
+  - `events.php` milestone events carry a revision-qualified identity
+    `milestone:<id>:<16-hex>` hashed over title/state/target_date/
+    updated_at, so an acknowledgement applies only to the acknowledged
+    revision — a later meaningful update resurfaces unread and an older
+    ack cannot consume it. `activity_key` accepts the optional suffix;
+    `activity_reads` VARCHAR(80) fits — no schema change. HTTP coverage:
+    read-then-update for primary client (`activity_cases.py`) and
+    projects-permission contact (`contacts_cases.py`) with exact
+    `data-event-key` assertions.
+- #211 `devin/non20i-activity-prefs` `0cd5ce7a` — the preference-
+  isolation check expected an admin-authored message in a staff feed,
+  which the staff projection intentionally excludes; the substring could
+  only false-match. The client reply is now created first and asserted
+  by exact `data-event-key` in the staff feed, while the admin-authored
+  key is asserted absent (staff author filter preserved).
+- #212/#213 follow-through: PR203 (`9015ef8f`) dependency changes
+  propagated through the whole stack — merged forward contacts →
+  contact-decisions → contact-activity (`17f0227b`) → staff-notes
+  (`b4d25087`) → milestones (`81bf0c27`) → activity-prefs (`180f1309`+
+  `5d325631`) → client-actions (`66cc00b7`) → portal-account
+  (`49dfe86c`+`eb6c8082`). Union conflicts resolved preserving every
+  feature (staff notes, milestone checks, upload attribution, boundary
+  block, password/session tail, both worker modes); inventory pins
+  regenerated per merge.
+- Combined acceptance dispatched on the propagated exact heads:
+  client-actions run 39073761930, portal-account run 39073763300 —
+  pending at this writing.
+
+## 2026-10-18 — Acceptance failure corrected; stale-ack cases added; acceptance redispatched
+
+- Combined acceptance on the first propagation round failed at
+  `tests/native.php` "Additive upgrade creates seven workspace tables":
+  the assertion still counted seven `ci_studio_*` tables after #210 added
+  `studio_milestones` (native lanes had never run the stacked merge).
+  Both dispatched runs hit it — 39073761930 (client-actions `66cc00b7`)
+  and 39073810828 (portal-account `4f72f3fb`). Infrastructure-independent,
+  source-specific.
+- Fix `0be1fc7a` on `devin/non20i-milestones`: the check now compares the
+  actual table names against `studio_schema()`'s sorted key set, so it
+  cannot rot when tables are added or removed. `activity_native.php`'s
+  `===7` assertions were audited — the event counts remain seven (the
+  fixture seeds no milestone rows), and the receivable-kind count also
+  stays seven because the milestone kind was already gated in by #210;
+  `9ab408b0` on `devin/non20i-activity-prefs` additionally asserts
+  `milestone` is a member of that set so the count cannot silently rot.
+- #210 stale-acknowledgement coverage strengthened `fecf93f9` on
+  `devin/non20i-milestones`: client and contact suites now submit the
+  superseded `milestone:<id>:<rev>` key over HTTP after the milestone
+  changes and assert the mark is rejected while the new revision stays
+  unread — exercising `activity_mark`'s current-projection revalidation
+  end-to-end.
+- Propagated clean through the stack: activity-prefs `d7374456`,
+  client-actions `37b131e9`, portal-account `2dfa5d69`. Test-only diffs;
+  no inventory regeneration required (site/ bytes unchanged).
+- Acceptance redispatched on the exact corrected heads (stale runs
+  cancelled): client-actions run 39076920607 on `37b131e9`,
+  portal-account run 39076926308 on `2dfa5d69` — in progress.
+- No merges, deployments, provider activity, or release publication.
+
+## 2026-10-18 — Second acceptance round: missing activity enablement on the upgraded fixture
+
+- Redispatched runs 39076920607 / 39076926308 both reached the HTTP
+  step and failed identically at `staff_cases.py` "Milestone change
+  enters client activity feed" (portal-account run observed to
+  completion; client-actions run cancelled once the cause was known —
+  identical file/line).
+- Root cause: `/existing/` is an upgraded install, so
+  `activity_schema_version` is unset until the owner completes the
+  guarded `activity_setup` step; `activity_actor` then throws and the
+  client page renders a 403 access error with no feed rows. The prior
+  negative assertion at staff_cases.py:76 ("Client activity never
+  surfaces internal notes") passes vacuously on that page, which hid
+  the missing precondition. Component lanes never execute this suite.
+- Fix `66841f3a` on `devin/non20i-milestones`: owner POSTs
+  `activity_setup` on `/existing/` before the feed assertion. Also
+  unblocks `contacts_cases.py`'s own `?activity=1` mark/feed checks on
+  the same fixture (its assertions had never run either — the runner
+  halts at the first failure, staff_cases precedes contacts_cases).
+- One union conflict on the forward merge (staff_cases.py): kept #212's
+  "Open blockers" check plus the new enablement — `8e1cc8b7` on
+  client-actions, propagated to activity-prefs `bfaee17d` and
+  portal-account `2ba0a003`.
+- Acceptance redispatched on the exact corrected heads: client-actions
+  run 39079044619 (`8e1cc8b7`), portal-account run 39079050602
+  (`2ba0a003`) — in progress.
+
+## 2026-10-18 — Feed-check diagnosis: enablement theory disproven, instrumentation added
+
+- Third acceptance round (runs 39079044619 / 39079050602) failed at the
+  same assertion family but a different point: `submit()` raised
+  "Form missing activity_setup" on `?view=activity` — meaning
+  `activity_ready()` was already true on `/existing/` (the feed page has
+  no setup card). The missing `milestone:<id>` row is therefore a
+  projection question, not an enablement one; the negative assertion at
+  staff_cases.py:76 passes vacuously only when the feed errors, and with
+  activity enabled the feed renders — so the milestone row is genuinely
+  absent from alice's first page.
+- `a5f6fe59` on `devin/non20i-milestones` removes the erroneous setup
+  call and instruments the check to dump `status_code`, `url` and the
+  rendered `data-event-key` list before failing. Propagated:
+  activity-prefs (auto), client-actions `29f8056d` (union conflict —
+  kept #212's blockers check + instrumented feed check), portal-account
+  `5c507dc1`.
+- Process note: an instrument commit initially landed on portal-account
+  (`28080e31`, local only — the push targeted the unchanged milestones
+  branch and no-op'd). Portal-account was reset to its remote tip and
+  the change was committed correctly on milestones; remote history was
+  never affected.
+- Diagnostic acceptance dispatched: run 39081460330 on client-actions
+  `29f8056d` — in progress.
+
+## 2026-10-18 — Feed-check diagnosis round 3: dump fixed, contradiction narrows
+
+- Diagnostic run 39083645344 (`e2ff4337`) failed at HTTP step — but NOT
+  at the milestone assertion: the expanded dump's `db()` probe queried
+  nonexistent `ci_studio_milestones` columns (`active`,`client_id`),
+  making `fixture_db.php` exit 255 before the diagnostic printed. All
+  254 checks up to `Client sees open blockers` passed — including every
+  milestone write/validation/leap-day check and the client job view.
+- Static analysis of the 403 from run 39081460330: `?activity=1` gate
+  (`contact_can`) returns true for alice (primary client, id=1, no
+  contact session), `studio_client()` is valid (the adjacent `?job=1`
+  check passed), so `activity_actor`'s 403 must be
+  "Workspace activity has not been enabled" — i.e. `activity_ready()`
+  is false on `ci_`: `native.php` seeds legacy schema + `studio_migrate`
+  only; nothing ever sets `activity_schema_version` on the `ci_` prefix
+  (only `activity_native.php`'s `activityci_` and `fixture_db.php`'s
+  upgrade prefixes do).
+- Contradiction to resolve: run 39079050602 raised
+  "Form missing activity_setup" on `?view=activity` — the enable card
+  should render when `activity_ready()` is false and the owner session
+  is valid (verified: `PermissionPolicy` owner bypass, `staff_require`
+  path, `admin_user` checks all pass). Either the card was suppressed or
+  the GET redirected — the dump will discriminate.
+- `1e478ef8` on milestones fixes the dump: real milestone columns
+  (id,job_id,title,state,target_date,updated_at) + `db()` calls wrapped
+  so a probe failure still emits page state; also dumps `ci_settings`
+  rows for the four schema_version keys. Propagated: activity-prefs
+  `ef222bb0` → client-actions `d795be7c` → portal-account `ee03cfca`.
+- Diagnostic acceptance dispatched: run 39084434485 on portal-account
+  `ee03cfca` — queued behind the recovery tail of run 39083645344.
+
+## 2026-10-18 — Feed-check root cause: missing activity_setup, not a projection bug
+
+- Resolved the contradiction between runs: `legacy-schema.json` is
+  generated from the retained **1.0.8** fixture (`prepare_legacy.py`),
+  so `activity_schema_version` can never exist on `ci_` — `activity_ready()`
+  is FALSE on `/existing/` at staff_cases time in every run. Run
+  39081460330's `403` + `[]` is the 'Workspace activity has not been
+  enabled' fail_page; run 39079050602's 'Form missing activity_setup'
+  was a transient card-render miss (saturated runner), misread earlier
+  as proof activity was already enabled — `a5f6fe59`'s inference was
+  wrong, `66841f3a`'s enable-submit was the right fix.
+- `a7b0dfeb` on milestones: re-adds the `activity_setup` submit — now
+  placed before the internal-note negative check (a 403 page vacuously
+  passes `not in text`) and asserts `ci_settings.activity_schema_version`
+  lands, so a silent migrate failure surfaces directly. Kept the
+  corrected conditional dump on the feed check for one more run.
+- Propagated: activity-prefs `94894ae3` → client-actions `ab513563` →
+  portal-account `c87d1060`. Acceptance dispatched on `c87d1060`
+  (run 39084652934); diagnostic-only run 39084434485 (`ee03cfca`)
+  remains in flight to confirm the dump mechanics.
+
+## 2026-10-18 — Feed-check fix verified; downstream ordering collision fixed
+
+- Run 39084652934 (`c87d1060`) confirmed the root cause and the fix:
+  `Owner enables workspace activity on the upgraded install` PASSED,
+  `Client activity never surfaces internal notes` PASSED meaningfully,
+  and **`Milestone change enters client activity feed` PASSED** — the
+  milestone row renders in alice's feed once the feature is enabled.
+- New collision: `activity_cases` ran later assuming `/existing/` was
+  un-enabled; its submit-based `activity_setup` probes hit the feed page
+  and raised 'Form missing activity_setup' (run 39084652934 failure).
+- `6136f042` on milestones: `activity_cases`' three setup probes become
+  direct POSTs with state-invariant assertions (bad CSRF / bad password
+  must not change `activity_schema_version`; owner POST must leave the
+  marker at '1') — order-agnostic. staff_cases' enable-submit is guarded
+  so re-entry can't hit 'Form missing' either. The `activityup_`
+  fixture's own setup probe keeps `submit` (always un-enabled there).
+- Propagated: activity-prefs `ef020125` → client-actions `b8a4c369` →
+  portal-account `4ce1cf6a`. Acceptance dispatched on `4ce1cf6a`
+  (run 39086508010).
+
+## 2026-10-18 — Session-loss ordering collision in the milestone-revision block
+
+- Run 39086508010 (`4ce1cf6a`) passed staff_cases end-to-end and every
+  activity_cases check through idx 768, then died on
+  `IndexError('list index out of range')` — the new milestone-revision
+  block at activity_cases.py:123-128. The checkpoint artifact plus
+  http-server.log show the milestone create POST returned 303 (the row
+  exists), then alice's `GET ?activity=1` returned 403, emptying the
+  `mkey` comprehension at line 127.
+- Root cause: the preceding check (`Client deactivation removes count
+  and exact navigation`, line 111) flips `ci_studio_clients.active` to
+  0, makes two requests, then restores `active=1`. `studio_client()`
+  (site/app/clients/identity.php:9) finds no active row on those
+  requests and unsets `$_SESSION['client_id']` — restoring the row does
+  not restore the session, so the milestone block ran on an anonymous
+  session and the feed 403'd. The contact-side block in
+  contacts_cases.py is unaffected (no deactivation precedes it).
+- Fix `2774c60d` on `devin/non20i-milestones`: alice signs in again
+  through the real portal login before the revision block — matching
+  the suite's own login pattern — instead of skipping the deactivation
+  check or weakening its assertions.
+- Propagated clean: activity-prefs `275fade9` → client-actions
+  `9f243f97` → portal-account `d3fdafaf`. Acceptance dispatched on
+  `d3fdafaf` (run 39088084804).
+
+## 2026-10-18 — Third fixture defect: NOT NULL feedback omitted by boundary INSERTs
+
+- Run 39088084804 (`d3fdafaf`) passed 1,455 checks — staff_cases,
+  activity_cases (including the re-authenticated milestone-revision
+  block) and contacts_cases' own revision block all green — then died
+  on `CalledProcessError(255, fixture_db.php)` in the #212 boundary
+  block at contacts_cases.py:196-206.
+- Root cause: both raw `INSERT INTO ci_studio_versions` statements
+  (the 101-row 'design' filler loop and the other-job 'proposal' row)
+  omit `feedback TEXT NOT NULL`, which has no default — strict mode
+  rejects the insert and `fixture_db.php` exits 255. The block was
+  moved after all feed assertions by `6bf64fce`, and every earlier
+  acceptance run died upstream, so these lines had never executed.
+  `studio_jobs` and all other raw INSERTs in the suite were audited
+  and cover every NOT NULL column.
+- Fix `4c172d6e` on `devin/non20i-client-actions` (the block's owning
+  branch): both INSERTs now supply `feedback`=''.
+- Propagated: portal-account `436e6def`. Acceptance dispatched on
+  `436e6def` (run 39089736893).
+
+## 2026-10-18 — Combined acceptance GREEN on the final exact head
+
+- Diagnostic scaffolding removed (`1b272c84`: the conditional
+  ACTIVITY PAGE DEBUG dump is gone from staff_cases.py).
+- Final propagated heads: milestones `1b272c84` → activity-prefs
+  `e9c266d3` → client-actions `73f9e861` → portal-account `1339e29f`
+  (+ docs/handoff commits on top).
+- **[Acceptance run 39092079427](https://github.com/afterburn25/Cajun_Web/actions/runs/39092079427)
+  on `1339e29f`: SUCCESS** — native integration, real HTTP/Chromium
+  (all suites: staff, activity, contacts including the boundary block
+  and both milestone-revision flows), unprivileged recovery, Apache
+  with/without rewriting, source-mutation and evidence preservation.
+- Component lanes: 43/43 (milestones, activity-prefs), 41/41
+  (client-actions), 42/42 (portal-account `1339e29f`). One infra flake
+  (`mariadb:10.11` container init timeout on Hosting records PHP 8.4)
+  passed on rerun 39091599102.
+- Prior evidence: run 39089736893 on `436e6def` also full-green —
+  identical test code plus the inert dump.
+- Review corrections #210/#211/#212/#213 are now exercised end-to-end
+  on the propagated heads. This is branch CI evidence only — no merge,
+  retarget, deployment or release. Codex owns the sequential
+  integration of the chain.
+
+## 2026-10-18 — Licensing PR #159 audited against main and closed as superseded
+
+- `devin/non20i-licensing` @ `69630e95` (48/48 lanes green) was
+  CONFLICTING vs main `6caf654c`. Merge preview showed 9 conflicts;
+  main's licensing subsystem had been rewritten during the 1.25
+  integration (`license_upgrade_shape`, journaled
+  `license_upgrade_pending`, `license_invoice_cutover`,
+  `legacy.php::license_resolve_legacy_invoice`).
+- File-by-file delta audit: every #159 protection exists on main in an
+  equal-or-stronger form (master-key `is_master=0` filters on portal /
+  bundle / download / admin mint; owner-attested legacy reconcile with
+  evidence + password + FOR UPDATE; version gate refusing unknown
+  markers before DDL; `catalog_validate_schema` checks column types so
+  legacy INT `product_id` is preserved-not-widened).
+- Residual branch deltas evaluated and dropped: stray `license_%`
+  table scan (inert tables never adopted), `product_id` INT→VARCHAR
+  widening (unsafe — would mint `'1'` not a product key).
+- PR #159 closed with verification comment 6245264465; branch retained
+  for history. Source inspection only — no runtime test, merge or
+  release action.
+
+## 2026-10-18 — Devin mass restack: all 51 non-20i PRs mergeable
+
+Request: continue non-20i work without stopping; clear every
+conflicting Devin PR against the current stack and current main
+(`e397d9a6`, after Codex merged PR #218 PR-check path filters).
+
+Actions: merged each advanced parent head (or main) into its Devin
+child branches in dependency order; resolved conflicts semantically —
+main's canonical versions where they are strict supersets, plus each
+branch's unique deltas (union denial lists, workflow native lanes,
+notification emits/nav/actions, contact-permission gates, stage
+history + focus_review, protected previews, recurring focus_event,
+`is_master` license guards, schema-pin unions). Regenerated
+`site/install/inventory.generated.php` after every source merge;
+`tools/build.py` canonical checks pass on each head (2188 locked
+files; receiving/submission runtime byte-for-byte). All touched PHP
+linted; Python suites compiled.
+
+Key resolutions this round: #200 stage-history kept `focus_review` +
+durable `studio_stage_events` checks on the protected-previews
+workspace; schema pin retained at `'4'`; #187 renewal-notifications
+re-applied `notification_emit` calls onto main's canonical
+`recurring_billing_locked`/`service_plans_client_row` wrappers and
+kept license-legacy/master-key guards; #205/#211 kept the broadened
+contact `activity_mark`/`activity_prefs` permission gate
+(projects|billing|downloads) alongside main's provider dispatches;
+#204 contact-decisions and the whole #209–#213 chain restacked onto
+the new client-contacts head.
+
+Result: all 51 open `devin/non20i-*` PRs report MERGEABLE. Final
+chain tips: portal-account `cf47ae55`; mail-html-compose `88428719`;
+renewal-notifications `86f03b05`; notification-outbox `38a3786d`;
+notification-events `38fe2e41`; contact-activity `3c3aa80e`;
+client-actions `95de0a9c`; mail-folders `ef2b3159`; mail-reply-all
+`f8a92276`; staff-notes `a0ef2679`; milestones `15216b37`;
+ticket-notifications `522686b3`; recurring-billing `ce895bab`;
+service-plans `938efb3c`; mail-attachments `4acb4edc`;
+stage-history `577d9925`/`e574f91d`; plus main-targeted restacks
+#196/#197/#198/#201/#202 onto `e397d9a6`. Branch CI only — Codex
+owns retarget/integration/release; no merge, deployment or 20i work
+claimed.
+
+Next: Codex retargets stacked PRs as parents integrate; combined
+acceptance runs after retarget, not from branch state alone.
 
 Continued complete20i objective fromf86c745c/PR139. Normal merge preserves main16f07e49 including licensing/domain controls. Both session histories retained; incoming handoff archived. Source inspection and actual temporary-table MariaDB reproduction showed invalid replacement/database failure disabled the original licensed domain. Added a transaction with original-row lock and rollback, plus caller-transaction refusal. Local4 corrected cases and35 named merged native licensing checks pass (isolated fixture prefix/config only; actual app functions). Added persistent CI native report; no Website_Core execution. All merged/changed PHP/Python syntax and installer refresh pass. Current combined Linux/browser/recovery/review acceptance remains pending.
 
@@ -3673,3 +4213,123 @@ Responding to coordinator integration-review findings on PR194/PR195. On `devin/
 On `devin/non20i-mail-html-compose` (`d2768611`, contract pin `d59dbce3`, merge tip `ece18ef3`): the draft storage marker stays `1` for version-1 populated storage (additive `body_html` column, no forced migration), reads/history stay marker-compatible, and draft edits/saves are gated on the additive column via `mail_drafts_html_ready()` with an owner "Prepare formatted drafts" path; `ComposeHtml::MAX_INPUT_BYTES` raised to the canonical output bound `61440` so every accepted value revalidates unchanged; template insertion clears `body_html` consistently with the previewed plain snapshot; the concurrent-discard recovery card shows the escaped unsaved formatted alternative; `OfflineMailer::alternativeExists()` uses `!==''` so a literal `0` plain body keeps its MIME alternative; and the format-5 tamper test replaces `body_html` through canonical JSON with exact payload restore.
 
 Verification: PHP lint clean on all touched files; isolated suites pass — 35 compose, 49 form (default and `-n`), 42 MIME (literal-0 cases included), 71 draft-content; 47/47 flag protocol checks; `acceptance_artifacts_test.py` 226 checks on both heads; installer inventory regenerated over LF bytes and verified. The native MariaDB fixture could not run locally (no test database); packaged HTTP/Chromium and Apache acceptance for this head remain pending in CI. No live mail, provider call, deployment, merge or release.
+## 2026-10-18 — LF inventory regeneration across non-20i heads
+
+Request: continue without stopping after the mass restack. Diagnosis of
+run failures on restacked heads found installer inventory hashes recorded
+over CRLF worktree bytes (ad-hoc Python text-mode writes during conflict
+resolution) while `.gitattributes eol=lf` commits LF content — verified by
+matching a recorded hash to the CRLF variant of
+`portal/views/workspace.php` (`c3b8bd4c…`).
+
+Actions: regenerated `site/install/inventory.generated.php` over
+LF-normalized bytes and updated `tools/acceptance-contract.json` pins
+(`unchanged_test_sha256`, `native_commands`) where each branch's own
+sources legitimately changed pinned test files — the contract diff keeps
+the change reviewable. Fixed 43 heads; 14 already clean; 6 old
+`devin/twentyi-*` heads predate the contract and needed nothing. Then
+merged each fixed parent head into its stacked child (32 merges),
+regenerating inventory/contract per child so every stacked pair stays
+mergeable. One latent docs defect also repaired: four literal merge
+marker lines committed in `docs/SESSION_LOG.md` (lines 2318/2661/2707/
+3949) — removed, preserving all genuine entries on both sides.
+
+Representative new heads: client-contacts `b4459a45`, portal-account
+`7f1a2c81`, mail-html-compose `6d02642c`, stage-history `fb8b67cf`,
+recurring-billing `7eea8733`, ticket-notifications `4d18132e`. Full local
+build gates pass on merged heads (locked packages, receiving/submission
+mirrors byte-for-byte, PHPMailer pins, generated installer checks). CI
+lanes re-queued on all touched heads; results pending. No merge,
+deployment, provider action or release claimed.
+
+## 2026-10-18 — approve ops/ area in full-project archive gate
+
+Follow-up diagnosis: after the LF inventory fix, a deeper build step
+(`tools/build.py --commit`) reported `Unapproved full-project area:
+ops/...` — Codex merged the `ops/` diagnostic trees to main
+(`bf788894`, `1159648f`) but `build.py`'s `allowed` area set predates
+it. Codex's own `codex/twentyi-direct-hosting-catalog` head carries
+the identical fix (`'ops'` appended to `allowed`). Applied the same
+one-word change on all 51 non-20i heads and merged each new parent
+head into its stacked child (32 clean merges — identical change on
+both sides auto-resolved). Verified `tools/build.py --commit` now
+assembles all three archives end-to-end on the deepest merged head
+(portal-account `10b39ca5`: 5,955 full-project files, 2,899 shipping
+files, 2,886 update files). All `devin/non20i-*` PRs report MERGEABLE;
+remaining CONFLICTING PRs are Codex-owned. CI re-queued on every
+touched head; results pending. No merge, deployment, provider action
+or release claimed.
+
+## 2026-10-18 — extend acceptance contract for added native commands
+
+Third diagnosis: 13 heads wire existing feature-native tests into the
+selected-runtime recipe (`support_tickets_native`, `notification_feed_native`,
+`backups_native`, `mail_replies_native`, `mail_flags_native`), giving
+153–154 commands against the contract's hard-pinned 152. Following
+Codex's established `provider_package_types` extension pattern, each
+head now carries a `non20i_native_command_extension` contract entry
+(additions, immediate-predecessor positions, residual-152 recipe hash,
+added test-source pins) plus a matching strip-check in
+`tests/acceptance_artifacts_test.py` — the extended recipe stays
+reviewable rather than failing the pinned count. Every head's
+`acceptance_artifacts_test.py` run was verified locally before push
+(221–226 checks pass on all 51 `devin/non20i-*` heads). Parent
+advances were merged into stacked children (8 merges this wave);
+`tools/build.py --commit` assembles all three archives end-to-end.
+167 queued CI runs on superseded heads were cancelled so runners
+verify current sources. CI re-queued; results pending. No merge,
+deployment, provider action or release claimed.
+
+## 2026-10-18 — #203/#212 integration-review corrections applied and propagated
+
+Request: apply Codex integration-review findings on the restacked contacts
+chain (reviews 6104933952 on #203, 6247843434 on #212 incl. the PR213
+documentation correction). Starting heads: client-contacts `a60db04c`,
+portal-account `467d488d`-era stack.
+
+#203 (client-contacts, head `cefb08d6`): `service_plans_current_client()`
+now rechecks the active contact's `billing` permission plus `auth_version`
+inside the existing lock/transaction via a direct row recheck that throws a
+normal `RuntimeException` (not `contact_can()`/`fail_page`, which would hard
+exit mid-transaction). This chokes every client billing path: portal render,
+subscription reads, consent/cancel/abandon, order-form decide,
+recurring-billing authority and the payment-detail invoice guard.
+`site/portal/views/workspace.php` regains the five main billing navigation
+links gated by `$canBilling`/`$canDownloads` and re-gates invoice links
+behind `recurring_billing_invoice_guard` and
+`domain_renewal_dispatch_invoice_display`. Coverage: native `sn_contact`
+helper, wrong-permission writer refusals and an in-lock revocation worker in
+`tests/service_plans_native.php`; packaged HTTP contact-consent/abandon/
+agreement/order billing checks plus forged-session POST denial in
+`tests/service_plan_cases.py`.
+
+#212 follow-through (applied on the owning branch and merged down):
+`site/app/activity/events.php` `activity_projection()` now unions
+`author_type` (with a default `''` on non-message projections) so
+`site/includes/layout/activity.php` renders Studio/Client/Contact sender
+labels instead of labelling every client-feed message 'Studio message'.
+Fixture-order correction per the review's recorded ordering evidence: the
+early activity-enablement was removed from `tests/staff_cases.py` and the
+two feed assertions moved into `tests/activity_cases.py` after its own
+negative/positive setup sequence, asserting page HTTP 200 and exact
+revision-qualified `milestone:`/`review:`/`message:` keys. New attribution
+checks: contact feed keeps `Client message`/`Studio message`, primary feed
+shows `Contact message`, staff feed retains `Client message` attribution.
+The handoff's earlier "transient card-render" diagnosis was corrected to
+the supported fixture-order explanation.
+
+Propagation: merged down contact-decisions `c6005b4c` -> contact-activity
+`ff145744` -> staff-notes `7795ffcb` -> milestones `2a6808e5` ->
+activity-prefs `e87ff1d4` -> client-actions `5dd2ee47` -> portal-account
+`863ec193`. Each level's own diffs were unioned (staff_notes/events.php
+kept child projections plus the new `author_type` argument; contacts_cases
+kept the child `data-event-key` assertion plus the new attribution block;
+staff_cases unioned the child milestone assertions minus the moved feed
+lines). `php -l` and `py_compile` pass on every edited file;
+`site/install/inventory.generated.php` was regenerated at each level.
+
+Remaining: #202 payment-schema review (start from updated head
+`467d488d`); #194/#195 carried-forward mail items; fresh packaged
+HTTP/browser lanes for the corrected feeds are queued at GitHub runner
+concurrency. Branch-CI state only; Codex owns retarget/integration and no
+merge, deployment, provider action or release is claimed.
