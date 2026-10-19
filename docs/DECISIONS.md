@@ -19,6 +19,11 @@ All currently recognized older release inventories lack hosting-publication imag
 ## 2026-10-18 — use existing service agreements for imported hosting offers
 
 Imported hosting drafts retain generic catalog publication/invoice refusals. A separate, explicit owner publication binds the exact draft, active retail plan, provider mapping and observed hosting type. A client request preserves those terms and an owner converts it to one existing service agreement atomically with its request link. Existing consent, invoice, payment, order and provisioning gates remain authoritative. Historical images stay retained after replacement. No browser, payment or provider acceptance follows from the backend implementation alone. See [scope](TWENTYI_HOSTING_OFFERS.md).
+## 2026-10-19 — superseded component queue checkpoint
+
+The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).
+
+Never replay an ambiguous cancellation. A preflight-only failure may be reconsidered in a new reviewed plan only when durable evidence proves no request occurred; absence of a request file alone is insufficient. Stop on observation failure and preserve uncertainty. Current runs, recorded originals, full application/capture/release/diagnostic work, and assigned/executed/artifact-bearing candidates stay excluded. No acceptance or production gate changes.
 
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
@@ -325,3 +330,6 @@ Compose imported-product plan creation, activation and provider mapping inside t
 ## 2026-10-18 — committed storefront byte alignment
 
 Packaging follow-up from `787c7f3225dd21757d5fd3a6ec9febb86230d905`, draft [PR228](https://github.com/afterburn25/Cajun_Web/pull/228): the first clean local build refused two shipping files whose Windows working copies had mixed line endings. Their application content already matched Git exactly after LF normalization. Restored only those two local copies to their committed bytes and refreshed the two installer hashes; no feature logic or acceptance source changed. The enclosing commit is **Align installer inventory with committed storefront bytes**. Original source/runs and the failed build receipt remain preserved. Byte comparison verifies all 2,928 non-inventory shipping files against Git and every generated hash; all 21 feature/test pins are unchanged and documentation checks pass. Recheck the exact committed package and first successor CI results before integration or release.
+## 2026-10-18 — filter only proven isolated pure suites
+
+For estimator, email-templates, portfolio, review-requests and webmail, PR paths cover each complete foundation/test directory and its workflow. Current PHP imports close within each family; all existing jobs and push/manual events are retained. Do not extend this narrow dependency assumption to application/native suites. [Evidence and required-check caveat](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). Future required-check settings must be reviewed together with skipped-workflow behavior. Existing queued runs and all release gates are preserved.

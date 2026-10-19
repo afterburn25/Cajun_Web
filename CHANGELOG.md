@@ -133,6 +133,25 @@ Show saved package assignment status and the expected client on the owner’s co
 ## Unreleased successor — staged owner recovery HTTP checks
 
 Add isolated tests of the real packaged owner updater for authentication, CSRF, package integrity, backup confirmation and hosting-history recovery decisions. Preserve original native/browser assertions and the production recovery algorithm. Portable/model checks pass; Linux SQL/HTTP and release acceptance remain pending. No shipping files or installer inventory changed.
+## Unreleased — final component PR filters and verified cleanup
+
+Limit service-plan and staff-invitation PR checks to their actual dependencies while preserving all execution settings. Confirm the remaining103 cleanup outcomes:327 total terminal cancellations,1,297 unexecuted jobs,31 preserved candidates and139 untouched. Keep the partial evidence and original failures. No application, installer, version or released package changes.
+
+## Unreleased — remaining pure-suite PR filters
+
+Add family-scoped PR filters to access policy, provider contracts and scheduling. Preserve all tests, matrices and push/manual runs. Source/dependency/inverse review passes; no application, installer or released bytes change.
+
+## Unreleased documentation — queue cleanup checkpoint
+
+Record327 acknowledged superseded component cancellation requests,224 independently verified terminal outcomes,103 unresolved verifications,31 preserved candidates and139 untouched candidates. Retain both interrupted batches and the later explicit API rate-limit failure. [Evidence and continuation](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md). Application and released package bytes are unchanged.
+
+## Unreleased documentation — original catalog runtime evidence
+
+Record four original 1.26 runtime producer sets and successful unchanged local aggregations, authenticated artifacts, identical source-matched packages, 16 populated upgrade scopes and known capture limits. Hosted final acceptance and the corrected capture candidate remain pending. [Evidence and next gates](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md). No application, package or release bytes change.
+
+## Unreleased — isolated pure-suite pull-request filters
+
+Limit estimator, email-template, portfolio, review-request and webmail pure-suite PR runs to their source/test directories and workflow files. Preserve every job and push/manual trigger. Source/dependency checks and independent review passed; this affects future scheduling only. No application or release version changes.
 
 ## Unreleased — reduce unrelated pull-request test runs
 
