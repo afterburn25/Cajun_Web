@@ -5,6 +5,7 @@
     "tests/browser_acceptance.py": "0b4ad398a26a55ceeec4b22673bc0d9b533e0705ee04ea2d026e5b94c7ba276d",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "b2a4ecaa1c1f16c50a74e0a2e7700218a1323c3b268c489d7f3d8d59b886db5a",
+
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
     "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
     "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
