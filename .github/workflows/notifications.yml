@@ -1,0 +1,41 @@
+name: Notification contract checks
+
+on:
+  pull_request:
+    paths: ['foundation/notifications/**', 'tests/notifications/**', 'site/app/notifications/**', 'site/includes/layout/notifications.php', 'site/database/schema/notification_feed_schema.php', 'site/database/migrations/notification_feed_migrate.php', 'tests/notification_feed_*', '.github/workflows/notifications.yml']
+  push:
+    branches: [main, 'devin/non20i-*']
+    paths: ['foundation/notifications/**', 'tests/notifications/**', 'site/app/notifications/**', 'site/includes/layout/notifications.php', 'site/database/schema/notification_feed_schema.php', 'site/database/migrations/notification_feed_migrate.php', 'tests/notification_feed_*', '.github/workflows/notifications.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: notifications-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Notification checks PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and notification checks using the official PHP image
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/notifications/*.php tests/notifications/*.php; do php -l "$source"; done
+            php tests/notifications/run.php
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Isolated notification contract checks only. No persistence, delivery transport or UI is tested by this job.' >> "$GITHUB_STEP_SUMMARY"

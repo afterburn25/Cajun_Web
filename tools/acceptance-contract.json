@@ -2,9 +2,9 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "d6a418591ba6e096cd6e7b346b05337c245c481b9bd2e906a755afc84c6efc07",
+    "tests/browser_acceptance.py": "0b4ad398a26a55ceeec4b22673bc0d9b533e0705ee04ea2d026e5b94c7ba276d",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
-    "tests/apache_acceptance.py": "f7d6f3f2a63286c310f28116d56bc2066eda8c8d7174c506755ef60c93b86a50",
+    "tests/apache_acceptance.py": "d5e857599ac2b3d91d77d569a34450b4ae739ce6b37d30f7e3142f09e9857cbd",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
     "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
     "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
@@ -28,6 +28,7 @@
     "\"$PHP_BINARY\" tests/payments_native.php",
     "\"$PHP_BINARY\" tests/attempts_native.php",
     "\"$PHP_BINARY\" tests/notifications_native.php",
+    "\"$PHP_BINARY\" tests/notification_feed_native.php",
     "\"$PHP_BINARY\" tests/ledger_native.php",
     "\"$PHP_BINARY\" tests/delivery_archive.php",
     "\"$PHP_BINARY\" tests/delivery_native.php",
@@ -568,19 +569,22 @@
     "additions": [
       "\"$PHP_BINARY\" tests/mail_flags_native.php",
       "\"$PHP_BINARY\" tests/mail_replies_native.php",
-      "\"$PHP_BINARY\" tests/backups_native.php"
+      "\"$PHP_BINARY\" tests/backups_native.php",
+      "\"$PHP_BINARY\" tests/notification_feed_native.php"
     ],
     "after": {
       "\"$PHP_BINARY\" tests/mail_flags_native.php": "\"$PHP_BINARY\" tests/mail_message_native.php",
       "\"$PHP_BINARY\" tests/mail_replies_native.php": "\"$PHP_BINARY\" tests/mail_drafts_native.php",
-      "\"$PHP_BINARY\" tests/backups_native.php": "\"$PHP_BINARY\" tests/delivery_native.php"
+      "\"$PHP_BINARY\" tests/backups_native.php": "\"$PHP_BINARY\" tests/delivery_native.php",
+      "\"$PHP_BINARY\" tests/notification_feed_native.php": "\"$PHP_BINARY\" tests/notifications_native.php"
     },
     "predecessor_native_count": 152,
     "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
     "source_sha256": {
       "tests/mail_flags_native.php": "dd09c0fbc5cc6a81329b9242c857a3cf6fcd170ffc7f14a24fa357cf1611f302",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
-      "tests/backups_native.php": "5e4311822a71c446b092d393564ab8f57ec736c4fb7f4054855c56eb51d094f8"
+      "tests/backups_native.php": "5e4311822a71c446b092d393564ab8f57ec736c4fb7f4054855c56eb51d094f8",
+      "tests/notification_feed_native.php": "d53a85e0ed44210ca877d348eb5b7a72d177b42eb8776a9545dea53ad63b1b96"
     }
   }
 }

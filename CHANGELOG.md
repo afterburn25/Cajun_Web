@@ -257,9 +257,28 @@ Devin non-20i increment on `devin/non20i-backup-restore-drill`, stacked on `devi
 ## Port A-03 backup/restore contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-backups-foundation` from main `595ac9c3`, continuing preserved `devin/backups-foundation`. Adds `foundation/backups/BackupManifest.php` (sealed sha256 item scopes; private/secret paths refused at construction; retention never born expired) and `RestorePlan.php` (preview→authorized→applied/abandoned; exact confirmation phrase, named actor, expired backups refused, newer formats rejected) with 33 pure contract checks in `tests/backups/run.php` and a PHP 8.2/8.4 workflow lane. No archive format, filesystem writes, database restore, scheduling or application integration — the adapter and restore drill remain future work. No release or deployment.
+
+## Renewal invoice issuance notifications — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-renewal-notifications`, merging `devin/non20i-recurring-billing` and `devin/non20i-notification-events` (union of both feature sets). `recurring_billing_issue` now notifies the owning client when a fresh period invoice is issued — emitted only after the locked issuance transaction commits, and replayed requests never re-notify. Native coverage extended.
 ## Port P-04 service-plan contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
+## Wire remaining P-07 client-facing notification events — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notification-events`, stacked on `devin/non20i-notification-metrics`. Emits directed feed notifications on the remaining client-facing studio events: staff publishing a pending design/proposal version (client `approval-request`), private project file shares in both directions (admin share -> client, client share -> clients.manage staff, silent during support sessions), project creation, stage changes and manual invoice issuance. Every emit runs after the business write commits and failures are recorded via report_error, never rolling back the event. Native + browser assertions extended. No live mail claim.
+
+## Surface honest operational freshness metrics — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notification-metrics`, stacked on the notifications runtime. Adds `app/notifications/metrics.php` — a read-side producer mapping the newest real rows (administration audit, inquiries, published website deliveries, notification delivery attempts) onto the foundation `MetricSample` contract — and an "Operational freshness" card on the System health page. Each sample's `checkedAt` is the recorded time of the underlying row, never render time; unprepared features show absent and quiet tables show stale rather than invented values. Staff-only surface; native and browser assertions cover fresh/stale/absent states and access denial. No polling daemon, provider call or live deployment.
+
+## Integrate P-07 per-recipient notification feed runtime — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notifications-runtime` from the notifications-foundation branch. Adds `ci_notification_feed`/`ci_notification_prefs`/`ci_notification_deliveries` storage (distinct from the payment-webhook `notifications` tables), an owner-password setup migration, the `app/notifications/feed.php` service mapping persistence onto the foundation models, private staff and client feed screens with recipient-only read/unread mutation and per-kind email opt-outs, read-only support-session viewing, and emit hooks on lead submission, admin/client project messages, review decisions, delivery publication and invoice-paid transitions. Portal delivery is unconditional; email copies attempt synchronously after commit and record honest `sent`/`failed` states — no daemon, no retry-forever. Native MariaDB and HTTP/Chromium suites cover isolation, preferences, retries, CSRF and access boundaries. No live mail, deployment or customer action.
+
+## Port P-07 notification contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notifications-foundation` from main `595ac9c3`, continuing preserved `devin/notifications`. Adds `foundation/notifications/` — `Notification`, `NotificationFeed`, `NotificationPreferences`, `DeliveryAttempt`, `MetricSample` — with 65 pure checks in `tests/notifications/run.php` and a PHP 8.2/8.4 offline workflow lane. No persistence, delivery transport or UI — integration remains future work. No release or deployment.
 
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 

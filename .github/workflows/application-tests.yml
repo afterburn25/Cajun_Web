@@ -296,6 +296,7 @@ jobs:
           "$PHP_BINARY" tests/payments_native.php
           "$PHP_BINARY" tests/attempts_native.php
           "$PHP_BINARY" tests/notifications_native.php
+          "$PHP_BINARY" tests/notification_feed_native.php
           "$PHP_BINARY" tests/ledger_native.php
           "$PHP_BINARY" tests/delivery_archive.php
           "$PHP_BINARY" tests/delivery_native.php

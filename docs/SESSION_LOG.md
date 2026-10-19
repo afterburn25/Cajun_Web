@@ -144,6 +144,8 @@ Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 o
 
 
 
+
+
 ## Provision ext-zip for the backup archive lane — 2026-10-17
 
 Request: continue #157 repairs; `Backup checks` on PHP 8.2/8.4 failed deterministically at `archive_run.php` with the production refusal `Ask your host to enable the PHP ZIP extension`.
@@ -321,6 +323,15 @@ Files/actions: extracted `foundation/billing-calendar/BillingCalendar.php`, `tes
 Tests/verification (local): `tests/billing-calendar/calendar.php` — all checks pass on PHP 8.4 (literal/clamped leap-day and century periods, index/window bounds, invalid-input refusals, immutability and timezone independence). `php -l` clean on the class.
 
 Next: commit, push, PR, #157 update; then recurring-billing storage/screens stack, ticket-screenshot-readiness.
+## Port P-07 notification contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.
+
+Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
+
+Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.
@@ -2512,6 +2523,23 @@ Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads
 ## 2026-10-16 15:15 UTC - Publish cloud candidate and actionable licensing review
 
 +Owner goal: continue complete20i and coordinate Devin non-20i work. Documentation parent595ac9c3; commit "Document cloud assignment candidate and licensing review" records exact source2a86704f/tree32f1058c/parent819c, original focused run38921917647 attempt1 and pending Windows build. Local/source/staged checks passed; native/full/browser/package/main/release acceptance remains pending. Original819c upgrade failure is preserved and corrected on2a; original9779 browser remains active. Licensing159 review299bf71e produced comments6218434878/6218437910 with two behavior gaps and stale inventory failure. All changed files are Markdown; no runtime, installer, version, release, live provider or customer action. Next: actual focused archives, full combined evidence and sequential integration.
+
+## 2026-10-16 - Devin P-07 notification feed runtime
+
+Request: continue all remaining non-20i site work per issue157; build the notification runtime on the ported contract. Starting from foundation tip `6cf9f405` on `devin/non20i-notifications-runtime`. Changes: new `notification_feed`/`notification_prefs`/`notification_deliveries` schema (distinct from payment-webhook `notifications`), owner-password setup migration with additive/readiness checks, `app/notifications/feed.php` service mapping persistence onto `Notification`/`NotificationFeed`/`NotificationPreferences`/`DeliveryAttempt`, private admin `?view=notifications` and portal `?notifications=1` feeds, recipient-only read/unread mutation, per-kind email opt-outs, read-only support-session viewing, emit hooks on inquiry submission, admin/client project messages, review decisions, delivery publication and invoice-paid transitions. Email copies attempt synchronously after commit; failures record terminal `failed` with the named error — no daemon.
+Tests: `php -l` clean on all touched files; `tests/notifications/run.php` 65 pure checks pass; `tests/notification_feed_native.php` (MariaDB isolation/read-state/preferences/retry/rollback/readiness) and `tests/notification_feed_cases.py` (HTTP setup, feeds, marking, opt-outs, cross-recipient denial) added and wired into `application-tests.yml`/`browser_acceptance.py`; Apache direct-denial inventory extended. Native/HTTP execution runs in CI — not executed locally (no MariaDB/browser host here). No live mail, deployment, provider or customer action. Next: push, open stacked PR, then `MetricSample` producers and polling surfaces.
+
+## 2026-10-16 - Devin P-07 MetricSample producers and health surface
+
+Request: continue all remaining non-20i site work; close P-07's remaining non-provider slice. `devin/non20i-notification-metrics` stacked on `devin/non20i-notifications-runtime`. Changes: `site/app/notifications/metrics.php` derives `MetricSample` records from real rows (audit, leads, published website_releases, notification_deliveries) with `checkedAt` = the row's recorded timestamp; System health (`?view=health`, staff.manage) renders an Operational freshness card showing fresh/stale/absent via the foundation contract — unprepared features report absent, quiet tables report stale. Tests: `php -l` clean; native suite asserts kinds/fresh/absent and withheld stale values; browser case asserts the card renders and clients get 403. `build.py --refresh` clean. No daemon, provider call, live mail or deployment. Next: commit, push, stacked PR on #181.
+
+## 2026-10-16 - Devin notification events: remaining P-07 emit gaps
+
+Request: continue remaining non-20i work (issue #157). New branch `devin/non20i-notification-events` stacked on `devin/non20i-notification-metrics`. Wired the remaining client-facing emit points: `studio_publish` now notifies the owning client when staff publish a pending design/proposal version; `studio_upload` notifies the opposite party (admin share -> client, client share -> clients.manage staff) and stays silent during support sessions; `studio_job` creation notifies the client their project workspace opened; `studio_invoice` notifies the client an invoice was issued with its reference and amount; `studio_job` stage changes notify the client of the new stage. All emits run after commit inside try/report_error so notification failures never roll back the business write. Native suite asserts the publish emit; browser case covers publish, both upload directions and invoice issuance. php -l clean; build refresh passes. Native/HTTP execution in CI; no live mail claim.
+
+## 2026-10-16 - Devin renewal notification events (merge branch)
+
+Request: continue remaining non-20i work (issue #157). New branch `devin/non20i-renewal-notifications` merges `devin/non20i-recurring-billing` + `devin/non20i-notification-events` (union resolutions across controllers/layout/portal/build/test inventories; docs keep both branches' entries). Adds the last named P-07 emit gap: `recurring_billing_issue` notifies the owning client when a new period invoice is issued — emit runs after the locked issuance transaction, only for non-replayed requests. Native suite extended: feed setup, issuance notification, replay adds no feed row. php -l clean on all touched files; build refresh pending in this commit chain.
 
 ## 2026-10-16 - retain scoped cloud passes and diagnose original full-run failure
 
