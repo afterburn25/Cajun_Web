@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace CajunWebPro\Foundation\TwentyISupportHandoff;
 if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once __DIR__.'/StackCpHandoffContext.php';
+require_once __DIR__.'/StackCpClientHandoffContext.php';
 
 /** Ephemeral strict SDK-field subset. Parsing is not successful provider login or safe retry evidence. */
 final class StackCpSensitiveResponse implements \JsonSerializable
@@ -18,18 +20,18 @@ final class StackCpSensitiveResponse implements \JsonSerializable
         #[\SensitiveParameter] ?string $opaque = null,
     ) { $this->opaque = $opaque; }
 
-    public static function parseToken(StackCpHandoffContext $context, int $status,
+    public static function parseToken(StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,
         #[\SensitiveParameter] string $body, #[\SensitiveParameter] array $ownedCredentials): self
     { return self::parse('token', $context, $status, $body, $ownedCredentials); }
 
-    public static function parseSession(StackCpHandoffContext $context, int $status,
+    public static function parseSession(StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,
         #[\SensitiveParameter] string $body, #[\SensitiveParameter] array $ownedCredentials): self
     { return self::parse('session', $context, $status, $body, $ownedCredentials); }
 
-    private static function parse(string $phase, StackCpHandoffContext $context, int $status,
+    private static function parse(string $phase, StackCpHandoffContext|StackCpClientHandoffContext $context, int $status,
         #[\SensitiveParameter] string $body, #[\SensitiveParameter] array $ownedCredentials): self
     {
-        $context = StackCpHandoffContext::validated($context);
+        $context = $context instanceof StackCpClientHandoffContext ? StackCpClientHandoffContext::validated($context) : StackCpHandoffContext::validated($context);
         // Token phase owns general + auth client keys; session also owns its bearer token.
         $roles = $phase === 'token' ? ['general-api-key','auth-client-key'] : ['general-api-key','auth-client-key','access-token'];
         if (array_keys($ownedCredentials) !== $roles) throw new \InvalidArgumentException('Invalid handoff credential roles.');

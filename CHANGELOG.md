@@ -1,3 +1,7 @@
+## Unreleased — primary-client hosting control panel access
+
+Add owner-controlled primary-client StackCP access, fresh membership and whole-user permission checks on explicit launch, and durable one-use admission history. Block contacts, support and mixed staff/client sessions. Keep failed submissions from renewing approval. Default StackCP destination only; no remote session-revocation claim. [Candidate scope](docs/TWENTYI_CLIENT_STACKCP.md). Full application acceptance and release remain pending.
+
 ## Unreleased — owner StackCP browser handoff candidate
 
 Add password-confirmed owner access to the default StackCP address using the existing separate authentication key, assignment and current observations. Record each admission and exchange phase before its effect; repeated submissions never resend or redeliver. Show previous unknown outcomes explicitly, retain authenticated history and protect the new-tab redirect. Custom control-panel domains, delegated/client access, remote revocation and SSH remain unfinished. Local checks pass; native and complete application acceptance are pending. [Scope and evidence](docs/TWENTYI_STACKCP_LAUNCH.md).

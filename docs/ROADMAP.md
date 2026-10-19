@@ -1,3 +1,7 @@
+## 2026-10-19 — primary-client StackCP candidate
+
+The [client hosting control panel increment](TWENTYI_CLIENT_STACKCP.md) extends frozen owner launch on a separate branch with explicit owner delegation, actual client identity, fresh provider permission checks and one-use launch. This is a candidate awaiting native/combined acceptance and release. Whole-user access, custom-brand limitations, no remote revocation and independent support/SSH scope remain explicit. Full20i is not complete.
+
 ## 2026-10-18 — StackCP launch implemented for candidate testing
 
 The [default-destination owner handoff](TWENTYI_STACKCP_LAUNCH.md) now has executable exchange, one-use admission/history, admin consent and browser delivery on `codex/twentyi-stackcp-launch` from `f688f79e`. Portable and isolated browser verification passed; native SQL, complete application acceptance and release delivery remain pending. Do not mark complete20i or remote login verified. Custom brands, client/delegated launch, remote lifecycle and interactive SSH remain outside this increment; full provider catalog/image import is also still unresolved.

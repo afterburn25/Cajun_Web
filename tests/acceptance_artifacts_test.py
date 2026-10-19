@@ -460,6 +460,125 @@ def stackcp_launch_checks(tmp,launch):
     check('StackCP launch private state remains excluded',not a.evidence_allowed('test-runtime/stackcp-launch-private/state.json','native-browser') and not a.evidence_allowed('qa/stackcp-launch-private/state.json','native-browser'))
 
 
+_run_before_client_stackcp = run
+
+
+def client_stackcp_inverse(data, delta):
+    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:
+        raise ValueError('Client StackCP current source changed')
+    lines = data.decode().splitlines(keepends=True)
+    for change in reversed(delta['changes']):
+        start, end = change['after_start'], change['after_end']
+        if ''.join(lines[start:end]) != change['after']:
+            raise ValueError('Client StackCP inverse range changed')
+        lines[start:end] = change['before'].splitlines(keepends=True)
+    result = ''.join(lines).encode()
+    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:
+        raise ValueError('Client StackCP predecessor changed')
+    return result
+
+
+def client_stackcp_current():
+    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['client_stackcp']
+    for path, digest in section['source_sha256'].items():
+        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() != digest:
+            raise ValueError('Client StackCP source changed: '+path)
+    registry = a.load(ROOT/'tools/acceptance-reports.json')
+    prior = copy.deepcopy(current); del prior['client_stackcp']
+    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1
+    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):
+        raise ValueError('Client StackCP native recipe changed')
+    del prior['native_commands'][position:position+len(additions)]
+    for pin in section['repins']:
+        cursor = prior
+        for key in pin['keys'][:-1]: cursor = cursor[key]
+        key = pin['keys'][-1]
+        if cursor[key] != pin['after']: raise ValueError('Client StackCP current pin changed')
+        cursor[key] = pin['before']
+    dump = lambda value: json.dumps(value, indent=2).encode()+b'\n'
+    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:
+        raise ValueError('Client StackCP predecessor contract changed')
+    old_reports = copy.deepcopy(registry)
+    for phase in ('browser', 'final'):
+        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client StackCP report missing or duplicated')
+        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]
+    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:
+        raise ValueError('Client StackCP predecessor reports changed')
+    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}
+    for path, delta in section['source_deltas'].items():
+        historical[path] = client_stackcp_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n'), delta)
+    return current, registry, section, historical
+
+
+def client_stackcp_checks(tmp, current, registry, section, historical):
+    prior = json.loads(historical['tools/acceptance-contract.json'])
+    check('Client StackCP preserves all157 native recipes and adds eleven', len(current['native_commands']) == 168 and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
+    check('Client StackCP reports are twelve unique producers', len(section['reports']) == len(set(section['reports'])) == 12)
+    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()
+    previous = historical['.github/workflows/application-tests.yml'].decode()
+    inserted = ''.join('          '+command+'\n' for command in section['native_additions'])
+    browser = '          '+section['browser_command']+'\n'
+    check('Client StackCP workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)
+    check('Client StackCP browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php "$PHP_BINARY"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))
+    check('Client StackCP native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_CLIENT_STACKCP=1 "$PHP_BINARY" tests/client_stackcp_native.php' and valid_port_context(workflow))
+    check('Client StackCP adds no unreviewed capture expectations', section['screenshots'] == [])
+    for path, digest in section['source_sha256'].items():
+        check('Client StackCP binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
+    for path, delta in section['source_deltas'].items():
+        check('Client StackCP retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])
+        deny('Client StackCP modified current source refuses '+path, lambda path=path, delta=delta: client_stackcp_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n')+b'\n', delta))
+    for phase, expected in [('browser',182),('final',226)]:
+        check('Client StackCP preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
+    root = tmp/'client-stackcp-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)
+    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64
+    for index, lane in enumerate(a.LANES):
+        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job
+        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')
+        elif lane == 'native-browser':
+            for name in registry['browser']:
+                if name not in a.BUILD_QA: named(job/'qa'/name)
+        else:
+            for name in registry['final']:
+                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)
+        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)
+        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}
+    seq = 0
+    def combine():
+        nonlocal seq
+        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)
+    def reseal():
+        job = jobs['native-browser']
+        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):
+            if path.exists():
+                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)
+        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
+    result = combine()
+    check('Client StackCP aggregate requires all226 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    for name in section['reports']:
+        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()
+        check('Client StackCP missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])
+        named(path,False); reseal(); result = combine()
+        check('Client StackCP failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)
+        named(path)
+        check('Client StackCP report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))
+    named(jobs['native-browser']/'qa/client-stackcp-unexpected-results.json'); reseal(); result = combine()
+    check('Client StackCP unexpected report refuses', result['complete'] is False and 'Unexpected reports: client-stackcp-unexpected-results.json' in result['errors'])
+    check('Client StackCP private fixture files remain excluded', not a.evidence_allowed('test-runtime/client-stackcp-private/session.json','native-browser') and not a.evidence_allowed('qa/client-stackcp-private/session.json','native-browser'))
+
+
+def run(tmp):
+    current, registry, section, historical = client_stackcp_current()
+    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}
+    read_bytes, read_text = Path.read_bytes, Path.read_text
+    def previous_bytes(path):
+        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)
+    def previous_text(path,*args,**kwargs):
+        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)
+    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):
+        _run_before_client_stackcp(tmp)
+    client_stackcp_checks(tmp,current,registry,section,historical)
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None
