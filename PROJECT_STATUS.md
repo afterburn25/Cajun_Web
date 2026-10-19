@@ -1,3 +1,11 @@
+## 2026-10-19 — component filters and verified queue cleanup
+
+Service-plan and staff-invitation workflows now filter pull requests using their actual source, test and workflow dependencies. Only 13 trigger lines are added; every existing job, command, matrix, push/manual trigger and release gate remains unchanged. This avoids four unrelated jobs per documentation-only PR after integration; it does not cancel existing runs. [Filter evidence](docs/evidence/ci-final-component-pr-filters.json). Source/dependency review and exact whole-file inverses pass; this is CI maintenance, not application acceptance.
+
+Read-only verification after API recovery confirms all 327 acknowledged cancellations, covering 1,297 jobs with no execution evidence. There are zero outstanding terminal verifications, 31 preserved candidates and 139 untouched candidates. The bounded pass is verified; the original 497-candidate plan is not complete. No cancellation request was repeated. [Final evidence and retained limits](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md). The first partial receipt and missing immediate post-request snapshot remain preserved.
+
+PR240 is normally merged at `847722b4` after successful documentation run39204313209; source and merge trees agree. The corrected catalog/capture source `b7c97953` still has its original build queued in run39137551561, freshly read at about05:36UTC. Other component jobs were active. Published1.25.0 remains unchanged; full20i and1.26 publication remain unfinished.
+
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Source evidence](docs/evidence/ci-remaining-pure-pr-filters.json). Producer36 finite checks, independent29-source/35-edge review and root whole-file inverse checks pass. Current read-only policy inspection found no branch-protection rules or repository/inherited rulesets. No application acceptance or release version changes.
