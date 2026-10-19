@@ -18,7 +18,7 @@ $checks=[];
 function ok(string $name,bool $value): void {global $checks;$checks[]=['name'=>$name,'passed'=>$value];if(!$value)throw new RuntimeException($name);}
 function prefix(int $exists=2,string $validity='7'): string {return "* OK synthetic\r\n* CAPABILITY IMAP4rev1 AUTH=PLAIN\r\nCWR001 OK done\r\n+ \r\nCWR002 OK authenticated\r\n* FLAGS (\\Seen \\Answered)\r\n* $exists EXISTS\r\n* 0 RECENT\r\n* OK [UIDVALIDITY $validity] stable\r\nCWR003 OK [READ-ONLY] examined\r\n";}
 function row(int $sequence,string $uid,?string $header=null,string $flags='\\Seen'): string {$header??="From: =?UTF-8?B?Sm9zw6k=?= <synthetic@example.net>\r\nSubject: =?UTF-8?B?Q2Fmw6k=?=\r\nDate: Tue, 13 Oct 2026 10:30:00 -0500\r\n\r\n";return '* '.$sequence.' FETCH (UID '.$uid.' FLAGS ('.$flags.') RFC822.SIZE 2048 BODY[HEADER] {'.strlen($header)."}\r\n".$header.")\r\n";}
-function exercise(string $bytes,int $revoke=0): array {$s=new HeaderFixture($bytes);$calls=0;try {$out=(new HeaderSession($s,function()use(&$calls,$revoke){if(++$calls===$revoke)throw new RuntimeException('private authority detail');}))->read('ssl','synthetic@example.net','synthetic password');return [$out,$s,$calls];}catch(ReceivingFailure $e){return [$e,$s,$calls];}}
+function exercise(string $bytes,int $revoke=0,string $folder='INBOX'): array {$s=new HeaderFixture($bytes);$calls=0;try {$out=(new HeaderSession($s,function()use(&$calls,$revoke){if(++$calls===$revoke)throw new RuntimeException('private authority detail');}))->read('ssl','synthetic@example.net','synthetic password',$folder);return [$out,$s,$calls];}catch(ReceivingFailure $e){return [$e,$s,$calls];}}
 function deny(string $name,string $bytes,string $code='protocol'): void {[$out,$s]=exercise($bytes);ok($name,$out instanceof ReceivingFailure && $out->getMessage()===$code && !$out->getPrevious() && !$s->opened());}
 $normal=prefix().row(1,'44').row(2,'45',null,'')."CWR004 OK fetched\r\n";
 [$result,$stream,$calls]=exercise($normal);
@@ -64,6 +64,13 @@ $decoded=HeaderDecoder::decode("Subject: =?UTF-8?B?SGkK4oCuPHNjcmlwdD4=?=\r\nCon
 ok('Decoded control and bidi format characters normalized while markup remains untrusted text',$decoded['subject']==='Hi <script>');
 $decoded=HeaderDecoder::decode("Subject: folded\r\n\tclaim\r\nReceived: one\r\nReceived: two\r\n\r\n");ok('Folded and repeated unrelated headers remain compatible',$decoded['subject']==='folded claim');
 $decoded=HeaderDecoder::decode('Subject: '.str_repeat('é',700)."\r\n\r\n");ok('Display truncation is explicit and preserves complete UTF-8 characters',$decoded['headers_truncated']===true && strlen($decoded['subject'])===1000 && mb_check_encoding($decoded['subject'],'UTF-8'));
+[$result,$stream]=exercise($normal,0,'Sent Items');
+ok('Named-folder read examines only the quoted safe folder name',is_array($result) && $result['folder']==='Sent Items' && in_array("CWR003 EXAMINE \"Sent Items\"\r\n",$stream->commands(),true));
+[$result,$stream]=exercise(str_replace('CWR003 OK [READ-ONLY] examined','CWR003 NO folder unavailable',$normal));
+ok('EXAMINE refusal reports the folder outcome',$result instanceof ReceivingFailure && $result->getMessage()==='folder');
+[$result,$stream]=exercise($normal,0,'bad"name');ok('Quoted-special folder name refuses before network work',$result instanceof ReceivingFailure && $result->getMessage()==='folder'&&!$stream->commands());
+[$result,$stream]=exercise($normal,0,'wild*card');ok('Wildcard folder name refuses before network work',$result instanceof ReceivingFailure && $result->getMessage()==='folder'&&!$stream->commands());
+[$result,$stream]=exercise($normal,0,'escape\\name');ok('Backslash folder name refuses before network work',$result instanceof ReceivingFailure && $result->getMessage()==='folder'&&!$stream->commands());
 deny('MIME token overflow cannot silently return partially parsed headers',prefix(1).row(1,'44','Subject: '.str_repeat('a ',1800)."\r\n\r\n")."CWR004 OK done\r\n");
 ZBateson\MailMimeParser\MailMimeParser::setGlobalLogger(new class extends Psr\Log\AbstractLogger {public function log($level,string|Stringable $message,array $context=[]):void {throw new RuntimeException('Global logger must not receive mailbox data');}});
 ZBateson\MailMimeParser\MailMimeParser::addGlobalPhpDiContainerDefinition(['maxHeaderCount'=>0]);

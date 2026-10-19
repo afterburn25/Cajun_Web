@@ -9,7 +9,7 @@ from staff_cases import OWNER,STAFF
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit','inbox_server']})
     db('DELETE FROM ci_rate_limits');root=BASE+'/existing/admin/index.php';library=root+'?view=mail-accounts';new=root+'?view=mail-account';assigned=root+'?view=mailboxes'
-    check('Fresh setup creates empty inbox request storage',db("SELECT value FROM fresh_settings WHERE name='mail_inbox_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_inbox_reads'))
+    check('Fresh setup creates empty inbox request storage',db("SELECT value FROM fresh_settings WHERE name='mail_inbox_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_inbox_reads'))
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     before=inbox_server.connections
     r=submit(owner,library,'mail_inbox_setup',{'csrf':'bad','current_password':OWNER});check('Inbox preparation rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_inbox_schema_version'"))
@@ -48,6 +48,11 @@ def run_browser(env,browser):
         age();inbox_server.mode=mode;r=load(owner);check('HTTP '+mode+' request has an honest isolated result',phrase in r.text and not soup(r).select('[data-inbox-uid]'))
         if mode!='empty':check('HTTP '+mode+' failure never masquerades as an empty inbox','server reported an empty inbox' not in r.text)
     inbox_server.mode='ok'
+    check('Inbox form offers the bounded folder choices','<select name="folder">' in r.text and '<option value="Sent"' in r.text)
+    age();r=load(owner,folder='Sent');check('Sent folder headers load through the same bounded read','SYNTHETIC SENT COPY' in r.text and 'EXAMINE Sent' in inbox_server.commands)
+    check('Folder-scoped request history records the folder name',{'folder':'Sent'} in db('SELECT folder FROM ci_mail_inbox_reads WHERE folder=?',['Sent']))
+    age();r=load(owner,folder='Missing');check('Absent server folder is an honest recorded refusal','did not accept that folder' in r.text and not soup(r).select('[data-inbox-uid]'))
+    age();r=load(owner,folder='evil "name"');check('Unsafe folder name refuses before any network work','listed folders' in r.text and inbox_server.commands.count('EXAMINE evil')==0)
     retained=json.dumps(db('SELECT * FROM ci_mail_inbox_reads')+db('SELECT * FROM ci_mail_inbox_results')+db("SELECT * FROM ci_audit WHERE action LIKE 'mail_accounts.inbox_%'"))
     check('HTTP request records and audits retain no mailbox header or password text','SYNTHETIC PRIVATE' not in retained and 'receiving HTTP password' not in retained)
     context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];remote=[];page.on('pageerror',lambda e:errors.append(str(e)));page.on('request',lambda q:remote.append(q.url) if 'untrusted.example.invalid' in q.url else None)

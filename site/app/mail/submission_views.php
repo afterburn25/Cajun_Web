@@ -32,7 +32,10 @@ function mail_submissions_list(string $account,int $page=1):array {
         $result=[];
         foreach($rows as $row) {
             $message=mail_submissions_message($row);$status=mail_submissions_status($row['result_status']===null?null:['status'=>$row['result_status'],'reason'=>$row['result_reason']],$row['dispatch_started']===null?null:['started_at'=>$row['dispatch_started']]);
-            $result[]=['id'=>$row['id'],'draft_id'=>$row['draft_id'],'draft_revision'=>(int)$row['draft_revision'],'created_at'=>$row['created_at'],'subject'=>$message->snapshot->content->subject,'status'=>$status];
+            // Copied content needs current origin Read; a revoked grant masks the subject rather than dropping history.
+            $subject=$message->snapshot->content->subject;
+            if($message->snapshot->thread!==null){try{mail_submissions_origin($row,$message,$actor);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$subject='Copied message unavailable';}}
+            $result[]=['id'=>$row['id'],'draft_id'=>$row['draft_id'],'draft_revision'=>(int)$row['draft_revision'],'created_at'=>$row['created_at'],'subject'=>$subject,'status'=>$status];
         }
         return $result;
     });
@@ -40,15 +43,29 @@ function mail_submissions_list(string $account,int $page=1):array {
 /** GET/read only: validate saved content without creating an intent, DNS or credentials. */
 function mail_submissions_review(string $draft,?int $revision=null,?int $accountRevision=null):array {
     return staff_locked(function()use($draft,$revision,$accountRevision):array {
-        $actor=mail_submissions_actor();$saved=mail_drafts_get($draft);
+        $actor=mail_submissions_actor();$saved=mail_drafts_get($draft);$thread=null;$originFingerprint=null;
+        if($saved['status']==='source') {
+            // Copied-message content lives only in prepared protected storage.
+            if(!mail_replies_ready())throw new RuntimeException('This copied-message draft requires prepared Reply/Forward storage.');
+            $saved=mail_reply_drafts_get($draft);
+            $copied=mail_reply_drafts_for_submission($draft,$actor);
+            $thread=$copied['thread'];$originFingerprint=$copied['origin_fingerprint'];
+        }
         // Preserve already prepared history, including an interrupted submission after a failed POST.
         $existing=one('SELECT id FROM '.table('mail_submissions').' WHERE draft_id=? AND draft_revision=? AND owner_id=?',[$draft,$revision??(int)$saved['revision'],$actor['id']]);
         if($existing)return ['existing'=>mail_submissions_get($existing['id'])];
         if($saved['status']!=='draft' || ($revision!==null&&$revision!==(int)$saved['revision']) || ($accountRevision!==null&&$accountRevision!==(int)$saved['account_revision']))throw new RuntimeException('The reviewed draft changed. Reopen the saved draft before sending.');
         mail_submissions_prior_attempt($draft);$account=mail_drafts_account($saved['account_id'],(int)$saved['account_revision']);
-        // Same maintained preparation gate as dispatch; the preview identity is never persisted.
-        $content=new \CajunWebPro\Foundation\MailCompose\DraftContent($saved['to'],$saved['cc'],$saved['bcc'],$saved['subject'],$saved['body']);
-        \CajunWebPro\Foundation\MailSubmission\PreparedMime::fromSnapshot(new \CajunWebPro\Foundation\MailSubmission\SubmissionSnapshot(str_repeat('0',32),(int)$actor['id'],$draft,(int)$saved['revision'],$account['id'],$account['revision'],$account['address'],$content,time()));
-        return ['existing'=>null,'draft'=>$saved,'account'=>$account];
+        // Same maintained preparation gate as dispatch, including the exact
+        // attachment set; the preview identity is never persisted.
+        $content=new \CajunWebPro\Foundation\MailCompose\DraftContent($saved['to'],$saved['cc'],$saved['bcc'],$saved['subject'],$saved['body'],$saved['body_html']??($saved['html']??null));
+        $files=mail_files_ready()?all('SELECT name,mime,bytes,sha256,data FROM '.table('mail_draft_files').' WHERE draft_id=? ORDER BY slot',[$draft]):[];
+        $attachments=[];
+        foreach($files as $stored) {
+            if(!hash_equals($stored['sha256'],hash('sha256',$stored['data']))||(int)$stored['bytes']!==strlen($stored['data']))throw new RuntimeException('Saved draft attachments are damaged. Existing data was preserved.');
+            $attachments[]=new \CajunWebPro\Foundation\MailCompose\DraftAttachment($stored['name'],$stored['mime'],$stored['data']);
+        }
+        \CajunWebPro\Foundation\MailSubmission\PreparedMime::fromSnapshot(new \CajunWebPro\Foundation\MailSubmission\SubmissionSnapshot(str_repeat('0',32),(int)$actor['id'],$draft,(int)$saved['revision'],$account['id'],$account['revision'],$account['address'],$content,time(),$thread,$originFingerprint,$attachments));
+        return ['existing'=>null,'draft'=>$saved,'account'=>$account,'files'=>array_map(static fn(array $f):array=>['name'=>$f['name'],'mime'=>$f['mime'],'bytes'=>(int)$f['bytes']],$files)];
     });
 }

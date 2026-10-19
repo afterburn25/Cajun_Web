@@ -26,6 +26,10 @@ $page=max(1,min((int)($_GET['p']??1),100000));
 <section class="workspace-card" data-message-setup><h2>Prepare message reading</h2><p>Prepare private request history before assigned staff open individual messages. This step connects to no email server.</p>
 <form method="post"><?php admin_action('mail_message_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare message reading</button></form></section>
 <?php else: ?><p>Message reading is ready. Use Open message after loading recent inbox headers.</p><?php endif; ?>
+<?php if(mail_messages_ready()&&!mail_flags_ready()): ?>
+<section class="workspace-card" data-flag-setup><h2>Prepare message flags</h2><p>Prepare private request history before assigned staff mark messages read or unread on the server. This step connects to no email server.</p>
+<form method="post"><?php admin_action('mail_message_flags_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare message flags</button></form></section>
+<?php elseif(mail_flags_ready()): ?><p>Message flags are ready. Loaded messages offer Mark read or Mark unread on server.</p><?php endif; ?>
 <?php if(!mail_notices_ready()): ?>
 <section class="workspace-card" data-mail-notices-setup><h2>Prepare email notices</h2><p>After inbox and message reading are prepared, enable recent email notices for assigned administrators. The bell uses the newest checked message window; this step contacts no server.</p>
 <form method="post"><?php admin_action('mail_notices_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare email notices</button></form></section>
@@ -78,6 +82,16 @@ admin_input($protocol.'_password',($record && $record['has_credentials'])?'New a
 <?php elseif ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_enable">Enable saved account</button><?php endif; ?>
 <?php if ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_clear">Clear saved passwords and disable</button><?php endif; ?>
 </form><p class="hint">Disabling removes current staff availability. Clearing removes stored passwords and disables this account; settings and assignment history remain.</p></section>
+<section class="workspace-card"><h2>Server Sent folder</h2><p>Accepted submissions can save an exact copy to this account's server Sent folder. Set the folder name your provider uses, such as Sent or INBOX.Sent. Saving this setting connects to no email server.</p>
+<?php if(!mail_copies_ready()): ?>
+<p class="hint">Sent-copy storage is not prepared yet.</p><form method="post"><?php admin_action('mail_accounts_sent_setup'); ?><input type="hidden" name="account_id" value="<?=esc($accountId)?>"><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare Sent-copy storage</button></form>
+<?php else: $sentFolder=mail_sent_folder($accountId); ?>
+<form method="post" data-mail-sent-folder><?php admin_action('mail_accounts_sent_folder'); ?><input type="hidden" name="account_id" value="<?=esc($accountId)?>">
+<?php admin_input('sent_folder','Server Sent folder name',$sentFolder,'text','maxlength="64"'); ?>
+<?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?>
+<button class="btn outline">Save Sent folder</button></form>
+<p class="hint">Current: <?=esc($sentFolder===''?'not set':$sentFolder)?>. Leave blank to clear the setting.</p>
+<?php endif; ?></section>
 <section class="workspace-card"><h2>Staff assignments</h2><p>Each staff member needs a separate assignment, including owners. Administrators also need the matching Read assigned email or Send from assigned email permission under Administrators. The owner also needs the corresponding assignment to check each connection. Reading and sending also require their respective storage to be prepared.</p>
 <?php $grants=mail_accounts_grants($accountId);$options=[];
 foreach (all('SELECT u.id,u.name,u.email FROM '.table('users').' u JOIN '.table('staff_profiles')." p ON p.user_id=u.id WHERE p.enabled=1 AND u.password_hash<>'' AND p.role IN ('owner','administrator') ORDER BY u.name,u.id") as $staff) $options[(string)$staff['id']]=$staff['name'].' · '.$staff['email'];

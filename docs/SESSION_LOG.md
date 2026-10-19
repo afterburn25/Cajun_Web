@@ -1,3 +1,8 @@
+## 2026-10-17 — stabilize copy-migration foreign-key verification
+
+Commit08600bed makes the sent-copy migration compare relationships order-insensitively. `mail_copy_attempts` declares two single-column foreign keys; `information_schema.KEY_COLUMN_USAGE` reports both at ORDINAL_POSITION1, so ordering by that column left their relative order to engine defaults and the strict per-column check falsely refused fresh storage with `Incompatible copy relationships`. Found rows now order by COLUMN_NAME and the expected relation list is sorted to match; count, referenced table/column and RESTRICT-rule checks are unchanged. The fix is cascaded through reply-all, send-attachments, folders, flags and html-compose after the corrected mail-replies base (a382bed6, bba1e1cb) unmasked it downstream.
+
+## 2026-10-16 — publish the concrete release freeze and branch
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
 ## 2026-10-17 - complete acceptance job allowance
@@ -139,6 +144,51 @@ Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 o
 
 # Session log
 
+## Fix copied-draft SMTP fixture envelope mismatch — 2026-10-17
+
+Request: continue #157; resolve the deterministic `Reviewed reply send records server acceptance` failure on `devin/non20i-mail-replies`.
+
+Root cause (from the `54c5b566` outcome diagnostic, run 38985432533): the send committed its dispatch fence, opened the TLS channel and passed greeting/EHLO/AUTH, then the recorded outcome was `not_submitted`/`sender`/`connection` — the fixture dropped the connection at `MAIL FROM`. `tests/mail_submission_server.py` hard-asserted the canonical envelope (`MAIL FROM:<sender@example.invalid>` plus `first@/copy@/private@example.invalid` RCPTs) written for `mail_submissions_cases.py`; `mail_reply_cases.py` sends `MAIL FROM:<reply-sender@example.invalid>` with `synthetic@example.net`/`forward-recipient@example.invalid` recipients, so its `expect()` assertion failed and the socket closed mid-dialogue. The application/authorize/transport code was correct — every leg re-verified statically and the native/combined suites already pass.
+
+Fix: `configure()` now accepts optional `sender`/`recipients` and resets them to the canonical envelope on every call, so each case declares its expected dialogue while strict command-order assertions are unchanged; the `recipient`-refusal mode keys on the second configured recipient. `mail_reply_cases.py` declares the reply envelope before its send and the forward envelope before its send; the temporary outcome diagnostic is removed.
+
+Tests: `python -m py_compile` clean on both files. CI re-runs the full native/HTTP/Chromium/recovery/Apache matrix.
+
+Verified: both push (`38988201829`) and pull_request (`38988207057`) Application acceptance runs are green on `bba1e1cb` — 61/61 PR checks pass, including named PASS evidence for `Reviewed reply send records server acceptance`, `Reply wire equals saved MIME with RFC thread headers`, `Same saved copied revision replays without another SMTP connection`, and `Reviewed forward send succeeds without reply headers`. All six #157 named repairs are now fully green (#158 55/55 `5ec3fe9a`, #159 48/48 `69630e95`, #160 `6fc6e897`, #161 61/61 `bba1e1cb`, #174, #175 44/44 `cdf016f5`).
+
+Next: none for this repair set; PRs await integration review/coordination (merge state is not inferred from CI).
+
+## Diagnose deterministic copied-draft HTTP send failure — 2026-10-17
+
+Request: continue #157 repairs on `devin/non20i-mail-replies`. After `a382bed6` (missing `submission_views.php` require for the copied-history checks) the native lane is green, but `Reviewed reply send records server acceptance` in `tests/mail_reply_cases.py` fails deterministically on `a382bed6` (runs 38978848909/38978854961): the POST returns a 303 to the submission record, so the flow completes with a non-`accepted` outcome or no SMTP connection.
+
+Investigation: the send/authorize path was re-verified statically end to end — `mail_submissions_authorize` legs (author, sender address, copied flag/thread match, `mail_reply_drafts_load` identity/source-Read/read-record/fingerprint checks, revision/content equality), per-account dispatch cooldown, `EndpointResolver` fixture interception (`submission-fixture.example.net` → 8.8.8.8 → 127.0.0.1:fixture-port via `tests/mail_submission_socket_connector.php`), and `mail_accounts_grant` not bumping account revision. All consistent; the recorded outcome is needed to name the refusal leg.
+
+Actions: `tests/mail_reply_cases.py` now prints the recorded `ci_mail_submission_results` row (status/phase/reason/smtp_code), dispatch count, fixture connection delta and rendered status title when the check fails (`54c5b566`). A shipping-file `error_log` diagnostic (`bcf42dd1`) broke the combined suite — stderr during intentional refusal cases — and was reverted at `af570376`.
+
+Tests: `python -m py_compile` clean; inventory refreshed after the revert. CI reruns will report the outcome directly.
+
+Next: read the diagnostic, fix the real authorize/transport defect, remove the print, re-run full acceptance.
+
+## Repair copied-submission authorization and draft pagination — 2026-10-16
+
+Request: continue #157; independent review of PR #161 head `1d45798b` found a P1 authorization gap and two P2 defects.
+
+Actions: added `mail_submissions_origin` (current origin Read + immutable origin/thread fingerprint revalidation) and applied it to `mail_submissions_get`, both `mail_submissions_prepare_intent` existing-record replays, and `mail_submissions_list` (subject masking on revoked Read); replaced independent per-kind draft offsets with `mail_drafts_combined_list` (single union ordering + page boundary); fixed the fixture SMTP hostname to `smtp.example.net`. Native + HTTP coverage added for revocation/detail/replay/history and multi-page mixed pagination.
+
+Tests: `php -l` clean on all touched PHP; Python case compiles; build refresh clean. Native/browser lanes run in CI on this commit — not yet claimed.
+
+Next: push, reply on PR #161, continue remaining repair items.
+
+## Complete webmail Reply/Forward end-to-end — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (assignment `DEVIN_START_HERE.md`, coordination issue #157); Devin owns non-20i including licensing, Codex owns complete 20i. Starting commit: main `155db254`, new branch `devin/non20i-mail-replies`.
+
+Actions: extracted the preserved `codex/mail-replies-forwards` reply slice (`ReplyDraft`, `ReplyMetadata`, `MessageThread`, `DraftOrigin`, replies service/schema/migration, native test, docs) and completed the missing application layers — opt-in raw retention parameter on `mail_message_read`; `mail_message_reply`/`mail_message_forward` actions requiring posted-route equality, fresh authorized read, `ReplyDraft::prepare`, `mail_reply_drafts_create`, redirect to the editor; copied-draft dispatch in `mail_drafts`/`mail_submissions` controllers and views (origin banner, copied badge, omissions, editor, discard, history, review/send); format-2 `SubmissionSnapshot` (`thread`+`origin_fingerprint`) with `PreparedMime` emitting `In-Reply-To`/`References`; origin/source-Read/send revalidation in `mail_submissions_prepare_intent` and `mail_submissions_authorize`; `mail_drafts_replies_setup` owner-password action gated by `staff.manage`; permission-map entries; `tests/mail_reply_cases.py` packaged HTTP/Chromium case (synthetic IMAP→protected draft→captured SMTP/TLS) wired into `browser_acceptance.py`; synthetic IMAP fixture gained a `Message-ID` for wire-thread assertions; Apache direct-access list and three workflows updated (`devin/non20i-*` triggers, mail-replies native/pure lanes, application-tests push branch + `mail_replies_native.php` step).
+
+Tests: local PHP pure suites — 60 reply-content, 45 thread, 71 draft-compose named checks all pass; `php -l` clean on all touched PHP; `tools/build.py --refresh` passes (40 packages/2188 dependency files no drift; 2201 runtime mirrors byte-identical; installer inventory refreshed). Native MariaDB cases (`tests/mail_replies_native.php` on PHP 8.2/8.4) and packaged Chromium/IMAP/SMTP cases run in CI; their results are pending at documentation time. Known limitation: no local MariaDB here, so native/HTTP evidence is CI-produced only; no live customer mail, provider call, deployment or release.
+
+Next: open the bounded PR, report on issue #157, then continue the remaining roadmap on a fresh `devin/non20i-*` branch.
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.
@@ -176,6 +226,140 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Cascade corrected mail-replies base through the stack — 2026-10-17
+
+Request: continue #157; `Protected reply drafts` focused checks fail across the mail stack (PRs #189–#195) with `Call to undefined function mail_submissions_list()` — the `a382bed6` require fix and `bba1e1cb` SMTP-envelope fix landed on `devin/non20i-mail-replies` after the stack branched.
+
+Actions: merged `devin/non20i-mail-replies` (through `85631c41`) into this branch; union-resolved `docs/SESSION_LOG.md` keeping both branch histories. Cascades upward through sent-sync → reply-all → send-attachments → folders → flags → html-compose.
+
+Tests: merge only — CI re-runs the focused and acceptance lanes on the new tip.
+
+Next: complete the cascade, then verify the `Protected reply drafts` and `native-and-browser` lanes on each PR.
+
+## Fix copied-draft SMTP fixture envelope mismatch — 2026-10-17
+
+Request: continue #157; resolve the deterministic `Reviewed reply send records server acceptance` failure on `devin/non20i-mail-replies`.
+
+Root cause (from the `54c5b566` outcome diagnostic, run 38985432533): the send committed its dispatch fence, opened the TLS channel and passed greeting/EHLO/AUTH, then the recorded outcome was `not_submitted`/`sender`/`connection` — the fixture dropped the connection at `MAIL FROM`. `tests/mail_submission_server.py` hard-asserted the canonical envelope (`MAIL FROM:<sender@example.invalid>` plus `first@/copy@/private@example.invalid` RCPTs) written for `mail_submissions_cases.py`; `mail_reply_cases.py` sends `MAIL FROM:<reply-sender@example.invalid>` with `synthetic@example.net`/`forward-recipient@example.invalid` recipients, so its `expect()` assertion failed and the socket closed mid-dialogue. The application/authorize/transport code was correct — every leg re-verified statically and the native/combined suites already pass.
+
+Fix: `configure()` now accepts optional `sender`/`recipients` and resets them to the canonical envelope on every call, so each case declares its expected dialogue while strict command-order assertions are unchanged; the `recipient`-refusal mode keys on the second configured recipient. `mail_reply_cases.py` declares the reply envelope before its send and the forward envelope before its send; the temporary outcome diagnostic is removed.
+
+Tests: `python -m py_compile` clean on both files. CI re-runs the full native/HTTP/Chromium/recovery/Apache matrix.
+
+Verified: both push (`38988201829`) and pull_request (`38988207057`) Application acceptance runs are green on `bba1e1cb` — 61/61 PR checks pass, including named PASS evidence for `Reviewed reply send records server acceptance`, `Reply wire equals saved MIME with RFC thread headers`, `Same saved copied revision replays without another SMTP connection`, and `Reviewed forward send succeeds without reply headers`. All six #157 named repairs are now fully green (#158 55/55 `5ec3fe9a`, #159 48/48 `69630e95`, #160 `6fc6e897`, #161 61/61 `bba1e1cb`, #174, #175 44/44 `cdf016f5`).
+
+Next: none for this repair set; PRs await integration review/coordination (merge state is not inferred from CI).
+
+## Diagnose deterministic copied-draft HTTP send failure — 2026-10-17
+
+Request: continue #157 repairs on `devin/non20i-mail-replies`. After `a382bed6` (missing `submission_views.php` require for the copied-history checks) the native lane is green, but `Reviewed reply send records server acceptance` in `tests/mail_reply_cases.py` fails deterministically on `a382bed6` (runs 38978848909/38978854961): the POST returns a 303 to the submission record, so the flow completes with a non-`accepted` outcome or no SMTP connection.
+
+Investigation: the send/authorize path was re-verified statically end to end — `mail_submissions_authorize` legs (author, sender address, copied flag/thread match, `mail_reply_drafts_load` identity/source-Read/read-record/fingerprint checks, revision/content equality), per-account dispatch cooldown, `EndpointResolver` fixture interception (`submission-fixture.example.net` → 8.8.8.8 → 127.0.0.1:fixture-port via `tests/mail_submission_socket_connector.php`), and `mail_accounts_grant` not bumping account revision. All consistent; the recorded outcome is needed to name the refusal leg.
+
+Actions: `tests/mail_reply_cases.py` now prints the recorded `ci_mail_submission_results` row (status/phase/reason/smtp_code), dispatch count, fixture connection delta and rendered status title when the check fails (`54c5b566`). A shipping-file `error_log` diagnostic (`bcf42dd1`) broke the combined suite — stderr during intentional refusal cases — and was reverted at `af570376`.
+
+Tests: `python -m py_compile` clean; inventory refreshed after the revert. CI reruns will report the outcome directly.
+
+Next: read the diagnostic, fix the real authorize/transport defect, remove the print, re-run full acceptance.
+## Optional sanitized HTML alternative in drafts — 2026-10-16
+
+Request: continue #157 non-20i roadmap after server read/unread flag sync; the mail roadmap's HTML composition item remained open. Starting commit: `devin/non20i-mail-flags` tip.
+
+Actions: `foundation/mail-compose/ComposeHtml.php` — outbound-safe sanitizer over the vendored Symfony HtmlSanitizer with a fixed config (formatting/table/link subset, `a[href,title]` http/https/mailto only, forced `rel`/`target`, no remote resources, style/class/id/event attributes stripped). `DraftContent` gains optional `$html` (bounds + still-unsanitized-token refusal; empty means plain only). `DraftOrigin::contentPayload`/`contentFromJson` carry an optional `body_html` key so edited copied drafts keep the alternative canonically. `SubmissionSnapshot::privatePayload` formats 5–8 (`body_html` key after `body`; formats 1–4 byte-identical). `PreparedMime` sends `multipart/alternative` via the maintained mailer with deterministic snapshot boundaries. `mail_drafts` schema gains `body_html MEDIUMTEXT NULL`; `mail_drafts_schema_version` advances to `2` — populated version-1 installs ALTER additively, unmarked populated storage still refuses adoption, fresh deploys stamp `2`. `site/app/mail/drafts.php` `mail_drafts_html()` wraps the sanitizer with finite messages; `submissions.php` validates formats 5–8 and compares `html` in the reviewed-content fence; `mail_submissions_message` rebuilds exact snapshots including the alternative. Controller binds posted `body_html` (65,536-byte raw bound) into sanitized content; draft/submission views render it in the shared sandboxed `app/mail/document.php` frame (extracted from `mail_message.php`).
+
+Tests: `tests/mail-compose/html.php` — 32 checks (sanitizer subset, link policies, hostile stripping, bounds, UTF-8/NUL refusal, DraftContent guards; DOM-gated checks skip cleanly under `php -n`). `tests/mail-submission/mime.php` — +8 checks: format 5/8 canonical keys, `multipart/alternative` structure, base64 plain+html parts, byte repeatability, wire-safe bounds, attachment wrapper composition. `mail_drafts_form.php`/`mail_submission_forms.php` — form parse/persist/render coverage (60 form checks incl. sandboxed recorded frame). `mail_drafts_native.php` — sanitize/save/replay/damage/clear round-trips plus a real version-1→2 populated-upgrade fixture. `mail_drafts_cases.py` — packaged HTTP sanitize/save/preview/refuse/clear flows and fresh-install stamp `2`. `mail_submission_upgrade_cases.py` — owner re-preparation preserves prior draft/history rows. `mail-compose.yml` lane and `apache_acceptance.py` denials updated for `html.php`, `app/mail/document.php`, `includes/foundation/mail-compose/ComposeHtml.php`. All pure suites pass locally (71 draft-content, 32 formatted, 39 MIME, 99 attachments, 48+60 form/template, reply 68); `php -l` clean; build refresh clean (2,206 receiving + 15 submission mirrored files byte-identical, inventory regenerated). Native MariaDB / HTTP-TLS / Apache lanes run in CI — not claimed here.
+
+Next: commit, push stacked PR on `devin/non20i-mail-flags`, update #157; then remaining roadmap items (OAuth/provider work is Codex's lane).
+
+## Explicit server read/unread flags — 2026-10-16
+
+Request: continue #157 non-20i roadmap after folder-scoped reads; A-06/A-08 require deliberate per-message read-state sync with the provider ("opening/marking a particular message updates the relevant provider flag").
+
+Actions: `foundation/mail-receiving/FlagSession.php` + `FlagWriter.php` — fixed `SELECT "<folder>"` (READ-WRITE required, `flags` refusal on READ-ONLY/refused folders), `UID FETCH <uid> (UID FLAGS)` existence/current-state proof, conditional `UID STORE <uid> ±FLAGS.SILENT (\Seen)`, UIDVALIDITY fencing, same authorize-callback cadence and 20s bound as reads; `ReadProfile::Flags` (1 KiB literal bound) and a `flags` `ReceivingFailure` code. `site/app/mail/flags.php` — `mail_message_mark()` with `mail.read` grant + exact account revision, `mail_inbox_folder` wire-safe validation, 5s per-account cooldown, 120/hour account+actor limits, durable request row before DNS, immutable result, and `mail_notice_items.server_seen` reconciliation on success. Additive `mail_flags_schema`/`mail_flags_migrate` (owner password, strict validation, no adoption of unknown rows). Controller `mail_message_flag` under the `mail_message_` prefix with route-identity POST matching; message view adds one mark button and a private flag history; accounts view adds the owner preparation card. Permission map: setup owner-only (`staff.manage`), mark action delegates to internal exact-authority checks.
+
+Tests: `tests/mail-receiving/flag_test.php` — 42 checks covering the exact wire sequence, both directions, unchanged short-circuit, UIDVALIDITY/folder/READ-ONLY/STORE refusals, revocation at every authorization boundary, unsafe folder/UID refusal before network. `tests/mail_flags_native.php` — 39 injected-resolver/transport checks (setup gating, identity fencing, cooldown, ceilings, revocation mid-flight, immutable single result, notice reconcile, audit hygiene). `tests/mail_message_cases.py` + `mail_inbox_http_server.py` — packaged HTTP `flag`/`flag-unseen`/`flag-refused`/`flag-readonly`/`flag-gone` modes over real synthetic TLS. `php -l` clean; all five pure receiving suites pass (42 flag + retained); build refresh clean (2206 mirrored receiving files). MariaDB native and HTTP lanes run in CI — no database or real-mailbox run is claimed here.
+
+Next: stacked PR against the folders branch; then remaining mail items (HTML composition, OAuth) or other non-20i roadmap work.
+
+## Folder browsing follow-up — folder column width correction — 2026-10-16
+
+Request: continue #157 non-20i roadmap. Review of the folder-scoped read increment found `mail_message_reads.folder` and `mail_notice_windows/mail_notice_items.folder` still declared `VARCHAR(5)`, which rejects legal folder names such as `Sent Items` under strict SQL mode.
+
+Actions: `mail_messages_schema.php` and `mail_notices_schema.php` declare `folder VARCHAR(64)` (the same bound as `mail_inbox_reads.folder` and the wire-safe folder rule); `mail_messages_migrate()` and `mail_notices_migrate()` apply an additive `MODIFY COLUMN folder VARCHAR(64)` before strict validation when an existing install still has `varchar(5)`; `mail_messages_schema_version` and `mail_notices_schema_version` advance to `2` with adoption checks only for truly unmarked installs; fresh deploys stamp `2`. Test assertions updated for the new markers.
+
+Tests: `php -l` clean on all touched PHP; Python case files compile; build refresh clean (40 locked packages, 2188 exact dependency files, receiving mirror byte-identical). The widen/refuse paths run in the native MariaDB lane in CI.
+
+Next: continue the non-20i roadmap (provider flag sync and remaining mail acceptance items).
+
+## Folder-scoped mailbox browsing — 2026-10-16
+
+Request: continue #157 non-20i roadmap; next named A-06 gap was other-folder reads. Starting commit: `devin/non20i-mail-send-attachments` tip `213325a4`, new branch `devin/non20i-mail-folders`.
+
+Actions: `ReadSession::folder` bounds wire folder names (printable ASCII ≤64, no quote/backslash/wildcard) and `headers`/`message`/`InboxReader::read`/`MessageReader::read`/`HeaderSession` accept a folder argument that feeds `EXAMINE "<name>"` — read-only, `folder` refusal is a distinct bounded outcome. `mail_inbox_folder` mirrors the rule for service callers; `mail_inbox_read` gains a folder parameter recorded in `mail_inbox_reads.folder` (additive `VARCHAR(64) ... DEFAULT 'INBOX'` — version-1 installs get the owner-gated ALTER through the same `mail_inbox_setup`, storage version now `2`); inbox results/history and audit detail carry the folder. `mail_message_read`/`mail_message_attachment` accept a folder, journal it in the existing `mail_message_reads.folder` column, and verify the transport's claimed folder against the requested one. `mail_notices_observe`/`mail_notices_resolve` remain INBOX-keyed so folder reads never invent or resolve notices. The inbox view gains a bounded folder select (common names plus the account's configured Sent folder); message routes/forms carry the folder through the same posted-field binding; non-INBOX pages hide Reply/Reply all/Forward because protected copied drafts still bind to INBOX source reads. The HTTP IMAP fixture answers `EXAMINE "Sent"` with a separate UIDVALIDITY/message set and `NO` for absent folders.
+
+Tests: `php -l` clean on all touched PHP; pure session suite extended to 53 checks (quoted folder names, `folder` refusal, wildcard/backslash/quote names refused before network); native inbox/message suites extended (folder recorded in journals, transport folder-mismatch refused, attachment reads keep folder binding); HTTP cases extended (Sent headers and message through real TLS fixture, reply hidden on Sent, missing-folder refusal, unsafe name refused before network); update fixture remains compatible (`DEFAULT 'INBOX'` lets legacy folderless inserts run on both shapes; version-1 tables migrate in place). Build refresh clean; canonical mirrors byte-identical. Native/HTTP/Apache lanes run in CI; no real mailbox or provider use is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-send-attachments`, update #157.
+
+## Send-side draft attachments — 2026-10-16
+
+Request: continue #157 non-20i roadmap; send-side attachments were the largest remaining named mail gap. Starting commit: `devin/non20i-mail-reply-all` tip `74e98c6d`, new branch `devin/non20i-mail-send-attachments`.
+
+Actions: new `foundation/mail-compose/DraftAttachment.php` (mirrored) — printable-ASCII wire names ≤180 bytes, declared MIME token validation, 1 B–256 KiB per file, ≤4 files, ≤512 KiB combined, embedded SHA-256, metadata-only descriptors; `SubmissionSnapshot` accepts ordered `DraftAttachment` lists and emits formats 3/4 (1/2 plus an `attachments` descriptor array) — unchanged inputs keep format 1/2 with identical payload bytes; `PreparedMime` attaches via `OfflineMailer::addStringAttachment` (base64, exact bytes) with the wire bound raised to 768 KiB and a snapshot-fingerprint-derived deterministic `generateId` so multipart boundaries reproduce byte-exactly (no randomness remains in generated MIME); `AppendSession`/`SentCopy` message bounds now take `PreparedMime::MAX_BYTES`; `site/app/mail/files.php` plus additive `mail_files_schema`/`mail_files_migrate` create `mail_draft_files`/`mail_submission_files` (owner-password gated, strict collation/FK validation, populated unknown storage refused); `mail_drafts_attach`/`mail_drafts_detach`/`mail_drafts_files`/`mail_drafts_file` revalidate author, exact draft revision, status and current Send grant, and bump the draft revision (paired protected revision for copied drafts); `mail_submissions_prepare_intent` copies verified draft file rows into immutable `mail_submission_files`; `mail_submissions_message` reconstructs formats 3/4 and verifies each stored descriptor/hash/bytes; `mail_submissions_authorize` revalidates the current draft file set against bound descriptors; review/send surfaces display attachment metadata; controller actions `mail_drafts_files_setup`, `mail_drafts_attach`, `mail_drafts_detach`, `mail_drafts_file` (forced octet-stream, `nosniff`, `no-store`).
+
+Tests: `php -l` clean on all touched PHP; new `tests/mail-submission/attachments.php` 99 checks (validation bounds, format-3/4 key order/fingerprints, deterministic repeatable MIME, base64 round-trip of exact bytes, bound coverage) plus `verify_attachments.py` 55 independent standard-library wire parses; existing snapshot (52), MIME (29), reply (68), receiving-attachment (15) and append (33) pure suites unchanged-pass; `mail_submissions_native.php` extended (owner-gated setup, author isolation, stale-revision refusals, count bound, immutable submission copies surviving later draft changes, changed-set dispatch refusal, byte-exact reconstruction, damaged-blob refusal); `mail_submissions_cases.py` extended (owner setup, multipart upload, exact download with safe headers, non-author denial, stale revision refusals, review visibility, byte-exact transmitted MIME, Sent-copy of the >64 KiB MIME, detach); `apache_acceptance.py` denial list gained the new internals; `mail-submission.yml` runs the new suite in both default and no-ini lanes. Build refresh clean; canonical mirrors byte-identical. Native/HTTP/Apache lanes run in CI; no real mailbox or provider use is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-reply-all`, update #157.
+
+## Reply all for protected copied drafts — 2026-10-16
+
+Request: continue #157 non-20i roadmap; reply-all was the remaining named gap in the Reply/Forward contract. Starting commit: `devin/non20i-mail-sent-sync` tip `3a3cb28c`, new branch `devin/non20i-mail-reply-all`.
+
+Actions: `ReplyMetadata::decode` now bounds and parses the original To/Cc headers alongside the existing reply fields (parser header budget 5→7, shared mailbox syntax pattern, ≤20 addresses per field); `ReplyDraft::prepare` accepts `reply-all` with a required `$self` argument — To = reply recipients ∪ original To, Cc = original Cc, each deduplicated by first occurrence and dropping the sender under `DraftContent`'s exact-address rule; `DraftOrigin` and `mail_reply_drafts_existing` whitelists gained `reply-all`; the `mail_message_reply_all` controller action resolves the sender's own address from the exact authorized account before preparing; the message view gained a Reply all button; the synthetic inbox fixture's stored message now carries To/Cc headers.
+
+Tests: `php -l` clean; `tests/mail-compose/reply.php` 67/67 pure checks including reply-all recipient union, self-exclusion exactness, Cc-vs-To dedupe, Reply-To precedence, missing-sender refusal, malformed recipient refusal and the recipient bound; `mail_reply_cases.py` extended with an HTTP reply-all flow asserting fixture-verified recipients, origin mode, thread binding and replay/different-action refusals; `mail_replies_native.php` gained a reply-all form-identity refusal. Build refresh clean; mirrors byte-identical. Native/HTTP lanes run in CI; no real mailbox acceptance is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-sent-sync`, update #157.
+
+## Sent-folder synchronization for accepted submissions — 2026-10-16
+
+Request: continue #157 non-20i roadmap; the mail roadmap's Sent-folder synchronization gap. Starting commit: `devin/non20i-mail-attachments` tip `921f7c53`, new branch `devin/non20i-mail-sent-sync`.
+
+Actions: added `foundation/mail-receiving/AppendSession.php` and `SentCopy.php` (mirrored to `site/includes/`) — a fixed APPEND-only session (CWA tags, capability negotiation, TLS/STARTTLS identical to the read path, AUTHENTICATE PLAIN, single literal continuation, `fwriteLiteral` bounded write, exact tagged final response) plus `ReadProfile::Append`, `ReceivingStream::fwriteLiteral`, and `folder` added to `ReceivingFailure`'s finite codes; added `site/database/schema/mail_copies_schema.php` + `mail_copies_migrate.php` creating `mail_sent_folders`, `mail_copy_attempts`, `mail_copy_results` under owner-password gated additive migration with strict relation/collation validation; added `site/app/mail/copies.php` — `mail_sent_folder_save` (owner-only, wire-unsafe names refused), `mail_copy_status`, immutable `mail_copy_record` (conflicting results refuse, never rewrite), and `mail_submission_copy` with a durable attempt fence before transport, current-authority revalidation inside the IMAP session at each boundary, dedupe of recorded `appended` results, and 2-second account plus 60/hour actor limits; wired `mail_accounts_sent_setup`/`mail_accounts_sent_folder` and `mail_submissions_copy_sent` controller actions, account settings card and submission detail copy form/result.
+
+Tests: `php -l` clean on all touched PHP; `tests/mail-receiving/append_test.php` 32/32 pass (acceptance, folder refusal, auth/protocol/timeout/authorization-loss boundaries, unsafe names, oversized/malformed/non-ASCII payload refusal, literal-injection refusal, budget bounds); receiving suites unchanged-pass; `tests/mail_submissions_native.php` extended (setup gating, dedupe fence, mid-copy grant loss, folder refusal retry, author isolation); `mail_submissions_cases.py` extended (no silent append on send, folder setup, wire-unsafe names, byte-exact fixture append, dedupe replay, folder refusal, non-author refusal); `mail_inbox_http_server.py` gained `append`/`append-refused` modes; `apache_acceptance.py` and `mail-receiving.yml` updated; attachment test `require` fixed for the now-canonical bootstrap class. Build refresh clean: 2204 receiving files byte-identical, 40 locked packages, pinned PHPMailer and submission bundles verified. Native/HTTP lanes run in CI; no real mailbox, provider or deployment acceptance is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-attachments`, update #157.
+
+## Receive-side mail attachments — 2026-10-16
+
+Request: continue #157 non-20i roadmap; the message view declared "attachments unavailable." Starting commit: `devin/non20i-mail-replies` tip `c99370a6`, new branch `devin/non20i-mail-attachments`.
+
+Actions: added `foundation/mail-receiving/AttachmentIndex.php` (mirrored to `site/includes/`) — parses the already-fetched bounded raw via the maintained MIME parser, lists attachment-disposition or named parts with sanitized display names (no path separators, quotes, control or non-ASCII bytes; `attachment-N.bin` fallback), declared-type metadata and decoded sizes capped at 256 KiB; `mail_message_content` now includes `attachments` metadata in successful reads while `source` stays transient under `retainSource`; `mail_message_attachment` performs a second fully recorded exact-message read and extracts the indexed part; the admin controller streams it as `application/octet-stream` with `nosniff` and a sanitized `Content-Disposition` filename; the view lists each attachment as an explicit POST download and keeps the 256 KiB whole-message disclaimer; `staff_action_permission` maps the action to grant-internal authorization; Apache denial inventory updated.
+
+Tests: `php -l` clean on all touched PHP; `tests/mail-receiving/attachment_test.php` 14/14 pass (pure decoder/index, no sockets); `body_test.php` 35/35 unchanged-pass; native suite extended with a synthetic `quote.pdf` fixture asserting metadata-without-source, byte-exact extract, pre-read index refusal, truthful recorded out-of-range read, and revoked-grant bounded failure; `mail_message_cases.py` extended with HTTP assertions for listing, octet-stream byte-exact download, pre/post-read index refusal, stale identity refusal and denied staff; `apache_acceptance.py` lists the new foundation file. Build refresh clean; installer inventory regenerated. No real mailbox, provider or deployment acceptance is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-replies`, update #157.
+
+## Repair copied-submission authorization and draft pagination — 2026-10-16
+
+Request: continue #157; independent review of PR #161 head `1d45798b` found a P1 authorization gap and two P2 defects.
+
+Actions: added `mail_submissions_origin` (current origin Read + immutable origin/thread fingerprint revalidation) and applied it to `mail_submissions_get`, both `mail_submissions_prepare_intent` existing-record replays, and `mail_submissions_list` (subject masking on revoked Read); replaced independent per-kind draft offsets with `mail_drafts_combined_list` (single union ordering + page boundary); fixed the fixture SMTP hostname to `smtp.example.net`. Native + HTTP coverage added for revocation/detail/replay/history and multi-page mixed pagination.
+
+Tests: `php -l` clean on all touched PHP; Python case compiles; build refresh clean. Native/browser lanes run in CI on this commit — not yet claimed.
+
+Next: push, reply on PR #161, continue remaining repair items.
+
+## Complete webmail Reply/Forward end-to-end — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (assignment `DEVIN_START_HERE.md`, coordination issue #157); Devin owns non-20i including licensing, Codex owns complete 20i. Starting commit: main `155db254`, new branch `devin/non20i-mail-replies`.
+
+Actions: extracted the preserved `codex/mail-replies-forwards` reply slice (`ReplyDraft`, `ReplyMetadata`, `MessageThread`, `DraftOrigin`, replies service/schema/migration, native test, docs) and completed the missing application layers — opt-in raw retention parameter on `mail_message_read`; `mail_message_reply`/`mail_message_forward` actions requiring posted-route equality, fresh authorized read, `ReplyDraft::prepare`, `mail_reply_drafts_create`, redirect to the editor; copied-draft dispatch in `mail_drafts`/`mail_submissions` controllers and views (origin banner, copied badge, omissions, editor, discard, history, review/send); format-2 `SubmissionSnapshot` (`thread`+`origin_fingerprint`) with `PreparedMime` emitting `In-Reply-To`/`References`; origin/source-Read/send revalidation in `mail_submissions_prepare_intent` and `mail_submissions_authorize`; `mail_drafts_replies_setup` owner-password action gated by `staff.manage`; permission-map entries; `tests/mail_reply_cases.py` packaged HTTP/Chromium case (synthetic IMAP→protected draft→captured SMTP/TLS) wired into `browser_acceptance.py`; synthetic IMAP fixture gained a `Message-ID` for wire-thread assertions; Apache direct-access list and three workflows updated (`devin/non20i-*` triggers, mail-replies native/pure lanes, application-tests push branch + `mail_replies_native.php` step).
+
+Tests: local PHP pure suites — 60 reply-content, 45 thread, 71 draft-compose named checks all pass; `php -l` clean on all touched PHP; `tools/build.py --refresh` passes (40 packages/2188 dependency files no drift; 2201 runtime mirrors byte-identical; installer inventory refreshed). Native MariaDB cases (`tests/mail_replies_native.php` on PHP 8.2/8.4) and packaged Chromium/IMAP/SMTP cases run in CI; their results are pending at documentation time. Known limitation: no local MariaDB here, so native/HTTP evidence is CI-produced only; no live customer mail, provider call, deployment or release.
+
+Next: open the bounded PR, report on issue #157, then continue the remaining roadmap on a fresh `devin/non20i-*` branch.
 
 ## Synchronize release entry points after review — 2026-10-15
 
@@ -2160,6 +2344,9 @@ Original9779 is now classified as a runner105-minute timeout, with140/141 checkp
 
 Continue roadmap and keep the published assignment directly usable. Start main00201b98798f08ea4eee2ffc2336438bf2a74c3e. Commit description: Record StackCP candidate tests and direct Devin repair priorities. Rewrite current status/handoff/checkpoint, updateREADME/roadmap/coordination/changelog/start-here/fullassignment and preserve old detail through immutable Git links. Runtime remains on reviewed3fa72d7b; first focused38933590118 is active. Parent5bfd focused38931463106 passes four755-check native environments plus260distro checks (proofab93db13); original cccf/2a/9779 failures are classified. Fresh PR state158–175 preserves unchanged reviewed158/159/161 findings and stacked dependencies. This commit changes only Markdown; no runtime/installer/version/asset/live state. Documentation validation follows before publication. Next: verify original focused artifacts and actual query profiles, continue bounded PHP-settings work and complete full/combined/release acceptance.
 
+- 2026-10-17 mail-folders: fixed `mail_inbox_admin_action` folder default and the notice-migration version guard. `posted('folder',70)` returns `''` (not null) for the folderless POST used by the upgraded-1.16 Apache baseline, so `??'INBOX'` never fired and `mail_inbox_folder('')` threw before the endpoint-policy check — switched to `?:` (1bbc91d5). The v1->v2 notice rewrite also silently adopted any populated storage with an unrecognized schema-version marker; it now requires empty/'1'/'2' and refuses otherwise, matching the flags-side fix. Installer inventory regenerated; cascaded through flags (579b3d64) and html-compose (c6bfff6e).
+
+- 2026-10-17 mail-sent-sync: corrected the 'Server folder refusal records a bounded failure without copy claims' expectation (9051a74d). The APPEND literal is always transmitted before the server's NO, so the fixture's `appended` bytes are the refused submission's MIME — comparing to the earlier accepted MIME could never hold. Now asserts the fixture received exactly the refused submission's bytes. Cascaded through reply-all (ff0e120e), send-attachments (a6a74d82), folders (2d19a992), flags (3fe1a281) and html-compose (4fa5d1ae); inventories verified on every branch.
 
 ## 2026-10-15 — Preserve current main and repair replacement rollback during20i integration
 
@@ -3479,3 +3666,10 @@ Request: continue the roadmap and preserve actionable GitHub continuity. Startin
 Recorded the newly reviewed139-run remainder (139 verified cancellations,551 unexecuted jobs), exact PR249 package verification and separate PR250 fixture correction/first runs. Added source-bound receipts and current handoff; no application, workflow, installer, version or published files changed. Validation consists of existing named39 package checks,9 setup checks in each PHP mode/two lints, independent cleanup terminal review and root556 retained-file hash checks. These scopes are distinct from pending hosted SQL/browser/full acceptance. A consolidation review found a missing aggregate-to-reviewed-input binding; root corrected it before the sole finalizer invocation.
 
 All 13 original required gates were queued at10:45:52 UTC. No new dispatch/rerun followed. Original duplicate-table failures, absent downstream results and prior cleanup API/missing-snapshot limitations remain preserved. Local documentation validation passes 12 required documents,274 Markdown files,1,906 local links and 36 heading links; the dependency-bundle checks and whitespace check also pass. See [current work and next action](ROADMAP_CONTINUATION_2026_10_19.md). Next inspect changed original results, resolve real failures, then normally integrate accepted candidates and perform exact-main/release-delivery verification. Published 1.25.0 remains unchanged; full 20i/1.26 and live deployment are not complete.
+## 2026-10-19 — mail flags/HTML-compose review corrections (non-20i)
+
+Responding to coordinator integration-review findings on PR194/PR195. On `devin/non20i-mail-flags` (`2212997f`, pin `3be6a7a7`): the native fixture now loads `site/app/mail/flags.php`, projects per-actor private history correctly, and assigns each injected transport mode; `FlagSession` honors PERMANENTFLAGS, refuses unsupported flag changes up front, verifies post-`UID STORE` state with a bounded `UID FETCH`, and classifies unconfirmed application as `uncertain` rather than success, with post-write authority changes reported as `access_changed`. Protocol fixture reports 47/47 checks.
+
+On `devin/non20i-mail-html-compose` (`d2768611`, contract pin `d59dbce3`, merge tip `ece18ef3`): the draft storage marker stays `1` for version-1 populated storage (additive `body_html` column, no forced migration), reads/history stay marker-compatible, and draft edits/saves are gated on the additive column via `mail_drafts_html_ready()` with an owner "Prepare formatted drafts" path; `ComposeHtml::MAX_INPUT_BYTES` raised to the canonical output bound `61440` so every accepted value revalidates unchanged; template insertion clears `body_html` consistently with the previewed plain snapshot; the concurrent-discard recovery card shows the escaped unsaved formatted alternative; `OfflineMailer::alternativeExists()` uses `!==''` so a literal `0` plain body keeps its MIME alternative; and the format-5 tamper test replaces `body_html` through canonical JSON with exact payload restore.
+
+Verification: PHP lint clean on all touched files; isolated suites pass — 35 compose, 49 form (default and `-n`), 42 MIME (literal-0 cases included), 71 draft-content; 47/47 flag protocol checks; `acceptance_artifacts_test.py` 226 checks on both heads; installer inventory regenerated over LF bytes and verified. The native MariaDB fixture could not run locally (no test database); packaged HTTP/Chromium and Apache acceptance for this head remain pending in CI. No live mail, provider call, deployment, merge or release.

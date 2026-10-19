@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, 'devin/non20i-*']
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
@@ -307,8 +307,10 @@ jobs:
           "$PHP_BINARY" tests/mail_connections_native.php
           "$PHP_BINARY" tests/mail_inbox_native.php
           "$PHP_BINARY" tests/mail_message_native.php
+          "$PHP_BINARY" tests/mail_flags_native.php
           "$PHP_BINARY" tests/mail_notices_native.php
           "$PHP_BINARY" tests/mail_drafts_native.php
+          "$PHP_BINARY" tests/mail_replies_native.php
           "$PHP_BINARY" tests/mail_drafts_form.php
           cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
           "$PHP_BINARY" -n tests/mail_drafts_form.php

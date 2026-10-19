@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php';
 require_once CWP_CODE_ROOT.'/app/mail/submission_views.php';
 require_once CWP_CODE_ROOT.'/app/mail/submission_dispatch.php';
+require_once CWP_CODE_ROOT.'/app/mail/copies.php';
 
 function mail_submissions_form(array $input,bool $confirmation=true):array {
     $id=mail_drafts_form_text($input,'submission_id',32);mail_drafts_id($id);
@@ -20,6 +21,12 @@ function mail_submissions_admin_action(string $action):void {
     if($action==='mail_submissions_setup') {
         mail_submissions_migrate(mail_drafts_form_text($_POST,'current_password',200));flash('Email submission storage is ready.');redirect(admin_url('mail-submissions'));
     }
+    if($action==='mail_submissions_copy_sent') {
+        $id=mail_drafts_form_text($_POST,'submission_id',32);
+        $result=mail_submission_copy($id);
+        flash($result['code']==='appended'?'A copy was saved in the server Sent folder.':mail_copy_outcome($result['code']),$result['code']==='appended'?'success':'error');
+        redirect(admin_url('mail-submission',['submission_id'=>$id]));
+    }
     if($action!=='mail_submissions_send')throw new InvalidArgumentException('Unknown email submission action.');
     $form=mail_submissions_form($_POST);
     $id=mail_submissions_send($form['id'],$form['draft'],$form['revision'],$form['accountRevision']);
@@ -31,7 +38,7 @@ function mail_submissions_admin_data(string $view):array {
         $actor=mail_submissions_actor();
         if($view==='mail-submission') {
             $id=mail_drafts_form_text($_GET,'submission_id',32);$row=mail_submissions_get($id);
-            return ['actor'=>$actor,'row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch'])];
+            return ['actor'=>$actor,'row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch']),'copy'=>mail_copy_status($id),'sentFolder'=>mail_sent_folder($row['account_id'])];
         }
         if($view==='mail-send') {
             $draft=mail_drafts_form_text($_GET,'draft_id',32);mail_drafts_id($draft);$form=null;

@@ -7,7 +7,7 @@ require_once CWP_CODE_ROOT.'/database/schema/mail_notices_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_notices_migrate.php';
 
 function mail_notices_ready(): bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_notices_schema_version'])['value']??'')==='1';
+    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_notices_schema_version'])['value']??'')==='2';
 }
 /** Navigation eligibility only; all data operations recheck the current session and grants. */
 function mail_notices_access(array $actor): bool {

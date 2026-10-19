@@ -8,7 +8,7 @@ function mail_drafts_validate_schema(string $name,string $sql):void {
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
         $collation=match($column['Field']) {
             'id','account_id','draft_id','status','create_fingerprint','to_json','cc_json','bcc_json','action'=>'ascii_bin',
-            'subject','body'=>'utf8mb4_unicode_ci',
+            'subject','body','body_html'=>'utf8mb4_unicode_ci',
             default=>null,
         };
         if($column['Collation']!==$collation || $column['Default']!==null || $column['Extra']!=='') throw new RuntimeException('Incompatible draft columns. Existing data was preserved.');
@@ -37,14 +37,19 @@ function mail_drafts_migrate(#[\SensitiveParameter] string $password):void {
     staff_locked(function()use($password):void {
         $actor=mail_accounts_owner($password);
         $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'';
-        if(!in_array($version,['','1'],true))throw new RuntimeException('This draft storage version is not supported. Existing data was preserved.');
+        if(!in_array($version,['','1','2'],true))throw new RuntimeException('This draft storage version is not supported. Existing data was preserved.');
         foreach(mail_drafts_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
+            elseif($name==='mail_drafts' && !one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].$name])) {
+                db()->exec('ALTER TABLE '.table($name).' ADD COLUMN body_html MEDIUMTEXT NULL AFTER body');
+            }
             mail_drafts_validate_schema($name,$sql);
         }
-        staff_transaction(function()use($actor):void {
+        staff_transaction(function()use($actor,$version):void {
             if(!mail_drafts_ready()) {
-                foreach(array_keys(mail_drafts_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized draft records exist. No data was adopted.');
+                // A marked version-1 install upgrades in place; only unmarked
+                // storage must prove it is empty before adoption.
+                if($version==='')foreach(array_keys(mail_drafts_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized draft records exist. No data was adopted.');
                 save_setting('mail_drafts_schema_version','1');
             }
             mail_drafts_audit((int)$actor['id'],'setup','Additive local draft storage verified');

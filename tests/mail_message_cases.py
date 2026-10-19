@@ -9,10 +9,10 @@ from staff_cases import OWNER,STAFF
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','submit','inbox_server']})
     db('DELETE FROM ci_rate_limits');root=BASE+'/existing/admin/index.php';library=root+'?view=mail-accounts'
-    check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_message_reads'))
+    check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_message_reads'))
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     aid=db("SELECT id FROM ci_mail_accounts WHERE label='Staff inbox fixture'")[0]['id'];inbox=root+'?view=mail-inbox&account_id='+aid;detail=root+'?view=mail-account&account_id='+aid
-    route={'account_id':aid,'revision':'1','uidvalidity':'1234','uid':'82'};message=root+'?view=mail-message&'+urlencode(route)
+    route={'account_id':aid,'revision':'1','uidvalidity':'1234','uid':'82','folder':'INBOX'};message=root+'?view=mail-message&'+urlencode(route)
     before=inbox_server.connections
     check('Upgrade waits for owner message preparation','must prepare message reading' in owner.get(message).text and inbox_server.connections==before)
     r=submit(owner,library,'mail_message_setup',{'csrf':'bad','current_password':OWNER});check('Message preparation rejects bad CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_messages_schema_version'"))
@@ -21,7 +21,9 @@ def run_browser(env,browser):
     def load(session,**overrides):
         fields={'action':'mail_message_read','csrf':token(session.get(message)),**route};fields.update(overrides)
         return session.post(message,data=fields,timeout=30)
-    def age():db('UPDATE ci_mail_message_reads SET started_epoch=?',[int(time.time())-7200])
+    def age():
+        db('UPDATE ci_mail_message_reads SET started_epoch=?',[int(time.time())-7200])
+        if db("SHOW TABLES LIKE 'ci_mail_flag_requests'"):db('UPDATE ci_mail_flag_requests SET started_epoch=?',[int(time.time())-7200])
     def grant(user,enabled='1',read='1'):
         revision=db('SELECT revision FROM ci_mail_account_grants WHERE account_id=? AND user_id=?',[aid,user])[0]['revision']
         return owner.post(detail,data={'csrf':token(owner.get(detail)),'action':'mail_accounts_grant','account_id':aid,'revision':revision,'user_id':user,'can_read':read,'can_send':'1','enabled':enabled,'days':'0','current_password':OWNER})
@@ -51,7 +53,46 @@ def run_browser(env,browser):
     for mode,phrase in [('message-limit','exceeds the supported'),('message-wrong-uid','no longer available'),('message-epoch','no longer available'),('message-bad-mime','unsupported or incomplete')]:
         age();inbox_server.mode=mode;r=load(owner);check('Exact-message HTTP '+mode+' refuses partial content',phrase in r.text and soup(r).select_one('[data-message-content]') is None)
     age();inbox_server.mode='message-attachment';r=load(owner);check('Attached text is not displayed as an inline body','No supported inline text was provided' in r.text and 'SYNTHETIC ATTACHMENT SECRET' not in r.text)
+    check('Attached part is listed as a safe download with exact metadata',soup(r).select_one('[data-message-attachments]') is not None and 'secret.txt' in r.text and soup(r).select_one('[data-message-attachments] script') is None)
+    def download(session,**overrides):
+        fields={'action':'mail_message_attachment','csrf':token(session.get(message)),**route,'attachment':'0'};fields.update(overrides)
+        return session.post(message,data=fields,timeout=30)
+    age();d=download(owner);check('Attachment download returns exact decoded bytes as a forced file',d.status_code==200 and d.headers.get('Content-Type')=='application/octet-stream' and 'filename="secret.txt"' in d.headers.get('Content-Disposition','') and d.headers.get('X-Content-Type-Options')=='nosniff' and 'no-store' in d.headers.get('Cache-Control','') and d.content==b'SYNTHETIC ATTACHMENT SECRET')
+    age();before_attach=inbox_server.connections;d=download(owner,attachment='5');check('Out-of-range attachment index refuses after the recorded read','attachment is unavailable' in d.text.lower() and 'SYNTHETIC ATTACHMENT SECRET' not in d.text and inbox_server.connections==before_attach+1)
+    before_attach=inbox_server.connections;d=download(owner,attachment='99');check('Out-of-range index refuses before any mailbox request','attachment is unavailable' in d.text.lower() and inbox_server.connections==before_attach)
+    before_attach=inbox_server.connections;d=download(owner,uid='81');check('Stale message identity refuses an attachment download','no longer matches' in d.text.lower() and inbox_server.connections==before_attach)
+    before_attach=inbox_server.connections;d=download(member);check('Staff without message permission cannot download','SYNTHETIC ATTACHMENT SECRET' not in d.text and inbox_server.connections==before_attach)
     age();inbox_server.mode='message-html-only';r=load(owner);check('HTML-only message has formatting without invented plaintext',soup(r).select_one('[data-message-formatted]') is not None and soup(r).select_one('[data-message-plain]') is None)
+    sent_route={'account_id':aid,'revision':'1','uidvalidity':'4321','uid':'90','folder':'Sent'};sent_page=root+'?view=mail-message&'+urlencode(sent_route)
+    age();inbox_server.mode='message';r=owner.post(sent_page,data={'action':'mail_message_read','csrf':token(owner.get(sent_page)),**sent_route},timeout=30)
+    check('Sent folder message loads through the same exact-identity read',r.status_code==200 and 'SYNTHETIC SENT BODY' in r.text and 'EXAMINE Sent' in inbox_server.commands)
+    check('Non-inbox message hides reply and forward controls','only available for inbox messages' in r.text)
+    check('Folder-scoped message history records the folder',db("SELECT folder FROM ci_mail_message_reads WHERE folder='Sent'")==[{'folder':'Sent'}])
+    r=owner.post(sent_page,data={'action':'mail_message_reply','csrf':token(owner.get(sent_page)),**sent_route},timeout=30)
+    check('Reply on a non-inbox message refuses before any request','only available for inbox' in r.text)
+    def mark(session,**overrides):
+        fields={'action':'mail_message_flag','csrf':token(session.get(message)),**route,'mark':'read'};fields.update(overrides)
+        return session.post(message,data=fields,timeout=30)
+    before=inbox_server.connections
+    r=mark(owner);check('Flag marking waits for owner flag preparation','prepare message flags' in r.text and inbox_server.connections==before)
+    r=submit(owner,library,'mail_message_flags_setup',{'csrf':'bad','current_password':OWNER});check('Flag preparation rejects bad CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_flags_schema_version'"))
+    r=submit(owner,library,'mail_message_flags_setup',{'current_password':'wrong'});check('Flag preparation requires current owner password','current password' in r.text and not db("SELECT value FROM ci_settings WHERE name='mail_flags_schema_version'"))
+    r=submit(owner,library,'mail_message_flags_setup',{'current_password':OWNER});check('Flag preparation commits without mailbox access','Message flag history is ready' in r.text and inbox_server.connections==before)
+    for overrides,phrase in [({'mark':'flagged'},'mark the message read or unread'),({'uid':'81'},'no longer matches'),({'folder':'Sent'},'no longer matches')]:
+        before=inbox_server.connections;r=mark(owner,**overrides);check('Malformed flag POST refused before network '+str(overrides),phrase in r.text.lower() and inbox_server.connections==before and not db('SELECT * FROM ci_mail_flag_requests'))
+    inbox_server.mode='flag';r=mark(owner)
+    check('Explicit mark-read issues exactly one bounded flag write','flag was updated' in r.text.lower() and 'CWF005 UID STORE 82 +FLAGS.SILENT ('+chr(92)+r'Seen)' in inbox_server.commands)
+    check('Flag history binds the complete exact identity',db("SELECT q.folder,q.uidvalidity,q.uid,q.mark_seen,r.outcome,r.result_code,r.applied FROM ci_mail_flag_requests q JOIN ci_mail_flag_results r ON r.id=q.id")==[{'folder':'INBOX','uidvalidity':'1234','uid':'82','mark_seen':1,'outcome':'success','result_code':'ok','applied':1}])
+    check('Mark control appears after a loaded message with prepared flags','Mark unread on server' in r.text and 'Your recent flag requests' in r.text)
+    age();inbox_server.mode='flag-unseen';r=mark(owner,mark='unread')
+    check('Explicit mark-unread issues the remove-flag write','flag was updated' in r.text.lower() and 'CWF005 UID STORE 82 -FLAGS.SILENT ('+chr(92)+r'Seen)' in inbox_server.commands)
+    age();inbox_server.mode='flag';before=inbox_server.connections;r=mark(owner,mark='unread')
+    check('Matching server state records unchanged without a write','already reported this read state' in r.text and db("SELECT result_code FROM ci_mail_flag_results ORDER BY finished_at DESC LIMIT 1")[0]['result_code']=='unchanged' and 'CWF005' not in str(inbox_server.commands[-1:]))
+    age();inbox_server.mode='flag-refused';r=mark(owner);check('Server flag refusal is a bounded failure','refused the flag change' in r.text and db("SELECT result_code FROM ci_mail_flag_results ORDER BY finished_at DESC LIMIT 1")[0]['result_code']=='flags')
+    age();inbox_server.mode='flag-readonly';r=mark(owner);check('Read-only folder selection refuses the write','refused the flag change' in r.text)
+    age();inbox_server.mode='flag-gone';r=mark(owner);check('A missing message refuses instead of marking','no longer available' in r.text)
+    age();inbox_server.mode='flag';before=inbox_server.connections;r=mark(member);check('Staff without read grant cannot mark flags',r.status_code==403 and inbox_server.connections==before)
+    inbox_server.mode='message';age();r=load(owner)
     retained=json.dumps(db('SELECT * FROM ci_mail_message_reads')+db('SELECT * FROM ci_mail_message_results')+db("SELECT * FROM ci_audit WHERE action LIKE 'mail_accounts.message_%'"))
     check('Message storage and audit retain no contents or credentials','SYNTHETIC PRIVATE' not in retained and 'SYNTHETIC ATTACHMENT' not in retained and 'receiving HTTP password' not in retained)
     context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];remote=[];external=[];frame_resources=[];dialogs=[];failed_requests=[];frame_routes=[];security_console=[]
@@ -106,6 +147,6 @@ def run_browser(env,browser):
     check('Message browser flow has no script errors',not errors)
     before=inbox_server.connections;page.goto(message);check('Browser GET does not reload or cache message content',page.locator('[data-message-content]').count()==0 and inbox_server.connections==before)
     context.close();inbox_server.mode='ok'
-    for path in ['app/mail/messages.php','admin/controllers/mail_message.php','admin/views/mail_message.php','database/schema/mail_messages_schema.php','database/migrations/mail_messages_migrate.php','includes/foundation/mail-receiving/MessageReader.php','includes/foundation/mail-receiving/BodyHtml.php']:
+    for path in ['app/mail/messages.php','admin/controllers/mail_message.php','admin/views/mail_message.php','database/schema/mail_messages_schema.php','database/migrations/mail_messages_migrate.php','app/mail/flags.php','database/schema/mail_flags_schema.php','database/migrations/mail_flags_migrate.php','includes/foundation/mail-receiving/FlagSession.php','includes/foundation/mail-receiving/FlagWriter.php','includes/foundation/mail-receiving/MessageReader.php','includes/foundation/mail-receiving/BodyHtml.php','includes/foundation/mail-receiving/AttachmentIndex.php']:
         check('Message direct PHP access denied '+path,requests.get(BASE+'/existing/'+path).status_code==404)
-    check('Synthetic exact-message TLS fixture observed no unexpected command',not inbox_server.errors and all(not any(' '+verb in c for verb in ['SELECT','STORE','APPEND','EXPUNGE','SEARCH']) for c in inbox_server.commands))
+    check('Synthetic exact-message TLS fixture observed no unexpected command',not inbox_server.errors and all(not any(' '+verb in c for verb in ['SELECT','STORE','APPEND','EXPUNGE','SEARCH']) for c in inbox_server.commands if not c.startswith('CWF') and c not in ['CREDENTIAL']))

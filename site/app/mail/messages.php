@@ -3,12 +3,12 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 use CajunWebPro\Foundation\MailTransport\{EndpointPolicy,EndpointResolver,ProbeFailure};
-use CajunWebPro\Foundation\MailReceiving\{MessageReader,BodyDecoder,ReceivingFailure};
+use CajunWebPro\Foundation\MailReceiving\{MessageReader,BodyDecoder,AttachmentIndex,ReceivingFailure};
 require_once CWP_CODE_ROOT.'/app/mail/inbox.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_messages_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_messages_migrate.php';
 
-function mail_messages_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_messages_schema_version'])['value']??'')==='1';}
+function mail_messages_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_messages_schema_version'])['value']??'')==='2';}
 function mail_message_outcomes(): array {
     return array_replace(mail_inbox_messages(),[
         'ok'=>'Message loaded. The server’s read flag was left unchanged.',
@@ -28,18 +28,19 @@ function mail_message_authority(string $id,?int $revision=null,bool $ready=true)
     if($ready&&!mail_messages_ready())throw new RuntimeException('An owner must prepare message reading in Email accounts first.');
     return [$actor,$row];
 }
-function mail_message_transport(array $row,#[\SensitiveParameter] array $secrets,string $address,string $validity,string $uid,callable $authorize): array {
+function mail_message_transport(array $row,#[\SensitiveParameter] array $secrets,string $address,string $validity,string $uid,callable $authorize,string $folder='INBOX'): array {
     require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/bootstrap.php';
-    return MessageReader::read($row['imap_host'],(int)$row['imap_port'],$row['imap_encryption'],$address,$row['imap_username'],$secrets['imap_password'],$validity,$uid,$authorize);
+    return MessageReader::read($row['imap_host'],(int)$row['imap_port'],$row['imap_encryption'],$address,$row['imap_username'],$secrets['imap_password'],$validity,$uid,$authorize,$folder);
 }
 /** Even injected transports supply raw MIME, never trusted HTML or decoded metadata. */
-function mail_message_content(#[\SensitiveParameter] array $response,string $validity,string $uid): array {
-    if(($response['folder']??null)!=='INBOX'||($response['uidvalidity']??null)!==$validity||($response['uid']??null)!==$uid
+function mail_message_content(#[\SensitiveParameter] array $response,string $validity,string $uid,string $folder='INBOX'): array {
+    if(($response['folder']??null)!==$folder||($response['uidvalidity']??null)!==$validity||($response['uid']??null)!==$uid
         ||!is_bool($response['seen']??null)||!mail_inbox_uint($response['bytes']??null,true)||!is_string($response['raw']??null))throw new ReceivingFailure('protocol');
     if(strlen($response['raw'])>262144)throw new ReceivingFailure('limit');
     if((string)strlen($response['raw'])!==$response['bytes'])throw new ReceivingFailure('protocol');
     require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/bootstrap.php';
-    return ['folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$response['seen'],'bytes'=>$response['bytes']]+BodyDecoder::decode($response['raw']);
+    require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/AttachmentIndex.php';
+    return ['folder'=>$folder,'uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$response['seen'],'bytes'=>$response['bytes']]+BodyDecoder::decode($response['raw'])+['attachments'=>AttachmentIndex::list($response['raw'])];
 }
 function mail_message_record(array $started,string $code,int $elapsed,#[\SensitiveParameter] ?array $content=null): void {
     if(!array_key_exists($code,mail_message_outcomes())||($code==='ok')!==($content!==null))throw new LogicException('Invalid local message result.');
@@ -50,13 +51,14 @@ function mail_message_record(array $started,string $code,int $elapsed,#[\Sensiti
     });
 }
 /** Test seams are internal PHP callables; never exposed through owner/HTTP configuration. */
-function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null): array {
+function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null,bool $retainSource=false,string $folder='INBOX'): array {
     mail_message_identity($validity,$uid);
+    $folder=mail_inbox_folder($folder);
     if($noticeHandle!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_handle($noticeHandle);}
     if(db()->inTransaction())throw new LogicException('Message reads cannot run inside a transaction.');
-    [$started,$row]=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$validity,$uid,$noticeHandle):array {
+    [$started,$row]=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$validity,$uid,$noticeHandle,$folder):array {
         [$actor,$row]=mail_message_authority($id,$revision);
-        if($noticeHandle!==null)mail_notices_resolve($noticeHandle,['account_id'=>$id,'account_revision'=>$revision,'folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid]);
+        if($noticeHandle!==null)mail_notices_resolve($noticeHandle,['account_id'=>$id,'account_revision'=>$revision,'folder'=>$folder,'uidvalidity'=>$validity,'uid'=>$uid]);
         try {EndpointPolicy::host($row['imap_host']);EndpointPolicy::port('imap',(int)$row['imap_port'],$row['imap_encryption']);}
         catch(InvalidArgumentException) {throw new InvalidArgumentException('Message reading requires a public incoming server on 993/TLS or 143/STARTTLS. Ask an owner to check the saved settings.');}
         $now=time();
@@ -64,7 +66,7 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
         foreach(['account_id'=>$id,'actor_id'=>$actor['id']] as $column=>$value) {
             if((int)query('SELECT COUNT(*) FROM '.table('mail_message_reads').' WHERE '.$column.'=? AND started_epoch>?',[$value,$now-3600])->fetchColumn()>=240)throw new RuntimeException('The hourly message request limit for this account or administrator has been reached. Try again later.');
         }
-        $started=['id'=>bin2hex(random_bytes(16)),'account_id'=>$id,'account_revision'=>$revision,'actor_id'=>(int)$actor['id'],'folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid,'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now];
+        $started=['id'=>bin2hex(random_bytes(16)),'account_id'=>$id,'account_revision'=>$revision,'actor_id'=>(int)$actor['id'],'folder'=>$folder,'uidvalidity'=>$validity,'uid'=>$uid,'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now];
         query('INSERT INTO '.table('mail_message_reads').' (id,account_id,account_revision,actor_id,folder,uidvalidity,uid,started_at,started_epoch) VALUES (?,?,?,?,?,?,?,?,?)',array_values($started));
         mail_accounts_audit((int)$actor['id'],'message_started','Read '.$started['id'].' account '.$id.' revision '.$revision);
         return [$started,$row];
@@ -74,7 +76,7 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
     catch(InvalidArgumentException) {$code='destination';}
     catch(ProbeFailure $e) {$code=$e->getMessage();}
     catch(Throwable) {$code='connection';}
-    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle):array {
+    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle,$retainSource,$folder):array {
         $authorize=static function()use($started,$noticeHandle):array {
             try {[$actor,$row]=mail_message_authority($started['account_id'],$started['account_revision']);
                 if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');
@@ -89,9 +91,13 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
             catch(InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;$code='credential';}
             if($code==='ok') {
                 try {
-                    $response=($transport??'mail_message_transport')($current,$secrets,$addresses[0],$started['uidvalidity'],$started['uid'],$authorize);
+                    $response=($transport??'mail_message_transport')($current,$secrets,$addresses[0],$started['uidvalidity'],$started['uid'],$authorize,$started['folder']);
                     $authorize();
-                    $content=mail_message_content($response,$started['uidvalidity'],$started['uid']);
+                    $content=mail_message_content($response,$started['uidvalidity'],$started['uid'],$started['folder']);
+                    // Only an internal caller that must re-parse the exact bytes
+                    // (protected Reply/Forward draft creation) may retain the raw
+                    // source; it is never persisted or returned to display paths.
+                    if($retainSource)$content['source']=$response['raw'];
                     $authorize();
                 }catch(ReceivingFailure $e) {$code=$e->getMessage();$content=null;}
                 catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$content=null;}
@@ -99,8 +105,19 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
             }
         }
         mail_message_record($started,$code,(int)((hrtime(true)-$begin)/1e6),$content);
-        return ['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'notice_handle'=>$noticeHandle,'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
+        return ['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'folder'=>$started['folder'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'notice_handle'=>$noticeHandle,'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
     });
+}
+/** A protected attachment download is another recorded exact-message read. */
+function mail_message_attachment(string $id,int $revision,string $validity,string $uid,int $index,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null,string $folder='INBOX'): array {
+    if($index<0||$index>31)throw new InvalidArgumentException('This attachment is unavailable.');
+    $read=mail_message_read($id,$revision,$validity,$uid,$resolver,$transport,$noticeHandle,true,$folder);
+    $attachment=null;
+    if($read['code']==='ok') {
+        try {$attachment=AttachmentIndex::extract($read['content']['source'],$index);}
+        finally {unset($read['content']);}
+    }
+    return $read+['attachment'=>$attachment];
 }
 function mail_message_history(string $id,int $page=1): array {
     [$actor]=mail_message_authority($id,null,false);if(!mail_messages_ready())return [];

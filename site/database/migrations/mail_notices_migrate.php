@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function mail_notices_validate_schema(string $name): void {
-    $identity=['account_id'=>['char(32)','NO'],'account_revision'=>['int unsigned','NO'],'folder'=>['varchar(5)','NO'],'uidvalidity'=>['varchar(10)','NO']];
+    $identity=['account_id'=>['char(32)','NO'],'account_revision'=>['int unsigned','NO'],'folder'=>['varchar(64)','NO'],'uidvalidity'=>['varchar(10)','NO']];
     $columns=match($name) {
         'mail_notice_windows'=>$identity+['request_id'=>['char(32)','NO'],'checked_at'=>['datetime','NO']],
         'mail_notice_items'=>['handle'=>['char(32)','NO']]+$identity+['uid'=>['varchar(10)','NO'],'slot'=>['int unsigned','NO'],'server_seen'=>['int unsigned','NO'],'flags_observed_at'=>['datetime','NO']],
@@ -33,7 +33,10 @@ function mail_notices_migrate(#[\SensitiveParameter] string $password): void {
             'mail_notice_states'=>['handle'=>['mail_notice_items','handle','CASCADE'],'actor_id'=>['users','id','RESTRICT']],
         ];
         foreach(mail_notices_schema(config()['db']['prefix']) as $name=>$sql) {
-            if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
+            if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])) {
+                if(in_array($name,['mail_notice_windows','mail_notice_items'],true) && strtolower((string)(one('SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=?',[config()['db']['prefix'].$name,'folder'])['COLUMN_TYPE']??''))==='varchar(5)')
+                    db()->exec('ALTER TABLE `'.config()['db']['prefix'].$name.'` MODIFY COLUMN folder VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
+            } else db()->exec($sql);
             mail_notices_validate_schema($name);
             foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column)if(in_array($column['Field'],['account_id','handle','request_id','folder','uidvalidity','uid'],true)&&$column['Collation']!=='ascii_bin')throw new RuntimeException('Incompatible email notice identifiers. Existing data was preserved.');
             $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
@@ -45,10 +48,13 @@ function mail_notices_migrate(#[\SensitiveParameter] string $password): void {
             }
         }
         staff_transaction(function()use($actor):void {
-            if(!mail_notices_ready()) {
+            $version=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_notices_schema_version'])['value']??'');
+            if($version==='') {
                 foreach(array_keys(mail_notices_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized email notice records exist. No data was adopted.');
-                save_setting('mail_notices_schema_version','1');
+            } elseif($version!=='1'&&$version!=='2') {
+                throw new RuntimeException('Unrecognized email notice storage version. Existing data was preserved.');
             }
+            save_setting('mail_notices_schema_version','2');
             mail_accounts_audit((int)$actor['id'],'notice_setup','Additive email notice storage verified');
         });
     });
