@@ -1,4 +1,14 @@
 # Session handoff - Devin sole-owner continuation
+## 2026-10-19 — renewal-invoicing leaf merge preflight complete
+
+On `devin/preflight-commercial` at `b3dbbd15` (merge of commercial tip `1c7234da` + `codex/twentyi-renewal-invoicing` `632362f6`), ten conflicts resolved semantically (doc unions per the compacted-checkpoint convention, CSS append, regenerated installer inventory, acceptance contract tail, test-file renewal block).
+
+- Renewal adds three native commands (leaf recipe 198, predecessor 195) and three browser/final report pairs that persist through every predecessor stage. Acceptance provenance re-anchored: HEAD-verified deltas restored verbatim for the 41 merge-unchanged files; `changes`-format deltas relocated per-stage via substring anchors; report/native count literals +3 inside loaded-stage-contract checks only (deep-run recipe chain strips renewal once so predecessor literals keep original values); `predecessor_native_*` = inclusive for checkout (pre-strip scope) and HEAD values for joined/offers (post-strip scope); `workflow_delta` restricted to `application-tests.yml`; threaded `predecessor_workflow_sha256` recomputed.
+- `python tests/acceptance_artifacts_test.py --report <scratch>` → `{"passed": true, "checks": 967}`. Note: `--report` is a WRITE target — never point it at `tools/acceptance-contract.json` or `tools/acceptance-reports.json`.
+- Reusable engine artifacts: `%TEMP%/reanchor.py` (rebuilds M2 stage states from leaf bytes via delta reversals), `%TEMP%/engine7.py` (re-anchor engine: pins/repins/deltas/contract-strip fixpoint; pass-4b now models renewal strip scope).
+
+Next: observe hosted acceptance on `632362f6` and the cumulative branch, then continue the leaf order in `docs/DEVIN_INTEGRATION_QUEUE.md` — remaining eight leaves: `024b50dc`, `0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `95ce538e`, `8fe2787a`, `ff467d7f`. Each needs the same re-anchor pipeline.
+
 ## 2026-10-19 — commercial leaf merge preflight complete
 
 On `devin/preflight-commercial` at `1c7234dacac91114f3f097ec3a4a8b353b2c3d76`, Group B's largest leaf `codex/twentyi-installed-billing-options` (`d2903bfb`) is merged into integration tip `6832dde3` and pushed. This leaf carries the catalog stack base (`f67b1631` contained), so catalog preflight work is subsumed.
