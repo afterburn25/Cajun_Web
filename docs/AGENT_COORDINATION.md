@@ -5,6 +5,11 @@ Branch `codex/twentyi-installed-billing-options` continues exact billing-selecto
 
 Root owns the bridge, existing runner and continuity; VPS owns the new browser callback, Catalog the portable guards and independent source review, and Domains additive acceptance wiring. Devin remains on non20i. No worker changes another worker's files or frozen Git heads.
 
+## 2026-10-19 — renewal invoicing implementation
+
+Root owns `codex/twentyi-renewal-invoicing` from main `a86f6f4f`, applies reviewed proposals sequentially, and owns UI/controller, shared acceptance, installer inventory and delivery. Domains supplies backend and focused cases; Catalog reviews actual modeled desktop/mobile views and backend safety; VPS supplies the packaged browser extension. Proposals and review evidence remain external until root integration. [Scope](TWENTYI_RENEWAL_INVOICING.md). No frozen acceptance branch is changed. Devin retains non-20i work.
+
+
 ## 2026-10-19 — monthly and annual hosting plan browsing
 
 Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](TWENTYI_HOSTING_BILLING_SELECTOR.md).

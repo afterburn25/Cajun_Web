@@ -82,11 +82,11 @@ def previous_contract(contract):
     require(ext['additions'] == COMMANDS and ext['additions_after'] == AFTER, 'Imported-plan commands changed')
     commands = contract['native_commands']
     position = commands.index(AFTER) + 1
-    require(len(commands) == 181 and commands[position:position+5] == COMMANDS and all(commands.count(c) == 1 for c in COMMANDS), 'Imported-plan exact recipe missing or reordered')
+    require(len(commands) == 184 and commands[position:position+5] == COMMANDS and all(commands.count(c) == 1 for c in COMMANDS), 'Imported-plan exact recipe missing or reordered')
     prior = copy.deepcopy(contract)
     del prior['imported_plan_setup']
     prior['native_commands'] = commands[:position] + commands[position+5:]
-    require(len(prior['native_commands']) == 176, 'Imported-plan predecessor recipe changed')
+    require(len(prior['native_commands']) == 179, 'Imported-plan predecessor recipe changed')
     for pin in ext['updated_pins']:
         location = prior
         for key in pin['location']:
@@ -100,7 +100,7 @@ def previous_contract(contract):
 def previous_reports(reports, extension):
     require(extension['reports'] == REPORTS, 'Imported-plan required reports changed')
     prior = copy.deepcopy(reports)
-    for lane, count in [('browser', 197), ('final', 248)]:
+    for lane, count in [('browser', 200), ('final', 251)]:
         values = reports[lane]
         require(len(values) == len(set(values)) == count and values[-5:] == REPORTS and all(values.count(name) == 1 for name in REPORTS), 'Imported-plan required report union differs')
         prior[lane] = [name for name in values if name not in REPORTS]
@@ -194,7 +194,7 @@ def run(a, root, tmp, check, deny, named, contract, reports=None):
     for pin in ext['updated_pins']:
         require(sha(inbox_source(root, pin['path'])) == pin['current_sha256'], 'Serialized imported-plan source pin is stale')
     prior = previous_contract(contract)
-    check('Imported plan setup preserves exact176 commands and complete460 contract', len(prior['native_commands']) == 176)
+    check('Imported plan setup preserves exact179 commands and complete460 contract', len(prior['native_commands']) == 179)
     for label, commands in [('missing', contract['native_commands'][:-1]), ('duplicate', contract['native_commands']+[COMMANDS[0]]), ('reordered', contract['native_commands'][1:]+contract['native_commands'][:1])]:
         wrong = copy.deepcopy(contract);wrong['native_commands'] = commands
         deny('Imported plan setup rejects '+label+' recipe', lambda c=wrong: previous_contract(c))
@@ -213,7 +213,7 @@ def run(a, root, tmp, check, deny, named, contract, reports=None):
     prior_workflow = historical_bytes(root, '.github/workflows/application-tests.yml').decode()
     reports = a.load(root/'tools/acceptance-reports.json') if reports is None else reports
     prior_reports = previous_reports(reports, ext)
-    check('Imported plan setup adds five required reports without dropping predecessors', len(prior_reports['browser'])==192 and len(prior_reports['final'])==243)
+    check('Imported plan setup adds five required reports without dropping predecessors', len(prior_reports['browser'])==195 and len(prior_reports['final'])==246)
     for label in ['missing', 'duplicate', 'changed predecessor']:
         wrong = copy.deepcopy(reports)
         if label == 'missing':wrong['browser'].remove(REPORTS[0])

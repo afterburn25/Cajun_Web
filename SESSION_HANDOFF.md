@@ -10,6 +10,13 @@ On `devin/preflight-commercial` at `1c7234dacac91114f3f097ec3a4a8b353b2c3d76`, G
 
 Next: observe dispatched acceptance `39297756510` on `d2903bfb` and `39299409880` on `ceb06c05`, then merge this branch into `devin/full-site-integration` per the leaf order in `docs/DEVIN_INTEGRATION_QUEUE.md`. Remaining nine leaves: `024b50dc`, `0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `632362f6`, `95ce538e`, `8fe2787a`, `ff467d7f`. Each will need the same re-anchor pipeline on its own preflight branch.
 
+## 2026-10-19 — renewal invoice creation candidate
+
+Parent `a86f6f4fa592e6f715a9420aec8de4622258642e`; branch `codex/twentyi-renewal-invoicing`; enclosing commit **feat: create invoices from accepted domain renewal terms**. [Scope and evidence](docs/TWENTYI_RENEWAL_INVOICING.md). Root owns integration and shared UI/CI seams; Domains owns backend proposal, Catalog independent review, VPS installed browser cases. Devin retains non-20i work.
+
+Finish the first candidate native/full hosted gates, review installed captures, then integrate normally and verify exact-main delivery. Do not modify or redispatch frozen PR249/250 or earlier catalog/capture acceptance. The 497-run obsolete cleanup is already fully classified and closed. Published1.25.0 remains immutable; this candidate performs no live provider request, payment, email or deployment.
+
+
 ## 2026-10-19 — installed monthly and annual purchase coverage
 
 Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](docs/TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.

@@ -1,6 +1,9 @@
 ## Unreleased — post-integration corrections and component ports
 
 Integration branch `devin/full-site-integration` (not on main): fixed admin notification dispatch shadowing (`payments_notification_*` handled before generic feed dispatch) and removed a duplicate notification-layout `require` in the portal router. Carried the scheduling adapter contract doc onto the branch. Ported four isolated contract components onto the current tree as PRs based on the integration branch: VPS uncertainty retention (#257), SSH access model (#258), provider capability catalog (#259) and the domain commerce model (#260) — local suites pass 311/70/50+171/81 checks respectively; hosted runs pending. No main merge, release or deployment.
+## Unreleased — domain renewal invoice creation
+
+Create and reserve an invoice directly from accepted renewal terms in a selected client project. Keep exact fee/privacy, duplicate-submission protection, rollback and original invoice history. Add clearer retry forms and mobile controls while preserving separate payment verification and explicit provider approval. [Candidate scope and verification](docs/TWENTYI_RENEWAL_INVOICING.md).
 
 ## Unreleased documentation — verified remainder and candidate handoff
 

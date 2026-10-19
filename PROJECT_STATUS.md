@@ -1,8 +1,12 @@
 # CajunWebPro current status
-# CajunWebPro current status
 ## 2026-10-19 — commercial Group B leaf merge preflighted (d2903bfb)
 
 On `devin/preflight-commercial` (`1c7234da`), the largest Group B leaf `codex/twentyi-installed-billing-options` (`d2903bfb`) is merged into the integration tip `6832dde3`: installed monthly/annual hosting billing, catalog storefront, billing selector, retail variants, purchase inbox, imported plan setup, checkout and joined purchase, integrated alongside the non20i A-group work. All 22 merge conflicts resolved semantically; the acceptance-provenance chain was fully re-anchored onto merged bytes (22 source deltas rebuilt, all serialized pins/repins re-anchored via a 24-stage file-state model, nine-section contract-predecessor strip chain converged to fixpoint, commercial-stage recipe literals +5). Local acceptance harness: **964 checks pass**. Hosted application acceptance on `d2903bfb` (run `39297756510`, dispatched) is the remaining gate before merging to `devin/full-site-integration`.
+
+## 2026-10-19 — renewal invoicing implementation
+
+The [renewal invoicing increment](docs/TWENTYI_RENEWAL_INVOICING.md) adds an owner action to create and reserve the exact accepted renewal fee in a selected client project. Existing manual allocation and separate payment/provider approval remain. Branch `codex/twentyi-renewal-invoicing` starts at `a86f6f4f`; this is a candidate, not a published release. Source, portable, native and installed browser evidence must remain distinct. Full 20i, full product/image catalog import and 1.26 publication remain unfinished.
+
 
 ## 2026-10-19 — Group A non-20i integration merged (A1–A25)
 ## 2026-10-19 — installed monthly and annual purchase coverage

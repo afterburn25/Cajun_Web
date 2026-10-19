@@ -186,7 +186,7 @@ def baseline_driver_predecessor(path, data, contract):
 
 def hosting_checkout_recipe_predecessor(commands, contract):
     checkout = contract['hosting_checkout']; additions = checkout['additions']
-    a.require(len(commands) == 176 and commands == contract['native_commands'], 'Checkout requires exactly176 ordered native commands')
+    a.require(len(commands) == 179 and commands == contract['native_commands'], 'Checkout requires exactly179 ordered native commands')
     expected = [
         '"$PHP_BINARY" tests/hosting_checkout_document.php qa/hosting-checkout-document-default.json',
         '"$PHP_BINARY" -n tests/hosting_checkout_document.php qa/hosting-checkout-document-minimal.json',
@@ -202,7 +202,7 @@ def hosting_checkout_recipe_predecessor(commands, contract):
     position = commands.index(checkout['additions_after']) + 1
     a.require(commands[position:position + 9] == additions and all(commands.count(c) == 1 for c in additions), 'Checkout commands occur once at their exact position')
     original = [c for c in commands if c not in additions]
-    a.require(len(original) == checkout['predecessor_native_count'] == 167 and hashlib.sha256(json.dumps(original, separators=(',', ':')).encode()).hexdigest() == checkout['predecessor_native_sha256'], 'Original162 recipe changed')
+    a.require(len(original) == checkout['predecessor_native_count'] == 170 and hashlib.sha256(json.dumps(original, separators=(',', ':')).encode()).hexdigest() == checkout['predecessor_native_sha256'], 'Original165 recipe changed')
     return original
 
 
@@ -221,7 +221,7 @@ def hosting_checkout_report_predecessor(reports, checkout):
         'billing-default', 'billing-minimal', 'views-default', 'views-minimal', 'native-results', 'http-guards', 'http-results')]
     a.require(checkout['reports'] == expected, 'Eleven exact checkout report names required')
     original = copy.deepcopy(reports)
-    for lane, count in [('browser', 192), ('final', 243)]:
+    for lane, count in [('browser', 195), ('final', 246)]:
         current = reports[lane]; prior = [n for n in current if n not in expected]
         a.require(len(current) == len(set(current)) == count and all(current.count(n) == 1 for n in expected), 'Missing or duplicate checkout reports')
         a.require(hashlib.sha256(json.dumps(prior, separators=(',', ':')).encode()).hexdigest() == checkout['predecessor_reports_sha256'][lane], 'Original report sequence changed')
@@ -235,7 +235,7 @@ def hosting_checkout_wiring_checks(tmp, workflow, contract, reports=None):
     commands = [line.strip() for line in native.splitlines()]
     original = hosting_checkout_recipe_predecessor(commands, contract)
     prior_workflow = hosting_checkout_workflow_predecessor(workflow, checkout)
-    check('Checkout preserves exact167 predecessor commands and the whole7703 workflow', len(original) == 167 and bool(prior_workflow))
+    check('Checkout preserves exact170 predecessor commands and the whole7703 workflow', len(original) == 170 and bool(prior_workflow))
     for label, changed in [('missing', commands[:-1]), ('duplicate', commands + [checkout['additions'][0]]), ('reordered', commands[1:] + commands[:1])]:
         deny('Checkout recipe refuses ' + label, lambda c=changed: hosting_checkout_recipe_predecessor(c, contract))
     deny('Checkout cannot omit native opt-in', lambda: hosting_checkout_recipe_predecessor([c.replace('CWP_TEST_HOSTING_CHECKOUT=1 ', '') for c in commands], contract))
@@ -259,7 +259,7 @@ def hosting_checkout_wiring_checks(tmp, workflow, contract, reports=None):
           and set(checkout['unchanged_source_sha256']) == {'tests/browser_acceptance.py', 'tools/acceptance_artifacts.py'})
     reports = a.load(ROOT / 'tools/acceptance-reports.json') if reports is None else reports
     prior_reports = hosting_checkout_report_predecessor(reports, checkout)
-    check('Checkout adds eleven required reports while retaining181 browser and232 final reports', len(prior_reports['browser']) == 181 and len(prior_reports['final']) == 232)
+    check('Checkout adds eleven required reports while retaining184 browser and235 final reports', len(prior_reports['browser']) == 184 and len(prior_reports['final']) == 235)
     for label in ('missing', 'duplicate', 'changed predecessor'):
         wrong = copy.deepcopy(reports)
         if label == 'missing': wrong['final'].remove(checkout['reports'][0])
@@ -338,7 +338,7 @@ def hosting_upgrade_wiring_checks(tmp, workflow, contract, reports=None):
     expected = ['apache-release126-hosting-guards-results.json', 'apache-release126-hosting-results.json']
     check('Hosting upgrade adds exactly two required reports', extension['reports'] == expected)
     reports = a.load(ROOT / 'tools/acceptance-reports.json') if reports is None else reports
-    for lane, count in [('browser', 181), ('final', 232)]:
+    for lane, count in [('browser', 184), ('final', 235)]:
         current = reports[lane]
         additions = expected if lane == 'final' else []
         prior = [name for name in current if name not in additions]
@@ -407,7 +407,7 @@ def hosting_purchase_wiring_checks(tmp, workflow, commands, contract, reports=No
     expected=['hosting-purchase-'+p+'-results.json' for p in ('prepare','due','portal-own','portal-other','joined')]+['hosting-purchase-handoff-guards.json','hosting-purchase-http-results.json']
     check('Joined purchase requires exact five native phase runner reports and two handoff reports',joined['reports']==expected and len(set(expected))==7)
     if reports is None: reports=a.load(ROOT/'tools/acceptance-reports.json')
-    for lane,count in [('browser',181),('final',230)]:
+    for lane,count in [('browser',184),('final',233)]:
         current=reports[lane];prior=[n for n in current if n not in expected]
         check('Joined purchase retains every original report '+lane,len(current)==len(set(current))==count and all(current.count(n)==1 for n in expected) and hashlib.sha256(json.dumps(prior,separators=(',',':')).encode()).hexdigest()==joined['predecessor_reports_sha256'][lane])
         reports[lane]=prior
@@ -486,7 +486,7 @@ def hosting_wiring_checks(tmp, workflow, commands, contract, reports=None):
                       'hosting-catalog-recovery-guard-default.json', 'hosting-catalog-recovery-guard-minimal.json',
                       'hosting-catalog-recovery-native-results.json']
     check('Hosting requires exactly seven distinct named reports', names == expected_names and len(set(names)) == 7)
-    for lane, count in [('browser', 174), ('final', 223)]:
+    for lane, count in [('browser', 177), ('final', 226)]:
         current = reports[lane]; prior = [n for n in current if n not in names]
         check('Hosting preserves exact original report union ' + lane, len(current) == len(set(current)) == count and all(current.count(n) == 1 for n in names) and hashlib.sha256(json.dumps(prior, separators=(',', ':')).encode()).hexdigest() == hosting['predecessor_reports_sha256'][lane])
     report_root = tmp / 'hosting-reports'
@@ -789,6 +789,9 @@ def run(tmp):
     workflow,upgrade_reports=hosting_upgrade_wiring_checks(tmp,workflow,contract,checkout_reports)
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    renewal_commands=contract['domain_renewal_invoicing']['additions']
+    native_commands=[command for command in native_commands if command not in renewal_commands]
+    contract['native_commands']=[command for command in contract['native_commands'] if command not in renewal_commands]
     workflow,native_commands,hosting_reports=hosting_purchase_wiring_checks(tmp,workflow,native_commands,contract,upgrade_reports)
     contract['native_commands']=list(native_commands)
     native_commands=hosting_wiring_checks(tmp, workflow, native_commands, contract, hosting_reports)
@@ -811,7 +814,7 @@ def run(tmp):
         check('Hosting catalog fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
     contract['native_commands']=[command for command in contract['native_commands'] if command not in package_commands]
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
-    check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
+    check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==[command for command in contract['native_commands'] if command not in renewal_commands])
     import_position=native_commands.index(import_contract['additions_after'])+1
     check('Three import commands occur once after the existing catalog native fixture',len(import_commands)==len(set(import_commands))==3 and native_commands[import_position:import_position+3]==import_commands and all(native_commands.count(command)==1 for command in import_commands))
     native_commands=[command for command in native_commands if command not in import_commands]
@@ -819,12 +822,12 @@ def run(tmp):
     for path,expected_hash in import_contract['source_sha256'].items():
         check('Import fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
     access_snapshot=contract['stackcp_access_snapshot_native_command_baseline'];access_snapshot_command='"$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php'
-    check('All149 native commands equal the exact current selected-runtime recipe',len(native_commands)==149 and native_commands==[command for command in contract['native_commands'] if command not in import_commands])
+    check('All149 native commands equal the exact current selected-runtime recipe',len(native_commands)==149 and native_commands==[command for command in contract['native_commands'] if command not in import_commands and command not in renewal_commands])
     access_snapshot_position=native_commands.index(access_snapshot['additions_after'])+1
     check('Access snapshot comparison occurs exactly once after prerequisite snapshot',access_snapshot['additions']==[access_snapshot_command] and native_commands[access_snapshot_position:access_snapshot_position+1]==[access_snapshot_command] and native_commands.count(access_snapshot_command)==1)
     native_commands=[command for command in native_commands if command!=access_snapshot_command]
     check('Access snapshot addition retains exact148 source-bound commands',len(native_commands)==access_snapshot['count']==148 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==access_snapshot['sha256'])
-    check('All148 native commands retain exact selected-runtime order and arguments', native_commands==[command for command in contract['native_commands'] if command!=access_snapshot_command and command not in import_commands])
+    check('All148 native commands retain exact selected-runtime order and arguments', native_commands==[command for command in contract['native_commands'] if command!=access_snapshot_command and command not in import_commands and command not in renewal_commands])
     predecessor=contract['release_environment_predecessor']
     native_commands=['php8.3 '+command[len('"$PHP_BINARY" '):] if command.startswith('"$PHP_BINARY" ') else command for command in native_commands]
     check('Only explicit executable selection changes all148 predecessor commands',len(native_commands)==predecessor['count']==148 and native_commands==predecessor['commands'] and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==predecessor['sha256'])
@@ -952,8 +955,8 @@ def retail_variants_current(current=None, registry=None):
 
 def retail_variants_checks(tmp, current, registry, section, historical):
     prior = json.loads(historical['tools/acceptance-contract.json'])
-    check('Retail variants retain all186 native commands and add five exact producers',
-          len(current['native_commands']) == 191 and len(section['native_additions']) == 5
+    check('Retail variants retain all189 native commands and add five exact producers',
+          len(current['native_commands']) == 194 and len(section['native_additions']) == 5
           and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
     check('Retail variants require six unique report producers and no new captures',
           len(section['reports']) == len(set(section['reports'])) == 6 and section['screenshots'] == [])
@@ -1003,7 +1006,7 @@ def retail_variants_checks(tmp, current, registry, section, historical):
         else:
             raise AssertionError('Stale retail variant source pin passed')
     check('Retail variants refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 208), ('final', 259)]:
+    for phase, expected in [('browser', 211), ('final', 262)]:
         check('Retail variants preserve exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1045,7 +1048,7 @@ def retail_variants_checks(tmp, current, registry, section, historical):
                 shutil.rmtree(path)
         bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
     result = combine()
-    check('Retail variants aggregate requires all259 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    check('Retail variants aggregate requires all262 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
     for name in section['reports']:
         path = jobs['native-browser']/'qa'/name
         path.unlink()
@@ -1143,8 +1146,8 @@ def billing_selector_current(current=None, registry=None):
 
 def billing_selector_checks(tmp, current, registry, section, historical):
     prior = json.loads(historical['tools/acceptance-contract.json'])
-    check('Billing selector retains all191 native commands and adds three exact producers',
-          len(current['native_commands']) == 194 and len(section['native_additions']) == 3
+    check('Billing selector retains all194 native commands and adds three exact producers',
+          len(current['native_commands']) == 197 and len(section['native_additions']) == 3
           and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
     check('Billing selector requires four unique report producers and no new captures',
           len(section['reports']) == len(set(section['reports'])) == 4 and section['screenshots'] == [])
@@ -1194,7 +1197,7 @@ def billing_selector_checks(tmp, current, registry, section, historical):
         else:
             raise AssertionError('Stale billing selector source pin passed')
     check('Billing selector refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 212), ('final', 263)]:
+    for phase, expected in [('browser', 215), ('final', 266)]:
         check('Billing selector preserves exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1236,7 +1239,7 @@ def billing_selector_checks(tmp, current, registry, section, historical):
                 shutil.rmtree(path)
         bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
     result = combine()
-    check('Billing selector aggregate requires all263 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    check('Billing selector aggregate requires all266 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
     for name in section['reports']:
         path = jobs['native-browser']/'qa'/name
         path.unlink()
@@ -1334,8 +1337,8 @@ def installed_billing_options_current(current=None, registry=None):
 
 def installed_billing_options_checks(tmp, current, registry, section, historical):
     prior = json.loads(historical['tools/acceptance-contract.json'])
-    check('Installed billing options preserve all194 commands and add one portable producer',
-          len(current['native_commands']) == 195 and len(section['native_additions']) == 1
+    check('Installed billing options preserve all197 commands and add one portable producer',
+          len(current['native_commands']) == 198 and len(section['native_additions']) == 1
           and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
     expected_captures = ['Hosting-Billing-Options-'+scene+'-'+size+'.png'
                          for scene in ('Owner-Annual','Public-Monthly','Public-Annual','Client-Annual')
@@ -1393,7 +1396,7 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
         else:
             raise AssertionError('Stale installed billing options source pin passed')
     check('Installed billing options refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 213), ('final', 264)]:
+    for phase, expected in [('browser', 216), ('final', 267)]:
         check('Installed billing options preserves exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1435,7 +1438,7 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
                 shutil.rmtree(path)
         bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
     result = combine()
-    check('Installed billing options aggregate requires all264 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    check('Installed billing options aggregate requires all267 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
     for name in section['reports']:
         path = jobs['native-browser']/'qa'/name
         path.unlink()
@@ -1459,6 +1462,17 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
 
 
 def run(tmp):
+    contract=a.load(ROOT/'tools/acceptance-contract.json')
+    renewal_contract=contract['domain_renewal_invoicing']
+    renewal_commands=renewal_contract['additions']
+    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
+    native_commands=[line.strip() for line in native.splitlines()]
+    check('Renewal invoice creation adds three mandatory native-lane checks',len(native_commands)==198 and native_commands==contract['native_commands'] and len(renewal_commands)==3 and len(set(renewal_commands))==3 and all(native_commands.count(command)==1 for command in renewal_commands) and native_commands[-3:]==renewal_commands)
+    native_commands=[command for command in native_commands if command not in renewal_commands]
+    check('Renewal invoice creation preserves every original195 command in order',len(native_commands)==renewal_contract['predecessor_native_count']==195 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==renewal_contract['predecessor_native_sha256'])
+    renewal_reports=a.load(ROOT/'tools/acceptance-reports.json')
+    check('Renewal invoice creation requires all three new reports in both acceptance lists',all(report in renewal_reports['browser'] and report in renewal_reports['final'] for report in renewal_contract['reports']))
     current, registry, section, historical = installed_billing_options_current()
     originals = {str((ROOT/path).resolve()):data for path, data in historical.items()}
     read_bytes, read_text = Path.read_bytes, Path.read_text

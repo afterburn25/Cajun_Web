@@ -117,6 +117,10 @@ The direct hosting catalog import passes its focused four-way database matrix. B
 ## 2026-10-18 — hosting catalog candidate, acceptance pending
 
 The [direct hosting catalog increment](TWENTYI_HOSTING_CATALOG.md) adds an explicit owner refresh and local draft import for returned IDs/names, including types absent from installed inventory. It preserves cross-source draft identity and original provenance. Source implementation does not complete native/browser or release acceptance, complete product coverage, provider prices/images, cloud imports or hosting publication. The original cloud-only check returned null; no catalog meaning is inferred. Published1.25.0 remains the latest verified release.
+## 2026-10-19 — renewal invoicing candidate
+
+[Direct renewal invoice creation](TWENTYI_RENEWAL_INVOICING.md) removes the separate manual invoice-creation step after exact client consent and owner activation. The owner selects the client's project and creates one permanently reserved invoice. Candidate acceptance and publication remain pending. Automatic renewal, complete registration/transfer, database controls and VPS/catalog contract gaps remain open; this increment does not complete those scopes.
+
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Evidence](evidence/ci-remaining-pure-pr-filters.json). This scheduling correction completes no product feature. PR239's cleanup checkpoint is merged, with103 terminal verifications still pending; continue original20i acceptance after the current CI-only integration.

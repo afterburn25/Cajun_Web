@@ -72,7 +72,7 @@ def previous_contract(contract):
     require(ext['base'] == BASE and ext['additions'] == COMMANDS and ext['additions_after'] == AFTER, 'Purchase-inbox command contract changed')
     commands = contract['native_commands']
     position = commands.index(AFTER) + 1
-    require(len(commands) == 181 + len(COMMANDS) and commands[position:position+len(COMMANDS)] == COMMANDS
+    require(len(commands) == 184 + len(COMMANDS) and commands[position:position+len(COMMANDS)] == COMMANDS
             and all(commands.count(command) == 1 for command in COMMANDS), 'Purchase-inbox recipe missing, duplicated or reordered')
     prior = copy.deepcopy(contract)
     del prior['hosting_purchase_inbox']
@@ -90,7 +90,7 @@ def previous_contract(contract):
 def previous_reports(reports, ext):
     require(ext['reports'] == REPORTS, 'Purchase-inbox report contract changed')
     prior = copy.deepcopy(reports)
-    for lane, before in [('browser', 197), ('final', 248)]:
+    for lane, before in [('browser', 200), ('final', 251)]:
         values = reports[lane]
         require(len(values) == len(set(values)) == before + len(REPORTS)
                 and values[-len(REPORTS):] == REPORTS
@@ -131,7 +131,7 @@ def _run_inbox_predecessor(a, root, tmp, check, deny, named, contract):
             raise AssertionError('Altered purchase-inbox source passed: ' + path)
     check('Purchase inbox whole source inverses preserve predecessors and refuse altered bytes', bool(ext['source_delta']))
     prior = previous_contract(contract)
-    check('Purchase inbox retains every original176 native command and whole0dd contract', len(prior['native_commands']) == 181)
+    check('Purchase inbox retains every original176 native command and whole0dd contract', len(prior['native_commands']) == 184)
     for label, change in [
         ('missing', lambda c:c['native_commands'].remove(COMMANDS[0])),
         ('duplicate', lambda c:c['native_commands'].append(COMMANDS[0])),
@@ -151,7 +151,7 @@ def _run_inbox_predecessor(a, root, tmp, check, deny, named, contract):
           and '-d extension=tokenizer' not in focused and '-d extension=pdo' not in focused)
     reports = a.load(root/'tools/acceptance-reports.json')
     prior_reports = previous_reports(reports, ext)
-    check('Purchase inbox retains all197 browser and248 final reports before its additions', len(prior_reports['browser']) == 197 and len(prior_reports['final']) == 248)
+    check('Purchase inbox retains all200 browser and251 final reports before its additions', len(prior_reports['browser']) == 200 and len(prior_reports['final']) == 251)
     wrong = copy.deepcopy(reports);wrong['browser'].remove(REPORTS[0])
     deny('Purchase inbox cannot omit a required report', lambda:previous_reports(wrong, ext))
     wrong = copy.deepcopy(reports);wrong['final'][0] += '.changed'
@@ -238,7 +238,7 @@ def browser_checks(a, root, tmp, check, deny, named, contract):
         inverse(raw, delta)
         deny('Installed purchase inbox rejects changed source ' + path, lambda r=raw, d=delta:inverse(r + b'\n# altered', d))
     prior = browser_contract(contract)
-    check('Installed purchase inbox preserves the complete7535 contract and186 native recipes', len(prior['native_commands']) == 186)
+    check('Installed purchase inbox preserves the complete7535 contract and189 native recipes', len(prior['native_commands']) == 189)
     wrong = copy.deepcopy(contract); wrong['native_commands'][0] += ' changed'
     deny('Installed purchase inbox rejects altered historical recipe', lambda:browser_contract(wrong))
     for pin in ext['updated_pins']:
@@ -247,8 +247,8 @@ def browser_checks(a, root, tmp, check, deny, named, contract):
         value[pin['path']] = '0' * 64
         deny('Installed purchase inbox rejects stale serialized pin ' + '/'.join(pin['location']) + '/' + pin['path'], lambda w=wrong:browser_contract(w))
     reports = a.load(root/'tools/acceptance-reports.json')
-    check('Installed purchase inbox preserves all202 browser and253 final report requirements',
-          len(reports['browser']) == 202 and len(reports['final']) == 253
+    check('Installed purchase inbox preserves all205 browser and256 final report requirements',
+          len(reports['browser']) == 205 and len(reports['final']) == 256
           and sha(canonical(reports)) == ext['predecessor_reports_sha256'])
     for path in ('.github/workflows/application-tests.yml', '.github/workflows/catalog-storefront.yml'):
         current = root.joinpath(path).read_text(encoding='utf-8')
@@ -402,7 +402,7 @@ def policy_checks(a, root, check, deny, contract):
     check('Checkout policy correction binds all current sources before exact historical projection', True)
     check('Checkout policy correction whole inverses reject changed source and predecessor hashes', True)
     prior = policy_contract(contract)
-    check('Checkout policy correction preserves the complete3042 contract and186 native recipes', len(prior['native_commands']) == 186)
+    check('Checkout policy correction preserves the complete3042 contract and189 native recipes', len(prior['native_commands']) == 189)
     for label, mutate in [
         ('removed original command', lambda value:value['native_commands'].pop()),
         ('altered original command', lambda value:value['native_commands'].__setitem__(0, 'changed')),
@@ -422,8 +422,8 @@ def policy_checks(a, root, check, deny, contract):
             raise AssertionError('Checkout policy stale current pin passed')
     check('Checkout policy correction refuses every stale current serialized pin', True)
     reports = a.load(root/'tools/acceptance-reports.json')
-    check('Checkout policy correction preserves all202 browser and253 final reports',
-          len(reports['browser']) == 202 and len(reports['final']) == 253
+    check('Checkout policy correction preserves all205 browser and256 final reports',
+          len(reports['browser']) == 205 and len(reports['final']) == 256
           and sha(canonical(reports)) == ext['predecessor_reports_sha256'])
     check('Checkout policy correction leaves both workflows and installed fixture unchanged',
           all(sha(root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')) == expected
