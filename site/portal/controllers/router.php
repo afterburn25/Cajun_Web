@@ -2,7 +2,6 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';require_once CWP_CODE_ROOT.'/includes/layout/notifications.php';require_once CWP_CODE_ROOT.'/includes/layout/proposals.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
 require_once CWP_CODE_ROOT.'/portal/controllers/tickets.php';
-require CWP_CODE_ROOT.'/includes/layout/notifications.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
