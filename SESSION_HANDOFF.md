@@ -1,3 +1,11 @@
+## 2026-10-18 — client subdomain request continuation
+
+Parent `b8c316b6fd138167b11c251d5db24a6d31f2bd88`; branch `codex/twentyi-client-subdomain-requests`; intended enclosing commit `feat: add client subdomain review workflow`. [Workflow and evidence](docs/TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md). PR234 remains the separate owner-operation parent; this candidate must retain its original tests and behavior. Root owns shared route seams and publication. Agent proposals stay external until reviewed.
+
+Local verification is recorded in the [source-bound receipt](docs/evidence/client-subdomain-requests-local.json): all default/minimal PHP suites, 429 portable acceptance-helper outcomes, 53 synthetic layout checks, canonical installer refresh and 25 PHP lints pass. Original 297 helper outcomes remain intact; acceptance inventories are 168 native commands, 180 browser-phase reports and 224 final reports. There are no new installed-browser captures.
+
+Next: inspect the stacked candidate's first native and full application results, add and run installed owner/client workflow coverage, then perform normal combined integration and release acceptance. The current complete application workflow excludes this new branch/base from automatic push/PR runs: check for an exact-head run and dispatch the first full PHP8.3/MariaDB acceptance once if absent. The focused document-roots workflow accepts the PR. Do not duplicate a queued run. Installed browser, database and release results cannot be inferred from local parser or synthetic-render tests. Preserve original PR234/235/216 runs, published 1.25.0 and Devin's separate branches. No live operation is authorized by this checkpoint.
+
 ## 2026-10-18 — continue subdomain addition acceptance
 
 Starting main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`; branch `codex/twentyi-subdomain-add`; enclosing commit: `feat: add reviewed hosting subdomain requests`. [Workflow and limits](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). Root owns routing, owner forms, packaging and integration; the three existing agents supplied transport, native persistence and acceptance work with independent review. New files belong to this increment only.

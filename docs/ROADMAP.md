@@ -1,3 +1,7 @@
+## 2026-10-18 — client subdomain request workflow
+
+[Client requests](TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) extend the owner operation from `b8c316b6` on a separate branch. The increment covers assigned parent selection, pending withdrawal, owner decline/approval, an exact provider-attempt link and safe client progress. Database, installed application and combined release acceptance remain required. Full 20i, provider catalog/image coverage and the remaining roadmap are not marked complete.
+
 ## 2026-10-18 — hosting subdomain workflow candidate
 
 Owner subdomain addition now has a typed request, native approval/history, admin forms and independent name readback on `codex/twentyi-subdomain-add`. [Scope and validation](TWENTYI_SUBDOMAIN_ADDITIONS.md). Native/full application acceptance and release remain pending. This advances Hosting DNS; client-request forms, removal, broader DNS management and complete 20i remain unfinished.

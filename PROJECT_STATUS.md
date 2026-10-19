@@ -1,3 +1,11 @@
+## 2026-10-18 — client subdomain request candidate
+
+Branch `codex/twentyi-client-subdomain-requests` starts from `b8c316b6fd138167b11c251d5db24a6d31f2bd88` ([PR234](https://github.com/afterburn25/Cajun_Web/pull/234)). It adds [primary-client intake, owner review and saved progress](docs/TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) on top of the existing owner subdomain operation. Root owns shared navigation, routing, integration and documentation; the three existing agents own backend persistence, views and independent native acceptance. This checkpoint is unreleased and does not change the live site.
+
+Source-specific local PHP checks, the canonical installer refresh, 25 touched PHP lints, 429 acceptance-helper outcomes and 53 synthetic layout checks pass. The [receipt](docs/evidence/client-subdomain-requests-local.json) names sources, reports and limits. Native SQL and installed owner/client flow coverage remain required; no new installed-browser producer or capture is claimed. Nine new mandatory commands/reports preserve every prior requirement. Next: inspect the first focused/full candidate runs, add and run installed workflow coverage, then perform normal combined integration and release acceptance.
+
+Original full runs for PR234, hosting-checkout [PR235](https://github.com/afterburn25/Cajun_Web/pull/235) and catalog [PR216](https://github.com/afterburn25/Cajun_Web/pull/216) were still queued at the latest read. Preserve their first attempts. Published 1.25.0 remains immutable; Devin retains the separate non-20i assignment.
+
 ## 2026-10-18 — subdomain additions in development
 
 Branch `codex/twentyi-subdomain-add`, from main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`, adds an [owner subdomain request and independent readback workflow](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). Requests retain one-use approval and history, and uncertainty prevents another add for the same hostname. Separate names remain eligible for fresh approval. Local verification is recorded in the session log; native SQL, installed application acceptance and release remain pending.

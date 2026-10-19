@@ -2,9 +2,9 @@ name: Native assigned-package document roots checks
 on:
   push:
     branches: [main, codex/twentyi-document-roots-observations]
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile', 'tests/subdomain_requests_document.php', 'tests/subdomain_requests_storage.php', 'tests/subdomain_requests_contract.php', 'tests/subdomain_requests_views.php', 'tests/provider_subdomain_requests_native.php']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile', 'tests/subdomain_requests_document.php', 'tests/subdomain_requests_storage.php', 'tests/subdomain_requests_contract.php', 'tests/subdomain_requests_views.php', 'tests/provider_subdomain_requests_native.php']
   workflow_dispatch:
 permissions:
   contents: read
@@ -78,6 +78,15 @@ jobs:
               php tests/subdomain_add_views.php qa/subdomain-add-views-default.json
               php -n tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json
               CWP_TEST_SUBDOMAIN_ADD=1 php tests/provider_subdomain_add_native.php
+              php tests/subdomain_requests_document.php > qa/subdomain-requests-document-default-results.json
+              php -n tests/subdomain_requests_document.php > qa/subdomain-requests-document-minimal-results.json
+              php tests/subdomain_requests_storage.php > qa/subdomain-requests-storage-default-results.json
+              php -n tests/subdomain_requests_storage.php > qa/subdomain-requests-storage-minimal-results.json
+              php tests/subdomain_requests_contract.php > qa/subdomain-requests-service-default-results.json
+              php -n tests/subdomain_requests_contract.php > qa/subdomain-requests-service-minimal-results.json
+              php tests/subdomain_requests_views.php > qa/subdomain-requests-views-default-results.json
+              php -n tests/subdomain_requests_views.php > qa/subdomain-requests-views-minimal-results.json
+              CWP_TEST_SUBDOMAIN_REQUESTS=1 php tests/provider_subdomain_requests_native.php
               php tests/provider_package_php_native.php
               php tests/domain_expiry_native.php
               php tests/provider_schedule_native.php
@@ -96,6 +105,15 @@ jobs:
             qa/subdomain-add-views-default.json
             qa/subdomain-add-views-minimal.json
             qa/provider-subdomain-add-native-results.json
+            qa/subdomain-requests-document-default-results.json
+            qa/subdomain-requests-document-minimal-results.json
+            qa/subdomain-requests-storage-default-results.json
+            qa/subdomain-requests-storage-minimal-results.json
+            qa/subdomain-requests-service-default-results.json
+            qa/subdomain-requests-service-minimal-results.json
+            qa/subdomain-requests-views-default-results.json
+            qa/subdomain-requests-views-minimal-results.json
+            qa/provider-subdomain-requests-native-results.json
             qa/document-roots-document-results.json
             qa/document-roots-document-no-ini-results.json
             qa/document-roots-transport-results.json

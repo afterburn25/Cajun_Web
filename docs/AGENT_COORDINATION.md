@@ -1,3 +1,9 @@
+## Client subdomain requests — 2026-10-18
+
+Root owns `codex/twentyi-client-subdomain-requests`, parent `b8c316b6fd138167b11c251d5db24a6d31f2bd88` from PR234, and shared routing, navigation, CSS, installer inventory, documentation and Git integration. Domains supplied the authenticated request history and owner-operation integration; Catalog supplied dedicated owner/client views and controller checks; VPS supplied the independent native fixture and additive acceptance wiring. Their proposals were prepared outside the shared checkout and applied by root after source/hash review. No agent changed another lane's checkout.
+
+This is an unreleased stacked candidate. Its [scope and verification](TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) do not establish native SQL or installed browser acceptance. Keep PR234 and the other original queued runs, immutable 1.25.0 and Devin's separate non-20i branches intact. The first focused PR run and a single exact-head full application dispatch provide the next runtime evidence; do not duplicate queued work.
+
 ## Post-publication coordination — 2026-10-18
 
 1.25.0 is [published and freshly verified](RELEASE_1.25.0_PUBLICATION.md) at immutable main source `b79c67110829126916e3a65e616191542448bccc`. Root completed normal merge, five original full runs, maintained compatibility, 330-image review, assembly and all-asset draft/public verification. Keep that source/tag/assets unchanged.
