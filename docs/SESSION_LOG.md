@@ -295,6 +295,7 @@ Tests/verification (local): `php -l` clean on all touched PHP; `tests/project-pr
 Known limits: fresh installs keep history off until the owner enables it (by design — unprepared editing still works); `project_progress_native.php` and browser/upgrade suites pending CI on this branch.
 
 Next: commit/push this increment, open bounded PR, continue remaining non-20i items (mail Reply/Forward, payment schedules).
+
 ## Port service plans runtime — 2026-10-16
 
 Request: continue the non-20i roadmap (issue #157 item 4 — maintenance plans). Recurring billing requires `service_plans_*` helpers, so the runtime slice precedes it.
@@ -659,6 +660,14 @@ Request: continue the remaining non-20i roadmap (issue #157). Starting commit: m
 Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
 
 Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-service-plans-foundation`.
+
+Actions: extracted the preserved `devin/service-plans` slice — `ServicePlan`/`PlanSubscription`, `tests/service-plans/run.php`, `service-plans.yml`, `docs/SERVICE_PLANS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording. `devin/service-desk` is already delivered inside the tickets branch's desk foundation, so no separate port is needed.
+
+Tests: `php -l` clean; `php tests/service-plans/run.php` → 76/76 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
 

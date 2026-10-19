@@ -72,6 +72,10 @@ On `devin/non20i-mail-sent-sync` (stacked on `devin/non20i-mail-attachments`), a
 
 Remove duplicate contacts-table creation in the native service-plan fixture while retaining all new contact authority checks. Runtime application and published1.25 bytes are unchanged.
 
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
 ## Unreleased — record observed cloud null response
 ## Receive-side mail attachments with authorized downloads — 2026-10-16
 
@@ -297,6 +301,10 @@ Devin non-20i increment on `devin/non20i-notifications-runtime` from the notific
 ## Port P-07 notification contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-notifications-foundation` from main `595ac9c3`, continuing preserved `devin/notifications`. Adds `foundation/notifications/` — `Notification`, `NotificationFeed`, `NotificationPreferences`, `DeliveryAttempt`, `MetricSample` — with 65 pure checks in `tests/notifications/run.php` and a PHP 8.2/8.4 offline workflow lane. No persistence, delivery transport or UI — integration remains future work. No release or deployment.
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
 
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
@@ -765,6 +773,10 @@ Ported `codex/billing-calendar` onto `devin/non20i-billing-calendar`. Canonical 
 
 Ported `codex/ticket-screenshot-readiness` onto `devin/non20i-ticket-screenshots` (stacked on `devin/non20i-support-tickets`). New `tests/ticket_screenshot.py` helper waits for the real activity-bell fetch to settle and verifies complete footer bounds before full-page captures; `tests/ticket_cases.py` screenshots assert on it. Test-only; no runtime change.
 
+
+## Unreleased — service plans and client agreements (Devin port)
+
+Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `devin/non20i-service-plans` (stacked on the foundation port). Additive `service_plans`/`service_subscriptions` event-sourced tables behind owner-password setup; admin Service agreements view (create/edit plans, enroll clients); portal `?agreements` views where clients review and sign exact plan terms; `service-plans` added to the canonical mirror list. No provider, hosting or billing dependency introduced. No live deployment or release.
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
@@ -935,6 +947,7 @@ Ported the preserved `codex/project-planning`/`project-planning-storage`/`projec
 - Port the preserved `codex/support-ticket-screens` slice onto `main` under the 2026-10-16 allocation: immutable journal + hash-linked event storage (`support_tickets`, `support_ticket_events`, staff/client read cursors), owner-gated `tickets_setup` migration, `support.tickets` permission, admin queue/detail/new-conversation screens, portal create/reply/status/read flows, private staff notes and assignments invisible to the client projection, exact-message activity links, and per-viewer explicit read controls.
 - Compose ticket unread facts into the existing workspace activity bell (`workspace_activity_summary`) without merging the two read models; ticket-only staff can use the activity center without project-administration access.
 - `docs/`: [usage](docs/SUPPORT_TICKETS.md), [contract](docs/SUPPORT_TICKETS_CONTRACT.md), [desk foundation](docs/DESK_FOUNDATION.md). Tests: `tests/desk/*` (114 model checks, default/no-ini), `tests/support_tickets_native.php` + `tests/support_ticket_screen_native_cases.php` (native MariaDB), `tests/ticket_cases.py` (HTTP/Chromium), `tests/ticket_upgrade_cases.py` (1.23 retained-upgrade replay). New `desk.yml` workflow; `application-tests.yml`/`access-policy.yml` cover `devin/non20i-*` pushes.
+
 
 ## Synchronize release entry points after review — 2026-10-15
 
