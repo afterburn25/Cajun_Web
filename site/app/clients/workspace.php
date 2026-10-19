@@ -12,7 +12,7 @@ require_once CWP_CODE_ROOT.'/database/migrations/workspace.php';
 require_once CWP_CODE_ROOT.'/app/clients/identity.php';
 require_once CWP_CODE_ROOT.'/app/projects/reviews.php';
 require_once CWP_CODE_ROOT.'/app/clients/files.php';
-function studio_ready(): bool {return setting('studio_schema_version')==='2';}
+function studio_ready(): bool {return setting('studio_schema_version')==='3';}
 
 /** Structured milestones arrive through a later studio_migrate run on older workspace installs. */
 function studio_milestones_ready(): bool {return studio_ready()&&(bool)one('SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'studio_milestones']);}

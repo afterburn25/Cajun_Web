@@ -73,6 +73,12 @@ try {
     ok('Upgrade retains original settings',setting('sentinel_original')==='Preserve original settings');
     ok('Upgrade saves schema marker',studio_ready());
     studio_migrate();ok('Repeated migration is idempotent',rowcount('leads')===1&&rowcount('users')===1);
+    db()->exec('DROP TABLE '.table('studio_version_files'));
+    rejected('Migration refuses missing established preview binding history',fn()=>studio_migrate());
+    ok('Missing v3 binding table is not silently recreated',!one('SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'studio_version_files']));
+    save_setting('studio_schema_version','2');studio_migrate();
+    ok('v2 to v3 migration adds preview bindings additively',(bool)one('SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'studio_version_files'])&&studio_ready());
+    save_setting('studio_schema_version','9');rejected('Migration refuses an unknown workspace marker',fn()=>studio_migrate());save_setting('studio_schema_version','3');
     // Digit-bearing fields must be recognized; incompatible schemas still fail.
     db()->exec('ALTER TABLE '.table('studio_files').' MODIFY sha256 VARCHAR(64) NOT NULL');
     rejected('Migration rejects mismatched digest column type',fn()=>studio_migrate());
@@ -131,10 +137,24 @@ if(!isset($error))try {
     ok('Approval records exact version and client',one('SELECT decision,decided_by FROM '.table('studio_versions').' WHERE id=?',[$v2])==['decision'=>'approved','decided_by'=>1]);
     rejected('Duplicate approval rejected',fn()=>studio_decide(1,$v2,'approved',''));
     ok('Prior version content immutable',one('SELECT body FROM '.table('studio_versions').' WHERE id=?',[$v1])['body']==='Original version text');
+    $previewId=studio_preview_store(1,$v2,'approved-preview.png','png preview bytes','image/png',17);
+    $previewFile=one('SELECT * FROM '.table('studio_files').' WHERE id=?',[$previewId]);$previewPath=config()['storage'].'/media/'.$previewFile['stored_name'];
+    ok('Preview store binds the protected file to its version',(bool)one('SELECT id FROM '.table('studio_version_files').' WHERE version_id=? AND file_id=?',[$v2,$previewId])&&is_file($previewPath)&&hash('sha256',substr(file_get_contents($previewPath),strlen(CWP_GUARD)))===hash('sha256','png preview bytes'));
     studio_publish(1,'proposal','Proposal one','Scope and fee for review','');$proposal=(int)query('SELECT MAX(id) FROM '.table('studio_versions'))->fetchColumn();
     rejected('Change request requires feedback',fn()=>studio_decide(1,$proposal,'changes',''));
     studio_decide(1,$proposal,'changes','Please clarify the content scope.');
     ok('Change request records feedback',one('SELECT decision FROM '.table('studio_versions').' WHERE id=?',[$proposal])['decision']==='changes');
+    // The other connection owns the project row lock that ordinary uploads and
+    // all previews now share; the attempted preview must stop there and leave no
+    // file or binding row behind.
+    $db=config()['db'];$blocking=new PDO('mysql:host='.$db['host'].';port='.(int)$db['port'].';dbname='.$db['name'].';charset=utf8mb4',$db['user'],$db['pass'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
+    $blocking->beginTransaction();$blocking->query('SELECT id FROM '.table('studio_jobs').' WHERE id=1 FOR UPDATE');
+    $mediaBefore=glob(config()['storage'].'/media/studio-*.php')?:[];$blocked=false;
+    query('SET SESSION innodb_lock_wait_timeout=1');
+    try{studio_preview_store(1,$proposal,'blocked-preview.png','blocked bytes','image/png',13);}catch(Throwable){$blocked=true;}
+    finally{query('SET SESSION innodb_lock_wait_timeout=50');}
+    $blocking->rollBack();
+    ok('Preview store shares the project lock used by uploads', $blocked&&(glob(config()['storage'].'/media/studio-*.php')?:[])===$mediaBefore&&!one('SELECT id FROM '.table('studio_version_files').' WHERE version_id=?',[$proposal])&&!one('SELECT id FROM '.table('studio_files').' WHERE original_name=?',['blocked-preview.png']));
     client_session(1);$oldAuth=$_SESSION['client_auth'];studio_new_invite(1,one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=1')['auth_version']);ok('New invitation revokes older client session',studio_client()===null);
     studio_revision_save('growth_intro','First saved copy',hash('sha256',setting('growth_intro')));
     $expect=hash('sha256',setting('growth_intro'));studio_revision_save('growth_intro','Second saved copy',$expect);

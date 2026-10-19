@@ -18,7 +18,7 @@ function d_audit_failure(callable $fn): bool {db()->exec('CREATE TRIGGER deliver
 if(($argv[1]??'')==='upload-worker'){d_actor();try{echo d_upload('parallel',$argv[2]);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'DENIED';}exit;}
 try{
     foreach(schema_statements('deliverci_') as $name=>$sql)if(!in_array($name,['website_releases','delivery_events'],true))db()->exec($sql);
-    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');save_setting('staff_schema_version','1');
+    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','3');save_setting('staff_schema_version','1');
     $now=gmdate('Y-m-d H:i:s');for($id=1;$id<=3;$id++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Delivery staff '.$id,'delivery'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);staff_seed_owner(1);
     foreach([2=>['clients.manage'],3=>['website.manage']] as $id=>$grants)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($grants)]);d_actor();
     for($id=1;$id<=2;$id++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Delivery client '.$id,'delivery-client'.$id.'@example.invalid',str_repeat((string)$id,32),$now]);

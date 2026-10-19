@@ -63,7 +63,7 @@ if(($argv[1]??'')==='upload-worker') {
 try {
     foreach(schema_statements('caci_') as $sql)db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
-    save_setting('studio_schema_version','2');
+    save_setting('studio_schema_version','3');
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Synthetic staff '.$i,'client-staff'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);
     foreach([2=>['administrator',['clients.manage']],3=>['administrator',['website.manage']],4=>['owner',[]]] as $id=>[$role,$permissions])query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode($permissions)]);

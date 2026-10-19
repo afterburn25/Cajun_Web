@@ -28,7 +28,7 @@ function pu_audit_failure(int $version,callable $fn):void {
 try {
     pu_ok('Isolated prefix is unused',(int)query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,?)=?',[strlen($prefix),$prefix])->fetchColumn()===0);
     foreach(schema_statements($prefix) as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','3');
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Upgrade owner','upgrade@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('e',32),'2026-01-01 00:00:00']);
     staff_seed_owner(1);$_SESSION=['uid'=>1,'auth_version'=>str_repeat('e',32),'login_at'=>time(),'last_activity'=>time()];
     foreach(['First','Second'] as $name)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$name,strtolower($name).'@example.invalid',bin2hex(random_bytes(16)),'2026-01-01 00:00:00']);

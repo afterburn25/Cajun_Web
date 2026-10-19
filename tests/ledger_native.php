@@ -18,7 +18,7 @@ function l_audit_failure(callable $fn): bool {db()->exec('CREATE TRIGGER ledgerc
 if(($argv[1]??'')==='receive-worker'){l_actor();try{echo ledger_receive(3,7000,'cash','Concurrent worker reference',gmdate('Y-m-d'),$argv[2],$argv[3]);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'DENIED';}exit;}
 try{
     foreach(schema_statements('ledgerci_') as $name=>$sql)if($name!=='invoice_payments')db()->exec($sql);
-    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','3');
     foreach(['staff','support','catalog','payments','payment_attempts'] as $module)save_setting($module.'_schema_version','1');
     $now=gmdate('Y-m-d H:i:s');
     for($id=1;$id<=4;$id++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Ledger staff '.$id,'ledger'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),substr(l_key(),0,32),$now]);
