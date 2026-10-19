@@ -1,3 +1,7 @@
+## 2026-10-19 — renewal invoicing implementation
+
+Root owns `codex/twentyi-renewal-invoicing` from main `a86f6f4f`, applies reviewed proposals sequentially, and owns UI/controller, shared acceptance, installer inventory and delivery. Domains supplies backend and focused cases; Catalog reviews actual modeled desktop/mobile views and backend safety; VPS supplies the packaged browser extension. Proposals and review evidence remain external until root integration. [Scope](TWENTYI_RENEWAL_INVOICING.md). No frozen acceptance branch is changed. Devin retains non-20i work.
+
 ## 2026-10-19 — continuation evidence sealed
 
 Root owns the main-based documentation checkpoint and later sequential integration. [Current sources and gates](ROADMAP_CONTINUATION_2026_10_19.md) preserve frozen PR249/250, pending original application/capture runs and Devin's non-20i ownership. Catalog independently verified all 139 new cleanup outcomes; Domains checked exact PR249 packages and fixture applicability; VPS reviewed the cleanup boundaries and consolidation. All 139 are terminally cancelled with 551 unexecuted jobs. No cleanup process remains active, and no cancellation is to be repeated. Original 327 acknowledgements and 31 preserved runs were excluded from this new operation. This records completed bounded work, not a new product completion claim.

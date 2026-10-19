@@ -1,3 +1,7 @@
+## Unreleased — domain renewal invoice creation
+
+Create and reserve an invoice directly from accepted renewal terms in a selected client project. Keep exact fee/privacy, duplicate-submission protection, rollback and original invoice history. Add clearer retry forms and mobile controls while preserving separate payment verification and explicit provider approval. [Candidate scope and verification](docs/TWENTYI_RENEWAL_INVOICING.md).
+
 ## Unreleased documentation — verified remainder and candidate handoff
 
 Record completion of the 139-run obsolete CI remainder, exact PR249 package verification and the separate PR250 contacts-fixture correction. Preserve every original acceptance gate, historical failure and published 1.25 asset. This commit changes documentation only; hosted feature acceptance remains pending.

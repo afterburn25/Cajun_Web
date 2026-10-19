@@ -161,7 +161,10 @@
     "\"$PHP_BINARY\" tests/hosting_delete_retry_native.php",
     "\"$PHP_BINARY\" tests/hosting_reconciliation_native.php",
     "\"$PHP_BINARY\" tests/client_authority_native.php",
-    "\"$PHP_BINARY\" tests/license_native.php"
+    "\"$PHP_BINARY\" tests/license_native.php",
+    "\"$PHP_BINARY\" tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-default.json",
+    "\"$PHP_BINARY\" -n tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json",
+    "CWP_TEST_RENEWAL_INVOICING=1 \"$PHP_BINARY\" tests/domain_renewal_invoice_create_native.php"
   ],
   "native_command_baseline": {
     "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
@@ -555,5 +558,22 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "domain_renewal_invoicing": {
+    "source_base": "a86f6f4fa592e6f715a9420aec8de4622258642e",
+    "predecessor_native_count": 152,
+    "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
+    "additions_after": "\"$PHP_BINARY\" tests/license_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-default.json",
+      "\"$PHP_BINARY\" -n tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json",
+      "CWP_TEST_RENEWAL_INVOICING=1 \"$PHP_BINARY\" tests/domain_renewal_invoice_create_native.php"
+    ],
+    "reports": [
+      "domain-renewal-invoicing-default.json",
+      "domain-renewal-invoicing-minimal.json",
+      "domain-renewal-invoicing-native-results.json"
+    ],
+    "scope": "Atomic local accepted-renewal invoice creation, retained original manual allocation, native recovery and packaged browser flow; synthetic provider only."
   }
 }

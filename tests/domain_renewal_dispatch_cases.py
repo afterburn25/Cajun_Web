@@ -10,6 +10,12 @@ from playwright.sync_api import expect
 from release_cases import db, chosen_form
 
 
+CREATION_CAPTURES = (
+    'Domain-Renewal-Invoice-Create-Desktop.png',
+    'Domain-Renewal-Invoice-Create-Mobile.png',
+)
+
+
 def run_browser(env, browser):
     base, qa, provider, check = (env[k] for k in ['BASE', 'QA', 'provider_server', 'check'])
     soup, token, submit, form_data, form_for = (env[k] for k in ['soup', 'token', 'submit', 'form_data', 'form_for'])
@@ -84,6 +90,17 @@ def run_browser(env, browser):
     def snapshot():
         return digest({name: rows(name) for name in ['domain_renewal_invoices', 'domain_renewal_dispatches', 'domain_renewal_dispatch_ends', 'provider_operation_grants', 'provider_operations', 'invoice_payments', 'audit']})
 
+    def creation_state():
+        names = ['studio_jobs', 'studio_invoices', 'domain_renewal_invoices', 'domain_renewal_dispatches',
+                 'domain_renewal_dispatch_ends', 'provider_operation_grants', 'provider_operations',
+                 'invoice_payments', 'provider_refreshes', 'provider_refresh_results', 'audit']
+        state = {name: rows(name) for name in names}
+        state['settings'] = db('SELECT * FROM fresh_settings ORDER BY name')
+        for name in ['payment_requests', 'payment_attempts', 'payment_attempt_events']:
+            state[name] = optional_rows('fresh_', name)
+        return {'tables': state, 'provider_calls': provider.calls, 'provider_posts': list(provider.posts),
+                'renewal_posts': list(provider.renewal_posts), 'mail_sha256': hashlib.sha256((qa/'mail-capture.txt').read_bytes()).hexdigest()}
+
     try:
         clients = []
         for number in [1, 2]:
@@ -137,28 +154,134 @@ def run_browser(env, browser):
             if index == 0:
                 response = submit(owner, target, 'provider_renewal_dispatch_prepare', {'owner_password': password}); evidence('Prepare permanent purpose and approval history', response)
                 check('Explicit renewal setup creates empty charging history without a POST', rows('domain_renewal_invoices') == rows('domain_renewal_dispatches') == rows('domain_renewal_dispatch_ends') == [] and provider.posts == initial_posts)
-            title = 'Exact renewal fee '+str(index+1)
-            submit(owner, job_url, 'studio_invoice', {'title': title, 'amount': '24.99', 'instructions': 'Synthetic instruction: pay the displayed exact renewal service only.'})
-            invoice = db('SELECT * FROM fresh_studio_invoices WHERE title=?', [title])[0]
-            form = form_data(form_for(owner.get(target), 'provider_renewal_dispatch_allocate'))
             if index == 0:
-                before = snapshot()
-                for label, changes in [('CSRF', {'csrf': 'bad'}), ('password', {'owner_password': 'wrong'}), ('terms', {'agreement_sha256': 'f'*64})]:
-                    response = owner.post(target, data={**form, 'allocation_confirmed': '1', 'owner_password': password, **changes})
-                    check('Renewal invoice allocation rejects '+label+' before any mutation or send', snapshot() == before and provider.posts == initial_posts)
-                for label, bad in [('missing', None), ('stale', '999999999')]:
-                    fields = {**form, 'allocation_confirmed': '1', 'owner_password': password}
-                    if bad is None: fields.pop('invoice_id')
-                    else: fields['invoice_id'] = bad
+                title = 'Exact renewal fee '+str(index+1)
+                submit(owner, job_url, 'studio_invoice', {'title': title, 'amount': '24.99', 'instructions': 'Synthetic instruction: pay the displayed exact renewal service only.'})
+                invoice = db('SELECT * FROM fresh_studio_invoices WHERE title=?', [title])[0]
+                form = form_data(form_for(owner.get(target), 'provider_renewal_dispatch_allocate'))
+                if index == 0:
+                    before = snapshot()
+                    for label, changes in [('CSRF', {'csrf': 'bad'}), ('password', {'owner_password': 'wrong'}), ('terms', {'agreement_sha256': 'f'*64})]:
+                        response = owner.post(target, data={**form, 'allocation_confirmed': '1', 'owner_password': password, **changes})
+                        check('Renewal invoice allocation rejects '+label+' before any mutation or send', snapshot() == before and provider.posts == initial_posts)
+                    for label, bad in [('missing', None), ('stale', '999999999')]:
+                        fields = {**form, 'allocation_confirmed': '1', 'owner_password': password}
+                        if bad is None: fields.pop('invoice_id')
+                        else: fields['invoice_id'] = bad
+                        response = owner.post(target, data=fields)
+                        check('Actual allocation retry with '+label+' selector cannot adopt a fresh invoice review', snapshot() == before and not soup(response).select('.renewal-invoice-allocation') and 'Reload this page' in response.text)
+                response = chosen_form(owner, target, 'provider_renewal_dispatch_allocate', 'invoice_id', invoice['id'], {'allocation_confirmed': '1', 'owner_password': password}); evidence('Reserve unpaid invoice '+str(index+1), response)
+            else:
+                create_action = 'provider_renewal_dispatch_create_invoice'
+                before_get = creation_state()
+                response = owner.get(target)
+                create_form = form_for(response, create_action)
+                create = form_data(create_form)
+                choices = [option.get('value', '') for option in create_form.select('[name=project_choice] option')
+                           if option.get('value', '').startswith(str(job)+':')]
+                check('Inline renewal invoice GET retains all database mail and provider state', creation_state() == before_get)
+                check('Inline renewal invoice review offers exact client project and fixed accepted fee', response.status_code == 200
+                      and len(choices) == 1 and len(choices[0].split(':')[1]) == 64
+                      and create['request_id'] == rid and create['project_choice'] == ''
+                      and 'USD 24.99' in create_form.text and domain['name'] in create_form.text
+                      and not create_form.select('[name=amount], [name=price], [name=currency], [name=years], [name=renew_privacy]'))
+                choice = choices[0]
+                captured = {**create, 'project_choice': choice, 'create_invoice_confirmed': '1', 'owner_password': password}
+                before = creation_state()
+                cases = [('CSRF', {'csrf': 'bad'}), ('password', {'owner_password': 'wrong'}),
+                         ('binding', {'binding_sha256': 'f'*64}), ('terms', {'agreement_sha256': 'f'*64}),
+                         ('project', {'project_choice': str(job)+':'+'f'*64}), ('confirmation', {'create_invoice_confirmed': None})]
+                for label, changes in cases:
+                    fields = {**captured, **changes}
+                    if fields.get('create_invoice_confirmed') is None: fields.pop('create_invoice_confirmed', None)
                     response = owner.post(target, data=fields)
-                    check('Actual allocation retry with '+label+' selector cannot adopt a fresh invoice review', snapshot() == before and not soup(response).select('.renewal-invoice-allocation') and 'Reload this page' in response.text)
-            response = chosen_form(owner, target, 'provider_renewal_dispatch_allocate', 'invoice_id', invoice['id'], {'allocation_confirmed': '1', 'owner_password': password}); evidence('Reserve unpaid invoice '+str(index+1), response)
+                    check('Inline renewal invoice rejects '+label+' without invoice audit mail or network mutation',
+                          bool(soup(response).select('.notice.error')) and creation_state() == before)
+                    retry = soup(response).select_one('.renewal-invoice-creation')
+                    if label in ('binding', 'terms', 'project'):
+                        check('Inline renewal invoice stale '+label+' cannot adopt a fresh review',
+                              retry is None and 'Reload this page and review' in response.text)
+                    else:
+                        values = form_data(retry) if retry is not None else {}
+                        check('Inline renewal invoice '+label+' retry retains original identity and clears consent secrets',
+                              retry is not None and all(values.get(key) == captured[key] for key in
+                                  ['allocation_id', 'request_id', 'binding_sha256', 'agreement_sha256', 'project_choice'])
+                              and values.get('owner_password') == '' and 'create_invoice_confirmed' not in values)
+                before_creation = creation_state()
+                context = browser.new_context(); errors = []
+                try:
+                    context.add_cookies([{'name': c.name, 'value': c.value, 'url': base+'/fresh/'} for c in owner.cookies])
+                    page = context.new_page(); page.on('pageerror', lambda e: errors.append(str(e)))
+                    for width, height, label, capture in [(1440, 1000, 'Desktop', CREATION_CAPTURES[0]),
+                                                          (320, 740, 'Mobile', CREATION_CAPTURES[1])]:
+                        page.set_viewport_size({'width': width, 'height': height}); page.goto(target, wait_until='domcontentloaded')
+                        form = page.locator('.renewal-invoice-creation')
+                        expect(form).to_contain_text('USD 24.99')
+                        expect(form).to_contain_text(domain['name'])
+                        form.locator('[name=project_choice]').select_option(choice)
+                        expect(form.locator('[name=project_choice]')).to_have_value(choice)
+                        expect(form.locator('[name=create_invoice_confirmed]')).not_to_be_checked()
+                        page.evaluate('document.fonts.ready')
+                        page.screenshot(path=str(qa/capture), full_page=True)
+                        check('Inline renewal invoice '+label+' renders the actual creation form within viewport',
+                              not errors and page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+                              and creation_state() == before_creation)
+                    # Capture the exact form that the real browser will submit; no token or hidden-field injection.
+                    creation_post = {name: form.locator('[name='+name+']').input_value() for name in
+                                     ['csrf', 'action', 'allocation_id', 'request_id', 'binding_sha256', 'agreement_sha256', 'project_choice']}
+                    creation_post.update(create_invoice_confirmed='1', owner_password=password)
+                    form.locator('[name=create_invoice_confirmed]').check()
+                    form.locator('[name=owner_password]').fill(password)
+                    with page.expect_navigation(wait_until='domcontentloaded'):
+                        form.get_by_role('button', name='Create renewal invoice', exact=True).click()
+                    expect(page.locator('.renewal-invoice-purpose').first).to_contain_text(domain['name'])
+                    check('Chromium inline invoice creation returns to its exact renewal request',
+                          parse_qs(urlparse(page.url).query) == {'view': ['domain-renewal-dispatch'], 'request': [rid]}
+                          and page.locator('.notice.error').count() == 0 and page.locator('.renewal-invoice-creation').count() == 0)
+                finally:
+                    context.close()
+                invoices = db('SELECT * FROM fresh_studio_invoices WHERE reference=?', ['DR-'+creation_post['allocation_id']])
+                check('Inline renewal invoice creates one issued exact-fee invoice in the selected client project',
+                      len(invoices) == 1 and invoices[0]['job_id'] == job and invoices[0]['amount_cents'] == 2499
+                      and invoices[0]['currency'] == 'USD' and invoices[0]['status'] == 'issued'
+                      and invoices[0]['paid_at'] is None and invoices[0]['paid_note'] == ''
+                      and domain['name'] in invoices[0]['instructions'] and '2 year(s)' in invoices[0]['instructions']
+                      and 'do not renew privacy' in invoices[0]['instructions']
+                      and 'Payment does not submit the renewal.' in invoices[0]['instructions'])
+                invoice = invoices[0]
+                after_creation = creation_state()
+                additions = {}
+                for name in ['studio_invoices', 'domain_renewal_invoices', 'audit']:
+                    old_ids = {row['id'] for row in before_creation['tables'][name]}
+                    additions[name] = [row for row in after_creation['tables'][name] if row['id'] not in old_ids]
+                old_settings = {row['name']: row['value'] for row in before_creation['tables']['settings']}
+                expected_settings = dict(old_settings)
+                expected_settings['domain_renewal_dispatch_allocation_count'] = str(int(old_settings['domain_renewal_dispatch_allocation_count'])+1)
+                preserved_rows = all({row['id']: row for row in after_creation['tables'][name]}.get(old['id']) == old
+                                     for name in additions for old in before_creation['tables'][name])
+                check('Inline renewal invoice commits only one invoice allocation counter and two ordered witnesses',
+                      additions['studio_invoices'] == [invoice] and len(additions['domain_renewal_invoices']) == 1
+                      and additions['domain_renewal_invoices'][0]['id'] == creation_post['allocation_id']
+                      and additions['domain_renewal_invoices'][0]['invoice_id'] == invoice['id']
+                      and additions['domain_renewal_invoices'][0]['request_id'] == rid
+                      and additions['domain_renewal_invoices'][0]['client_id'] == cid
+                      and [row['action'] for row in additions['audit']] == ['domain_renewal_dispatch.allocation', 'domain_renewal_dispatch.invoice_created']
+                      and all(row['user_id'] == actor for row in additions['audit']) and preserved_rows
+                      and {row['name']: row['value'] for row in after_creation['tables']['settings']} == expected_settings
+                      and all(after_creation['tables'][name] == value for name, value in before_creation['tables'].items()
+                              if name not in (*additions, 'settings'))
+                      and all(after_creation[key] == before_creation[key] for key in ['provider_calls', 'provider_posts', 'renewal_posts', 'mail_sha256']))
+                response = owner.post(target, data=creation_post); evidence('Replay captured inline renewal invoice creation', response)
+                check('Captured inline renewal invoice replay returns original allocation without any duplicate or send',
+                      response.status_code == 200 and [r.status_code for r in response.history] == [303]
+                      and not soup(response).select('.notice.error') and creation_state() == after_creation
+                      and db('SELECT invoice_id FROM fresh_domain_renewal_invoices WHERE id=?', [creation_post['allocation_id']]) == [{'invoice_id': invoice['id']}])
             allocation = db('SELECT * FROM fresh_domain_renewal_invoices WHERE invoice_id=?', [invoice['id']])[0]
             check('Renewal invoice '+str(index+1)+' purpose precedes all payment and provider work', not db('SELECT id FROM fresh_invoice_payments WHERE invoice_id=?', [invoice['id']]) and len(provider.renewal_posts) == len(initial_renewals)+index and 'Approve and submit this renewal once' not in response.text)
             statement = portal+'?invoice='+str(invoice['id'])
             response = client.get(statement)
             purpose = soup(response).select_one('.renewal-invoice-purpose')
-            check('Client invoice '+str(index+1)+' shows exact agreed renewal before payment instructions', purpose is not None and domain['name'] in purpose.text and '2 years' in purpose.text and 'Do not renew privacy' in purpose.text and 'USD 24.99' in purpose.text and response.text.index('Domain renewal invoice purpose') < response.text.index('Synthetic instruction:'))
+            check('Client invoice '+str(index+1)+' shows exact agreed renewal before payment instructions', purpose is not None and domain['name'] in purpose.text and '2 years' in purpose.text and 'Do not renew privacy' in purpose.text and 'USD 24.99' in purpose.text and invoice['instructions'] != '' and invoice['instructions'] in response.text and response.text.index('Domain renewal invoice purpose') < response.text.index(invoice['instructions']))
             if index == 0:
                 check('Reserved invoice purpose refuses foreign support and anonymous clients', domain['name'] not in foreign.get(statement).text and domain['name'] not in client.get(statement+'&support=fixture').text and domain['name'] not in requests.get(statement).text)
                 workspace = client.get(portal+'?job='+str(job))
