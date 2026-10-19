@@ -2,6 +2,10 @@ name: Review request checks
 
 on:
   pull_request:
+    paths:
+      - 'foundation/review-requests/**'
+      - 'tests/review-requests/**'
+      - '.github/workflows/review-requests.yml'
   push:
     branches: [main, devin/review-requests]
   workflow_dispatch:
