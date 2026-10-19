@@ -95,6 +95,10 @@ Staff can attach one private PDF/PNG/JPEG preview to an exact published design o
 
 Review correction on `devin/non20i-support-tickets` (PR #158). `tickets.css` was referenced unconditionally by the shared admin and portal layouts but was not registered in the closed `asset()` map, throwing `Unknown public asset` on the ordinary dashboard and portal before any ticket feature ran. Registers `tickets.css => assets/css/tickets.css`, adds `tests/asset_registry.php` — a static regression asserting every literal `asset('name')` in shipping PHP resolves through the map and maps to an existing file (plus whole-map disk checks and the audited `image_url` allowlist) — wired into application-tests in default and no-INI modes. Installer inventory refreshed; 45 local checks pass in both modes. Original failed run 38915585801 is preserved; fresh HTTP/Apache acceptance runs in CI.
 
+## Unreleased — layered homepage depth with measured evidence
+
+A CSS-composed device pair now sits as a nearer parallax plane in the hero, giving real pointer-depth without new image assets; it respects reduced-motion, `motion-off` and small screens. Browser acceptance records measured CLS/LCP/longtask evidence to `qa/homepage-performance.json` with a hard layout-shift bound — evidence recorded before any performance claim. Branch `devin/non20i-homepage-device-depth`; acceptance pending on CI.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.

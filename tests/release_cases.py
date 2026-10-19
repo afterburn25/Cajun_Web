@@ -218,6 +218,18 @@ def run_browser(env,browser,fixture):
     (QA/'browser-diagnostics.json').write_text(json.dumps({'console_and_page_errors':errors,'unexpected':unexpected,'failed_requests':failed,'unexpected_failed_requests':unexpected_failed},indent=2))
     check('Extended browser has no unexpected console or page errors',not unexpected);check('Extended browser has no unexpected failed network requests',not unexpected_failed)
     context.close()
+    # Measured homepage evidence: real PerformanceObserver layout-shift/LCP/longtask capture.
+    perf=browser.new_context(viewport={'width':1440,'height':900})
+    pp=perf.new_page()
+    pp.add_init_script("window.__cls=0;window.__lcp=0;window.__longtasks=0;try{new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__cls+=e.value}).observe({type:'layout-shift',buffered:true});new PerformanceObserver(l=>{const es=l.getEntries();if(es.length)window.__lcp=es[es.length-1].startTime}).observe({type:'largest-contentful-paint',buffered:true});new PerformanceObserver(l=>{window.__longtasks+=l.getEntries().length}).observe({type:'longtask',buffered:true});}catch(e){}")
+    pp.goto(BASE+'/existing/',wait_until='networkidle')
+    pp.evaluate('window.scrollTo({top:document.documentElement.scrollHeight})');pp.wait_for_timeout(350);pp.evaluate('window.scrollTo(0,0)');pp.wait_for_timeout(350)
+    metrics=pp.evaluate('({cls:window.__cls,lcp:window.__lcp,longtasks:window.__longtasks,nav_ms:performance.getEntriesByType("navigation")[0].duration,resources:performance.getEntriesByType("resource").length,devices:!!document.querySelector(".hero-devices")})')
+    (QA/'homepage-performance.json').write_text(json.dumps({'viewport':'1440x900','measured':metrics,'evidence':'lab (Chromium loopback), not real-user data'},indent=2))
+    check('Layered device depth is present on desktop',metrics['devices'])
+    check('Homepage load is free of large layout shifts',metrics['cls']<=0.1)
+    check('Homepage renders inside a bounded lab budget',0<metrics['lcp']<10000 and 0<metrics['nav_ms']<15000)
+    perf.close()
     # Regression for the original inquiry form, whose named action input also shadows form.action.
     contact=browser.new_context();p=contact.new_page();p.goto(BASE+'/existing/index.php?page=contact')
     form=p.locator('[data-inquiry]');form.locator('[name=name]').fill('Browser contact fixture');form.locator('[name=email]').fill('contact-browser@example.invalid');form.locator('[name=service]').select_option('Website redesign');form.locator('[name=budget]').select_option('Help me estimate');form.locator('[name=message]').fill('Synthetic original contact form destination regression.');form.locator('[name=consent]').check();p.wait_for_timeout(2100);form.locator('button[type=submit]').click();expect(form.locator('.form-result')).to_be_visible()

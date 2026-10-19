@@ -8,6 +8,10 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
     <div class="hero-visual" aria-hidden="true" data-parallax>
         <img src="<?=esc(asset('hero-detail.webp'))?>" width="770" height="459" alt="" fetchpriority="high" decoding="async">
     </div>
+    <div class="hero-devices" aria-hidden="true" data-parallax-near>
+        <div class="hero-device hero-device-desktop"><i></i><i></i><i></i></div>
+        <div class="hero-device hero-device-mobile"><i></i><i></i></div>
+    </div>
     <div class="container hero-inner">
         <div class="hero-copy">
             <div class="eyebrow hero-eyebrow">STRATEGY <b>×</b> DESIGN <b>×</b> DEVELOPMENT <b>×</b> GROWTH</div>
