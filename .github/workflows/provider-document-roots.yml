@@ -2,9 +2,9 @@ name: Native assigned-package document roots checks
 on:
   push:
     branches: [main, codex/twentyi-document-roots-observations]
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile']
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
   native-history:
     name: Assigned package document roots ${{ matrix.php }} and ${{ matrix.database.label }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
@@ -71,6 +71,13 @@ jobs:
               php tests/document_roots_transport.php > qa/document-roots-transport-results.json
               php -n tests/document_roots_transport.php > qa/document-roots-transport-no-ini-results.json
               php tests/provider_document_roots_native.php
+              php tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-default.json
+              php -n tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-minimal.json
+              php tests/subdomain_add_contract.php > qa/subdomain-add-service-default.json
+              php -n tests/subdomain_add_contract.php > qa/subdomain-add-service-minimal.json
+              php tests/subdomain_add_views.php qa/subdomain-add-views-default.json
+              php -n tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json
+              CWP_TEST_SUBDOMAIN_ADD=1 php tests/provider_subdomain_add_native.php
               php tests/provider_package_php_native.php
               php tests/domain_expiry_native.php
               php tests/provider_schedule_native.php
@@ -82,6 +89,13 @@ jobs:
           name: document-roots-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
           path: |
             qa/provider-document-roots-native-results.json
+            qa/subdomain-add-contract-default.json
+            qa/subdomain-add-contract-minimal.json
+            qa/subdomain-add-service-default.json
+            qa/subdomain-add-service-minimal.json
+            qa/subdomain-add-views-default.json
+            qa/subdomain-add-views-minimal.json
+            qa/provider-subdomain-add-native-results.json
             qa/document-roots-document-results.json
             qa/document-roots-document-no-ini-results.json
             qa/document-roots-transport-results.json

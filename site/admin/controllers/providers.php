@@ -20,6 +20,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/domain_expiry.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_php.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_document_roots.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_subdomain_add.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_force_ssl.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_force_ssl_controls.php';
@@ -46,6 +47,7 @@ function provider_inventory_message(?string $code):string {
 }
 
 function provider_inventory_admin_action(string $action):void {
+    if (str_starts_with($action,'provider_inventory_subdomain_')) provider_subdomain_add_admin_action($action);
     if (str_starts_with($action,'provider_inventory_stackcp_access_')) provider_stackcp_access_admin_action($action);
     if (str_starts_with($action,'provider_inventory_stackcp_')) provider_stackcp_admin_action($action);
     if(str_starts_with($action,'provider_inventory_contract_'))domain_contracts_admin_action($action);

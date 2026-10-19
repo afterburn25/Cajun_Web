@@ -1,3 +1,9 @@
+## 2026-10-18 — continue subdomain addition acceptance
+
+Starting main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`; branch `codex/twentyi-subdomain-add`; enclosing commit: `feat: add reviewed hosting subdomain requests`. [Workflow and limits](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). Root owns routing, owner forms, packaging and integration; the three existing agents supplied transport, native persistence and acceptance work with independent review. New files belong to this increment only.
+
+Next: inspect the first exact-candidate document-roots focused and full application runs, resolve actual failures, then perform normal integration and release acceptance. Local PHP and synthetic browser results are not native SQL or installed acceptance. Preserve the original queued StackCP, hosting and nameserver runs without duplicate dispatch. At 02:25 UTC the queue was processing older Ubuntu jobs; no approval gate or concurrency deadlock was observed, and the actual account capacity remains unknown. Devin retains separate non-20i work. Published 1.25.0 and the live site are unchanged.
+
 ## 2026-10-18 — pure-suite CI follow-through
 
 Starting main `e397d9a6e293850e8dff61a593e3ba39ee178400`; branch `codex/ci-pure-family-pr-filters`; enclosing commit `ci: limit isolated pure suites to relevant PR paths`. Five workflow files plus continuity/evidence documentation change. No shipping source, generated inventory, application workflow or published asset changes. [Trigger contract, actual checks and policy caveat](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers).

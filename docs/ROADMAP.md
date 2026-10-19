@@ -1,3 +1,7 @@
+## 2026-10-18 — hosting subdomain workflow candidate
+
+Owner subdomain addition now has a typed request, native approval/history, admin forms and independent name readback on `codex/twentyi-subdomain-add`. [Scope and validation](TWENTYI_SUBDOMAIN_ADDITIONS.md). Native/full application acceptance and release remain pending. This advances Hosting DNS; client-request forms, removal, broader DNS management and complete 20i remain unfinished.
+
 ## 2026-10-18 — verification throughput follow-through
 
 Five isolated pure suites have reviewed PR path filters, with complete current dependency coverage and unchanged tests. [Evidence and limits](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This scheduling increment does not complete a product capability or queued acceptance. Hosting [PR231](https://github.com/afterburn25/Cajun_Web/pull/231) and nameserver [PR230](https://github.com/afterburn25/Cajun_Web/pull/230) remain separate candidates awaiting runtime and release gates; full20i remains unfinished.

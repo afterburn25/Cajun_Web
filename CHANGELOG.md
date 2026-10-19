@@ -1,3 +1,7 @@
+## Unreleased — owner hosting subdomain additions
+
+Add one subdomain beneath an explicitly attached parent website, with current owner approval, once-only dispatch and separate provider readback. Retain uncertain outcomes and request history without treating a missing name as permission to resend. Preserve entered names after form errors, and keep long names/actions readable on mobile. [Scope and acceptance](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). This candidate is not a release or live deployment.
+
 ## Unreleased — isolated pure-suite pull-request filters
 
 Limit estimator, email-template, portfolio, review-request and webmail pure-suite PR runs to their source/test directories and workflow files. Preserve every job and push/manual trigger. Source/dependency checks and independent review passed; this affects future scheduling only. No application or release version changes.

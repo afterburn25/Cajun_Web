@@ -16,6 +16,7 @@ require_once __DIR__.'/ForceSslChange.php';
 require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
 require_once __DIR__.'/DomainRenewal.php';
 require_once __DIR__.'/DirectoryIndexingChange.php';
+require_once __DIR__.'/SubdomainAdd.php';
 
 /**
  * Translates a validated ProviderOperation into one bounded provider
@@ -61,6 +62,7 @@ final class TwentyIRequestBuilder
             throw new InvalidArgumentException('Operation ' . $operation->name . ' requires typed request validation that is not yet implemented.');
         }
 
+        if ($operation->name === SubdomainAdd::OPERATION) return SubdomainAdd::request($operation);
         if ($operation->name === DomainRenewal::OPERATION) return DomainRenewal::request($operation);
         if ($operation->name === DirectoryIndexingChange::OPERATION) return DirectoryIndexingChange::request($operation);
         if ($operation->name === ForceSslChange::OPERATION) return ForceSslChange::request($operation);
