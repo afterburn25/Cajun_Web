@@ -1266,6 +1266,205 @@ def run(tmp):
     billing_selector_checks(tmp, current, registry, section, historical)
 
 
+_run_before_installed_billing_options = run
+
+
+def installed_billing_options_inverse(data, delta):
+    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:
+        raise ValueError('Installed billing options current source changed')
+    lines = data.decode().splitlines(keepends=True)
+    for change in reversed(delta['changes']):
+        start, end = change['after_start'], change['after_end']
+        if ''.join(lines[start:end]) != change['after']:
+            raise ValueError('Installed billing options inverse range changed')
+        lines[start:end] = change['before'].splitlines(keepends=True)
+    result = ''.join(lines).encode()
+    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:
+        raise ValueError('Installed billing options predecessor changed')
+    return result
+
+
+def installed_billing_options_current(current=None, registry=None):
+    if current is None:
+        current = a.load(ROOT/'tools/acceptance-contract.json')
+    if registry is None:
+        registry = a.load(ROOT/'tools/acceptance-reports.json')
+    section = current['hosting_billing_options']
+    for path, digest in section['source_sha256'].items():
+        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() != digest:
+            raise ValueError('Installed billing options current source changed: '+path)
+    prior = copy.deepcopy(current)
+    del prior['hosting_billing_options']
+    additions = section['native_additions']
+    position = prior['native_commands'].index(section['native_after'])+1
+    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):
+        raise ValueError('Installed billing options native recipe changed')
+    del prior['native_commands'][position:position+len(additions)]
+    for pin in section['repins']:
+        cursor = prior
+        for key in pin['keys'][:-1]:
+            cursor = cursor[key]
+        key = pin['keys'][-1]
+        if cursor[key] != pin['after']:
+            raise ValueError('Installed billing options current serialized pin changed')
+        cursor[key] = pin['before']
+    dump = lambda value: json.dumps(value, indent=2).encode()+b'\n'
+    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:
+        raise ValueError('Installed billing options predecessor contract changed')
+    old_reports = copy.deepcopy(registry)
+    for phase in ('browser', 'final'):
+        if any(old_reports[phase].count(name) != 1 for name in section['reports']):
+            raise ValueError('Installed billing options report missing or duplicated')
+        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]
+    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:
+        raise ValueError('Installed billing options predecessor reports changed')
+    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}
+    for path, delta in section['source_deltas'].items():
+        historical[path] = installed_billing_options_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n'), delta)
+    return current, registry, section, historical
+
+
+def installed_billing_options_checks(tmp, current, registry, section, historical):
+    prior = json.loads(historical['tools/acceptance-contract.json'])
+    check('Installed billing options preserve all189 commands and add one portable producer',
+          len(current['native_commands']) == 190 and len(section['native_additions']) == 1
+          and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
+    expected_captures = ['Hosting-Billing-Options-'+scene+'-'+size+'.png'
+                         for scene in ('Owner-Annual','Public-Monthly','Public-Annual','Client-Annual')
+                         for size in ('Desktop','Mobile')]
+    check('Installed billing options require one new report and eight exact unique captures',
+          section['reports'] == ['hosting-billing-options-wiring-results.json']
+          and section['screenshots'] == expected_captures and len(set(expected_captures)) == 8)
+    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()
+    previous = historical['.github/workflows/application-tests.yml'].decode()
+    inserted = ''.join('          '+command+'\n' for command in section['native_additions'])
+    check('Installed billing options preserve all workflow jobs triggers and previous command order',
+          workflow.count(inserted) == 1 and workflow.replace(inserted, '', 1) == previous)
+    check('Installed billing options use one stdlib guard and retain the installed checkout producer',
+          section['native_additions'] == ['python3 -B tests/hosting_billing_options_wiring.py --report qa/hosting-billing-options-wiring-results.json']
+          and workflow.count('.ci-venv/bin/python -B tests/hosting_checkout_http_browser.py --full-suite') == 1
+          and valid_port_context(workflow))
+    runner = (ROOT/'tests/hosting_checkout_http_browser.py').read_text()
+    check('Installed billing options are mandatory in the original packaged result and capture inventory',
+          "result['billing_options'] = billing_options_browser(" in runner
+          and "billing_options_complete(result['billing_options'], qa)" in runner
+          and 'INBOX_CAPTURES + BILLING_OPTIONS_CAPTURES' in runner
+          and "'tests/hosting_billing_options_cases.py'" in runner
+          and "'tests/hosting_billing_options_wiring.py'" in runner)
+    for path, digest in section['source_sha256'].items():
+        check('Installed billing options binds current source '+path,
+              hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
+    for path, delta in section['source_deltas'].items():
+        check('Installed billing options preserves complete parent source '+path,
+              hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])
+        deny('Installed billing options refuse modified current source '+path,
+             lambda path=path, delta=delta: installed_billing_options_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n')+b'\n', delta))
+    wrong = copy.deepcopy(current)
+    wrong['native_commands'].pop(0)
+    deny('Installed billing options refuse a removed original command', lambda: installed_billing_options_current(wrong, registry))
+    wrong = copy.deepcopy(current)
+    wrong['native_commands'][0] += ' changed'
+    deny('Installed billing options refuse an altered original command', lambda: installed_billing_options_current(wrong, registry))
+    wrong = copy.deepcopy(current)
+    first = next(iter(section['source_deltas']))
+    wrong['hosting_billing_options']['source_deltas'][first]['before_sha256'] = '0'*64
+    deny('Installed billing options refuse a substituted predecessor source', lambda: installed_billing_options_current(wrong, registry))
+    wrong = copy.deepcopy(registry)
+    wrong['final'].remove(next(n for n in wrong['final'] if n not in section['reports']))
+    deny('Installed billing options refuse removing an original report', lambda: installed_billing_options_current(current, wrong))
+    for pin in section['repins']:
+        wrong = copy.deepcopy(current)
+        cursor = wrong
+        for key in pin['keys'][:-1]:
+            cursor = cursor[key]
+        cursor[pin['keys'][-1]] = pin['before']
+        try:
+            installed_billing_options_current(wrong, registry)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Stale installed billing options source pin passed')
+    check('Installed billing options refuse every stale serialized current pin', True)
+    for phase, expected in [('browser', 213), ('final', 264)]:
+        check('Installed billing options preserves exact original '+phase+' reports',
+              len(registry[phase]) == len(set(registry[phase])) == expected
+              and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
+    root = tmp/'installed-billing-options-artifacts'
+    source = root/'source'
+    ctx = context()
+    fixtures(source, ctx)
+    incoming = root/'partitions'
+    bindings = {}
+    jobs = {}
+    input_sha = '7'*64
+    for index, lane in enumerate(a.LANES):
+        job = root/('job-'+lane)
+        job.mkdir(parents=True)
+        jobs[lane] = job
+        if lane == 'build':
+            shutil.copytree(source/'dist', job/'dist')
+            shutil.copytree(source/'qa', job/'qa')
+        elif lane == 'native-browser':
+            for name in registry['browser']:
+                if name not in a.BUILD_QA:
+                    named(job/'qa'/name)
+        else:
+            for name in registry['final']:
+                if name not in registry['browser'] and a.evidence_allowed('qa/'+name, lane):
+                    named(job/'qa'/name)
+        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)
+        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}
+    seq = 0
+    def combine():
+        nonlocal seq
+        seq += 1
+        return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)
+    def reseal():
+        job = jobs['native-browser']
+        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):
+            if path.exists():
+                assert path.resolve().is_relative_to(root.resolve())
+                shutil.rmtree(path)
+        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
+    result = combine()
+    check('Installed billing options aggregate requires all264 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    for name in section['reports']:
+        path = jobs['native-browser']/'qa'/name
+        path.unlink()
+        reseal()
+        result = combine()
+        check('Installed billing options missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])
+        named(path, False)
+        reseal()
+        result = combine()
+        check('Installed billing options failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)
+        named(path)
+        check('Installed billing options report stays in native-browser '+name,
+              a.evidence_allowed('qa/'+name, 'native-browser') and not any(a.evidence_allowed('qa/'+name, lane) for lane in ('build', 'apache', 'recovery')))
+    named(jobs['native-browser']/'qa/installed-billing-options-unexpected-results.json')
+    reseal()
+    result = combine()
+    check('Installed billing options unexpected report refuses', result['complete'] is False and 'Unexpected reports: installed-billing-options-unexpected-results.json' in result['errors'])
+    for path in ('test-runtime/hosting-checkout-private/provider-master.key', 'qa/hosting-checkout-private/provider-master.key'):
+        deny('Installed billing options private fixture file refuses '+path,
+             lambda path=path: a.evidence_allowed(path, 'native-browser'))
+
+
+def run(tmp):
+    current, registry, section, historical = installed_billing_options_current()
+    originals = {str((ROOT/path).resolve()):data for path, data in historical.items()}
+    read_bytes, read_text = Path.read_bytes, Path.read_text
+    def previous_bytes(path):
+        key = str(path.resolve())
+        return originals[key] if key in originals else read_bytes(path)
+    def previous_text(path, *args, **kwargs):
+        key = str(path.resolve())
+        return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path, *args, **kwargs)
+    with patch.object(Path, 'read_bytes', previous_bytes), patch.object(Path, 'read_text', previous_text):
+        _run_before_installed_billing_options(tmp)
+    installed_billing_options_checks(tmp, current, registry, section, historical)
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None

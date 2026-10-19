@@ -2,6 +2,13 @@ name: Service-plan contract checks
 
 on:
   pull_request:
+    paths:
+      - site/**
+      - foundation/service-plans/**
+      - foundation/estimator/**
+      - foundation/review-requests/**
+      - tests/service-plans/**
+      - .github/workflows/service-plans.yml
   push:
     branches: [main, codex/service-plan-integration, codex/service-plan-records, codex/service-plan-screens]
   workflow_dispatch:

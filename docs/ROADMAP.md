@@ -1,3 +1,7 @@
+## 2026-10-19 — installed monthly and annual purchase coverage
+
+Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
+
 ## 2026-10-19 — monthly and annual hosting plan browsing
 
 Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](TWENTYI_HOSTING_BILLING_SELECTOR.md).
@@ -113,6 +117,21 @@ The direct hosting catalog import passes its focused four-way database matrix. B
 ## 2026-10-18 — hosting catalog candidate, acceptance pending
 
 The [direct hosting catalog increment](TWENTYI_HOSTING_CATALOG.md) adds an explicit owner refresh and local draft import for returned IDs/names, including types absent from installed inventory. It preserves cross-source draft identity and original provenance. Source implementation does not complete native/browser or release acceptance, complete product coverage, provider prices/images, cloud imports or hosting publication. The original cloud-only check returned null; no catalog meaning is inferred. Published1.25.0 remains the latest verified release.
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Evidence](evidence/ci-remaining-pure-pr-filters.json). This scheduling correction completes no product feature. PR239's cleanup checkpoint is merged, with103 terminal verifications still pending; continue original20i acceptance after the current CI-only integration.
+
+## 2026-10-19 — superseded component queue checkpoint
+
+Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched. [Evidence and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md). Finish outstanding read-only verification after API recovery, then resume original20i release gates. This maintenance checkpoint completes no product capability and claims no measured elapsed-time saving.
+
+## 2026-10-18 — original catalog runtime review
+
+The four supported-runtime producer sets for the original1.26 catalog candidate now pass. [Saved-artifact review](RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md) completes all four unchanged local aggregates, package/source comparisons and 16 populated upgrade scopes while retaining the queued hosted final jobs and later capture-correction gate. This is verification progress, not publication or completion of full20i. No new roadmap capability or live operation is claimed.
+
+## 2026-10-18 — verification throughput follow-through
+
+Five isolated pure suites have reviewed PR path filters, with complete current dependency coverage and unchanged tests. [Evidence and limits](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This scheduling increment does not complete a product capability or queued acceptance. Hosting [PR231](https://github.com/afterburn25/Cajun_Web/pull/231) and nameserver [PR230](https://github.com/afterburn25/Cajun_Web/pull/230) remain separate candidates awaiting runtime and release gates; full20i remains unfinished.
 
 ## Verified increment and remaining work — 2026-10-18
 

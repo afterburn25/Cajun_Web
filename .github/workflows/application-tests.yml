@@ -321,6 +321,7 @@ jobs:
           "$PHP_BINARY" tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-default.json
           "$PHP_BINARY" -n tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-minimal.json
           CWP_TEST_HOSTING_BILLING=1 "$PHP_BINARY" tests/hosting_catalog_billing_native.php
+          python3 -B tests/hosting_billing_options_wiring.py --report qa/hosting-billing-options-wiring-results.json
           "$PHP_BINARY" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json
           "$PHP_BINARY" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json
           "$PHP_BINARY" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json

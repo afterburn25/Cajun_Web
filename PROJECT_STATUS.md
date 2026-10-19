@@ -1,3 +1,7 @@
+## 2026-10-19 — installed monthly and annual purchase coverage
+
+Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](docs/TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
+
 ## 2026-10-19 — monthly and annual hosting plan browsing
 
 Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](docs/TWENTYI_HOSTING_BILLING_SELECTOR.md).
@@ -167,6 +171,39 @@ This starts from hosting successor `512656850e1d9855b921ab4e3b9b4a891b636b16`; i
 The hosting successor adds an explicit HTTP-test opt-in after its exact-source COMPLETE and UPDATE packages are built. Four isolated installed copies exercise the real staged owner page with absent, empty, published and withdrawn hosting history. Tests cover package validation, CSRF, current owner/password, backup confirmation, permitted recovery and retained-history refusal. They verify business rows, table definitions, files and private media while separately checking expected authentication/rate/audit bookkeeping. [Scope and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
 
 All 88 original hosting assertions and the separate 44-case native recovery continuation are preserved. Source/syntax review, 57 portable checks and 18 modeled bookkeeping checks per PHP mode pass; actual packaged SQL/HTTP results remain pending. This uses complete synthetic journals with real same-source packages, not a published-baseline or interrupted-upgrade acceptance result. The 1.26 release candidate remains separate. CI-only [PR218](https://github.com/afterburn25/Cajun_Web/pull/218) is merged on main; its trigger changes do not alter these preserved original runs.
+## 2026-10-19 — component filters and verified queue cleanup
+
+Service-plan and staff-invitation workflows now filter pull requests using their actual source, test and workflow dependencies. Only 13 trigger lines are added; every existing job, command, matrix, push/manual trigger and release gate remains unchanged. This avoids four unrelated jobs per documentation-only PR after integration; it does not cancel existing runs. [Filter evidence](docs/evidence/ci-final-component-pr-filters.json). Source/dependency review and exact whole-file inverses pass; this is CI maintenance, not application acceptance.
+
+Read-only verification after API recovery confirms all 327 acknowledged cancellations, covering 1,297 jobs with no execution evidence. There are zero outstanding terminal verifications, 31 preserved candidates and 139 untouched candidates. The bounded pass is verified; the original 497-candidate plan is not complete. No cancellation request was repeated. [Final evidence and retained limits](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md). The first partial receipt and missing immediate post-request snapshot remain preserved.
+
+PR240 is normally merged at `847722b4` after successful documentation run39204313209; source and merge trees agree. The corrected catalog/capture source `b7c97953` still has its original build queued in run39137551561, freshly read at about05:36UTC. Other component jobs were active. Published1.25.0 remains unchanged; full20i and1.26 publication remain unfinished.
+
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Source evidence](docs/evidence/ci-remaining-pure-pr-filters.json). Producer36 finite checks, independent29-source/35-edge review and root whole-file inverse checks pass. Current read-only policy inspection found no branch-protection rules or repository/inherited rulesets. No application acceptance or release version changes.
+
+Queue checkpoint [PR239](https://github.com/afterburn25/Cajun_Web/pull/239) is normally merged at7e1507f5 with its actual documentation CI passing. Its224 verified cancellations/103 unresolved requests/31 preserved/139 untouched counts remain unchanged. Original catalog acceptance and PR220 capture build are still queued in the latest connected-app summary; full20i and1.26 remain unfinished.
+
+## 2026-10-19 — superseded component queue checkpoint
+
+Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched. A later verification GET explicitly returned GitHub HTTP403 API rate limit exceeded. Cleanup is stopped, and acknowledged requests are not treated as completed cancellations. [Scope and evidence](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md).
+
+No application, workflow, installer, version or published package changed. Original full application/capture/release runs and current replacements remain excluded. The last recorded catalog/capture gates remain pending; this checkpoint has no newer result for them. Published1.25.0 remains the latest verified release, and full20i/1.26 publication remain unfinished.
+
+## 2026-10-18 — original 1.26 runtime evidence
+
+The catalog candidate `f67b1631683b29096dd8ec1daee405e104dc0b83` in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216) now has successful build, native/database/browser, Apache and recovery jobs in all four original PHP8.2/8.4 × MariaDB10.11/MySQL8.4 runs. Their final hosted acceptance jobs remain queued. The [retained-evidence review](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md) separates completed producer evidence, local reconciliation and the unfinished hosted/release gates.
+
+All four unchanged local aggregations pass 216 required reports and 28,873 named executions per run. Independent package/source review confirms identical archives across runtimes; all 16 populated upgrade scopes preserve the original data within the documented snapshot contract. The [source-bound receipt](docs/evidence/catalog126-original-runtime-review.json) records report hashes, artifact identities, actual outcomes and limitations. This does not complete a hosted job or accept a later source.
+
+The reviewed catalog images repeat the known clipped mobile imported-image capture; no new material catalog blocker was found. The capture successor [PR220](https://github.com/afterburn25/Cajun_Web/pull/220), source `b7c97953`, still awaits its original full run39137551561 and actual changed-image review. Full20i, automatic provider images/cloud catalog, candidate integration and 1.26 publication remain unfinished. Published1.25.0 is unchanged. Hosting, nameserver, StackCP and client-subdomain candidates, including [PR237](https://github.com/afterburn25/Cajun_Web/pull/237), remain separate; this documentation checkpoint imports none of them.
+
+## 2026-10-18 — five pure-suite PR filters
+
+Branch `codex/ci-pure-family-pr-filters` starts at main `e397d9a6e293850e8dff61a593e3ba39ee178400`. Five isolated pure suites now watch their own foundation/test directories and workflow file on PRs. All jobs and push/manual triggers remain unchanged. Actual verification: 82 finite producer checks, 44 independent review checks, and root comparison of all five applied hashes and complete inverses to main. [Scope and retained evidence](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This is CI scheduling work, not application acceptance.
+
+Hosting source `3042f24eddc3587d67ac5d10e28df3b3294a3310` remains in [draft PR231](https://github.com/afterburn25/Cajun_Web/pull/231), with original full run39184742627 and focused run39184742510 queued at the latest read. Nameserver source `024b50dc31604d5cfdcb104312e9858a5d5e7a45` remains separate in [draft PR230](https://github.com/afterburn25/Cajun_Web/pull/230). Their runtime, integration and publication gates remain pending. Devin has advanced several previously reviewed branches; evaluate the new heads before carrying forward old findings. Published 1.25.0 and production are unchanged.
 
 ## 2026-10-18 — reduce unrelated CI work
 
