@@ -332,3 +332,6 @@ def run(web,base,check,qa,php,label,prefix,version):
         agreement_context=service_plan_upgrade({**locals(),'token':token})
         from recurring_billing_upgrade_cases import run as recurring_upgrade
         recurring_upgrade({**locals(),**agreement_context})
+    if version=='1.23.0':
+        from project_progress_upgrade_cases import run as progress_upgrade
+        progress_upgrade({**locals(),'token':token})

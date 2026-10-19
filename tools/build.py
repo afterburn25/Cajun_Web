@@ -118,7 +118,7 @@ def generated(refresh):
             target=SITE/'includes/foundation/mail-submission'/source.relative_to(submission)
             target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
     check_submission_mirror(required=True)
-    for area in ['billing-calendar','recurring-billing','service-plans','hosting','access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','twentyi-inventory','twentyi-inventory-reader','twentyi-operations','twentyi-document-roots','twentyi-directory-listing','twentyi-support-handoff', 'twentyi-cloud-assignment','mail-compose','twentyi-domain-registration','twentyi-stackcp-access']:
+    for area in ['projects','billing-calendar','recurring-billing','service-plans','hosting','access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','twentyi-inventory','twentyi-inventory-reader','twentyi-operations','twentyi-document-roots','twentyi-directory-listing','twentyi-support-handoff', 'twentyi-cloud-assignment','mail-compose','twentyi-domain-registration','twentyi-stackcp-access']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:
@@ -196,7 +196,7 @@ def main():
     modes=subprocess.check_output(['git','ls-tree','-r',commit],cwd=ROOT,text=True).splitlines()
     if any(line.startswith('120000 ') for line in modes):raise RuntimeError('Git symlinks cannot be shipped, including on Windows checkouts')
     if {n[5:] for n in tracked if n.startswith('site/')}!=set(inv):raise RuntimeError('Shipping inventory differs from source commit')
-    full={};allowed={'.github','docs','tests','tools','brand','foundation','site'}
+    full={};allowed={'.github','docs','tests','tools','brand','foundation','site','ops'}
     with source_blobs(commit,tracked) as read_source:
         for n in tracked:
             safe(n);p=ROOT/n

@@ -742,6 +742,13 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Unreleased — dated project history and client progress timeline (Devin port)
+
+- Port the preserved `codex/project-progress-screens` slice onto `main` under the 2026-10-16 allocation: `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}` canonical classes with deployment mirrors, additive `studio_progress_{events,requests,heads}` storage behind owner-gated `project_progress_setup`, and immutable hash-linked dated history for existing `studio_job` create/edit forms.
+- Admin: progress editor + bounded timeline on `studio-job`, create-project editor on `studio-clients`, setup form under Version & database; `studio-job`/`studio-upgrade` get private no-store headers and `studio-job` joins the support-session block list.
+- Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
+- Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
+- `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
 
 ## Synchronize release entry points after review — 2026-10-15
 
