@@ -56,8 +56,10 @@ function provider_catalog_import_origins(array $records): array {
     if($records===[])return [];
     // A changed/missing catalog intent cannot masquerade as legacy inventory provenance.
     $catalogReady=provider_package_types_ready();$sources=[];$origins=[];
+    $variantsReady=provider_catalog_variant_ready();
     foreach($records as $record){
-        provider_catalog_import_validate_record($record);
+        // Physical canonical audit remains exact; a variant needs its separate authenticated pair.
+        provider_catalog_import_canonical_record_in_scope($record,$variantsReady);
         $id=$record['refresh_id'];
         if(!isset($sources[$id])){
             $saved=one('SELECT f.*,r.* FROM '.table('provider_refreshes').' f JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.id=?',[$id]);
@@ -150,8 +152,14 @@ function provider_catalog_import_image(int $product,int $revision,int $imageRevi
             if($remove&&isset($_FILES['product_image'])&&($_FILES['product_image']['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE)throw new InvalidArgumentException('Choose either a replacement image or removal.');
             $media=null;
             if(!$remove){$uploaded=upload_image('product_image');if(!$uploaded)throw new InvalidArgumentException('Choose a JPG, PNG or WebP product image.');$media=$uploaded;}
-            query('UPDATE '.table('catalog_provider_imports').' SET media_id=?,media_revision=? WHERE product_id=?',[$media,$imageRevision+1,$product]);
-            catalog_audit((int)$actor['id'],'provider_import.image','Product '.$product.' image revision '.($imageRevision+1));
+            $canonical=provider_catalog_import_canonical_record($record);
+            if((int)$canonical['product_id']===$product){
+                query('UPDATE '.table('catalog_provider_imports').' SET media_id=?,media_revision=? WHERE product_id=?',[$media,$imageRevision+1,$product]);
+                catalog_audit((int)$actor['id'],'provider_import.image','Product '.$product.' image revision '.($imageRevision+1));
+            }else{
+                query('UPDATE '.table('catalog_provider_variants').' SET media_id=?,media_revision=? WHERE product_id=?',[$media,$imageRevision+1,$product]);
+                catalog_audit((int)$actor['id'],'provider_variant.image',provider_catalog_variant_image_detail($product,$imageRevision+1,$media));
+            }
         });
     });}catch(Throwable $e){
         // Only the newly allocated local upload may be removed after DB rollback.

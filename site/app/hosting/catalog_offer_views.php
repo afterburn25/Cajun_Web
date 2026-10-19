@@ -116,7 +116,8 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
             return $data;
         }
         if (!provider_catalog_import_ready()||!catalog_ready()) throw new RuntimeException('Prepare imported hosting drafts in Products first.');
-        $rows=all('SELECT p.id,p.title,p.sku,p.amount_cents,p.currency,p.term FROM '.table('catalog_products').' p JOIN '.table('catalog_provider_imports')." i ON i.product_id=p.id WHERE p.family='hosting' AND p.status='draft' AND (LOCATE(?,p.title)>0 OR LOCATE(?,p.sku)>0) ORDER BY p.sort_order,p.id LIMIT 21 OFFSET ".(($page-1)*20),[$search,$search]);
+        $importPredicate=provider_catalog_import_product_predicate('p');
+        $rows=all('SELECT p.id,p.title,p.sku,p.amount_cents,p.currency,p.term FROM '.table('catalog_products')." p WHERE ".$importPredicate." AND p.family='hosting' AND p.status='draft' AND (LOCATE(?,p.title)>0 OR LOCATE(?,p.sku)>0) ORDER BY p.sort_order,p.id LIMIT 21 OFFSET ".(($page-1)*20),[$search,$search]);
         $data['has_more']=count($rows)>20;
         foreach (array_slice($rows,0,20) as $row) {$row['id']=(int)$row['id'];$row['amount_cents']=$row['amount_cents']===null?null:(int)$row['amount_cents'];$data['products'][]=$row;}
         if ($action==='hosting_catalog_withdraw') {
@@ -124,7 +125,7 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
             $productId=$doc->data()['product']['id'];$data['withdrawal_offer']=$doc->historicalProjection();
         }
         if ($productId!==null) {
-            $row=one('SELECT p.id,p.revision,p.sku,p.title,p.family,p.status,p.term,p.currency,p.amount_cents,p.setup_cents FROM '.table('catalog_products').' p JOIN '.table('catalog_provider_imports').' i ON i.product_id=p.id WHERE p.id=?',[$productId]);
+            $row=one('SELECT p.id,p.revision,p.sku,p.title,p.family,p.status,p.term,p.currency,p.amount_cents,p.setup_cents FROM '.table('catalog_products').' p WHERE '.$importPredicate.' AND p.id=?',[$productId]);
             if (!$row) throw new InvalidArgumentException('Choose an imported hosting product.');
             foreach (['id','revision','amount_cents','setup_cents'] as $key) $row[$key]=$row[$key]===null?null:(int)$row[$key];
             $data['product']=$row;

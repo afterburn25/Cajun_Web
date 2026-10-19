@@ -313,6 +313,11 @@ jobs:
           "$PHP_BINARY" tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-default.json
           "$PHP_BINARY" -n -d extension=pdo -d extension=tokenizer tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-minimal.json
           CWP_TEST_HOSTING_PLAN_SETUP=1 "$PHP_BINARY" tests/hosting_catalog_plan_setup_native.php
+          "$PHP_BINARY" tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-default.json
+          "$PHP_BINARY" -n tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-minimal.json
+          "$PHP_BINARY" tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-default.json
+          "$PHP_BINARY" -n tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-minimal.json
+          CWP_TEST_HOSTING_VARIANTS=1 "$PHP_BINARY" tests/hosting_catalog_variants_native.php
           "$PHP_BINARY" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json
           "$PHP_BINARY" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json
           "$PHP_BINARY" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json
@@ -468,6 +473,7 @@ jobs:
           .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite
           .ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json
           .ci-venv/bin/python -B tests/hosting_checkout_http_browser.py --full-suite
+          .ci-venv/bin/python -B tests/hosting_catalog_variants_browser.py --php "$PHP_BINARY" --report qa/hosting-catalog-variants-browser-results.json
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
