@@ -12,6 +12,10 @@ Continue [combined hosting/client PR85](https://github.com/afterburn25/Cajun_Web
 
 Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 independent controls per PHP8.4 default/no-ini); observed current branch `29200a14ceaeefa7dda646d0de4c543a011cd292` may be newer. Service-desk61 df0a1d2 is independently clear after114 supplied plus44 independent controls per default/no-ini mode: approvals expire, rejected decisions preserve state, attempt tokens reject stale results, and verified resolution is required before a stalled external operation can retry. Unknown observations remain recoverable and conclusive replays preserve state. [Review6167233334](https://github.com/afterburn25/Cajun_Web/pull/61#issuecomment-6167233334). Verify current CI and inspect any newer correction at observed `df0a1d23f5900541557b795511332d1e80be5e52` before integration. Preserve Devin ownership and all original branches. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the roadmap goal stays active.
 
+## Current support-ticket conversations — unreleased
+
+`devin/non20i-support-tickets` ports the preserved ticket implementation onto current `main`. Current-authorized ticket records, append-only hash-linked events and staff/client read cursors use separate additive InnoDB tables prepared by an owner password (`support_tickets`, `support_ticket_events`, `support_ticket_staff_reads`, `support_ticket_client_reads`). Public projections have independent sequence numbers so private notes never change a client stale-form token, ordering or unread count. All mutation and viewer authority runs inside the existing shared staff lock and atomic strict audit; the `support.tickets` permission is separate from client administration and support-session access. See [contract](SUPPORT_TICKETS_CONTRACT.md) and [usage/evidence](SUPPORT_TICKETS.md). No provider dispatch, mail send or charge is attached.
+
 ## Earlier checkpoints — superseded by the publication above
 
 ## Unreleased submission integration

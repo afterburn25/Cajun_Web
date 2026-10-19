@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/includes/layout/ticket_activity.php';
 function activity_post(string $audience): never {
     check_csrf();$action=posted('action',40);
     if($action==='activity_setup'&&$audience==='admin')activity_migrate(posted('password',1000));
@@ -19,6 +20,15 @@ function activity_form(string $audience,array $keys,string $state,string $label)
     echo '<form method="post" action="'.esc(activity_url($audience)).'">'.csrf_field().'<input type="hidden" name="action" value="activity_mark"><input type="hidden" name="keys" value="'.esc(json_encode($keys,JSON_THROW_ON_ERROR)).'"><input type="hidden" name="state" value="'.esc($state).'"><button class="btn outline small">'.esc($label).'</button></form>';
 }
 function activity_render(string $audience,string $error=''): never {
+    header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
+    $ticketFeed=null;$ticketAccess=false;$projectAccess=false;
+    try{support_tickets_locked(fn()=>support_tickets_notification_actor($audience));$ticketAccess=true;}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException){report_error($e);fail_page('Workspace activity is temporarily unavailable.',503);}}
+    try{activity_actor($audience);$projectAccess=true;}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException){report_error($e);fail_page('Workspace activity is temporarily unavailable.',503);}}
+    if($ticketAccess){
+        try{$ticketFeed=support_tickets_notification_page($audience,is_string($_GET['tickets_before']??null)?$_GET['tickets_before']:'');}
+        catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)report_error($e);fail_page('Ticket activity is unavailable. Return to the activity center and refresh.',403);}
+        if(!$projectAccess){if(isset($_GET['open']))fail_page('Project activity is unavailable for this account.',403);support_tickets_activity_only($audience,$ticketFeed,$error);}
+    }
     try{
         if(!activity_ready()&&$audience==='admin'){
             $user=staff_require('clients.manage');admin_head('Workspace activity','activity',$user);
@@ -31,13 +41,14 @@ function activity_render(string $audience,string $error=''): never {
         $actor=activity_actor($audience);
         if(isset($_GET['open']))redirect(activity_destination($audience,is_string($_GET['open'])?$_GET['open']:''));
         $unread=($_GET['filter']??'')==='unread';$before=is_string($_GET['before']??null)?$_GET['before']:'';
-        $feed=activity_feed($audience,$unread,$before);$count=activity_count($audience);
+        $feed=activity_feed($audience,$unread,$before);$count=workspace_activity_summary($audience)['count'];
     }catch(PDOException $e){report_error($e);fail_page('Workspace activity is temporarily unavailable. Your project records are unchanged.',503);}
     catch(InvalidArgumentException|RuntimeException){fail_page('Activity unavailable. Sign in with an authorized account or return to the activity center and refresh.',403);}
     if($audience==='admin')admin_head('Workspace activity','activity',staff_require('clients.manage'));
     else{site_head('Workspace activity','portal');echo '<section class="section"><div class="container"><span class="eyebrow">YOUR PROJECT UPDATES</span><h1>Workspace activity</h1><p><a href="'.esc(studio_url()).'">← All projects</a></p>';show_flash();}
     if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
-    echo '<p>Messages, reviews, files'.($audience==='client'?', stage updates, invoices, payments and website releases':', stage updates and client decisions').'. Opening an update keeps its read status until you change it. All times are UTC.</p><div class="activity-toolbar"><strong>'.($count>=100?'99+':$count).' unread</strong><nav aria-label="Activity filter"><a href="'.esc(activity_url($audience)).'"'.(!$unread?' aria-current="page"':'').'>All updates</a><a href="'.esc(activity_url($audience,['filter'=>'unread'])).'"'.($unread?' aria-current="page"':'').'>Unread</a></nav>';
+    if($ticketFeed!==null)support_tickets_activity_section($audience,$ticketFeed);
+    echo '<h2>Project updates</h2>';echo '<p>Messages, reviews, files'.($audience==='client'?', stage updates, invoices, payments and website releases':', stage updates and client decisions').'. Opening an update keeps its read status until you change it. All times are UTC.</p><div class="activity-toolbar"><strong>'.($count>=100?'99+':$count).' unread</strong><nav aria-label="Activity filter"><a href="'.esc(activity_url($audience)).'"'.(!$unread?' aria-current="page"':'').'>All updates</a><a href="'.esc(activity_url($audience,['filter'=>'unread'])).'"'.($unread?' aria-current="page"':'').'>Unread</a></nav>';
     if($feed['rows'])activity_form($audience,array_column($feed['rows'],'event_key'),'read','Mark visible updates read');echo '</div><div class="activity-list">';
     $labels=['recurring'=>'Recurring billing','financial'=>'Financial agreement','planning'=>'Project plan','progress'=>'Project updated','message'=>$audience==='client'?'Studio message':'Client message','file'=>'Private file added','review'=>'Review published','invoice'=>'Invoice issued','payment'=>'Payment history updated','release'=>'Website release published','decision'=>'Client review decision','milestone'=>'Milestone update','stage'=>'Project stage updated'];
     $senders=['admin'=>'Studio message','client'=>'Client message','contact'=>'Contact message'];

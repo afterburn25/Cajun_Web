@@ -302,6 +302,8 @@ try:
         cloud_assignment_browser(globals(),browser)
         from license_release_cases import run_browser as license_release_browser
         license_release_browser(globals(),browser)
+        from ticket_cases import run_browser as ticket_browser
+        ticket_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         from contacts_cases import run_browser as contacts_browser

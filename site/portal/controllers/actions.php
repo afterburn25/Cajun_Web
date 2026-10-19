@@ -4,9 +4,10 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 if($_SERVER['REQUEST_METHOD']==='POST'){
  try{if($supportRequested)support_check_csrf($supportId);else check_csrf();if(!studio_ready())throw new RuntimeException('The client workspace has not been enabled. Please contact the studio.');$action=posted('action',40);
  if(support_current()){
+  if(str_starts_with($action,'client_tickets_'))support_tickets_portal_action($action,$client);
   if(!in_array($action,['message','upload'],true)){support_record('action.blocked','portal','','denied');throw new RuntimeException('This action is blocked during support. Client decisions, payments and security changes require the proper independent workflow.');}
   if(!consume_rate('support-action-'.support_current()['actor']['id'],30,3600))throw new RuntimeException('Please wait before making more support changes.');
-  if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
+   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
@@ -17,6 +18,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif($action==='financial_decide'){if(!$client)throw new RuntimeException('Sign in to continue.');design_financial_client_action($client,$jobId);}
  elseif(str_starts_with($action,'recurring_')){if(!$client)throw new RuntimeException('Sign in to continue.');recurring_ui_action($action,(int)$client['id']);}
  elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}
+ elseif(str_starts_with($action,'client_tickets_')){if(!$client)throw new RuntimeException('Sign in to continue.');if(studio_contact()&&!contact_can('projects')&&!contact_can('billing')&&!contact_can('downloads'))throw new RuntimeException('Your contact permissions do not include support tickets.');support_tickets_portal_action($action,$client);}
  elseif($action==='financial_decide'){if(!$client)throw new RuntimeException('Sign in to continue.');design_financial_client_action($client,$jobId);}
  elseif(in_array($action,['activity_mark','activity_prefs'],true)){if(!contact_can('projects')&&!contact_can('billing')&&!contact_can('downloads'))throw new RuntimeException('Your contact permissions do not include workspace activity.');activity_post('client');}
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}

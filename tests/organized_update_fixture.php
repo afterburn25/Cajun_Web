@@ -64,6 +64,13 @@ if(($argv[2]??'')==='progress'){
     foreach(['studio_jobs'=>'id','studio_progress_events'=>'job_id,revision','studio_progress_requests'=>'id','studio_progress_heads'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
     echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
 }
+if(($argv[2]??'')==='tickets'){
+    $saved=[];
+    foreach(['support_tickets'=>'id','support_ticket_events'=>'revision','support_ticket_staff_reads'=>'ticket_id,user_id','support_ticket_client_reads'=>'ticket_id,client_id'] as $name=>$order){
+        $saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    }
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='submissions'){
     echo json_encode(['intents'=>all('SELECT * FROM '.table('mail_submissions').' ORDER BY id'),'dispatches'=>all('SELECT * FROM '.table('mail_submission_dispatches').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('mail_submission_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
 }

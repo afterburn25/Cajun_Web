@@ -86,6 +86,11 @@ Staff can attach one private PDF/PNG/JPEG preview to an exact published design o
 
 ## 2026-10-16 — publish the concrete release freeze and branch
 ## Unreleased — record observed cloud null response
+## Repair tickets.css asset registration from review — 2026-10-16
+
+Review correction on `devin/non20i-support-tickets` (PR #158). `tickets.css` was referenced unconditionally by the shared admin and portal layouts but was not registered in the closed `asset()` map, throwing `Unknown public asset` on the ordinary dashboard and portal before any ticket feature ran. Registers `tickets.css => assets/css/tickets.css`, adds `tests/asset_registry.php` — a static regression asserting every literal `asset('name')` in shipping PHP resolves through the map and maps to an existing file (plus whole-map disk checks and the audited `image_url` allowlist) — wired into application-tests in default and no-INI modes. Installer inventory refreshed; 45 local checks pass in both modes. Original failed run 38915585801 is preserved; fresh HTTP/Apache acceptance runs in CI.
+
+## 2026-10-16 — publish the concrete release freeze and branch
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.
 
@@ -750,6 +755,11 @@ Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `d
 ## Unreleased — recurring billing calendar (Devin port)
 
 Ported `codex/billing-calendar` onto `devin/non20i-billing-calendar`. Canonical `foundation/billing-calendar/BillingCalendar.php` derives exact recurring periods (monthly/quarterly/annually × day-of-month/month-end) from an immutable anchor, with direct period/periodAt/window lookups, leap-day/century correctness and year-9999 bounds. Pure `tests/billing-calendar/calendar.php` contract + dedicated workflow. Canonical-only foundation; runtime wiring lands with recurring agreements. No live deployment or release.
+
+## Unreleased — ticket screenshot readiness (Devin port)
+
+Ported `codex/ticket-screenshot-readiness` onto `devin/non20i-ticket-screenshots` (stacked on `devin/non20i-support-tickets`). New `tests/ticket_screenshot.py` helper waits for the real activity-bell fetch to settle and verifies complete footer bounds before full-page captures; `tests/ticket_cases.py` screenshots assert on it. Test-only; no runtime change.
+
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
@@ -914,6 +924,12 @@ Ported the preserved `codex/project-planning`/`project-planning-storage`/`projec
 - Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
 - Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
 - `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
+
+## Unreleased — client support tickets and private staff notes (Devin port)
+
+- Port the preserved `codex/support-ticket-screens` slice onto `main` under the 2026-10-16 allocation: immutable journal + hash-linked event storage (`support_tickets`, `support_ticket_events`, staff/client read cursors), owner-gated `tickets_setup` migration, `support.tickets` permission, admin queue/detail/new-conversation screens, portal create/reply/status/read flows, private staff notes and assignments invisible to the client projection, exact-message activity links, and per-viewer explicit read controls.
+- Compose ticket unread facts into the existing workspace activity bell (`workspace_activity_summary`) without merging the two read models; ticket-only staff can use the activity center without project-administration access.
+- `docs/`: [usage](docs/SUPPORT_TICKETS.md), [contract](docs/SUPPORT_TICKETS_CONTRACT.md), [desk foundation](docs/DESK_FOUNDATION.md). Tests: `tests/desk/*` (114 model checks, default/no-ini), `tests/support_tickets_native.php` + `tests/support_ticket_screen_native_cases.php` (native MariaDB), `tests/ticket_cases.py` (HTTP/Chromium), `tests/ticket_upgrade_cases.py` (1.23 retained-upgrade replay). New `desk.yml` workflow; `application-tests.yml`/`access-policy.yml` cover `devin/non20i-*` pushes.
 
 ## Synchronize release entry points after review — 2026-10-15
 
