@@ -328,6 +328,10 @@ def run(web,base,check,qa,php,label,prefix,version):
         check(label+' recovered original consumed approval cannot replay provider operation', replay['network_calls']==0 and replay['status']=='failed' and inventory_records()==original_inventory)
 
     if version=='1.23.0':
+        from ticket_upgrade_cases import run as ticket_upgrade
+        ticket_upgrade({**locals()})
+
+    if version=='1.23.0':
         from service_plan_upgrade_cases import run as service_plan_upgrade
         agreement_context=service_plan_upgrade({**locals(),'token':token})
         from recurring_billing_upgrade_cases import run as recurring_upgrade

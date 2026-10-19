@@ -19,6 +19,11 @@ Limit estimator, email-template, portfolio, review-request and webmail pure-suit
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
 
 ## Unreleased — record observed cloud null response
+## Repair tickets.css asset registration from review — 2026-10-16
+
+Review correction on `devin/non20i-support-tickets` (PR #158). `tickets.css` was referenced unconditionally by the shared admin and portal layouts but was not registered in the closed `asset()` map, throwing `Unknown public asset` on the ordinary dashboard and portal before any ticket feature ran. Registers `tickets.css => assets/css/tickets.css`, adds `tests/asset_registry.php` — a static regression asserting every literal `asset('name')` in shipping PHP resolves through the map and maps to an existing file (plus whole-map disk checks and the audited `image_url` allowlist) — wired into application-tests in default and no-INI modes. Installer inventory refreshed; 45 local checks pass in both modes. Original failed run 38915585801 is preserved; fresh HTTP/Apache acceptance runs in CI.
+
+## 2026-10-16 — publish the concrete release freeze and branch
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.
 
@@ -738,6 +743,11 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Unreleased — client support tickets and private staff notes (Devin port)
+
+- Port the preserved `codex/support-ticket-screens` slice onto `main` under the 2026-10-16 allocation: immutable journal + hash-linked event storage (`support_tickets`, `support_ticket_events`, staff/client read cursors), owner-gated `tickets_setup` migration, `support.tickets` permission, admin queue/detail/new-conversation screens, portal create/reply/status/read flows, private staff notes and assignments invisible to the client projection, exact-message activity links, and per-viewer explicit read controls.
+- Compose ticket unread facts into the existing workspace activity bell (`workspace_activity_summary`) without merging the two read models; ticket-only staff can use the activity center without project-administration access.
+- `docs/`: [usage](docs/SUPPORT_TICKETS.md), [contract](docs/SUPPORT_TICKETS_CONTRACT.md), [desk foundation](docs/DESK_FOUNDATION.md). Tests: `tests/desk/*` (114 model checks, default/no-ini), `tests/support_tickets_native.php` + `tests/support_ticket_screen_native_cases.php` (native MariaDB), `tests/ticket_cases.py` (HTTP/Chromium), `tests/ticket_upgrade_cases.py` (1.23 retained-upgrade replay). New `desk.yml` workflow; `application-tests.yml`/`access-policy.yml` cover `devin/non20i-*` pushes.
 
 ## Synchronize release entry points after review — 2026-10-15
 

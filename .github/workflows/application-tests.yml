@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, 'devin/non20i-*']
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
@@ -119,6 +119,10 @@ jobs:
         run: |
           set -o pipefail
           python3 tests/prepare_legacy.py | tee qa/legacy-preparation.txt
+          "$PHP_BINARY" tests/desk/run.php > qa/desk-supplied-default.txt
+          "$PHP_BINARY" tests/desk/review_controls.php --deployment > qa/desk-deployed-results.json
+          "$PHP_BINARY" tests/desk/ticket_documents.php > qa/desk-documents-results.json
+          "$PHP_BINARY" tests/desk/forms.php > qa/desk-forms-results.json
       - name: Seal exact build and public inputs
         id: inputs
         run: python3 tools/acceptance_artifacts.py pack-inputs
@@ -289,6 +293,7 @@ jobs:
           "$PHP_BINARY" tests/native.php
           "$PHP_BINARY" tests/staff_native.php
           "$PHP_BINARY" tests/support_native.php
+          "$PHP_BINARY" tests/support_tickets_native.php
           "$PHP_BINARY" tests/catalog_native.php
           "$PHP_BINARY" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json
           "$PHP_BINARY" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json
