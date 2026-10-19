@@ -66,21 +66,22 @@ Independent foundations merged only where a runtime needs them; pure contract-on
 | StackCP | #233 `3d449d79`→#243→#255 `ffee2e3a` | PENDING |
 | Renewal invoicing | #252 `632362f6` | PENDING |
 | Reset email template | #254 `95ce538e` | PENDING |
-| Old codex draft stacks #102–#125 (tickets/progress/planning/payments/recurring) | heads on codex/* bases | SUPERSEDED — ported on the devin/non20i main-based chains (A-groups); verify port parity before closing |
+| Old codex draft stacks #102–#125 (tickets/progress/planning/payments/recurring) | heads on codex/* bases | CLOSED SUPERSEDED — port parity verified (no missing files; codex support-tickets.yml redundant with the pinned native recipe); all closed 2026-10-19 |
 | Older codex hosting/service-plan drafts not already integrated | #84–#92 covered; others check per-branch | mixed |
 
 ## Group C — FOUNDATION / INCOMPLETE
 
 | PR | Scope | Disposition |
 |---|---|---|
-| #256 `fb395998` codex/vps-uncertainty-repair (bases devin/vps-foundation) | VPS uncertainty component on old foundation tree | FOUNDATION — port component only, never deploy old tree |
-| #45 vps-foundation, #43 provider, #44 domain, #46 ssh-access, #47 proposals, #48 revisions, #49 comparisons, #51 pipeline, #52 backups, #54 support-access, #57 notifications, #60 shared-hosting, #61 service-desk | Isolated contract foundations | FOUNDATION — most superseded by A-group non20i ports; SSH #46 remains unimplemented component |
-| #32/#36/#37 | Consultation/review/scheduling contract docs | PENDING review — contract docs only |
-| #93/#109/#111 | Early Devin 20i inventory/ledger/execution drafts | SUPERSEDED — capabilities released in 1.24/1.25 via Codex merges |
+| #256 `fb395998` codex/vps-uncertainty-repair (bases devin/vps-foundation) | VPS uncertainty component on old foundation tree | PORTED — component-only port on `devin/vps-uncertainty-port` (PR #257, base = integration branch; 311 local checks); never deploy old tree |
+| #46 ssh-access, #43 provider catalog, #44 domain commerce | Isolated contract components absent from the tree | PORTED — `devin/ssh-access-port` (PR #258, 70 checks), `devin/provider-catalog-port` (PR #259, 50 catalog + 171 provider checks), `devin/domains-port` (PR #260, 81 checks); originals closed |
+| #45 vps-foundation, #47 proposals, #48 revisions, #49 comparisons, #51 pipeline, #52 backups, #54 support-access, #57 notifications, #60 shared-hosting, #61 service-desk | Isolated contract foundations | CLOSED SUPERSEDED — superseded by A-group ports / newer integrated equivalents (hosting has newer ACCEPTED_PENDING semantics; desk is byte-identical); vps-foundation's component carried by PR #257 |
+| #32/#36/#37 | Consultation/review/scheduling contract docs | CLOSED SUPERSEDED — #36's doc byte-identical on tree; #32's component released in 1.15.0; #37's SCHEDULING_ADAPTER.md carried onto the integration branch (`5da3ef95`) |
+| #93/#109/#111 | Early Devin 20i inventory/ledger/execution drafts | CLOSED SUPERSEDED — capabilities released in 1.24/1.25; current operations migration/suites are strictly newer |
 
 ## Group D — ALREADY INTEGRATED (ancestor of main `1067757d`)
 
-#80, #81, #82, #83, #84, #87, #88, #89, #90, #91, #92, #94, #99, #100, #133, #135, #136, #138, #139, #140, #148, #149, #150, #151, #156 — verified via `git merge-base --is-ancestor`. Safe to close after confirming no orphan fixes.
+#80, #81, #82, #83, #84, #87, #88, #89, #90, #91, #92, #94, #99, #100, #133, #135, #136, #138, #139, #140, #148, #149, #150, #151, #156 — verified via `git merge-base --is-ancestor`. All 25 closed 2026-10-19 with ancestry-verification notes.
 
 ## Concrete blockers and next actions
 

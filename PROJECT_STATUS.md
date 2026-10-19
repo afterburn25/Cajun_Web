@@ -8,9 +8,13 @@ Each merge preserved HEAD's contact-aware permission gates (`contact_can`, `clie
 
 Two real defects fixed during integration: a closure missing the `$user` capture in the merged stage insert (`studio.php`), and recurring-forms validation placed in the POST path instead of the GET query parser. The A16 contract was initially committed with conflict markers; amended to `1f217bdd` (force-with-lease on the Devin-owned branch).
 
-Hosted combined acceptance is running as run 39297205239 — the application-tests push filter now includes the integration branch. This run IS the combined Group A acceptance. Nothing is merged to main, released or deployed yet.
+Hosted combined acceptance is triggered by the integration-branch push filter. The run on pre-fix `9896b1f0` (39297205239) was cancelled as stale; the runs on `ceb06c05`-era tips are authoritative. Nothing is merged to main, released or deployed yet.
 
-Known remaining: port-parity check vs superseded codex #102–#125 stacks; Group B Codex 20i drafts still pending observed CI; the non-20i/20i gap review follows after the combined run.
+Follow-on corrections after Group A: `cb8d2117` fixed notification dispatch shadowing in the admin action dispatcher (`payments_notification_*` before the generic `notification*` handler); `ceb06c05` removed a fatal duplicate `require` of the notification layout in the portal router.
+
+Unported Group C components were extracted as component-only ports on the integration tip — `devin/vps-uncertainty-port` (PR #257, 311 checks), `devin/ssh-access-port` (#258, 70), `devin/provider-catalog-port` (#259, 50 catalog + 171 provider), `devin/domains-port` (#260, 81) — all green locally, awaiting hosted runs. Verified-superseded PRs closed in bulk: #102–#125, #32/#36/#37, #43–#46, #60/#61, #109/#111, and all 25 Group D ancestor PRs. ~101 open PRs remain, nearly all Group B.
+
+Known remaining: Group B Codex 20i drafts still pending observed CI (runs dispatched; GitHub-hosted concurrency starvation serializes the queue); normal merge into `main` follows combined acceptance; the non-20i/20i gap review follows after the combined run.
 
 ## 2026-10-19 — contacts native fixture correction
 ## 2026-10-19 — payment-link view correction

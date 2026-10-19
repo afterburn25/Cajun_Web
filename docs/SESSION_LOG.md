@@ -4885,3 +4885,17 @@ Local corrected function/model checks and PHP syntax/installer checks are distin
 - Known failures/blockers: hosted combined result pending; Group B Codex 20i CI unverified; no main merge/release yet.
 - Next: observe run 39297205239, port-parity check vs codex #102–#125, then Group B CI inspection.
 
+## 2026-10-19 — post-Group A corrections, component ports, PR hygiene
+
+- Request: continue without stopping after Group A completion.
+- Actions: fixed notification dispatch shadowing in `site/admin/controllers/actions.php` (`cb8d2117` — `payments_notification_*` prefix now precedes the generic `notification*` feed dispatch, since `notifications_admin_action` throws on feed actions); removed a duplicate plain `require` of `notifications.php` in `site/portal/controllers/router.php` (`ceb06c05` — would fatal on redeclaration); carried `docs/SCHEDULING_ADAPTER.md` from PR #37 (`5da3ef95`).
+- Component ports (each: extracted component files only onto a fresh branch from the integration tip, workflow branch filters retargeted, local suites run, opened as PRs based on `devin/full-site-integration`):
+  - `devin/vps-uncertainty-port` PR #257 — VPS uncertainty retention from `fb395998`: 311/311 `tests/vps/run.php` checks.
+  - `devin/ssh-access-port` PR #258 — SSH access model from `devin/ssh-access`: 70/70 checks.
+  - `devin/provider-catalog-port` PR #259 — CapabilityCatalog/CatalogEntry/TwentyICatalog from `devin/provider-foundation`: 50/50 catalog checks; existing 171 provider checks still pass; `provider.yml` extended to lint/run the added suite.
+  - `devin/domains-port` PR #260 — foundation/domains commerce model from `devin/domain-foundation`: 81/81 checks.
+- Verified superseded, then closed with notes: #102–#125 codex draft stacks (file-level port parity vs the A-group merges; only extra file was the redundant `support-tickets.yml` workflow), #32/#36/#37 contract-doc PRs (#36's doc already byte-identical on the tree; #37's doc carried), #43/#44/#45/#46 (ported as above), #60 (current foundation/hosting is strictly newer — carries ACCEPTED_PENDING semantics), #61 (foundation/desk byte-identical), #109/#111 (released 20i capabilities; current migration/suites strictly newer), and all remaining Group D ancestor PRs (#90/#91/#92/#133/#135/#136/#138/#139/#140/#148–#151/#156 re-verified via merge-base before closing).
+- Cancelled stale combined run 39297205239 (on pre-fix `9896b1f0`); runs on `cb8d2117`/`ceb06c05`/`5da3ef95` are authoritative. Open PR count 152 → ~101.
+- Known blockers: GitHub-hosted concurrency starvation — ~58 runs queued, account cap serializes execution; Group B 20i merges remain gated on observed CI.
+- Next: hosted acceptance on the integration tip; merge port PRs on green; then Group B by dependency order.
+

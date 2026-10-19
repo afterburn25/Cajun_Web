@@ -33,10 +33,20 @@ This session writes the takeover directive and current root/coordination instruc
 - `tests/apache_acceptance.py` conflicts are usually giant list unions; check INC-only quoted items first — often HEAD is already a strict superset (`git checkout --ours`).
 - Regenerate `site/install/inventory.generated.php` via `python tools/build.py --refresh` after every site change; artifact check is `python -B tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json` (expects 229).
 
+**Continuation 2026-10-19 (later same day):** tip `5da3ef95`. Post-Group A fixes: `cb8d2117` repaired admin notification dispatch shadowing (`payments_notification_*` prefix now precedes the generic `notification*` feed dispatch); `ceb06c05` removed a duplicate plain `require` of notifications.php in the portal router. Stale pre-fix run 39297205239 (on `9896b1f0`) cancelled — acceptance runs on `cb8d2117`/`ceb06c05`/`5da3ef95` are authoritative.
+
+**Component ports (base = integration branch, awaiting hosted runs):**
+- PR #257 `devin/vps-uncertainty-port` — VPS uncertainty-retention component from `fb395998` (311 local checks).
+- PR #258 `devin/ssh-access-port` — SSH access-model from `devin/ssh-access` (70 local checks).
+- PR #259 `devin/provider-catalog-port` — CapabilityCatalog/CatalogEntry/TwentyICatalog (50 catalog + 171 provider checks local).
+- PR #260 `devin/domains-port` — foundation/domains commerce model (81 local checks).
+
+**PR hygiene:** closed #102–#125 (port parity verified), #32/#36/#37/#43–#46/#60/#61 (superseded; ported where needed), #109/#111 (superseded by released 20i work), and all 25 Group D ancestor PRs. Open PRs now ~101, almost all Group B awaiting CI.
+
 **Next actions in order:**
-1. Watch run 39297205239 to completion; fix any combined failures.
-2. Port-parity check vs superseded codex #102–#125 heads; then close the 23 already-integrated ancestor PRs.
-3. Observe actual CI on Group B Codex 20i heads (catalog f67b1631, capture b7c97953, commercial d2903bfb, nameservers 024b50dc, runtime, subdomain 4dc05d8c, StackCP ffee2e3a, renewal 632362f6, reset-template 95ce538e) before any merge.
+1. Watch the acceptance runs on the integration branch tip; fix any combined failures.
+2. Merge the four component-port PRs once their hosted runs pass (or fold branches in directly before the main merge).
+3. Observe actual CI on Group B Codex 20i heads (catalog f67b1631, capture b7c97953, commercial d2903bfb, nameservers 024b50dc, runtime, subdomain 4dc05d8c, StackCP ffee2e3a, renewal 632362f6, reset-template 95ce538e) before any merge — runs dispatched, queue is starved by account concurrency.
 4. Normal-merge integration branch into main after combined acceptance passes, then continue remaining 20i/non-20i gaps and the next verified release.
 
 ## Devin's first executable milestone
