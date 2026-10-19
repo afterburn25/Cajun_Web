@@ -1,3 +1,7 @@
+## Current development candidate —2026-10-18
+
+Version1.26.0 is being assembled on `codex/twentyi-direct-hosting-catalog`; it is not published. See [candidate scope](docs/RELEASE_SCOPE_1.26.0.md), [current status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md). Published1.25.0 remains immutable and available. Native feature checks do not replace the candidate's remaining browser, upgrade, full-runtime and release/download verification.
+
 ## Verified release — 2026-10-18
 
 [CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.

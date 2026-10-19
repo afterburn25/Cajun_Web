@@ -6,6 +6,145 @@ Integration branch `devin/full-site-integration` (not on main): fixed admin noti
 
 Record completion of the 139-run obsolete CI remainder, exact PR249 package verification and the separate PR250 contacts-fixture correction. Preserve every original acceptance gate, historical failure and published 1.25 asset. This commit changes documentation only; hosted feature acceptance remains pending.
 
+## 2026-10-19 — installed monthly and annual purchase coverage
+
+Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](docs/TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
+
+## 2026-10-19 — monthly and annual hosting plan browsing
+
+Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](docs/TWENTYI_HOSTING_BILLING_SELECTOR.md).
+
+Root owns UI, documentation, packaging and integration; Catalog owns the read service, Domains native coverage and acceptance binding, and VPS the modeled browser journey and independent review. Local portable/model checks and packaging are recorded separately from pending Linux SQL, installed application, upgrade and release gates. The initial extracted-fixture dependency failure and browser harness failures remain retained. Published 1.25.0 and the live site are unchanged. Devin retains non-20i/licensing.
+
+Preserve the separate frozen directory-listing source `b0fe332f391f5586d1a3978e9ae8f21a0605bfba` ([PR246](https://github.com/afterburn25/Cajun_Web/pull/246)) and original queued runs. Next: inspect this increment's first exact-source full run, resolve actual failures, integrate accepted branches sequentially and complete combined release verification. Queued work is not acceptance; no queue-driven restart or cancellation.
+
+## 2026-10-19 — separate monthly and annual hosting offers
+
+Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](docs/TWENTYI_CATALOG_BILLING_OPTIONS.md).
+
+Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
+
+## Unreleased — checkout fulfillment controls
+
+- Show checkout owners the verified-payment setup path and remove manual-fulfillment actions that the server refuses for those agreements.
+- Preserve legacy manual controls and extend the existing renderer and installed purchase-navigation regression checks.
+- Correct the 1.26 candidate scope to include its already-implemented plan setup, storefront, checkout and purchase inbox. Acceptance and publication remain pending.
+
+## 2026-10-19 — installed hosting purchase navigation
+
+Branch `codex/twentyi-purchase-inbox-browser`, parent `7535f861c2c3accf37482f5af94099780c7806a6` (draft [PR229](https://github.com/afterburn25/Cajun_Web/pull/229)); enclosing commit **fix: verify hosting purchase navigation and invoice links**. This bounded acceptance increment continues the existing packaged checkout, storefront and plan-setup journeys through the owner and primary-client purchase inbox. It follows the original invoice, project and agreement links, distinguishes the inherited paid/accepted order from unpaid purchases, and checks unchanged commercial history across navigation and access refusals. The inherited setup card's owner **Review invoice** link now selects the original invoice through `invoice-payments` / `invoice_id`; its previous `payments` / `invoice` URL opened the general payment-request page. The client destination is unchanged. Published releases are unchanged. [Scope and actual verification](docs/TWENTYI_HOSTING_PURCHASE_INBOX.md#installed-purchase-navigation).
+
+Applied local checks pass 631 artifact-helper outcomes, preserving all 584 predecessor objects and their order, 52 original checkout guards, and 80 actual renderer/controller checks in each default/minimal PHP 8.4.25 mode. The browser proposal also retains 49 helper/synthetic-layout checks and 26 final source/predicate checks; these are not installed application evidence. Canonical refresh, touched PHP/Python syntax and documentation checks pass. The 181 native commands, 202 browser reports and 253 final reports are unchanged; four new inbox captures are required through the existing checkout report. Inspect the first automatic successor full/focused Linux runs and their original outputs next. Native SQL, installed HTTP/Chromium, actual capture review, supported upgrades, final integration and release acceptance remain pending. Do not cancel or rerun the preserved parent jobs merely because they are queued.
+
+## 2026-10-18 — hosting purchase history and setup handoff
+
+Continue on `codex/twentyi-hosting-purchase-inbox` from exact `0ddbd23d6489e2b9445304123e214d0a2e188f31` (draft PR228). The enclosing commit, **Connect hosting purchases to existing setup**, adds owner and primary-client purchase lists with original invoice/project/agreement links and separate local setup status. The existing owner order form selects the original checkout invoice even after 51 newer same-price invoices; legacy invoice selection is unchanged. No new schema, POST action, provider request or payment writer is added. Actual-source modeled checks and syntax pass locally; native Linux SQL, installed navigation, combined upgrade and final release acceptance remain pending. The additive workflows preserve predecessor commands, reports and captures. Published 1.25.0 and original queued runs remain unchanged. The first local test harness incorrectly tried loading built-in Windows modules dynamically; its failed output is preserved and the harness now uses plain minimal PHP. [Behavior, evidence and remaining gates](docs/TWENTYI_HOSTING_PURCHASE_INBOX.md).
+
+## 2026-10-18 — guided imported hosting plan setup
+
+Packaging follow-up from `787c7f3225dd21757d5fd3a6ec9febb86230d905`, draft [PR228](https://github.com/afterburn25/Cajun_Web/pull/228): the first clean local build refused two shipping files whose Windows working copies had mixed line endings. Their application content already matched Git exactly after LF normalization. Restored only those two local copies to their committed bytes and refreshed the two installer hashes; no feature logic or acceptance source changed. The enclosing commit is **Align installer inventory with committed storefront bytes**. Original source/runs and the failed build receipt remain preserved. Byte comparison verifies all 2,928 non-inventory shipping files against Git and every generated hash; all 21 feature/test pins are unchanged and documentation checks pass. Recheck the exact committed package and first successor CI results before integration or release.
+
+Continue from exact catalog storefront source `460eebfb5d8d87c3816576aeb7289bfa90478668` on `codex/twentyi-imported-plan-setup`. The enclosing commit, **Connect imported hosting products to plan setup**, adds the owner form and atomic matching-plan/activation/provider-mapping composition. Saved product pricing and imported type/profile remain authoritative; exact retries preserve the original records and expiry. The existing offer preview, separate publication and invoice checkout remain in place. [Behavior, verification and remaining gates](docs/TWENTYI_IMPORTED_PLAN_SETUP.md).
+
+Applied-source portable/model checks and local synthetic-data Chromium layout checks pass. The independent review found and corrected a form-fallback database re-read; the original proposal remains preserved externally. Linux native transactions, installed HTTP/browser execution, supported upgrades and final release acceptance remain pending. Published1.25.0 and original queued runs are unchanged. Complete VPS catalog discovery, automatic provider artwork, remote SSH and whole-project completion remain open.
+
+## Unreleased — installed catalog storefront tests
+
+Require packaged admin catalog and public-to-client checkout continuations through existing HTTP reports. Cover bounded imports/retries, retained local artwork, exact selected-offer login and one unpaid invoice; retain eight scoped captures. Preserve prior fixtures, assertions, source guards and workflows. Local checks pass; Linux application execution and actual image review remain pending. No shipping behavior or published release changes.
+
+## 2026-10-18 — catalog storefront source integration
+
+Current saved-connection success now links to catalog import; fixed batches preserve existing edits and support safe retries. Shared Hosting compares published prices, terms and local images, with exact checkout selection retained through login. The preserved first-invoice branch is normally integrated; VPS catalog/provider artwork remain unverified and combined runtime/release acceptance remains pending. [Scope and checks](docs/TWENTYI_CATALOG_STOREFRONT.md).
+
+## Unreleased — capture complete mobile StackCP cards
+
+Keep the original layout/action checks at their existing viewports, then capture five tall StackCP mobile cards with complete bounds below the header and skip link. Add five unobscured-capture checks. Close the finite inventory review of all 340 original captured extents while preserving overlay/scrolling limits. These changes affect tests and documentation; shipping behavior and published 1.25.0 remain unchanged.
+
+## Unreleased — expand candidate visual evidence
+
+Record115 additional browser-image reviews and their limits, including five StackCP mobile captures with covered headings. Verify the retained complete20i reference and preserve the original queued test runs. Documentation only; no application, test, workflow or released-package changes.
+
+## Unreleased — wait for release captures to be ready
+
+Scroll the actual fresh-root content into view and decode its images before taking the full-page screenshot. Verify the imported-image Save button is reachable at the original mobile size, then capture the whole card at the same width with additional height. Wait for the domain-search mobile drawer to leave the viewport before capture. Preserve original assertions, report/image names and application behavior. These test corrections address observed capture gaps; corrected application acceptance is pending.
+
+## Unreleased — hosting recovery test startup
+
+- Match the PHP test server's closed-connection address reuse during loopback preflight; active listeners still cause failure.
+- Retain only a fixed startup stage and bounded errno for preflight/log-open errors.
+- Require real Linux socket regressions before focused packaged hosting tests. Existing application checks, cleanup, complete-suite recipe and release assets are preserved.
+
+## Development — checkout history and packaged acceptance, 2026-10-18
+
+- Show actual client confirmation and automatic agreement activation in checkout history; retain legacy staff attribution and remove the missing-creator warning.
+- Add packaged owner/client checkout, denied-access, retry and result-link tests with desktop/mobile captures.
+- Wire focused and full acceptance while preserving all preceding recipes and required reports. Runtime, visual and release acceptance are still pending.
+
+## Development — owner-enabled hosting invoice checkout, 2026-10-18
+
+- Add owner opt-in and primary-client project selection, exact price/date review and first-invoice confirmation.
+- Save the project/agreement/schedule/invoice together, preserve completed retries and reject missing financial history.
+- Require verified payment and the accepted provider mapping for checkout-origin fulfillment.
+- Local document and screen checks pass; native Linux, packaged browser and full release acceptance remain pending.
+
+## Development — recurring checkout storage, 2026-10-18
+
+- Add explicit owner migration for client-attributed recurring checkout schedules and first invoices, preserving legacy SQL defaults and history.
+- Bind the first invoice to exact consent and an independent compact audit origin; refuse missing history or staff recreation of the client obligation.
+- Pass66 isolated native migration/history checks. Atomic checkout, customer screens and release acceptance remain pending.
+
+## Development — checkout subscription storage, 2026-10-18
+
+- Add an explicit owner migration for checkout client creators and system activation events, preserving old documents, actors and audits.
+- Validate recognized interrupted migration states and complete retained checkout history; reject missing or inconsistent records.
+- Pass58 isolated native migration/history checks. Checkout creation, invoices, screens and full release acceptance remain pending.
+
+## Development — first-period checkout billing rules, 2026-10-18
+
+- Derive checkout billing from exact retained subscription/consent and start its first period on the accepted local date.
+- Preserve legacy activation and future lifecycle boundaries; add92 pure regressions and exact foundation/site mirrors.
+- Actual invoice creation, native checkout storage and customer screens remain pending.
+
+## Development — client-attributed checkout subscriptions, 2026-10-18
+
+- Retain the exact hosting consent and real client creator in subscription format2, with separate client-consent and automatic local-activation events.
+- Preserve legacy subscription documents and later lifecycle rules; add65 pure regression cases and refresh installer inventory/source pins.
+- Native storage, invoice creation, customer screens and release acceptance remain pending.
+
+## 2026-10-18 — hosting checkout consent groundwork
+
+- Added inactive, versioned hosting checkout publication policy and canonical client review/consent documents. They bind exact commercial terms and a selected existing or new hosting project; no route or database writer is enabled.
+- Preserved format1 requests and blocked checkout publications from their legacy conversion path. Corrected skipped-midnight expiry and historical acceptance-date validation; added pure regressions for date, ownership facts, changed terms, replay identity and private-field exclusion.
+- Refreshed installer inventory and exact source pins for the development branch. Database/invoice/UI integration and release acceptance remain pending.
+
+## Development — preserve hosting acceptance while integrating main CI triggers
+
+Integrate the reviewed PR218 workflow path filters from main `e397d9a6e293850e8dff61a593e3ba39ee178400` with hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` through a normal merge. Only ten focused workflow triggers and documentation change relative to that development source; shipping files, tests, full acceptance commands and contracts stay exact. This does not merge the separate f67 release candidate to main, certify hosting behavior or change published 1.25.0.
+
+## Development — integration review handoff, 2026-10-18
+
+Document current Devin branch corrections for contact billing authority, preserved invoice checks/navigation and payment-upgrade verification. Include an unapplied invoice restoration patch and carry forward unresolved mail findings. No shipping behavior or version changes; application acceptance remains pending.
+
+## Development — full hosting and published upgrade verification, 2026-10-18
+
+Connect existing offer/recovery and eventual purchase/client-access tests to complete acceptance. Add explicit hosting setup, publication, request, consent and recovery protection after upgrading the immutable published1.25 package. Preserve all previous test predicates, private output exclusions and released bytes. Local source/portable checks pass; actual combined runtime and release gates remain pending.
+
+## Development — joined hosting purchase verification, 2026-10-18
+
+Add an isolated eventual purchase test and packaged owner re-link/client visibility checks. Preserve the original focused tests and recurring billing rules; no shipping files or version labels change. Actual Linux database/browser and release acceptance remain pending.
+
+## Development — original hosting mapping continuity, 2026-10-18
+
+- Keep new and saved catalog-origin hosting order links tied to the exact provider mapping in the client's original offer. Reject silent substitutions and manual bypasses; guide owners through a new offer/agreement when the original mapping is no longer eligible.
+- Preserve ordinary order preparation, historical mapping readability and explicit billing project consent. This remains development work awaiting joined SQL/HTTP/browser and release acceptance.
+
+## Unreleased — guide confirmed hosting orders to client access
+
+Show saved package assignment status and the expected client on the owner’s confirmed hosting order. Provide a direct link to the matching provider inventory card for the existing password-confirmed assignment action. Keep provider purchases, confirmation, ownership writes, client projections and billing behavior unchanged. Native/browser and full purchase-through-access acceptance remain pending.
+
+## Unreleased successor — staged owner recovery HTTP checks
+
+Add isolated tests of the real packaged owner updater for authentication, CSRF, package integrity, backup confirmation and hosting-history recovery decisions. Preserve original native/browser assertions and the production recovery algorithm. Portable/model checks pass; Linux SQL/HTTP and release acceptance remain pending. No shipping files or installer inventory changed.
 ## Unreleased — final component PR filters and verified cleanup
 
 Limit service-plan and staff-invitation PR checks to their actual dependencies while preserving all execution settings. Confirm the remaining103 cleanup outcomes:327 total terminal cancellations,1,297 unexecuted jobs,31 preserved candidates and139 untouched. Keep the partial evidence and original failures. No application, installer, version or released package changes.
@@ -93,6 +232,34 @@ Review corrections on `devin/non20i-mail-replies` (PR #161). Saved copied-messag
 Staff can attach one private PDF/PNG/JPEG preview to an exact published design or proposal version. The artifact lives in guarded private storage and is served inline with integrity verification only to the owning client, staff or granted support sessions — never as a public URL. External staging links remain available and labeled external. Workspace storage upgrades additively (marker 3); existing content is preserved. Branch `devin/non20i-protected-previews`; packaged acceptance pending on CI.
 
 ## 2026-10-16 — publish the concrete release freeze and branch
+
+## 2026-10-18 — hosting successor recovery protection
+
+Guard staged owner file recovery with fresh owner authentication and retained hosting history under the same mutex as publication. Empty, validated history remains eligible; publications, partial/unknown storage and inherited transactions refuse before recovery changes files or the journal. Keep the generic recovery engine intact. Add 142 modeled regression checks per PHP mode and wire 44 separate native recovery cases into the four-environment focused matrix, preserving all 88 earlier hosting cases and the packaged UI job. Native execution and real HTTP acceptance remain pending. [Behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
+## Unreleased successor — hosting offer screens
+
+Add owner offer review/publication and client request handling under Hosting & Domains, public hosting cards with local artwork, and client request history with agreement/project links. Preserve failed submissions, current permissions, support restrictions and explicit confirmation. Correct the product review link to select its imported draft. Runtime/browser acceptance remains pending; these changes are outside the 1.26 release candidate.
+
+## Unreleased successor — hosting offers and client request backend
+
+Connect exact imported hosting drafts to reviewed service plans through explicit local publications, retained client requests and atomic agreement conversion. Add immutable history, current-session and stale-offer checks, and protection for historical product images during media cleanup. Generic hosting catalog invoices remain refused. No route enables the feature yet; focused native SQL, browser and full ordering acceptance are pending. This successor is separate from the frozen 1.26.0 release candidate.
+
+## Unreleased — isolate direct catalog browser fixture ordering
+
+Run the new catalog browser callback after the existing provider/scheduler callbacks so its six simulated reads do not invalidate older zero-prior-call assertions. Keep all test predicates and deployment bytes unchanged. Original failed evidence remains retained; corrected full acceptance is pending.
+
+## Unreleased —1.26.0 upgrade preparation
+
+Advance development version markers and staged-update instructions to1.26.0. Add the immutable published1.25 baseline while retaining older upgrade/recovery cases. Full1.26 acceptance and publication remain pending.
+
+## Unreleased — direct 20i hosting catalog drafts
+
+The corrected hosting catalog passes all four focused database environments. Preserve original import provenance in the older changed-credential test by modeling a separate later observation. Actual combined browser and next-version upgrade acceptance remain pending.
+
+The first CI follow-up corrects one synthetic inventory name list and includes the retained public diagnostic scripts in the sanitized FULL-PROJECT source archive. Deployment payloads are unchanged by these corrections. The original failed native/build runs remain documented.
+
+Add explicit owner refresh of the documented hosting type catalog, including types without installed accounts, and source-aware local draft imports. Preserve existing inventory imports and their prices, wording, images and provenance. Add bounded typed projection and durable current-context observations; retain failed/unfinished attempts instead of falling back. Provider prices/images, cloud products and hosting publication remain unfinished. Combined native/browser acceptance is pending; released1.25.0 is unchanged.
 
 ## Unreleased — record observed cloud null response
 ## Repair tickets.css asset registration from review — 2026-10-16

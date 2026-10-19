@@ -1,0 +1,1986 @@
+{
+  "schema": 1,
+  "passed": true,
+  "base": "826eb5dd6807eb8424efc677706d21d07b6748c3",
+  "main_sync": "0e813d21f761b40a2d031fe19ca7afb7c19f9637",
+  "scope": "Local source, portable guards, synthetic capture-helper and acceptance-helper verification only; installed SQL/HTTP/browser and actual screenshot review pending.",
+  "components": {
+    "browser": {
+      "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-browser-proposal\\source-review.json",
+      "sha256": "f9c7512d8ae410ad8095e382796af86a06c60f458c673e88b5a00b7258db0fa0",
+      "review": {
+        "schema": 1,
+        "base": "826eb5dd6807eb8424efc677706d21d07b6748c3",
+        "reviewed_head": "0e813d21f761b40a2d031fe19ca7afb7c19f9637",
+        "owned_file": {
+          "path": "tests/hosting_billing_options_cases.py",
+          "sha256": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60",
+          "bytes": 37693
+        },
+        "patch": {
+          "path": "new-module.patch",
+          "sha256": "7aae4571781e3e3fc52c6a2ba9b88c64645c90bdf2410cd39ee0dde4e166826c"
+        },
+        "source_sha256": {
+          "tests/hosting_billing_options_cases.py": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60",
+          "tests/hosting_billing_options_wiring.py": "1336419d6d453007cad69c6970915464d166c9492869a99812d50adddb0c1c93",
+          "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
+          "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
+          "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+          "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
+          "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
+          "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
+          "tests/hosting_purchase_inbox_cases.py": "ad714d79c1dce6ba21f243c4d81fbe0e2349ba52375cda8a8a1ac75331d57600",
+          "site/admin/controllers/catalog.php": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57",
+          "site/admin/controllers/catalog_variants.php": "a6d4995a5aff5c8e461593968d6113ec2f7f2dcdb1333cfc687ef11a17ead283",
+          "site/admin/views/catalog_variants.php": "352e36772c00fa324902aa67a19ddc8a06ef48705ac5731072535da075c40596",
+          "site/admin/views/catalog_import.php": "1525df784e2c1f1e17634895324fcd9f2cd56733002c6354fd379c5908b9f90b",
+          "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
+          "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
+          "site/app/providers/catalog_variants.php": "89ff0ca2ef72bb14f544b4481b6992510599f72883b4943451ce2a4158d414a5",
+          "site/app/providers/catalog_variants_storage.php": "bebd64dfef60e32fce024978fae15cd961118510cd21a5f851b4b2afd94fbaaa",
+          "site/app/providers/catalog_import.php": "e08527169d037b33c26c8678740225f9f95076dc66187ba0cfbab1861ab52906",
+          "site/app/providers/catalog_import_storage.php": "a922075d0d7a6499534678265617e0d017949b241dc3436f2b0f4ed4ebd7bdc7",
+          "site/app/hosting/catalog_offer_setup.php": "f9be99047dd3aac5a1ce7777b4b5e25705d01d5036fa110525aa0cc33ec43a52",
+          "site/app/hosting/catalog_offer_setup_document.php": "cd68fb846661a2a38cb05c4f87501b17b923cf2a27d9e610286358bccb9cdb5c",
+          "site/app/hosting/catalog_offer_setup_views.php": "573d00d1f5bdfb0cb2d7cd98ca9edfdeafdea9330976b6c7102d2f78b796c1c2",
+          "site/app/hosting/catalog_offers.php": "cfc966698bedf870b014944708243db2a07d00806982f405bc27fcaf9f3ae28e",
+          "site/app/hosting/catalog_offers_context.php": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b",
+          "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
+          "site/app/hosting/catalog_checkout.php": "b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2",
+          "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
+          "site/app/hosting/catalog_billing.php": "ac6497e0b09eae8d3d7796583712cd857c0a79ebdb783c747b64c86c104f5189",
+          "site/app/billing/recurring_billing_invoices.php": "b022b7b452a7f7ac5cd9b7a8c4c5c15e17ed7d0bbfdfa49a56563de61ac678d7",
+          "site/includes/layout/hosting_catalog.php": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a",
+          "site/includes/layout/ledger.php": "835e7065055780b317edb148b7a7dc5749d97e39c84a8ad45651cd6d3baa8d39",
+          "site/portal/controllers/hosting_catalog.php": "db214c825efd4754f7ecfac9c79734d2df1138c5f2959f9193b701447294280b",
+          "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
+          "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
+          "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
+          "site/pages/services/hosting.php": "91904fea81cbcf6494a74fcc1090cdd7d5ff8f9600c0c4b3eb1eb16893cd8e52",
+          "site/includes/urls.php": "4e5ed7e8926d8c7d51e55d558ac7ca05cbc628b63e889aa5cb365f655e55e68a",
+          "site/includes/security/csrf.php": "cf24bbccd978bd9ac94d289f822deea683624b8093e86b362a4b8e818f9a99de",
+          "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
+          "site/assets/css/growth.css": "7bbc3ed26641d67cc272a13bafb17c3c6698f37407292cfd4dd3853fc96f5a6a"
+        },
+        "validation": {
+          "path": "source-validation.json",
+          "sha256": "0ecb951243b59c5709edb1a28301fd4d1b20d544300bfe10788b018b0009c59c",
+          "named_checks": 52
+        },
+        "capture_probe": {
+          "path": "capture-probe-01.json",
+          "sha256": "454fb524fc062a88eb21a7d582986fb1cffc2f425ab8adce1c8452599d4342ef",
+          "actual_checks": 15,
+          "scope": "Actual AST-extracted capture helper on synthetic set_content DOM only. No HTTP, SQL, packaged app, provider or installed screenshot acceptance."
+        },
+        "peer_portable_evidence": {
+          "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\hosting-billing-options-wiring-proposal\\checks\\portable-01.json",
+          "sha256": "635832a8c4a35138dede6212d726b68ca869a40fea3581bf58e3431b9f7fce66",
+          "actual_checks": 128,
+          "executed_by": "Catalog",
+          "scope": "Portable actual-source output and preservation contracts only; no SQL, HTTP, Chromium or application screenshots."
+        },
+        "integration": {
+          "path": "INTEGRATION.json",
+          "sha256": "e1612ad9dec3af4cd454ced1b2ee2502e49196d3ed796ba49849982052fd2e04"
+        },
+        "limits": [
+          "Installed SQL/HTTP/Chromium billing journey has not executed locally. Linux guarded original runner remains the required acceptance path.",
+          "Synthetic geometry screenshots from the capture helper are not release captures or application previews; no visual approval claimed.",
+          "Eight installed captures are future required artifacts, not existing evidence.",
+          "Source review traced actual forms, CSRF identities, publication hashes, calendar dates, invoice links, provenance and retention. It does not certify runtime success.",
+          "No fixture reset, authenticated SQL mutation, timestamp rewrite, provider refresh/send, payment or mail action added.",
+          "All prior callbacks and original state operation remain preserved and independently guarded by the new portable wiring test."
+        ]
+      }
+    },
+    "portable": {
+      "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\hosting-billing-options-wiring-proposal\\source-review.json",
+      "sha256": "1e60de1bdcb58448737998048a54e177745a04c5c16d06c46a81651073aa8292",
+      "review": {
+        "passed": true,
+        "scope": "Portable actual-source guards and bounded independent bridge source review; no SQL, HTTP, provider request, Chromium journey or application image acceptance.",
+        "base": "826eb5dd6807eb8424efc677706d21d07b6748c3",
+        "working_head": "0e813d21f761b40a2d031fe19ca7afb7c19f9637",
+        "owned_files": [
+          "tests/hosting_billing_options_wiring.py"
+        ],
+        "source_sha256": {
+          "tests/hosting_billing_options_wiring.py": "1336419d6d453007cad69c6970915464d166c9492869a99812d50adddb0c1c93",
+          "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
+          "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
+          "tests/hosting_billing_options_cases.py": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60"
+        },
+        "reviewed_dependencies_sha256": {
+          "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
+          "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
+          "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
+          "tests/hosting_purchase_inbox_cases.py": "ad714d79c1dce6ba21f243c4d81fbe0e2349ba52375cda8a8a1ac75331d57600",
+          "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+          "site/app/hosting/catalog_checkout.php": "b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2",
+          "site/app/hosting/catalog_checkout_storage.php": "eaf98711efa2de3985fe74ad0b9dd85bc2c2e48a17e4bd4624b1f578e6d61e76",
+          "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
+          "site/app/providers/catalog_import_storage.php": "a922075d0d7a6499534678265617e0d017949b241dc3436f2b0f4ed4ebd7bdc7",
+          "site/app/providers/catalog_variants_storage.php": "bebd64dfef60e32fce024978fae15cd961118510cd21a5f851b4b2afd94fbaaa"
+        },
+        "executed_helper_ast_sha256": {
+          "billing_snapshot": "effff935f2a2ad9c67aaa9f418e26d536e4b215cc1ed1f2c3ed46ed2292a2cd8",
+          "retained_rows_preserved": "20b5539f5c259528cd94c9e3334357982a10b0c0c379c2b1989f628aad3977e1",
+          "billing_period_matches": "e43f516033cdeaa412806a15d64772f854d8a3d1ee51b3e4123fb92aff489609"
+        },
+        "portable": {
+          "command": "C:/Python314/python.exe -B tests/hosting_billing_options_wiring.py --report ../hosting-billing-options-wiring-proposal/checks/portable-01.json",
+          "exit_code": 0,
+          "passed": true,
+          "checks": 128,
+          "report": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\hosting-billing-options-wiring-proposal\\checks\\portable-01.json",
+          "sha256": "635832a8c4a35138dede6212d726b68ca869a40fea3581bf58e3431b9f7fce66"
+        },
+        "preservation": {
+          "old_callbacks": 4,
+          "old_runner_check_expressions": 12,
+          "old_captures": 24,
+          "added_captures": 8,
+          "entire_old_fixture_recovered_by_exact_inverse": true,
+          "old_state_tail_exact": true
+        },
+        "bridge_review": [
+          "The new billing-state branch uses the existing checkout mutex and transaction plus complete checkout-readiness validation; no new business writer, migration or provider request is called.",
+          "Products resolve authenticated canonical/retail provenance; publications use original historical projections, allowing deliberately stale preceding offers without claiming current eligibility.",
+          "Each review and result is validated through the actual saved review/consent/subscription/schedule/invoice graph before safe IDs, terms and issued periods are exported.",
+          "Fixed hcc_ table selection exports sorted row-hash multisets and business-audit witnesses. Missing or changed old rows cannot be credited as retained by the actual callback comparator.",
+          "Provider IO hashes distinguish missing optional operations/grants from present-empty or changed rows. Missing required refresh/check histories refuses. No DDL fills an absent family.",
+          "The old state operation, prepare/contact paths and native79 preconditions remain byte-identical after only the finite additive inverse.",
+          "Row/output bounds and fixed source selectors are retained; the bridge is a disposable prerequisite-guarded read witness, not a user-facing authority or actual browser authentication claim."
+        ],
+        "resolved_findings": [
+          {
+            "area": "Root bridge optional provider-operation tables",
+            "finding": "First draft queried operations/grants although the original checkout native fixture intentionally had not prepared that family.",
+            "resolution": "Root added fixed existence checks; only those two may be absent, with presence included in the digest.",
+            "validation": "Source trace against original native preparation and actual new bridge; no SQL execution."
+          },
+          {
+            "area": "New callback image check names",
+            "finding": "Repeated previews/public comparisons reused an image-derived name despite the callback requiring unique outcome names.",
+            "resolution": "VPS qualified image check labels by publication/public stage.",
+            "validation": "Final callback0fbd3db1 contains the correction; no installed journey execution."
+          }
+        ],
+        "limits": [
+          "No application/native database execution or screenshot approval is claimed.",
+          "Synthetic temporary capture files test the actual file guard only and are explicitly not application images.",
+          "The actual installed producer, retained full acceptance and final image review remain separately required."
+        ]
+      }
+    },
+    "acceptance": {
+      "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\source-review.json",
+      "sha256": "f2303cc8fb2ea4176d1fba69093d17f30133bdf5f83be7a8ba17cce2840d14f0",
+      "review": {
+        "base_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
+        "files": [
+          {
+            "path": ".github/workflows/application-tests.yml",
+            "before_sha256": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
+            "sha256": "5602b946fde8d2fdb0e6a852c076947aaa473ed767aad1a4ad0cb4e4c8842ccc",
+            "bytes": 55921
+          },
+          {
+            "path": "tools/acceptance-contract.json",
+            "before_sha256": "a4c86f37e1d109a25cfa81a5b08b3c9760f10dc6fa5acc948d4a49af6c7e9c97",
+            "sha256": "854162a8ed967098c40f1abe5b86a7a9bf9589c430f437d5cf68312cceb63015",
+            "bytes": 510773
+          },
+          {
+            "path": "tools/acceptance-reports.json",
+            "before_sha256": "0cf0869fc0e9d7e81ee61340cd5e2e7dd5ca24c08fc2d127f095d8974d6f715c",
+            "sha256": "659111805951dff4664b89eed30f15669be303a2732574575a909e0f1ff57c05",
+            "bytes": 24284
+          },
+          {
+            "path": "tests/acceptance_artifacts_test.py",
+            "before_sha256": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
+            "sha256": "d71bda240895561ec8b453a89cea1a9ba7259a1cd9fe8d45f73d128d84e2154e",
+            "bytes": 114243
+          }
+        ],
+        "patch": {
+          "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\final-01\\proposal.patch",
+          "sha256": "c252c79da9b48c482e8a3e69398a94f6383d0a0d9ff18b69f1c70ec51c0ac80e",
+          "bytes": 74958
+        },
+        "composition": {
+          "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\final-01\\composition.json",
+          "sha256": "1957f3c4580b02ef3d3d3c4892d0201a0210304ef64218b794be8d8522d94b24",
+          "bytes": 1336
+        },
+        "source_checks": {
+          "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\source-checks.json",
+          "sha256": "6375c9a4e27038b31ee620d190cd98efa7e6fa04ba711f75bee8ad5702936272",
+          "bytes": 9089
+        },
+        "roundtrip": {
+          "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\patch-roundtrip.json",
+          "sha256": "006f345d6c65fa1e84e56f29ea67915b430515265f394b4cb8d3e797938a1787",
+          "bytes": 595
+        },
+        "actual_helper_result": {
+          "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\helper-run-01\\results.json",
+          "sha256": "0be0495acb750a76d789940f2a59ef78f9ad8627f3208073e1266f63cf5e9caa",
+          "bytes": 98171
+        },
+        "actual_helper_validation": {
+          "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\helper-run-01\\validation.json",
+          "sha256": "d39056e0bc1f7319d8d216784ab1dd6020e8cc152d59cb1443818282db25679a",
+          "bytes": 888
+        },
+        "actual_helper_checks": 958,
+        "exact_predecessor_outcome_objects_first": 871,
+        "current_source_pins": 60,
+        "complete_source_inverses": 4,
+        "serialized_pin_updates": 26,
+        "inventory": {
+          "native_commands": {
+            "before": 189,
+            "after": 190
+          },
+          "browser_reports": {
+            "before": 212,
+            "after": 213
+          },
+          "final_reports": {
+            "before": 263,
+            "after": 264
+          }
+        },
+        "native_commands_added": [
+          "python3 -B tests/hosting_billing_options_wiring.py --report qa/hosting-billing-options-wiring-results.json"
+        ],
+        "reports_added": [
+          "hosting-billing-options-wiring-results.json"
+        ],
+        "captures_added": [
+          "Hosting-Billing-Options-Owner-Annual-Desktop.png",
+          "Hosting-Billing-Options-Owner-Annual-Mobile.png",
+          "Hosting-Billing-Options-Public-Monthly-Desktop.png",
+          "Hosting-Billing-Options-Public-Monthly-Mobile.png",
+          "Hosting-Billing-Options-Public-Annual-Desktop.png",
+          "Hosting-Billing-Options-Public-Annual-Mobile.png",
+          "Hosting-Billing-Options-Client-Annual-Desktop.png",
+          "Hosting-Billing-Options-Client-Annual-Mobile.png"
+        ],
+        "dependencies": {
+          "sources": {
+            "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
+            "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
+            "tests/hosting_billing_options_wiring.py": "1336419d6d453007cad69c6970915464d166c9492869a99812d50adddb0c1c93",
+            "tests/hosting_billing_options_cases.py": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60"
+          },
+          "portable_guard_report": {
+            "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\hosting-billing-options-wiring-proposal\\checks\\portable-01.json",
+            "sha256": "635832a8c4a35138dede6212d726b68ca869a40fea3581bf58e3431b9f7fce66"
+          },
+          "provenance": "Final source freezes supplied by each owning agent and verified against applied bytes; no installed runtime acceptance inferred."
+        },
+        "preservation": "Current source bindings validate before whole-file parent projection. All original871 outcome objects/order,189 recipes and212/263 ordered reports remain exact. Workflow change is exactly one portable guard command; jobs/triggers/concurrency and original installed callbacks/captures remain. No production transfer helper edit.",
+        "retained_drafts": [
+          "draft-01",
+          "draft-02"
+        ],
+        "limits": "Offline acceptance helper/source/patch verification only. This does not execute the installed SQL/HTTP/Chromium continuation or certify hosted CI, provider sends, payments, capture pixels or release acceptance."
+      }
+    }
+  },
+  "root_source": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "Frozen source bytes tests/hosting_checkout_http_fixture.php",
+        "passed": true
+      },
+      {
+        "name": "Frozen source bytes tests/hosting_checkout_http_browser.py",
+        "passed": true
+      },
+      {
+        "name": "Frozen Python syntax tests/hosting_checkout_http_browser.py",
+        "passed": true
+      },
+      {
+        "name": "Frozen source bytes tests/hosting_billing_options_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Frozen Python syntax tests/hosting_billing_options_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Frozen source bytes tests/hosting_billing_options_wiring.py",
+        "passed": true
+      },
+      {
+        "name": "Frozen Python syntax tests/hosting_billing_options_wiring.py",
+        "passed": true
+      },
+      {
+        "name": "Portable current guard report has all128 unique successful named outcomes",
+        "passed": true
+      },
+      {
+        "name": "Original52 HTTP guard outcomes still pass",
+        "passed": true
+      },
+      {
+        "name": "All frozen runner source paths exist",
+        "passed": true
+      }
+    ],
+    "source": {
+      "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
+      "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
+      "tests/hosting_billing_options_cases.py": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60",
+      "tests/hosting_billing_options_wiring.py": "1336419d6d453007cad69c6970915464d166c9492869a99812d50adddb0c1c93"
+    },
+    "portable_report_sha256": "635832a8c4a35138dede6212d726b68ca869a40fea3581bf58e3431b9f7fce66",
+    "scope": "Independent frozen source/report review; no SQL/installed execution"
+  },
+  "root_acceptance_checks": [
+    {
+      "name": "Current source binding .github/workflows/application-tests.yml",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/controllers/actions.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/controllers/catalog_variants.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/controllers/hosting_catalog.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/controllers/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/controllers/router.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/controllers/support.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/views/catalog_variants.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/views/hosting_catalog.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/admin/views/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/billing/ledger.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_billing.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_checkout.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_checkout_document.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_checkout_storage.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_offer_setup.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_offer_setup_document.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_offer_setup_views.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_offer_views.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_offers.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_offers_context.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/catalog_offers_storage.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/checkout_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/checkout_purchases_views.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/hosting/order_views.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/plans/records.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/providers/catalog_variants.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/providers/catalog_variants_storage.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/providers/inventory.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/providers/plan_catalog.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/app/providers/settings.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/database/migrations/attempts_migrate.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/includes/auth/session.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/includes/layout/hosting_order_links.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/includes/layout/ledger.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/includes/layout/plans.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/includes/layout/recurring_billing.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/includes/layout/service_orders.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/portal/controllers/actions.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/portal/controllers/hosting_checkout.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/portal/controllers/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/portal/controllers/router.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/portal/views/hosting_checkout.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding site/portal/views/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/acceptance_artifacts_test.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/browser_acceptance.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/catalog_storefront_checkout_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_billing_options_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_billing_options_wiring.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_catalog_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_catalog_plan_setup_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_catalog_purchase.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_checkout_http_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_checkout_http_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_checkout_http_fixture.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_checkout_http_guards.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_checkout_native.php",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_purchase_handoff_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_purchase_handoff_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Current source binding tests/hosting_purchase_inbox_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Inverse current digest .github/workflows/application-tests.yml",
+      "passed": true
+    },
+    {
+      "name": "Whole inverse equals actual parent Git .github/workflows/application-tests.yml",
+      "passed": true
+    },
+    {
+      "name": "Inverse current digest tests/acceptance_artifacts_test.py",
+      "passed": true
+    },
+    {
+      "name": "Whole inverse equals actual parent Git tests/acceptance_artifacts_test.py",
+      "passed": true
+    },
+    {
+      "name": "Inverse current digest tests/hosting_checkout_http_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Whole inverse equals actual parent Git tests/hosting_checkout_http_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Inverse current digest tests/hosting_checkout_http_fixture.php",
+      "passed": true
+    },
+    {
+      "name": "Whole inverse equals actual parent Git tests/hosting_checkout_http_fixture.php",
+      "passed": true
+    },
+    {
+      "name": "Original ordered browser reports retained",
+      "passed": true
+    },
+    {
+      "name": "Original ordered final reports retained",
+      "passed": true
+    },
+    {
+      "name": "All original commands remain ordered",
+      "passed": true
+    },
+    {
+      "name": "Final helper report matches sealed digest",
+      "passed": true
+    },
+    {
+      "name": "All958 helper outcomes pass",
+      "passed": true
+    },
+    {
+      "name": "Every original871 outcome object retained in exact order",
+      "passed": true
+    }
+  ],
+  "unchanged_shipping": {
+    "passed": true,
+    "parent": "826eb5dd6807eb8424efc677706d21d07b6748c3",
+    "scope": "Exact tracked application and foundation bytes; no package build or runtime acceptance",
+    "checks": [
+      {
+        "name": "No application/foundation Git delta",
+        "passed": true
+      },
+      {
+        "name": "Every tracked application/foundation working file matches parent Git blob",
+        "passed": true
+      }
+    ],
+    "files": 5294
+  },
+  "root_syntax_platform": {
+    "passed": true,
+    "scope": "Syntax and platform refusal only; no native SQL or browser",
+    "checks": [
+      {
+        "name": "Python syntax tests/hosting_checkout_http_browser.py",
+        "passed": true
+      },
+      {
+        "name": "Python syntax tests/hosting_billing_options_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Python syntax tests/hosting_billing_options_wiring.py",
+        "passed": true
+      },
+      {
+        "name": "Final PHP bridge syntax default",
+        "passed": true
+      },
+      {
+        "name": "Windows bridge platform refusal default",
+        "passed": true
+      },
+      {
+        "name": "Final PHP bridge syntax minimal",
+        "passed": true
+      },
+      {
+        "name": "Windows bridge platform refusal minimal",
+        "passed": true
+      }
+    ],
+    "files": {
+      "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
+      "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3"
+    }
+  },
+  "main_sync_review": {
+    "first_parent": "826eb5dd6807eb8424efc677706d21d07b6748c3",
+    "second_parent": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
+    "conflicts": [
+      {
+        "path": "CHANGELOG.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "73419a54a1846c327e1b0facad375ea7dcd3da90e546dc40ada44075892ab5ad"
+      },
+      {
+        "path": "PROJECT_STATUS.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "56ff5aa32bce032f7c0e628777871dbe3885537a8b2d08fa9e8ec2022b9ac595"
+      },
+      {
+        "path": "SESSION_HANDOFF.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "8421f46156e1abf1e68af3f7040c83adc6461db34b15559ceb35d0ef028ce79f"
+      },
+      {
+        "path": "docs/AGENT_COORDINATION.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "5a84e721132914b3f621d3640eb27c1e5a682b472e249992fbbdfe74e7b3e691"
+      },
+      {
+        "path": "docs/DECISIONS.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "7a94e75c1d394da4535b531cb8c08a1e6bb1a3780fe4ef3aa459aa4614535499"
+      },
+      {
+        "path": "docs/RELEASE_WORKFLOW.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "ffa60cfd36191787c7fb57b4194df88bfb09f2b442e81c2ba1120e67fdb0982f"
+      },
+      {
+        "path": "docs/ROADMAP.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "7d8dc2da6dddb1e6e13efa56d28e282bc32d4d227559a8d6236f7dc5ad319700"
+      },
+      {
+        "path": "docs/SESSION_LOG.md",
+        "all_nonempty_lines_from_both_parents_preserved": true,
+        "sha256": "5d684fa8807041f0162a604c85677c714402a401d699c1454beececa09f0df87"
+      }
+    ],
+    "staged_files": [
+      ".github/workflows/access-policy.yml",
+      ".github/workflows/email-templates.yml",
+      ".github/workflows/estimator.yml",
+      ".github/workflows/portfolio-catalog.yml",
+      ".github/workflows/provider.yml",
+      ".github/workflows/review-requests.yml",
+      ".github/workflows/scheduling.yml",
+      ".github/workflows/service-plans.yml",
+      ".github/workflows/staff-invitations.yml",
+      ".github/workflows/webmail.yml",
+      "CHANGELOG.md",
+      "PROJECT_STATUS.md",
+      "SESSION_HANDOFF.md",
+      "docs/AGENT_COORDINATION.md",
+      "docs/CI_SUPERSEDED_QUEUE_CLEANUP.md",
+      "docs/DECISIONS.md",
+      "docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md",
+      "docs/RELEASE_WORKFLOW.md",
+      "docs/ROADMAP.md",
+      "docs/SESSION_LOG.md",
+      "docs/evidence/catalog126-original-runtime-review.json",
+      "docs/evidence/ci-final-component-pr-filters.json",
+      "docs/evidence/ci-pure-family-pr-filters.json",
+      "docs/evidence/ci-remaining-pure-pr-filters.json",
+      "docs/evidence/ci-superseded-queue-cleanup.json",
+      "docs/evidence/ci-superseded-queue-completion.json"
+    ],
+    "runtime_tests_unchanged": true,
+    "workflows_exact_main": true,
+    "retained_tool_failure": "Initial script stopped after four additive resolutions because DECISIONS has two hunks, not one; no data discarded. Corrected script verifies every nonblank parent line retained."
+  },
+  "portable_checks": [
+    {
+      "name": "Original installed callback remains byte-identical: hosting_checkout_http_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original installed callback remains byte-identical: catalog_storefront_checkout_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original installed callback remains byte-identical: hosting_catalog_plan_setup_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original installed callback remains byte-identical: hosting_purchase_inbox_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original state operation retains its exact complete response and validation",
+      "passed": true
+    },
+    {
+      "name": "Removing only the new read branch and operation recovers the whole original fixture",
+      "passed": true
+    },
+    {
+      "name": "New read branch keeps original lock and authenticated checkout history entry",
+      "passed": true
+    },
+    {
+      "name": "New read branch exports bounded projections and explicit optional-table presence",
+      "passed": true
+    },
+    {
+      "name": "All twelve predecessor runner check expressions retain exact order and bodies",
+      "passed": true
+    },
+    {
+      "name": "New callback declares exactly its eight reviewed capture names",
+      "passed": true
+    },
+    {
+      "name": "Runner preserves all twenty-four original captures before eight additions",
+      "passed": true
+    },
+    {
+      "name": "Runner records exact callback and bridge sources without duplicates",
+      "passed": true
+    },
+    {
+      "name": "Runner imports actual callback and exact capture declaration",
+      "passed": true
+    },
+    {
+      "name": "Installed billing callback runs once after all three original journeys",
+      "passed": true
+    },
+    {
+      "name": "One actual billing completion gate runs after its callback",
+      "passed": true
+    },
+    {
+      "name": "Runner calls its tested completion guard on the nested billing result",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard accepts strict complete output with all files",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses failed result",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses truthy integer result",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses missing passed value",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses missing check list",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses empty check list",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses failed named check",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses truthy integer named check",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses empty check name",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses non-string check name",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses extra check field",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses duplicate named check",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses missing captures",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses missing capture",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses reordered captures",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses duplicate capture",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses foreign capture name",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses non-object NoneType",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses non-object list",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses non-object bool",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses missing capture file",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses empty capture file",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses a directory as capture",
+      "passed": true
+    },
+    {
+      "name": "Actual result guard refuses a capture marked as a symlink",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Owner-Annual-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Owner-Annual-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Owner-Annual-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Owner-Annual-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Public-Monthly-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Public-Monthly-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Public-Monthly-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Public-Monthly-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Public-Annual-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Public-Annual-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Public-Annual-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Public-Annual-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Client-Annual-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Client-Annual-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Actual output guard preserves existing billing capture Hosting-Billing-Options-Client-Annual-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing billing capture bytes stay intact Hosting-Billing-Options-Client-Annual-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator accepts a complete pre-variant projection",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator retains unpriced drafts without converting null to zero",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses missing provider digest",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses unapproved top-level data",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses truthy preparation flag",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses missing counter",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses unknown counter",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses boolean counter",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses negative counter",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses over-bound counter",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses invalid provider digest",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses empty product history",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses empty publication history",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses empty review history",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses empty result history",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses empty retained history",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses mismatched product identity",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses boolean product revision",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses missing canonical product",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses unsupported product cadence",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses boolean product amount",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses negative product amount",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses boolean image revision",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses invalid variant identity",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses invalid image identity",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses mismatched publication identity",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses mismatched review identity",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses mismatched result identity",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses publication count mismatch",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses review count mismatch",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses result count mismatch",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses invalid retained table name",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses invalid retained digest",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses unsorted retained multiset",
+      "passed": true
+    },
+    {
+      "name": "Actual state validator refuses over-bound retained table",
+      "passed": true
+    },
+    {
+      "name": "Actual retention allows additional invoices and publications with unchanged originals",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses lost original table",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses lost repeated original row",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses changed original row",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses lost business audit",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses changed original invoice projection",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses changed original publication fingerprint",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses changed provider IO history",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses additional payment receipt",
+      "passed": true
+    },
+    {
+      "name": "Actual retention refuses additional payment attempt",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion accepts monthly non-leap short month",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion accepts monthly leap short month",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion accepts monthly year boundary",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion accepts annual leap-day clamp",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion accepts annual ordinary date",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses divided monthly equivalent instead of full annual charge",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses monthly cadence on annual selection",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses wrong currency",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses wrong timezone",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses wrong alignment",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses boolean amount",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses additional setup charge",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses boolean zero setup",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses different due offset",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses automatic collection",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses impossible anchor",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses missing anchor",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses missing period",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses boolean period index",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses later period index",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses wrong period start",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses wrong period end",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses wrong payment due date",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses wrong next-period boundary",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses unapproved period field",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses an unsupported requested cadence",
+      "passed": true
+    },
+    {
+      "name": "Actual period assertion refuses a boolean requested amount",
+      "passed": true
+    }
+  ],
+  "original_http_guard_checks": [
+    {
+      "name": "Exact 79 native producer labels are retained",
+      "passed": true
+    },
+    {
+      "name": "Complete synthetic report shape is accepted only as a guard example",
+      "passed": true
+    },
+    {
+      "name": "False outer pass refuses",
+      "passed": true
+    },
+    {
+      "name": "Truthy integer outer pass refuses",
+      "passed": true
+    },
+    {
+      "name": "False named outcome refuses",
+      "passed": true
+    },
+    {
+      "name": "Truthy named integer refuses",
+      "passed": true
+    },
+    {
+      "name": "Missing original assertion refuses",
+      "passed": true
+    },
+    {
+      "name": "Duplicate original assertion refuses",
+      "passed": true
+    },
+    {
+      "name": "Reordered original assertion refuses",
+      "passed": true
+    },
+    {
+      "name": "Error-bearing report refuses",
+      "passed": true
+    },
+    {
+      "name": "Different actual PHP family refuses",
+      "passed": true
+    },
+    {
+      "name": "Missing actual database runtime refuses",
+      "passed": true
+    },
+    {
+      "name": "Duplicate JSON keys refuse",
+      "passed": true
+    },
+    {
+      "name": "Oversized original report refuses",
+      "passed": true
+    },
+    {
+      "name": "Altered producer label count refuses",
+      "passed": true
+    },
+    {
+      "name": "Twelve exact unique capture names retained",
+      "passed": true
+    },
+    {
+      "name": "Full outputs are the exact flat report names",
+      "passed": true
+    },
+    {
+      "name": "Focused outputs retain the separate nested directory",
+      "passed": true
+    },
+    {
+      "name": "Flat setup preserves unrelated evidence",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses hosting-checkout-http-results.json",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original hosting-checkout-http-results.json",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses hosting-checkout-http-progress.txt",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original hosting-checkout-http-progress.txt",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses hosting-checkout-http-commands.json",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original hosting-checkout-http-commands.json",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses hosting-checkout-http-server.log",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original hosting-checkout-http-server.log",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Owner-Publication-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Owner-Publication-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Owner-Publication-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Owner-Publication-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Project-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Project-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Project-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Project-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Review-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Review-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Review-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Review-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Result-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Result-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Result-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Result-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Invoice-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Invoice-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-Invoice-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-Invoice-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-New-Project-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-New-Project-Desktop.png",
+      "passed": true
+    },
+    {
+      "name": "Existing owned output refuses Hosting-Checkout-New-Project-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Collision preserves original Hosting-Checkout-New-Project-Mobile.png",
+      "passed": true
+    },
+    {
+      "name": "Existing web runtime refuses reset",
+      "passed": true
+    }
+  ],
+  "new_acceptance_helper_checks": [
+    {
+      "name": "Installed billing options preserve all189 commands and add one portable producer",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options require one new report and eight exact unique captures",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options preserve all workflow jobs triggers and previous command order",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options use one stdlib guard and retain the installed checkout producer",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options are mandatory in the original packaged result and capture inventory",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source .github/workflows/application-tests.yml",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/controllers/actions.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/controllers/catalog_variants.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/controllers/hosting_catalog.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/controllers/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/controllers/router.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/controllers/support.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/views/catalog_variants.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/views/hosting_catalog.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/admin/views/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/billing/ledger.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_billing.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_checkout.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_checkout_document.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_checkout_storage.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_offer_setup.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_offer_setup_document.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_offer_setup_views.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_offer_views.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_offers.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_offers_context.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/catalog_offers_storage.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/checkout_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/checkout_purchases_views.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/hosting/order_views.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/plans/records.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/providers/catalog_variants.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/providers/catalog_variants_storage.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/providers/inventory.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/providers/plan_catalog.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/app/providers/settings.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/database/migrations/attempts_migrate.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/includes/auth/session.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/includes/layout/hosting_order_links.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/includes/layout/ledger.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/includes/layout/plans.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/includes/layout/recurring_billing.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/includes/layout/service_orders.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/portal/controllers/actions.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/portal/controllers/hosting_checkout.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/portal/controllers/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/portal/controllers/router.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/portal/views/hosting_checkout.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source site/portal/views/hosting_purchases.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/acceptance_artifacts_test.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/browser_acceptance.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/catalog_storefront_checkout_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_billing_options_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_billing_options_wiring.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_catalog_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_catalog_plan_setup_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_catalog_purchase.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_checkout_http_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_checkout_http_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_checkout_http_fixture.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_checkout_http_guards.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_checkout_native.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_purchase_handoff_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_purchase_handoff_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options binds current source tests/hosting_purchase_inbox_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options preserves complete parent source .github/workflows/application-tests.yml",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse modified current source .github/workflows/application-tests.yml",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options preserves complete parent source tests/acceptance_artifacts_test.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse modified current source tests/acceptance_artifacts_test.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options preserves complete parent source tests/hosting_checkout_http_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse modified current source tests/hosting_checkout_http_browser.py",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options preserves complete parent source tests/hosting_checkout_http_fixture.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse modified current source tests/hosting_checkout_http_fixture.php",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse a removed original command",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse an altered original command",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse a substituted predecessor source",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse removing an original report",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options refuse every stale serialized current pin",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options preserves exact original browser reports",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options preserves exact original final reports",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options aggregate requires all264 current reports",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options missing report refuses hosting-billing-options-wiring-results.json",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options failed report refuses hosting-billing-options-wiring-results.json",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options report stays in native-browser hosting-billing-options-wiring-results.json",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options unexpected report refuses",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options private fixture file refuses test-runtime/hosting-checkout-private/provider-master.key",
+      "passed": true
+    },
+    {
+      "name": "Installed billing options private fixture file refuses qa/hosting-checkout-private/provider-master.key",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "No installed application, SQL or release acceptance claimed.",
+    "Original frozen branches/runs preserved; no queue-driven reruns or cancellation.",
+    "No shipping source or installer inventory changed."
+  ],
+  "independent_acceptance_review": {
+    "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-catalog-review\\review.json",
+    "sha256": "003f9ac7ff953d4784c8eb6f1df090cf16d003f2897b4742255e1057ac3cc85d",
+    "review": {
+      "passed": true,
+      "scope": "Independent source/preservation review and inspection of existing reports only; no helper suite rerun, SQL or installed browser execution.",
+      "base": "826eb5dd6807eb8424efc677706d21d07b6748c3",
+      "descriptor": {
+        "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\source-review.json",
+        "sha256": "f2303cc8fb2ea4176d1fba69093d17f30133bdf5f83be7a8ba17cce2840d14f0"
+      },
+      "source_sha256": {
+        ".github/workflows/application-tests.yml": "5602b946fde8d2fdb0e6a852c076947aaa473ed767aad1a4ad0cb4e4c8842ccc",
+        "tools/acceptance-contract.json": "854162a8ed967098c40f1abe5b86a7a9bf9589c430f437d5cf68312cceb63015",
+        "tools/acceptance-reports.json": "659111805951dff4664b89eed30f15669be303a2732574575a909e0f1ff57c05",
+        "tests/acceptance_artifacts_test.py": "d71bda240895561ec8b453a89cea1a9ba7259a1cd9fe8d45f73d128d84e2154e"
+      },
+      "producer_sha256": {
+        "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
+        "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
+        "tests/hosting_billing_options_cases.py": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60",
+        "tests/hosting_billing_options_wiring.py": "1336419d6d453007cad69c6970915464d166c9492869a99812d50adddb0c1c93"
+      },
+      "current_pins": 60,
+      "whole_inverses": {
+        ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
+        "tests/acceptance_artifacts_test.py": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
+        "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
+        "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1"
+      },
+      "repins": 26,
+      "native_commands": 190,
+      "browser_reports": 213,
+      "final_reports": 264,
+      "new_captures": 8,
+      "actual_retained_result": {
+        "path": "C:\\Users\\after\\Documents\\Codex\\2026-10-12\\ok-x20\\work\\installed-billing-options-acceptance-proposal\\helper-run-01\\results.json",
+        "sha256": "0be0495acb750a76d789940f2a59ef78f9ad8627f3208073e1266f63cf5e9caa",
+        "checks": 958,
+        "original_exact_prefix": 871
+      },
+      "checks": [
+        {
+          "name": "Exact final producer descriptor",
+          "passed": true
+        },
+        {
+          "name": "Four applied files match the frozen proposal byte for byte",
+          "passed": true
+        },
+        {
+          "name": "All sixty current source hashes match before predecessor reconstruction",
+          "passed": true
+        },
+        {
+          "name": "Exactly one new portable command and unchanged prior189 recipes in order",
+          "passed": true
+        },
+        {
+          "name": "New command is at the agreed existing native fixture seam",
+          "passed": true
+        },
+        {
+          "name": "Exactly26 explicit current repins restore the whole original contract",
+          "passed": true
+        },
+        {
+          "name": "One mandatory report appended to each registry without changing original order",
+          "passed": true
+        },
+        {
+          "name": "Whole old report registry is exactly recovered",
+          "passed": true
+        },
+        {
+          "name": "Four complete source inverses restore exact826 parent files",
+          "passed": true
+        },
+        {
+          "name": "Workflow preserves every job trigger step command and artifact byte except one additive command",
+          "passed": true
+        },
+        {
+          "name": "Installed HTTP producer remains one original command",
+          "passed": true
+        },
+        {
+          "name": "All original helper assertion bodies and execution order remain byte-identical under the wrapper",
+          "passed": true
+        },
+        {
+          "name": "Actual current-source validation precedes any predecessor read substitution",
+          "passed": true
+        },
+        {
+          "name": "Predecessor execution is scoped and restores Path readers before new checks",
+          "passed": true
+        },
+        {
+          "name": "Eight new captures are exact and distinct",
+          "passed": true
+        },
+        {
+          "name": "Actual final helper report is the retained958-pass result",
+          "passed": true
+        },
+        {
+          "name": "All871 previous outcome objects and order are exact prefix",
+          "passed": true
+        },
+        {
+          "name": "Retained actual outcomes cover missing failed unexpected reports and altered historical gates",
+          "passed": true
+        },
+        {
+          "name": "Portable actual runner output probes are separately passed128",
+          "passed": true
+        }
+      ],
+      "findings": [],
+      "review_notes": [
+        "New report is owned by native-browser and must pass aggregation; no prior report is omitted or reordered.",
+        "The current source hashes and whole inverse checks execute before historical Path projections. All original helper bytes remain intact, and their871 actual result objects form the exact final prefix.",
+        "Runner output completion requires strict boolean outcomes and exact capture inventory/files; the separate128 portable outcomes execute the actual guard and case helper ASTs.",
+        "The new checkout callback remains after the original purchase inbox. Original callback files and24 original capture names remain unchanged; eight new captures require later actual installed execution and image inspection."
+      ]
+    }
+  },
+  "staging_note": "Initial exact-byte staging guard stopped on Windows CRLF in the two new JSON receipts; normalized those receipt files to LF, without changing source or report content. No commit or push occurred before correction."
+}

@@ -1,3 +1,122 @@
+## 2026-10-19 — installed monthly and annual purchase coverage
+
+Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
+
+## 2026-10-19 — monthly and annual hosting plan browsing
+
+Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](TWENTYI_HOSTING_BILLING_SELECTOR.md).
+
+Root owns UI, documentation, packaging and integration; Catalog owns the read service, Domains native coverage and acceptance binding, and VPS the modeled browser journey and independent review. Local portable/model checks and packaging are recorded separately from pending Linux SQL, installed application, upgrade and release gates. The initial extracted-fixture dependency failure and browser harness failures remain retained. Published 1.25.0 and the live site are unchanged. Devin retains non-20i/licensing.
+
+Preserve the separate frozen directory-listing source `b0fe332f391f5586d1a3978e9ae8f21a0605bfba` ([PR246](https://github.com/afterburn25/Cajun_Web/pull/246)) and original queued runs. Next: inspect this increment's first exact-source full run, resolve actual failures, integrate accepted branches sequentially and complete combined release verification. Queued work is not acceptance; no queue-driven restart or cancellation.
+
+## 2026-10-19 — separate monthly and annual hosting offers
+
+Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](TWENTYI_CATALOG_BILLING_OPTIONS.md).
+
+Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
+
+## 2026-10-18 — imported-hosting checkout guidance correction
+
+The checkout successor aligns owner forms with the existing verified-receipt policy while retaining legacy manual fulfillment. The regression covers the real agreement/order/provider renderers; installed purchase navigation remains a required gate. [Details](TWENTYI_HOSTING_PURCHASE_INBOX.md#checkout-fulfillment-controls). This fixes a user-visible dead end in the existing hosting purchase journey; it does not complete the cloud catalog, provider image import or whole 20i roadmap.
+
+## 2026-10-19 — installed hosting purchase navigation
+
+The existing hosting purchase inbox gains an installed owner/client navigation continuation, preserving the preceding five purchases and their original billing and setup records. [Verification scope](TWENTYI_HOSTING_PURCHASE_INBOX.md#installed-purchase-navigation) separates portable checks from pending Linux database, authenticated browser and release acceptance. Full cloud catalog, automatic provider images, remote access and the broader project remain open.
+
+## 2026-10-18 — hosting purchase history and setup handoff
+
+Continue on `codex/twentyi-hosting-purchase-inbox` from exact `0ddbd23d6489e2b9445304123e214d0a2e188f31` (draft PR228). The enclosing commit, **Connect hosting purchases to existing setup**, adds owner and primary-client purchase lists with original invoice/project/agreement links and separate local setup status. The existing owner order form selects the original checkout invoice even after 51 newer same-price invoices; legacy invoice selection is unchanged. No new schema, POST action, provider request or payment writer is added. Actual-source modeled checks and syntax pass locally; native Linux SQL, installed navigation, combined upgrade and final release acceptance remain pending. The additive workflows preserve predecessor commands, reports and captures. Published 1.25.0 and original queued runs remain unchanged. The first local test harness incorrectly tried loading built-in Windows modules dynamically; its failed output is preserved and the harness now uses plain minimal PHP. [Behavior, evidence and remaining gates](TWENTYI_HOSTING_PURCHASE_INBOX.md).
+
+## 2026-10-18 — guided imported hosting plan setup
+
+Packaging follow-up from `787c7f3225dd21757d5fd3a6ec9febb86230d905`, draft [PR228](https://github.com/afterburn25/Cajun_Web/pull/228): the first clean local build refused two shipping files whose Windows working copies had mixed line endings. Their application content already matched Git exactly after LF normalization. Restored only those two local copies to their committed bytes and refreshed the two installer hashes; no feature logic or acceptance source changed. The enclosing commit is **Align installer inventory with committed storefront bytes**. Original source/runs and the failed build receipt remain preserved. Byte comparison verifies all 2,928 non-inventory shipping files against Git and every generated hash; all 21 feature/test pins are unchanged and documentation checks pass. Recheck the exact committed package and first successor CI results before integration or release.
+
+Continue from exact catalog storefront source `460eebfb5d8d87c3816576aeb7289bfa90478668` on `codex/twentyi-imported-plan-setup`. The enclosing commit, **Connect imported hosting products to plan setup**, adds the owner form and atomic matching-plan/activation/provider-mapping composition. Saved product pricing and imported type/profile remain authoritative; exact retries preserve the original records and expiry. The existing offer preview, separate publication and invoice checkout remain in place. [Behavior, verification and remaining gates](TWENTYI_IMPORTED_PLAN_SETUP.md).
+
+Applied-source portable/model checks and local synthetic-data Chromium layout checks pass. The independent review found and corrected a form-fallback database re-read; the original proposal remains preserved externally. Linux native transactions, installed HTTP/browser execution, supported upgrades and final release acceptance remain pending. Published1.25.0 and original queued runs are unchanged. Complete VPS catalog discovery, automatic provider artwork, remote SSH and whole-project completion remain open.
+
+## 2026-10-18 — installed catalog storefront test coverage
+
+Two packaged continuations now require the current-success import entry, fixed-window batches with original artwork, and public plan selection through invited-client login to one unpaid invoice. Eight installed captures are declared; actual Linux execution remains pending. Existing reports, native recipes and workflows remain intact. [Scope and outstanding gates](TWENTYI_CATALOG_STOREFRONT.md#installed-storefront-continuations). Complete provider/VPS catalogs and automatic artwork remain unverified; this does not establish whole-project completion.
+
+## 2026-10-18 — catalog storefront source integration
+
+Current saved-connection success now links to catalog import; fixed batches preserve existing edits and support safe retries. Shared Hosting compares published prices, terms and local images, with exact checkout selection retained through login. The preserved first-invoice branch is normally integrated; VPS catalog/provider artwork remain unverified and combined runtime/release acceptance remains pending. [Scope and checks](TWENTYI_CATALOG_STOREFRONT.md).
+
+## 2026-10-18 — complete captured-image inventory and StackCP correction
+
+All 340 original candidate captured extents are reviewed with explicit overlay/scrolling limitations. A [test-only StackCP capture correction](RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction) completes the consolidated capture changes; fresh application execution and actual corrected images remain required. Full20i, cloud catalog, provider artwork and hosting commerce are still unfinished. Use the retained owner API reference without requesting it again.
+
+## 2026-10-18 — further candidate image review
+
+Direct hosting catalog release verification continues with115 additional finite browser-image reviews. Five StackCP section captures still need unobscured heading evidence; original full-application runs remain queued. [Detailed evidence](RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18). Full20i, automatic provider images, cloud catalog imports and hosting commerce remain unfinished. The owner reference is retained; no repeated documentation request is needed.
+
+## 2026-10-18 — direct catalog release verification continues
+
+Candidate f67 passes the original build, Apache, native/browser and recovery partitions; final aggregation and other runtime gates remain pending. Actual image review identified fresh-root reveal and imported-image card capture gaps. The separate [capture-readiness correction](RELEASE_CAPTURE_READINESS_1.26.0.md) changes tests only and requires fresh application execution. Full catalog coverage, provider artwork, cloud products and hosting commerce remain unfinished; 1.25.0 is still the latest published verified release.
+
+## 2026-10-18 — hosting acceptance correction
+
+The first-invoice branch has a reviewed recovery startup correction with six passing portable regressions and 466 preserved artifact-helper outcomes. Two mandatory Linux socket regressions and corrected exact-source application/browser acceptance remain pending. The historical 512 native matrix supplies bounded successful evidence, while its whole run remains failed. [Exact scope and next checks](TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes). This does not complete checkout, full 20i, catalog images or a new release.
+
+## 2026-10-18 — packaged checkout acceptance prepared
+
+Checkout implementation now has truthful linked agreement/billing histories and prepared packaged HTTP/Chromium acceptance, including existing/new projects, first unpaid invoice now, retries and denied authority. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Local 58-case renderer checks pass; the real Linux/browser, screenshot review, supported upgrade/recovery and release gates remain open. Full 20i, cloud catalog completeness and automatic provider images are not claimed complete.
+
+## 2026-10-18 — checkout implementation joined for acceptance
+
+Owner opt-in, atomic first unpaid invoice, owned project choice, client review/result screens, exact replay and verified-payment/mapping policy are integrated on the development branch. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Pure/model/render checks pass; first native Linux transaction acceptance, real packaged browser journey, full-suite integration, upgrades and release verification remain pending. No published version or live website changed.
+
+## 2026-10-18 — recurring checkout attribution and invoice origin
+
+Recurring checkout storage passes66 isolated native checks, following58 subscription migration/history checks. [Exact scope](TWENTYI_HOSTING_FIRST_INVOICE.md). The next increment composes the actual client confirmation transaction, then connects owner/client pages and verified-payment-only fulfillment. Same-clock purchase, supported runtime/browser, upgrade and release acceptance remain outstanding. Synthetic retained rows do not establish a usable purchase flow.
+
+## 2026-10-18 — native subscription attribution
+
+Checkout subscription migration and stored-history validation pass58 isolated local MariaDB checks. [Scope and limits](TWENTYI_HOSTING_FIRST_INVOICE.md). Remaining work includes recurring/invoice native origins, atomic checkout creation, owner/client pages, complete same-clock and supported-runtime acceptance, and release verification. Synthetic retained checkout rows do not establish a usable purchase flow.
+
+## 2026-10-18 — first-period billing model
+
+Pure checkout subscriptions and recurring schedules now retain the client's exact agreement and begin the first billing period on confirmation. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Native attribution, invoice origins, atomic writes, owner/client pages and same-clock acceptance remain unfinished. The legacy future-start flow and existing release gates remain intact.
+
+## 2026-10-18 — subscription consent retained
+
+The [first-invoice branch](TWENTYI_HOSTING_FIRST_INVOICE.md) now includes pure client-attributed subscriptions with exact retained checkout consent and an explicit automatic local effect. Database migrations, native composition, recurring/invoice origin support, screens and same-clock acceptance remain open. This checkpoint does not complete checkout or change the published release.
+
+## 2026-10-18 — hosting checkout consent groundwork
+
+Immediate first invoice is implementing on `codex/twentyi-hosting-first-invoice`, separate from the preserved full-acceptance branch and 1.26 catalog release candidate. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md) includes reviewed pure commercial confirmation documents. Client-attributed storage, atomic first-invoice creation, actual screens, same-clock native/browser tests and release acceptance remain unfinished. This does not complete hosting checkout, automatic image import, cloud products or the full20i roadmap.
+
+## Successor follow-through — full hosting acceptance
+
+The separate `codex/twentyi-hosting-full-acceptance` branch integrates reviewed offer/recovery and eventual purchase/client-access tests into the existing full suite, plus a genuine published1.25 upgrade continuation. It is development preparation awaiting original focused outcomes and combined runtime/visual acceptance. [Scope and remaining gates](TWENTYI_HOSTING_FULL_ACCEPTANCE.md). Complete cloud imports, automatic provider images and immediate first-payment checkout remain unfinished.
+
+## Successor follow-through — joined purchase verification
+
+The portal-handoff branch now prepares an actual-wrapper eventual purchase test plus packaged owner re-link and client Hosting isolation. Local checks are separate from pending Linux SQL/clock, HTTP/Chromium and visual acceptance. Immediate first-payment checkout, complete cloud catalog coverage and automatic provider images remain unfinished. [Test scope](TWENTYI_HOSTING_CLIENT_ACCESS.md#joined-purchase-and-browser-continuation).
+
+## Successor follow-through — original package continuity
+
+Catalog-origin order preparation and retained service links now enforce the original publication mapping on the separate portal handoff branch. The owner screen follows that mapping and preserves the original project link. Source/model checks pass; actual joined SQL/browser acceptance remains pending. Current recurring billing also requires a future activation date and invoices only after that period starts, so immediate first-payment checkout remains unfinished. See [behavior and limitations](TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
+## Successor follow-through — client hosting access
+
+The separate hosting portal handoff branch connects confirmed orders to the existing owner package-assignment screen with saved-state guidance and exact package navigation. Local renderer/projection checks pass; this does not complete the joined offer, payment, fulfillment and client service-control path. See [remaining acceptance](TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
+## Successor in progress — hosting offers and client requests
+
+The separate `codex/twentyi-hosting-commerce` branch connects imported shared-hosting products to existing service agreements through owner/public/client screens under development. [Scope and remaining acceptance](TWENTYI_HOSTING_OFFERS.md). Document and isolated existing-agreement SQL checks pass; combined hosting SQL, public/admin/client browser behavior and the complete payment/order/fulfillment path remain unaccepted. Cloud catalog and provider image contracts remain unresolved. The 1.26 release candidate stays separate.
+
+The successor also guards owner file recovery against published or inconsistent hosting history. Modeled regression passes; real SQL/filesystem and staged HTTP acceptance remains pending. See [recovery scope](TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
+## Current increment —direct hosting catalog
+
+The direct hosting catalog import passes its focused four-way database matrix. Browser and1.26 release/upgrade acceptance remain pending; see [scope](RELEASE_SCOPE_1.26.0.md). Complete20i, cloud catalog, provider prices/images and hosting publication remain unfinished.
+
+## 2026-10-18 — hosting catalog candidate, acceptance pending
+
+The [direct hosting catalog increment](TWENTYI_HOSTING_CATALOG.md) adds an explicit owner refresh and local draft import for returned IDs/names, including types absent from installed inventory. It preserves cross-source draft identity and original provenance. Source implementation does not complete native/browser or release acceptance, complete product coverage, provider prices/images, cloud imports or hosting publication. The original cloud-only check returned null; no catalog meaning is inferred. Published1.25.0 remains the latest verified release.
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Evidence](evidence/ci-remaining-pure-pr-filters.json). This scheduling correction completes no product feature. PR239's cleanup checkpoint is merged, with103 terminal verifications still pending; continue original20i acceptance after the current CI-only integration.

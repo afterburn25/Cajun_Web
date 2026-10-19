@@ -10,6 +10,7 @@ require_once CWP_CODE_ROOT.'/app/marketing/growth.php';
 require_once CWP_CODE_ROOT.'/app/marketing/comparisons.php';
 require_once CWP_CODE_ROOT.'/app/portfolio/browse.php';
 $page = is_string($_GET['page'] ?? null) ? $_GET['page'] : 'home';
+if ($page==='shared-hosting') $page='hosting';
 $allowed = ['home','about','services','hosting','products','work','project','process','contact','privacy','thanks'];
 if($page==='pay'){require CWP_CODE_ROOT.'/pages/pay/index.php';exit;}
 if(in_array($page,growth_routes(),true)){require CWP_CODE_ROOT.'/pages/marketing/controller.php';exit;}

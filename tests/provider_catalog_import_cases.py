@@ -136,6 +136,16 @@ def run_browser(env, browser):
         expect(card.locator('img')).to_be_visible()
         check('Imported draft image page has no horizontal overflow ' + name, page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
         check('Imported draft image Save control fits ' + name, card.get_by_role('button', name='Save image', exact=True).evaluate("b => {const r=b.getBoundingClientRect(),f=b.closest('form').getBoundingClientRect(),t=document.createRange();t.selectNodeContents(b);const x=t.getBoundingClientRect();return r.left>=f.left-1&&r.right<=f.right+1&&x.left>=r.left-1&&x.right<=r.right+1;}"))
+        save = card.get_by_role('button', name='Save image', exact=True)
+        save.evaluate("b => b.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'})")
+        save.click(trial=True)  # Actionability only; multipart persistence is exercised above.
+        check('Imported draft image Save control is fully reachable ' + name, save.evaluate("b => {const r=b.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight&&[[.5,.5],[.1,.1],[.9,.1],[.1,.9],[.9,.9]].every(([x,y])=>{const h=document.elementFromPoint(r.left+r.width*x,r.top+r.height*y);return h===b||b.contains(h);});}"))
+        # Preserve320x900 interaction checks; give this section-only capture room
+        # for the existing108px scroll padding and mobile sticky header.
+        if name == 'Mobile':
+            page.set_viewport_size({'width': width, 'height': 1100})
+        card.scroll_into_view_if_needed()
+        check('Imported draft image capture contains the whole card ' + name, card.evaluate("c => {const r=c.getBoundingClientRect(),h=document.querySelector('.admin-topbar').getBoundingClientRect();return r.top>=Math.max(0,h.bottom)&&r.bottom<=innerHeight;}"))
         card.screenshot(path=str(qa / ('20i-Product-Import-' + name + '.png')))
     context.close()
     check('Catalog imports and local images send no provider request', env['provider_server'].calls == calls)

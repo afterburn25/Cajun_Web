@@ -1,3 +1,12 @@
+## Hosting development integration — main trigger filters only
+
+The normal merge of main `e397d9a6e293850e8dff61a593e3ba39ee178400` into development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` preserves the full hosting acceptance workflow, all test sources and both published-baseline contracts. Main's ten focused workflow changes affect admission paths only; all job bodies, matrices, commands, artifacts, permissions and timeouts remain unchanged. The retained PR218 validation below concerns those triggers, not application acceptance.
+
+This development merge is separate from the f67 release-candidate merge to main. Preserve original 512/10142 focused evidence and the [remaining hosting release gates](TWENTYI_HOSTING_FULL_ACCEPTANCE.md), including a genuine published 1.26 baseline when it exists. Do not replace that future gate with the supplemental real 1.25 upgrade. Published1.25 remains immutable; this merge provides no new runtime, screenshot or publication result.
+
+## Development candidate —1.26.0
+
+The [direct hosting catalog increment](RELEASE_SCOPE_1.26.0.md) is under acceptance; it is not published. The [candidate update guide](MIGRATION-INSTRUCTIONS-1.26.0.md) uses the new1.26 staging/recovery paths and preserves existing settings, products and private files. Published1.25.0 remains the current verified download. Earlier1.25 instructions below describe that retained release.
 ## 2026-10-19 — component filters and verified queue cleanup
 
 Service-plan and staff-invitation workflows now filter pull requests using their actual source, test and workflow dependencies. Only 13 trigger lines are added; every existing job, command, matrix, push/manual trigger and release gate remains unchanged. This avoids four unrelated jobs per documentation-only PR after integration; it does not cancel existing runs. [Source, dependency and independent review evidence](evidence/ci-final-component-pr-filters.json). Service plans deliberately include `site/**` plus canonical service-plan, estimator and review-request families, the test family and own workflow. Staff invitations include access/invitation sources and tests, covering schemas, the same-file worker and the full Docker context. Future inputs outside these roots require matching filter changes.

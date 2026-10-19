@@ -1,3 +1,7 @@
+## Development candidate —1.26.0
+
+The [direct hosting catalog increment](RELEASE_SCOPE_1.26.0.md) is under acceptance; it is not published. The [candidate update guide](MIGRATION-INSTRUCTIONS-1.26.0.md) uses the new1.26 staging/recovery paths and preserves existing settings, products and private files. Published1.25.0 remains the current verified download. Earlier1.25 instructions below describe that retained release.
+
 ## Verified publication — 1.25.0
 
 [CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.

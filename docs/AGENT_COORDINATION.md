@@ -1,4 +1,24 @@
 # Current coordination - Devin sole-owner execution
+## 2026-10-19 — installed monthly and annual purchase coverage
+
+Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
+
+Root owns the bridge, existing runner and continuity; VPS owns the new browser callback, Catalog the portable guards and independent source review, and Domains additive acceptance wiring. Devin remains on non20i. No worker changes another worker's files or frozen Git heads.
+
+## 2026-10-19 — monthly and annual hosting plan browsing
+
+Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](TWENTYI_HOSTING_BILLING_SELECTOR.md).
+
+Root owns UI, documentation, packaging and integration; Catalog owns the read service, Domains native coverage and acceptance binding, and VPS the modeled browser journey and independent review. Local portable/model checks and packaging are recorded separately from pending Linux SQL, installed application, upgrade and release gates. The initial extracted-fixture dependency failure and browser harness failures remain retained. Published 1.25.0 and the live site are unchanged. Devin retains non-20i/licensing.
+
+Preserve the separate frozen directory-listing source `b0fe332f391f5586d1a3978e9ae8f21a0605bfba` ([PR246](https://github.com/afterburn25/Cajun_Web/pull/246)) and original queued runs. Next: inspect this increment's first exact-source full run, resolve actual failures, integrate accepted branches sequentially and complete combined release verification. Queued work is not acceptance; no queue-driven restart or cancellation.
+
+## 2026-10-19 — separate monthly and annual hosting offers
+
+Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](TWENTYI_CATALOG_BILLING_OPTIONS.md).
+
+Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
+## 2026-10-19 — remaining isolated pure-suite PR filters
 
 ## Owner override - 2026-10-19
 

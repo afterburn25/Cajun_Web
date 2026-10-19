@@ -6,6 +6,7 @@ require_once CWP_CODE_ROOT.'/app/hosting/orders.php';
 require_once CWP_CODE_ROOT.'/app/hosting/records.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/plan_catalog.php';
+require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers_storage.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_order_links_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/hosting_order_links_migrate.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,HostingPackage};
@@ -41,6 +42,9 @@ function hosting_order_links_validate(array $row,ServiceOrderDocument $order):ar
         service_plans_keys($b,[$b['format']===2?'catalog':'format',...($b['format']===2?['format']:[]),'order_id','order_revision','order_sha256','account_id','client_id','created_by','created_at','profile_id','profile_revision','credential_sha256','package','request','commercial']);
         if(service_plans_json($b)!==$row['binding_json']||!in_array($b['format'],[1,2],true)||$b['order_id']!==$row['id']||$b['order_id']!==$order->data()['id']||$b['account_id']!==$row['account_id']||$b['client_id']!==(int)$row['client_id']||$b['client_id']!==$order->data()['client_id']||$b['created_by']!==(int)$row['created_by']||$b['created_at']!==(int)$row['created_epoch']||$b['profile_id']!==$row['profile_id']||$b['profile_revision']!==(int)$row['profile_revision'])throw new RuntimeException('Binding identity differs.');
         service_orders_hash($b['credential_sha256']);
+        // Historical reads retain the accepted offer mapping, without requiring present eligibility.
+        $origin=hosting_catalog_agreement_origin($order->data()['agreement']['id'],$order->data()['client_id']);
+        if($origin!==null && (($b['catalog']['id']??null)!==$origin['mapping_id'] || !is_string($b['catalog']['sha256']??null) || !hash_equals($origin['mapping_sha256'],$b['catalog']['sha256'])))throw new RuntimeException('Original hosting offer mapping differs.');
         $prefix=hosting_order_links_prefix($order,$b['order_revision'],$b['order_sha256']);$pd=$prefix->data();
         if($pd['events'][array_key_last($pd['events'])]['at']>$b['created_at'])throw new RuntimeException('Binding predates consent.');
         service_plans_keys($b['package'],['sku','label','provider_type','region','limits']);$p=$b['package'];
@@ -48,6 +52,7 @@ function hosting_order_links_validate(array $row,ServiceOrderDocument $order):ar
         if($b['request']!==hosting_order_links_request($prefix,$package,$b['request']['params']['resellerId']))throw new RuntimeException('Saved provider request differs.');
         service_plans_keys($b['commercial'],['basis','payment_review_sha256','manual_event_id']);
         service_orders_hash($b['commercial']['payment_review_sha256']);
+        if(($origin['requires_verified_payment']??false)===true && ($b['commercial']['basis']!=='verified-payment'||$b['commercial']['manual_event_id']!==null))throw new RuntimeException('Checkout association requires its original verified-payment snapshot.');
         $manual=$prefix->manualPolicy($b['created_at']);
         if(!in_array($b['commercial']['basis'],['verified-payment','owner-manual-policy'],true)||($b['commercial']['basis']==='owner-manual-policy'&&($manual===null||$b['commercial']['manual_event_id']!==$manual['event_id']))||($b['commercial']['basis']==='verified-payment'&&$b['commercial']['manual_event_id']!==null))throw new RuntimeException('Commercial snapshot differs.');
         if($b['format']===2){
@@ -74,9 +79,12 @@ function hosting_order_links_create(string $orderId,int $client,int $revision,st
         $order=service_orders_validate(service_orders_row($orderId));
         if($order->data()['client_id']!==$client)throw new RuntimeException('Hosting order unavailable.');
         $prefix=hosting_order_links_prefix($order,$revision,$orderHash);
+        $origin=hosting_catalog_agreement_origin($order->data()['agreement']['id'],$client);
+        if($origin!==null && $catalogId!==$origin['mapping_id'])throw new RuntimeException('Use the original hosting offer mapping. A different setup needs a new offer and client agreement.');
         $catalog=null;
         if($catalogId!==null){
             $catalog=provider_plan_catalog_lookup($catalogId);provider_plan_catalog_order($catalog,$prefix,true);
+            if($origin!==null && !hash_equals($origin['mapping_sha256'],$catalog['sha256']))throw new RuntimeException('The original hosting offer mapping needs recovery.');
             if($catalog['profile_id']!==$profileId||$catalog['profile_revision']!==$profileRevision||$catalog['configuration']['reseller_id']!==$reseller||provider_plan_catalog_package($catalog['configuration'],$orderId)!=$package)throw new RuntimeException('Reload the exact provider catalog selection.');
         }
         $request=hosting_order_links_request($prefix,$package,$reseller);$pd=json_decode(HostingJournal::create($accountId,$package,'client:'.$client,0)->json(),true)['package'];

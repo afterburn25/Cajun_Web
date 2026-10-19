@@ -1,3 +1,35 @@
+## Hosting acceptance successor —2026-10-18
+
+The separate `codex/twentyi-hosting-full-acceptance` branch integrates full-suite hosting and real published1.25 upgrade tests. [Current scope](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and current status distinguish locally verified preparation from pending runtime/release acceptance. Original10142/512/f67 sources and runs stay intact; published1.25 remains immutable.
+
+## Current development candidate —2026-10-18
+
+Version1.26.0 is being assembled on `codex/twentyi-direct-hosting-catalog`; it is not published. See [candidate scope](docs/RELEASE_SCOPE_1.26.0.md), [current status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md). Published1.25.0 remains immutable and available. Native feature checks do not replace the candidate's remaining browser, upgrade, full-runtime and release/download verification.
+
+## Current release instructions — 2026-10-18
+
+[CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.
+
+The release freeze condition is satisfied. Codex resumes the remaining 20i roadmap on separate reviewed branches; Devin continues the separate non-20i assignment. Existing operation-specific authorization and live-operation gates remain. Complete 20i, automatic provider product/image import, remote StackCP login and SSH are not claimed complete.
+
+Read [publication and evidence](docs/RELEASE_1.25.0_PUBLICATION.md), [status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md) before acting. Do not rerun completed candidate/main acceptance or rebuild/replace the released 1.25.0 bytes merely because a historical block says pending. Documentation follow-ups do not change the immutable release source.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
+## Owner additions — 2026-10-17
+
+The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](docs/NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the [product-import lane](docs/TWENTYI_PRODUCT_IMPORT.md) now has a reviewed hosting-draft/local-image subset, with native acceptance and full catalog coverage pending. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.
+
+## Owner release priority — 2026-10-16
+
+Freeze new 20i capabilities and nonessential refactors until CajunWebPro 1.25.0 is published and every downloaded release asset is verified. The owner explicitly requires the mature increment now, without waiting for complete20i. Codex root owns `codex/release-1.25.0`, started from main `35d8fb7e`, and one normal merge of the mature `3fa72d7b` history. [Frozen scope](docs/RELEASE_SCOPE_1.25.0.md) and [integration map](docs/RELEASE_1.25_INTEGRATION_MAP.md) distinguish included capabilities, dependencies and held work.
+
+Only integration, release-blocking corrections, migrations, authorization, tests, browser fixes, packaging and release documentation proceed in this lane. Preserve unfinished branches and original failed evidence. Devin's remaining non-20i assignment continues on separate branches; do not import unaccepted proposals opportunistically. Root coordinates shared seams and release acceptance. Published 1.24.0 stays immutable. No live deployment is authorized. Resume remaining20i after the verified incremental release.
+
+## Earlier owner allocation — retained context
+
+**Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is active. Devin [acknowledged the assignment and reported work](https://github.com/afterburn25/Cajun_Web/issues/157#issuecomment-6217621738). Licensing PR #159, tickets #158 and project progress #160 are open; their proposed changes require independent acceptance and sequential integration. Licensing159 has [actionable review findings](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878): unsupported sole-license invoice association, unmarked populated legacy upgrade, and stale installer inventory.
+
 # Working agreement for CajunWebPro
 
 ## Current owner directive - 2026-10-19

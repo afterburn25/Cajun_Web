@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "passed": true,
+  "created_utc": "2026-10-19T09:17:52.390872+00:00",
+  "scope": "Independent read-only verification of newly completed original hosted final default-runtime evidence. No application rerun, artifact replacement, visual re-review or release approval.",
+  "identity": {
+    "attempt": "1",
+    "ci_sha": "ee131c1f65ecf2fe3ac8faaf55d04485d8edec71",
+    "contract_sha256": "6135fbf40c42b6977f6d9afe3f4f56ed4efdc83902a99039b4a6b815eb1da432",
+    "environment": {
+      "database": "mariadb-10.11",
+      "php": "8.3"
+    },
+    "helper_sha256": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+    "reports_sha256": "30b4e57c59717afe3e8f528ad93db7db7a84606b1440b3c7f9941345a248e477",
+    "repository": "afterburn25/Cajun_Web",
+    "run_id": "39098482550",
+    "schema": 1,
+    "source_sha": "f67b1631683b29096dd8ec1daee405e104dc0b83",
+    "tree": "a24876428ada7d4f7c764d28650d208b8eddf8f2",
+    "workflow_sha256": "b0c5042d6e5dc3d5660f19f64ec0118c59349b16b0a413c92af5291fe9d4d50b"
+  },
+  "run_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39098482550",
+  "final_job_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39098482550/job/117675017917",
+  "final_job": {
+    "id": 117675017917,
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-19T08:49:54Z",
+    "completed_at": "2026-10-19T08:50:43Z",
+    "runner_id": 1000079542
+  },
+  "artifact": {
+    "id": 12174160354,
+    "name": "application-acceptance-ee131c1f65ecf2fe3ac8faaf55d04485d8edec71",
+    "path": "D:\\CodexArtifacts\\Cajun_Web\\catalog126-2026-10-18\\default-hosted-final-39098482550\\application-acceptance.zip",
+    "size": 409906374,
+    "sha256": "473fdd216770f3d4e32be4dee17e258fbc0c5e8417d5d1200daee1b5a48eec6f"
+  },
+  "hosted_aggregate": {
+    "path": "D:\\CodexArtifacts\\Cajun_Web\\catalog126-2026-10-18\\default-hosted-final-39098482550\\parallel-acceptance.json",
+    "sha256": "0b0aa2a1e1c76218675e2bfe8e1721298f6194711c957cd0f7074e8d4239ab4a",
+    "mode": "full",
+    "complete": true,
+    "full_partition_checks_passed": true,
+    "errors": []
+  },
+  "job_bindings": {
+    "apache": {
+      "artifact_id": "12133168033",
+      "result": "success",
+      "sha256": "99bf9d29c3f8c33ec5dbabb69a90291aca8c72213b5f4036ee9f657df166a941"
+    },
+    "build": {
+      "artifact_id": "12126748571",
+      "input_sha256": "6acce2a7660e1c2aa535ee01c49ee5ce9bf2ce1a2286a10703f22cc99e574e8c",
+      "result": "success",
+      "sha256": "e8919a447dac92bc393a198dd8e64ff69299d077dde0327f6c4eb6f473282604"
+    },
+    "native-browser": {
+      "artifact_id": "12136666720",
+      "checkpoint_digest": "de20b6ecb2802f226ca5ec5f414c5b7f94bf69b8d659a839f41e0a09a5bbb149",
+      "checkpoint_id": "12136592269",
+      "result": "success",
+      "sha256": "9732cfe30be0804b3214f38dc2eb7c8fe9fad8d481852244098234639a9107c7"
+    },
+    "recovery": {
+      "artifact_id": "12133352353",
+      "result": "success",
+      "sha256": "5c7e50cd7a357c7aac812f6926ee3aaf05cde605832fda375b1d24fac34686fd"
+    }
+  },
+  "counts": {
+    "archive_members": 762,
+    "original_partition_union_members": 761,
+    "required_reports": 216,
+    "named_executions": 28873,
+    "sum_per_report_unique_names": 28287,
+    "png_members": 340,
+    "new_visual_reviews": 0
+  },
+  "runtime": {
+    "build": {
+      "selected": {
+        "php": "8.3",
+        "database": "mariadb-10.11"
+      },
+      "actual_cli": "8.3.6",
+      "actual_database": null
+    },
+    "native": {
+      "selected": {
+        "php": "8.3",
+        "database": "mariadb-10.11"
+      },
+      "actual_cli": "8.3.6",
+      "actual_database": "10.11.19-MariaDB-ubu2204"
+    },
+    "apache": {
+      "selected": {
+        "php": "8.3",
+        "database": "mariadb-10.11"
+      },
+      "actual_cli": "8.3.6",
+      "actual_database": "10.11.19-MariaDB-ubu2204"
+    },
+    "recovery": {
+      "selected": {
+        "php": "8.3",
+        "database": "mariadb-10.11"
+      },
+      "actual_cli": "8.3.6",
+      "actual_database": null
+    }
+  },
+  "packages": [
+    {
+      "name": "CajunWebPro-1.26.0-FULL-PROJECT.zip",
+      "sha256": "d463ec4e5e80b88c1a9aba413039e1508b9bcb3cdf2a427b9e572c7bd61a9e3e",
+      "size": 42227830
+    },
+    {
+      "name": "CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip",
+      "sha256": "3d4feb63bcd104a18d1cb462a369f33448e4b3759f64745135b0ef163e813b71",
+      "size": 15887300
+    },
+    {
+      "name": "CajunWebPro-1.26.0-UPDATE.zip",
+      "sha256": "d24f48a9a844ce4f92c9f7b4fc4576a230cc0725994064e39a40f96fbab0b1b9",
+      "size": 19948535
+    }
+  ],
+  "limits": [
+    "The GitHub API envelope digest and hosted aggregate receipt are verified; no separate cryptographic artifact-attestation claim is made.",
+    "Existing partition outer ZIPs are not downloaded or rehashed. Their small manifest bytes match the new hosted bindings, and every final member is rehashed against those inventories.",
+    "This default PHP8.3/MariaDB10.11 result does not certify the four original PHP8.2/PHP8.4 matrix final jobs, which remained queued at observation.",
+    "Known f67 capture visibility defects and the later capture-corrected source acceptance remain open; no screenshot gains new visual credit here.",
+    "Normal integration, exact-main acceptance, release packaging/download verification and publication remain separate decisions."
+  ],
+  "independent_review": {
+    "path": "D:\\CodexArtifacts\\Cajun_Web\\catalog126-2026-10-18\\default-hosted-final-39098482550\\review.json",
+    "sha256": "60caf41ba0d96eca78936e37e6df27f2711e9b3ff3503ae0a4c53275e99b58f3",
+    "named_checks": 1029
+  },
+  "root_checks": [
+    {
+      "name": "Independent final receipt matches frozen SHA256",
+      "passed": true
+    },
+    {
+      "name": "All independent named verification outcomes pass",
+      "passed": true
+    },
+    {
+      "name": "Hosted aggregate is complete full acceptance",
+      "passed": true
+    },
+    {
+      "name": "Actual hosted aggregate bytes match receipt",
+      "passed": true
+    },
+    {
+      "name": "Report and member inventories agree",
+      "passed": true
+    },
+    {
+      "name": "Actual CI merge and candidate whole trees equal",
+      "passed": true
+    }
+  ]
+}

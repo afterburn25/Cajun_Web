@@ -28,6 +28,10 @@ if(array_key_exists('forwarding',$_GET)||(is_string($_POST['action']??null)&&str
 if(array_key_exists('domain_renewals',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'domain_renewal_')))header('Cache-Control: no-store, private');
 if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/hosting_catalog.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/hosting_purchases.php';
+if(array_key_exists('hosting_purchases',$_GET))header('Cache-Control: no-store, private');
+if(array_key_exists('hosting',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';
 if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');
 if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
@@ -41,7 +45,9 @@ if($supportRequested){
  }
  $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;
 }
-$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';$cinvite=is_string($_GET['cinvite']??null)?$_GET['cinvite']:'';
+if(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_access();}catch(RuntimeException){fail_page('Sign in as the primary client outside support access to view hosting purchases.',403);}}
+$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
+
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity'])){if($client&&!contact_can('projects')&&!contact_can('billing')&&!contact_can('downloads'))fail_page('Your contact permissions do not include workspace activity.',403);activity_render('client',$error);}
 if(isset($_GET['download_release'])){if($client&&!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');}
@@ -55,6 +61,8 @@ if(isset($_GET['account'])&&$client){require CWP_CODE_ROOT.'/portal/views/accoun
 if(isset($_GET['notifications'])){if($client&&!contact_can('projects')&&!contact_can('billing')&&!contact_can('downloads'))fail_page('Your contact permissions do not include notifications.',403);notifications_portal_render($error);}
 if(array_key_exists('tickets',$_GET)||array_key_exists('ticket',$_GET)||array_key_exists('ticket_new',$_GET)){if($client&&!contact_can('projects')&&!contact_can('billing')&&!contact_can('downloads'))fail_page('Your contact permissions do not include support tickets.',403);support_tickets_portal_render($client,$error);}
 require CWP_CODE_ROOT.'/portal/views/auth.php';
+if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);
+if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);

@@ -1,3 +1,7 @@
+## Development follow-through — direct hosting catalog
+
+The [new candidate](TWENTYI_HOSTING_CATALOG.md) adds explicit direct catalog refresh and source-aware draft import. Combined database/browser and release acceptance are pending; it is not included in published1.25.0. The guide below describes the released inventory-based importer and local-image behavior, which the candidate preserves.
+
 # Importing 20i hosting drafts
 
 This increment adds an owner-only **Import hosting products** panel to the service catalog. It uses named hosting types already present in the latest saved 20i hosting inventory. It creates local hosting drafts; it does not import the complete 20i product catalog, provider prices, available stock, billing periods, images or order capabilities.
