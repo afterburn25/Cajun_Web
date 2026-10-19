@@ -79,9 +79,12 @@ cleanly.
 
 Containment verified via `merge-base --is-ancestor`: `d2903bfb` contains
 `f67b1631`+`b7c97953`+`1db32352`; `0397a0e4` contains `f545cf93`; `8fe2787a`
-contains `e2c88d9d`. Minimal merge set — nine leaf tips: `d2903bfb`, `024b50dc`,
-`0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `632362f6`, `95ce538e`,
-`8fe2787a`. `d2903bfb` merges first (it carries the catalog the queue called the
+contains `e2c88d9d`; `b0fe332f` contains `1a8ae850` (force-ssl);
+`024b50dc` contains `fbe00172` (registrar-nameservers). Minimal merge set —
+ten leaf tips: `d2903bfb`, `024b50dc`, `0397a0e4`, `b0fe332f`, `4dc05d8c`,
+`ffee2e3a`, `632362f6`, `95ce538e`, `8fe2787a`, `ff467d7f`
+(php-version-controls — a standalone leaf, contained in nothing else).
+`d2903bfb` merges first (it carries the catalog the queue called the
 stack base); the rest are independent and may merge in any order.
 
 Prepared resolution: `devin/preflight-catalog` (`93e24ba0`) holds the fully

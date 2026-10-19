@@ -48,7 +48,7 @@ This session writes the takeover directive and current root/coordination instruc
 **Next actions in order:**
 1. Watch run `39299409880` (acceptance on `ceb06c05`; tip `f73dd118` is docs-only past it) — on pass the integration branch is merge-eligible to `main`.
 2. Merge the four component-port PRs once their dedicated runs pass (or fold branches in directly before the main merge).
-3. Observe dispatched acceptance on the nine Group B leaf tips (`d2903bfb` first — carries catalog/capture/first-invoice); merge in dependency order, resolving the known 8–22-hunk stale-base conflicts (catalog resolution pre-staged on `devin/preflight-catalog` `93e24ba0`).
+3. Observe dispatched acceptance on the ten Group B leaf tips (`d2903bfb` first — carries catalog/capture/first-invoice; `ff467d7f` php-version-controls is a standalone tenth leaf); merge in dependency order, resolving the known 8–22-hunk stale-base conflicts (catalog resolution pre-staged on `devin/preflight-catalog` `93e24ba0`).
 4. Normal-merge integration branch into main after combined acceptance passes, then continue remaining 20i/non-20i gaps and the next verified release.
 
 ## Devin's first executable milestone
