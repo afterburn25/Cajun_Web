@@ -1,3 +1,9 @@
+## 2026-10-19 — isolated VPS correction and next hosting increment
+
+Root owns `codex/vps-uncertainty-repair` from preserved PR45 `8dcce53f`, workflow/continuity updates, independent regression review and Git delivery. VPS prepared the isolated lifecycle/test/doc correction outside the shared checkout. Catalog independently reviewed it; Domains prepared a separate, unregistered package-type request/readback proposal. No agent modifies Devin's branches or performs live operations.
+
+The next complete hosting increment is [the source-bound plan amendment](HOSTING_PLAN_CHANGE_NEXT.md). Its preferred parent is preserved `d2903bfb81c93eb9da756c128536f23a3d34e822`, with current main merged normally. The proposal and architecture are preparation only; no customer plan-change UI or billing cutover is claimed implemented. Full catalog/provider-image and VPS SSH contracts remain unresolved. Published1.25.0 remains unchanged; all older coordination below is historical for this companion parent.
+
 # Codex and Devin work allocation
 
 ## Latest verified publication — 1.22.0

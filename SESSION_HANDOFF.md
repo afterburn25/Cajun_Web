@@ -1,3 +1,17 @@
+## 2026-10-19 — VPS uncertainty companion
+
+Parent: preserved PR45 `8dcce53f8998915992a36475cb68f9a315a2b0c7`. Branch: `codex/vps-uncertainty-repair`. Enclosing change: `fix: retain uncertain VPS attempts until reconciliation`. [Component behavior, actual verification and limits](docs/VPS_FOUNDATION.md).
+
+Local 311-case component checks pass in both PHP modes. Independent 20-case adversarial checks also pass in both modes, with the final comment-only source clarification reviewed separately. [Named evidence](docs/evidence/vps-uncertainty-local.json). The initial documentation check encountered the retained untracked support-StackCP PR body from another branch; preserve that diagnostic directory and verify this companion's staged tracked tree separately.
+
+That separate staged-tree documentation check now passes 131 Markdown files and 1,160 local links, with pinned dependency/mirror verification. No private local diagnostic files are included in the staged tree.
+
+Keep this correction on its companion branch until independent review and focused PHP acceptance. Then integrate it with current main through the normal reviewed path; this branch's historical application tree is not a deployable candidate. The VPS foundation remains excluded from shipping. Actual adapters must authenticate terminal attempt evidence and persist admission before network work; this in-memory model does neither.
+
+Current main is `a86f6f4fa592e6f715a9420aec8de4622258642e`; published1.25.0 is unchanged. Preserve support StackCP PR255 `ffee2e3a`, client PR243 `51938fc8`, reset-template PR254 `95ce538e`, payment privacy PR253 `b1948eeb`, and Devin's non-20i work. Hosting plan-change work requires a dedicated amendment with new client consent and a future billing cutover; the existing detached HC-08 model must not equate an HTTP acknowledgement with a completed change. Full catalog/images and VPS SSH still require their missing provider contracts.
+
+For the next customer-facing increment, use the [concrete hosting amendment handoff](docs/HOSTING_PLAN_CHANGE_NEXT.md), based on preserved `d2903bfb`. This turn's request/readback proposal and architecture do not enable plan changes or billing cutover.
+
 # Session handoff — read before continuing
 
 ## Devin HC-10 VPS lifecycle foundation in review — 2026-10-13

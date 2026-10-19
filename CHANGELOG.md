@@ -1,3 +1,9 @@
+## Unreleased companion — 2026-10-19
+
+- Correct the isolated VPS lifecycle so uncertain provisioning, suspension, resumption and teardown retain the original attempt and provider reference. Require exact terminal reconciliation before a deliberate retry or a stable-state claim.
+- Preserve attempt history and reject stale, foreign or replayed evidence. Keep the two-actor teardown requirement.
+- Extend portable lifecycle regression checks and retained GitHub results. This does not add a provider adapter, VPS UI, billing, SSH, deployment or a new release; published1.25.0 remains unchanged.
+
 # Changelog
 
 ## Unreleased — HC-10 VPS lifecycle foundation (Devin, isolated component)

@@ -1,3 +1,7 @@
+## 2026-10-19 — VPS lifecycle correction before integration
+
+The isolated HC-10 foundation's retry/rollback behavior is corrected on `codex/vps-uncertainty-repair`, based on preserved PR45 `8dcce53f`. Unconfirmed attempts remain unresolved, with their original provider identities retained, until a distinct terminal outcome is supplied for the exact attempt. [Scope and verification](VPS_FOUNDATION.md). Native persistence, provider authentication, catalog, UI and SSH are still incomplete. This companion does not alter published1.25.0 or make its historical application tree a release candidate.
+
 # Approved roadmap and acceptance criteria
 
 ## Latest verified publication — 1.22.0
