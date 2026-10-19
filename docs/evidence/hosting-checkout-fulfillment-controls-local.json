@@ -1,0 +1,106 @@
+{
+  "parent": "3042f24eddc3587d67ac5d10e28df3b3294a3310",
+  "branch": "codex/twentyi-checkout-fulfillment-controls",
+  "enclosing_commit_subject": "fix: show supported hosting checkout fulfillment controls",
+  "scope": "Applied UI/rendering correction and offline acceptance wiring. No native SQL, installed HTTP/browser, live provider, payment or deployment.",
+  "reports": [
+    {
+      "report": "views-default.json",
+      "sha256": "b946b7a84c31ca3454805825767f836fb68002be0b28e38dc0782efdb41e9909",
+      "checks": 94,
+      "passed": true,
+      "scope": "Actual PHP renderer and extracted controller functions; modeled reader/session seams, no SQL or HTTP."
+    },
+    {
+      "report": "views-minimal.json",
+      "sha256": "b946b7a84c31ca3454805825767f836fb68002be0b28e38dc0782efdb41e9909",
+      "checks": 94,
+      "passed": true,
+      "scope": "Actual PHP renderer and extracted controller functions; modeled reader/session seams, no SQL or HTTP."
+    },
+    {
+      "report": "helper.json",
+      "sha256": "60bff3b5c401f5e8033690da97199f2959e478ed9b175170d924c840731a8240",
+      "checks": 642,
+      "passed": true,
+      "scope": "Offline synthetic temporary files and exact transfer helpers; no application, provider, database or CI execution."
+    }
+  ],
+  "original_helper_outcomes_preserved": 631,
+  "original_renderer_outcomes_preserved_per_mode": 80,
+  "predecessor_regression": {
+    "default": "failed check85: Checkout unpaid owner has no manual approval or revoke controls",
+    "minimal": "same failure",
+    "retained_reports_sha256": {
+      "default": "c528e43f3e3cad41b87da7fd09272269664ad69bc254261470550aaeda5c7370",
+      "minimal": "c528e43f3e3cad41b87da7fd09272269664ad69bc254261470550aaeda5c7370"
+    }
+  },
+  "source_sha256": {
+    "site/includes/layout/service_orders.php": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
+    "site/includes/layout/hosting_order_links.php": "81633d29f4580f11fc78aa1422fdb8909efc4600667c1ec83be977fa1e8be155",
+    "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
+    "tests/hosting_purchases_views.php": "a3f1a1aa1835be4eb9009ecaaa70b5c4c84c48c08f0690d77b35aa0bc070d0be",
+    "tests/hosting_purchase_inbox_cases.py": "ad714d79c1dce6ba21f243c4d81fbe0e2349ba52375cda8a8a1ac75331d57600",
+    "tests/hosting_purchase_inbox_wiring.py": "1548e9a0ae23b48b104f96f91a7c69ba64ac1567363ff0007525e738ebfbb744",
+    "tools/acceptance-contract.json": "a1159c4a9a38cfaa181550e68be4a86d21df047dd1e0dacbe0c06677c28cd4cf"
+  },
+  "unchanged_native_policy_and_acceptance": {
+    "site/app/hosting/orders.php": "97f40c3621f5736665d5930ec85d83919d3a0b2ff8c295ed04166b0c206f81e8",
+    "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+    ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+    "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
+  },
+  "touched_php_lints": [
+    {
+      "path": "site/includes/layout/hosting_fulfillment.php",
+      "sha256": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
+      "passed": true
+    },
+    {
+      "path": "site/includes/layout/hosting_order_links.php",
+      "sha256": "81633d29f4580f11fc78aa1422fdb8909efc4600667c1ec83be977fa1e8be155",
+      "passed": true
+    },
+    {
+      "path": "site/includes/layout/service_orders.php",
+      "sha256": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
+      "passed": true
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "sha256": "5dee5e8ba0af54896838e30002c76b86c3c1257f12c273242232da099eb63de2",
+      "passed": true
+    },
+    {
+      "path": "tests/hosting_purchases_views.php",
+      "sha256": "a3f1a1aa1835be4eb9009ecaaa70b5c4c84c48c08f0690d77b35aa0bc070d0be",
+      "passed": true
+    }
+  ],
+  "canonical_refresh": {
+    "passed": true,
+    "log_sha256": "ba976e209a189bbdaaf73c8e25419f0d43d46d1b27d94aa65a0763b66b96a3af",
+    "release_archives_built": false
+  },
+  "reviews": [
+    {
+      "receipt": "hosting-checkout-fulfillment-ui-proposal/source-review.json",
+      "sha256": "6d05c4794ad8d9c20b54845ef422387d11550bc750145f79b88e33271f1a7fd0"
+    },
+    {
+      "receipt": "checkout-manual-policy-acceptance-proposal/source-review.json",
+      "sha256": "c69f80614cbd2eba8ca8be0cdb0c41b8e55d368818e7b01f5b6de71ebbd878f7"
+    },
+    {
+      "receipt": "checkout-manual-policy-vps-review/review.json",
+      "sha256": "5eef301b73c31f05a65342bd0060b6ac4ee70a8e477ea911e9f642f28ec18469"
+    }
+  ],
+  "retained_transport_failure": "An external patch proof first applied global CRLF conversion. Exact LF transfer and corrected roundtrip pass; no application source correction was required.",
+  "pending": [
+    "Installed paid-order owner navigation assertion",
+    "Linux native and full current-candidate acceptance",
+    "Normal integration and immutable release/download verification"
+  ]
+}

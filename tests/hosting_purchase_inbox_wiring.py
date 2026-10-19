@@ -194,6 +194,7 @@ BROWSER_UNCHANGED = {
 
 
 def browser_contract(contract):
+    contract = policy_contract(contract)
     if 'hosting_purchase_inbox_browser' not in contract:
         return contract
     ext = contract['hosting_purchase_inbox_browser']
@@ -213,10 +214,10 @@ def browser_contract(contract):
 
 
 def browser_source(root, path):
-    raw = root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+    raw = policy_source(root, path)
     if root.resolve() != Path(__file__).resolve().parents[1]:
         return raw
-    ext = json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes())['hosting_purchase_inbox_browser']
+    ext = policy_contract(json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes()))['hosting_purchase_inbox_browser']
     delta = ext['source_delta'].get(path)
     return inverse(raw, delta) if delta is not None else raw
 
@@ -229,11 +230,11 @@ def browser_checks(a, root, tmp, check, deny, named, contract):
     for key in ('source_sha256', 'unchanged_source_sha256'):
         for path, expected in ext[key].items():
             a.safe_name(path)
-            require(sha(root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')) == expected,
+            require(sha(policy_source(root, path)) == expected,
                     'Installed inbox current source differs: ' + path)
     check('Installed purchase inbox validates every current source before predecessor projection', True)
     for path, delta in ext['source_delta'].items():
-        raw = root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        raw = policy_source(root, path)
         inverse(raw, delta)
         deny('Installed purchase inbox rejects changed source ' + path, lambda r=raw, d=delta:inverse(r + b'\n# altered', d))
     prior = browser_contract(contract)
@@ -322,6 +323,134 @@ def browser_checks(a, root, tmp, check, deny, named, contract):
     return prior
 
 
-def run(a, root, tmp, check, deny, named, contract):
+def _run_policy_predecessor(a, root, tmp, check, deny, named, contract):
     prior = browser_checks(a, root, tmp, check, deny, named, contract)
     return _run_inbox_predecessor(a, root, tmp, check, deny, named, prior)
+
+# Exact source correction only; recipes, reports, captures and all older guards stay intact.
+POLICY_BASE = '3042f24eddc3587d67ac5d10e28df3b3294a3310'
+POLICY_SECTION = 'hosting_checkout_manual_policy_ui'
+POLICY_SOURCES = {
+    'site/includes/layout/service_orders.php',
+    'site/includes/layout/hosting_order_links.php',
+    'site/includes/layout/hosting_fulfillment.php',
+    'tests/hosting_purchases_views.php',
+    'tests/hosting_purchase_inbox_cases.py',
+    'tests/hosting_purchase_inbox_wiring.py',
+}
+POLICY_UNCHANGED = {
+    '.github/workflows/application-tests.yml', '.github/workflows/catalog-storefront.yml',
+    'tests/acceptance_artifacts_test.py', 'tests/hosting_checkout_http_browser.py',
+    'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_cases.py',
+    'tests/hosting_checkout_purchases_native.php', 'tools/acceptance-reports.json',
+    'tools/acceptance_artifacts.py',
+}
+
+
+def policy_contract(contract):
+    if POLICY_SECTION not in contract:
+        return contract
+    ext = contract[POLICY_SECTION]
+    require(ext['base'] == POLICY_BASE and ext['added_commands'] == []
+            and ext['added_reports'] == [] and ext['added_captures'] == [],
+            'Checkout policy correction cannot change acceptance producers')
+    prior = copy.deepcopy(contract)
+    del prior[POLICY_SECTION]
+    for pin in ext['updated_pins']:
+        value = prior
+        for part in pin['location']:
+            value = value[part]
+        require(value[pin['path']] == pin['current_sha256'], 'Checkout policy current serialized pin differs')
+        value[pin['path']] = pin['predecessor_sha256']
+    require(sha(canonical(prior)) == ext['predecessor_contract_sha256'], 'Original3042 acceptance contract changed')
+    return prior
+
+
+def policy_source(root, path):
+    raw = root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+    if root.resolve() != Path(__file__).resolve().parents[1]:
+        return raw
+    contract = json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes())
+    ext = contract.get(POLICY_SECTION)
+    if ext is None:
+        return raw
+    delta = ext['source_delta'].get(path)
+    return inverse(raw, delta) if delta is not None else raw
+
+
+def policy_checks(a, root, check, deny, contract):
+    import ast
+    ext = contract[POLICY_SECTION]
+    require(set(ext['source_sha256']) == POLICY_SOURCES
+            and set(ext['source_delta']) == POLICY_SOURCES
+            and set(ext['unchanged_source_sha256']) == POLICY_UNCHANGED,
+            'Checkout policy exact source boundary changed')
+    before = {}
+    for path, expected in ext['source_sha256'].items():
+        a.safe_name(path)
+        raw = root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        require(sha(raw) == expected, 'Checkout policy current source differs: ' + path)
+        before[path] = inverse(raw, ext['source_delta'][path])
+        for changed, delta in [(raw + b'\n# changed', ext['source_delta'][path]),
+                               (raw, dict(ext['source_delta'][path], predecessor_sha256='0' * 64))]:
+            try:
+                inverse(changed, delta)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError('Checkout policy altered source or predecessor passed: ' + path)
+    check('Checkout policy correction binds all current sources before exact historical projection', True)
+    check('Checkout policy correction whole inverses reject changed source and predecessor hashes', True)
+    prior = policy_contract(contract)
+    check('Checkout policy correction preserves the complete3042 contract and181 native recipes', len(prior['native_commands']) == 181)
+    for label, mutate in [
+        ('removed original command', lambda value:value['native_commands'].pop()),
+        ('altered original command', lambda value:value['native_commands'].__setitem__(0, 'changed')),
+    ]:
+        wrong = copy.deepcopy(contract); mutate(wrong)
+        deny('Checkout policy correction refuses ' + label, lambda value=wrong:policy_contract(value))
+    for pin in ext['updated_pins']:
+        wrong = copy.deepcopy(contract); value = wrong
+        for part in pin['location']:
+            value = value[part]
+        value[pin['path']] = '0' * 64
+        try:
+            policy_contract(wrong)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Checkout policy stale current pin passed')
+    check('Checkout policy correction refuses every stale current serialized pin', True)
+    reports = a.load(root/'tools/acceptance-reports.json')
+    check('Checkout policy correction preserves all202 browser and253 final reports',
+          len(reports['browser']) == 202 and len(reports['final']) == 253
+          and sha(canonical(reports)) == ext['predecessor_reports_sha256'])
+    check('Checkout policy correction leaves both workflows and installed fixture unchanged',
+          all(sha(root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')) == expected
+              for path, expected in ext['unchanged_source_sha256'].items()))
+    path = 'tests/hosting_purchase_inbox_cases.py'
+    old_tree = ast.parse(before[path].decode())
+    current_tree = ast.parse(root.joinpath(path).read_text(encoding='utf-8'))
+    def checks(tree):
+        return [ast.dump(node, include_attributes=False) for node in ast.walk(tree)
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'check']
+    old_checks = checks(old_tree); current_checks = checks(current_tree)
+    check('Checkout policy correction retains every original installed inbox check expression and order',
+          [item for item in current_checks if item in set(old_checks)] == old_checks)
+    new_checks = [node for node in ast.walk(current_tree)
+                  if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'check'
+                  and ast.dump(node, include_attributes=False) not in set(old_checks)]
+    check('Checkout policy correction adds only its installed verified-payment assertion',
+          len(new_checks) == 1 and isinstance(new_checks[0].args[0], ast.Constant)
+          and new_checks[0].args[0].value == 'Checkout owner uses verified-payment setup without legacy manual controls')
+    def captures(tree):
+        return [ast.dump(node, include_attributes=False) for node in tree.body
+                if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'CAPTURES' for t in node.targets)]
+    check('Checkout policy correction preserves the four original capture declarations',
+          len(captures(old_tree)) == 1 and captures(current_tree) == captures(old_tree))
+    return prior
+
+
+def run(a, root, tmp, check, deny, named, contract):
+    prior = policy_checks(a, root, check, deny, contract)
+    return _run_policy_predecessor(a, root, tmp, check, deny, named, prior)

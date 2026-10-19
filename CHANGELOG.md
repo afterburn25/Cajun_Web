@@ -1,3 +1,9 @@
+## Unreleased — checkout fulfillment controls
+
+- Show checkout owners the verified-payment setup path and remove manual-fulfillment actions that the server refuses for those agreements.
+- Preserve legacy manual controls and extend the existing renderer and installed purchase-navigation regression checks.
+- Correct the 1.26 candidate scope to include its already-implemented plan setup, storefront, checkout and purchase inbox. Acceptance and publication remain pending.
+
 ## 2026-10-19 — installed hosting purchase navigation
 
 Branch `codex/twentyi-purchase-inbox-browser`, parent `7535f861c2c3accf37482f5af94099780c7806a6` (draft [PR229](https://github.com/afterburn25/Cajun_Web/pull/229)); enclosing commit **fix: verify hosting purchase navigation and invoice links**. This bounded acceptance increment continues the existing packaged checkout, storefront and plan-setup journeys through the owner and primary-client purchase inbox. It follows the original invoice, project and agreement links, distinguishes the inherited paid/accepted order from unpaid purchases, and checks unchanged commercial history across navigation and access refusals. The inherited setup card's owner **Review invoice** link now selects the original invoice through `invoice-payments` / `invoice_id`; its previous `payments` / `invoice` URL opened the general payment-request page. The client destination is unchanged. Published releases are unchanged. [Scope and actual verification](docs/TWENTYI_HOSTING_PURCHASE_INBOX.md#installed-purchase-navigation).

@@ -6,7 +6,7 @@ require_once CWP_CODE_ROOT.'/app/hosting/order_link_views.php';
 require_once CWP_CODE_ROOT.'/includes/layout/hosting_fulfillment.php';
 require_once CWP_CODE_ROOT.'/includes/layout/provider_plan_catalog.php';
 
-function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment):void {
+function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment,bool $requiresVerifiedPayment=false):void {
     $ctx=hosting_order_links_context($order->data()['id'],$order->data()['client_id'],!$owner);$p=$ctx['progress'];
     if($p){
         $label=match($p['status']){'pending'=>'Hosting record prepared','provisioning'=>'Hosting setup in progress','unknown'=>'Hosting setup outcome needs review','active'=>'Hosting service active','failed'=>'Hosting setup needs attention','suspended'=>'Hosting service suspended','cancelled'=>'Hosting service cancelled','deprovisioned'=>'Hosting service removed',default=>'Hosting service needs review'};
@@ -20,7 +20,7 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $
             if($p['status']==='pending')echo '<p>Provider package availability and configuration still require verification before setup. No provider request was sent by this preparation form.</p>';
             if(!$p['profile_current'])echo '<p class="notice warning">The saved provider connection changed. Review its original mapping before any setup.</p>';
         }
-        echo '</section>';if($owner)hosting_fulfillment_ui($order);return;
+        echo '</section>';if($owner)hosting_fulfillment_ui($order,$requiresVerifiedPayment);return;
     }
     if(!$owner||$order->state()['phase']!=='accepted')return;
     $profile=$ctx['profile'];

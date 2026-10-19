@@ -25,7 +25,7 @@ function hosting_fulfillment_ui_assignment(?array $assignment):void {
     if($assignment['observed_at']!==null)echo '<p class="hint">Last saved inventory: '.esc($assignment['observed_at']).' UTC. Saved observation only.</p>';
     echo '<a class="btn outline" href="'.esc($assignment['url']).'">Review client access</a></div>';
 }
-function hosting_fulfillment_ui(ServiceOrderDocument $order):void {
+function hosting_fulfillment_ui(ServiceOrderDocument $order,bool $requiresVerifiedPayment=false):void {
     $v=hosting_fulfillment_view($order->data()['id'],$order->data()['client_id']);$order=$v['order'];$agreement=$order->data()['agreement']['id'];
     echo '<section class="workspace-card" data-hosting-fulfillment><h2>Provider setup</h2>';
     if(!$v['ready']){
@@ -42,7 +42,7 @@ function hosting_fulfillment_ui(ServiceOrderDocument $order):void {
     }
     if(!$v['profile_current'])echo '<p class="notice warning">The original provider connection changed. Restore and review that connection before setup or result recovery.</p>';
     if($v['mode']==='approve'){
-        if(!$v['eligible']){echo '<p>Current client consent and verified payment or an active manual fulfillment policy are required before setup.</p></section>';return;}
+        if(!$v['eligible']){echo $requiresVerifiedPayment?'<p>Current client consent and a verified payment receipt for the original checkout invoice are required before setup.</p></section>':'<p>Current client consent and verified payment or an active manual fulfillment policy are required before setup.</p></section>';return;}
         if(!$v['profile_current']){echo '</section>';return;}
         $action='service_plans_order_fulfill_service';$domain=$order->state()['domain_name'];$phrase='CREATE '.$domain;
         echo '<p>Request hosting for <strong>'.esc($domain).'</strong> using '.esc($v['package']['label']).' (type '.esc($v['package']['provider_type']).') in reseller account '.esc((string)$v['reseller_id']).'.</p>';
