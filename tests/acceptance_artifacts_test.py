@@ -604,6 +604,159 @@ def run(tmp):
     client_subdomain_checks(tmp, current, registry, section, historical)
 
 
+_run_before_subdomain_browser = run
+
+
+def subdomain_browser_inverse(data, delta):
+    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:
+        raise ValueError('Subdomain browser current source mismatch')
+    text = data.decode('utf-8')
+    for item in reversed(delta['replacements']):
+        if text.count(item['after']) != 1: raise ValueError('Subdomain browser ambiguous inverse')
+        text = text.replace(item['after'], item['before'], 1)
+    result = text.encode('utf-8')
+    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:
+        raise ValueError('Subdomain browser predecessor mismatch')
+    return result
+
+
+def subdomain_browser_current():
+    current = a.load(ROOT/'tools/acceptance-contract.json')
+    section = current['client_subdomain_browser']
+    # Authenticate current source before any predecessor substitution.
+    for path, digest in section['source_sha256'].items():
+        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() != digest:
+            raise ValueError('Subdomain browser source changed: '+path)
+    registry = a.load(ROOT/'tools/acceptance-reports.json')
+    prior = copy.deepcopy(current); del prior['client_subdomain_browser']
+    command = section['native_addition']; position = prior['native_commands'].index(section['native_after'])+1
+    if prior['native_commands'][position] != command or prior['native_commands'].count(command) != 1:
+        raise ValueError('Subdomain browser offline recipe changed')
+    del prior['native_commands'][position]
+    for pin in section['repins']:
+        cursor = prior
+        for key in pin['keys'][:-1]: cursor = cursor[key]
+        key = pin['keys'][-1]
+        if cursor[key] != pin['after']: raise ValueError('Subdomain browser current pin changed')
+        cursor[key] = pin['before']
+    dump = lambda value: json.dumps(value, indent=2).encode()+b'\n'
+    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:
+        raise ValueError('Subdomain browser predecessor contract changed')
+    old_reports = copy.deepcopy(registry)
+    for phase in ('browser', 'final'):
+        if any(old_reports[phase].count(name) != 1 for name in section['reports']):
+            raise ValueError('Subdomain browser reports missing or duplicated')
+        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]
+    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:
+        raise ValueError('Subdomain browser predecessor reports changed')
+    historical = {'tools/acceptance-contract.json':dump(prior), 'tools/acceptance-reports.json':dump(old_reports)}
+    for path, delta in section['source_deltas'].items():
+        historical[path] = subdomain_browser_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n'), delta)
+    return current, registry, section, historical
+
+
+def subdomain_browser_checks(tmp, current, registry, section, historical):
+    check('Subdomain browser retains168 recipes and adds one offline handler',len(current['native_commands'])==169 and len(json.loads(historical['tools/acceptance-contract.json'])['native_commands'])==168)
+    for path,digest in section['source_sha256'].items():
+        check('Subdomain browser current source bound '+path,hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==digest)
+    for path,delta in section['source_deltas'].items():
+        check('Subdomain browser exact complete inverse '+path,hashlib.sha256(historical[path]).hexdigest()==delta['before_sha256'])
+        deny('Subdomain browser changed current bytes refuse '+path,lambda path=path,delta=delta:subdomain_browser_inverse((ROOT/path).read_bytes().replace(b'\r\n',b'\n')+b'\n',delta))
+        changed=copy.deepcopy(delta);changed['before_sha256']='0'*64
+        deny('Subdomain browser changed prior hash refuses '+path,lambda path=path,changed=changed:subdomain_browser_inverse((ROOT/path).read_bytes().replace(b'\r\n',b'\n'),changed))
+    for phase,total in [('browser',182),('final',226)]:
+        check('Subdomain browser preserves every prior '+phase+' report in order',len(registry[phase])==len(set(registry[phase]))==total and [n for n in registry[phase] if n not in section['reports']]==json.loads(historical['tools/acceptance-reports.json'])[phase])
+    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    before=historical['.github/workflows/application-tests.yml'].decode()
+    check('Subdomain browser preserves full workflow triggers permissions concurrency and environments',workflow.split('jobs:\n',1)[0]==before.split('jobs:\n',1)[0])
+    check('Subdomain browser offline handler command is exact and once',workflow.count('          '+section['native_addition']+'\n')==1 and section['native_addition']=='python -B tests/subdomain_requests_http_contract.py --report qa/subdomain-requests-http-contract-results.json')
+    check('Subdomain browser keeps two distinct required reports',section['reports']==['subdomain-requests-http-contract-results.json','subdomain-requests-http-browser-results.json'])
+    captures=section['screenshots']
+    expected=[f'Subdomain-Requests-{state}-{size}.png' for state in ['Client-Pending','Owner-Review','Client-Observed'] for size in ['Desktop','Mobile']]
+    check('Subdomain browser has exact six declared captures',captures==expected)
+
+    # Execute the actual caller's result predicate in isolation. These are synthetic
+    # files for guard behavior, not application screenshots or browser acceptance.
+    import ast as subdomain_ast
+    callback_tree=subdomain_ast.parse((ROOT/'tests/provider_subdomain_requests_cases.py').read_text())
+    callback_constants={n.targets[0].id:subdomain_ast.literal_eval(n.value) for n in callback_tree.body if isinstance(n,subdomain_ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],subdomain_ast.Name) and n.targets[0].id in {'CAPTURES','REPORT'}}
+    check('Subdomain browser callback declares the exact required capture filenames',list(callback_constants['CAPTURES'])==captures)
+    check('Subdomain browser callback declares the exact required report',callback_constants['REPORT']=='subdomain-requests-http-browser-results.json')
+    caller_tree=subdomain_ast.parse((ROOT/'tests/browser_acceptance.py').read_text())
+    label='Installed client subdomain workflow reports passed outcomes and all six real captures'
+    matches=[n for n in subdomain_ast.walk(caller_tree) if isinstance(n,subdomain_ast.Call) and isinstance(n.func,subdomain_ast.Name) and n.func.id=='check' and len(n.args)==2 and isinstance(n.args[0],subdomain_ast.Constant) and n.args[0].value==label]
+    check('Subdomain browser actual caller has one final result predicate',len(matches)==1)
+    predicate=compile(subdomain_ast.Expression(matches[0].args[1]),'<actual subdomain browser result predicate>','eval')
+    qa=tmp/'subdomain-browser-caller';qa.mkdir()
+    png=b'\x89PNG\r\n\x1a\nSynthetic guard bytes, not captured pixels'
+    for name in captures:(qa/name).write_bytes(png)
+    good={'passed':True,'checks':[{'name':'Synthetic caller predicate only','passed':True}],'captures':captures.copy()}
+    def accepted(value):return eval(predicate,{'subdomain_browser_result':value,'subdomain_captures':captures,'QA':qa})
+    check('Subdomain browser actual caller accepts complete typed result',accepted(good) is True)
+    invalid=[('missing result',None),('truthy passed',{**good,'passed':1}),('empty checks',{**good,'checks':[]}),('failed check',{**good,'checks':[{'name':'failed','passed':False}]}),('blank name',{**good,'checks':[{'name':' ','passed':True}]}),('missing capture',{**good,'captures':captures[:-1]}),('duplicate capture',{**good,'captures':captures[:-1]+[captures[0]]}),('foreign capture',{**good,'captures':captures[:-1]+['foreign.png']})]
+    for name,value in invalid:check('Subdomain browser actual caller refuses '+name,not accepted(value))
+    target=qa/captures[0]
+    target.unlink();check('Subdomain browser actual caller refuses absent file',not accepted(good))
+    for name,data in [('empty file',b''),('non-PNG',b'not a PNG file'),('signature only',png[:8])]:
+        target.write_bytes(data);check('Subdomain browser actual caller refuses '+name,not accepted(good))
+    target.write_bytes(png)
+    original_is_link=Path.is_symlink
+    with patch.object(Path,'is_symlink',lambda path: True if path==target else original_is_link(path)):
+        check('Subdomain browser actual caller refuses symlink predicate',not accepted(good))
+
+    root=tmp/'subdomain-browser-artifacts';source=root/'source';ctx=context();fixtures(source,ctx)
+    incoming=root/'partitions';bindings={};jobs={};input_sha='5'*64
+    for index,lane in enumerate(a.LANES):
+        job=root/('job-'+lane);job.mkdir(parents=True);jobs[lane]=job
+        if lane=='build':shutil.copytree(source/'dist',job/'dist');shutil.copytree(source/'qa',job/'qa')
+        elif lane=='native-browser':
+            for name in registry['browser']:
+                if name not in a.BUILD_QA:named(job/'qa'/name)
+            for name in captures:blob(job/'qa'/name,png+name.encode())
+        else:
+            for name in registry['final']:
+                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane):named(job/'qa'/name)
+        digest=a.seal(job,ctx,incoming/lane,lane,outcomes(lane),input_sha)
+        bindings[lane]={'result':'success','artifact_id':str(index+51),'sha256':digest,**({'input_sha256':input_sha} if lane=='build' else {}),**({'checkpoint_id':'59','checkpoint_digest':'6'*64} if lane=='native-browser' else {})}
+    seq=0
+    def combine():
+        nonlocal seq
+        seq+=1;destination=root/('combined-'+str(seq))
+        return destination,a.aggregate(destination,ctx,incoming,bindings,registry)
+    def reseal():
+        job=jobs['native-browser']
+        for path in (job/'.acceptance/checkpoint',incoming/'native-browser'):
+            if path.exists():
+                assert path.resolve().is_relative_to(root.resolve());shutil.rmtree(path)
+        bindings['native-browser']['sha256']=a.seal(job,ctx,incoming/'native-browser','native-browser',outcomes('native-browser'),input_sha)
+    destination,result=combine()
+    check('Subdomain browser aggregate requires all226 reports',result['complete'] is True and set(result['reports'])==set(registry['final']))
+    for name in captures:check('Subdomain browser transfer preserves exact synthetic bytes '+name,(destination/'qa'/name).read_bytes()==png+name.encode())
+    for name in section['reports']:
+        path=jobs['native-browser']/'qa'/name;path.unlink();reseal();_,result=combine()
+        check('Subdomain browser missing named report refuses '+name,result['complete'] is False and 'Missing reports: '+name in result['errors'])
+        named(path,False);reseal();_,result=combine()
+        check('Subdomain browser failed named report refuses '+name,result['complete'] is False and result['reports'][name]['passed'] is False)
+        named(path)
+        check('Subdomain browser report belongs only to native-browser '+name,a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))
+    named(jobs['native-browser']/'qa/subdomain-requests-unexpected-browser-results.json');reseal();_,result=combine()
+    check('Subdomain browser unexpected report cannot complete',result['complete'] is False and 'Unexpected reports: subdomain-requests-unexpected-browser-results.json' in result['errors'])
+    deny('Subdomain browser private TLS key remains excluded',lambda:a.evidence_allowed('test-runtime/provider-http/server.key','native-browser'))
+
+
+def run(tmp):
+    current,registry,section,historical=subdomain_browser_current()
+    originals={str((ROOT/path).resolve()):data for path,data in historical.items()}
+    read_bytes,read_text=Path.read_bytes,Path.read_text
+    def previous_bytes(path):
+        key=str(path.resolve());return originals[key] if key in originals else read_bytes(path)
+    def previous_text(path,*args,**kwargs):
+        key=str(path.resolve());return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)
+    with patch.object(Path,'read_bytes',previous_bytes),patch.object(Path,'read_text',previous_text):
+        _run_before_subdomain_browser(tmp)
+    subdomain_browser_checks(tmp,current,registry,section,historical)
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None

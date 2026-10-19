@@ -1,3 +1,9 @@
+## 2026-10-18 — installed subdomain workflow coverage
+
+Branch `codex/twentyi-client-subdomain-browser` starts from [PR236](https://github.com/afterburn25/Cajun_Web/pull/236), source `af956844690b1ed3be93a9a83574f06127fa8763`. It adds [packaged owner/client HTTP and Chromium coverage](docs/TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md) for the submitted subdomain workflow. The original PR236 focused/full runs remain queued on their first attempts. Source preparation and offline fixture checks are separate from the installed results that remain required. Published 1.25.0 and the live site are unchanged.
+
+Local evidence: 90 new Handler checks, all 82 outcomes from four unchanged Handler contracts, 521 portable acceptance outcomes preserving every prior 429, and 14 callback source/failure-path checks pass. The [receipt](docs/evidence/client-subdomain-browser-local.json) records hashes and limits. No shipping files changed. Next: first full candidate run, actual six-capture review, then normal combined integration and release acceptance.
+
 ## 2026-10-18 — client subdomain request candidate
 
 Branch `codex/twentyi-client-subdomain-requests` starts from `b8c316b6fd138167b11c251d5db24a6d31f2bd88` ([PR234](https://github.com/afterburn25/Cajun_Web/pull/234)). It adds [primary-client intake, owner review and saved progress](docs/TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) on top of the existing owner subdomain operation. Root owns shared navigation, routing, integration and documentation; the three existing agents own backend persistence, views and independent native acceptance. This checkpoint is unreleased and does not change the live site.
