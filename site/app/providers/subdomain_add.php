@@ -4,6 +4,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/providers/document_roots.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/subdomain_add_storage.php';
+require_once CWP_CODE_ROOT.'/app/providers/subdomain_requests.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-operations/SubdomainAdd.php';
 use CajunWebPro\Foundation\TwentyIDocumentRoots\{DocumentRootsBinding,DocumentRootsObservation};
 use CajunWebPro\Foundation\TwentyI\Operations\SubdomainAdd;
@@ -20,7 +21,7 @@ function provider_subdomain_add_grant_scope(string $id,string $document):array {
 function provider_subdomain_add_decode(string $kind,array $row):array {
     if(strlen($row['document_json'])>16384)throw new RuntimeException('Subdomain add evidence exceeds its bound.');
     try{$d=json_decode($row['document_json'],true,20,JSON_THROW_ON_ERROR);}catch(JsonException){throw new RuntimeException('Subdomain add evidence needs recovery.');}
-    if(!is_array($d)||($d['version']??null)!==1||provider_document_roots_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Subdomain add evidence needs recovery.');
+    if(!is_array($d)||!in_array($d['version']??null,$kind==='request'?[1,2]:[1],true)||provider_document_roots_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Subdomain add evidence needs recovery.');
     $values=$row;unset($values['proof']);$values=array_map(static fn($v)=>(string)$v,$values);
     if($kind==='request'){$g=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$row['id']]);if(!$g)throw new RuntimeException('Subdomain add approval is missing.');$values['grant']=provider_subdomain_add_grant_values($g);}
     if(!hash_equals($row['proof'],provider_subdomain_add_hmac($kind,$values)))throw new RuntimeException('Subdomain add proof needs recovery.');return $d;
@@ -36,7 +37,8 @@ function provider_subdomain_add_entry(array $observation,string $name):?string {
 function provider_subdomain_add_request(string $id):array {
     provider_document_roots_id($id);$q=one('SELECT * FROM '.table('provider_subdomain_add_requests').' WHERE id=?',[$id]);
     if(!$q)throw new RuntimeException('This subdomain request is unavailable.');$d=provider_subdomain_add_decode('request',$q);
-    if(array_keys($d)!==['version','binding','anchor_id','anchor_seq','anchor_proof','params','reviewed','review_proof','actor_auth','approved_epoch'])throw new RuntimeException('Subdomain request fields need recovery.');
+    $keys=['version','binding','anchor_id','anchor_seq','anchor_proof','params','reviewed','review_proof','actor_auth','approved_epoch'];if($d['version']===2)$keys[]='client_origin';
+    if(array_keys($d)!==$keys)throw new RuntimeException('Subdomain request fields need recovery.');
     try{$b=provider_document_roots_from_data($d['binding']);$params=SubdomainAdd::params($d['params']);$review=provider_subdomain_add_review_document($d['review_proof']);}catch(InvalidArgumentException|TypeError){throw new RuntimeException('Subdomain request binding needs recovery.');}
     $p=$b->data['package'];
     if($d['reviewed']!==true||$params!==$d['params']||$params['packageId']!==$p['package_id']||$q['subdomain']!==$params['subdomain']||$q['link_id']!==$p['link_id']||$q['profile_id']!==$p['profile_id']||(int)$q['package_id']!==$p['package_id']
@@ -56,7 +58,8 @@ function provider_subdomain_add_request(string $id):array {
     if($ledger){$op=new ProviderOperation(SubdomainAdd::OPERATION,$g['consumed_key'],$params);$identity=$g['profile_id'].':'.$g['profile_revision'].':'.$p['key_fingerprint'];
         if(!hash_equals($ledger['fingerprint'],ProviderGateway::requestFingerprint('twenty-i',$identity,$op))||($ledger['operation']!==null&&$ledger['operation']!==SubdomainAdd::OPERATION))throw new RuntimeException('Subdomain execution identity needs recovery.');
         if($ledger['operation']===null&&($ledger['status']!=='claimed'||(int)$ledger['attempts']!==0||$ledger['resolved_epoch']!==null))throw new RuntimeException('Subdomain execution claim needs recovery.');}
-    return ['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];
+    $result=['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];
+    if($d['version']===2)provider_subdomain_requests_validate_origin($result);return $result;
 }
 
 function provider_subdomain_add_terminal(array $request):?array {
@@ -116,7 +119,7 @@ function provider_subdomain_add_precondition(string $linkId,string $anchorId,str
 function provider_subdomain_add_authorize(array $request):array {
     provider_subdomain_add_guard(false);
     return staff_transaction(function()use($request):array{
-        $request=provider_subdomain_add_request($request['row']['id']);[$actor,$profile,$current]=provider_subdomain_add_context($request['binding']);$g=$request['grant'];
+        $request=provider_subdomain_add_request($request['row']['id']);if($request['document']['version']===2)provider_subdomain_requests_origin_current($request);[$actor,$profile,$current]=provider_subdomain_add_context($request['binding']);$g=$request['grant'];
         if($g['revoked_at']!==null||(int)$g['expires_epoch']<=time()||(int)$actor['id']!==(int)$request['row']['actor_id']||!hash_equals(hash('sha256',$actor['auth_version']),$request['document']['actor_auth'])
             ||!hash_equals($current->sha256,$request['binding']->sha256)||provider_subdomain_add_terminal($request)!==null)throw new ProviderOperationAccessChanged('Subdomain approval is no longer current.');
         [$binding,$anchor]=provider_subdomain_add_precondition($request['row']['link_id'],$request['document']['anchor_id'],$request['binding']->sha256);
@@ -137,43 +140,55 @@ function provider_subdomain_add_add(string $requestId,string $linkId,string $par
     provider_document_roots_id($requestId);provider_document_roots_id($linkId);
     if(!$confirmed)throw new InvalidArgumentException('Confirm this exact subdomain addition first.');$review=provider_subdomain_add_review_document($reviewProof);
     if($review['request_id']!==$requestId||$review['link_id']!==$linkId)throw new InvalidArgumentException('Reload the subdomain review.');
-    return staff_locked(function()use($requestId,$linkId,$parentDomain,$subdomain,$reviewProof,$review,$password,$resolver,$perform):array{
-        $fresh=staff_transaction(function()use($requestId,$linkId,$parentDomain,$subdomain,$reviewProof,$review,$password):bool{
-            $actor=provider_subdomain_add_actor($password);if(!provider_subdomain_add_ready())throw new RuntimeException('Prepare subdomain additions first.');
-            if(one('SELECT id FROM '.table('provider_subdomain_add_requests').' WHERE id=?',[$requestId])){
-                $old=provider_subdomain_add_request($requestId);provider_subdomain_add_context($old['binding'],false);
-                if($old['row']['link_id']!==$linkId||$old['document']['review_proof']!==$reviewProof||$old['document']['params']['parentDomain']!==$parentDomain||$old['document']['params']['subdomain']!==$subdomain
-                    ||(int)$old['row']['actor_id']!==(int)$actor['id']||$old['document']['actor_auth']!==hash('sha256',$actor['auth_version']))throw new RuntimeException('This subdomain request identifier was already used.');return false;
-            }
-            if($review['actor_id']!==(int)$actor['id']||$review['actor_auth']!==hash('sha256',$actor['auth_version'])||time()<$review['issued_epoch']||time()>=$review['expires_epoch'])throw new RuntimeException('Reload the expired or changed subdomain review.');
-            [$binding,$anchor]=provider_subdomain_add_precondition($linkId,$review['anchor_id'],$review['binding_sha256']);provider_subdomain_add_context($binding);
-            if($review['anchor_proof']!==$anchor['proof'])throw new RuntimeException('The reviewed hosting map changed.');
-            $params=provider_subdomain_add_target($binding,$anchor,$parentDomain,$subdomain);$p=$binding->data['package'];
-            if(provider_subdomain_add_pending($p['profile_id'],$p['package_id'],$params['subdomain']))throw new RuntimeException('A previous addition for this hostname is unresolved. It cannot be sent again.');
-            $previous=provider_subdomain_add_previous($p['profile_id'],$p['package_id']);
-            if(($previous['id']??'')!==$review['previous_id']||($previous['proof']??str_repeat('0',64))!==$review['previous_proof'])throw new RuntimeException('Subdomain history changed. Reload the review.');
-            if($previous){$old=provider_subdomain_add_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new hosting map before a separate approval.');}
-            $now=time();$d=['version'=>1,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_proof'=>$anchor['proof'],'params'=>$params,
-                'reviewed'=>true,'review_proof'=>$reviewProof,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];$json=provider_document_roots_json($d);
-            if(strlen($json)>16384)throw new LogicException('Subdomain approval exceeds its storage contract.');$scope=provider_subdomain_add_grant_scope($requestId,$json);
-            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-                [$requestId,$p['profile_id'],SubdomainAdd::OPERATION,provider_operations_scope(SubdomainAdd::OPERATION,$scope),$p['profile_revision'],provider_document_roots_json($scope),(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'subdomainadd:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);
-            $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$p['profile_id'],'package_id'=>$p['package_id'],'subdomain'=>$subdomain,'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];
-            provider_subdomain_add_insert('request',provider_subdomain_add_prove('request',$q,$grant));return true;
-        });
+    return staff_locked(function()use($requestId,$linkId,$parentDomain,$subdomain,$reviewProof,$confirmed,$password,$resolver,$perform):array{
+        $fresh=staff_transaction(fn()=>provider_subdomain_add_admit_locked($requestId,$linkId,$parentDomain,$subdomain,$reviewProof,$confirmed,$password));
         if(!$fresh)return staff_transaction(fn()=>provider_subdomain_add_summary($requestId));
-        $request=provider_subdomain_add_request($requestId);$entered=false;$failure=null;
-        try{
-            $authorize=static fn()=>provider_subdomain_add_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();
-            $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));
-            try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['package']['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');
-                $authorize();$op=new ProviderOperation(SubdomainAdd::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);
-            }finally{unset($secret);}
-        }catch(Throwable $e){if($e instanceof PDOException)throw $e;$failure=$e;}
-        staff_transaction(fn()=>provider_subdomain_add_end($request,$entered?'attempted':'not_sent'));
-        if($failure!==null&&!($failure instanceof RuntimeException)&&!($failure instanceof InvalidArgumentException))throw $failure;
-        return staff_transaction(fn()=>provider_subdomain_add_summary($requestId));
+        return provider_subdomain_add_send_locked($requestId,$resolver,$perform);
     });
+}
+/** Internal composition: the client-origin event must be appended in this same transaction. */
+function provider_subdomain_add_admit_locked(string $requestId,string $linkId,string $parentDomain,string $subdomain,string $reviewProof,bool $confirmed,#[SensitiveParameter] string $password,?array $clientOrigin=null):bool {
+    provider_subdomain_add_guard();provider_document_roots_id($requestId);provider_document_roots_id($linkId);
+    if(!$confirmed)throw new InvalidArgumentException('Confirm this exact subdomain addition first.');$review=provider_subdomain_add_review_document($reviewProof);
+    if($review['request_id']!==$requestId||$review['link_id']!==$linkId)throw new InvalidArgumentException('Reload the subdomain review.');
+    if($clientOrigin!==null)provider_subdomain_requests_admission_origin($clientOrigin,$linkId,$parentDomain,$subdomain);
+    $actor=provider_subdomain_add_actor($password);if(!provider_subdomain_add_ready())throw new RuntimeException('Prepare subdomain additions first.');
+    if(one('SELECT id FROM '.table('provider_subdomain_add_requests').' WHERE id=?',[$requestId])){
+        $old=provider_subdomain_add_request($requestId);
+            if(($old['document']['client_origin']??null)!==$clientOrigin)throw new RuntimeException('This subdomain approval has a different origin.');provider_subdomain_add_context($old['binding'],false);
+        if($old['row']['link_id']!==$linkId||$old['document']['review_proof']!==$reviewProof||$old['document']['params']['parentDomain']!==$parentDomain||$old['document']['params']['subdomain']!==$subdomain
+            ||(int)$old['row']['actor_id']!==(int)$actor['id']||$old['document']['actor_auth']!==hash('sha256',$actor['auth_version']))throw new RuntimeException('This subdomain request identifier was already used.');return false;
+    }
+    if($review['actor_id']!==(int)$actor['id']||$review['actor_auth']!==hash('sha256',$actor['auth_version'])||time()<$review['issued_epoch']||time()>=$review['expires_epoch'])throw new RuntimeException('Reload the expired or changed subdomain review.');
+    [$binding,$anchor]=provider_subdomain_add_precondition($linkId,$review['anchor_id'],$review['binding_sha256']);provider_subdomain_add_context($binding);
+    if($review['anchor_proof']!==$anchor['proof'])throw new RuntimeException('The reviewed hosting map changed.');
+    $params=provider_subdomain_add_target($binding,$anchor,$parentDomain,$subdomain);$p=$binding->data['package'];
+    if(provider_subdomain_add_pending($p['profile_id'],$p['package_id'],$params['subdomain']))throw new RuntimeException('A previous addition for this hostname is unresolved. It cannot be sent again.');
+    $previous=provider_subdomain_add_previous($p['profile_id'],$p['package_id']);
+    if(($previous['id']??'')!==$review['previous_id']||($previous['proof']??str_repeat('0',64))!==$review['previous_proof'])throw new RuntimeException('Subdomain history changed. Reload the review.');
+    if($previous){$old=provider_subdomain_add_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new hosting map before a separate approval.');}
+    $now=time();$d=['version'=>$clientOrigin===null?1:2,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_proof'=>$anchor['proof'],'params'=>$params,
+        'reviewed'=>true,'review_proof'=>$reviewProof,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];if($clientOrigin!==null)$d['client_origin']=$clientOrigin;$json=provider_document_roots_json($d);
+    if(strlen($json)>16384)throw new LogicException('Subdomain approval exceeds its storage contract.');$scope=provider_subdomain_add_grant_scope($requestId,$json);
+    query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+        [$requestId,$p['profile_id'],SubdomainAdd::OPERATION,provider_operations_scope(SubdomainAdd::OPERATION,$scope),$p['profile_revision'],provider_document_roots_json($scope),(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'subdomainadd:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);
+    $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$p['profile_id'],'package_id'=>$p['package_id'],'subdomain'=>$subdomain,'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];
+    provider_subdomain_add_insert('request',provider_subdomain_add_prove('request',$q,$grant));return true;
+}
+/** Exactly one newly admitted request; an existing terminal is never sent again. */
+function provider_subdomain_add_send_locked(string $requestId,?callable $resolver=null,?callable $perform=null):array {
+    provider_subdomain_add_guard(false);if(db()->inTransaction())throw new LogicException('Subdomain dispatch cannot inherit a transaction.');
+    $request=provider_subdomain_add_request($requestId);$entered=false;$failure=null;
+    try{
+        $authorize=static fn()=>provider_subdomain_add_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();
+        $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));
+        try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['package']['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');
+            $authorize();$op=new ProviderOperation(SubdomainAdd::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);
+        }finally{unset($secret);}
+    }catch(Throwable $e){if($e instanceof PDOException)throw $e;$failure=$e;}
+    staff_transaction(fn()=>provider_subdomain_add_end($request,$entered?'attempted':'not_sent'));
+    if($failure!==null&&!($failure instanceof RuntimeException)&&!($failure instanceof InvalidArgumentException))throw $failure;
+    return staff_transaction(fn()=>provider_subdomain_add_summary($requestId));
 }
 
 function provider_subdomain_add_check_document(array $row,array $request):array {
@@ -197,6 +212,7 @@ function provider_subdomain_add_check_document(array $row,array $request):array 
 /** Internal atomic save of this exact newly returned receipt, never a latest-row replacement. */
 function provider_subdomain_add_save_check(array $plan,array $receipt):array {
     provider_document_roots_guard();$request=provider_subdomain_add_request($plan['request_id']);
+    if($request['document']['version']===2)provider_subdomain_requests_origin_current($request);
     [$actor,,$current]=provider_subdomain_add_context($request['binding']);provider_subdomain_add_original_actor($request,$actor);$terminal=provider_subdomain_add_terminal($request);
     provider_subdomain_add_finished_ledger($request,time());
     if((int)$actor['id']!==$plan['actor_id']||!hash_equals(hash('sha256',$actor['auth_version']),$plan['actor_auth'])||!$terminal||$terminal['row']['disposition']!=='attempted'
@@ -252,6 +268,7 @@ function provider_subdomain_add_recover_finished(string $requestId,string $revie
         $actor=provider_subdomain_add_actor($password);
         if(!provider_subdomain_add_ready())throw new RuntimeException('Restore the original Subdomain add storage first.');
         $request=provider_subdomain_add_request($requestId);
+        if($request['document']['version']===2)provider_subdomain_requests_origin_current($request);
         provider_subdomain_add_context($request['binding'],false);
         if((int)$actor['id']!==(int)$request['row']['actor_id']||!hash_equals($request['document']['actor_auth'],hash('sha256',$actor['auth_version']))||$request['grant']['revoked_at']!==null)
             throw new RuntimeException('The original Subdomain approval owner or context changed.');
@@ -274,14 +291,14 @@ function provider_subdomain_add_recover_finished(string $requestId,string $revie
 function provider_subdomain_add_verify(string $requestId,#[SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null):array {
     if(db()->inTransaction())throw new LogicException('Subdomain verification cannot run in a transaction.');provider_document_roots_id($requestId);
     $plan=staff_locked(fn()=>staff_transaction(function()use($requestId,$password):array{
-        $actor=provider_subdomain_add_actor($password);if(!provider_subdomain_add_ready())throw new RuntimeException('Prepare Subdomain add storage first.');$request=provider_subdomain_add_request($requestId);[,,$binding]=provider_subdomain_add_context($request['binding']);provider_subdomain_add_original_actor($request,$actor);$terminal=provider_subdomain_add_terminal($request);
+        $actor=provider_subdomain_add_actor($password);if(!provider_subdomain_add_ready())throw new RuntimeException('Prepare Subdomain add storage first.');$request=provider_subdomain_add_request($requestId);if($request['document']['version']===2)provider_subdomain_requests_origin_current($request);[,,$binding]=provider_subdomain_add_context($request['binding']);provider_subdomain_add_original_actor($request,$actor);$terminal=provider_subdomain_add_terminal($request);
         if(!$terminal)throw new RuntimeException('This interrupted request needs an operator recovery transition. Dispatch and reconciliation remain blocked.');
         provider_subdomain_add_finished_ledger($request,time());
         if($terminal['row']['disposition']!=='attempted')throw new RuntimeException('This request was refused before provider dispatch. Save a new observation before a separate approval.');
         if(one('SELECT id FROM '.table('provider_subdomain_add_checks')." WHERE request_id=? AND BINARY disposition='observed'",[$requestId]))throw new RuntimeException('This hostname was already observed after this request. Use the normal hosting map refresh for current information.');
-        return ['request_id'=>$requestId,'check_id'=>bin2hex(random_bytes(16)),'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),'binding'=>$binding,'terminal_proof'=>$terminal['row']['proof'],'floor'=>(int)query('SELECT COALESCE(MAX(seq),0) FROM '.table('provider_refreshes'))->fetchColumn()];
+        $plan=['request_id'=>$requestId,'check_id'=>bin2hex(random_bytes(16)),'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),'binding'=>$binding,'terminal_proof'=>$terminal['row']['proof'],'floor'=>(int)query('SELECT COALESCE(MAX(seq),0) FROM '.table('provider_refreshes'))->fetchColumn()];if($request['document']['version']===2)$plan['client_origin']=true;return $plan;
     }));
-    $receipt=provider_document_roots_refresh($plan['binding']->data['package']['link_id'],$plan['binding'],$password,$resolver,$transport);
+    $receipt=isset($plan['client_origin'])?provider_subdomain_requests_refresh($requestId,$plan['binding'],$password,$resolver,$transport):provider_document_roots_refresh($plan['binding']->data['package']['link_id'],$plan['binding'],$password,$resolver,$transport);
     return staff_locked(fn()=>staff_transaction(fn()=>provider_subdomain_add_save_check($plan,$receipt)));
 }
 function provider_subdomain_add_summary(string $requestId):array {
@@ -337,25 +354,28 @@ function provider_subdomain_add_status():array {
 }
 function provider_subdomain_add_review(string $linkId):array {
     provider_document_roots_id($linkId);
-    return staff_locked(fn()=>staff_transaction(function()use($linkId):array{
-        $actor=provider_subdomain_add_actor();$out=['ready'=>false,'reason'=>'not_prepared','link_id'=>$linkId,'profile_id'=>'','package_id'=>0,'package_name'=>'','parent_domains'=>[],'request_id'=>'','review_proof'=>'','expires_epoch'=>0,'observed_epoch'=>0];
-        if(!provider_subdomain_add_ready())return $out;
-        $out['reason']='refresh_required';
-        try{$binding=provider_document_roots_binding($linkId);$r=provider_document_roots_latest($linkId);
-            if(!$r||$r['state']!=='complete'||!service_observations_fresh($r))return $out;
-            [$binding,$anchor]=provider_subdomain_add_precondition($linkId,$r['id'],$binding->sha256);$package=provider_subdomain_add_package($binding);
-        }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;return $out;}
-        $p=$binding->data['package'];$out['profile_id']=$p['profile_id'];$out['package_id']=$p['package_id'];$out['package_name']=$package['name'];$out['observed_epoch']=$anchor['observed_epoch'];
-        $parents=[];foreach($package['names'] as $name)if(DocumentRootsObservation::validName($name)&&provider_subdomain_add_entry($anchor,$name)!==null)$parents[]=$name;
-        if(!$package['enabled']||$parents===[]){$out['reason']='no_attached_parent';return $out;}sort($parents,SORT_STRING);
-        $previous=provider_subdomain_add_previous($p['profile_id'],$p['package_id']);
-        if($previous&&$anchor['seq']<=provider_subdomain_add_request($previous['id'])['document']['anchor_seq'])return $out;
-        $now=time();$id=bin2hex(random_bytes(16));$d=['version'=>1,'request_id'=>$id,'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),
-            'binding_sha256'=>$binding->sha256,'anchor_id'=>$anchor['id'],'anchor_proof'=>$anchor['proof'],'previous_id'=>$previous['id']??'','previous_proof'=>$previous['proof']??str_repeat('0',64),'issued_epoch'=>$now,'expires_epoch'=>$now+300];
-        $proof=rtrim(strtr(base64_encode(provider_document_roots_json($d)),'+/','-_'),'=').'.'.provider_subdomain_add_hmac('review',$d);
-        return array_replace($out,['ready'=>true,'reason'=>'','parent_domains'=>$parents,'request_id'=>$id,'review_proof'=>$proof,'expires_epoch'=>$now+300]);
-    }));
+    return staff_locked(fn()=>staff_transaction(fn()=>provider_subdomain_add_review_locked($linkId)));
 }
+function provider_subdomain_add_review_locked(string $linkId):array {
+    provider_subdomain_add_guard();provider_document_roots_id($linkId);
+    $actor=provider_subdomain_add_actor();$out=['ready'=>false,'reason'=>'not_prepared','link_id'=>$linkId,'profile_id'=>'','package_id'=>0,'package_name'=>'','parent_domains'=>[],'request_id'=>'','review_proof'=>'','expires_epoch'=>0,'observed_epoch'=>0];
+    if(!provider_subdomain_add_ready())return $out;
+    $out['reason']='refresh_required';
+    try{$binding=provider_document_roots_binding($linkId);$r=provider_document_roots_latest($linkId);
+        if(!$r||$r['state']!=='complete'||!service_observations_fresh($r))return $out;
+        [$binding,$anchor]=provider_subdomain_add_precondition($linkId,$r['id'],$binding->sha256);$package=provider_subdomain_add_package($binding);
+    }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;return $out;}
+    $p=$binding->data['package'];$out['profile_id']=$p['profile_id'];$out['package_id']=$p['package_id'];$out['package_name']=$package['name'];$out['observed_epoch']=$anchor['observed_epoch'];
+    $parents=[];foreach($package['names'] as $name)if(DocumentRootsObservation::validName($name)&&provider_subdomain_add_entry($anchor,$name)!==null)$parents[]=$name;
+    if(!$package['enabled']||$parents===[]){$out['reason']='no_attached_parent';return $out;}sort($parents,SORT_STRING);
+    $previous=provider_subdomain_add_previous($p['profile_id'],$p['package_id']);
+    if($previous&&$anchor['seq']<=provider_subdomain_add_request($previous['id'])['document']['anchor_seq'])return $out;
+    $now=time();$id=bin2hex(random_bytes(16));$d=['version'=>1,'request_id'=>$id,'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),
+        'binding_sha256'=>$binding->sha256,'anchor_id'=>$anchor['id'],'anchor_proof'=>$anchor['proof'],'previous_id'=>$previous['id']??'','previous_proof'=>$previous['proof']??str_repeat('0',64),'issued_epoch'=>$now,'expires_epoch'=>$now+300];
+    $proof=rtrim(strtr(base64_encode(provider_document_roots_json($d)),'+/','-_'),'=').'.'.provider_subdomain_add_hmac('review',$d);
+    return array_replace($out,['ready'=>true,'reason'=>'','parent_domains'=>$parents,'request_id'=>$id,'review_proof'=>$proof,'expires_epoch'=>$now+300]);
+}
+
 function provider_subdomain_add_history(?string $linkId=null,int $page=1):array {
     if($linkId!==null)provider_document_roots_id($linkId);$page=max(1,min(100000,$page));
     return staff_locked(fn()=>staff_transaction(function()use($linkId,$page):array{

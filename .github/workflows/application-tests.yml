@@ -378,6 +378,15 @@ jobs:
           "$PHP_BINARY" tests/subdomain_add_views.php qa/subdomain-add-views-default.json
           "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json
           CWP_TEST_SUBDOMAIN_ADD=1 "$PHP_BINARY" tests/provider_subdomain_add_native.php
+          "$PHP_BINARY" tests/subdomain_requests_document.php > qa/subdomain-requests-document-default-results.json
+          "$PHP_BINARY" -n tests/subdomain_requests_document.php > qa/subdomain-requests-document-minimal-results.json
+          "$PHP_BINARY" tests/subdomain_requests_storage.php > qa/subdomain-requests-storage-default-results.json
+          "$PHP_BINARY" -n tests/subdomain_requests_storage.php > qa/subdomain-requests-storage-minimal-results.json
+          "$PHP_BINARY" tests/subdomain_requests_contract.php > qa/subdomain-requests-service-default-results.json
+          "$PHP_BINARY" -n -d extension=pdo tests/subdomain_requests_contract.php > qa/subdomain-requests-service-minimal-results.json
+          "$PHP_BINARY" tests/subdomain_requests_views.php > qa/subdomain-requests-views-default-results.json
+          "$PHP_BINARY" -n -d extension=pdo tests/subdomain_requests_views.php > qa/subdomain-requests-views-minimal-results.json
+          CWP_TEST_SUBDOMAIN_REQUESTS=1 "$PHP_BINARY" tests/provider_subdomain_requests_native.php
           "$PHP_BINARY" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
           "$PHP_BINARY" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
           "$PHP_BINARY" tests/provider_package_force_ssl_native.php

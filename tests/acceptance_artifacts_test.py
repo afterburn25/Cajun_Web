@@ -466,6 +466,144 @@ def subdomain_add_checks(tmp,launch):
     check('Subdomain add private state remains excluded',not a.evidence_allowed('test-runtime/subdomain-add-private/state.json','native-browser') and not a.evidence_allowed('qa/subdomain-add-private/state.json','native-browser'))
 
 
+# The predecessor's actual functions and predicates above stay byte-for-byte intact.
+_run_before_client_subdomain = run
+
+
+def client_subdomain_inverse(data, delta):
+    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:
+        raise ValueError('Client subdomain current source changed')
+    text = data.decode('utf-8')
+    for item in reversed(delta['replacements']):
+        if text.count(item['after']) != 1:
+            raise ValueError('Client subdomain inverse is not unique')
+        text = text.replace(item['after'], item['before'], 1)
+    result = text.encode('utf-8')
+    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:
+        raise ValueError('Client subdomain predecessor changed')
+    return result
+
+
+def client_subdomain_current():
+    current = a.load(ROOT/'tools/acceptance-contract.json')
+    section = current['client_subdomain_requests']
+    # Authenticate every current shipping/producer/route byte before any historical
+    # comparison substitutes its exact predecessor. Never silently accept old pins.
+    for path, digest in section['source_sha256'].items():
+        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() != digest:
+            raise ValueError('Client subdomain current source mismatch: '+path)
+    registry = a.load(ROOT/'tools/acceptance-reports.json')
+    old = copy.deepcopy(current)
+    del old['client_subdomain_requests']
+    commands = section['native_additions']
+    position = old['native_commands'].index(section['native_after'])+1
+    if len(commands) != 9 or old['native_commands'][position:position+9] != commands or any(old['native_commands'].count(c) != 1 for c in commands):
+        raise ValueError('Client subdomain native recipe changed')
+    del old['native_commands'][position:position+9]
+    for pin in section['repins']:
+        cursor = old
+        for key in pin['keys'][:-1]: cursor = cursor[key]
+        key = pin['keys'][-1]
+        if cursor[key] != pin['after']: raise ValueError('Client subdomain current pin changed')
+        cursor[key] = pin['before']
+    dump = lambda value: json.dumps(value, indent=2).encode()+b'\n'
+    if hashlib.sha256(dump(old)).hexdigest() != section['predecessor_contract_sha256']:
+        raise ValueError('Client subdomain predecessor contract changed')
+    prior_registry = copy.deepcopy(registry)
+    for phase in ('browser', 'final'):
+        if any(prior_registry[phase].count(n) != 1 for n in section['reports']):
+            raise ValueError('Client subdomain report is missing or duplicated')
+        prior_registry[phase] = [n for n in prior_registry[phase] if n not in section['reports']]
+    if hashlib.sha256(dump(prior_registry)).hexdigest() != section['predecessor_reports_sha256']:
+        raise ValueError('Client subdomain predecessor reports changed')
+    historical = {'tools/acceptance-contract.json': dump(old), 'tools/acceptance-reports.json': dump(prior_registry)}
+    for path, delta in section['source_deltas'].items():
+        historical[path] = client_subdomain_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n'), delta)
+    return current, registry, section, historical
+
+
+def client_subdomain_checks(tmp, current, registry, section, historical):
+    check('Client subdomain preserves all159 prior native commands before nine additions', len(current['native_commands']) == 168 and len(json.loads(historical['tools/acceptance-contract.json'])['native_commands']) == 159)
+    for path, digest in section['source_sha256'].items():
+        check('Client subdomain current source bound '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
+    for path, delta in section['source_deltas'].items():
+        check('Client subdomain complete source inverse '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])
+        for label, changed in [('current bytes', (ROOT/path).read_bytes().replace(b'\r\n', b'\n')+b'\n'), ('predecessor hash', None)]:
+            altered = copy.deepcopy(delta)
+            if changed is None:
+                changed = (ROOT/path).read_bytes().replace(b'\r\n', b'\n'); altered['before_sha256'] = '0'*64
+            deny('Client subdomain inverse refuses '+label+' '+path, lambda changed=changed, altered=altered: client_subdomain_inverse(changed, altered))
+    reports = section['reports']
+    check('Client subdomain has nine separate mandatory reports and no captures', len(reports) == len(set(reports)) == 9 and section['screenshots'] == [])
+    for phase, total, prior in [('browser', 180, 171), ('final', 224, 215)]:
+        check('Client subdomain '+phase+' retains every original report in order', len(registry[phase]) == total and len(set(registry[phase])) == total and [n for n in registry[phase] if n not in reports] == json.loads(historical['tools/acceptance-reports.json'])[phase] and len(registry[phase])-len(reports) == prior)
+    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()
+    focused = (ROOT/section['focused_path']).read_text()
+    for path, text in [('.github/workflows/application-tests.yml', workflow), (section['focused_path'], focused)]:
+        prior = historical[path].decode()
+        check('Client subdomain preserves all branch triggers and concurrency '+path, text.split('jobs:\n', 1)[0].split('paths:')[0] == prior.split('jobs:\n', 1)[0].split('paths:')[0] and text.split('concurrency:\n', 1)[1].split('jobs:\n', 1)[0] == prior.split('concurrency:\n', 1)[1].split('jobs:\n', 1)[0])
+    check('Client subdomain retains focused four combinations timeout and no cancellation', "php: ['8.2', '8.4']" in focused and "image: 'mariadb:10.11'" in focused and "image: 'mysql:8.4'" in focused and 'timeout-minutes: 35' in focused and 'cancel-in-progress: false' in focused)
+    check('Client subdomain retains mapped-port context and explicit isolated opt-in', valid_port_context(workflow) and section['native_additions'][-1] == 'CWP_TEST_SUBDOMAIN_REQUESTS=1 "$PHP_BINARY" tests/provider_subdomain_requests_native.php')
+    for command in section['native_additions']:
+        docker = command.replace('"$PHP_BINARY"', 'php').replace(' -d extension=pdo', '')
+        check('Client subdomain focused exact producer '+docker, focused.count('              '+docker+'\n') == 1)
+    for name in reports:
+        check('Client subdomain focused preserves named output '+name, focused.count('            qa/'+name+'\n') == 1 and 'if: always()' in focused)
+    # Actual artifact sealing and aggregation, using explicitly synthetic reports.
+    root = tmp/'client-subdomain'; source = root/'source'; ctx = context(); fixtures(source, ctx)
+    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '5'*64
+    for index, lane in enumerate(a.LANES):
+        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job
+        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')
+        elif lane == 'native-browser':
+            for name in registry['browser']:
+                if name not in a.BUILD_QA: named(job/'qa'/name)
+        else:
+            for name in registry['final']:
+                if name not in registry['browser'] and a.evidence_allowed('qa/'+name, lane): named(job/'qa'/name)
+        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)
+        bindings[lane] = {'result':'success', 'artifact_id':str(index+31), 'sha256':digest, **({'input_sha256':input_sha} if lane=='build' else {}), **({'checkpoint_id':'39','checkpoint_digest':'6'*64} if lane=='native-browser' else {})}
+    seq = 0
+    def combined():
+        nonlocal seq
+        seq += 1
+        return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)
+    def reseal():
+        job = jobs['native-browser']
+        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):
+            if path.exists():
+                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)
+        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
+    result = combined()
+    check('Client subdomain actual aggregate requires all224 named reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    for name in reports:
+        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combined()
+        check('Client subdomain missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])
+        named(path, False); reseal(); result = combined()
+        check('Client subdomain failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)
+        named(path)
+        check('Client subdomain evidence owns only native-browser '+name, a.evidence_allowed('qa/'+name, 'native-browser') and not any(a.evidence_allowed('qa/'+name, lane) for lane in ('build','apache','recovery')))
+    named(jobs['native-browser']/'qa/subdomain-requests-unexpected-results.json'); reseal(); result = combined()
+    check('Client subdomain unexpected report cannot pass', result['complete'] is False and 'Unexpected reports: subdomain-requests-unexpected-results.json' in result['errors'])
+    check('Client subdomain private fixture state is never exported', not a.evidence_allowed('test-runtime/subdomain-requests-private/state.json', 'native-browser') and not a.input_allowed('test-runtime/subdomain-requests-private/state.json'))
+
+
+def run(tmp):
+    current, registry, section, historical = client_subdomain_current()
+    # Finite exact paths only, and all actual current pins were checked above.
+    # The original test predicates execute unchanged against their whole preimages.
+    originals = {str((ROOT/path).resolve()): data for path, data in historical.items()}
+    read_bytes, read_text = Path.read_bytes, Path.read_text
+    def historical_bytes(path):
+        return originals.get(str(path.resolve()), None) if str(path.resolve()) in originals else read_bytes(path)
+    def historical_text(path, *args, **kwargs):
+        key = str(path.resolve())
+        return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path, *args, **kwargs)
+    with patch.object(Path, 'read_bytes', historical_bytes), patch.object(Path, 'read_text', historical_text):
+        _run_before_client_subdomain(tmp)
+    client_subdomain_checks(tmp, current, registry, section, historical)
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None

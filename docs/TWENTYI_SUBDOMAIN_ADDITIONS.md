@@ -14,7 +14,7 @@ After submission, use **Check reported website names** in request history. This 
 
 An uncertain request blocks another add for the same hostname and package, including after assignment or credential changes. Other hostnames remain eligible for a new explicit review. Reposting an existing request never sends it again. A separate recovery action can restore a missing local completion record from the exact finished provider attempt; it does not replay the request. Incomplete attempts or damaged retained evidence require recovery of their original records.
 
-Owners can see retained request history after an assignment is removed. Further checks and recovery require current authority matching the original approval. Client-request forms, delegated writes, deletion, custom document-root changes and automatic DNS or certificate setup are outside this increment.
+Owners can see retained request history after an assignment is removed. Further checks and recovery require current authority matching the original approval. The original PR234 increment excludes client-request forms; the separate [client request continuation](TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) adds them above this owner workflow. Delegated writes, deletion, custom document-root changes and automatic DNS or certificate setup remain outside both increments.
 
 ## Provider and storage contract
 

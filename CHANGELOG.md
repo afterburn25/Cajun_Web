@@ -1,3 +1,7 @@
+## Unreleased — client subdomain requests
+
+Add a dedicated Subdomain requests section for primary clients and the owner, with assigned website choices, pending withdrawal, owner review and saved provider progress. Connect approval to the existing once-only subdomain operation and keep separate readback distinct from website availability. [Scope and acceptance](docs/TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md). This candidate remains unreleased.
+
 ## Unreleased — owner hosting subdomain additions
 
 Add one subdomain beneath an explicitly attached parent website, with current owner approval, once-only dispatch and separate provider readback. Retain uncertain outcomes and request history without treating a missing name as permission to resend. Preserve entered names after form errors, and keep long names/actions readable on mobile. [Scope and acceptance](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). This candidate is not a release or live deployment.
