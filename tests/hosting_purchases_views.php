@@ -101,6 +101,45 @@ try {
     $result=['invoice_id'=>7,'invoice_reference'=>'INV-7','amount_cents'=>2500,'currency'=>'USD','invoice_status'=>'issued','project_id'=>99,'agreement_id'=>str_repeat('b',32),'schedule_id'=>str_repeat('d',32)];
     ob_start();require CWP_CODE_ROOT.'/portal/views/hosting_checkout.php';$resultHtml=ob_get_clean();
     hpv_ok('Actual checkout result adds purchase history without removing four original links',count(hpv_links($resultHtml))===5&&(hpv_links($resultHtml)['My hosting purchases']??null)===studio_url(['hosting_purchases'=>1]));
+    // Follow the actual inherited setup-card link through the real controller bodies.
+    // Pure documents are real; the native context and later progress renderer are modeled.
+    require CWP_CODE_ROOT.'/app/hosting/order_document.php';
+    hpv_load(CWP_CODE_ROOT.'/includes/layout/service_orders.php','service_orders_ui');
+    final class HpvOrderCardReached extends Exception {}
+    final class HpvWrongInvoiceRoute extends Exception {}
+    function service_orders_ready(): bool {return true;}
+    function service_orders_context(string $agreement,int $client,bool $asClient=false): array {
+        $GLOBALS['order_contexts'][]=[$agreement,$client,$asClient];
+        return ['document'=>$GLOBALS['order_document'],'assessment'=>null,'warning'=>null];
+    }
+    function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment): never {throw new HpvOrderCardReached();}
+    function payments_ready(): bool {return false;}
+    function staff_ready(): bool {return false;}
+    function admin_foot(): never {throw new HpvWrongInvoiceRoute();}
+    $terms=['name'=>'Saved setup invoice','cadence'=>'monthly','price'=>2500,'currency'=>'USD','inclusions'=>['One website'],'exclusions'=>[],'limits'=>[],'support'=>'Studio support'];
+    $plan=ServicePlanDocument::create(str_repeat('1',32),4,100,$terms)->append(str_repeat('2',32),'activate',4,101,[]);
+    $agreement=ServiceSubscriptionDocument::create(str_repeat('3',32),42,4,102,$plan);
+    $agreement=$agreement->append(str_repeat('4',32),'consent','client:42',103,['terms_hash'=>$plan->model()->termsHash()])->append(str_repeat('5',32),'activate','staff:4',104,[]);
+    $order_document=ServiceOrderDocument::create(str_repeat('6',32),42,4,105,
+        ['id'=>$agreement->data()['id'],'revision'=>$agreement->revision(),'sha256'=>$agreement->fingerprint(),'terms_hash'=>$plan->model()->termsHash()],
+        ['id'=>7,'project_id'=>99,'sha256'=>str_repeat('a',64),'amount_cents'=>2500,'currency'=>'USD','basis'=>'initial-recurring-period','schedule_id'=>str_repeat('7',32),'period_index'=>0]);
+    $order_document=$order_document->append(str_repeat('8',32),'accept','client:42',106,['domain_name'=>'setup.example','review_sha256'=>$order_document->fingerprint()]);
+    $originalDocuments=[$agreement->json(),$order_document->json()];$order_contexts=[];$setupCards=[];
+    foreach([true,false] as $asOwner) {
+        $stopped=false;ob_start();
+        try {service_orders_ui($agreement,$asOwner);} catch(HpvOrderCardReached) {$stopped=true;}
+        finally {$setupCards[$asOwner?'owner':'client']=ob_get_clean();}
+        if(!$stopped)throw new LogicException('Expected the actual setup card before later progress forms.');
+    }
+    $ownerSetup=hpv_links($setupCards['owner']);$clientSetup=hpv_links($setupCards['client']);
+    parse_str(parse_url($ownerSetup['Review invoice'],PHP_URL_QUERY),$_GET);$calls=[];$reached=false;
+    ob_start();try {payments_admin_render($_GET['view'],$user,'');}
+    catch(HpvInvoiceReached) {$reached=true;} catch(HpvWrongInvoiceRoute) {}
+    finally {ob_end_clean();}$_GET=[];
+    hpv_ok('Actual owner setup Review invoice reaches its original selected invoice',$reached&&$calls===[['admin-head','invoice-payments'],['ledger-invoice',7]]);
+    hpv_ok('Owner setup card retains the exact invoice-payments route and query',$ownerSetup['Review invoice']===admin_url('invoice-payments',['invoice_id'=>7]));
+    hpv_ok('Client setup Review invoice retains its existing owned portal destination',$clientSetup['Review invoice']===studio_url(['invoice'=>7]));
+    hpv_ok('Setup link rendering preserves exact documents and owning context',$originalDocuments===[$agreement->json(),$order_document->json()]&&$order_contexts===[[$agreement->data()['id'],42,false],[$agreement->data()['id'],42,true]]);
     echo json_encode(['passed'=>true,'count'=>count($checks),'checks'=>$checks,'scope'=>'Actual PHP renderer and extracted controller functions; modeled reader/session seams, no SQL or HTTP.'],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
 } catch(Throwable $e) {
     while(ob_get_level()>0)ob_end_clean();

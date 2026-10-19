@@ -1,3 +1,7 @@
+## 2026-10-19 — installed hosting purchase navigation
+
+Extend the existing completed checkout fixture through its purchase inbox rather than synthesizing another commerce history. Owner and client reads must preserve the same invoices, agreements, orders, provider counters and business digest. The already-combined hosting head contains current main; frozen earlier branches and their original queued runs remain intact. Correct the discovered owner setup invoice link at its existing renderer; keep the client link and payment authorization unchanged. The regression must follow that generated URL through the actual payment and ledger controllers. Keep the nameserver candidate separate pending its own runtime evidence. No acceptance result transfers across source revisions. [Scope](TWENTYI_HOSTING_PURCHASE_INBOX.md#installed-purchase-navigation).
+
 ## 2026-10-18 — hosting purchase history and setup handoff
 
 A completed hosting checkout is exposed as retained purchase history and links to the existing agreement-based setup controls. Invoice payment, agreement activation and local order acceptance remain distinct. A list read never creates or repairs business history. Checkout-created agreements select their original invoice by retained origin; the prior latest-50 scan remains only for legacy agreements. This closes the discoverability and older-invoice gap without adding another order writer or bypassing owner/client consent. [Scope and verification](TWENTYI_HOSTING_PURCHASE_INBOX.md).

@@ -1,7 +1,7 @@
 name: Catalog import and shared hosting storefront
 on:
   push:
-    branches: [codex/twentyi-catalog-storefront, codex/twentyi-imported-plan-setup, codex/twentyi-hosting-purchase-inbox]
+    branches: [codex/twentyi-catalog-storefront, codex/twentyi-imported-plan-setup, codex/twentyi-hosting-purchase-inbox, codex/twentyi-purchase-inbox-browser]
   workflow_dispatch:
 permissions:
   contents: read

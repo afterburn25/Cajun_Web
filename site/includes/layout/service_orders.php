@@ -42,7 +42,7 @@ function service_orders_ui(ServiceSubscriptionDocument $agreement,bool $owner):v
     $d=$doc->data();$state=$doc->state();$phase=$state['phase'];$invoice=$d['invoice'];
     $label=match($phase){'offered'=>'Awaiting your hosting confirmation','accepted'=>'Hosting request accepted','cancelled'=>'Hosting request cancelled','declined'=>'Hosting offer declined',default=>'Hosting offer withdrawn'};
     echo '<section class="workspace-card" data-service-order><h2>Initial shared hosting</h2><p class="workspace-status">'.esc($label).'</p><p>Invoice #'.(int)$invoice['id'].' · $'.esc(gmoney($invoice['amount_cents'])).' '.esc($invoice['currency']).'</p>';
-    $url=$owner?admin_url('payments',['invoice'=>$invoice['id']]):studio_url(['invoice'=>$invoice['id']]);
+    $url=$owner?admin_url('invoice-payments',['invoice_id'=>$invoice['id']]):studio_url(['invoice'=>$invoice['id']]);
     echo '<a class="btn outline" href="'.esc($url).'">Review invoice</a>';
     if($state['domain_name'])echo '<p><strong>Hosting domain:</strong> '.esc($state['domain_name']).'</p>';
     if($ctx['warning'])echo '<p class="notice warning">'.esc($ctx['warning']).'</p>';

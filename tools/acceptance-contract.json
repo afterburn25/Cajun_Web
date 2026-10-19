@@ -1188,7 +1188,7 @@
       "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46",
       "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
       "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
-      "tests/hosting_checkout_http_browser.py": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+      "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
       "tests/hosting_checkout_http_guards.py": "cb3c348d6766a27decd16b28285f123573ee476ac137e4662d704a931e0288b2",
@@ -1310,7 +1310,7 @@
       "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
       "site/pages/services/hosting.php": "d4a6530f40cd17f34675214afbbf88a852bdde74fedfd3478c7671eb4cf21a8b",
       "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
-      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+      ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "tests/provider_catalog_connection_entry.php": "af57305a2fddd137e5970a4148f148aba7c2f95ffc7a1ef0c17ab4660c0a70bf",
       "tests/provider_catalog_import_batch.php": "48299dc9aaf55c665d5323baf2478130b5475d453532a77d1a863a7de97eaea3",
       "tests/provider_catalog_import_batch_views.php": "80dd47177a3404320fad762fac9e239292d05922f8a3504d55c6ec13dd876891",
@@ -1332,7 +1332,7 @@
       }
     },
     "unchanged_workflows": {
-      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
     },
     "scope": "Separate focused portable/native and synthetic-renderer checks; actual installed application, combined full/upgrade acceptance and provider artwork/VPS mapping remain pending."
@@ -1346,7 +1346,7 @@
     },
     "source_sha256": {
       "tests/provider_package_types_cases.py": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b",
-      "tests/hosting_checkout_http_browser.py": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+      "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/catalog_storefront_http_cases.py": "6f9c729c655ea6b1bc866738d144aa73989818da30525bae51cb9f34edc50709",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8"
     },
@@ -1385,8 +1385,8 @@
       }
     },
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
-      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
@@ -1431,8 +1431,8 @@
     "predecessor_contract_sha256": "67cb48db157eae0d77f0addbe880659c418d06ed8e01f0e77308ca4c9f7065ef",
     "predecessor_reports_sha256": "383566d49b339c0c0d1ec69947fdab508252ecb553e6a9dc3ef1bab180a669d4",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
-      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
       "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
       "site/app/hosting/catalog_offer_setup.php": "f9be99047dd3aac5a1ce7777b4b5e25705d01d5036fa110525aa0cc33ec43a52",
@@ -1448,7 +1448,7 @@
       "tests/hosting_catalog_plan_setup_document.php": "aadbf41e64c3157459ebef173170ea35a5ee291f0ebd05bedaae5e6532f2a457",
       "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
       "tests/hosting_catalog_plan_setup_views.php": "c15317594664fc32aafb655c90f6f4757373b16bbe62bbe7cd6e3baf408097e6",
-      "tests/hosting_checkout_http_browser.py": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+      "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
       "tests/imported_plan_setup_wiring.py": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268",
       "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
@@ -1862,8 +1862,8 @@
     "predecessor_contract_sha256": "a4091c25c3c034a27761db7441aeff508419bb28d3e15cd79fea28860e217431",
     "predecessor_reports_sha256": "90a9bb0bb73c2129337c8c89e7f8245feaf657d47bacf4532d567e52007608c1",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
-      ".github/workflows/catalog-storefront.yml": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_purchases.php": "c45a8ae46cffdac59d269de2e9a1cf56cd6e775f18bd4a0e181fe3c0e3e95c5b",
       "site/admin/controllers/router.php": "215de3171908b8912b2d2eae7f0d3843a10890499c4e0f425898c57ea04ded89",
       "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
@@ -1881,8 +1881,8 @@
       "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
       "tests/hosting_checkout_purchases_guards.php": "7135eca0924835e125371aaea84f7de56c0ed00c89e3973a2961dc405c12f95a",
       "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
-      "tests/hosting_purchase_inbox_wiring.py": "9ee2909e64eea3a3f061fda701e22b820d720e06b854d25f79ff09371831c1bf",
-      "tests/hosting_purchases_views.php": "9fc5e8354508f6fa83a497ea15bff9d39bcb07d4f0994ac77ee185634a35d742",
+      "tests/hosting_purchase_inbox_wiring.py": "79db24a299ba5a4cbc01f04b9196c38076c40c00ae638411e325f0ddf6cf001c",
+      "tests/hosting_purchases_views.php": "65000b09de02f2a9ec3f4c85158f216e124fdb3ed96ee2c75462cd3958df7f69",
       "tests/imported_plan_setup_wiring.py": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268",
       "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe"
     },
@@ -2216,9 +2216,252 @@
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
-      "tests/hosting_checkout_http_browser.py": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+      "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
+    }
+  },
+  "hosting_purchase_inbox_browser": {
+    "base": "7535f861c2c3accf37482f5af94099780c7806a6",
+    "branch": "codex/twentyi-purchase-inbox-browser",
+    "http_report": "hosting-checkout-http-results.json",
+    "screenshots": [
+      "Hosting-Purchase-Inbox-Owner-Desktop.png",
+      "Hosting-Purchase-Inbox-Owner-Mobile.png",
+      "Hosting-Purchase-Inbox-Client-Desktop.png",
+      "Hosting-Purchase-Inbox-Client-Mobile.png"
+    ],
+    "result_check": "Installed purchase inbox follows exact original records without new business writes",
+    "predecessor_contract_sha256": "feb7d4c1088f5aa8b66284a79bdbb7583f62c1685220f08ca2707486ef5b5776",
+    "predecessor_reports_sha256": "4250d481fcf080b42e9d9847c78484ae7be31e9b8b9e48b8a945446d31fb74b2",
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
+      "site/includes/layout/service_orders.php": "6664a3990ce2803c9f60af49d8dc5c0369b10a9046f8efba1c90f58ac5d3350c",
+      "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
+      "tests/hosting_purchase_inbox_cases.py": "1208bd94b91614c9567dc12f45fd2261ab2cdd61d852c80aaab69f7e4a12aef4",
+      "tests/hosting_purchase_inbox_wiring.py": "79db24a299ba5a4cbc01f04b9196c38076c40c00ae638411e325f0ddf6cf001c",
+      "tests/hosting_purchases_views.php": "65000b09de02f2a9ec3f4c85158f216e124fdb3ed96ee2c75462cd3958df7f69"
+    },
+    "source_delta": {
+      ".github/workflows/application-tests.yml": {
+        "predecessor_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+        "current_sha256": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "replacements": [
+          {
+            "before": "name: Application acceptance\non:\n  push:\n    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-hosting-purchase-inbox]\n    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']\n  pull_request:\n    branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]\n",
+            "after": "name: Application acceptance\non:\n  push:\n    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-hosting-purchase-inbox, codex/twentyi-purchase-inbox-browser]\n    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']\n  pull_request:\n    branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]\n"
+          }
+        ]
+      },
+      ".github/workflows/catalog-storefront.yml": {
+        "predecessor_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+        "current_sha256": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
+        "replacements": [
+          {
+            "before": "name: Catalog import and shared hosting storefront\non:\n  push:\n    branches: [codex/twentyi-catalog-storefront, codex/twentyi-imported-plan-setup, codex/twentyi-hosting-purchase-inbox]\n  workflow_dispatch:\npermissions:\n  contents: read\n",
+            "after": "name: Catalog import and shared hosting storefront\non:\n  push:\n    branches: [codex/twentyi-catalog-storefront, codex/twentyi-imported-plan-setup, codex/twentyi-hosting-purchase-inbox, codex/twentyi-purchase-inbox-browser]\n  workflow_dispatch:\npermissions:\n  contents: read\n"
+          }
+        ]
+      },
+      "site/includes/layout/service_orders.php": {
+        "predecessor_sha256": "d348ba09bf484513f2c2e60a026d64805dded11de830d6939509a2f44faf0012",
+        "current_sha256": "6664a3990ce2803c9f60af49d8dc5c0369b10a9046f8efba1c90f58ac5d3350c",
+        "replacements": [
+          {
+            "before": "    $d=$doc->data();$state=$doc->state();$phase=$state['phase'];$invoice=$d['invoice'];\n    $label=match($phase){'offered'=>'Awaiting your hosting confirmation','accepted'=>'Hosting request accepted','cancelled'=>'Hosting request cancelled','declined'=>'Hosting offer declined',default=>'Hosting offer withdrawn'};\n    echo '<section class=\"workspace-card\" data-service-order><h2>Initial shared hosting</h2><p class=\"workspace-status\">'.esc($label).'</p><p>Invoice #'.(int)$invoice['id'].' \u00b7 $'.esc(gmoney($invoice['amount_cents'])).' '.esc($invoice['currency']).'</p>';\n    $url=$owner?admin_url('payments',['invoice'=>$invoice['id']]):studio_url(['invoice'=>$invoice['id']]);\n    echo '<a class=\"btn outline\" href=\"'.esc($url).'\">Review invoice</a>';\n    if($state['domain_name'])echo '<p><strong>Hosting domain:</strong> '.esc($state['domain_name']).'</p>';\n    if($ctx['warning'])echo '<p class=\"notice warning\">'.esc($ctx['warning']).'</p>';\n",
+            "after": "    $d=$doc->data();$state=$doc->state();$phase=$state['phase'];$invoice=$d['invoice'];\n    $label=match($phase){'offered'=>'Awaiting your hosting confirmation','accepted'=>'Hosting request accepted','cancelled'=>'Hosting request cancelled','declined'=>'Hosting offer declined',default=>'Hosting offer withdrawn'};\n    echo '<section class=\"workspace-card\" data-service-order><h2>Initial shared hosting</h2><p class=\"workspace-status\">'.esc($label).'</p><p>Invoice #'.(int)$invoice['id'].' \u00b7 $'.esc(gmoney($invoice['amount_cents'])).' '.esc($invoice['currency']).'</p>';\n    $url=$owner?admin_url('invoice-payments',['invoice_id'=>$invoice['id']]):studio_url(['invoice'=>$invoice['id']]);\n    echo '<a class=\"btn outline\" href=\"'.esc($url).'\">Review invoice</a>';\n    if($state['domain_name'])echo '<p><strong>Hosting domain:</strong> '.esc($state['domain_name']).'</p>';\n    if($ctx['warning'])echo '<p class=\"notice warning\">'.esc($ctx['warning']).'</p>';\n"
+          }
+        ]
+      },
+      "tests/hosting_checkout_http_browser.py": {
+        "predecessor_sha256": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+        "current_sha256": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
+        "replacements": [
+          {
+            "before": "from hosting_checkout_http_cases import run_browser, CAPTURE_STEMS\nfrom catalog_storefront_checkout_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES\nfrom hosting_catalog_plan_setup_cases import CAPTURES as PLAN_SETUP_CAPTURES\n\nROOT = Path(__file__).resolve().parents[1]\nWEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'\nSESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'\nBASE = 'http://127.0.0.1:8091'\nCAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))\nALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES\nSOURCE_PATHS = [\n    'tests/hosting_catalog_plan_setup_cases.py',\n    'site/app/hosting/catalog_offer_setup.php', 'site/app/hosting/catalog_offer_setup_document.php',\n    'site/app/hosting/catalog_offer_setup_views.php', 'site/app/hosting/catalog_offer_views.php', 'site/app/plans/records.php',\n",
+            "after": "from hosting_checkout_http_cases import run_browser, CAPTURE_STEMS\nfrom catalog_storefront_checkout_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES\nfrom hosting_catalog_plan_setup_cases import CAPTURES as PLAN_SETUP_CAPTURES\nfrom hosting_purchase_inbox_cases import run_browser as inbox_browser, CAPTURES as INBOX_CAPTURES\n\nROOT = Path(__file__).resolve().parents[1]\nWEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'\nSESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'\nBASE = 'http://127.0.0.1:8091'\nCAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))\nALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES + INBOX_CAPTURES\nSOURCE_PATHS = [\n    'tests/hosting_purchase_inbox_cases.py',\n    'site/app/hosting/checkout_purchases.php', 'site/app/hosting/checkout_purchases_views.php',\n    'site/admin/controllers/hosting_purchases.php', 'site/admin/views/hosting_purchases.php',\n    'site/portal/controllers/hosting_purchases.php', 'site/portal/views/hosting_purchases.php',\n    'site/admin/controllers/router.php', 'site/portal/controllers/router.php',\n    'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_order_links.php', 'site/app/hosting/order_views.php',\n    'tests/hosting_catalog_plan_setup_cases.py',\n    'site/app/hosting/catalog_offer_setup.php', 'site/app/hosting/catalog_offer_setup_document.php',\n    'site/app/hosting/catalog_offer_setup_views.php', 'site/app/hosting/catalog_offer_views.php', 'site/app/plans/records.php',\n"
+          },
+          {
+            "before": "                      result['catalog_storefront']['plan_setup']['passed'] is True\n                      and tuple(c['name'] for c in result['catalog_storefront']['plan_setup']['captures']) == PLAN_SETUP_CAPTURES\n                      and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in PLAN_SETUP_CAPTURES))\n            finally: browser.close()\n        check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))\n        complete = True\n    except Exception as error:\n        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py', 'hosting_catalog_plan_setup_cases.py'}\n        locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]\n        failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}\n    finally:\n",
+            "after": "                      result['catalog_storefront']['plan_setup']['passed'] is True\n                      and tuple(c['name'] for c in result['catalog_storefront']['plan_setup']['captures']) == PLAN_SETUP_CAPTURES\n                      and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in PLAN_SETUP_CAPTURES))\n                result['purchase_inbox'] = inbox_browser(browser_env, browser)\n                check('Installed purchase inbox follows exact original records without new business writes',\n                      result['purchase_inbox']['passed'] is True\n                      and tuple(c['name'] for c in result['purchase_inbox']['captures']) == INBOX_CAPTURES\n                      and all(not (qa/n).is_symlink() and (qa/n).is_file() and (qa/n).stat().st_size > 0 for n in INBOX_CAPTURES))\n            finally: browser.close()\n        check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))\n        complete = True\n    except Exception as error:\n        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py', 'hosting_catalog_plan_setup_cases.py', 'hosting_purchase_inbox_cases.py'}\n        locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]\n        failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}\n    finally:\n"
+          }
+        ]
+      },
+      "tests/hosting_purchase_inbox_wiring.py": {
+        "predecessor_sha256": "9ee2909e64eea3a3f061fda701e22b820d720e06b854d25f79ff09371831c1bf",
+        "current_sha256": "79db24a299ba5a4cbc01f04b9196c38076c40c00ae638411e325f0ddf6cf001c",
+        "replacements": [
+          {
+            "before": "\n\ndef previous_contract(contract):\n    ext = contract['hosting_purchase_inbox']\n    require(ext['base'] == BASE and ext['additions'] == COMMANDS and ext['additions_after'] == AFTER, 'Purchase-inbox command contract changed')\n    commands = contract['native_commands']\n",
+            "after": "\n\ndef previous_contract(contract):\n    contract = browser_contract(contract)\n    ext = contract['hosting_purchase_inbox']\n    require(ext['base'] == BASE and ext['additions'] == COMMANDS and ext['additions_after'] == AFTER, 'Purchase-inbox command contract changed')\n    commands = contract['native_commands']\n"
+          },
+          {
+            "before": "\ndef previous_source(root, path):\n    \"\"\"Invert only declared current source, never independent synthetic test trees.\"\"\"\n    raw = root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')\n    if root.resolve() != Path(__file__).resolve().parents[1]:\n        return raw\n    contract = json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes())\n    ext = contract['hosting_purchase_inbox']\n    delta = ext['source_delta'].get(path)\n    return inverse(raw, delta) if delta is not None else raw\n\n\ndef run(a, root, tmp, check, deny, named, contract):\n    ext = contract['hosting_purchase_inbox']\n    require(ext['screenshots'] == [], 'Purchase inbox cannot replace captured-image requirements')\n    require(set(ext['source_sha256']) == SOURCES and set(ext['source_delta']) == HISTORICAL\n            and set(ext['unchanged_source_sha256']) == UNCHANGED, 'Purchase-inbox exact source boundary changed')\n    for path, expected in ext['source_sha256'].items():\n        a.safe_name(path)\n        require(sha(root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')) == expected, 'Purchase-inbox current source differs: ' + path)\n    check('Purchase inbox binds actual production, tests and wiring before historical projection', bool(ext['source_sha256']))\n    for path, delta in ext['source_delta'].items():\n        current = root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')\n        inverse(current, delta)\n        try:\n            inverse(current + b'\\n# changed', delta)\n",
+            "after": "\ndef previous_source(root, path):\n    \"\"\"Invert only declared current source, never independent synthetic test trees.\"\"\"\n    raw = browser_source(root, path)\n    if root.resolve() != Path(__file__).resolve().parents[1]:\n        return raw\n    contract = browser_contract(json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes()))\n    ext = contract['hosting_purchase_inbox']\n    delta = ext['source_delta'].get(path)\n    return inverse(raw, delta) if delta is not None else raw\n\n\ndef _run_inbox_predecessor(a, root, tmp, check, deny, named, contract):\n    ext = contract['hosting_purchase_inbox']\n    require(ext['screenshots'] == [], 'Purchase inbox cannot replace captured-image requirements')\n    require(set(ext['source_sha256']) == SOURCES and set(ext['source_delta']) == HISTORICAL\n            and set(ext['unchanged_source_sha256']) == UNCHANGED, 'Purchase-inbox exact source boundary changed')\n    for path, expected in ext['source_sha256'].items():\n        a.safe_name(path)\n        require(sha(browser_source(root, path)) == expected, 'Purchase-inbox current source differs: ' + path)\n    check('Purchase inbox binds actual production, tests and wiring before historical projection', bool(ext['source_sha256']))\n    for path, delta in ext['source_delta'].items():\n        current = browser_source(root, path)\n        inverse(current, delta)\n        try:\n            inverse(current + b'\\n# changed', delta)\n"
+          },
+          {
+            "before": "    ]:\n        wrong = copy.deepcopy(contract);change(wrong)\n        deny('Purchase inbox rejects ' + label + ' recipe', lambda c=wrong:previous_contract(c))\n    full = root.joinpath('.github/workflows/application-tests.yml').read_text()\n    native = full.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    check('Purchase inbox full workflow executes the exact additive recipe', [line.strip() for line in native.splitlines()] == contract['native_commands'])\n    focused = root.joinpath('.github/workflows/catalog-storefront.yml').read_text()\n    docker_commands = [command.replace('\"$PHP_BINARY\"', 'php').replace(' -d extension=pdo -d extension=tokenizer ', ' ').replace(' -d extension=tokenizer ', ' ') for command in COMMANDS]\n    check('Purchase inbox focused matrix appends exact commands with supported minimal runtime',\n          all(focused.count(command) == 1 for command in docker_commands)\n",
+            "after": "    ]:\n        wrong = copy.deepcopy(contract);change(wrong)\n        deny('Purchase inbox rejects ' + label + ' recipe', lambda c=wrong:previous_contract(c))\n    full = browser_source(root, '.github/workflows/application-tests.yml').decode()\n    native = full.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    check('Purchase inbox full workflow executes the exact additive recipe', [line.strip() for line in native.splitlines()] == contract['native_commands'])\n    focused = browser_source(root, '.github/workflows/catalog-storefront.yml').decode()\n    docker_commands = [command.replace('\"$PHP_BINARY\"', 'php').replace(' -d extension=pdo -d extension=tokenizer ', ' ').replace(' -d extension=tokenizer ', ' ') for command in COMMANDS]\n    check('Purchase inbox focused matrix appends exact commands with supported minimal runtime',\n          all(focused.count(command) == 1 for command in docker_commands)\n"
+          },
+          {
+            "before": "        require(name not in a.reports(sample), 'Missing purchase-inbox report appeared')\n    check('Purchase inbox failed and missing reports remain failures and stay in their actual lane', True)\n    check('Purchase inbox preserves original browser, transfer helper and captures',\n          all(sha(root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')) == expected for path, expected in ext['unchanged_source_sha256'].items()))\n    deny('Purchase inbox private runtime remains excluded from evidence', lambda:a.evidence_allowed('test-runtime/hosting-checkout-purchases-private/provider-master.key','native-browser'))\n    return prior, prior_reports\n",
+            "after": "        require(name not in a.reports(sample), 'Missing purchase-inbox report appeared')\n    check('Purchase inbox failed and missing reports remain failures and stay in their actual lane', True)\n    check('Purchase inbox preserves original browser, transfer helper and captures',\n          all(sha(browser_source(root, path)) == expected for path, expected in ext['unchanged_source_sha256'].items()))\n    deny('Purchase inbox private runtime remains excluded from evidence', lambda:a.evidence_allowed('test-runtime/hosting-checkout-purchases-private/provider-master.key','native-browser'))\n    return prior, prior_reports\n\n# Bounded installed inbox continuation. All historical checks below receive exact\n# predecessor bytes only after every current dependency and serialized pin passes.\nBROWSER_BASE = '7535f861c2c3accf37482f5af94099780c7806a6'\nBROWSER_BRANCH = 'codex/twentyi-purchase-inbox-browser'\nBROWSER_CAPTURES = ['Hosting-Purchase-Inbox-' + stem + '-' + size + '.png'\n                    for stem in ('Owner', 'Client') for size in ('Desktop', 'Mobile')]\nBROWSER_SOURCES = {\n    '.github/workflows/application-tests.yml', '.github/workflows/catalog-storefront.yml',\n    'tests/hosting_purchase_inbox_wiring.py', 'tests/hosting_checkout_http_browser.py',\n    'tests/hosting_purchase_inbox_cases.py', 'tests/hosting_purchases_views.php',\n    'site/includes/layout/service_orders.php',\n}\nBROWSER_HISTORY = BROWSER_SOURCES - {'tests/hosting_purchase_inbox_cases.py'}\nBROWSER_UNCHANGED = {\n    'tools/acceptance-reports.json', 'tools/acceptance_artifacts.py', 'tests/browser_acceptance.py',\n    'tests/acceptance_artifacts_test.py', 'tests/imported_plan_setup_wiring.py',\n    'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_cases.py',\n    'tests/catalog_storefront_checkout_cases.py', 'tests/hosting_catalog_plan_setup_cases.py',\n    'tests/hosting_checkout_native.php', 'tests/hosting_checkout_purchases_native.php',\n    '.github/workflows/hosting-catalog-offers.yml',\n}\n\n\ndef browser_contract(contract):\n    if 'hosting_purchase_inbox_browser' not in contract:\n        return contract\n    ext = contract['hosting_purchase_inbox_browser']\n    require(ext['base'] == BROWSER_BASE and ext['branch'] == BROWSER_BRANCH\n            and ext['http_report'] == 'hosting-checkout-http-results.json'\n            and ext['screenshots'] == BROWSER_CAPTURES, 'Installed purchase inbox boundary changed')\n    prior = copy.deepcopy(contract)\n    del prior['hosting_purchase_inbox_browser']\n    for pin in ext['updated_pins']:\n        value = prior\n        for key in pin['location']:\n            value = value[key]\n        require(value[pin['path']] == pin['current_sha256'], 'Installed inbox serialized current pin differs')\n        value[pin['path']] = pin['predecessor_sha256']\n    require(sha(canonical(prior)) == ext['predecessor_contract_sha256'], 'Original7535 acceptance contract changed')\n    return prior\n\n\ndef browser_source(root, path):\n    raw = root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')\n    if root.resolve() != Path(__file__).resolve().parents[1]:\n        return raw\n    ext = json.loads(root.joinpath('tools/acceptance-contract.json').read_bytes())['hosting_purchase_inbox_browser']\n    delta = ext['source_delta'].get(path)\n    return inverse(raw, delta) if delta is not None else raw\n\n\ndef browser_checks(a, root, tmp, check, deny, named, contract):\n    import ast\n    ext = contract['hosting_purchase_inbox_browser']\n    require(set(ext['source_sha256']) == BROWSER_SOURCES and set(ext['source_delta']) == BROWSER_HISTORY\n            and set(ext['unchanged_source_sha256']) == BROWSER_UNCHANGED, 'Installed inbox exact source set changed')\n    for key in ('source_sha256', 'unchanged_source_sha256'):\n        for path, expected in ext[key].items():\n            a.safe_name(path)\n            require(sha(root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')) == expected,\n                    'Installed inbox current source differs: ' + path)\n    check('Installed purchase inbox validates every current source before predecessor projection', True)\n    for path, delta in ext['source_delta'].items():\n        raw = root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')\n        inverse(raw, delta)\n        deny('Installed purchase inbox rejects changed source ' + path, lambda r=raw, d=delta:inverse(r + b'\\n# altered', d))\n    prior = browser_contract(contract)\n    check('Installed purchase inbox preserves the complete7535 contract and181 native recipes', len(prior['native_commands']) == 181)\n    wrong = copy.deepcopy(contract); wrong['native_commands'][0] += ' changed'\n    deny('Installed purchase inbox rejects altered historical recipe', lambda:browser_contract(wrong))\n    for pin in ext['updated_pins']:\n        wrong = copy.deepcopy(contract); value = wrong\n        for key in pin['location']:value = value[key]\n        value[pin['path']] = '0' * 64\n        deny('Installed purchase inbox rejects stale serialized pin ' + '/'.join(pin['location']) + '/' + pin['path'], lambda w=wrong:browser_contract(w))\n    reports = a.load(root/'tools/acceptance-reports.json')\n    check('Installed purchase inbox preserves all202 browser and253 final report requirements',\n          len(reports['browser']) == 202 and len(reports['final']) == 253\n          and sha(canonical(reports)) == ext['predecessor_reports_sha256'])\n    for path in ('.github/workflows/application-tests.yml', '.github/workflows/catalog-storefront.yml'):\n        current = root.joinpath(path).read_text(encoding='utf-8')\n        previous = browser_source(root, path).decode('utf-8')\n        line = next(line for line in previous.splitlines(True) if line.startswith('    branches: ['))\n        check('Installed purchase inbox only appends its push branch in ' + path,\n              current == previous.replace(line, line.replace(']\\n', ', ' + BROWSER_BRANCH + ']\\n'), 1))\n    runner_path = root/'tests/hosting_checkout_http_browser.py'\n    tree = ast.parse(runner_path.read_text(encoding='utf-8'))\n    case_tree = ast.parse(root.joinpath('tests/hosting_purchase_inbox_cases.py').read_text(encoding='utf-8'))\n    captures_node = [n for n in case_tree.body if isinstance(n, ast.Assign)\n                     and any(isinstance(t, ast.Name) and t.id == 'CAPTURES' for t in n.targets)]\n    require(len(captures_node) == 1, 'Exact installed inbox capture declaration required')\n    constants = {}; exec(compile(ast.Module(body=captures_node, type_ignores=[]), 'capture-constant', 'exec'), constants)\n    check('Installed purchase inbox declares exactly four new capture names', constants['CAPTURES'] == tuple(BROWSER_CAPTURES))\n    predecessor_tree = ast.parse(browser_source(root, 'tests/hosting_checkout_http_browser.py').decode())\n    old_checks = [ast.dump(n, include_attributes=False) for n in ast.walk(predecessor_tree)\n                  if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == 'check']\n    current_checks = [ast.dump(n, include_attributes=False) for n in ast.walk(tree)\n                      if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == 'check']\n    check('Installed purchase inbox retains every original runner check expression and order',\n          [n for n in current_checks if n in set(old_checks)] == old_checks)\n    # Execute current output-collision code only, with no web process or fixture.\n    names = {'require', 'output_paths', 'prepare_outputs'}\n    definitions = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]\n    require(len(definitions) == 3, 'Exact runner output guards required')\n    local = tmp/'purchase-inbox-output';local.mkdir();qa = local/'qa';qa.mkdir()\n    def no_runtime(path):raise AssertionError('Collision guard reached runtime creation')\n    env = {'ROOT':local, 'WEB':local/'web', 'SITE':local/'web/site', 'SESSIONS':local/'sessions',\n           'ALL_CAPTURES':tuple(BROWSER_CAPTURES), 'fresh_directory':no_runtime}\n    exec(compile(ast.Module(body=definitions, type_ignores=[]), str(runner_path), 'exec'), env)\n    for name in BROWSER_CAPTURES:\n        target = qa/name;target.write_bytes(b'original')\n        try:env['prepare_outputs'](True)\n        except RuntimeError as error:refused = str(error) == 'Preserve prior checkout HTTP outputs'\n        else:refused = False\n        check('Installed purchase inbox refuses capture overwrite ' + name, refused and target.read_bytes() == b'original' and not env['WEB'].exists())\n        target.unlink()\n        check('Installed purchase inbox capture stays in native-browser ' + name,\n              a.evidence_allowed('qa/'+name,'native-browser') and all(not a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    label = ext['result_check']\n    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)\n             and isinstance(n.value.func, ast.Name) and n.value.func.id == 'check' and n.value.args\n             and isinstance(n.value.args[0], ast.Constant) and n.value.args[0].value == label]\n    require(len(calls) == 1, 'Actual runner must require the inbox result exactly once')\n    predicate = compile(ast.Module(body=calls, type_ignores=[]), str(runner_path), 'exec')\n    result = {'purchase_inbox':{'passed':True,'captures':[{'name':n} for n in BROWSER_CAPTURES]}}\n    for name in BROWSER_CAPTURES:(qa/name).write_bytes(b'synthetic guard only')\n    def exact_check(name, condition):require(name == label and condition is True, 'Installed inbox actual result predicate refused')\n    def verify(value):exec(predicate, {'result':value,'qa':qa,'INBOX_CAPTURES':tuple(BROWSER_CAPTURES),'check':exact_check})\n    verify(result);check('Installed purchase inbox actual result predicate accepts exact bounded output',True)\n    for title, mutate in [\n        ('failed result',lambda r:r['purchase_inbox'].update(passed=False)),\n        ('truthy nonboolean result',lambda r:r['purchase_inbox'].update(passed=1)),\n        ('missing result',lambda r:r.pop('purchase_inbox')),\n        ('missing capture',lambda r:r['purchase_inbox']['captures'].pop()),\n        ('reordered captures',lambda r:r['purchase_inbox']['captures'].reverse()),\n        ('duplicate capture',lambda r:r['purchase_inbox']['captures'].__setitem__(1,r['purchase_inbox']['captures'][0])),\n    ]:\n        bad = copy.deepcopy(result);mutate(bad)\n        deny('Installed purchase inbox runner refuses '+title, lambda r=bad:verify(r))\n    for mode in ('missing','empty'):\n        path = qa/BROWSER_CAPTURES[0]\n        if mode == 'missing':path.unlink()\n        else:path.write_bytes(b'')\n        deny('Installed purchase inbox runner refuses '+mode+' PNG',lambda:verify(result))\n        path.write_bytes(b'synthetic guard only')\n    check('Installed purchase inbox keeps business fixture and private-runtime transport unchanged',\n          sha(root.joinpath('tests/hosting_checkout_http_fixture.php').read_bytes().replace(b'\\r\\n',b'\\n')) == ext['unchanged_source_sha256']['tests/hosting_checkout_http_fixture.php'])\n    check('Installed purchase inbox never exports private session state',\n          a.evidence_allowed('test-runtime/hosting-checkout-browser-sessions/sess_private','native-browser') is False)\n    return prior\n\n\ndef run(a, root, tmp, check, deny, named, contract):\n    prior = browser_checks(a, root, tmp, check, deny, named, contract)\n    return _run_inbox_predecessor(a, root, tmp, check, deny, named, prior)\n"
+          }
+        ]
+      },
+      "tests/hosting_purchases_views.php": {
+        "predecessor_sha256": "9fc5e8354508f6fa83a497ea15bff9d39bcb07d4f0994ac77ee185634a35d742",
+        "current_sha256": "65000b09de02f2a9ec3f4c85158f216e124fdb3ed96ee2c75462cd3958df7f69",
+        "replacements": [
+          {
+            "before": "    $result=['invoice_id'=>7,'invoice_reference'=>'INV-7','amount_cents'=>2500,'currency'=>'USD','invoice_status'=>'issued','project_id'=>99,'agreement_id'=>str_repeat('b',32),'schedule_id'=>str_repeat('d',32)];\n    ob_start();require CWP_CODE_ROOT.'/portal/views/hosting_checkout.php';$resultHtml=ob_get_clean();\n    hpv_ok('Actual checkout result adds purchase history without removing four original links',count(hpv_links($resultHtml))===5&&(hpv_links($resultHtml)['My hosting purchases']??null)===studio_url(['hosting_purchases'=>1]));\n    echo json_encode(['passed'=>true,'count'=>count($checks),'checks'=>$checks,'scope'=>'Actual PHP renderer and extracted controller functions; modeled reader/session seams, no SQL or HTTP.'],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR).\"\\n\";\n} catch(Throwable $e) {\n    while(ob_get_level()>0)ob_end_clean();\n",
+            "after": "    $result=['invoice_id'=>7,'invoice_reference'=>'INV-7','amount_cents'=>2500,'currency'=>'USD','invoice_status'=>'issued','project_id'=>99,'agreement_id'=>str_repeat('b',32),'schedule_id'=>str_repeat('d',32)];\n    ob_start();require CWP_CODE_ROOT.'/portal/views/hosting_checkout.php';$resultHtml=ob_get_clean();\n    hpv_ok('Actual checkout result adds purchase history without removing four original links',count(hpv_links($resultHtml))===5&&(hpv_links($resultHtml)['My hosting purchases']??null)===studio_url(['hosting_purchases'=>1]));\n    // Follow the actual inherited setup-card link through the real controller bodies.\n    // Pure documents are real; the native context and later progress renderer are modeled.\n    require CWP_CODE_ROOT.'/app/hosting/order_document.php';\n    hpv_load(CWP_CODE_ROOT.'/includes/layout/service_orders.php','service_orders_ui');\n    final class HpvOrderCardReached extends Exception {}\n    final class HpvWrongInvoiceRoute extends Exception {}\n    function service_orders_ready(): bool {return true;}\n    function service_orders_context(string $agreement,int $client,bool $asClient=false): array {\n        $GLOBALS['order_contexts'][]=[$agreement,$client,$asClient];\n        return ['document'=>$GLOBALS['order_document'],'assessment'=>null,'warning'=>null];\n    }\n    function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment): never {throw new HpvOrderCardReached();}\n    function payments_ready(): bool {return false;}\n    function staff_ready(): bool {return false;}\n    function admin_foot(): never {throw new HpvWrongInvoiceRoute();}\n    $terms=['name'=>'Saved setup invoice','cadence'=>'monthly','price'=>2500,'currency'=>'USD','inclusions'=>['One website'],'exclusions'=>[],'limits'=>[],'support'=>'Studio support'];\n    $plan=ServicePlanDocument::create(str_repeat('1',32),4,100,$terms)->append(str_repeat('2',32),'activate',4,101,[]);\n    $agreement=ServiceSubscriptionDocument::create(str_repeat('3',32),42,4,102,$plan);\n    $agreement=$agreement->append(str_repeat('4',32),'consent','client:42',103,['terms_hash'=>$plan->model()->termsHash()])->append(str_repeat('5',32),'activate','staff:4',104,[]);\n    $order_document=ServiceOrderDocument::create(str_repeat('6',32),42,4,105,\n        ['id'=>$agreement->data()['id'],'revision'=>$agreement->revision(),'sha256'=>$agreement->fingerprint(),'terms_hash'=>$plan->model()->termsHash()],\n        ['id'=>7,'project_id'=>99,'sha256'=>str_repeat('a',64),'amount_cents'=>2500,'currency'=>'USD','basis'=>'initial-recurring-period','schedule_id'=>str_repeat('7',32),'period_index'=>0]);\n    $order_document=$order_document->append(str_repeat('8',32),'accept','client:42',106,['domain_name'=>'setup.example','review_sha256'=>$order_document->fingerprint()]);\n    $originalDocuments=[$agreement->json(),$order_document->json()];$order_contexts=[];$setupCards=[];\n    foreach([true,false] as $asOwner) {\n        $stopped=false;ob_start();\n        try {service_orders_ui($agreement,$asOwner);} catch(HpvOrderCardReached) {$stopped=true;}\n        finally {$setupCards[$asOwner?'owner':'client']=ob_get_clean();}\n        if(!$stopped)throw new LogicException('Expected the actual setup card before later progress forms.');\n    }\n    $ownerSetup=hpv_links($setupCards['owner']);$clientSetup=hpv_links($setupCards['client']);\n    parse_str(parse_url($ownerSetup['Review invoice'],PHP_URL_QUERY),$_GET);$calls=[];$reached=false;\n    ob_start();try {payments_admin_render($_GET['view'],$user,'');}\n    catch(HpvInvoiceReached) {$reached=true;} catch(HpvWrongInvoiceRoute) {}\n    finally {ob_end_clean();}$_GET=[];\n    hpv_ok('Actual owner setup Review invoice reaches its original selected invoice',$reached&&$calls===[['admin-head','invoice-payments'],['ledger-invoice',7]]);\n    hpv_ok('Owner setup card retains the exact invoice-payments route and query',$ownerSetup['Review invoice']===admin_url('invoice-payments',['invoice_id'=>7]));\n    hpv_ok('Client setup Review invoice retains its existing owned portal destination',$clientSetup['Review invoice']===studio_url(['invoice'=>7]));\n    hpv_ok('Setup link rendering preserves exact documents and owning context',$originalDocuments===[$agreement->json(),$order_document->json()]&&$order_contexts===[[$agreement->data()['id'],42,false],[$agreement->data()['id'],42,true]]);\n    echo json_encode(['passed'=>true,'count'=>count($checks),'checks'=>$checks,'scope'=>'Actual PHP renderer and extracted controller functions; modeled reader/session seams, no SQL or HTTP.'],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR).\"\\n\";\n} catch(Throwable $e) {\n    while(ob_get_level()>0)ob_end_clean();\n"
+          }
+        ]
+      }
+    },
+    "updated_pins": [
+      {
+        "location": [
+          "hosting_checkout",
+          "source_sha256"
+        ],
+        "path": "tests/hosting_checkout_http_browser.py",
+        "predecessor_sha256": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+        "current_sha256": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f"
+      },
+      {
+        "location": [
+          "catalog_storefront",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/catalog-storefront.yml",
+        "predecessor_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+        "current_sha256": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c"
+      },
+      {
+        "location": [
+          "catalog_storefront",
+          "unchanged_workflows"
+        ],
+        "path": ".github/workflows/application-tests.yml",
+        "predecessor_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+        "current_sha256": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760"
+      },
+      {
+        "location": [
+          "catalog_storefront_http",
+          "source_sha256"
+        ],
+        "path": "tests/hosting_checkout_http_browser.py",
+        "predecessor_sha256": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+        "current_sha256": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f"
+      },
+      {
+        "location": [
+          "catalog_storefront_http",
+          "unchanged_source_sha256"
+        ],
+        "path": ".github/workflows/application-tests.yml",
+        "predecessor_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+        "current_sha256": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760"
+      },
+      {
+        "location": [
+          "catalog_storefront_http",
+          "unchanged_source_sha256"
+        ],
+        "path": ".github/workflows/catalog-storefront.yml",
+        "predecessor_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+        "current_sha256": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/application-tests.yml",
+        "predecessor_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+        "current_sha256": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/catalog-storefront.yml",
+        "predecessor_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+        "current_sha256": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c"
+      },
+      {
+        "location": [
+          "imported_plan_setup",
+          "source_sha256"
+        ],
+        "path": "tests/hosting_checkout_http_browser.py",
+        "predecessor_sha256": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+        "current_sha256": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f"
+      },
+      {
+        "location": [
+          "hosting_purchase_inbox",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/application-tests.yml",
+        "predecessor_sha256": "bf111fd2b8baea37993de4eecbb90af774894495b5e1aa3880d62042d43eb93a",
+        "current_sha256": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760"
+      },
+      {
+        "location": [
+          "hosting_purchase_inbox",
+          "source_sha256"
+        ],
+        "path": ".github/workflows/catalog-storefront.yml",
+        "predecessor_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
+        "current_sha256": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c"
+      },
+      {
+        "location": [
+          "hosting_purchase_inbox",
+          "source_sha256"
+        ],
+        "path": "tests/hosting_purchase_inbox_wiring.py",
+        "predecessor_sha256": "9ee2909e64eea3a3f061fda701e22b820d720e06b854d25f79ff09371831c1bf",
+        "current_sha256": "79db24a299ba5a4cbc01f04b9196c38076c40c00ae638411e325f0ddf6cf001c"
+      },
+      {
+        "location": [
+          "hosting_purchase_inbox",
+          "source_sha256"
+        ],
+        "path": "tests/hosting_purchases_views.php",
+        "predecessor_sha256": "9fc5e8354508f6fa83a497ea15bff9d39bcb07d4f0994ac77ee185634a35d742",
+        "current_sha256": "65000b09de02f2a9ec3f4c85158f216e124fdb3ed96ee2c75462cd3958df7f69"
+      },
+      {
+        "location": [
+          "hosting_purchase_inbox",
+          "unchanged_source_sha256"
+        ],
+        "path": "tests/hosting_checkout_http_browser.py",
+        "predecessor_sha256": "5ddb9d9500b8283f2a7fdb7a6c8a3c53f24bcc71d1950dd5b7cc9120184ff5d3",
+        "current_sha256": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f"
+      }
+    ],
+    "unchanged_source_sha256": {
+      ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
+      "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+      "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
+      "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
+      "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
+      "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
+      "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
+      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/imported_plan_setup_wiring.py": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268",
+      "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     }
   }

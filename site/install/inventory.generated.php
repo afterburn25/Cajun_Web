@@ -2836,7 +2836,7 @@ function setup_expected_files(): array { return [
     'includes/layout/provider_services.php'=>'ab178466c36e57414c6c7643a1a3b3b0bd1c7b1d559e45788f6c3a6a236e0a84',
     'includes/layout/public.php'=>'4a41b36885dd9da1f7da3f66f1d6a4c3936c7fe735e0d16e17d1a96e4562b14f',
     'includes/layout/recurring_billing.php'=>'26745404c2f9d8a4539de4492bd89960542c927c38e5ef0712bb102a294b49b1',
-    'includes/layout/service_orders.php'=>'d348ba09bf484513f2c2e60a026d64805dded11de830d6939509a2f44faf0012',
+    'includes/layout/service_orders.php'=>'6664a3990ce2803c9f60af49d8dc5c0369b10a9046f8efba1c90f58ac5d3350c',
     'includes/paths.php'=>'9eea9e207c37671ce434fc80278339fb10b08ac0eeafa5b85672a0178d03dde8',
     'includes/runtime.php'=>'3b36b47ab70dd4ab6db378ad30f856bf0d75cb67f8ec1b24b6f6c4c217bfb4b2',
     'includes/security/crypto.php'=>'29fd3bd25864f9607488acc92f39d0537667c5b5614f0c15c5f767538e8afffe',
