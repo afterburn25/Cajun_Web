@@ -1,3 +1,35 @@
+## 2026-10-19 — component filters and verified queue cleanup
+
+Service-plan and staff-invitation workflows now filter pull requests using their actual source, test and workflow dependencies. Only 13 trigger lines are added; every existing job, command, matrix, push/manual trigger and release gate remains unchanged. This avoids four unrelated jobs per documentation-only PR after integration; it does not cancel existing runs. [Source, dependency and independent review evidence](evidence/ci-final-component-pr-filters.json). Service plans deliberately include `site/**` plus canonical service-plan, estimator and review-request families, the test family and own workflow. Staff invitations include access/invitation sources and tests, covering schemas, the same-file worker and the full Docker context. Future inputs outside these roots require matching filter changes.
+
+Producer checks pass28 service-plan and42 invitation source comparisons; cross-review and root applied-byte/source bindings pass. Read-only GraphQL at05:35UTC found no protection rules or repository/inherited rulesets with complete pagination. No policy changed. Future required-check policies must account for path-skipped workflows; repository checks remain unconditional. No application suite was rerun for this trigger-only change.
+
+Read-only verification after API recovery confirms all 327 acknowledged cancellations, covering 1,297 jobs with no execution evidence. There are zero outstanding terminal verifications, 31 preserved candidates and 139 untouched candidates. The bounded pass is verified; the original 497-candidate plan is not complete. No cancellation request was repeated. [Cleanup evidence](CI_SUPERSEDED_QUEUE_CLEANUP.md). This establishes no replacement-test or application acceptance. All original catalog/capture/release gates remain mandatory.
+
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Named source/dependency checks and exact hashes](evidence/ci-remaining-pure-pr-filters.json) cover all29 PHP sources,34 literal imports and one fixed provider worker edge. Whole-file inverses prove every other workflow byte unchanged. Service-plans and staff-invitations are excluded from this pure-family change.
+
+Read-only GraphQL inspection with inherited rulesets included returned zero branch-protection rules, zero rulesets and complete pagination before application. No policy was changed. A future required-check policy must account for workflows skipped by path filters; add any future external source dependency to its owning filter. Repository documentation checks remain unconditional. This affects future PR admission only and is not an acceptance result or queue-cleanup operation.
+
+## 2026-10-19 — superseded component queue checkpoint
+
+[Recorded maintenance](CI_SUPERSEDED_QUEUE_CLEANUP.md) concerns only reviewed superseded component runs.327 acknowledgements include224 independently verified cancellations and103 pending terminal checks;31 candidates were preserved and139 left untouched. No force-cancellation, deletion, repeated cancellation, dispatch or test omission occurred.
+
+Original full application/capture/release runs remain required, including the f67 catalog matrix and PR220 b7 run39137551561. Cancelled runs provide no acceptance credit. Earlier dated statements that no runs were cancelled retain their historical meaning. Do not certify a queued hosted gate from this maintenance record or count acknowledgements as terminal results.
+
+## 2026-10-18 — pure-suite pull-request triggers
+
+Five additional isolated pure suites filter PR changes: estimator, email-templates, portfolio-catalog, review-requests and webmail. Each includes `foundation/FAMILY/**`, `tests/FAMILY/**` and its exact workflow path; portfolio-catalog uses the `portfolio` directories. Complete directory patterns cover new nested fixtures and helpers. Current PHP tokenization found 31 source files and 28 local import edges, all confined to their respective family. Shared application and native suites do not inherit this assumption.
+
+Only 20 YAML lines are added. Every job, command, assertion, PHP8.2/8.4 matrix, artifact, permission, timeout, concurrency setting and push/manual trigger stays byte-identical after subtracting the new PR path lists. Full application/release acceptance and repository checks remain unchanged. The current hosting3042 stacked PR diff would start five fewer workflows (ten fewer PHP jobs); this is a finite path comparison, not measured throughput or a claim that queued work has finished.
+
+Actual source verification: 82 producer checks, 44 independent review checks, then root confirmation of all five applied hashes and whole-file inverses against main `e397d9a6e293850e8dff61a593e3ba39ee178400`. [Named results and policy observations](evidence/ci-pure-family-pr-filters.json). The first external patch proof's Windows CRLF mismatch was preserved; explicit LF application resolved it without changing workflow semantics. No hosted event, application or native execution is claimed by these checks.
+
+Read-only policy preflight found main unprotected (HTTP404), no repository rulesets and no effective main rules. No policy is changed. GitHub documents that a path-filtered workflow used as a required check can leave unrelated PRs pending; review these filters when adding required checks. See [GitHub workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) and [required-check troubleshooting](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks). Do not work around future protection rules or weaken release gates.
+
+This increment affects future PR scheduling only. Existing queued and failed runs remain original evidence; no cancellation, deletion, retry or duplicate dispatch is part of this change. Hosting3042 and nameserver024 remain separate, unpublished candidates awaiting their acceptance. Published1.25 stays immutable.
+
 ## 2026-10-18 — dependency-aware pull-request triggers
 
 Ten focused workflows previously filtered pushes but ran on every eligible pull request: client authority, hosting operations and records, mail drafts and notices, mail receiving and transport, provider operations and settings, and service-plan records. Their PR triggers now use the same paths as their push triggers. Existing branch filters and manual dispatch remain.

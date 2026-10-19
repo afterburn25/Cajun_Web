@@ -15,6 +15,25 @@ Add authenticated storage, shared owner dispatch, narrow local recovery and addi
 ## Unreleased — single-website folder request contract
 
 Add a typed one-host request for the documented 20i document-root setter, canonical body/route validation and a narrow relative-path input policy. Keep generic approval closed and unverified replies uncertain. Add synthetic contract, cold-loader, transport and generic-denial checks to the existing focused/full operation suite; retain the saved observation behavior. Dedicated owner/client controls, native acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+## Unreleased — final component PR filters and verified cleanup
+
+Limit service-plan and staff-invitation PR checks to their actual dependencies while preserving all execution settings. Confirm the remaining103 cleanup outcomes:327 total terminal cancellations,1,297 unexecuted jobs,31 preserved candidates and139 untouched. Keep the partial evidence and original failures. No application, installer, version or released package changes.
+
+## Unreleased — remaining pure-suite PR filters
+
+Add family-scoped PR filters to access policy, provider contracts and scheduling. Preserve all tests, matrices and push/manual runs. Source/dependency/inverse review passes; no application, installer or released bytes change.
+
+## Unreleased documentation — queue cleanup checkpoint
+
+Record327 acknowledged superseded component cancellation requests,224 independently verified terminal outcomes,103 unresolved verifications,31 preserved candidates and139 untouched candidates. Retain both interrupted batches and the later explicit API rate-limit failure. [Evidence and continuation](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md). Application and released package bytes are unchanged.
+
+## Unreleased documentation — original catalog runtime evidence
+
+Record four original 1.26 runtime producer sets and successful unchanged local aggregations, authenticated artifacts, identical source-matched packages, 16 populated upgrade scopes and known capture limits. Hosted final acceptance and the corrected capture candidate remain pending. [Evidence and next gates](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md). No application, package or release bytes change.
+
+## Unreleased — isolated pure-suite pull-request filters
+
+Limit estimator, email-template, portfolio, review-request and webmail pure-suite PR runs to their source/test directories and workflow files. Preserve every job and push/manual trigger. Source/dependency checks and independent review passed; this affects future scheduling only. No application or release version changes.
 
 ## Unreleased — reduce unrelated pull-request test runs
 

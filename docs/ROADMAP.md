@@ -15,6 +15,21 @@ The [folder-control increment](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now implements
 ## 2026-10-18 — document-root changes: request boundary implemented
 
 The [single-host folder request](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now has typed input, exact transport admission and synthetic generic-denial coverage on a separate e397-based branch. It is not a complete hosting control. Durable owner review, latest-map/assignment authority, platform/directory eligibility handling, one-send history, independent readback, interrupted-write recovery and native/browser/upgrade acceptance remain. Full20i and the broader platform are unfinished; no completion percentage follows from endpoint or assertion counts.
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Evidence](evidence/ci-remaining-pure-pr-filters.json). This scheduling correction completes no product feature. PR239's cleanup checkpoint is merged, with103 terminal verifications still pending; continue original20i acceptance after the current CI-only integration.
+
+## 2026-10-19 — superseded component queue checkpoint
+
+Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched. [Evidence and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md). Finish outstanding read-only verification after API recovery, then resume original20i release gates. This maintenance checkpoint completes no product capability and claims no measured elapsed-time saving.
+
+## 2026-10-18 — original catalog runtime review
+
+The four supported-runtime producer sets for the original1.26 catalog candidate now pass. [Saved-artifact review](RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md) completes all four unchanged local aggregates, package/source comparisons and 16 populated upgrade scopes while retaining the queued hosted final jobs and later capture-correction gate. This is verification progress, not publication or completion of full20i. No new roadmap capability or live operation is claimed.
+
+## 2026-10-18 — verification throughput follow-through
+
+Five isolated pure suites have reviewed PR path filters, with complete current dependency coverage and unchanged tests. [Evidence and limits](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This scheduling increment does not complete a product capability or queued acceptance. Hosting [PR231](https://github.com/afterburn25/Cajun_Web/pull/231) and nameserver [PR230](https://github.com/afterburn25/Cajun_Web/pull/230) remain separate candidates awaiting runtime and release gates; full20i remains unfinished.
 
 ## Verified increment and remaining work — 2026-10-18
 

@@ -2,6 +2,10 @@ name: Portfolio catalog checks
 
 on:
   pull_request:
+    paths:
+      - 'foundation/portfolio/**'
+      - 'tests/portfolio/**'
+      - '.github/workflows/portfolio-catalog.yml'
   push:
     branches: [main, devin/public-experience]
   workflow_dispatch:

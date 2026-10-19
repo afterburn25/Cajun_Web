@@ -1,0 +1,583 @@
+{
+  "scope": "Source, dependency, finite path evaluation and exact application only; no hosted event or application acceptance.",
+  "base_commit": "e397d9a6e293850e8dff61a593e3ba39ee178400",
+  "proposal_sha256": "f60fad96872412cd8ec7e8d1c787dcd617d05d8b1831fa7ff89c13855317b21f",
+  "patch_sha256": "d0f96a4feb6448015b20dbc5fdba9da6ca9ea0b83c0d7077af1ef592e191c7fc",
+  "files": [
+    {
+      "path": ".github/workflows/email-templates.yml",
+      "sha256": "ed580849ed674365ff3560dc343541c4822ee36c6b45cfd203590aaa4d6bd52b",
+      "bytes": 1344
+    },
+    {
+      "path": ".github/workflows/estimator.yml",
+      "sha256": "8023c79d459bf5810900e4d89e34520139db02e4df12c88937007c00b2b88ec3",
+      "bytes": 1353
+    },
+    {
+      "path": ".github/workflows/portfolio-catalog.yml",
+      "sha256": "ed1f30358ec93e7bee9d2fc588584400cf6ccf31a8ef1c56d6657744b489dab6",
+      "bytes": 1363
+    },
+    {
+      "path": ".github/workflows/review-requests.yml",
+      "sha256": "9278ea22d691b7fb8da2c67f8d28cbd95b5f51dbd4b987ba7a82edd1bdc533c4",
+      "bytes": 1560
+    },
+    {
+      "path": ".github/workflows/webmail.yml",
+      "sha256": "b47f850d214eb057100ade4be4592f64e90520556a0b92ea67756e8c1b4dd921",
+      "bytes": 1352
+    }
+  ],
+  "producer_checks": {
+    "passed": true,
+    "count": 82,
+    "checks": [
+      {
+        "name": "Actual PHP tokenizer completes without diagnostics",
+        "passed": true
+      },
+      {
+        "name": "All31 PHP files and28 actual literal imports traced",
+        "passed": true
+      },
+      {
+        "name": "All36 retained workflow and dependency files match exact main Git bytes",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml whole-byte inverse exact",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml raw jobs unchanged",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml only parsed PR paths added",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml push and manual triggers unchanged",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml original two PHP matrix runtimes retained",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml actual transitive imports exactly close over own files",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml every actual dependency edit triggers",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml own workflow edit triggers",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml added nested foundation dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml added test or fixture dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml unrelated hosting invoice change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml unrelated documentation change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml neighboring family prefix does not overmatch",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml unrelated workflow does not trigger",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml mixed unrelated and relevant changes trigger",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml whole-byte inverse exact",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml raw jobs unchanged",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml only parsed PR paths added",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml push and manual triggers unchanged",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml original two PHP matrix runtimes retained",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml actual transitive imports exactly close over own files",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml every actual dependency edit triggers",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml own workflow edit triggers",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml added nested foundation dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml added test or fixture dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml unrelated hosting invoice change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml unrelated documentation change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml neighboring family prefix does not overmatch",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml unrelated workflow does not trigger",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml mixed unrelated and relevant changes trigger",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml whole-byte inverse exact",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml raw jobs unchanged",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml only parsed PR paths added",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml push and manual triggers unchanged",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml original two PHP matrix runtimes retained",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml actual transitive imports exactly close over own files",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml every actual dependency edit triggers",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml own workflow edit triggers",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml added nested foundation dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml added test or fixture dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml unrelated hosting invoice change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml unrelated documentation change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml neighboring family prefix does not overmatch",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml unrelated workflow does not trigger",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml mixed unrelated and relevant changes trigger",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml whole-byte inverse exact",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml raw jobs unchanged",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml only parsed PR paths added",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml push and manual triggers unchanged",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml original two PHP matrix runtimes retained",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml actual transitive imports exactly close over own files",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml every actual dependency edit triggers",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml own workflow edit triggers",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml added nested foundation dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml added test or fixture dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml unrelated hosting invoice change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml unrelated documentation change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml neighboring family prefix does not overmatch",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml unrelated workflow does not trigger",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml mixed unrelated and relevant changes trigger",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml whole-byte inverse exact",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml raw jobs unchanged",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml only parsed PR paths added",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml push and manual triggers unchanged",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml original two PHP matrix runtimes retained",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml actual transitive imports exactly close over own files",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml every actual dependency edit triggers",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml own workflow edit triggers",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml added nested foundation dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml added test or fixture dependency triggers",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml unrelated hosting invoice change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml unrelated documentation change does not trigger",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml neighboring family prefix does not overmatch",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml unrelated workflow does not trigger",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml mixed unrelated and relevant changes trigger",
+        "passed": true
+      },
+      {
+        "name": "UTF8 five-file patch applies to external exact-main copies",
+        "passed": true
+      },
+      {
+        "name": "Every applied file equals resolved bytes",
+        "passed": true
+      },
+      {
+        "name": "Five-file patch reverse check succeeds",
+        "passed": true
+      },
+      {
+        "name": "Proposal contains exactly five workflows and no runtime source",
+        "passed": true
+      }
+    ],
+    "scope": "Static source/byte proof, actual PHP tokenization and finite literal-prefix trigger evaluation. Not GitHub Actions execution or application acceptance.",
+    "runtime": {
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "pyyaml": "6.0.3"
+    }
+  },
+  "independent_review": {
+    "sha256": "d081a328f5b4729ff69dfcea9dfe06347be58f0a3a371c941e6e73b4dac9dd09",
+    "verdict": "No concrete source blocker in the five pure-family PR path filters.",
+    "checks": [
+      {
+        "name": "Frozen proposal manifest",
+        "passed": true
+      },
+      {
+        "name": "Resolved exact resolved/.github/workflows/email-templates.yml",
+        "passed": true
+      },
+      {
+        "name": "Resolved exact resolved/.github/workflows/estimator.yml",
+        "passed": true
+      },
+      {
+        "name": "Resolved exact resolved/.github/workflows/portfolio-catalog.yml",
+        "passed": true
+      },
+      {
+        "name": "Resolved exact resolved/.github/workflows/review-requests.yml",
+        "passed": true
+      },
+      {
+        "name": "Resolved exact resolved/.github/workflows/webmail.yml",
+        "passed": true
+      },
+      {
+        "name": "Bound patch",
+        "passed": true
+      },
+      {
+        "name": "Bound exact_inverse",
+        "passed": true
+      },
+      {
+        "name": "Bound integration",
+        "passed": true
+      },
+      {
+        "name": "Bound proof report",
+        "passed": true
+      },
+      {
+        "name": "Bound proof source",
+        "passed": true
+      },
+      {
+        "name": "Bound proof imports",
+        "passed": true
+      },
+      {
+        "name": "Bound proof tokenizer",
+        "passed": true
+      },
+      {
+        "name": "Bound proof baseline",
+        "passed": true
+      },
+      {
+        "name": "All36 retained source and workflow preimages are exact main",
+        "passed": true
+      },
+      {
+        "name": "Actual import report31 source files and28 literal edges",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml whole inverse exact",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml only exact three PR paths",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml every job byte and push/manual/concurrency unchanged",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml all current transitive dependencies stay covered",
+        "passed": true
+      },
+      {
+        "name": "estimator.yml original source has no external fixture or loader read",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml whole inverse exact",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml only exact three PR paths",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml every job byte and push/manual/concurrency unchanged",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml all current transitive dependencies stay covered",
+        "passed": true
+      },
+      {
+        "name": "email-templates.yml original source has no external fixture or loader read",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml whole inverse exact",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml only exact three PR paths",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml every job byte and push/manual/concurrency unchanged",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml all current transitive dependencies stay covered",
+        "passed": true
+      },
+      {
+        "name": "portfolio-catalog.yml original source has no external fixture or loader read",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml whole inverse exact",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml only exact three PR paths",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml every job byte and push/manual/concurrency unchanged",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml all current transitive dependencies stay covered",
+        "passed": true
+      },
+      {
+        "name": "review-requests.yml original source has no external fixture or loader read",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml whole inverse exact",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml only exact three PR paths",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml every job byte and push/manual/concurrency unchanged",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml all current transitive dependencies stay covered",
+        "passed": true
+      },
+      {
+        "name": "webmail.yml original source has no external fixture or loader read",
+        "passed": true
+      },
+      {
+        "name": "Exactly five workflows changed",
+        "passed": true
+      },
+      {
+        "name": "Inspected retained82 finite checks all pass",
+        "passed": true
+      },
+      {
+        "name": "Retained main policy indicates unprotected and no repository rulesets",
+        "passed": true
+      }
+    ]
+  },
+  "dependency_scope": {
+    "php_files": 31,
+    "literal_import_edges": 28,
+    "families": {
+      "estimator.yml": "estimator",
+      "email-templates.yml": "email-templates",
+      "portfolio-catalog.yml": "portfolio",
+      "review-requests.yml": "review-requests",
+      "webmail.yml": "webmail"
+    }
+  },
+  "root_application": {
+    "all_five_hashes_match": true,
+    "all_five_whole_byte_inverses_match_base": true
+  },
+  "policy_read_only": {
+    "branch_protection": "HTTP 404: Branch not protected",
+    "repository_rulesets": [],
+    "effective_main_rules": [],
+    "effective_rules_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "limitations": [
+    "Hosted GitHub event evaluation not executed.",
+    "No application/native/provider or CI execution.",
+    "Required-check/rules preflight belongs to root; future required path-filtered checks need policy review.",
+    "No original jobs, push/manual events, commands, assertions or concurrency settings changed.",
+    "No queued run was changed or credited as complete."
+  ],
+  "preserved_proof_issue": "Git automatic CRLF conversion in external patch proof; all transformed files normalize exactly to expected LF. Corrected harness uses explicit core.autocrlf=false. No workflow semantic correction."
+}
