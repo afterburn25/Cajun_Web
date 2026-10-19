@@ -58,8 +58,8 @@ def run_http(env):
     r=chosen_form(admin,history,'studio_restore_content','id',revision,{'confirm':'1'})
     check('Deliberate HTTP restore persists as history',db("SELECT value FROM ci_settings WHERE name='growth_intro'")[0]['value']=='Synthetic release acceptance introduction.')
     pipeline=BASE+'/existing/admin/index.php?view=studio-pipeline'
-    chosen_form(admin,pipeline,'studio_pipeline','id',1,{'status':'proposal','notes':'Saved pipeline note','follow_up':'2026-12-01'})
-    check('Pipeline stage and notes persisted',db('SELECT status,notes FROM ci_leads WHERE id=1')[0]=={'status':'proposal','notes':'Saved pipeline note'})
+    chosen_form(admin,pipeline,'studio_pipeline','id',1,{'status':'contacted','notes':'Saved pipeline note','follow_up':'2026-12-01'})
+    check('Pipeline stage and notes persisted',db('SELECT status,notes FROM ci_leads WHERE id=1')[0]=={'status':'contacted','notes':'Saved pipeline note'})
     submit(admin,BASE+'/existing/admin/index.php?view=lead&id=1','lead_save',{'status':'qualified','notes':'Legacy lead editor works'})
     check('Seven-status legacy lead editor regression',db('SELECT status FROM ci_leads WHERE id=1')[0]['status']=='qualified')
     prices=BASE+'/existing/admin/index.php?view=studio-prices'

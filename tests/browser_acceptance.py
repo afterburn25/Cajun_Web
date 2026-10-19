@@ -210,6 +210,9 @@ try:
         activity_browser(globals(),browser)
         from notification_feed_cases import run_browser as notification_feed_browser
         notification_feed_browser(globals(),browser)
+
+        from pipeline_cases import run_browser as pipeline_browser
+        pipeline_browser(globals(),browser)
         from portfolio_cases import run_browser as portfolio_browser
         portfolio_browser(globals(),browser)
         from mail_templates_cases import run_browser as mail_templates_browser

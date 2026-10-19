@@ -349,6 +349,28 @@ Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass o
 
 Next: commit, push, open bounded PR, update #157.
 
+## Apply A-01 pipeline transition rules and stage history — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Main's pipeline board already rendered stage columns but `studio_pipeline`/`lead_save` wrote `leads.status` directly — any stage, no validation, no history. Starting commit: `devin/non20i-pipeline-foundation` tip `a58736bc`, new branch `devin/non20i-pipeline-runtime`.
+
+Actions: `app/marketing/pipeline.php` defines `pipeline_board()` (canonical rules over the existing seven stages: `new→contacted/spam/closed`, `contacted→qualified/closed/spam`, `qualified→proposal/closed`, `proposal→won/closed`, `won` terminal, `closed`/`spam→new` reopen) and `pipeline_transition()` — same-stage saves update notes/follow-up only; real moves are validated, wrapped in `staff_transaction`, logged via `log_event`, and appended to `lead_stage_history` when enabled. `pipeline_schema.php` + `pipeline_migrate.php` add the owner-authorized additive history table (refuses unknown populated records). Pipeline cards and the inquiry detail select now render `pipeline_choices()`; lead detail shows attributed history. `pipeline_setup` action gated `staff.manage` + owner password + confirm. Build mirror sync, Apache direct-deny list, workflow paths, `application-tests.yml` push/native wiring. Existing tests `release_cases.py`/`staff_cases.py` updated to legal transitions (`new→contacted`, `contacted→qualified`, same-stage).
+
+Tests: `php -l` clean on all touched PHP; `tests/pipeline/run.php` 31 checks pass; `tests/pipeline_native.php` (MariaDB lane, CI-wired) covers owner gates, unknown-history refusal, illegal/terminal transitions, same-stage notes, history actor attribution, audit-failure rollback; `tests/pipeline_cases.py` covers the full HTTP flow (CSRF/password gates, restricted selects, denied jump, history render, staff scope). `tools/build.py --refresh` clean — `includes/foundation/pipeline/` mirror byte-identical.
+
+Known limits: history enablement is opt-in (transitions validate before it); no notifications, search changes, or portal exposure. 
+
+Next: commit, push, open bounded PR, update issue #157; continue notifications/revisions/proposals runtime.
+
+## Port lead-pipeline contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); lead management is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-pipeline-foundation`.
+
+Actions: extracted the preserved `devin/pipeline-foundation` slice — `PipelineBoard`, `PipelineStage`, `LeadRecord`, `tests/pipeline/run.php`, `.github/workflows/pipeline.yml`, `docs/PIPELINE_FOUNDATION.md` — without the old branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters; corrected the doc's ownership line for current allocation.
+
+Tests: `php -l` clean; `php tests/backups/../pipeline/run.php` → 31/31 checks pass on local PHP 8.4; CI covers PHP 8.2/8.4 offline. No persistence/permissions/UI exists yet — pure contract layer.
+
+Next: commit, push, open bounded PR, update #157; continue with proposals/notifications/revisions contract ports, then application layers.
+
 ## 2026-10-15 — concise current state with retained history
 
 Startinga894de58, archived prior status/handoff snapshots with rebased local links and replaced repeated contradictory current sections with one concise summary and exact active handles. No runtime change. Documentation checker passes205 Markdown files and1458 local links; whitespace passes. Installer66528 has completed and is closed. Registrar actual browser checkpoint1810 and four-way63-case native evidence are agent-verified; its final mobile capture correction is pending combined inspection. Catalog8f7028 native matrix is complete; exact browser continues. Cloudce8d4e89 remains under corrected acceptance. The195,457-byte original API upload was not found among current text/Markdown/JSON attachments; official public API guides were rechecked and still direct full documentation access through My20i. No response schemas were inferred from third-party wrappers. Next: integrate registrar after final handoff, then catalog/cloud, retaining current tests and release gates.
@@ -670,6 +692,16 @@ Actions: extracted the preserved `devin/service-plans` slice — `ServicePlan`/`
 Tests: `php -l` clean; `php tests/service-plans/run.php` → 76/76 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
+## Port lead-pipeline contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); lead management is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-pipeline-foundation`.
+
+Actions: extracted the preserved `devin/pipeline-foundation` slice — `PipelineBoard`, `PipelineStage`, `LeadRecord`, `tests/pipeline/run.php`, `.github/workflows/pipeline.yml`, `docs/PIPELINE_FOUNDATION.md` — without the old branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters; corrected the doc's ownership line for current allocation.
+
+Tests: `php -l` clean; `php tests/backups/../pipeline/run.php` → 31/31 checks pass on local PHP 8.4; CI covers PHP 8.2/8.4 offline. No persistence/permissions/UI exists yet — pure contract layer.
+
+Next: commit, push, open bounded PR, update #157; continue with proposals/notifications/revisions contract ports, then application layers.
 
 ## Synchronize release entry points after review — 2026-10-15
 

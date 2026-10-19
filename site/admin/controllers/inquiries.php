@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/app/marketing/pipeline.php';
     if($action==='lead_save'){
-        $recordId=(int)posted('id',12);$status=posted('status',20);if(!in_array($status,['new','contacted','qualified','proposal','won','closed','spam'],true))throw new InvalidArgumentException('Invalid inquiry status.');
-        query('UPDATE '.table('leads').' SET status=?,notes=? WHERE id=?',[$status,posted('notes',12000),$recordId]);log_event('lead.update','Inquiry '.$recordId);flash('Inquiry updated.');redirect(admin_url('lead',['id'=>$recordId]));
+        $recordId=(int)posted('id',12);pipeline_transition($recordId,posted('status',20),posted('notes',12000),setting('growth_follow_'.$recordId),$user);log_event('lead.update','Inquiry '.$recordId);flash('Inquiry updated.');redirect(admin_url('lead',['id'=>$recordId]));
     }
     if($action==='lead_delete'){reviews_delete_lead((int)posted('id',12));flash('Inquiry permanently deleted.');redirect(admin_url('leads'));}
     if($action==='lead_retry'){$recordId=(int)posted('id',12);$lead=one('SELECT * FROM '.table('leads').' WHERE id=?',[$recordId]);if(!$lead)throw new InvalidArgumentException('Inquiry not found.');try{$status=notify_lead($lead);}catch(Throwable $e){query('UPDATE '.table('leads').' SET notification_status=\'failed\' WHERE id=?',[$recordId]);throw $e;}query('UPDATE '.table('leads').' SET notification_status=? WHERE id=?',[$status,$recordId]);log_event('lead.notify','Inquiry '.$recordId.' / '.$status);flash($status==='accepted'?'The mail server accepted the notification. Check the recipient inbox.':'Configure email delivery first.',$status==='accepted'?'success':'warning');redirect(admin_url('lead',['id'=>$recordId]));}
