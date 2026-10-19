@@ -1,3 +1,7 @@
+## Unreleased documentation — verified remainder and candidate handoff
+
+Record completion of the 139-run obsolete CI remainder, exact PR249 package verification and the separate PR250 contacts-fixture correction. Preserve every original acceptance gate, historical failure and published 1.25 asset. This commit changes documentation only; hosted feature acceptance remains pending.
+
 ## Unreleased — final component PR filters and verified cleanup
 
 Limit service-plan and staff-invitation PR checks to their actual dependencies while preserving all execution settings. Confirm the remaining103 cleanup outcomes:327 total terminal cancellations,1,297 unexecuted jobs,31 preserved candidates and139 untouched. Keep the partial evidence and original failures. No application, installer, version or released package changes.

@@ -1,3 +1,15 @@
+## Newly reviewed remainder completed — 2026-10-19
+
+The 139 previously untouched candidates received a fresh, separately reviewed pass in three new 64/64/11 batches. All 139 cancellation requests are independently verified terminal, covering 551 jobs with no execution evidence or artifacts. There are zero skipped, errored or unresolved rows in this new pass. All producers and verifiers exited. The [new remainder receipt](evidence/ci-superseded-queue-remainder.json), SHA256 `df7f3ee715647db45b10417c086fa9ec3f6e15c2c25e3d956eb9b0688b349673`, preserves the original completion receipt222646 unchanged.
+
+Across the original 497-candidate inventory,466 runs are now verified cancelled and 31 remain preserved because they had work or results. The cancellations cover1,848 unexecuted jobs. No candidates remain untouched and no acknowledged request lacks terminal verification. This closes that bounded inventory, not the entire GitHub queue or application acceptance.
+
+New plans exactly matched the original untouched set and excluded all 327 previous acknowledgements, all 31 preserved runs and all protected full/manual/main/capture/release gates. Current PR heads, old-head ancestry and identical workflow bytes were reviewed afresh. A reviewed wrapper preserved the original helper and added complete fresh PR discussion reads, strict discussion-count checks and refusal if an old run was named. Each cancellation still required fresh exact run/replacement identity, all-attempt jobs, artifacts and no prior execution. No original cancellation helper or old batch was restarted.
+
+Independent terminal verification used 411 GETs, with no retry or mutation. Root bound each closed plan, outcome and retained per-run file to the independent review, rechecked 556 operation-file hashes and every terminal snapshot, and confirmed exact 139-run coverage. The read-to-cancel race and same-count discussion-edit race remain limitations; before/after/terminal evidence contains no execution. The earlier missing immediate snapshot and API failures remain unchanged. Review provenance is retained in [continuation evidence](evidence/roadmap-continuation-2026-10-19.json).
+
+The owner's standing testing/integration direction supports this routine maintenance as agent judgment, not a new instruction to cancel arbitrary tests. Cancelled runs provide no acceptance credit or measured elapsed-time saving. [Original gate status and next work](ROADMAP_CONTINUATION_2026_10_19.md) remain separate. Earlier dated checkpoints below describe their historical scope.
+
 # Superseded component queue cleanup
 
 ## Verified bounded pass — 2026-10-19, after API recovery

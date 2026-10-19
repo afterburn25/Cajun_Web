@@ -1,0 +1,647 @@
+{
+  "schema": 1,
+  "scope": "Retained-source continuity record, with named existing results and a separate fresh status snapshot. No test results are inferred for main or a later source.",
+  "pr249": {
+    "url": "https://github.com/afterburn25/Cajun_Web/pull/249",
+    "source": "0397a0e4369628d7e06aecdff4aa0a8dd93f6abd",
+    "tree": "3d70102e1b37e2365dd5ef06047816a67c2166bb",
+    "base": "f545cf939bfc11534978346171f3f4471784dbac",
+    "test_merge": "cde77ef056142564c6867a89c9abc2de8d6a381f",
+    "test_merge_tree": "3d70102e1b37e2365dd5ef06047816a67c2166bb",
+    "local_package_verification": {
+      "passed": true,
+      "named_checks": 39,
+      "scope": [
+        "One unchanged build from the exact recorded commit",
+        "All three archives: exact Git member bytes, CRC, paths, member metadata, manifests and directory inventories",
+        "Original owner and new client upgrade producers: immutable published baseline and exact candidate archive-input validators only"
+      ],
+      "retained_ignored_files": 39,
+      "retained_ignored_bytes": 231979513,
+      "archives": {
+        "CajunWebPro-1.25.0-FULL-PROJECT.zip": {
+          "sha256": "9ba2d0171c08fb87ffe3a0fab96dcfe81e1115c7f46af81efbdc2dee5cbf3adb",
+          "bytes": 45013964,
+          "members": 5998,
+          "manifest_sha256": "227b317b40c1fddb7262b50a3deea940d9058b05dfab8599be677dba1a11154d"
+        },
+        "CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip": {
+          "sha256": "34ea019851b4691a4eedd372a5ca1e0d6c35c9cf7aeeff508534f984322fd362",
+          "bytes": 16008375,
+          "members": 2910,
+          "manifest_sha256": "337554c352865535bd4981d293fcd47d8402fa2cf44f116d98946899312e6d73"
+        },
+        "CajunWebPro-1.25.0-UPDATE.zip": {
+          "sha256": "fd7ce5744a2567239b94ebd5408d5f5c85300116442ade595d39e7d08a88c76d",
+          "bytes": 20070354,
+          "members": 2897,
+          "manifest_sha256": "f054cead6e176f045bb8e17c8b377901dec0601f5a0324a8cf2188174e89ac67"
+        }
+      },
+      "published_baseline_source": "b79c67110829126916e3a65e616191542448bccc",
+      "published_baseline_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
+      "package_version": "1.25.0",
+      "identity_note": "These are local candidate archives at PR249 source0397, not the immutable published1.25 archives at b79. No release publication or replacement.",
+      "named_results": [
+        {
+          "name": "Single recorded build completed successfully",
+          "passed": true
+        },
+        {
+          "name": "Exact committed source and tree remain checked out",
+          "passed": true
+        },
+        {
+          "name": "Tracked and untracked source remains clean",
+          "passed": true
+        },
+        {
+          "name": "Build has no stderr diagnostics",
+          "passed": true
+        },
+        {
+          "name": "Every original ignored dist byte remains preserved externally",
+          "passed": true
+        },
+        {
+          "name": "No original dist path was deleted",
+          "passed": true
+        },
+        {
+          "name": "Recorded source consists only of normal file blobs",
+          "passed": true
+        },
+        {
+          "name": "Every source blob independently matches its Git object ID",
+          "passed": true
+        },
+        {
+          "name": "Root runtime and installer versions agree",
+          "passed": true
+        },
+        {
+          "name": "UPDATE has the exact nonexecutable manifest envelope",
+          "passed": true
+        },
+        {
+          "name": "Embedded UPDATE identity and all payload hashes match source",
+          "passed": true
+        },
+        {
+          "name": "Embedded compatibility shims equal committed route map",
+          "passed": true
+        },
+        {
+          "name": "FULL-PROJECT sidecar binds exact source version archive and archive hash",
+          "passed": true
+        },
+        {
+          "name": "FULL-PROJECT exact members have no omissions additions or case aliases",
+          "passed": true
+        },
+        {
+          "name": "FULL-PROJECT member paths modes timestamps and encoding are safe",
+          "passed": true
+        },
+        {
+          "name": "FULL-PROJECT CRC and every archive byte match exact committed source",
+          "passed": true
+        },
+        {
+          "name": "FULL-PROJECT every sidecar member digest matches validated bytes",
+          "passed": true
+        },
+        {
+          "name": "FULL-PROJECT directory inventories match members exactly",
+          "passed": true
+        },
+        {
+          "name": "COMPLETE-UPLOAD sidecar binds exact source version archive and archive hash",
+          "passed": true
+        },
+        {
+          "name": "COMPLETE-UPLOAD exact members have no omissions additions or case aliases",
+          "passed": true
+        },
+        {
+          "name": "COMPLETE-UPLOAD member paths modes timestamps and encoding are safe",
+          "passed": true
+        },
+        {
+          "name": "COMPLETE-UPLOAD CRC and every archive byte match exact committed source",
+          "passed": true
+        },
+        {
+          "name": "COMPLETE-UPLOAD every sidecar member digest matches validated bytes",
+          "passed": true
+        },
+        {
+          "name": "COMPLETE-UPLOAD directory inventories match members exactly",
+          "passed": true
+        },
+        {
+          "name": "UPDATE sidecar binds exact source version archive and archive hash",
+          "passed": true
+        },
+        {
+          "name": "UPDATE exact members have no omissions additions or case aliases",
+          "passed": true
+        },
+        {
+          "name": "UPDATE member paths modes timestamps and encoding are safe",
+          "passed": true
+        },
+        {
+          "name": "UPDATE CRC and every archive byte match exact committed source",
+          "passed": true
+        },
+        {
+          "name": "UPDATE every sidecar member digest matches validated bytes",
+          "passed": true
+        },
+        {
+          "name": "UPDATE directory inventories match members exactly",
+          "passed": true
+        },
+        {
+          "name": "Global manifest binds all three exact archive sidecars",
+          "passed": true
+        },
+        {
+          "name": "Packaged operator instructions equal committed source",
+          "passed": true
+        },
+        {
+          "name": "Checksum registry covers only current outputs with exact bytes",
+          "passed": true
+        },
+        {
+          "name": "All original unrelated historical dist files remain unchanged",
+          "passed": true
+        },
+        {
+          "name": "original_owner actual published1.25 input validator passes",
+          "passed": true
+        },
+        {
+          "name": "original_owner actual current candidate input validator passes",
+          "passed": true
+        },
+        {
+          "name": "client_requests actual published1.25 input validator passes",
+          "passed": true
+        },
+        {
+          "name": "client_requests actual current candidate input validator passes",
+          "passed": true
+        },
+        {
+          "name": "Validation makes no tracked or untracked source changes",
+          "passed": true
+        }
+      ]
+    },
+    "hosted_snapshot_at": "2026-10-19T10:16:56.485070+00:00",
+    "first_runs": [
+      {
+        "id": 39236273937,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 39236246335,
+        "name": "Native client website folder requests",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null
+      }
+    ]
+  },
+  "pr250": {
+    "url": "https://github.com/afterburn25/Cajun_Web/pull/250",
+    "source": "80050ef887058b5ad9d0a774287cc9ee4d6d362b",
+    "base": "cefb08d6c29f4faca104089bb5941b322418d2ba",
+    "test_merge": "9f7654b400456e143b4aee843cd0ab222db674d1",
+    "source_and_merge_tree": "e05d0a7a4785374c595675f76014164a1c2b8dfc",
+    "change": {
+      "path": "tests/service_plans_native.php",
+      "description": "Remove only repeated contacts_schema DDL; retain contacts_schema_version marker and all original native guards, workers and assertions. Canonical schema_statements already creates the table.",
+      "fixture_before_sha256": "4b095ac6c5c4e4bce2c53c4ad372ecd5b854f44a5329d39ebfa0c640506806f1",
+      "fixture_after_sha256": "1d571654476c9edce730b9ba25d0b8be07d53f41c057d4574fce19beb71044ac",
+      "base_schema_sha256": "5393c7de4ccdd2f7e0e2d994c9fe04ad7a1c0440779cb6b25ee7f394d4002617",
+      "applicability": "Exact fixture/base/contacts inputs at PR203 cefb equal reviewed PR210 ff145; correction targets the earliest affected branch. No current-main/PR249 source fix."
+    },
+    "local_validation": {
+      "extracted_setup_guards_default": 9,
+      "extracted_setup_guards_minimal": 9,
+      "php_lints": 2,
+      "scope": "Retained actual extracted setup with a DDL witness; not native SQL acceptance.",
+      "retained_default_report": {
+        "passed": true,
+        "scope": "Actual extracted base/contact schema and fixture setup statements with a DDL witness; no SQL, native suite or hosted rerun",
+        "checks": [
+          {
+            "name": "Executed merge and latest PR head retain the same exact failing fixture",
+            "passed": true
+          },
+          {
+            "name": "Actual canonical base schema includes exact contact DDL",
+            "passed": true
+          },
+          {
+            "name": "Actual first fixture setup already creates the contacts table",
+            "passed": true
+          },
+          {
+            "name": "Original actual later setup repeats contacts DDL and fails",
+            "passed": true
+          },
+          {
+            "name": "Original failure occurs before the later contacts marker",
+            "passed": true
+          },
+          {
+            "name": "Correction changes exactly one known DDL prefix and preserves every other byte",
+            "passed": true
+          },
+          {
+            "name": "Corrected actual setup keeps the exact canonical tables without another DDL",
+            "passed": true
+          },
+          {
+            "name": "Corrected actual setup preserves the contacts schema marker",
+            "passed": true
+          },
+          {
+            "name": "Canonical schema continues rejecting invalid fixture prefixes",
+            "passed": true
+          }
+        ]
+      },
+      "retained_minimal_report": {
+        "passed": true,
+        "scope": "Actual extracted base/contact schema and fixture setup statements with a DDL witness; no SQL, native suite or hosted rerun",
+        "checks": [
+          {
+            "name": "Executed merge and latest PR head retain the same exact failing fixture",
+            "passed": true
+          },
+          {
+            "name": "Actual canonical base schema includes exact contact DDL",
+            "passed": true
+          },
+          {
+            "name": "Actual first fixture setup already creates the contacts table",
+            "passed": true
+          },
+          {
+            "name": "Original actual later setup repeats contacts DDL and fails",
+            "passed": true
+          },
+          {
+            "name": "Original failure occurs before the later contacts marker",
+            "passed": true
+          },
+          {
+            "name": "Correction changes exactly one known DDL prefix and preserves every other byte",
+            "passed": true
+          },
+          {
+            "name": "Corrected actual setup keeps the exact canonical tables without another DDL",
+            "passed": true
+          },
+          {
+            "name": "Corrected actual setup preserves the contacts schema marker",
+            "passed": true
+          },
+          {
+            "name": "Canonical schema continues rejecting invalid fixture prefixes",
+            "passed": true
+          }
+        ]
+      }
+    },
+    "original_failure": {
+      "run": 39130068128,
+      "executed_merge": "11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+      "trigger_head": "6f0072dd0bad7075ef4974d292b16c2882ee5794",
+      "message": "SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'spln_studio_contacts' already exists",
+      "completed_artifacts": [
+        {
+          "id": 12178667920,
+          "name": "domain-renewal-agreements-8.2-mariadb-10.11-11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+          "sha256": "c6ffd8889b9fe2f24a91f1addd490ea47a7886fa53cba5bf9d7dd31417df5755"
+        },
+        {
+          "id": 12178253752,
+          "name": "domain-renewal-agreements-8.4-mysql-8.4-11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+          "sha256": "2d9052619c3d7a6c97a569d44ff2ddc98a275699afc3274fbee3248ff4545eb5"
+        },
+        {
+          "id": 12178033380,
+          "name": "domain-renewal-agreements-8.2-mysql-8.4-11f7c7fbc57daa9fc29f78cd7974a9815371e0e5",
+          "sha256": "1311333c4fd4424082c0321717c92d6061726897ccbcf523cd7a57fb32fd39db"
+        }
+      ],
+      "identical_service_plan_report_sha256": "70e925be98d24a4b3515b3147d690bd3c872351814fa49896663c686eb35d527",
+      "outcomes": {
+        "passed": false,
+        "passing": 87,
+        "failed": 1
+      },
+      "limitation": "Three completed matrix artifacts contain the same failure at fixture line103; downstream recurring-billing report is absent. Original failure and partial run history remain preserved."
+    },
+    "hosted_snapshot_at": "2026-10-19T10:36:48.648815+00:00",
+    "first_runs": [
+      {
+        "id": 39238623449,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 39238597112,
+        "name": "Native domain renewal agreement checks",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 39238597066,
+        "name": "Service-plan storage and client agreement checks",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null
+      }
+    ]
+  },
+  "pending_gates": [
+    "PR249: exact-source full and native hosted acceptance, including installed Apache/SQL/browser upgrade and retention evidence.",
+    "PR250: successor native service-plan/domain-renewal agreement and full application acceptance. Prior failure is not passing evidence; absent downstream reports receive no credit."
+  ],
+  "limits": [
+    "All queued states are retained timestamped snapshots, not fresh status claims.",
+    "No installed Linux/Apache/SQL/native/provider execution or release publication is established by this closeout.",
+    "Local candidate archives retain version1.25.0 but are distinct from immutable published1.25 bytes."
+  ],
+  "evidence": {
+    "pr249_delivery": {
+      "path": "work/client-document-roots-root-checks/delivery-first.json",
+      "sha256": "c59656de421576f81c1e6c23edbc9542126a1c0f12423bcbe5b8260bfaa7bc26",
+      "bytes": 2701
+    },
+    "pr249_continuation_snapshot": {
+      "path": "work/client-document-roots-root-checks/continuation-run-status.json",
+      "sha256": "c7ead131b5eafb77f61dfa7173e08c146349680ec729e986966520458d4860e5",
+      "bytes": 4002
+    },
+    "pr249_root_package_review": {
+      "path": "work/client-document-roots-root-checks/package-receipt-review.json",
+      "sha256": "4d1be6d0ea0f2211b9ecd4d66df6561c897ca1536d0984098d2b315f68d4efed",
+      "bytes": 4177
+    },
+    "pr249_package_review": {
+      "path": "work/client-document-roots-package-checks/source-review.json",
+      "sha256": "6e6e375dcdefcae5bd556081db7f4c936e12bbb6adf63fb479ee73471d400c08",
+      "bytes": 6894
+    },
+    "pr249_package_named_results": {
+      "path": "work/client-document-roots-package-checks/results.json",
+      "sha256": "4f5b3cb13f8df23ef71fed87a0a2d135af34635e3f838701acee56f490994f2d",
+      "bytes": 8479
+    },
+    "pr249_upgrade_inputs": {
+      "path": "work/client-document-roots-package-checks/actual-upgrade-inputs.json",
+      "sha256": "4fcbc4d8d0c32c711421eca740ce7bd008abc8927240f047d91b898ccf736493",
+      "bytes": 1720
+    },
+    "pr250_delivery": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/delivery-first.json",
+      "sha256": "474d3663d7d415e74bd1d9c04eb20f9d7c3ec9c8dde787d479f8b77bcc1c01a7",
+      "bytes": 1403
+    },
+    "original_failure_review": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/review.json",
+      "sha256": "662f061cee88be5fa4d0aff855f4fa4a025c74da626c5380825afa8988c0cb30",
+      "bytes": 40085
+    },
+    "original_failure_independent_review": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/independent-review/review.json",
+      "sha256": "60d3d887cfbecd49e43fb6ebd209313d0db5b7c0d196c6b1dc77427098612fbb",
+      "bytes": 15438
+    },
+    "pr203_applicability": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/independent-review/pr203-applicability/review.json",
+      "sha256": "452ed1952834d41f4ff0e637b0b74536276a65f59fef470e2f5f05048e7a2fd8",
+      "bytes": 3665
+    },
+    "fixture_patch": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/proposal/proposal.patch",
+      "sha256": "2a92e1c133af86a20ec34ff2e223a7ba888e5c21ac09fdeae6db84817db0a6a3",
+      "bytes": 1378
+    },
+    "fixture_guard_default": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/proposal/guard-default.json",
+      "sha256": "f3bdea19626030a92349fd80bc0f8be8fce6f1ca56377467eded2715f3acf985",
+      "bytes": 1407
+    },
+    "fixture_guard_minimal": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/proposal/guard-minimal.json",
+      "sha256": "f3bdea19626030a92349fd80bc0f8be8fce6f1ca56377467eded2715f3acf985",
+      "bytes": 1407
+    },
+    "fixture_lint_default": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/proposal/lint-default.txt",
+      "sha256": "521c242653d55521bbce347611fd02121a2485961d9e57fbe3e147ed8a028f05",
+      "bytes": 69
+    },
+    "fixture_lint_minimal": {
+      "path": "work/domain-renewal-ci-review-2026-10-19/proposal/lint-minimal.txt",
+      "sha256": "521c242653d55521bbce347611fd02121a2485961d9e57fbe3e147ed8a028f05",
+      "bytes": 69
+    }
+  },
+  "fresh_status_snapshot": {
+    "observed_utc": "2026-10-19T10:45:52.791264+00:00",
+    "runs": [
+      {
+        "id": 39098578401,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "f67b1631683b29096dd8ec1daee405e104dc0b83",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39098578401",
+        "updated_at": "2026-10-18T14:25:25Z"
+      },
+      {
+        "id": 39098583508,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "f67b1631683b29096dd8ec1daee405e104dc0b83",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39098583508",
+        "updated_at": "2026-10-18T14:19:17Z"
+      },
+      {
+        "id": 39098588864,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "f67b1631683b29096dd8ec1daee405e104dc0b83",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39098588864",
+        "updated_at": "2026-10-18T15:16:28Z"
+      },
+      {
+        "id": 39098593805,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "f67b1631683b29096dd8ec1daee405e104dc0b83",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39098593805",
+        "updated_at": "2026-10-18T14:34:47Z"
+      },
+      {
+        "id": 39137551561,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "b7c97953f323004e1fdd527bdef0b2da63f01c71",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39137551561",
+        "updated_at": "2026-10-18T14:47:15Z"
+      },
+      {
+        "id": 39158969942,
+        "name": "Application acceptance",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "f545cf939bfc11534978346171f3f4471784dbac",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39158969942",
+        "updated_at": "2026-10-18T19:29:06Z"
+      },
+      {
+        "id": 39158969808,
+        "name": "Native website folder change controls",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "f545cf939bfc11534978346171f3f4471784dbac",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39158969808",
+        "updated_at": "2026-10-18T19:29:06Z"
+      },
+      {
+        "id": 39231739716,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "d2903bfb81c93eb9da756c128536f23a3d34e822",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39231739716",
+        "updated_at": "2026-10-19T09:39:46Z"
+      },
+      {
+        "id": 39236273937,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "0397a0e4369628d7e06aecdff4aa0a8dd93f6abd",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39236273937",
+        "updated_at": "2026-10-19T10:16:30Z"
+      },
+      {
+        "id": 39236246335,
+        "name": "Native client website folder requests",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "0397a0e4369628d7e06aecdff4aa0a8dd93f6abd",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39236246335",
+        "updated_at": "2026-10-19T10:16:16Z"
+      },
+      {
+        "id": 39238623449,
+        "name": "Application acceptance",
+        "event": "workflow_dispatch",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "80050ef887058b5ad9d0a774287cc9ee4d6d362b",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39238623449",
+        "updated_at": "2026-10-19T10:36:09Z"
+      },
+      {
+        "id": 39238597112,
+        "name": "Native domain renewal agreement checks",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "80050ef887058b5ad9d0a774287cc9ee4d6d362b",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39238597112",
+        "updated_at": "2026-10-19T10:35:56Z"
+      },
+      {
+        "id": 39238597066,
+        "name": "Service-plan storage and client agreement checks",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "80050ef887058b5ad9d0a774287cc9ee4d6d362b",
+        "run_attempt": 1,
+        "html_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/39238597066",
+        "updated_at": "2026-10-19T10:35:56Z"
+      }
+    ],
+    "scope": "One read per original required run; no rerun, dispatch or cancellation."
+  },
+  "queue_review_provenance": [
+    {
+      "path": "work/queue-review-2026-10-19-remainder/review-index.json",
+      "sha256": "976ee505625ca9cefe5c190ac00cfeaebacf2af16572c4357705dcb5aa999465"
+    },
+    {
+      "path": "work/queue-review-2026-10-19-remainder/vps-review/review.json",
+      "sha256": "d1cc2d4f90e4e408ca66299ab8a2b5861530c32d00667dcb87963fe7d9633b58"
+    },
+    {
+      "path": "work/queue-review-2026-10-19-remainder/vps-review/wrapper/review.json",
+      "sha256": "16931a37d5efd8bb80af235dfd3c61e0d2f24a3475e4b07aa6e08bf7e2f3850a"
+    },
+    {
+      "path": "work/queue-review-2026-10-19-remainder/vps-review/finalizer/review.json",
+      "sha256": "b8da40a1e3a6ffe31479516eeebf4311c04085b26fb68a690e67cd908487a085"
+    },
+    {
+      "path": "work/queue-review-2026-10-19-remainder/root-source-review.json",
+      "sha256": "91d53b82acf0152e7a29b2eb93e4efabbdfe79384282a13b825d4f35b32be151"
+    },
+    {
+      "path": "work/queue-review-2026-10-19-remainder/root-approved-plans.json",
+      "sha256": "1d594b363f92e9bc48c28c31d5b5d5702b0093f7a8244a646b5d40d3dbcdba07"
+    },
+    {
+      "path": "work/queue-review-2026-10-19-remainder/root_finalize.py",
+      "sha256": "40f816668a88b675cf2d0f68689cf0c7c6ed74664e3a6fa2d5df87f46d85b3a9"
+    }
+  ],
+  "documentation_parent": "dcd6966c4e0c209d15f9d88c8832ef601765c336"
+}
