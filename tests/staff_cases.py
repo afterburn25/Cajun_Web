@@ -32,7 +32,7 @@ def run_http(env):
     for t in ['leads','projects','studio_clients','studio_jobs']:
         check('Actual 1.1.0 retains populated '+t,db('SELECT * FROM staffup_'+t)==before[t])
     after={r['name']:r['value'] for r in db('SELECT * FROM staffup_settings')}
-    check('Actual 1.1.0 retains all original settings',all(after[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')))
+    check('Actual 1.1.0 retains all original settings',all(after[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')) and after['staff_schema_version']=='1')
     users=db('SELECT * FROM staffup_users')
     check('Actual 1.1.0 retains all passwords identifiers and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     profiles=db('SELECT role,enabled,permissions FROM staffup_staff_profiles ORDER BY user_id')

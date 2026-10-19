@@ -1,5 +1,6 @@
 """Create candidate-only agreement/recurring/license records AFTER the real1.24 upgrade."""
 import datetime
+import hashlib
 import json
 import os
 import subprocess
@@ -47,8 +48,26 @@ def prepare(repo, installed, base, php, owner, client, other, client_id, job_id,
     listing = admin + '?view=recurring-billing'
     project = listing + '&job=' + str(job_id)
     client_project = portal + '?recurring=1&job=' + str(job_id)
+    payment_marker = hashlib.sha256(json.dumps({'name': 'payments_schema_version'}, separators=(',', ':')).encode()).hexdigest()
+    marker_cell = ('settings', payment_marker, 'value')
+    pre_payment = snapshot()
+    requests_before = pre_payment['tables']['payment_requests']['rows']
+    ok('Retained upgrade still carries payment schema 1 before explicit owner migration',
+       pre_payment['tables']['settings']['rows'][payment_marker]['value'] == hashlib.sha256(b'"1"').hexdigest()
+       and all('link_hash' not in row and 'link_secret' not in row for row in requests_before.values()))
+    response = submit(owner, admin + '?view=payments', 'payments_migrate', {'owner_password': password, 'confirm': '1'})
+    migrated = snapshot()
+    null_cell = hashlib.sha256(b'null').hexdigest()
+    requests_after = migrated['tables']['payment_requests']['rows']
+    ok('Owner payment migration sets schema 2 with nullable link fields and retained rows keys receipts',
+       response.status_code == 200 and 'Payment preparation enabled' in response.text
+       and migrated['tables']['settings']['rows'][payment_marker]['value'] == hashlib.sha256(b'"2"').hexdigest()
+       and retained(pre_payment, migrated, changed_cells=[marker_cell])
+       and all(requests_after[key]['link_hash'] == null_cell and requests_after[key]['link_secret'] == null_cell
+               for key in requests_before))
     response = submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})
-    ok('Candidate recurring preparation is explicit and keeps original invoices', response.status_code == 200 and retained(before, snapshot()))
+    ok('Candidate recurring preparation is explicit and keeps original invoices', response.status_code == 200
+       and retained(before, snapshot(), changed_cells=[marker_cell]))
     anchor = (datetime.datetime.now(datetime.timezone.utc).date() + datetime.timedelta(days=60)).isoformat()
     offer_target, offer = fields(owner.get(project + '&source=' + agreement, timeout=120), 'recurring_offer')
     offer.update({'title': 'Retained release recurring care', 'terms': 'Exact candidate terms; invoice only, no automatic charge.',

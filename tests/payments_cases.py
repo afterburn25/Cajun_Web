@@ -6,6 +6,146 @@ from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
 
+# The additions below use only the installed synthetic fixture. They do not
+# prepare extra requests or change a request's captured invoice fingerprint.
+PAYMENT_LINK_CAPTURES = tuple(
+    'Payment-Link-' + state + '-' + viewport + '.png'
+    for state in ('Valid', 'Terminal') for viewport in ('Desktop', 'Mobile')
+)
+
+
+def payment_link_local_url(link):
+    value = urlparse(link)
+    base = urlparse(BASE)
+    query = parse_qs(value.query, keep_blank_values=True)
+    if (value.scheme, value.netloc) != (base.scheme, base.netloc) or value.fragment or value.path != base.path.rstrip('/') + '/existing/index.php':
+        raise AssertionError('Payment link escaped the installed local fixture')
+    if set(query) != {'page', 't'} or query['page'] != ['pay'] or len(query['t']) != 1 or len(query['t'][0]) != 64 or any(c not in '0123456789abcdef' for c in query['t'][0]):
+        raise AssertionError('Payment link has an unexpected route or token shape')
+    return link
+
+
+def payment_link_rows():
+    # These exact financial and binding tables must remain unchanged by a GET.
+    # Optional ledger/trial tables are absent before their original later setup.
+    tables = ('studio_invoices', 'studio_jobs', 'studio_clients', 'payment_requests',
+              'payment_gateways', 'audit', 'invoice_payments', 'payment_attempts',
+              'payment_notifications', 'catalog_invoice_snapshots')
+    present = {r['TABLE_NAME'] for r in db('SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE()')}
+    return {name: db('SELECT * FROM ci_' + name + ' ORDER BY id') if 'ci_' + name in present else None for name in tables}
+
+
+def payment_link_terminal_page(response, state, forbidden, label):
+    page = soup(response)
+    cards = page.select('article.workspace-card')
+    status = cards[0].select_one('.workspace-status') if len(cards) == 1 else None
+    check(label + ' has the exact safe terminal state', response.status_code == 200 and status is not None and status.get_text(strip=True) == state)
+    body = page.get_text(' ', strip=True)
+    check(label + ' exposes no invoice metadata or stale amount', len(cards) == 1 and not cards[0].select('h2, .prose, strong') and '$' not in cards[0].get_text() and all(not value or value not in body for value in forbidden) and ' USD due' not in body and ' EUR due' not in body and 'request expires' not in body)
+
+
+def payment_link_read_only_terminal(link, state, forbidden, label):
+    before = payment_link_rows()
+    response = requests.get(payment_link_local_url(link), allow_redirects=False)
+    payment_link_terminal_page(response, state, forbidden, label)
+    check(label + ' GET preserves financial and binding rows', payment_link_rows() == before)
+
+
+def payment_link_http_isolation(link, request):
+    original = db('SELECT * FROM ci_studio_invoices WHERE id=?', [INVOICE['id']])[0]
+    job = db('SELECT * FROM ci_studio_jobs WHERE id=?', [original['job_id']])[0]
+    client = db('SELECT * FROM ci_studio_clients WHERE id=?', [job['client_id']])[0]
+    other = db('SELECT * FROM ci_studio_jobs WHERE id<>? AND client_id<>? ORDER BY id LIMIT 1', [job['id'], client['id']])[0]
+    before = payment_link_rows()
+    response = requests.get(payment_link_local_url(link), allow_redirects=False)
+    page = soup(response)
+    card = page.select_one('article.workspace-card')
+    expected_amount = '$' + format(request['amount_cents'] / 100, '.2f') + ' USD due'
+    check('Anonymous unchanged link renders exact captured invoice details', response.status_code == 200 and card is not None and card.select_one('h2').get_text() == original['reference'] + ' · ' + original['title'] and card.select_one('.prose').get_text() == original['instructions'] and expected_amount in card.get_text(' ', strip=True) and 'Agreed milestone invoice' in card.get_text())
+    check('Anonymous unchanged link GET preserves financial and binding rows', payment_link_rows() == before)
+    cases = (
+        ('changed title', 'studio_invoices', original, 'title', 'Private changed payment title', 'invoice changed'),
+        ('changed reference', 'studio_invoices', original, 'reference', 'PRIVATE-LINK-REFERENCE', 'invoice changed'),
+        ('changed instructions', 'studio_invoices', original, 'instructions', 'Private changed invoice instructions', 'invoice changed'),
+        ('changed cost', 'studio_invoices', original, 'amount_cents', original['amount_cents'] + 123, 'invoice changed'),
+        ('changed currency', 'studio_invoices', original, 'currency', 'EUR', 'unavailable'),
+        ('moved invoice project', 'studio_invoices', original, 'job_id', other['id'], 'unavailable'),
+        ('moved project client', 'studio_jobs', job, 'client_id', other['client_id'], 'unavailable'),
+        ('inactive original client', 'studio_clients', client, 'active', 0, 'unavailable'),
+        ('paid invoice status', 'studio_invoices', original, 'status', 'paid', 'paid'),
+    )
+    for label, table, row, column, changed, state in cases:
+        # Fixed identifiers above only. The fixture fault does not rewrite any
+        # immutable payment request; restore the exact original cell even on failure.
+        original_rows = payment_link_rows()
+        try:
+            db('UPDATE ci_' + table + ' SET ' + column + '=? WHERE id=?', [changed, row['id']])
+            forbidden = [original['title'], original['reference'], original['instructions'], expected_amount,
+                         'Agreed milestone invoice', '$' + format((original['amount_cents'] + 123) / 100, '.2f')]
+            if column in ('title', 'reference', 'instructions'):
+                forbidden.append(changed)
+            payment_link_read_only_terminal(link, state, forbidden, 'Anonymous link after ' + label)
+        finally:
+            db('UPDATE ci_' + table + ' SET ' + column + '=? WHERE id=?', [row[column], row['id']])
+            check('Anonymous link restores exact fixture after ' + label, payment_link_rows() == original_rows)
+
+
+def payment_link_browser_isolation(browser):
+    # The original browser flow has just prepared its legitimate deposit request.
+    request = db('SELECT * FROM ci_payment_requests WHERE invoice_id=? ORDER BY id DESC LIMIT 1', [INVOICE['id']])[0]
+    review = soup(admin.get(PAY + '&invoice_id=' + str(INVOICE['id'])))
+    cards = [node for node in review.select('article.workspace-version')
+             if node.select_one('[name=request_id]') is not None and node.select_one('[name=request_id]').get('value') == str(request['id'])]
+    check('Anonymous browser uses the exact rendered current request link', len(cards) == 1 and len(cards[0].select('code')) == 1 and request['status'] == 'prepared')
+    link = payment_link_local_url(cards[0].select_one('code').get_text(strip=True))
+    before = payment_link_rows()
+    context = browser.new_context(viewport={'width': 1440, 'height': 1000}, reduced_motion='reduce')
+    local = urlparse(BASE)
+    blocked = []
+    def local_only(route):
+        target = urlparse(route.request.url)
+        if (target.scheme, target.netloc) == (local.scheme, local.netloc):
+            route.continue_()
+        else:
+            blocked.append((target.scheme, target.netloc))
+            route.abort()
+    context.route('**/*', local_only)
+    check('Anonymous payment browser starts without an authenticated session', not context.cookies())
+    page = context.new_page()
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    try:
+        for state in ('Valid', 'Terminal'):
+            original_rows = payment_link_rows()
+            try:
+                if state == 'Terminal':
+                    db("UPDATE ci_payment_requests SET status='revoked' WHERE id=?", [request['id']])
+                for viewport, width, height in (('Desktop', 1440, 1000), ('Mobile', 390, 844)):
+                    page.set_viewport_size({'width': width, 'height': height})
+                    response = page.goto(link, wait_until='networkidle')
+                    card = page.locator('article.workspace-card')
+                    expect(card).to_have_count(1)
+                    expect(card).to_be_visible()
+                    check('Anonymous payment link ' + state + ' ' + viewport + ' returns protected HTTP content', response is not None and response.status == 200 and 'no-store' in response.headers.get('cache-control', '') and response.headers.get('referrer-policy') == 'no-referrer')
+                    if state == 'Valid':
+                        expect(card.locator('h2')).to_have_text(INVOICE['reference'] + ' · ' + INVOICE['title'])
+                        expect(card.locator('.prose')).to_have_text(INVOICE['instructions'])
+                        check('Anonymous payment link Valid ' + viewport + ' shows exact due amount', '$' + format(request['amount_cents'] / 100, '.2f') + ' USD due' in card.inner_text())
+                    else:
+                        expect(card.locator('.workspace-status')).to_have_text('revoked')
+                        check('Anonymous payment link Terminal ' + viewport + ' hides invoice details and due amount', card.locator('h2, .prose, strong').count() == 0 and '$' not in card.inner_text() and all(not value or value not in page.locator('body').inner_text() for value in (INVOICE['title'], INVOICE['reference'], INVOICE['instructions'], 'USD due', 'request expires')))
+                    check('Anonymous payment link ' + state + ' ' + viewport + ' fits viewport', page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+                    page.screenshot(path=str(QA / ('Payment-Link-' + state + '-' + viewport + '.png')), full_page=True)
+            finally:
+                if state == 'Terminal':
+                    db('UPDATE ci_payment_requests SET status=? WHERE id=?', [request['status'], request['id']])
+                check('Anonymous payment browser ' + state + ' restores financial and binding rows', payment_link_rows() == original_rows)
+        check('Anonymous payment browser has no uncaught errors', not errors)
+    finally:
+        context.close()
+    check('Anonymous payment browser preserves all original financial rows', payment_link_rows() == before)
+
+
 def upgrade():
     dest=WEB/'payment-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.4.0',dest)
     seed=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps({'operation':'seed-payment-upgrade'}),text=True,capture_output=True)
@@ -35,7 +175,7 @@ def run_http(env):
     ADMIN=BASE+'/existing/admin/index.php';PAY=ADMIN+'?view=payments';SETTINGS=ADMIN+'?view=payment-settings'
     CREDS={'api_login_id':'HttpFixtureLogin','transaction_key':'HttpFixtureKey12','signature_key':'b'*128,'public_client_key':'HttpFixturePublicKey'}
     db('DELETE FROM ci_rate_limits');upgrade()
-    check('Fresh installer initializes payment schema without credentials',db("SELECT value FROM fresh_settings WHERE name='payments_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_payment_gateways'))
+    check('Fresh installer initializes payment schema without credentials',db("SELECT value FROM fresh_settings WHERE name='payments_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_payment_gateways'))
     r=submit(admin,PAY,'payments_migrate',{'owner_password':'wrong','confirm':'1'});check('Payment setup HTTP reauthentication','current password is not correct' in r.text)
     r=submit(admin,PAY,'payments_migrate',{'owner_password':OWNER,'confirm':'1','csrf':'bad'});check('Payment setup HTTP CSRF denial','session expired' in r.text.lower())
     r=submit(admin,PAY,'payments_migrate',{'owner_password':OWNER,'confirm':'1'});check('Owner enables payment preparation','Payment preparation enabled' in r.text)
@@ -57,11 +197,25 @@ def run_http(env):
     alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     r=alice.get(BASE+'/existing/portal/index.php?job=1');check('Client sees own prepared request with truthful unpaid notice','Agreed milestone invoice' in r.text and 'Online payment is not available yet' in r.text and 'HttpFixture' not in r.text and 'ProductionHttpFixture' not in r.text)
     check('Other client cannot view payment request',bob.get(BASE+'/existing/portal/index.php?job=1').status_code==404 and 'Agreed milestone invoice' not in bob.get(BASE+'/existing/portal/index.php?job=2').text)
+    pay=soup(r).select_one('a[href*="page=pay"]');check('Client portal exposes own payment-request link',pay is not None)
+    link=pay['href'] if pay else '';r=requests.get(link);check('Shared payment link resolves invoice without a portal session',r.status_code==200 and 'SECURE PAYMENT REQUEST' in r.text and 'Agreed milestone invoice' in r.text and 'not available on this link yet' in r.text and 'noindex' in r.headers.get('X-Robots-Tag','') and 'no-referrer' in r.headers.get('Referrer-Policy',''))
+    check('Shared payment link never echoes secrets or other records','HttpFixture' not in r.text and 'ProductionHttpFixture' not in r.text)
+    payment_link_http_isolation(link, request)
+    check('Unknown payment link refused honestly',requests.get(BASE+'/existing/index.php?page=pay&t='+('0'*64)).status_code==404 and 'not valid' in requests.get(BASE+'/existing/index.php?page=pay&t='+('0'*64)).text)
+    check('Missing payment token refused',requests.get(BASE+'/existing/index.php?page=pay').status_code==404)
+    r=alice.post(PAY,data={'action':'payments_prepare','csrf':token(alice.get(BASE+'/existing/portal/index.php?job=1')),**{k:v for k,v in review.items() if k not in ['action','csrf']}},allow_redirects=False);check('Client cannot prepare administrator request',r.status_code==303 and 'login' in r.headers.get('Location',''))
     r=alice.post(PAY,data={'action':'payments_prepare','csrf':token(alice.get(PAY)),**{k:v for k,v in review.items() if k not in ['action','csrf']}},allow_redirects=False);check('Client cannot prepare administrator request',r.status_code==303 and 'login' in r.headers.get('Location',''))
     earlier=form_data(form_for(admin.get(target),'payments_prepare'));db('UPDATE ci_studio_invoices SET amount_cents=amount_cents+1 WHERE id=?',[INVOICE['id']]);r=admin.post(target,data=dict(earlier,confirm='1'));check('Stale invoice amount rejected after review','invoice changed' in r.text.lower() and len(db('SELECT * FROM ci_payment_requests'))==1);db('UPDATE ci_studio_invoices SET amount_cents=? WHERE id=?',[INVOICE['amount_cents'],INVOICE['id']])
     r=submit(admin,target,'payments_prepare',{'confirm':'1','purpose':'final','days':'3'});check('New request supersedes old instead of enabling two',db('SELECT status FROM ci_payment_requests ORDER BY id')==[{'status':'superseded'},{'status':'prepared'}])
+    check('Superseded payment link stays honest','newer payment request replaced this link' in requests.get(link).text)
+    payment_link_read_only_terminal(link, 'superseded', [INVOICE['title'], INVOICE['reference'], INVOICE['instructions'], 'Agreed milestone invoice'], 'Superseded anonymous payment link')
+    link2=soup(alice.get(BASE+'/existing/portal/index.php?job=1')).select_one('a[href*="page=pay"]')['href']
     r=submit(admin,PAY,'payments_revoke',{'confirm':'1'});check('Revocation preserves invoice financial state',db('SELECT status FROM ci_payment_requests ORDER BY id DESC LIMIT 1')==[{'status':'revoked'}] and db('SELECT * FROM ci_studio_invoices WHERE id=?',[INVOICE['id']])[0]==INVOICE)
+    check('Revoked payment link refuses honestly','revoked this payment request' in requests.get(link2).text)
+    payment_link_read_only_terminal(link2, 'revoked', [INVOICE['title'], INVOICE['reference'], INVOICE['instructions'], 'Final balance invoice'], 'Revoked anonymous payment link')
     r=submit(admin,target,'payments_prepare',{'confirm':'1'});latest=db('SELECT id FROM ci_payment_requests ORDER BY id DESC LIMIT 1')[0]['id'];db('UPDATE ci_payment_requests SET expires_at=1 WHERE id=?',[latest]);check('Expired request displayed honestly','expired' in admin.get(PAY).text and 'expired' in alice.get(BASE+'/existing/portal/index.php?job=1').text)
+    link3=[c.get_text() for c in soup(admin.get(PAY)).select('code') if 'page=pay' in c.get_text()];check('Expired payment link refuses honestly',link3 and 'This payment link expired' in requests.get(link3[0]).text)
+    payment_link_read_only_terminal(link3[0], 'expired', [INVOICE['title'], INVOICE['reference'], INVOICE['instructions']], 'Expired anonymous payment link')
     # Existing clients permission must not silently receive newly introduced finance permission.
     email='request-staff@example.invalid';submit(admin,ADMIN+'?view=staff','staff_save',{'name':'Request staff','email':email,'role':'administrator','permissions[]':['clients.manage'],'enabled':'1','owner_password':OWNER})
     uid=db('SELECT id FROM ci_users WHERE email=?',[email])[0]['id'];r=chosen_form(admin,ADMIN+'?view=staff','staff_invite','id',uid,{'owner_password':OWNER});link=soup(r).select_one('[data-staff-invite]')['href'];code=parse_qs(urlparse(link).fragment)['token'][0];staff=requests.Session();submit(staff,link,'staff_activate',{'token':code,'password':STAFF,'confirm_password':STAFF});submit(staff,ADMIN+'?view=login','login',{'email':email,'password':STAFF})
@@ -88,3 +242,4 @@ def run_browser(env,browser):
     p.set_viewport_size({'width':1440,'height':1000});p.goto(PAY+'&invoice_id='+str(INVOICE['id']));p.locator('.payment-review [name=purpose]').select_option('deposit');p.locator('.payment-review [name=confirm]').check();p.screenshot(path=str(QA/'Payment-Request-Review.png'),full_page=True);p.get_by_role('button',name='Prepare request',exact=True).click();expect(p.get_by_text('Payment request prepared.',exact=False)).to_be_visible()
     check('Browser request preparation retains invoice amount',db('SELECT amount_cents,purpose FROM ci_payment_requests ORDER BY id DESC LIMIT 1')==[{'amount_cents':INVOICE['amount_cents'],'purpose':'deposit'}]);p.set_viewport_size({'width':320,'height':844});p.screenshot(path=str(QA/'Payment-Requests-Narrow.png'),full_page=True);check('Payment requests fit narrow screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     check('Payment browser has no uncaught errors',not errors);(QA/'payment-browser-diagnostics.json').write_text(json.dumps({'page_errors':errors,'provider_calls':'None; connection response parsing tested separately with CLI fixtures'},indent=2));ctx.close()
+    payment_link_browser_isolation(browser)

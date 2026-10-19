@@ -31,5 +31,8 @@ Keep status, handoff, roadmap, changelog, decisions, session log, release regist
 ## 2026-10-19 — bounded contacts test correction
 
 Root owns `codex/contacts-native-fixture` from PR203/cefb08d6. VPS traced three real hosted failures and prepared the one-line fixture correction; Domains independently verified no setup dependency or assertion is lost. Devin retains all contacts/milestones feature work. The correction targets the earliest affected source, with fresh native/full acceptance required before integration. [Evidence](evidence/service-plan-contact-fixture.json).
+## Shared payment-link correction — 2026-10-19
+
+Root owns `codex/payment-link-view-isolation` from exact Devin PR202 source `750f1ab8`, the two view/runtime files, additive native coverage, installer inventory and delivery. Catalog independently reproduces and reviews the privacy/display correction; VPS prepares only additive `tests/payments_cases.py` evidence externally. Original PR202 and renewal PR252 source `632362f6` remain untouched. Devin retains non-20i feature ownership. Root integrates this small correction through the affected branch only after its actual acceptance. [Scope and evidence](PAYMENT_LINK_VIEW_REVIEW.md).
 
 ## Post-publication coordination — 2026-10-18

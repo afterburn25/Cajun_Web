@@ -13,6 +13,9 @@ The four supported-runtime producer sets for the original1.26 catalog candidate 
 ## 2026-10-18 — verification throughput follow-through
 
 Five isolated pure suites have reviewed PR path filters, with complete current dependency coverage and unchanged tests. [Evidence and limits](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This scheduling increment does not complete a product capability or queued acceptance. Hosting [PR231](https://github.com/afterburn25/Cajun_Web/pull/231) and nameserver [PR230](https://github.com/afterburn25/Cajun_Web/pull/230) remain separate candidates awaiting runtime and release gates; full20i remains unfinished.
+## Shared payment-link correction — 2026-10-19
+
+HC-11 shareable requests remain an unreleased Devin candidate. The separate [payment-link view correction](PAYMENT_LINK_VIEW_REVIEW.md) closes stale-link invoice disclosure and contradictory paid amounts; local modeled checks, actual SQL and installed HTTP evidence remain distinct. It does not implement card checkout, publish a version, or change the separate 20i lane.
 
 ## Verified increment and remaining work — 2026-10-18
 

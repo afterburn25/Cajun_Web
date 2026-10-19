@@ -25,6 +25,12 @@ Limit estimator, email-template, portfolio, review-request and webmail pure-suit
 ## Unreleased — project stage history
 
 Real stage transitions on web-design projects are recorded durably (`studio_stage_events`, workspace marker 4) with actor attribution, shown as progress history in the portal and admin project views, and projected into both activity centers as `stage:` events with exact anchors. Unchanged saves record nothing. Branch `devin/non20i-stage-history` stacked on protected previews; acceptance pending on CI.
+## Unreleased — isolate expired or changed payment links
+
+- Show invoice details and an amount due only for a current prepared link whose original invoice fingerprint, project and client still match.
+- Show metadata-free terminal notices for revoked, superseded, expired, changed or unavailable links. Paid notices no longer repeat the old amount as due.
+- Add native and installed-browser regression coverage to Devin's unreleased payment-link candidate; current runtime acceptance is pending.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
@@ -1671,3 +1677,8 @@ Owner request: continue full20i while Devin completes non-20i. Parent819c3ea3; c
 ## Main documentation synchronization
 
 Main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` publishes the same owner release freeze, canonical b98b96eb branch and scope/map to make them discoverable. Its12 Markdown-only changes add no runtime, installer, schema or version delta. The release branch normally merges that checkpoint; its existing release-specific status and all prior histories remain, rather than copying main's pre-integration runtime wording. Both sources agree on frozen capabilities, licensing corrections, complete supported acceptance, published1.24 and no live deployment.
+## Unreleased — shareable payment-request links (devin/non20i-payment-links)
+
+- Each prepared payment request now mints a 256-bit shareable link (`index.php?page=pay&t=`); the token is sealed with the payment master key and looked up only by its SHA-256 hash, grants no portal access, and the page is `noindex`/`no-referrer`/`no-store` with per-IP rate limiting.
+- Link states stay honest end-to-end: prepared requests show invoice reference, purpose, authoritative amount, expiry and the studio's instructions; revoked, superseded, expired, paid, invoice-changed and unknown links each render a truthful terminal state. No card checkout yet.
+- Payments schema 1 → 2 via additive `ALTER` (v1 rows keep `NULL` links); admin request history surfaces the link for prepared requests and the portal invoice card links the owning client to it.

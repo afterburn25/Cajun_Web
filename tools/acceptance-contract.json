@@ -463,8 +463,8 @@
       "apache-release125-r125_soff_-Upgraded-Client-Mobile.png"
     ],
     "source_sha256": {
-      "tests/organized_update_fixture.php": "70d026111c4dffaefb31c4f6c8ec896ef725584e0566d223a7fec023ad9c6ade",
-      "tests/release_125_later_records.py": "0902efd051b96eba613c266ed5aba49272bdfa3a00e7b005e2310c19bf131e61",
+      "tests/organized_update_fixture.php": "5f7363d51871347755b25921565f1031e626b148e090180b9b3d48213d674a03",
+      "tests/release_125_later_records.py": "077357331e2af68e6686f96adcdda8a5c12eaf927e11b35823c3b5a74a26d290",
       "tests/release_125_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
       "tests/release_125_retention_fixture.php": "102635706356d8f52b38f6cd495444290677ba1254889eedf8e96b1eaaf8788c",
       "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
@@ -487,17 +487,17 @@
       }
     },
     "source_sha256": {
-      "tests/release_cases.py": "807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af",
+      "tests/release_cases.py": "f78d33ca59c9f28a0ecf9fa1eddd81ab6699a8bf8f07f1c8b53fc83a122cade5",
       "tests/license_release_cases.py": "f4734915f8c50afd652bfd352888f363e3144d4ba7f3515a49ff729881fa1599",
       "tests/license_release_browser_fixture.php": "9b0b4f72b1ed9281332afbf3b5060fef98d43501e3685bd4bc3c51c703d91bc9",
       "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
       "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a",
       "tests/structure_helpers.py": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
-      "tests/staff_cases.py": "77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f",
-      "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
-      "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
-      "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
-      "tests/payments_native.php": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
+      "tests/staff_cases.py": "5c44ed29d27eecb169fa8b74c10f413e08298fd103bec360d113d364f8fe2c60",
+      "tests/support_cases.py": "4a4345979fe294ace1db1ca6280cd6254fb98144f0712a10452ee24a4e9b3735",
+      "tests/catalog_cases.py": "fbc8584862f41c960c41bf937f855d2d17625ce56e0ae7d9ee523fc7c7f2f99d",
+      "tests/payments_cases.py": "efe7078b2c7ac2ced1de0f9c3bfcc66b0fd99c6e675bb2fa03437b013839fe57",
+      "tests/payments_native.php": "c2514b3ecb9abac25da3b236b3324e12b9db96c6635349918dd76fd0850b17cc",
       "tests/provider_package_wordpress_installed_native.php": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
       "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
       "tests/domain_expiry_native.php": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
@@ -505,7 +505,8 @@
       "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
       "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
       "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
-      "tests/delivery_cases.py": "d89f8b51e16cd95be0461010b005be6138b69cf07f5d05b083db423bbfa9b944"
+      "tests/delivery_cases.py": "acf7bf48823c159c288c184a8642ae0f9ca6d2ed81b51fa02cfc4f9137db5ce0",
+      "tests/payment_link_view_cases.php": "276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990"
     },
     "additional_screenshots": [
       "Admin-Overview-Desktop.png",
@@ -517,7 +518,11 @@
       "Licensing-Customer-Downloads-Desktop.png",
       "Licensing-Customer-Downloads-Mobile.png",
       "Licensing-Owner-Invoice-Review-Desktop.png",
-      "Licensing-Owner-Invoice-Review-Mobile.png"
+      "Licensing-Owner-Invoice-Review-Mobile.png",
+      "Payment-Link-Valid-Desktop.png",
+      "Payment-Link-Valid-Mobile.png",
+      "Payment-Link-Terminal-Desktop.png",
+      "Payment-Link-Terminal-Mobile.png"
     ],
     "scope": "Additive landing-page captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
   },
