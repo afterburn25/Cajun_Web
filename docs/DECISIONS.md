@@ -1,5 +1,7 @@
 ## 2026-10-18 — client nameserver request candidate
 
+Preserve the original diagnostic paths and workflow references through an exact four-file development-package exception. Do not open the entire `ops` directory or omit tracked source from FULL-PROJECT. Existing private-file, symlink, immutable-blob and deployment-file boundaries stay intact. This fixes the inherited clean-build refusal without changing application behavior.
+
 Acceptance additions retain the complete predecessor command/report inventory and all 334 helper outcomes. Current source hashes are checked before finite predecessor reconstruction. The sole earlier-command correction loads tokenizer/PDO for distro PHP minimal mode; no original test or release gate is removed.
 
 Enable local nameserver intake through explicit owner setup plus the active primary client's exact registrar-domain assignment, without a separate per-client provider capability. This grants no provider-send authority. Bind static original assignment/account/owner facts so aging or failure of a later read does not remove local intake; require fresh complete observations independently at owner approval.

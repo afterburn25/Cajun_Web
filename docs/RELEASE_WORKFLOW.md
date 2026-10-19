@@ -1,3 +1,7 @@
+## 2026-10-18 — closed diagnostic source packaging
+
+FULL-PROJECT includes the four tracked Python sources under `ops/twentyi-catalog-schema` and `ops/twentyi-cloud-root` by exact path. The broader `ops` area remains excluded. These scripts and their tests are development source; they are not executed by packaging and are absent from COMPLETE-UPLOAD and UPDATE. Existing private-file, symlink and exact-Git-byte checks remain mandatory. The actual builder path-policy checks append to the existing build guard report. Preserve the original63444bcd failed build as evidence of the inherited allowlist omission.
+
 ## 2026-10-18 — dependency-aware pull-request triggers
 
 Ten focused workflows previously filtered pushes but ran on every eligible pull request: client authority, hosting operations and records, mail drafts and notices, mail receiving and transport, provider operations and settings, and service-plan records. Their PR triggers now use the same paths as their push triggers. Existing branch filters and manual dispatch remain.

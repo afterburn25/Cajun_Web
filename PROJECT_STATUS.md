@@ -1,5 +1,7 @@
 ## 2026-10-18 — client nameserver request candidate
 
+The first clean candidate build at63444bcd exposed an inherited package failure: the four tracked catalog diagnostic scripts were outside the builder's development-source allowlist. A bounded correction admits those four exact paths to FULL-PROJECT, retains every private-file/symlink/source-byte guard, and adds22 passing portable path-policy checks. Site files and installer inventory are unchanged. Corrected package and exact-source GitHub acceptance remain due.
+
 Primary-client nameserver requests now connect submission/withdrawal, owner review, the existing one-send approval and separate readback to client-safe status. This is source on `codex/twentyi-client-nameserver-requests`, based on af78abd8 / [PR222](https://github.com/afterburn25/Cajun_Web/pull/222). [Exact behavior and evidence](docs/TWENTYI_CLIENT_NAMESERVER_REQUESTS.md).
 
 Applied local checks pass 1,034 named portable/model executions, 91 loopback TLS checks, 39 upgrade guards and 473 acceptance-helper checks, plus canonical installer/dependency verification. The native, packaged browser and installed update/recovery producers are wired into GitHub acceptance. Synthetic layout checks pass; actual SQL, authenticated browser, installed update/recovery and exact-source GitHub acceptance remain pending. Published1.25 is unchanged; this is not a release or deployment. Hosting purchase inbox PR229 at7535f861 remains separate, with both original acceptance runs queued at the latest check. Complete20i remains unfinished.

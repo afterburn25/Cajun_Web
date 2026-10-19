@@ -1,5 +1,7 @@
 ## 2026-10-18 — client nameserver request candidate
 
+The first clean63444bcd package build found an inherited diagnostic-folder allowlist failure. The narrow four-file development-package correction passes22 local policy checks; it does not change runtime capability status or waive pending package/native/browser/update/release gates.
+
 The [primary-client nameserver workflow](TWENTYI_CLIENT_NAMESERVER_REQUESTS.md) is implemented as a separate source candidate: local intake/withdrawal, owner review, atomic approval association, existing one-send execution, separate readback and client-safe status. Applied local portable/model, TLS, upgrade-guard, acceptance-helper and canonical build checks pass. Native, packaged browser and installed update/recovery producers are now wired into CI. Their actual runtime, source-bound CI and release gates remain open; this does not mark complete20i or the whole project complete.
 
 The separate hosting purchase inbox PR229, full catalog/image work, VPS/SSH and Devin's non20i work retain their own acceptance/integration status. Published1.25 remains immutable.

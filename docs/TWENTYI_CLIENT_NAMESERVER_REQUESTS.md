@@ -64,6 +64,8 @@ Root's applied-source helper run passes 473 named outcomes, retaining all 334 pr
 
 The distro full-workflow minimal service tests explicitly load tokenizer and PDO because the actual services use `token_get_all` and `PDOException`. This includes one documented correction to the existing owner-service command. The official Docker focused image and Windows interpreter retain their built-in modules and plain minimal mode. No prior workflow run is cancelled or replaced by this correction.
 
+The first clean63444bcd build failed before creating archives because inherited catalog diagnostic sources were outside the FULL-PROJECT allowlist. Its original log remains retained. The follow-up package correction permits only the four existing diagnostic Python paths and adds22 passing actual path-policy checks to the existing builder guard suite. It changes no site bytes, provider diagnostic behavior or deployment package selection. Corrected packages require exact-Git comparison; the earlier failed build supplies no passing packaging evidence.
+
 ## Continuity
 
 The separate hosting purchase inbox remains at `7535f861c2c3accf37482f5af94099780c7806a6` on [PR229](https://github.com/afterburn25/Cajun_Web/pull/229), with its locally verified packages and original GitHub acceptance runs preserved. That work is not implicitly merged into this branch. Remote main was checked at `e397d9a6e293850e8dff61a593e3ba39ee178400` at this turn's start. Devin retains non-20i/licensing work. Complete 20i, full cloud catalog, automatic provider images, VPS/SSH and the whole project remain unfinished.
