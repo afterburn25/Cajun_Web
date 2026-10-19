@@ -1,3 +1,7 @@
+## Unreleased documentation — original catalog runtime evidence
+
+Record four original 1.26 runtime producer sets and successful unchanged local aggregations, authenticated artifacts, identical source-matched packages, 16 populated upgrade scopes and known capture limits. Hosted final acceptance and the corrected capture candidate remain pending. [Evidence and next gates](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md). No application, package or release bytes change.
+
 ## Unreleased — isolated pure-suite pull-request filters
 
 Limit estimator, email-template, portfolio, review-request and webmail pure-suite PR runs to their source/test directories and workflow files. Preserve every job and push/manual trigger. Source/dependency checks and independent review passed; this affects future scheduling only. No application or release version changes.
