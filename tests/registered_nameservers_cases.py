@@ -264,3 +264,8 @@ def run_browser(env, browser):
     check('Installed nameserver change continuation completes all scoped forms and captures',
           changes['passed'] is True and tuple(c['name'] for c in changes['captures']) == CHANGE_CAPTURES
           and all((qa/name).is_file() and (qa/name).stat().st_size > 0 for name in CHANGE_CAPTURES))
+    from registered_nameserver_requests_cases import run_browser as client_requests_browser, CAPTURES as CLIENT_REQUEST_CAPTURES
+    client_requests = client_requests_browser(env, browser)
+    check('Installed client nameserver requests complete all scoped forms and captures',
+          client_requests['passed'] is True and tuple(c['name'] for c in client_requests['captures']) == CLIENT_REQUEST_CAPTURES
+          and all((qa/name).is_file() and (qa/name).stat().st_size > 0 for name in CLIENT_REQUEST_CAPTURES))

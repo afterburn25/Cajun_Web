@@ -55,7 +55,11 @@ def report_predecessor(reports, extension):
     return prior
 
 
-def verify(a, root, tmp, check, deny, contract):
+def verify(a, root, tmp, check, deny, contract, source_predecessors=None, reports_predecessor=None):
+    # Only the outer current-source verifier supplies these exact predecessor bytes.
+    source_predecessors = {} if source_predecessors is None else source_predecessors
+    def source(path):
+        return source_predecessors.get(path, root.joinpath(path).read_bytes().replace(b'\r\n', b'\n'))
     extension = contract['registered_nameserver_changes_installed']
     prior = copy.deepcopy(contract)
     del prior['registered_nameserver_changes_installed']
@@ -66,10 +70,10 @@ def verify(a, root, tmp, check, deny, contract):
           and set(extension['source_sha256']) == DELTA_PATHS | NEW_PATHS | {'tools/acceptance-reports.json'})
     for path, expected in extension['source_sha256'].items():
         check('Nameserver installed current source pin ' + path,
-              sha(root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')) == expected)
+              sha(source(path)) == expected)
     restored = {}
     for path, delta in extension['source_delta'].items():
-        raw = root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        raw = source(path)
         restored[path] = source_predecessor(raw, delta)
         check('Nameserver installed retains complete original producer ' + path, True)
         deny('Nameserver installed rejects changed producer ' + path,
@@ -83,7 +87,7 @@ def verify(a, root, tmp, check, deny, contract):
     check('Nameserver installed tests retain the original native browser transfer and upgrade producers',
           set(extension['unchanged_source_sha256']) == unchanged
           and all(sha(root.joinpath(p).read_bytes().replace(b'\r\n', b'\n')) == h for p, h in extension['unchanged_source_sha256'].items()))
-    reports = a.load(root / 'tools/acceptance-reports.json')
+    reports = a.load(root / 'tools/acceptance-reports.json') if reports_predecessor is None else reports_predecessor
     preceding_reports = report_predecessor(reports, extension)
     check('Nameserver installed reports retain all176 browser and222 final predecessors',
           len(preceding_reports['browser']) == 176 and len(preceding_reports['final']) == 222
@@ -112,7 +116,7 @@ def verify(a, root, tmp, check, deny, contract):
         check('Nameserver change capture retains browser evidence ownership ' + name,
               a.evidence_allowed('qa/' + name, 'native-browser')
               and not a.evidence_allowed('qa/' + name, 'apache'))
-    workflow = root.joinpath('.github/workflows/application-tests.yml').read_text(encoding='utf-8')
+    workflow = source('.github/workflows/application-tests.yml').decode('utf-8')
     fixture = '.ci-venv/bin/python -B tests/registered_nameserver_changes_http_fixture_test.py --report qa/' + REPORTS['browser'][0]
     upgrade = ['.ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/' + REPORTS['final'][1],
                '.ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py']

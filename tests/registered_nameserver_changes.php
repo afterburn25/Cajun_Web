@@ -25,6 +25,10 @@ use CajunWebPro\Foundation\Provider\{ProviderGateway,ProviderOperation,ProviderC
 use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
 $imports='use CajunWebPro\\Foundation\\TwentyIRegistrarNameservers\\RegisteredNameserverBinding;use CajunWebPro\\Foundation\\TwentyI\\Operations\\RegistrarNameserverChange;use CajunWebPro\\Foundation\\Provider\\{ProviderOperation,ProviderGateway};use CajunWebPro\\Foundation\\MailTransport\\EndpointPolicy;';
 eval($imports.substr($source,strpos($source,'function registered_nameserver_changes_grant_values')));
+// This retained v1 suite models the newly added client-request feature as unprepared.
+// Execute the real cross-history hook; v2 associations have a separate service/native suite.
+function registered_nameserver_requests_graph():?array {return null;}
+eval(body(file_get_contents($repo.'/site/app/providers/registered_nameserver_requests.php'),'registered_nameserver_requests_owner_history'));
 $s=file_get_contents($storage);foreach(['tables','columns','values','json','digest','hmac','ledger_values','ledger_digest'] as $name)eval(body($s,'registered_nameserver_changes_'.$name));
 $ops=file_get_contents($repo.'/site/app/providers/operations.php');foreach(['provider_operations_scope','provider_operations_canonical'] as $name)eval(body($ops,$name));
 $classStart=strpos($ops,'final class ProviderOperationLedger');$classEnd=strpos($ops,'/**\n * The canonical',$classStart);if($classEnd===false)$classEnd=strpos($ops,'function provider_operations_scope',$classStart);$classCode=substr($ops,$classStart,$classEnd-$classStart);$classCode=substr($classCode,0,strrpos($classCode,'}')+1);

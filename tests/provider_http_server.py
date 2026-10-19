@@ -47,8 +47,10 @@ def registered_nameserver_change_reply(fixture, path, headers, raw):
         return values == sorted(set(values))
 
     mode = fixture.nameserver_change_mode
-    if mode not in ('uncertain_landed', 'uncertain_unlanded', 'authentication') or path != '/domain/14701/nameservers':
+    client_target = (path == '/domain/14702/nameservers' and getattr(fixture, 'nameserver_client_request_enabled', False) is True and mode == 'uncertain_unlanded')
+    if mode not in ('uncertain_landed', 'uncertain_unlanded', 'authentication') or (path != '/domain/14701/nameservers' and not client_target):
         return refused()
+    target_id = '14702' if client_target else '14701'
     required = {'Authorization': 'Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode(),
                 'Content-Type': 'application/json', 'Accept': 'application/json'}
     if any(headers.get(key) != value for key, value in required.items()) or headers.get('Transfer-Encoding') is not None:
@@ -64,7 +66,7 @@ def registered_nameserver_change_reply(fixture, path, headers, raw):
         return refused()
     if type(payload) is not dict or list(payload) != ['ns', 'old-ns'] or not names(payload['ns']) or not names(payload['old-ns']):
         return refused()
-    if set(payload['ns']).intersection(payload['old-ns']) or not names(fixture.nameservers.get('14701')) or payload['old-ns'] != fixture.nameservers['14701']:
+    if set(payload['ns']).intersection(payload['old-ns']) or not names(fixture.nameservers.get(target_id)) or payload['old-ns'] != fixture.nameservers[target_id]:
         return refused()
     if raw != json.dumps(payload, separators=(',', ':'), ensure_ascii=True).encode('ascii'):
         return refused()
@@ -92,6 +94,7 @@ class ProviderServer:
         self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';self.wp_installed=True;self.wp_installed_mode='success';fixture=self
         self.nameservers={};self.nameserver_mode='success'
         self.nameserver_change_mode='disabled';self.nameserver_change_posts=[]
+        self.nameserver_client_request_enabled=False
         self.stackcp_membership=[];self.stackcp_grants=[]
         self.renewal_mode='success';self.renewal_posts=[]
         self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}

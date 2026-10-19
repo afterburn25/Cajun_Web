@@ -5,6 +5,7 @@ require_once CWP_CODE_ROOT.'/app/providers/registered_nameservers.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/registered_nameserver_changes_storage.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-operations/RegistrarNameserverChange.php';
+require_once CWP_CODE_ROOT.'/app/providers/registered_nameserver_requests.php';
 use CajunWebPro\Foundation\TwentyIRegistrarNameservers\RegisteredNameserverBinding;
 use CajunWebPro\Foundation\TwentyI\Operations\RegistrarNameserverChange;
 use CajunWebPro\Foundation\Provider\{ProviderOperation,ProviderGateway};
@@ -15,7 +16,7 @@ function registered_nameserver_changes_grant_values(array $g):array {return arra
 function registered_nameserver_changes_decode(string $kind,array $row):array {
     if(array_keys($row)!==registered_nameserver_changes_columns($kind))throw new RuntimeException('Nameserver change row needs recovery.');
     try{$d=json_decode($row['document_json'],true,20,JSON_THROW_ON_ERROR);}catch(JsonException){throw new RuntimeException('Nameserver change evidence needs recovery.');}
-    if(!is_array($d)||($d['version']??null)!==1||registered_nameservers_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Nameserver change evidence needs recovery.');
+    if(!is_array($d)||!in_array($d['version']??null,$kind==='request'?[1,2]:[1],true)||registered_nameservers_json($d)!==$row['document_json']||!hash_equals(hash('sha256',$row['document_json']),$row['document_sha256']))throw new RuntimeException('Nameserver change evidence needs recovery.');
     $values=$row;unset($values['proof']);$values=array_map(static fn($v)=>(string)$v,$values);
     if($kind==='request'){$g=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$row['id']]);if(!$g)throw new RuntimeException('Nameserver change approval is missing.');$values['grant']=registered_nameserver_changes_grant_values($g);}
     if(!hash_equals($row['proof'],registered_nameserver_changes_hmac($kind,$values)))throw new RuntimeException('Nameserver change proof needs recovery.');return $d;
@@ -25,7 +26,8 @@ function registered_nameserver_changes_prove(string $kind,array $row,?array $gra
 }
 function registered_nameserver_changes_request(string $id):array {
     registered_nameservers_id($id);$q=one('SELECT * FROM '.table('provider_nameserver_change_requests').' WHERE id=?',[$id]);if(!$q)throw new RuntimeException('This nameserver change is unavailable.');$d=registered_nameserver_changes_decode('request',$q);
-    if(array_keys($d)!==['version','binding','anchor_id','anchor_seq','anchor_sha256','before_nameservers','params','reviewed','actor_auth','approved_epoch'])throw new RuntimeException('Nameserver change document needs recovery.');
+    $keys=['version','binding','anchor_id','anchor_seq','anchor_sha256','before_nameservers','params','reviewed','actor_auth','approved_epoch'];if($d['version']===2)$keys[]='client_origin';
+    if(array_keys($d)!==$keys)throw new RuntimeException('Nameserver change document needs recovery.');
     try{$b=new RegisteredNameserverBinding($d['binding']);$params=RegistrarNameserverChange::params($d['params']);registered_nameservers_id($d['anchor_id']);}catch(InvalidArgumentException|TypeError){throw new RuntimeException('Nameserver change binding needs recovery.');}
     if($d['params']!==$params||$d['reviewed']!==true||$d['before_nameservers']!==$params['old-ns']||$params['domainId']!==$b->data['domain_id']||$q['link_id']!==$b->data['link_id']||$q['profile_id']!==$b->data['profile_id']||(int)$q['domain_id']!==$b->data['domain_id']||!is_int($d['anchor_seq'])||$d['anchor_seq']<1||!is_string($d['anchor_sha256'])||!preg_match('/\A[a-f0-9]{64}\z/',$d['anchor_sha256'])||!is_string($d['actor_auth'])||!preg_match('/\A[a-f0-9]{64}\z/',$d['actor_auth'])||!is_int($d['approved_epoch'])||$d['approved_epoch']<1||$d['approved_epoch']>2147482747)throw new RuntimeException('Nameserver change binding needs recovery.');
     $g=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$id]);
@@ -34,7 +36,9 @@ function registered_nameserver_changes_request(string $id):array {
     if($anchor['state']!=='complete'||$anchor['seq']!==$d['anchor_seq']||$anchor['nameservers']!==$params['old-ns']||!hash_equals(registered_nameserver_changes_receipt_hash($anchor),$d['anchor_sha256'])||!hash_equals($anchor['binding']->sha256,$b->sha256))throw new RuntimeException('The complete reviewed nameserver set needs recovery.');
     $ledger=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',[$g['consumed_key']]);
     if($ledger){$op=new ProviderOperation(RegistrarNameserverChange::OPERATION,$g['consumed_key'],$params);$identity=$g['profile_id'].':'.$g['profile_revision'].':'.$b->data['key_fingerprint'];$claimed=$ledger['operation']===null&&$ledger['status']==='claimed'&&(int)$ledger['attempts']===0&&$ledger['resolved_epoch']===null;if(!hash_equals($ledger['fingerprint'],ProviderGateway::requestFingerprint('twenty-i',$identity,$op))||(!$claimed&&$ledger['operation']!==RegistrarNameserverChange::OPERATION))throw new RuntimeException('Nameserver execution identity needs recovery.');}
-    return ['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];
+    $request=['row'=>$q,'document'=>$d,'binding'=>$b,'grant'=>$g,'ledger'=>$ledger];
+    if($d['version']===2)registered_nameserver_requests_validate_origin($request);
+    return $request;
 }
 function registered_nameserver_changes_terminal(array $request):?array {
     $row=one('SELECT * FROM '.table('provider_nameserver_change_terminals').' WHERE id=?',[$request['row']['id']]);if(!$row)return null;$d=registered_nameserver_changes_decode('terminal',$row);
@@ -69,6 +73,7 @@ function registered_nameserver_changes_authenticated_history():void {
         }while(count($rows)===64);
         if($seen!==registered_nameserver_changes_counter($kind))throw new RuntimeException('Nameserver change history counts disagree.');
     }
+    registered_nameserver_requests_owner_history();
 }
 /** Every unresolved approval fences the resource, even after client or key changes. */
 function registered_nameserver_changes_pending(string $profileId,int $domainId):?array {
@@ -93,6 +98,7 @@ function registered_nameserver_changes_authorize(array $request):array {
     registered_nameservers_guard(false);$request=registered_nameserver_changes_request($request['row']['id']);
     [$actor,$profile,$current]=registered_nameserver_changes_context($request['binding']);$g=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$request['row']['id']]);
     if(!$g||$g['revoked_at']!==null||(int)$g['expires_epoch']<=time()||(int)$actor['id']!==(int)$request['row']['actor_id']||!hash_equals(hash('sha256',$actor['auth_version']),$request['document']['actor_auth'])||!hash_equals($current->sha256,$request['binding']->sha256)||registered_nameserver_changes_terminal($request)!==null)throw new ProviderOperationAccessChanged('Nameserver change approval is no longer current.');
+    if($request['document']['version']===2)registered_nameserver_requests_origin_current($request);
     registered_nameserver_changes_request($request['row']['id']);registered_nameserver_changes_precondition($request['row']['link_id'],$request['document']['anchor_id'],$request['binding']->sha256);return $profile;
 }
 function registered_nameserver_changes_end(array $request,string $phase):void {
@@ -101,35 +107,50 @@ function registered_nameserver_changes_end(array $request,string $phase):void {
     $digest=registered_nameserver_changes_ledger_digest($ledger);$d=['version'=>1,'request_proof'=>$request['row']['proof'],'phase'=>$phase,'ended_epoch'=>time(),'ledger_sha256'=>$digest];$json=registered_nameservers_json($d);
     $row=['id'=>$request['row']['id'],'actor_id'=>(int)$request['row']['actor_id'],'disposition'=>$phase,'ledger_sha256'=>$digest,'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];registered_nameserver_changes_insert('terminal',registered_nameserver_changes_prove('terminal',$row));
 }
+/** Internal admission seam. Caller owns the staff mutex and one transaction.
+ * A client-origin caller must append its immutable dispatch association in this same
+ * transaction before validating history or entering the separate send seam. */
+function registered_nameserver_changes_admit_locked(string $requestId,string $linkId,string $anchorId,string $bindingHash,array $desired,#[SensitiveParameter] string $password,?array $clientOrigin=null):bool {
+    registered_nameservers_guard();registered_nameservers_id($requestId);registered_nameservers_id($linkId);registered_nameservers_id($anchorId);
+    if(!preg_match('/\A[a-f0-9]{64}\z/',$bindingHash))throw new InvalidArgumentException('Review this exact nameserver change first.');
+    $desired=\CajunWebPro\Foundation\TwentyI\Operations\NameserverChange::observed($desired);
+    if($clientOrigin!==null){if(array_keys($clientOrigin)!==['id','request_sha256']||!is_string($clientOrigin['id'])||!is_string($clientOrigin['request_sha256'])||!preg_match('/\A[a-f0-9]{64}\z/',$clientOrigin['request_sha256']))throw new LogicException('Invalid client request origin.');registered_nameservers_id($clientOrigin['id']);}
+    $actor=registered_nameserver_changes_actor($password);if(!registered_nameserver_changes_ready())throw new RuntimeException('Prepare nameserver change storage first.');
+    if(one('SELECT id FROM '.table('provider_nameserver_change_requests').' WHERE id=?',[$requestId])){$old=registered_nameserver_changes_request($requestId);registered_nameserver_changes_context($old['binding']);if(($old['document']['client_origin']??null)!==$clientOrigin||$old['row']['link_id']!==$linkId||$old['document']['anchor_id']!==$anchorId||!hash_equals($old['binding']->sha256,$bindingHash)||$old['document']['params']['ns']!==$desired||(int)$old['row']['actor_id']!==(int)$actor['id']||!hash_equals($old['document']['actor_auth'],hash('sha256',$actor['auth_version'])))throw new RuntimeException('This nameserver request identifier was already used.');return false;}
+    [$binding,$anchor]=registered_nameserver_changes_precondition($linkId,$anchorId,$bindingHash);registered_nameserver_changes_context($binding);
+    // Registrar semantics are whole, nonempty, disjoint sets. Never a package delta.
+    $params=RegistrarNameserverChange::params(['domainId'=>$binding->data['domain_id'],'ns'=>$desired,'old-ns'=>$anchor['nameservers']]);
+    if(registered_nameserver_changes_pending($binding->data['profile_id'],$binding->data['domain_id']))throw new RuntimeException('A previous nameserver change is unresolved. It cannot be sent again.');
+    $previous=one('SELECT * FROM '.table('provider_nameserver_change_requests').' WHERE profile_id=? AND domain_id=? ORDER BY grant_seq DESC LIMIT 1',[$binding->data['profile_id'],$binding->data['domain_id']]);
+    if($previous){$old=registered_nameserver_changes_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new nameserver observation before approving another change.');}
+    $now=time();if($now<1||$now>2147482747)throw new RuntimeException('The local nameserver approval clock is outside its supported range.');
+    $d=['version'=>$clientOrigin===null?1:2,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_sha256'=>registered_nameserver_changes_receipt_hash($anchor),'before_nameservers'=>$anchor['nameservers'],'params'=>$params,'reviewed'=>true,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];if($clientOrigin!==null)$d['client_origin']=$clientOrigin;$json=registered_nameservers_json($d);if(strlen($json)>4096)throw new InvalidArgumentException('This complete nameserver change exceeds the local approval size limit.');
+    query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$requestId,$binding->data['profile_id'],RegistrarNameserverChange::OPERATION,provider_operations_scope(RegistrarNameserverChange::OPERATION,$d),$binding->data['profile_revision'],$json,(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'nameservers:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);
+    $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$binding->data['profile_id'],'domain_id'=>$binding->data['domain_id'],'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];registered_nameserver_changes_insert('request',registered_nameserver_changes_prove('request',$q,$grant));return true;
+
+}
+/** Dispatch only a committed, authenticated approval. Never creates an approval. */
+function registered_nameserver_changes_send_locked(string $requestId,?callable $resolver=null,?callable $perform=null):array {
+    registered_nameservers_guard(false);if(db()->inTransaction())throw new LogicException('Nameserver changes cannot run in a transaction.');
+    $request=registered_nameserver_changes_request($requestId);$entered=false;
+    try{
+        $authorize=static fn()=>registered_nameserver_changes_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();
+        $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));
+        try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');$authorize();$op=new ProviderOperation(RegistrarNameserverChange::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);}finally{unset($secret);}
+    }catch(Throwable $e){if($e instanceof PDOException)throw $e;/* Never save exception text or infer no-send after performer entry. */}
+    staff_transaction(fn()=>registered_nameserver_changes_end($request,$entered?'attempted':'not_sent'));
+    return staff_transaction(fn()=>registered_nameserver_changes_summary($requestId));
+
+}
 /** One owning mutex spans admission, DNS, gateway and the immutable terminal witness. */
 function registered_nameserver_changes_change(string $requestId,string $linkId,string $anchorId,string $bindingHash,array $desired,bool $reviewed,#[SensitiveParameter] string $password,?callable $resolver=null,?callable $perform=null):array {
     if(db()->inTransaction())throw new LogicException('Nameserver changes cannot run in a transaction.');registered_nameservers_id($requestId);registered_nameservers_id($linkId);registered_nameservers_id($anchorId);
     if(!$reviewed||!preg_match('/\A[a-f0-9]{64}\z/',$bindingHash))throw new InvalidArgumentException('Review this exact nameserver change first.');
     $desired=\CajunWebPro\Foundation\TwentyI\Operations\NameserverChange::observed($desired);
     return staff_locked(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$password,$resolver,$perform):array{
-        $fresh=staff_transaction(function()use($requestId,$linkId,$anchorId,$bindingHash,$desired,$password):bool{
-            $actor=registered_nameserver_changes_actor($password);if(!registered_nameserver_changes_ready())throw new RuntimeException('Prepare nameserver change storage first.');
-            if(one('SELECT id FROM '.table('provider_nameserver_change_requests').' WHERE id=?',[$requestId])){$old=registered_nameserver_changes_request($requestId);registered_nameserver_changes_context($old['binding']);if($old['row']['link_id']!==$linkId||$old['document']['anchor_id']!==$anchorId||!hash_equals($old['binding']->sha256,$bindingHash)||$old['document']['params']['ns']!==$desired||(int)$old['row']['actor_id']!==(int)$actor['id']||!hash_equals($old['document']['actor_auth'],hash('sha256',$actor['auth_version'])))throw new RuntimeException('This nameserver request identifier was already used.');return false;}
-            [$binding,$anchor]=registered_nameserver_changes_precondition($linkId,$anchorId,$bindingHash);registered_nameserver_changes_context($binding);
-            // Registrar semantics are whole, nonempty, disjoint sets. Never a package delta.
-            $params=RegistrarNameserverChange::params(['domainId'=>$binding->data['domain_id'],'ns'=>$desired,'old-ns'=>$anchor['nameservers']]);
-            if(registered_nameserver_changes_pending($binding->data['profile_id'],$binding->data['domain_id']))throw new RuntimeException('A previous nameserver change is unresolved. It cannot be sent again.');
-            $previous=one('SELECT * FROM '.table('provider_nameserver_change_requests').' WHERE profile_id=? AND domain_id=? ORDER BY grant_seq DESC LIMIT 1',[$binding->data['profile_id'],$binding->data['domain_id']]);
-            if($previous){$old=registered_nameserver_changes_request($previous['id']);if($anchor['seq']<=$old['document']['anchor_seq'])throw new RuntimeException('Save a new nameserver observation before approving another change.');}
-            $now=time();if($now<1||$now>2147482747)throw new RuntimeException('The local nameserver approval clock is outside its supported range.');
-            $d=['version'=>1,'binding'=>$binding->data,'anchor_id'=>$anchor['id'],'anchor_seq'=>$anchor['seq'],'anchor_sha256'=>registered_nameserver_changes_receipt_hash($anchor),'before_nameservers'=>$anchor['nameservers'],'params'=>$params,'reviewed'=>true,'actor_auth'=>hash('sha256',$actor['auth_version']),'approved_epoch'=>$now];$json=registered_nameservers_json($d);if(strlen($json)>4096)throw new InvalidArgumentException('This complete nameserver change exceeds the local approval size limit.');
-            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$requestId,$binding->data['profile_id'],RegistrarNameserverChange::OPERATION,provider_operations_scope(RegistrarNameserverChange::OPERATION,$d),$binding->data['profile_revision'],$json,(int)$actor['id'],gmdate('Y-m-d H:i:s',$now),$now+900,'nameservers:'.$requestId,gmdate('Y-m-d H:i:s',$now)]);
-            $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);$q=['id'=>$requestId,'grant_seq'=>(int)$grant['seq'],'profile_id'=>$binding->data['profile_id'],'domain_id'=>$binding->data['domain_id'],'link_id'=>$linkId,'actor_id'=>(int)$actor['id'],'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];registered_nameserver_changes_insert('request',registered_nameserver_changes_prove('request',$q,$grant));return true;
-        });
+        $fresh=staff_transaction(fn()=>registered_nameserver_changes_admit_locked($requestId,$linkId,$anchorId,$bindingHash,$desired,$password));
         if(!$fresh)return staff_transaction(fn()=>registered_nameserver_changes_summary($requestId));
-        $request=registered_nameserver_changes_request($requestId);$entered=false;
-        try{
-            $authorize=static fn()=>registered_nameserver_changes_authorize($request);$profile=$authorize();$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];$profile=$authorize();
-            $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));
-            try{if(!hash_equals(provider_operations_credential_fingerprint($secret),$request['binding']->data['key_fingerprint']))throw new ProviderOperationAccessChanged('Provider account changed.');$authorize();$op=new ProviderOperation(RegistrarNameserverChange::OPERATION,$request['grant']['consumed_key'],$request['document']['params']);$entered=true;($perform??'provider_operations_perform')($profile,$secret,$address,$authorize,$op);}finally{unset($secret);}
-        }catch(Throwable $e){if($e instanceof PDOException)throw $e;/* Never save exception text or infer no-send after performer entry. */}
-        staff_transaction(fn()=>registered_nameserver_changes_end($request,$entered?'attempted':'not_sent'));
-        return staff_transaction(fn()=>registered_nameserver_changes_summary($requestId));
+        return registered_nameserver_changes_send_locked($requestId,$resolver,$perform);
     });
 }
 function registered_nameserver_changes_check_document(array $row,array $request):array {

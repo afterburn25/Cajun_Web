@@ -176,7 +176,16 @@
     "twentyi-mailboxes-integrated-results.json",
     "twentyi-operations-integrated-results.json",
     "wordpress-installed-http-handler-results.json",
-    "registered-nameserver-changes-http-fixture-results.json"
+    "registered-nameserver-changes-http-fixture-results.json",
+    "registered-nameserver-requests-document-results.json",
+    "registered-nameserver-requests-document-no-ini-results.json",
+    "registered-nameserver-requests-service-results.json",
+    "registered-nameserver-requests-service-no-ini-results.json",
+    "registered-nameserver-requests-storage-results.json",
+    "registered-nameserver-requests-storage-no-ini-results.json",
+    "registered-nameserver-requests-views-results.json",
+    "registered-nameserver-requests-views-no-ini-results.json",
+    "registered-nameserver-requests-native-results.json"
   ],
   "final": [
     "activity-native-results.json",
@@ -403,7 +412,18 @@
     "wordpress-installed-http-handler-results.json",
     "registered-nameserver-changes-http-fixture-results.json",
     "apache-registered-nameserver-changes-upgrade-guards-results.json",
-    "apache-registered-nameserver-changes-upgrade-results.json"
+    "apache-registered-nameserver-changes-upgrade-results.json",
+    "registered-nameserver-requests-document-results.json",
+    "registered-nameserver-requests-document-no-ini-results.json",
+    "registered-nameserver-requests-service-results.json",
+    "registered-nameserver-requests-service-no-ini-results.json",
+    "registered-nameserver-requests-storage-results.json",
+    "registered-nameserver-requests-storage-no-ini-results.json",
+    "registered-nameserver-requests-views-results.json",
+    "registered-nameserver-requests-views-no-ini-results.json",
+    "registered-nameserver-requests-native-results.json",
+    "apache-registered-nameserver-requests-upgrade-guards-results.json",
+    "apache-registered-nameserver-requests-upgrade-results.json"
   ],
   "provenance": {
     "original_source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",
