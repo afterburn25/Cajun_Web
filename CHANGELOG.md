@@ -1,3 +1,9 @@
+## Unreleased — isolate expired or changed payment links
+
+- Show invoice details and an amount due only for a current prepared link whose original invoice fingerprint, project and client still match.
+- Show metadata-free terminal notices for revoked, superseded, expired, changed or unavailable links. Paid notices no longer repeat the old amount as due.
+- Add native and installed-browser regression coverage to Devin's unreleased payment-link candidate; current runtime acceptance is pending.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

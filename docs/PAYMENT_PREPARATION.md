@@ -45,6 +45,8 @@ Administrators see the latest 100 invoices/requests and can copy the current sha
 
 ## Shareable payment links
 
+The separate [view-isolation correction](PAYMENT_LINK_VIEW_REVIEW.md) limits invoice details and the amount due to a current prepared request with the original invoice/client/project binding. Terminal requests display only their status explanation; a paid notice never repeats the old amount due. Current native and installed-browser acceptance for this unreleased correction remain pending.
+
 Every prepared request mints a 256-bit bearer token. The database stores only its SHA-256 hash plus the token sealed with the payment master key, so a database copy alone cannot redeem links. The public `index.php?page=pay&t=` page resolves the token without any portal session, is `noindex`/`no-referrer`/`no-store`, rate-limits lookups per IP, and shows the invoice reference, purpose, authoritative amount, expiry and the invoice's own instructions. Revoked, superseded, expired, already-paid, invoice-changed and unknown links each render an honest terminal state; the link records no payment. Requests prepared before schema 2 have no link — revoke and prepare a new request to issue one.
 
 ## Remaining M2 acceptance

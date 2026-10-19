@@ -493,8 +493,8 @@
       "tests/staff_cases.py": "62ee96e396e9baf9f1d657192e3abbc0cfe99bca6c0135952819d45dbdd86c4c",
       "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
       "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
-      "tests/payments_cases.py": "c7eb56dec6c71ed4c6661086a4d377279ce01b9a7cf702ae19a696aca1c9599b",
-      "tests/payments_native.php": "99678bd1a70aa1348c028bfea7d664c31578e1f190771ed684c06334396baddd",
+      "tests/payments_cases.py": "fc1a8f7a87bf22b4cae7fe4dc7362159123ca7f4dc85bd4db4611e814fe1257c",
+      "tests/payments_native.php": "c2514b3ecb9abac25da3b236b3324e12b9db96c6635349918dd76fd0850b17cc",
       "tests/provider_package_wordpress_installed_native.php": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
       "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
       "tests/domain_expiry_native.php": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
@@ -502,7 +502,8 @@
       "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
       "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
       "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
-      "tests/delivery_cases.py": "05cedfef283d7522c127710fccda797b909fe3f35d0c7d4d525882cede00ac4b"
+      "tests/delivery_cases.py": "05cedfef283d7522c127710fccda797b909fe3f35d0c7d4d525882cede00ac4b",
+      "tests/payment_link_view_cases.php": "276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990"
     },
     "additional_screenshots": [
       "Admin-Overview-Desktop.png",
@@ -514,7 +515,11 @@
       "Licensing-Customer-Downloads-Desktop.png",
       "Licensing-Customer-Downloads-Mobile.png",
       "Licensing-Owner-Invoice-Review-Desktop.png",
-      "Licensing-Owner-Invoice-Review-Mobile.png"
+      "Licensing-Owner-Invoice-Review-Mobile.png",
+      "Payment-Link-Valid-Desktop.png",
+      "Payment-Link-Valid-Mobile.png",
+      "Payment-Link-Terminal-Desktop.png",
+      "Payment-Link-Terminal-Mobile.png"
     ],
     "scope": "Additive landing-page captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
   },

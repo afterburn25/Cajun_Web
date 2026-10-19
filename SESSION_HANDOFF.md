@@ -1,3 +1,9 @@
+## 2026-10-19 — isolated payment-link review correction
+
+Parent `750f1ab8f4cf03f92585209e3880298df9b8aa90`; branch `codex/payment-link-view-isolation`; enclosing commit **fix: isolate stale payment links from invoice details**. This is a minimal shared-billing companion to Devin's PR202, which remains unchanged. [Review and exact next gates](docs/PAYMENT_LINK_VIEW_REVIEW.md).
+
+Root owns the correction and sequential integration; Catalog reproduced and independently reviewed the view behavior; VPS supplied additive installed HTTP/browser cases. Native cases join the existing payment report. Obtain the new source's actual acceptance before merging into Devin's branch, then continue its normal combined-main review. Preserve PR252 renewal invoicing at `632362f6` and all existing queued runs. Published1.25.0 stays immutable. No customer message, payment or deployment occurs.
+
 ## 2026-10-18 — CI trigger correction
 
 Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

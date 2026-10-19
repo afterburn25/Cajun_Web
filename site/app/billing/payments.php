@@ -156,27 +156,17 @@ function payments_client_view(array $invoice): void {
     if($url!==null)echo '<p><a class="btn outline" href="'.esc($url).'">View this payment request →</a></p>';
 }
 /** Shareable payment-request page: the link token is the only credential and grants no portal access. */
+require_once CWP_CODE_ROOT.'/app/billing/payment_link_view.php';
 function payments_link_page(string $token): never {
     header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');header('Cache-Control: no-store, private');
     $r=null;$error='';
     if(!payments_ready()||!preg_match('/^[a-f0-9]{64}$/D',$token))$error='invalid';
     elseif(!consume_rate(ip_key('pay-link'),40,300))$error='Too many attempts. Wait a few minutes, then try again.';
-    elseif(!($r=one('SELECT r.*,i.reference,i.title AS invoice_title,i.instructions,i.status AS invoice_status FROM '.table('payment_requests').' r JOIN '.table('studio_invoices').' i ON i.id=r.invoice_id WHERE r.link_hash=?',[hash('sha256',$token)])))$error='invalid';
+    elseif(!($r=one('SELECT * FROM '.table('payment_requests').' WHERE link_hash=?',[hash('sha256',$token)])))$error='invalid';
     if($error==='invalid'){http_response_code(404);$error='This payment link is not valid.';}
     site_head('Invoice payment','pay');
     echo '<section class="section"><div class="container"><span class="eyebrow">SECURE PAYMENT REQUEST</span><h1>Invoice payment</h1>';
     if($error!==''){echo '<div class="notice error">'.esc($error).'</div><p>Contact the studio if you need a current payment link.</p>';}
-    else{
-        $state=payments_request_state($r);
-        echo '<article class="workspace-card"><span class="workspace-status">'.esc($state).'</span><h2>'.esc($r['reference'].' · '.$r['invoice_title']).'</h2>';
-        echo '<p><strong>'.esc(payments_purposes()[$r['purpose']]??'Invoice payment').'</strong> · $'.esc(number_format(((int)$r['amount_cents'])/100,2,'.','')).' '.esc($r['currency']).' due · request expires '.esc(gmdate('Y-m-d H:i:s',(int)$r['expires_at'])).' UTC</p>';
-        if($state==='prepared')echo '<div class="prose">'.nl2br(esc($r['instructions'])).'</div><p class="hint">Online card payment is being enabled and is not available on this link yet. Viewing this link does not record a payment — pay using the studio’s instructions above, or contact the studio for help. This link is private to this invoice; do not forward it.</p>';
-        elseif($r['invoice_status']==='paid')echo '<p>This invoice has already been paid. No further payment is due.</p>';
-        elseif($state==='revoked')echo '<p>The studio revoked this payment request. Contact the studio before paying.</p>';
-        elseif($state==='superseded')echo '<p>A newer payment request replaced this link. Use the studio’s latest link or contact the studio.</p>';
-        elseif($state==='expired')echo '<p>This payment link expired. Ask the studio for a new link.</p>';
-        else echo '<p>The invoice details changed or are no longer payable through this link. Contact the studio for a current request.</p>';
-        echo '</article>';
-    }
+    else payments_link_card(payments_link_projection($r));
     echo '</div></section>';site_foot(false);exit;
 }

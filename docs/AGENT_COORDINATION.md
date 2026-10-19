@@ -1,3 +1,7 @@
+## Shared payment-link correction — 2026-10-19
+
+Root owns `codex/payment-link-view-isolation` from exact Devin PR202 source `750f1ab8`, the two view/runtime files, additive native coverage, installer inventory and delivery. Catalog independently reproduces and reviews the privacy/display correction; VPS prepares only additive `tests/payments_cases.py` evidence externally. Original PR202 and renewal PR252 source `632362f6` remain untouched. Devin retains non-20i feature ownership. Root integrates this small correction through the affected branch only after its actual acceptance. [Scope and evidence](PAYMENT_LINK_VIEW_REVIEW.md).
+
 ## Post-publication coordination — 2026-10-18
 
 1.25.0 is [published and freshly verified](RELEASE_1.25.0_PUBLICATION.md) at immutable main source `b79c67110829126916e3a65e616191542448bccc`. Root completed normal merge, five original full runs, maintained compatibility, 330-image review, assembly and all-asset draft/public verification. Keep that source/tag/assets unchanged.

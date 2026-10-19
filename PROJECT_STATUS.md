@@ -1,3 +1,7 @@
+## 2026-10-19 — payment-link view correction
+
+A separate companion to Devin's [PR202](https://github.com/afterburn25/Cajun_Web/pull/202) prevents revoked, superseded, expired or changed payment links from exposing current invoice metadata or a stale amount due. Prepared links display the same invoice snapshot used to validate their original fingerprint and client/project binding. [Scope, reproduction and remaining acceptance](docs/PAYMENT_LINK_VIEW_REVIEW.md). This branch starts at `750f1ab8`; it is not the main branch or a release. Native and installed-browser acceptance remain pending.
+
 ## 2026-10-18 — reduce unrelated CI work
 
 Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

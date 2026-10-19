@@ -1,0 +1,751 @@
+{
+  "schema": 1,
+  "parent": "750f1ab8f4cf03f92585209e3880298df9b8aa90",
+  "branch": "codex/payment-link-view-isolation",
+  "scope": "Independent original reproduction, corrected actual-function modeled execution and source review. Native SQL and installed browser gates remain pending.",
+  "original_reproduction": {
+    "sha256": "6aff7a0649667046d8706a9b6ace3ab2b1e845f7d431330fd9ac1b6309161b3c",
+    "finding": {
+      "severity": "P2",
+      "status": "Reproduced in original actual PHP output; corrected by current projection/card patch.",
+      "original_behavior": "Changed, moved, revoked, superseded and expired tokens print current invoice title/reference plus retained amount due before validity branching. Paid/superseded output simultaneously displays the old amount due and says none due.",
+      "limits": "Invalid original states already withhold instructions. Current studio form refuses project-client transfer, so moved-origin scenarios model changed/restored stored data, not a demonstrated normal customer action. No portal authorization or payment mutation exploit is claimed.",
+      "original_locations": [
+        "site/app/billing/payments.php:159",
+        "site/app/billing/payments.php:164",
+        "site/app/billing/payments.php:169",
+        "site/app/billing/payments.php:170"
+      ],
+      "requirement_sources": [
+        "docs/PAYMENT_PREPARATION.md:48",
+        "docs/HOSTING_AND_BILLING_ROADMAP.md:28",
+        "site/admin/controllers/studio.php:24"
+      ]
+    }
+  },
+  "corrected_modeled": {
+    "sha256": "cddbde02f25dad84b505dc3f38a5097c02e5b7417f7f6be72df31b12d1ff23e4",
+    "scope": "Actual extracted current payment page and helper with modeled SQL, rate, shell, catalog and ledger seams. No native database, installed HTTP, provider or payment acceptance. Modeled mutation demonstrates use of one captured invoice row, not transactional atomicity across independent catalog/ledger reads.",
+    "checks": [
+      {
+        "name": "default: prepared actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: prepared renders only the validated original invoice snapshot",
+        "passed": true
+      },
+      {
+        "name": "default: captured-row actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: captured-row renders only the validated original invoice snapshot",
+        "passed": true
+      },
+      {
+        "name": "default: modeled change occurred during hashing without a second unchecked invoice fetch",
+        "passed": true
+      },
+      {
+        "name": "default: escaped-current actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: newly authorized current fields escape HTML and retain line breaks",
+        "passed": true
+      },
+      {
+        "name": "default: changed-title actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: changed-title withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: changed-reference actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: changed-reference withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: changed-instructions actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: changed-instructions withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: changed-amount actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: changed-amount withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: changed-currency actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: changed-currency withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: missing-invoice actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: missing-invoice withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: inactive-client actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: inactive-client withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: moved-project actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: moved-project withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: moved-client actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: moved-client withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: moved-project-new-hash actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: moved-project-new-hash withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: moved-client-new-hash actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: moved-client-new-hash withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: paid-prepared actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: paid-prepared withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: paid-prepared does not expose paid state across changed ownership",
+        "passed": true
+      },
+      {
+        "name": "default: moved-paid actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: moved-paid withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: moved-paid does not expose paid state across changed ownership",
+        "passed": true
+      },
+      {
+        "name": "default: revoked actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: revoked withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: revoked avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "default: superseded actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: superseded withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: superseded avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "default: unknown-state actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: unknown-state withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: unknown-state avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "default: expired actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: expired withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: expired avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "default: unprepared actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: unprepared withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: unprepared preserves prelookup refusal",
+        "passed": true
+      },
+      {
+        "name": "default: rate-denied actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: rate-denied withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: rate-denied preserves prelookup refusal",
+        "passed": true
+      },
+      {
+        "name": "default: invalid-token actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: invalid-token withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: invalid-token preserves prelookup refusal",
+        "passed": true
+      },
+      {
+        "name": "default: unknown-token actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "default: unknown-token withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "default: unknown token remains generic 404",
+        "passed": true
+      },
+      {
+        "name": "minimal: prepared actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: prepared renders only the validated original invoice snapshot",
+        "passed": true
+      },
+      {
+        "name": "minimal: captured-row actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: captured-row renders only the validated original invoice snapshot",
+        "passed": true
+      },
+      {
+        "name": "minimal: modeled change occurred during hashing without a second unchecked invoice fetch",
+        "passed": true
+      },
+      {
+        "name": "minimal: escaped-current actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: newly authorized current fields escape HTML and retain line breaks",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-title actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-title withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-reference actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-reference withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-instructions actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-instructions withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-amount actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-amount withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-currency actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: changed-currency withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: missing-invoice actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: missing-invoice withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: inactive-client actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: inactive-client withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-project actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-project withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-client actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-client withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-project-new-hash actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-project-new-hash withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-client-new-hash actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-client-new-hash withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: paid-prepared actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: paid-prepared withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: paid-prepared does not expose paid state across changed ownership",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-paid actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-paid withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: moved-paid does not expose paid state across changed ownership",
+        "passed": true
+      },
+      {
+        "name": "minimal: revoked actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: revoked withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: revoked avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "minimal: superseded actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: superseded withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: superseded avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "minimal: unknown-state actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: unknown-state withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: unknown-state avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "minimal: expired actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: expired withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: expired avoids any invoice read",
+        "passed": true
+      },
+      {
+        "name": "minimal: unprepared actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: unprepared withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: unprepared preserves prelookup refusal",
+        "passed": true
+      },
+      {
+        "name": "minimal: rate-denied actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: rate-denied withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: rate-denied preserves prelookup refusal",
+        "passed": true
+      },
+      {
+        "name": "minimal: invalid-token actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: invalid-token withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: invalid-token preserves prelookup refusal",
+        "passed": true
+      },
+      {
+        "name": "minimal: unknown-token actual page completes without warnings",
+        "passed": true
+      },
+      {
+        "name": "minimal: unknown-token withholds all invoice fields and stale amount",
+        "passed": true
+      },
+      {
+        "name": "minimal: unknown token remains generic 404",
+        "passed": true
+      },
+      {
+        "name": "Current shared source remains exact before and after every modeled subprocess",
+        "passed": true
+      }
+    ],
+    "processes": 48,
+    "php_modes": [
+      "default",
+      "no INI"
+    ]
+  },
+  "independent_review": {
+    "sha256": "45987dadffb10a01516b8214d76d4fcf36d44e3b9d4dff276bf8d25cb1cfe7b8",
+    "checks": [
+      {
+        "name": "Payment source inverse restores the exact original text apart from checkout newline convention",
+        "passed": true
+      },
+      {
+        "name": "Existing native fixture inverse removes exactly one included-case call and preserves all other original text",
+        "passed": true
+      },
+      {
+        "name": "Original public gate preserved: header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');header('Cache-Control: no-store, private');",
+        "passed": true
+      },
+      {
+        "name": "Original public gate preserved: if(!payments_ready()||!preg_match('/^[a-f0-9]{64}$/D',$token))",
+        "passed": true
+      },
+      {
+        "name": "Original public gate preserved: consume_rate(ip_key('pay-link'),40,300)",
+        "passed": true
+      },
+      {
+        "name": "Original public gate preserved: http_response_code(404)",
+        "passed": true
+      },
+      {
+        "name": "Final raw source hashes still match all supplemental modeled runs",
+        "passed": true
+      },
+      {
+        "name": "Native addendum runs only in original payci_ CLI fixture",
+        "passed": true
+      },
+      {
+        "name": "Native temporary client omitted columns have actual schema defaults",
+        "passed": true
+      },
+      {
+        "name": "Native temporary project omitted stage has actual schema default",
+        "passed": true
+      },
+      {
+        "name": "Native cases retain full business-row snapshots and explicit restoration",
+        "passed": true
+      }
+    ],
+    "correction": {
+      "result": "No remaining concrete blocker in the scoped source and modeled review.",
+      "behavior": "Request-only token lookup; nonprepared/expired results expose state only without invoice reads; current invoice must match original project/client and active client before paid status or payable fields; prepared hash and display derive from one captured invoice row; all dynamic fields escaped; terminal states show no stale amount.",
+      "preserved": "Original readiness, token format, rate, noindex/no-referrer/no-store headers, generic 404 and shell remain. All unrelated payment source and original native assertions are unchanged under finite text inverses.",
+      "snapshot_limit": "The modeled mutation proves no second unchecked invoice metadata fetch. It is not evidence of serializable atomicity across separate catalog/ledger queries or a native concurrent transaction."
+    },
+    "native_fixture": {
+      "result": "Source trace found no deterministic setup or restoration defect.",
+      "basis": "Hook runs immediately after the actual prepared payci_ request and before original replay checks. Temporary client/project omitted columns have declared defaults. Changed invoice/client/project values restore in finally; temporary rows delete after restoring references; final arrays compare original invoice/job/client/request/audit state. No new provider/payment call.",
+      "limitations": "Native SQL fixture was inspected, not run. Row equality does not claim restoration of auto-increment counters; the tests do not claim that. Existing native safety/setup behavior is inherited unchanged."
+    }
+  },
+  "browser_proposal": {
+    "sha256": "02a3463a22110f0290249e4b6123b575b6add55b14a61ac32faa676cd35f674e",
+    "source_sha256": "fc1a8f7a87bf22b4cae7fe4dc7362159123ca7f4dc85bd4db4611e814fe1257c",
+    "original_assertions_preserved": 53,
+    "local_source_checks": 35,
+    "case_labels": [
+      "changed title",
+      "changed reference",
+      "changed instructions",
+      "changed cost",
+      "changed currency",
+      "moved invoice project",
+      "moved project client",
+      "inactive original client",
+      "paid invoice status"
+    ],
+    "planned_captures": [
+      "Payment-Link-Valid-Desktop.png",
+      "Payment-Link-Valid-Mobile.png",
+      "Payment-Link-Terminal-Desktop.png",
+      "Payment-Link-Terminal-Mobile.png"
+    ],
+    "installed_execution": "pending"
+  },
+  "source_sha256": {
+    "site/app/billing/payments.php": "f038f6298c7a60ed0629f9d1125e65c6ebf3197566e7f451835fc5046993b97e",
+    "site/app/billing/payment_link_view.php": "fab1510b5dda1e1f2bfd24de1efff9acdd12961745bda5b0e426e5cffbcb7fb3",
+    "site/install/inventory.generated.php": "a25ff53c251903e27e4c74349fd6fc14154caff7e52000b81339f776c74ad40a",
+    "tests/payments_native.php": "c2514b3ecb9abac25da3b236b3324e12b9db96c6635349918dd76fd0850b17cc",
+    "tests/payment_link_view_cases.php": "276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990",
+    "tests/payments_cases.py": "fc1a8f7a87bf22b4cae7fe4dc7362159123ca7f4dc85bd4db4611e814fe1257c",
+    "tools/acceptance-contract.json": "f10944a0dbd221edca08048a4d001f0b8bebbd8bffd23fbb3b9adfb8e6f6c70e"
+  },
+  "root_source_checks": [
+    {
+      "name": "Independent source review receipt matches sealed bytes",
+      "passed": true
+    },
+    {
+      "name": "Every independent source review outcome passed",
+      "passed": true
+    },
+    {
+      "name": "Reviewed source is still exact: site/app/billing/payments.php",
+      "passed": true
+    },
+    {
+      "name": "Reviewed source is still exact: site/app/billing/payment_link_view.php",
+      "passed": true
+    },
+    {
+      "name": "Reviewed source is still exact: tests/payment_link_view_cases.php",
+      "passed": true
+    },
+    {
+      "name": "Reviewed source is still exact: tests/payments_native.php",
+      "passed": true
+    },
+    {
+      "name": "Reviewed source is still exact: site/database/schema/workspace.php",
+      "passed": true
+    },
+    {
+      "name": "Retained execution report is exact: results.json",
+      "passed": true
+    },
+    {
+      "name": "Retained execution report is exact: corrected/results.json",
+      "passed": true
+    },
+    {
+      "name": "Retained execution report is exact: corrected-supplement/results.json",
+      "passed": true
+    },
+    {
+      "name": "Expanded actual-body modeled runs all pass without diagnostics",
+      "passed": true
+    },
+    {
+      "name": "Browser review receipt matches sealed bytes",
+      "passed": true
+    },
+    {
+      "name": "Browser predecessor is unchanged before applying",
+      "passed": true
+    },
+    {
+      "name": "Proposed installed browser test matches reviewed bytes",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/app/billing/payment_link_view.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/app/billing/payments.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/app/billing/ledger.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/app/billing/catalog.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/admin/controllers/payments.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/includes/urls.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/includes/auth/session.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/database/schema/workspace.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/database/schema/payments_schema.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: site/database/schema/catalog_schema.php",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: tests/browser_acceptance.py",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Browser dependency is still exact: tests/catalog_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reviewed browser insertion is unique:     check('Payment browser has no uncaught errors',not error",
+      "passed": true
+    },
+    {
+      "name": "Reviewed browser insertion is unique:     link3=[c.get_text() for c in soup(admin.get(PAY)).select",
+      "passed": true
+    },
+    {
+      "name": "Reviewed browser insertion is unique:     check('Revoked payment link refuses honestly','revoked t",
+      "passed": true
+    },
+    {
+      "name": "Reviewed browser insertion is unique:     check('Superseded payment link stays honest','newer paym",
+      "passed": true
+    },
+    {
+      "name": "Reviewed browser insertion is unique:     check('Shared payment link never echoes secrets or other",
+      "passed": true
+    },
+    {
+      "name": "Reviewed browser insertion is unique: from staff_cases import OWNER,STAFF\n",
+      "passed": true
+    },
+    {
+      "name": "Removing only new cases restores every original browser line",
+      "passed": true
+    }
+  ],
+  "remaining": [
+    "Current-source native SQL and installed HTTP/browser execution",
+    "Actual new capture inspection",
+    "Normal integration through Devin PR202 and combined-main acceptance",
+    "Versioned release and downloaded-asset verification"
+  ],
+  "live_provider_or_payment_or_deployment": false
+}

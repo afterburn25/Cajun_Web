@@ -91,6 +91,7 @@ try{
     $request=pay_request(str_repeat('1',64),'milestone');$r=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$request]);
     pay_ok('Request uses authoritative existing invoice identity and amount',$r['amount_cents']===12510&&$r['client_id']===1&&$r['job_id']===1&&$r['purpose']==='milestone');
     pay_ok('Preparing request cannot mark invoice paid',one('SELECT * FROM '.table('studio_invoices'))===$original&&payments_request_state($r)==='prepared');
+    require_once __DIR__.'/payment_link_view_cases.php';pay_link_view_cases($r);
     pay_ok('Identical retry creates one request',pay_request(str_repeat('1',64),'milestone')===$request&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()===1);
     pay_deny('Same request key with changed payload rejected',fn()=>pay_request(str_repeat('1',64),'deposit'));
     foreach([0,31] as $days)pay_deny('Invalid expiry '.$days,fn()=>pay_request(str_repeat('2',64),'full',$days));

@@ -1,3 +1,7 @@
+## Shared payment-link correction — 2026-10-19
+
+HC-11 shareable requests remain an unreleased Devin candidate. The separate [payment-link view correction](PAYMENT_LINK_VIEW_REVIEW.md) closes stale-link invoice disclosure and contradictory paid amounts; local modeled checks, actual SQL and installed HTTP evidence remain distinct. It does not implement card checkout, publish a version, or change the separate 20i lane.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.
