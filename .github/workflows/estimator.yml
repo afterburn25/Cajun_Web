@@ -2,6 +2,10 @@ name: Estimator checks
 
 on:
   pull_request:
+    paths:
+      - 'foundation/estimator/**'
+      - 'tests/estimator/**'
+      - '.github/workflows/estimator.yml'
   push:
     branches: [main, devin/lead-estimator]
   workflow_dispatch:

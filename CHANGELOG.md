@@ -1,3 +1,7 @@
+## Unreleased — isolated pure-suite pull-request filters
+
+Limit estimator, email-template, portfolio, review-request and webmail pure-suite PR runs to their source/test directories and workflow files. Preserve every job and push/manual trigger. Source/dependency checks and independent review passed; this affects future scheduling only. No application or release version changes.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

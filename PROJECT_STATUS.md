@@ -1,3 +1,9 @@
+## 2026-10-18 — five pure-suite PR filters
+
+Branch `codex/ci-pure-family-pr-filters` starts at main `e397d9a6e293850e8dff61a593e3ba39ee178400`. Five isolated pure suites now watch their own foundation/test directories and workflow file on PRs. All jobs and push/manual triggers remain unchanged. Actual verification: 82 finite producer checks, 44 independent review checks, and root comparison of all five applied hashes and complete inverses to main. [Scope and retained evidence](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This is CI scheduling work, not application acceptance.
+
+Hosting source `3042f24eddc3587d67ac5d10e28df3b3294a3310` remains in [draft PR231](https://github.com/afterburn25/Cajun_Web/pull/231), with original full run39184742627 and focused run39184742510 queued at the latest read. Nameserver source `024b50dc31604d5cfdcb104312e9858a5d5e7a45` remains separate in [draft PR230](https://github.com/afterburn25/Cajun_Web/pull/230). Their runtime, integration and publication gates remain pending. Devin has advanced several previously reviewed branches; evaluate the new heads before carrying forward old findings. Published 1.25.0 and production are unchanged.
+
 ## 2026-10-18 — reduce unrelated CI work
 
 Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

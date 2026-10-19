@@ -1,3 +1,7 @@
+## 2026-10-18 — verification throughput follow-through
+
+Five isolated pure suites have reviewed PR path filters, with complete current dependency coverage and unchanged tests. [Evidence and limits](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This scheduling increment does not complete a product capability or queued acceptance. Hosting [PR231](https://github.com/afterburn25/Cajun_Web/pull/231) and nameserver [PR230](https://github.com/afterburn25/Cajun_Web/pull/230) remain separate candidates awaiting runtime and release gates; full20i remains unfinished.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.

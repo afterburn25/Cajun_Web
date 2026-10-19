@@ -1,3 +1,9 @@
+## 2026-10-18 — pure-suite CI follow-through
+
+Starting main `e397d9a6e293850e8dff61a593e3ba39ee178400`; branch `codex/ci-pure-family-pr-filters`; enclosing commit `ci: limit isolated pure suites to relevant PR paths`. Five workflow files plus continuity/evidence documentation change. No shipping source, generated inventory, application workflow or published asset changes. [Trigger contract, actual checks and policy caveat](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers).
+
+Next: normal PR review/integration of this CI-only increment, then inspect original hosting and nameserver results without duplicate dispatch. Keep hosting `3042f24e` ([PR231](https://github.com/afterburn25/Cajun_Web/pull/231)) and nameserver `024b50dc` ([PR230](https://github.com/afterburn25/Cajun_Web/pull/230)) frozen separately; local package/source checks do not certify installed acceptance. Hosting original runs39184742627/39184742510 were queued at the latest read. Review Devin's changed PR heads against the retained findings before selecting any non-20i integration. Do not assume those corrections are accepted. Published 1.25.0 is immutable.
+
 ## 2026-10-18 — CI trigger correction
 
 Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

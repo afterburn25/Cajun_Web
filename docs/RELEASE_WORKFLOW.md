@@ -1,3 +1,15 @@
+## 2026-10-18 — pure-suite pull-request triggers
+
+Five additional isolated pure suites filter PR changes: estimator, email-templates, portfolio-catalog, review-requests and webmail. Each includes `foundation/FAMILY/**`, `tests/FAMILY/**` and its exact workflow path; portfolio-catalog uses the `portfolio` directories. Complete directory patterns cover new nested fixtures and helpers. Current PHP tokenization found 31 source files and 28 local import edges, all confined to their respective family. Shared application and native suites do not inherit this assumption.
+
+Only 20 YAML lines are added. Every job, command, assertion, PHP8.2/8.4 matrix, artifact, permission, timeout, concurrency setting and push/manual trigger stays byte-identical after subtracting the new PR path lists. Full application/release acceptance and repository checks remain unchanged. The current hosting3042 stacked PR diff would start five fewer workflows (ten fewer PHP jobs); this is a finite path comparison, not measured throughput or a claim that queued work has finished.
+
+Actual source verification: 82 producer checks, 44 independent review checks, then root confirmation of all five applied hashes and whole-file inverses against main `e397d9a6e293850e8dff61a593e3ba39ee178400`. [Named results and policy observations](evidence/ci-pure-family-pr-filters.json). The first external patch proof's Windows CRLF mismatch was preserved; explicit LF application resolved it without changing workflow semantics. No hosted event, application or native execution is claimed by these checks.
+
+Read-only policy preflight found main unprotected (HTTP404), no repository rulesets and no effective main rules. No policy is changed. GitHub documents that a path-filtered workflow used as a required check can leave unrelated PRs pending; review these filters when adding required checks. See [GitHub workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) and [required-check troubleshooting](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks). Do not work around future protection rules or weaken release gates.
+
+This increment affects future PR scheduling only. Existing queued and failed runs remain original evidence; no cancellation, deletion, retry or duplicate dispatch is part of this change. Hosting3042 and nameserver024 remain separate, unpublished candidates awaiting their acceptance. Published1.25 stays immutable.
+
 ## 2026-10-18 — dependency-aware pull-request triggers
 
 Ten focused workflows previously filtered pushes but ran on every eligible pull request: client authority, hosting operations and records, mail drafts and notices, mail receiving and transport, provider operations and settings, and service-plan records. Their PR triggers now use the same paths as their push triggers. Existing branch filters and manual dispatch remain.
