@@ -21,6 +21,24 @@ Main read before the handoff: `a86f6f4fa592e6f715a9420aec8de4622258642e`. Latest
 
 This session writes the takeover directive and current root/coordination instructions, and updates the assignment issues. These changes are documentation only. No application PR was merged, no PHP/schema/installer/workflow/version file changed, no application acceptance was rerun and no new software release or deployment occurred. No active Devin session or external-worker acknowledgement is claimed. The enclosing commit identifies the instruction revision.
 
+
+## Devin integration session — 2026-10-19 (Group A complete)
+
+**State:** `devin/full-site-integration` at `9896b1f0` contains main `1067757d` plus all 25 Group A non-20i merges. Branch worktree: `D:/Devin/Cajun_Web-int`. Push trigger added to `application-tests.yml`; combined acceptance run 39297205239 is in flight.
+
+**Rules learned for this integration:**
+- Every Union-projection conflict resolves to matching `author_type` + `sort_sequence` columns on all branches.
+- Contact actors scope through `$actor['client_id']`; never test `$actor['type']==='client'` alone.
+- `tools/acceptance-contract.json` must be merged semantically (additions list + after-map union, recompute `source_sha256`/`unchanged_test_sha256` for unioned files, `native_commands` rewritten from the workflow recipe). After editing, `git add` it BEFORE committing — staging order once left a markered contract committed (fixed via amend `1f217bdd`).
+- `tests/apache_acceptance.py` conflicts are usually giant list unions; check INC-only quoted items first — often HEAD is already a strict superset (`git checkout --ours`).
+- Regenerate `site/install/inventory.generated.php` via `python tools/build.py --refresh` after every site change; artifact check is `python -B tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json` (expects 229).
+
+**Next actions in order:**
+1. Watch run 39297205239 to completion; fix any combined failures.
+2. Port-parity check vs superseded codex #102–#125 heads; then close the 23 already-integrated ancestor PRs.
+3. Observe actual CI on Group B Codex 20i heads (catalog f67b1631, capture b7c97953, commercial d2903bfb, nameservers 024b50dc, runtime, subdomain 4dc05d8c, StackCP ffee2e3a, renewal 632362f6, reset-template 95ce538e) before any merge.
+4. Normal-merge integration branch into main after combined acceptance passes, then continue remaining 20i/non-20i gaps and the next verified release.
+
 ## Devin's first executable milestone
 
 1. Preserve local work; fetch current main, all relevant feature branches and paginated PR/run/review evidence. Check for concurrent writers.

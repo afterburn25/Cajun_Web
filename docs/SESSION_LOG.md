@@ -4875,3 +4875,13 @@ The correction adds a closed invoice projection and renderer, validates the orig
 
 Local corrected function/model checks and PHP syntax/installer checks are distinct from pending native SQL and installed-browser acceptance. Review actual new-source CI and images before integrating through Devin's branch, then perform normal combined-main release gates. Renewal PR252 stays frozen at632362f6. Current required20i jobs remain unassigned; another original workflow is running. Official20i module/API schema access requires My20i sign-in, requested through the browser without credentials in chat. No live provider request, charge, customer mail, SSH or deployment occurred.
 
+## 2026-10-19 — Devin Group A integration (A1–A25)
+
+- Request: sole-ownership takeover — integrate completed work first, then continue remaining implementation.
+- Starting commit: main `1067757d`; integration branch `devin/full-site-integration` created and pushed.
+- Actions: sequential merges of all 25 classified non-20i slices with manual union conflict resolution; per-merge PHP lint, feature pure suites, `tools/build.py --refresh` and `acceptance_artifacts_test.py` (227→229 checks). Real fixes: `$user` closure capture in `studio.php` stage insert; recurring-forms query validation moved to the GET parser; contract rebuilt semantically after a generic text merge corrupted it; A16 amended to `1f217bdd` to replace a markered contract commit.
+- Tests: 229/229 artifact checks; native recipe verified at 157 commands (152 predecessors hash `ae7da25c…` + 5 ordered additions); isolated suites pass (mail, recurring, design-payments, planning, progress, service-plans, pipeline, proposals, revisions, comparisons, support-access, tickets wiring in support_tickets_native).
+- Results: branch tip `9896b1f0` pushed; combined application acceptance run 39297205239 queued/running.
+- Known failures/blockers: hosted combined result pending; Group B Codex 20i CI unverified; no main merge/release yet.
+- Next: observe run 39297205239, port-parity check vs codex #102–#125, then Group B CI inspection.
+

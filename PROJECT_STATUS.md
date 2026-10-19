@@ -1,4 +1,17 @@
 # CajunWebPro current status
+# CajunWebPro current status
+## 2026-10-19 — Group A non-20i integration merged (A1–A25)
+
+All 25 reviewed Devin non-20i slices are sequentially merged into `devin/full-site-integration` (tip `9896b1f0`, based on main `1067757d`). Families: mail (replies/flags/attachments/copies/HTML compose), contacts and account permissions, protected previews, stage history, payment links + isolation, backups runtime/archive/restore-drill/database-export, project progress and planning, design-payment agreements, recurring billing, notifications (announcements/events/outbox), support tickets + notifications, service plans, pipeline, proposals, revisions, comparison registry + sources, billing calendar, homepage device depth, and the support-access contract foundation.
+
+Each merge preserved HEAD's contact-aware permission gates (`contact_can`, `client_id` scoping), `author_type`/`sort_sequence` UNION column parity, read-locked activity records, support-session refusals and the complete 152-command predecessor native recipe plus five additions in order (157 commands). Installer inventory regenerated per merge; `tools/acceptance-contract.json` rebuilt semantically and pinned to actual file hashes — 229/229 artifact checks on the final tree. Local suites: mail 35/49/71, recurring forms 76/76, design-payments 85, service-plans 83, pipeline 31, proposals 35, revisions 30, comparison-facts 30, support-access 37.
+
+Two real defects fixed during integration: a closure missing the `$user` capture in the merged stage insert (`studio.php`), and recurring-forms validation placed in the POST path instead of the GET query parser. The A16 contract was initially committed with conflict markers; amended to `1f217bdd` (force-with-lease on the Devin-owned branch).
+
+Hosted combined acceptance is running as run 39297205239 — the application-tests push filter now includes the integration branch. This run IS the combined Group A acceptance. Nothing is merged to main, released or deployed yet.
+
+Known remaining: port-parity check vs superseded codex #102–#125 stacks; Group B Codex 20i drafts still pending observed CI; the non-20i/20i gap review follows after the combined run.
+
 ## 2026-10-19 — contacts native fixture correction
 ## 2026-10-19 — payment-link view correction
 
