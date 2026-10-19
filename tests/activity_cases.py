@@ -65,7 +65,7 @@ def run_browser(env,browser):
     while next_url:
         resp=alice.get(next_url);feed_statuses.append(resp.status_code);page=soup(resp);source_keys.extend(n['data-event-key'] for n in page.select('[data-event-key]'));link=page.find('a',string='Older updates →');next_url=link['href'] if link else None
     check('Every paginated client activity page returns 200',set(feed_statuses)=={200} and feed_statuses!=[])
-    for kind in ['message','review','file','invoice','payment','release']:
+    for kind in ['message','review','file','invoice','payment','release','stage']:
         event=next(k for k in source_keys if k.startswith(kind+':'));result=alice.get(center+'&open='+event);fragment=urlparse(result.url).fragment
         check('Activity navigation resolves exact authorized '+kind,result.status_code==200 and (soup(result).find(id=fragment) is not None if fragment else parse_qs(urlparse(result.url).query).get('release')==[event.split(':')[1]]))
     # Fixture rows created by the staff suite: the internal note must stay out by exact key, and the milestone resolves by its complete revision key.

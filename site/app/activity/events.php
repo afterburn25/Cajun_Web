@@ -61,6 +61,7 @@ function activity_projection(array $actor): array {
         $add('studio_messages','message','s.created_at',"''","s.author_type".$authors,'s.id','s.id','s.author_type');
         $add('studio_files','file','s.created_at','s.original_name',"s.author_type".$authors);
         if(studio_milestones_ready())$add('studio_milestones','milestone','s.updated_at',"CONCAT('Milestone: ',s.title,' · ',s.state)",'1=1','s.id',"CONCAT(s.id,':',SUBSTR(SHA1(CONCAT_WS('|',s.title,s.state,COALESCE(s.target_date,''),s.updated_at)),1,16))");
+        $add('studio_stage_events','stage','s.created_at',"CONCAT('Stage: ',s.from_stage,' → ',s.to_stage)",'1=1','s.id','s.id','s.actor_type');
     }
     if($member){
         if($can('projects'))$add('studio_versions','review','s.created_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.title)",'1=1');
@@ -73,7 +74,7 @@ function activity_projection(array $actor): array {
     if(!$parts)return ["SELECT '' AS event_key,'none' AS kind,'' AS source_id,0 AS target_id,0 AS job_id,0 AS client_id,'' AS project_title,'' AS item_title,'1970-01-01 00:00:00' AS occurred_at WHERE 1=0",[]];
     return [implode(' UNION ALL ',$parts),$args];
 }
-function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision):[1-9][0-9]{0,19}|milestone:[1-9][0-9]{0,19}(?::[a-f0-9]{16})?|(?:file|release):[a-f0-9]{32})$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
+function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision|stage):[1-9][0-9]{0,19}|milestone:[1-9][0-9]{0,19}(?::[a-f0-9]{16})?|(?:file|release):[a-f0-9]{32})$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
 function activity_source(string $audience,string $key): array {
     activity_key($key);[$sql,$args]=activity_projection(activity_actor($audience));
     $row=one('SELECT * FROM ('.$sql.') events WHERE event_key=?',[...$args,$key]);if(!$row)throw new InvalidArgumentException('Activity item unavailable.');return $row;
