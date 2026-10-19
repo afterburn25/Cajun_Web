@@ -1,3 +1,9 @@
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Source evidence](docs/evidence/ci-remaining-pure-pr-filters.json). Producer36 finite checks, independent29-source/35-edge review and root whole-file inverse checks pass. Current read-only policy inspection found no branch-protection rules or repository/inherited rulesets. No application acceptance or release version changes.
+
+Queue checkpoint [PR239](https://github.com/afterburn25/Cajun_Web/pull/239) is normally merged at7e1507f5 with its actual documentation CI passing. Its224 verified cancellations/103 unresolved requests/31 preserved/139 untouched counts remain unchanged. Original catalog acceptance and PR220 capture build are still queued in the latest connected-app summary; full20i and1.26 remain unfinished.
+
 ## 2026-10-19 — superseded component queue checkpoint
 
 Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched. A later verification GET explicitly returned GitHub HTTP403 API rate limit exceeded. Cleanup is stopped, and acknowledged requests are not treated as completed cancellations. [Scope and evidence](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md).

@@ -1,3 +1,7 @@
+## Unreleased — remaining pure-suite PR filters
+
+Add family-scoped PR filters to access policy, provider contracts and scheduling. Preserve all tests, matrices and push/manual runs. Source/dependency/inverse review passes; no application, installer or released bytes change.
+
 ## Unreleased documentation — queue cleanup checkpoint
 
 Record327 acknowledged superseded component cancellation requests,224 independently verified terminal outcomes,103 unresolved verifications,31 preserved candidates and139 untouched candidates. Retain both interrupted batches and the later explicit API rate-limit failure. [Evidence and continuation](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md). Application and released package bytes are unchanged.

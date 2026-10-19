@@ -2,6 +2,10 @@ name: Scheduling checks
 
 on:
   pull_request:
+    paths:
+      - foundation/scheduling/**
+      - tests/scheduling/**
+      - .github/workflows/scheduling.yml
   push:
     branches: [main, devin/consultation-scheduling]
   workflow_dispatch:

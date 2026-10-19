@@ -1,3 +1,9 @@
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Catalog proposed only access policy, provider contracts and scheduling from main8f734de1; VPS independently verified all29 sources and35 dependency edges atafb24946. Root applied the same three reviewed files after PR239's normal merge7e1507f5 and refreshed policy through read-only GraphQL. [Evidence](evidence/ci-remaining-pure-pr-filters.json).
+
+Service-plans tests load application code and deployment mirrors; staff-invitations uses native SQL. Both remain outside this bounded proposal, along with repository/application/release/diagnostic workflows. Root owns normal integration. Cleanup, feature and original full acceptance heads remain unchanged; Devin retains non20i ownership.
+
 ## 2026-10-19 — superseded component queue checkpoint
 
 Root owns the documentation branch from main8f734de1 and sequential cleanup operations. Catalog reviewed28 explicit workflow sources; VPS reviewed helper/plans/continuation and reconstructed the partial receipt; Domains independently verified terminal outcomes. Root locally rechecked all retained attempt hashes and224 final observations. [Scope and handoff](CI_SUPERSEDED_QUEUE_CLEANUP.md).

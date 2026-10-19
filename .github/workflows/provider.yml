@@ -2,6 +2,10 @@ name: Provider contract checks
 
 on:
   pull_request:
+    paths:
+      - foundation/provider/**
+      - tests/provider/**
+      - .github/workflows/provider.yml
   push:
     branches: [main, devin/provider-foundation]
   workflow_dispatch:
