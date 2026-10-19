@@ -1,39 +1,39 @@
-# Devin - start here
+# Devin - sole-owner start here
 
-Owner assignment updated 2026-10-16: **continue the remaining non-20i CajunWebPro site, including software-product licensing**. Codex and three agents own complete 20i, provider-facing support/SSH, shared integration and versioned releases. The earlier pause on unrelated development no longer applies to Devin's lane.
+## Owner override - 2026-10-19
 
-The full assignment is [docs/DEVIN_NON20I_SITE_COMPLETION.md](docs/DEVIN_NON20I_SITE_COMPLETION.md), also posted as [GitHub issue #157](https://github.com/afterburn25/Cajun_Web/issues/157). It covers project/support workflows, payment forms, admin mail/templates/bells, public-site/lead work, backup/recovery and licensing. Use separate `devin/non20i-*` branches and coordinate shared auth/billing/schema/portal/build changes. Start with one bounded, testable increment and continue.
+Devin now owns the ENTIRE CajunWebPro project: all 20i/provider work, all non-20i work, review, shared-file integration, main merges, testing, packaging and GitHub releases. The owner's first priority is to merge completed work into main safely, then continue every remaining roadmap item independently. Do not wait for Codex to perform integration or finish its previous lane.
 
-## Licensing already exists on main
+Read and follow [the complete takeover directive](docs/DEVIN_FULL_SITE_TAKEOVER.md) before acting. It supersedes old lane restrictions in issues #2/#157 and historical documentation, but not security, data preservation, review, testing or live-operation gates. The latest publication observed at handoff was v1.25.0; fetch current GitHub state before assuming it is still latest.
 
-The absence of a branch named licensing does not mean the feature is absent. Main79d9e8e9 contains:
+## Start in this order
 
-- [Implementation guide](docs/LICENSING_IMPLEMENTATION.md), including current scope and evidence.
-- [License service](site/app/licenses/service.php), [fulfilment](site/app/licenses/fulfill.php), and [bundle creation](site/app/licenses/bundle.php).
-- [Validation handler](site/api/handlers/license.php), [bundle download](site/api/bundle-download.php), and [admin interface](site/admin/views/studio/licenses.php).
-- [Migration](site/database/migrations/license_migrate.php), [schema](site/database/schema/license_schema.php), [native tests](tests/license_native.php), and [functional bundle tests](tests/license_bundle_functional.php).
+1. Preserve current local edits and fetch main, all relevant feature refs, PR dependencies/reviews and actual run attempts. Confirm concurrent workers are not writing the same integration branch.
+2. Build a source-bound integration queue for BOTH Codex and Devin work. Identify already-included ancestors, useful ready slices, correction/acceptance blockers and incomplete foundations.
+3. Use a Devin-owned integration branch from current main. Fix blockers in mature slices, preserve all shared-file behavior, test/review the exact combined source and normal-merge accepted work to main in dependency order. Do not blanket-merge drafts or wait for every unrelated branch.
+4. Publish a verified incremental release with FULL-PROJECT, COMPLETE-UPLOAD, UPDATE, actual screenshots and the required reports/manifests. Verify downloaded public assets. Do not overwrite an existing version.
+5. Continue ALL remaining 20i and non-20i items. Keep a stable requirements-based tracker and explicit installed/released/live status. Do not stop at the first release.
 
-Read the [historical licensing findings](docs/LICENSING_INTEGRATION_REVIEW.md) and the [release acceptance report](docs/TEST_REPORT_1.25.0.md). The integrated1.25 source contains separately reviewed bounded corrections, subject to complete release acceptance; this does not accept [PR #159](https://github.com/afterburn25/Cajun_Web/pull/159) or other unmerged proposals. Preserve the existing implementation/history; do not rebuild it or add an installation key to CajunWebPro.
+Read [AGENTS.md](AGENTS.md), [status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md), [coordination](docs/AGENT_COORDINATION.md), [whole roadmap](docs/ROADMAP.md), [hosting/billing](docs/HOSTING_AND_BILLING_ROADMAP.md), [client portal](docs/CLIENT_PORTAL_ROADMAP.md), [admin mail](docs/ADMIN_MAIL_ROADMAP.md), [20i evidence](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md) and [release workflow](docs/RELEASE_WORKFLOW.md). The takeover directive maps the known pending PR families and concrete contacts/payment-link/VPS caveats; discover newer work rather than treating that list as exhaustive.
 
-## If the GitHub API is rate-limited
+## Preserve existing licensing and product architecture
 
-Normal Git fetch and local file reads provide the complete handoff; issue API access is unnecessary:
+Licensing already exists. Inspect [the implementation guide](docs/LICENSING_IMPLEMENTATION.md), [service](site/app/licenses/service.php), [fulfilment](site/app/licenses/fulfill.php), [bundles](site/app/licenses/bundle.php), [validation](site/api/handlers/license.php), [migration](site/database/migrations/license_migrate.php), [native tests](tests/license_native.php) and [release fixes](docs/TEST_REPORT_1.25.0.md). Do not rebuild it or add a license key to CajunWebPro's own installer.
+
+Keep the approved navy/gold design, organized shared-host PHP/MySQL application, one-page keyless installer, customer data/keys and previous downloads. A component based on an old tree is not a deployable replacement. Repository publication does not authorize production deployment, live charges/provider changes, customer mail or SSH.
+
+## API rate limits
+
+Use normal Git fetch and local files while backing off unavailable API calls. For example:
 
 ```sh
 git fetch origin main
 git show origin/main:DEVIN_START_HERE.md
-git show origin/main:docs/DEVIN_NON20I_SITE_COMPLETION.md
-git show origin/main:docs/LICENSING_INTEGRATION_REVIEW.md
+git show origin/main:docs/DEVIN_FULL_SITE_TAKEOVER.md
 ```
 
-Preserve any current local edits. Create a new `devin/non20i-*` branch from current `origin/main`, or continue your existing owned branch after inspecting its ancestry. Do not reset another worker's checkout, switch onto Codex's active branches, or make further20i changes.
+Do not reset another worker's checkout, force-push or redispatch a queued run. Continue unblocked code/review work and record any narrow external dependency.
 
-## Retained PR repair instructions — 2026-10-16
+First response: acknowledge sole end-to-end ownership, state actual main and integration branch, identify the first ready merge group and exact blockers, then begin execution. This file is an instruction, not evidence that a Devin session has started.
 
-1. [Tickets158 review](https://github.com/afterburn25/Cajun_Web/pull/158#issuecomment-6219612932): register tickets.css in the asset map, cover actual admin/client layout rendering, refresh inventories and complete browser acceptance. Preserve dependent175.
-2. [Licensing159 review](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878): repair unsupported legacy invoice association, populated unmarked migration and stale installer inventory.
-3. [Mail161 review](https://github.com/afterburn25/Cajun_Web/pull/161#issuecomment-6219105635): recheck current source-mailbox read permission for copied saved content/history, fix mixed pagination and the failing SMTP fixture.
-
-Then continue complete non-20i workflows from the full assignment. Preserve stacked160->170->171->174 (projects/planning/design payments/recurring billing),169->173 (service plans), and158->175 (ticket captures);172 proposes the billing calendar. Foundation PRs162–169 and new runtime proposals are unaccepted work until independently tested and integrated. Coordinate shared billing/auth/schema/portal/installer/CI changes; do not replace current Codex files with old whole-file versions.
-
-Devin [acknowledged the assignment](https://github.com/afterburn25/Cajun_Web/issues/157#issuecomment-6217621738). Codex has normally integrated the mature3fa history into the frozen1.25 release branch. Current release scope and actual evidence are linked from [status](PROJECT_STATUS.md); old branch/run statuses below or in linked historical reviews do not identify the active candidate. [Current checkpoint](docs/TWENTYI_CURRENT_CHECKPOINT.md) records exact evidence; [issue2](https://github.com/afterburn25/Cajun_Web/issues/2) tracks20i. Branch counts are not a completion measure.
+[Previous start guide and historical repairs](https://github.com/afterburn25/Cajun_Web/blob/a86f6f4fa592e6f715a9420aec8de4622258642e/DEVIN_START_HERE.md).
