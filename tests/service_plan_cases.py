@@ -145,6 +145,76 @@ def run_browser(env, browser):
     r = submit(client, portal+'?agreement='+second, 'service_agreements_abandon', {'confirm': '1'})
     check('Client may decline an unactivated offer without agreeing', 'Declined offer' in r.text and 'Service terms accepted' not in r.text)
 
+    # Additional contacts share the parent client identity; their own current billing authority is rechecked inside the guard.
+    submit(owner, admin+'?view=studio-upgrade', 'studio_contacts_setup', {'current_password': OWNER})
+
+    def contact_form(action, field, value):
+        for f in soup(owner.get(admin+'?view=studio-clients')).select('form'):
+            a, i = f.select_one('[name=action]'), f.select_one('[name='+field+']')
+            if a and i and a['value']==action and i['value']==str(value): return form_data(f)
+        raise AssertionError('Missing '+action+' form')
+
+    def add_contact(name, email, perms):
+        for f in soup(owner.get(admin+'?view=studio-clients')).select('form'):
+            a, i, d = f.select_one('[name=action]'), f.select_one('[name=client_id]'), f.select_one('[name=id]')
+            if a and i and d and a['value']=='studio_contact' and i['value']==str(cid) and d['value']=='0':
+                request = form_data(f); request.update(name=name, email=email, **{'perms[]': perms}); owner.post(admin+'?view=studio-clients', data=request)
+                contact_id = db('SELECT id FROM ci_studio_contacts WHERE email=?', [email])[0]['id']
+                r = owner.post(admin+'?view=studio-clients', data=contact_form('studio_contact_invite', 'id', contact_id))
+                link = soup(r).select_one('.notice.info a[href*="cinvite="]')['href']
+                visitor = requests.Session(); activation = form_data(soup(visitor.get(link)).select_one('form')); activation.update(password='Synthetic contact passphrase 2026', confirm_password='Synthetic contact passphrase 2026'); visitor.post(link, data=activation)
+                session = requests.Session(); submit(session, portal, 'login', {'email': email, 'password': 'Synthetic contact passphrase 2026'})
+                return session, contact_id
+        raise AssertionError('Missing add-contact form')
+
+    billing_session, billing_ctid = add_contact('Agreement Billing Contact', 'agreement-billing@example.invalid', 'billing')
+    third, _ = offer()
+    turl = portal+'?agreement='+third
+    r = billing_session.get(turl)
+    check('Billing-enabled contact can read offered terms', r.status_code==200 and 'Reviewed care plan' in r.text)
+    r = billing_session.get(portal+'?agreements=1')
+    check('Billing-enabled contact can open the agreements index', r.status_code==200)
+    r = billing_session.get(portal)
+    check('Billing-enabled contact sees billing navigation', 'agreements=1' in r.text and 'recurring=1' in r.text and 'registration_drafts=1' in r.text)
+    consent_c = data(billing_session, turl, 'service_agreements_consent')
+    r = billing_session.post(turl, data=dict(consent_c, confirm='1'))
+    check('Billing contact consent is recorded under the parent client identity', 'agreement to these service terms was recorded' in r.text and db('SELECT actor_client_id,actor_staff_id FROM ci_service_subscription_events WHERE subscription_id=?', [third])==[{'actor_client_id': cid, 'actor_staff_id': None}])
+
+    projects_session, projects_ctid = add_contact('Agreement Projects Contact', 'agreement-projects@example.invalid', 'projects')
+    fourth, _ = offer()
+    furl = portal+'?agreement='+fourth
+    denied = snapshot()
+    r = projects_session.get(furl)
+    check('Projects-only contact cannot read offered terms', r.status_code==403 and 'Reviewed care plan' not in r.text)
+    r = projects_session.get(portal+'?agreements=1')
+    check('Projects-only contact cannot open the agreements index', r.status_code==403)
+    r = projects_session.get(portal+'?recurring=1')
+    check('Projects-only contact cannot open recurring billing', r.status_code==403)
+    r = projects_session.get(portal)
+    check('Projects-only contact sees no billing navigation', 'agreements=1' not in r.text and 'recurring=1' not in r.text and 'registration_drafts=1' not in r.text)
+    forged = dict(data(client, furl, 'service_agreements_consent'), confirm='1', csrf=env['token'](projects_session.get(portal)))
+    r = projects_session.post(furl, data=forged)
+    check('Projects-only contact POST cannot consent under the shared session', 'do not include billing' in r.text and snapshot()==denied)
+    downloads_session, _ = add_contact('Agreement Downloads Contact', 'agreement-downloads@example.invalid', 'downloads')
+    r = downloads_session.get(furl)
+    check('Downloads-only contact cannot read offered terms', r.status_code==403 and 'Reviewed care plan' not in r.text)
+    r = downloads_session.post(furl, data=dict(data(client, furl, 'service_agreements_consent'), confirm='1', csrf=env['token'](downloads_session.get(portal))))
+    check('Downloads-only contact POST cannot consent under the shared session', 'do not include billing' in r.text and snapshot()==denied)
+
+    # Editing permissions rotates the contact credential; a re-authenticated non-billing contact stays denied.
+    edit = contact_form('studio_contact', 'id', billing_ctid); edit['perms[]'] = 'projects'
+    r = owner.post(admin+'?view=studio-clients', data=edit)
+    check('Contact permission edit saves', 'Contact saved' in r.text)
+    r = billing_session.get(turl)
+    check('Revoked contact permission ends the billing session', r.status_code==403)
+    submit(billing_session, portal, 'login', {'email': 'agreement-billing@example.invalid', 'password': 'Synthetic contact passphrase 2026'})
+    r = billing_session.get(turl)
+    check('Re-authenticated contact without billing cannot read terms', r.status_code==403 and 'Reviewed care plan' not in r.text)
+    r = billing_session.post(furl, data=dict(data(client, furl, 'service_agreements_consent'), confirm='1', csrf=env['token'](billing_session.get(portal))))
+    check('Re-authenticated contact without billing cannot consent', 'do not include billing' in r.text)
+    r = client.get(turl)
+    check('Primary client access is unchanged by contact permission edits', r.status_code==200 and 'Reviewed care plan' in r.text)
+
     member = requests.Session()
     submit(member, admin+'?view=login', 'login', {'email': 'request-staff@example.invalid', 'password': STAFF})
     before = snapshot()

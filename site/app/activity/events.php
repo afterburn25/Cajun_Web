@@ -21,8 +21,8 @@ function activity_projection(array $actor): array {
         $parts[]="SELECT CAST(CONCAT('".$kind.":',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($client?' AND j.client_id=?':'');
         if($client)$args[]=$actor['id'];
     };
-    $add('studio_messages','message','s.created_at',"''","s.author_type='".($client?'admin':'client')."'");
-    $add('studio_files','file','s.created_at','s.original_name',"s.author_type='".($client?'admin':'client')."'");
+    $add('studio_messages','message','s.created_at',"''","s.author_type".($client?"='admin'":" IN ('client','contact')"));
+    $add('studio_files','file','s.created_at','s.original_name',"s.author_type".($client?"='admin'":" IN ('client','contact')"));
     if($client){
         $add('studio_versions','review','s.created_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.title)",'1=1');
         $add('studio_invoices','invoice','s.created_at',"CONCAT(s.reference,' · ',s.title)",'1=1');

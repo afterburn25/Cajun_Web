@@ -597,6 +597,9 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — additional company contacts with scoped permissions (devin/non20i-client-contacts)
+
+Client accounts can carry additional company contacts: separate sign-in identities with independent project-review, billing and download permissions (P-05). Storage is a new additive `contacts_schema_version=1` (`studio_contacts`), prepared explicitly by the owner under Version & database with password reauthentication; unknown schema markers and non-empty unrecognized tables refuse adoption. Staff create/edit/disable contacts and issue 24-hour private one-time invitations shown once; raw tokens are never stored. Contact sessions ride the client session model (same idle/absolute limits) but revalidate contact enabled state, auth version and owning client on every request; disabling, editing or re-inviting a contact revokes it immediately. Portal routes and writes enforce scope server-side — `projects` gates job pages, messages, decisions, uploads and activity; `billing` gates invoices, receipts, license actions and hosting services; `downloads` gates `?file=`, releases and deliveries. Messages/uploads attribute to the contact identity and admin/client views render the contact name. Primary client accounts are unchanged when the feature is unused. No email is sent and no portal access is granted beyond the assigned permissions.
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.

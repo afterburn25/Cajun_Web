@@ -13,6 +13,7 @@ function sn_deny(string $name,callable $work):void {try{$work();}catch(InvalidAr
 function sn_id(int $id):string {return str_pad(dechex($id),32,'0',STR_PAD_LEFT);}
 function sn_owner(int $id=1):void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
 function sn_client(int $id=1):void {$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$id]);$_SESSION=['client_id'=>$id,'client_auth'=>$c['auth_version'],'client_last'=>time(),'client_login'=>time()];}
+function sn_contact(int $id,int $client=1):void {sn_client($client);$_SESSION['contact_id']=$id;$_SESSION['contact_auth']=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$id])['auth_version'];}
 function sn_plan(int $id):ServicePlanDocument {return service_plans_validate(service_plans_row(sn_id($id)));}
 function sn_sub(int $id):ServiceSubscriptionDocument {return service_plans_validate(service_plans_row(sn_id($id),true),true);}
 function sn_all():string {return service_plans_json([all('SELECT * FROM '.table('service_plans').' ORDER BY id'),all('SELECT * FROM '.table('service_plan_events').' ORDER BY id'),all('SELECT * FROM '.table('service_subscriptions').' ORDER BY id'),all('SELECT * FROM '.table('service_subscription_events').' ORDER BY id'),all('SELECT * FROM '.table('audit').' ORDER BY id')]);}
@@ -36,6 +37,10 @@ if(($argv[1]??'')==='read-worker'){sn_owner();echo service_plans_subscription_ge
 if(($argv[1]??'')==='list-worker'){
     sn_client(1);echo "ready\n";fflush(STDOUT);
     try{service_plans_page(0,true,1);echo 'read';}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
+if(($argv[1]??'')==='contact-consent-worker'){
+    sn_contact((int)$argv[2],(int)$argv[3]);$sub=sn_sub((int)$argv[4]);echo "ready\n";fflush(STDOUT);
+    try{service_plans_client_change(sn_id((int)$argv[4]),(int)$argv[3],(int)$argv[5],sn_id((int)$argv[6]),'consent',['terms_hash'=>$sub->model()->plan->termsHash()],true);echo 'saved';}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
 try {
     foreach(schema_statements('spln_') as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
@@ -93,6 +98,30 @@ try {
     sn_offer(105,2);query('SELECT GET_LOCK(?,5)',[$key]);$a=sn_worker('consent-worker',['1','105','0','150']);$b=sn_worker('consent-worker',['1','105','0','150']);sn_ok('Identical consent requests reach the shared guard',trim(fgets($a[1][1]))==='ready'&&trim(fgets($b[1][1]))==='ready');query('SELECT RELEASE_LOCK(?)',[$key]);$out=[sn_finish($a),sn_finish($b)];sn_ok('Concurrent exact consent replay creates only one agreement',$out===['saved','saved']&&sn_sub(105)->revision()===1&&(int)query('SELECT COUNT(*) FROM '.table('service_subscription_events').' WHERE subscription_id=?',[sn_id(105)])->fetchColumn()===1);
     sn_offer(106,2);query('SELECT GET_LOCK(?,5)',[$key]);$a=sn_worker('consent-worker',['1','106','0','160']);sn_ok('Consent worker waits after reading its client session',trim(fgets($a[1][1]))==='ready');$before=sn_all();query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=1',[bin2hex(random_bytes(16))]);query('SELECT RELEASE_LOCK(?)',[$key]);sn_ok('Client revocation while waiting prevents consent and preserves records',sn_finish($a)==='denied'&&sn_all()===$before&&sn_sub(106)->model()->consent()===null);
     query('SELECT GET_LOCK(?,5)',[$key]);$a=sn_worker('plan-worker',['3','3','1','32','13000']);sn_ok('Owner edit worker waits on current shared authority',trim(fgets($a[1][1]))==='ready');$before=sn_all();query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=3');query('SELECT RELEASE_LOCK(?)',[$key]);sn_ok('Revoked owner cannot edit after acquiring the guard',sn_finish($a)==='denied'&&sn_all()===$before);
+    // Additional contacts share the parent client identity; the current contact row is rechecked inside the shared guard.
+    require_once __DIR__.'/../site/database/schema/contacts_schema.php';
+    foreach(contacts_schema(config()['db']['prefix']) as $sql)db()->exec($sql);save_setting('contacts_schema_version','1');
+    foreach([['Billing contact','billing-contact@example.invalid','["billing"]'],['Projects contact','projects-contact@example.invalid','["projects"]']] as $row)
+        query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,permissions,enabled,auth_version,created_at) VALUES (1,?,?,?,1,?,?)',[$row[0],$row[1],$row[2],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
+    $contacts=array_column(all('SELECT id,email FROM '.table('studio_contacts')),'id','email');
+    $billingContact=(int)$contacts['billing-contact@example.invalid'];$projectsContact=(int)$contacts['projects-contact@example.invalid'];
+    sn_owner();sn_offer(107,2);sn_offer(108,2);sn_offer(109,2);
+    sn_contact($billingContact);sn_ok('Billing-enabled contact can consent under the parent client identity',sn_agree(107,170)->model()->consent()['by']==='client:1');
+    sn_contact($projectsContact);$before=sn_all();
+    sn_deny('Projects-only contact cannot consent to an agreement',fn()=>sn_agree(108,180));
+    sn_deny('Projects-only contact cannot read an agreement',fn()=>service_plans_subscription_get(sn_id(108),1,true));
+    sn_deny('Projects-only contact cannot list agreements',fn()=>service_plans_page(0,true,1));
+    query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["downloads"]',$projectsContact]);
+    sn_deny('Downloads-only contact cannot consent to an agreement',fn()=>sn_agree(108,181));
+    sn_deny('Downloads-only contact cannot read an agreement',fn()=>service_plans_subscription_get(sn_id(108),1,true));
+    sn_ok('Denied contact access preserves agreement records',sn_all()===$before);
+    query('UPDATE '.table('studio_contacts').' SET enabled=0,auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$projectsContact]);
+    sn_deny('Disabled contact cannot consent with a stale session',fn()=>sn_agree(108,182));
+    query('UPDATE '.table('studio_contacts').' SET enabled=1,permissions=? WHERE id=?',['["billing"]',$projectsContact]);
+    sn_deny('A contact session signed before credential rotation cannot consent',fn()=>sn_agree(108,183));
+    sn_contact($projectsContact);sn_ok('Re-authenticated contact with billing permission can consent',sn_agree(108,184)->model()->consent()['by']==='client:1');
+    query('SELECT GET_LOCK(?,5)',[$key]);$a=sn_worker('contact-consent-worker',[(string)$billingContact,'1','109','0','190']);sn_ok('Contact consent worker waits after reading its session',trim(fgets($a[1][1]))==='ready');$before=sn_all();query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["projects"]',$billingContact]);query('SELECT RELEASE_LOCK(?)',[$key]);sn_ok('Contact revocation while waiting prevents consent and preserves records',sn_finish($a)==='denied'&&sn_all()===$before&&sn_sub(109)->model()->consent()===null);
+    sn_client();sn_ok('Primary client access is unchanged by contact rows',sn_sub(109)->model()->state()==='pending-consent');
     sn_ok('Plan agreement records create no invoices or payment activity',(int)query('SELECT COUNT(*) FROM '.table('studio_invoices'))->fetchColumn()===0);
     $audit=service_plans_json(all('SELECT * FROM '.table('audit')));sn_ok('Audit excludes literal terms email passwords and consent hashes',!str_contains($audit,'Reviewed updates')&&!str_contains($audit,'plan-client')&&!str_contains($audit,$password)&&!str_contains($audit,$hash));
     // Screen read models use current authority and complete validated documents.

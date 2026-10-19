@@ -2160,6 +2160,29 @@ Original9779 is now classified as a runner105-minute timeout, with140/141 checkp
 
 Continue roadmap and keep the published assignment directly usable. Start main00201b98798f08ea4eee2ffc2336438bf2a74c3e. Commit description: Record StackCP candidate tests and direct Devin repair priorities. Rewrite current status/handoff/checkpoint, updateREADME/roadmap/coordination/changelog/start-here/fullassignment and preserve old detail through immutable Git links. Runtime remains on reviewed3fa72d7b; first focused38933590118 is active. Parent5bfd focused38931463106 passes four755-check native environments plus260distro checks (proofab93db13); original cccf/2a/9779 failures are classified. Fresh PR state158–175 preserves unchanged reviewed158/159/161 findings and stacked dependencies. This commit changes only Markdown; no runtime/installer/version/asset/live state. Documentation validation follows before publication. Next: verify original focused artifacts and actual query profiles, continue bounded PHP-settings work and complete full/combined/release acceptance.
 
+## 2026-10-16 - scoped additional company contacts (P-05)
+
+Request: continue Devin non-20i roadmap work; selected P-05's named gap - company contacts with separate project-review, billing and download permissions. Branch devin/non20i-client-contacts from main.
+
+Changed: new additive contacts schema v1 (studio_contacts: client_id FK scope, unique email, password_hash, auth_version, JSON permissions, enabled, hashed 24-hour invite) + versioned contacts_migrate (owner reauthentication, validate-or-create, refuse unknown markers and non-empty unrecognized tables). contacts.php app layer: studio_contact(), contact_can(), contact_save/contact_invite/contact_activate mirroring client identity patterns. identity.php: contact fallback in studio_login (same rate limits and dummy-hash path) and per-request contact revalidation in studio_client(). Portal router/actions gate activity, downloads, releases, files, invoices, receipts, services, license actions, message/decision/upload/activity_mark by permission; message/upload rows attribute author_type='contact'. workspace.php renders scoped sections per permission with contact indicator; auth.php adds cinvite activation. Admin: contacts_setup + studio_contact + contact_invite actions, permission map, clients view contact forms, upgrade view setup card; admin job view joins contact names. Activity feed includes contact-authored messages/files for admin. deploy.php seeds contacts_schema_version=1. tests/contacts_cases.py + browser_acceptance.py wiring: owner setup/idempotency/unknown-marker refusal, create/collision/permission-required, invite hash-at-rest/one-time, scoped views, denied routes/writes, disable/invite session revocation, fresh-install readiness, guard 404s, no mail/provider calls, Chromium scoped render.
+
+Tests so far: php -l on all 17 touched PHP files pass; python compile of both test files pass; installer inventory refreshed and canonical checks pass (2188 dependencies, 2201+15 runtime files byte-identical). Packaged HTTP/browser/native acceptance pending on CI; no live deployment, mail, payment or provider operation.
+
+Known limits: decisions still record the client account as decided_by (company-level artifact); per-contact notification routing and stage history remain pending elsewhere.
+
+Next: commit, open PR, monitor CI.
+
+## 2026-10-17 - P-05 contacts verified green; two CI repairs
+
+Request: continue without stopping; verify PR #203 acceptance on branch devin/non20i-client-contacts (head c025e501).
+
+Changed (test/dispatch only, no runtime contract change): contacts_setup/contact_invite renamed to studio_contacts_setup/studio_contact_invite in permission map, upgrade+clients forms, controller branches and contacts_cases.py - the admin dispatcher only routes studio_* actions to studio_admin_action so the original names fell through to Unknown administration action (d6d77b9d). Installer inventory refreshed after the rename (8f27e213). Re-enable flow in contacts_cases.py now fetches a freshly rendered form instead of reusing the pre-disable expected auth_version, which the rotation guard correctly rejected (c025e501).
+
+Tests and results: PR #203 48/48 checks pass including the native-and-browser lane - owner setup reauthentication/idempotency/unknown-marker refusal, contact create/collision/permission-required, one-time hashed invite with subfolder URL, activation CSRF/one-use, scoped project/billing/download views and denied routes/writes (403 + inline errors), disable/invite session revocation, support-session isolation, fresh-install marker, guard 404s, no mail/provider traffic, Chromium scoped render.
+
+Known limits: PR open at c025e501, not merged; Codex coordinates integration. Decisions still record the client account as decided_by.
+
+Next: integrate via Codex sequencing; continue next non-20i increment.
 
 ## 2026-10-15 — Preserve current main and repair replacement rollback during20i integration
 

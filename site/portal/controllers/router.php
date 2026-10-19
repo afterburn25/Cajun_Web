@@ -38,14 +38,14 @@ if($supportRequested){
  }
  $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;
 }
-$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
+$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';$cinvite=is_string($_GET['cinvite']??null)?$_GET['cinvite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
-if(isset($_GET['activity']))activity_render('client',$error);
-if(isset($_GET['download_release']))delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');
-if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
-if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
-if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
-if(isset($_GET['services']))provider_services_portal_render();
+if(isset($_GET['activity'])){if($client&&!contact_can('projects'))fail_page('Your contact permissions do not include project access.',403);activity_render('client',$error);}
+if(isset($_GET['download_release'])){if($client&&!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');}
+if(isset($_GET['downloads'])||isset($_GET['release'])){if($client&&!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);delivery_portal_render();}
+if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);if(!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
+if(isset($_GET['invoice'])||isset($_GET['receipt'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);ledger_portal_render();}
+if(isset($_GET['services'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);provider_services_portal_render();}
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
