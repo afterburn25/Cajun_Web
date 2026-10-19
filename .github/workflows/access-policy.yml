@@ -2,6 +2,10 @@ name: Access policy checks
 
 on:
   pull_request:
+    paths:
+      - foundation/access/**
+      - tests/access/**
+      - .github/workflows/access-policy.yml
   push:
     branches: [main, codex/platform-foundation]
   workflow_dispatch:

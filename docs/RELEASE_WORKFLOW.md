@@ -1,3 +1,9 @@
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Named source/dependency checks and exact hashes](evidence/ci-remaining-pure-pr-filters.json) cover all29 PHP sources,34 literal imports and one fixed provider worker edge. Whole-file inverses prove every other workflow byte unchanged. Service-plans and staff-invitations are excluded from this pure-family change.
+
+Read-only GraphQL inspection with inherited rulesets included returned zero branch-protection rules, zero rulesets and complete pagination before application. No policy was changed. A future required-check policy must account for workflows skipped by path filters; add any future external source dependency to its owning filter. Repository documentation checks remain unconditional. This affects future PR admission only and is not an acceptance result or queue-cleanup operation.
+
 ## 2026-10-19 — superseded component queue checkpoint
 
 [Recorded maintenance](CI_SUPERSEDED_QUEUE_CLEANUP.md) concerns only reviewed superseded component runs.327 acknowledgements include224 independently verified cancellations and103 pending terminal checks;31 candidates were preserved and139 left untouched. No force-cancellation, deletion, repeated cancellation, dispatch or test omission occurred.

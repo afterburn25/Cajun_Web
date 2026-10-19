@@ -1,3 +1,9 @@
+## 2026-10-19 — remaining isolated pure-suite PR filters
+
+Branch `codex/ci-remaining-pure-pr-filters` starts at main `7e1507f54901497dd0d0ba9a2ae1dccdeccc9eed`; enclosing commit `ci: scope remaining isolated pure PR checks`. Exactly12 workflow lines are additive across three pure suites. [Complete receipt](docs/evidence/ci-remaining-pure-pr-filters.json), SHA256 `691e0456102f0dba43e94d9b175071b13cc516b7a7a7d24857fa57c76e4f2679`. Producer36 checks and independent source review pass; root confirms every applied hash, exact inverse and all29 source bindings to this parent.
+
+Next: normal PR review/integration of this CI-only change. Preserve the pending cleanup terminal checks and original20i/capture/release gates. PR239's actual repository check39203822461 passed before normal merge; sourceafb24946 and merge7e1507f5 have identical trees. The connected GitHub app is available while the CLI REST verifier is rate-limited; its normalized first-page summaries omit runner/all-attempt fields and cannot close the103 strict audit gaps. The latest summary still shows catalog39098578401 acceptance and capture39137551561 build queued. No cancellation or acceptance rerun is authorized by this filter change.
+
 ## 2026-10-19 — superseded component queue checkpoint
 
 Branch `codex/ci-superseded-queue-cleanup` starts at main `8f734de11031938eff81a02744d5195ecdcab17c`; enclosing commit `docs: record superseded CI queue checkpoint`. Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched.

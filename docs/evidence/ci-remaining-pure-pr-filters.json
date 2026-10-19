@@ -1,0 +1,855 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-19T05:22:40.027274+00:00",
+  "parent": "7e1507f54901497dd0d0ba9a2ae1dccdeccc9eed",
+  "branch": "codex/ci-remaining-pure-pr-filters",
+  "enclosing_commit": "ci: scope remaining isolated pure PR checks",
+  "scope": "Three PR path filters; no jobs, push/manual triggers, application/test source or released bytes changed.",
+  "source_review": {
+    "base": "8f734de11031938eff81a02744d5195ecdcab17c",
+    "scope": "External proposal only: add positive pull_request.paths to three previously unfiltered isolated component workflows.",
+    "files": [
+      {
+        "path": ".github/workflows/access-policy.yml",
+        "before_sha256": "e91bdf59c7738cd352006b616a0602bbd8062215740880a884f0af6e17294ff7",
+        "after_sha256": "cd1d27d4d534d48ea52c1a214bc2a526a94e7642296a3c33ef3e1fb23f610817",
+        "before_git_blob": "72ec481cf990c1369cb1a62314155a4e1afe3584",
+        "filters": [
+          "foundation/access/**",
+          "tests/access/**",
+          ".github/workflows/access-policy.yml"
+        ],
+        "inverse_remove_exactly_once": "    paths:\n      - foundation/access/**\n      - tests/access/**\n      - .github/workflows/access-policy.yml\n",
+        "source_count": 5,
+        "dependency_edges": 4
+      },
+      {
+        "path": ".github/workflows/provider.yml",
+        "before_sha256": "95d0ca649892aa6f070a85c4d8e4d4de74f1259d7d3f7231bc233354c136d352",
+        "after_sha256": "b16e02c26fc71abcdaf73abe15e1015ba79d57c82377bf85a9951291b41eb625",
+        "before_git_blob": "c78dc7d395c968ab82690bae188c1f24f3853861",
+        "filters": [
+          "foundation/provider/**",
+          "tests/provider/**",
+          ".github/workflows/provider.yml"
+        ],
+        "inverse_remove_exactly_once": "    paths:\n      - foundation/provider/**\n      - tests/provider/**\n      - .github/workflows/provider.yml\n",
+        "source_count": 18,
+        "dependency_edges": 26
+      },
+      {
+        "path": ".github/workflows/scheduling.yml",
+        "before_sha256": "db04d77af30230615ac351d0d95d74f90ee8b9acc6d87749866a4eb698a82dad",
+        "after_sha256": "a8165a6d96108ac65311aaea1e645616dd522b236ee5f1e1c0c85a4a1593043b",
+        "before_git_blob": "de411a335aee51914f6ae0b42a33faa53a651f5f",
+        "filters": [
+          "foundation/scheduling/**",
+          "tests/scheduling/**",
+          ".github/workflows/scheduling.yml"
+        ],
+        "inverse_remove_exactly_once": "    paths:\n      - foundation/scheduling/**\n      - tests/scheduling/**\n      - .github/workflows/scheduling.yml\n",
+        "source_count": 6,
+        "dependency_edges": 5
+      }
+    ],
+    "patch_sha256": "e1b0f032fc30e516fd4d7815befe687a5f94676d39d42b9fa27d3c2094178baf",
+    "dependency_proof_sha256": "c2bad86c8dcdf7de66369e2fd90848dc004a7d4d1c2a963e23675d10d8cd1439",
+    "checks_sha256": "3ea6383ebbd5a8da63d31bdf2085df05a8300225ac69b687ab15976c9b768446",
+    "actual_source_checks": 36,
+    "excluded_remaining_unfiltered": {
+      "repository-checks.yml": "Repository-wide continuity/document gate explicitly excluded.",
+      "staff-invitations.yml": "Native SQL fixture, outside isolated pure-contract scope.",
+      "service-plans.yml": "Reads application plan forms/documents/security/layout plus deployment mirrors; excluded from this bounded three-family dependency proposal."
+    },
+    "preserved": [
+      "All jobs/steps/commands/checks and PHP8.2/8.4 matrices.",
+      "Push branches/events, manual event, permissions, concurrency and cancellation settings.",
+      "All existing filtered workflows, full application acceptance, repository checks, release and diagnostics."
+    ],
+    "limits": [
+      "No checkout, branch, tracked source, GitHub or network mutation.",
+      "No PHP/native/browser/application acceptance execution or claim.",
+      "Paths match only these proven current dependencies. Any future external import requires expanding the owning workflow filter.",
+      "Root must review current required-check/rules policy before applying: a skipped path-filtered workflow can remain pending if configured as required. No API policy refresh was performed during the rate limit.",
+      "This change affects future PR-trigger selection only; it does not change queued/original runs or provide cleanup authorization."
+    ]
+  },
+  "producer_checks": {
+    "passed": true,
+    "scope": "Actual local source/YAML/path-selection/inverse checks only; PHP suites and GitHub Actions not executed.",
+    "checks": [
+      {
+        "name": "Exact main base commit resolves",
+        "passed": true
+      },
+      {
+        "name": "Only six remaining unfiltered PR workflows observed",
+        "passed": true
+      },
+      {
+        "name": "access-policy: unfiltered PR anchor is unique",
+        "passed": true
+      },
+      {
+        "name": "access-policy: exact whole-byte inverse preserves every prior byte",
+        "passed": true
+      },
+      {
+        "name": "access-policy: only additive PR paths change parsed YAML",
+        "passed": true
+      },
+      {
+        "name": "access-policy: job bodies are byte-identical",
+        "passed": true
+      },
+      {
+        "name": "access-policy: existing matrix and network isolation remain",
+        "passed": true
+      },
+      {
+        "name": "access-policy: complete literal import and child closure stays in family",
+        "passed": true
+      },
+      {
+        "name": "access-policy: all current lint/runtime source edits trigger",
+        "passed": true
+      },
+      {
+        "name": "access-policy: workflow and future nested family files trigger",
+        "passed": true
+      },
+      {
+        "name": "access-policy: unrelated hosting invoice and documentation edits do not trigger",
+        "passed": true
+      },
+      {
+        "name": "access-policy: similarly named sibling family does not trigger",
+        "passed": true
+      },
+      {
+        "name": "provider: unfiltered PR anchor is unique",
+        "passed": true
+      },
+      {
+        "name": "provider: exact whole-byte inverse preserves every prior byte",
+        "passed": true
+      },
+      {
+        "name": "provider: only additive PR paths change parsed YAML",
+        "passed": true
+      },
+      {
+        "name": "provider: job bodies are byte-identical",
+        "passed": true
+      },
+      {
+        "name": "provider: existing matrix and network isolation remain",
+        "passed": true
+      },
+      {
+        "name": "provider: actual child worker is fixed and invoked with PHP_BINARY",
+        "passed": true
+      },
+      {
+        "name": "provider: complete literal import and child closure stays in family",
+        "passed": true
+      },
+      {
+        "name": "provider: all current lint/runtime source edits trigger",
+        "passed": true
+      },
+      {
+        "name": "provider: workflow and future nested family files trigger",
+        "passed": true
+      },
+      {
+        "name": "provider: unrelated hosting invoice and documentation edits do not trigger",
+        "passed": true
+      },
+      {
+        "name": "provider: similarly named sibling family does not trigger",
+        "passed": true
+      },
+      {
+        "name": "scheduling: unfiltered PR anchor is unique",
+        "passed": true
+      },
+      {
+        "name": "scheduling: exact whole-byte inverse preserves every prior byte",
+        "passed": true
+      },
+      {
+        "name": "scheduling: only additive PR paths change parsed YAML",
+        "passed": true
+      },
+      {
+        "name": "scheduling: job bodies are byte-identical",
+        "passed": true
+      },
+      {
+        "name": "scheduling: existing matrix and network isolation remain",
+        "passed": true
+      },
+      {
+        "name": "scheduling: complete literal import and child closure stays in family",
+        "passed": true
+      },
+      {
+        "name": "scheduling: all current lint/runtime source edits trigger",
+        "passed": true
+      },
+      {
+        "name": "scheduling: workflow and future nested family files trigger",
+        "passed": true
+      },
+      {
+        "name": "scheduling: unrelated hosting invoice and documentation edits do not trigger",
+        "passed": true
+      },
+      {
+        "name": "scheduling: similarly named sibling family does not trigger",
+        "passed": true
+      },
+      {
+        "name": "Exactly three workflow files proposed; excluded workflows untouched",
+        "passed": true
+      },
+      {
+        "name": "All29 PHP source files and35 dependency edges bound",
+        "passed": true
+      },
+      {
+        "name": "Patch is UTF8 LF without BOM or trailing whitespace",
+        "passed": true
+      }
+    ]
+  },
+  "dependencies": {
+    "base": "8f734de11031938eff81a02744d5195ecdcab17c",
+    "sources": [
+      {
+        "path": "foundation/access/AccessContext.php",
+        "sha256": "b0009bb6db9b74f25af990f4d2fb812d46762d2c5a5a5addc7c40a106344fab0",
+        "git_blob": "43dc19759196059122d85585a8cc03cdfbe689aa"
+      },
+      {
+        "path": "foundation/access/AuthorizationVersion.php",
+        "sha256": "92ddb6d3e15f57fe4dc7682052977376ef0c3362da076b0d609113e9a16e6e62",
+        "git_blob": "2e397168b08aeaf7cd114b79d5f3ca17896ceea9"
+      },
+      {
+        "path": "foundation/access/MailboxGrant.php",
+        "sha256": "2afb2bcda28572845ccea514180f6c5b67904a64eeb5a0bdb277eb338dd97027",
+        "git_blob": "dae17eee3d0cbd13950d7e3ef88eca5fb14a0d38"
+      },
+      {
+        "path": "foundation/access/PermissionPolicy.php",
+        "sha256": "800b44f481271b467bef5f2719aeba5608cc6fc6da57e90fd415de967fa58632",
+        "git_blob": "3e86a8dc8f2c1e53f0aa882a78804cdb4b9e4c13"
+      },
+      {
+        "path": "tests/access/run.php",
+        "sha256": "ac6dd1888acf89c703e51ffc05b8c1ae25e4644c5084fda53ec4e807cb7177cd",
+        "git_blob": "06c6313fba73c2481d8b55db4a23f8d7dc66f524"
+      },
+      {
+        "path": "foundation/provider/ConnectionCheck.php",
+        "sha256": "574632dc752f8681190ac757c9680d262b99405c47c924c43bd7cabccae7f274",
+        "git_blob": "ad8bc834fbade88831ba6edca3cc9b9f21bec25f"
+      },
+      {
+        "path": "foundation/provider/ExternalResource.php",
+        "sha256": "7093981712786a4039934d03d366deb1d5db37fd98642071feeed6008c43f37e",
+        "git_blob": "1cd34eebbd3d296c06975d9cc69c39c1a810a2cd"
+      },
+      {
+        "path": "foundation/provider/HttpTransport.php",
+        "sha256": "4662e6ac0b90f0481e74e672d99814103bf63d7c3716f75ee6c43c9c8194ecec",
+        "git_blob": "188d1017509e3f936266434fc087869543b20a61"
+      },
+      {
+        "path": "foundation/provider/LedgerClaim.php",
+        "sha256": "455de4ff2ade906410aa524c399dd7f5b53425bf40e2bac4887070e83c558581",
+        "git_blob": "1753be51f01708007ab62e6f09882d63b87e850a"
+      },
+      {
+        "path": "foundation/provider/OperationLedger.php",
+        "sha256": "9aaac93f0e0ffb57b646b0172fdde81a2f21c62ff215982a045b91b60a001058",
+        "git_blob": "a465fbd4756d5eb869168681b781143aa1a96ec8"
+      },
+      {
+        "path": "foundation/provider/OperationResult.php",
+        "sha256": "e764b228981f01846d20055987c1d5a08ce7be4b4f240cf2e6d7e5d49d09208c",
+        "git_blob": "eecf5ba7dae9d856829ab990f5b806d6d598cded"
+      },
+      {
+        "path": "foundation/provider/ProviderAdapter.php",
+        "sha256": "eb60dd84ed10ffc632c555c157bf5a5ffed8fb97bbe59cd3c39904be4c9d29c6",
+        "git_blob": "0e4e3292c4b8200a248c88123a17479ec5c081e8"
+      },
+      {
+        "path": "foundation/provider/ProviderCapability.php",
+        "sha256": "dec6c5b6da59ec728d3fdcb83eb60bc2d896ac052c24b7e2a1c9aa04be26c04b",
+        "git_blob": "a9c43fd26122bac978d6a2e44882887c9ee5732d"
+      },
+      {
+        "path": "foundation/provider/ProviderCredential.php",
+        "sha256": "d9842442918b0d8a04abb49c3269ae45dc7d24e2e34d448c026ba732b6e1dfec",
+        "git_blob": "fde75bfe22a30280db6c313171032f16eb7af82d"
+      },
+      {
+        "path": "foundation/provider/ProviderGateway.php",
+        "sha256": "c6885ca2170ca0ea9d854a237fc160a2f0ca950633dd49a1051b82e0f2eaf753",
+        "git_blob": "e41fd328162ad41dc17bad9815ec267ff78d9fef"
+      },
+      {
+        "path": "foundation/provider/ProviderOperation.php",
+        "sha256": "af7f846cc427b8acf04f80817968ff33c9d0d47ab06ac862a5fddf8506aeb078",
+        "git_blob": "56602eed72b9fb9c7dac515b17ca1b422f9de25b"
+      },
+      {
+        "path": "foundation/provider/RetryPolicy.php",
+        "sha256": "2cf91a09533a26cb3cf382c03d4e527062df87c889d71edd18b41532c3466616",
+        "git_blob": "40bf7f26521a2711e2e7cbb303324c70e1ecb8b7"
+      },
+      {
+        "path": "foundation/provider/TransportException.php",
+        "sha256": "05778aef7df8dea1b204b56624b53739561a27a2bd5b897aa64cbb2140c3fb4d",
+        "git_blob": "17664d171070e7ffa6ca93ad509472ccac324112"
+      },
+      {
+        "path": "foundation/provider/TransportRequest.php",
+        "sha256": "1e100d736c06a36538f6f2ada47369aa89c77da4b0c6bd6d6f4a3cd11074ed81",
+        "git_blob": "e59e405eeb64c3c06b7a84ebaf2945020051fcb6"
+      },
+      {
+        "path": "foundation/provider/TransportResponse.php",
+        "sha256": "f1eb6e3dd95a5161a07afa1b716081258e2a2f9a427997f9880c4ea7d63f6c76",
+        "git_blob": "b3190acfd80d3169667e639fb7bf073f1fc6d663"
+      },
+      {
+        "path": "tests/provider/FileLedger.php",
+        "sha256": "3101321fc56662368c7e93710b95f953d6557b6c92bf1b78812c9b99cb280816",
+        "git_blob": "698e9444a3a8953e49d3a5d249fcc88506636e07"
+      },
+      {
+        "path": "tests/provider/file_ledger_worker.php",
+        "sha256": "0638c617c34029ed6ddbeeaf1ce31c902c99766164eb911074f6d93dbac2c8af",
+        "git_blob": "91541586f557054b2ebece0d038d78ed0867e637"
+      },
+      {
+        "path": "tests/provider/run.php",
+        "sha256": "cc987b13609402be92a5b171dd8e7d6b39240182458a30e041371748ae351182",
+        "git_blob": "abc8610a0f5dcc055f13e6cb5266802f8c413425"
+      },
+      {
+        "path": "foundation/scheduling/Consultation.php",
+        "sha256": "2780ae6fc32f0ff9afa41324fc5ba201c22619a35a2e79b04aed8acfc3a47ddc",
+        "git_blob": "9765fe011c1721ed4e6b947b9ae07439fa0be540"
+      },
+      {
+        "path": "foundation/scheduling/ConsultationCalendar.php",
+        "sha256": "1444014be1b464117a49eb7f5beff4dc3d0147708a6375e59ed7829d38c9fa4a",
+        "git_blob": "f88d7724f5c2c33db468f721f1dc96cd587a91e2"
+      },
+      {
+        "path": "foundation/scheduling/SchedulePolicy.php",
+        "sha256": "47603702f92828df062c49c65e87248dd4e554b166eba6864d1725b46c44d4ee",
+        "git_blob": "8a5aaad73f4aeacbab5b5273639ddc83109138f9"
+      },
+      {
+        "path": "foundation/scheduling/TimeWindow.php",
+        "sha256": "589a86d8032e2c8375b20d8ed1f2f49a654bdabe121cf87cbb43f50650601db6",
+        "git_blob": "104cec05f7fd9aaa5d69d9db70f413fb35131399"
+      },
+      {
+        "path": "foundation/scheduling/WeeklyRule.php",
+        "sha256": "224db32aec36d1551dfe0d090b58130230a4a5c424cf597a305504386a1faa8c",
+        "git_blob": "cf85e30a70c76556be8de86729ed996474cad09f"
+      },
+      {
+        "path": "tests/scheduling/run.php",
+        "sha256": "b2ea4fa37c94bb54b71d4b61db556f04220b2f31763d01f7e5e4d660e8f57141",
+        "git_blob": "57e6091a5fc1a5c51d145ad1e303a5eae6f8cf8f"
+      }
+    ],
+    "edges": [
+      {
+        "source": "tests/access/run.php",
+        "line": 8,
+        "target": "foundation/access/AuthorizationVersion.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/access/run.php",
+        "line": 9,
+        "target": "foundation/access/MailboxGrant.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/access/run.php",
+        "line": 10,
+        "target": "foundation/access/AccessContext.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/access/run.php",
+        "line": 11,
+        "target": "foundation/access/PermissionPolicy.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 20,
+        "target": "foundation/provider/TransportRequest.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 21,
+        "target": "foundation/provider/TransportResponse.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 22,
+        "target": "foundation/provider/TransportException.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 23,
+        "target": "foundation/provider/HttpTransport.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 24,
+        "target": "foundation/provider/ProviderOperation.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 25,
+        "target": "foundation/provider/OperationResult.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 26,
+        "target": "foundation/provider/LedgerClaim.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 27,
+        "target": "foundation/provider/OperationLedger.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 28,
+        "target": "tests/provider/FileLedger.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 20,
+        "target": "foundation/provider/ProviderCapability.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 21,
+        "target": "foundation/provider/ProviderCredential.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 22,
+        "target": "foundation/provider/TransportRequest.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 23,
+        "target": "foundation/provider/TransportResponse.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 24,
+        "target": "foundation/provider/TransportException.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 25,
+        "target": "foundation/provider/HttpTransport.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 26,
+        "target": "foundation/provider/ProviderOperation.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 27,
+        "target": "foundation/provider/OperationResult.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 28,
+        "target": "foundation/provider/ConnectionCheck.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 29,
+        "target": "foundation/provider/RetryPolicy.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 30,
+        "target": "foundation/provider/LedgerClaim.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 31,
+        "target": "foundation/provider/OperationLedger.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 32,
+        "target": "foundation/provider/ProviderAdapter.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 33,
+        "target": "foundation/provider/ProviderGateway.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 34,
+        "target": "foundation/provider/ExternalResource.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 610,
+        "target": "tests/provider/FileLedger.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 612,
+        "target": "tests/provider/file_ledger_worker.php",
+        "kind": "fixed proc_open child"
+      },
+      {
+        "source": "tests/scheduling/run.php",
+        "line": 10,
+        "target": "foundation/scheduling/TimeWindow.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/scheduling/run.php",
+        "line": 11,
+        "target": "foundation/scheduling/WeeklyRule.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/scheduling/run.php",
+        "line": 12,
+        "target": "foundation/scheduling/SchedulePolicy.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/scheduling/run.php",
+        "line": 13,
+        "target": "foundation/scheduling/Consultation.php",
+        "kind": "literal PHP require"
+      },
+      {
+        "source": "tests/scheduling/run.php",
+        "line": 14,
+        "target": "foundation/scheduling/ConsultationCalendar.php",
+        "kind": "literal PHP require"
+      }
+    ],
+    "external_inputs": [
+      "Official PHP CLI image/runtime and standard extensions, selected by unchanged workflow matrix.",
+      "Provider local temporary ledger files created by tests/provider/run.php; no repository fixture input outside this family."
+    ],
+    "inspection": "All literal require statements resolve within these roots. Only provider suite has filesystem/process fixtures: fixed FileLedger.php and fixed file_ledger_worker.php. No application bootstrap, autoloader, Composer dependency, SQL fixture, live transport or external repository data input is read by these suites."
+  },
+  "independent_review": {
+    "schema": 1,
+    "recorded_utc": "2026-10-19T05:18:22.542571+00:00",
+    "verdict": "No actionable source finding in the bounded three-workflow proposal.",
+    "scope": "Independent local source/hash/token/dependency/inverse review only; no PHP suite/application/CI execution and no GitHub call or source edit.",
+    "head": "afb2494644fc451b13dc5983d78ea64d054186ae",
+    "base": "8f734de11031938eff81a02744d5195ecdcab17c",
+    "manifest_sha256": "bfa6d6c5eb9a6b99ba132fa1318e64f131f319de5b4ffaf2ffb7e23686427e39",
+    "patch_sha256": "e1b0f032fc30e516fd4d7815befe687a5f94676d39d42b9fa27d3c2094178baf",
+    "producer_checks": {
+      "retained_count": 36,
+      "rerun": false,
+      "sha256": "3ea6383ebbd5a8da63d31bdf2085df05a8300225ac69b687ab15976c9b768446"
+    },
+    "source_files": 29,
+    "imports_verified_by_php_tokenizer": 34,
+    "fixed_child_process_edges": 1,
+    "bindings": [
+      {
+        "path": "foundation/access/AccessContext.php",
+        "sha256": "b0009bb6db9b74f25af990f4d2fb812d46762d2c5a5a5addc7c40a106344fab0",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/access/AuthorizationVersion.php",
+        "sha256": "92ddb6d3e15f57fe4dc7682052977376ef0c3362da076b0d609113e9a16e6e62",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/access/MailboxGrant.php",
+        "sha256": "2afb2bcda28572845ccea514180f6c5b67904a64eeb5a0bdb277eb338dd97027",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/access/PermissionPolicy.php",
+        "sha256": "800b44f481271b467bef5f2719aeba5608cc6fc6da57e90fd415de967fa58632",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "tests/access/run.php",
+        "sha256": "ac6dd1888acf89c703e51ffc05b8c1ae25e4644c5084fda53ec4e807cb7177cd",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/ConnectionCheck.php",
+        "sha256": "574632dc752f8681190ac757c9680d262b99405c47c924c43bd7cabccae7f274",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/ExternalResource.php",
+        "sha256": "7093981712786a4039934d03d366deb1d5db37fd98642071feeed6008c43f37e",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/HttpTransport.php",
+        "sha256": "4662e6ac0b90f0481e74e672d99814103bf63d7c3716f75ee6c43c9c8194ecec",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/LedgerClaim.php",
+        "sha256": "455de4ff2ade906410aa524c399dd7f5b53425bf40e2bac4887070e83c558581",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/OperationLedger.php",
+        "sha256": "9aaac93f0e0ffb57b646b0172fdde81a2f21c62ff215982a045b91b60a001058",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/OperationResult.php",
+        "sha256": "e764b228981f01846d20055987c1d5a08ce7be4b4f240cf2e6d7e5d49d09208c",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/ProviderAdapter.php",
+        "sha256": "eb60dd84ed10ffc632c555c157bf5a5ffed8fb97bbe59cd3c39904be4c9d29c6",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/ProviderCapability.php",
+        "sha256": "dec6c5b6da59ec728d3fdcb83eb60bc2d896ac052c24b7e2a1c9aa04be26c04b",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/ProviderCredential.php",
+        "sha256": "d9842442918b0d8a04abb49c3269ae45dc7d24e2e34d448c026ba732b6e1dfec",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/ProviderGateway.php",
+        "sha256": "c6885ca2170ca0ea9d854a237fc160a2f0ca950633dd49a1051b82e0f2eaf753",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/ProviderOperation.php",
+        "sha256": "af7f846cc427b8acf04f80817968ff33c9d0d47ab06ac862a5fddf8506aeb078",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/RetryPolicy.php",
+        "sha256": "2cf91a09533a26cb3cf382c03d4e527062df87c889d71edd18b41532c3466616",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/TransportException.php",
+        "sha256": "05778aef7df8dea1b204b56624b53739561a27a2bd5b897aa64cbb2140c3fb4d",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/TransportRequest.php",
+        "sha256": "1e100d736c06a36538f6f2ada47369aa89c77da4b0c6bd6d6f4a3cd11074ed81",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/provider/TransportResponse.php",
+        "sha256": "f1eb6e3dd95a5161a07afa1b716081258e2a2f9a427997f9880c4ea7d63f6c76",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "tests/provider/FileLedger.php",
+        "sha256": "3101321fc56662368c7e93710b95f953d6557b6c92bf1b78812c9b99cb280816",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "tests/provider/file_ledger_worker.php",
+        "sha256": "0638c617c34029ed6ddbeeaf1ce31c902c99766164eb911074f6d93dbac2c8af",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "tests/provider/run.php",
+        "sha256": "cc987b13609402be92a5b171dd8e7d6b39240182458a30e041371748ae351182",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/scheduling/Consultation.php",
+        "sha256": "2780ae6fc32f0ff9afa41324fc5ba201c22619a35a2e79b04aed8acfc3a47ddc",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/scheduling/ConsultationCalendar.php",
+        "sha256": "1444014be1b464117a49eb7f5beff4dc3d0147708a6375e59ed7829d38c9fa4a",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/scheduling/SchedulePolicy.php",
+        "sha256": "47603702f92828df062c49c65e87248dd4e554b166eba6864d1725b46c44d4ee",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/scheduling/TimeWindow.php",
+        "sha256": "589a86d8032e2c8375b20d8ed1f2f49a654bdabe121cf87cbb43f50650601db6",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "foundation/scheduling/WeeklyRule.php",
+        "sha256": "224db32aec36d1551dfe0d090b58130230a4a5c424cf597a305504386a1faa8c",
+        "base_and_head_equal": true
+      },
+      {
+        "path": "tests/scheduling/run.php",
+        "sha256": "b2ea4fa37c94bb54b71d4b61db556f04220b2f31763d01f7e5e4d660e8f57141",
+        "base_and_head_equal": true
+      },
+      {
+        "path": ".github/workflows/access-policy.yml",
+        "before_sha256": "e91bdf59c7738cd352006b616a0602bbd8062215740880a884f0af6e17294ff7",
+        "after_sha256": "cd1d27d4d534d48ea52c1a214bc2a526a94e7642296a3c33ef3e1fb23f610817",
+        "base_and_head_equal": true,
+        "whole_inverse": true
+      },
+      {
+        "path": ".github/workflows/provider.yml",
+        "before_sha256": "95d0ca649892aa6f070a85c4d8e4d4de74f1259d7d3f7231bc233354c136d352",
+        "after_sha256": "b16e02c26fc71abcdaf73abe15e1015ba79d57c82377bf85a9951291b41eb625",
+        "base_and_head_equal": true,
+        "whole_inverse": true
+      },
+      {
+        "path": ".github/workflows/scheduling.yml",
+        "before_sha256": "db04d77af30230615ac351d0d95d74f90ee8b9acc6d87749866a4eb698a82dad",
+        "after_sha256": "a8165a6d96108ac65311aaea1e645616dd522b236ee5f1e1c0c85a4a1593043b",
+        "base_and_head_equal": true,
+        "whole_inverse": true
+      }
+    ],
+    "external_input_calls": [
+      {
+        "source": "tests/provider/FileLedger.php",
+        "line": 65,
+        "name": "fopen"
+      },
+      {
+        "source": "tests/provider/file_ledger_worker.php",
+        "line": 44,
+        "name": "fopen"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 615,
+        "name": "proc_open"
+      },
+      {
+        "source": "tests/provider/run.php",
+        "line": 632,
+        "name": "proc_open"
+      }
+    ],
+    "dependency_scope": "Only the provider test reads generated temporary ledger data and invokes its fixed included worker. Its runtime/path derives from PHP_BINARY and __DIR__; no external repository source/fixture, application bootstrap or autoloader is read. Access/scheduling use included family classes and PHP standard runtime.",
+    "preservation": "Exactly12 additive PRpath lines. All old bytes reconstruct exactly; jobs, matrices, commands, network isolation, push/manual events, permissions and concurrency unchanged. service-plans,staff-invitations,repository-checks and full application workflows excluded.",
+    "selection": "Full foundation/FAMILY/** and tests/FAMILY/** paths cover current source and future nested files; workflow-self path covers its own edits. Unrelated documentation/app edits have no dependency in these jobs and are correctly excluded.",
+    "limitations": [
+      "No GitHub required-check/rules policy refresh under local-only review; skipped-required-workflow policy caveat in manifest remains for root.",
+      "A future import outside these family roots requires expanding the filter in that change.",
+      "No suite result or queued-run state is changed or credited by these source checks."
+    ],
+    "tokenizer_output_sha256": "d9c15a4cce3a8be17fe63a634276371c8c6ad45f7af8fce4fcce6e6689abdd51"
+  },
+  "root_checks": [
+    {
+      "name": ".github/workflows/access-policy.yml: exact reviewed before/after and complete byte inverse",
+      "passed": true
+    },
+    {
+      "name": ".github/workflows/provider.yml: exact reviewed before/after and complete byte inverse",
+      "passed": true
+    },
+    {
+      "name": ".github/workflows/scheduling.yml: exact reviewed before/after and complete byte inverse",
+      "passed": true
+    },
+    {
+      "name": "All29 reviewed PHP source bytes are unchanged on current main parent",
+      "passed": true
+    }
+  ],
+  "policy": {
+    "method": "Read-only GitHub GraphQL query before applying the filters; no policy changes.",
+    "query_sha256": "906774986677f0270c40f43fbc1ea68ab345cb13eebd17de79b25b348986f248",
+    "repository": "afterburn25/Cajun_Web",
+    "branchProtectionRules": {
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "rulesets": {
+      "totalCount": 0,
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "includeParents": true,
+    "observed_utc_date": "2026-10-19",
+    "limit": "A future required-check policy must handle skipped workflows; this observation does not constrain future repository settings."
+  },
+  "limitations": [
+    "Source/trigger/dependency checks only; no new application acceptance executed.",
+    "Changes affect future PR admission, not existing queued/original runs.",
+    "Future dependencies outside a family must be added to that workflow filter."
+  ]
+}
