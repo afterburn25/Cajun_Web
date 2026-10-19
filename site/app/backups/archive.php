@@ -182,6 +182,58 @@ function backups_restore(string $id,string $confirmation,#[\SensitiveParameter] 
     });
 }
 
+/** Remove an isolated drill scratch directory completely. */
+function backups_scrub(string $dir): void {
+    try{$base=backups_directory();}catch(Throwable){return;}
+    $real=realpath($dir);
+    if($real===false||!str_starts_with(backups_canonical($real).'/',backups_canonical(rtrim($base,'/')).'/'))return;
+    $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($real,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST);
+    foreach($it as $f){$f->isDir()&&!$f->isLink()?rmdir($f->getPathname()):unlink($f->getPathname());}
+    rmdir($real);
+}
+
+/** Isolated restore drill: extract every manifest item into private scratch storage and prove each written file matches its recorded hash. No deployed file is touched; every attempt is recorded. */
+function backups_drill(string $id): array {
+    $actor=backups_require();
+    $row=backups_row($id);
+    $manifest=backups_manifest($row);
+    if($row['kind']!=='files')throw new RuntimeException('This backup kind cannot be drilled by this installation.');
+    $archive=backups_archive_path($row);
+    if(!is_file($archive))throw new RuntimeException('The stored archive for this backup is missing.');
+    if(!class_exists('ZipArchive'))throw new RuntimeException('Ask your host to enable the PHP ZIP extension before drilling backups.');
+    $start=hrtime(true);$verified=0;$missing=0;$mismatched=0;$failure=null;
+    $scratch=backups_directory().'/drill-'.$id.'-'.bin2hex(random_bytes(6));
+    if(!mkdir($scratch,0700))throw new RuntimeException('The isolated drill directory could not be created.');
+    try {
+        $zip=new ZipArchive();
+        try {
+            if($zip->open($archive,ZipArchive::RDONLY|ZipArchive::CHECKCONS)!==true)throw new RuntimeException('The stored backup archive is corrupt or unsupported.');
+            foreach($manifest->items as $name=>$hash) {
+                if(!backups_item_allowed($name))throw new RuntimeException('Manifest contains a path outside the restorable scope: '.$name);
+                $data=$zip->getFromName($name);
+                if($data===false){$missing++;continue;}
+                if(!hash_equals($hash,hash('sha256',$data))){$mismatched++;continue;}
+                $resolved=backups_target(realpath($scratch),$name);$dir=$resolved['dir'];$target=$resolved['target'];
+                if(!is_dir($dir)&&!mkdir($dir,0755,true))throw new RuntimeException('Drill directory could not be created for: '.$name);
+                if(file_put_contents($target,$data)!==strlen($data))throw new RuntimeException('Drill write failed for: '.$name);
+                if(hash_file('sha256',$target)!==$hash)throw new RuntimeException('Drill write verification failed for: '.$name);
+                $verified++;
+            }
+        }finally{$zip->close();}
+    }catch(Throwable $e){$failure=$e;}
+    finally{backups_scrub($scratch);}
+    $elapsed=max(0,min((int)((hrtime(true)-$start)/1e6),2147483647));
+    $result=$failure!==null?'corrupt':(($missing===0&&$mismatched===0)?'verified':'incomplete');
+    $record=staff_locked(fn()=>staff_transaction(function()use($row,$actor,$result,$verified,$missing,$mismatched,$start,$elapsed):array {
+        $drill=bin2hex(random_bytes(16));$now=gmdate('Y-m-d H:i:s');
+        query('INSERT INTO '.table('backup_drills').' (id,backup_id,actor_id,result,verified,missing,mismatched,elapsed_ms,started_at,finished_at) VALUES (?,?,?,?,?,?,?,?,?,?)',[$drill,$row['id'],(int)$actor['id'],$result,$verified,$missing,$mismatched,$elapsed,$now,$now]);
+        backups_audit((int)$actor['id'],'drill','Backup '.substr($row['id'],0,8).' drill '.$result.': '.$verified.' verified, '.$missing.' missing, '.$mismatched.' mismatched, '.$elapsed.'ms');
+        return ['id'=>$drill,'result'=>$result,'verified'=>$verified,'missing'=>$missing,'mismatched'=>$mismatched];
+    }));
+    if($failure!==null)throw $failure;
+    return $record;
+}
+
 /** Remove expired backups (rows + archives). Owner re-authentication required. */
 function backups_prune(#[\SensitiveParameter] string $password): int {
     return staff_locked(function() use($password): int {

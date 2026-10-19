@@ -30,6 +30,10 @@ No archive format, compression, filesystem extraction, database dump/restore, st
 
 The `site/` adapter now implements this contract: `app/backups/records.php` keeps durable backup rows plus the manifest/hash pair, `app/backups/archive.php` collects the deployable tree (applying the same forbidden-path rules), writes private ZIP archives and applies authorized restores atomically per item, and `admin/?view=backups` exposes create, impact preview, phrase-authorized restore, private no-store download and owner-gated pruning. Files added after a snapshot are left in place on restore; only manifest-covered items are rewritten.
 
+## Restore drill (devin/non20i-backup-restore-drill)
+
+The isolated restore drill from the roadmap acceptance is implemented: `backups_drill()` extracts every manifest item from the stored archive into a private scratch directory under backup storage, proves each written file's recorded hash, then removes the scratch completely — no deployed file is touched. Every attempt records durably in additive `backup_drills` (schema v2) with a `verified`/`incomplete`/`corrupt` result, per-item counts and elapsed time, and is audit-logged. The admin list shows each backup's latest drill outcome and staff with `staff.manage` can run a drill from the backup row.
+
 ## Integration contract
 
 When integrated, the adapter: generates manifests at backup time from real item bytes; persists manifests durably; renders `changedItems()` as the impact preview; collects the confirmation phrase before calling `authorize()`; applies item writes atomically per item-class and reports `applied()`/`abandon()`; enforces owner-only permission; and runs the isolated restore-drill acceptance before claiming the feature.

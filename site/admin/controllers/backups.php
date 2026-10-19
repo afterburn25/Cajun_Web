@@ -9,6 +9,7 @@ function backups_admin_action(string $action): void {
     if($action==='backups_setup'){backups_migrate(posted('owner_password',1000));flash('Backup storage and records are ready.');redirect(admin_url('backups'));}
     if($action==='backups_create'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm the snapshot scope before creating a backup.');$id=backups_create(['notes'=>posted('notes',5000),'retain_days'=>(int)posted('retain_days',6)],posted('request_key',64));flash('Backup snapshot recorded and verified.');redirect(admin_url('backups',['preview'=>$id]));}
     if($action==='backups_restore'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm this deliberate restore.');$id=posted('backup',32);backups_restore($id,posted('phrase',60),posted('owner_password',1000));flash('Backup applied. Every restored file was verified against its recorded hash.');redirect(admin_url('backups'));}
+    if($action==='backups_drill'){$r=backups_drill(posted('backup',32));flash($r['result']==='verified'?'Restore drill verified all '.$r['verified'].' items in isolated storage.':'Restore drill finished '.$r['result'].': '.$r['verified'].' verified, '.$r['missing'].' missing, '.$r['mismatched'].' mismatched.');redirect(admin_url('backups'));}
     if($action==='backups_prune'){$n=backups_prune(posted('owner_password',1000));flash($n.' expired backup'.($n===1?'':'s').' removed.');redirect(admin_url('backups'));}
 }
 

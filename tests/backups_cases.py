@@ -13,7 +13,7 @@ def run_browser(env,browser):
         r=owner.get(url);check('Backups section renders before setup','Prepare backup storage' in r.text)
         r=submit(owner,url,'backups_setup',{'csrf':'wrong'});check('Backups setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='backups_schema_version'"))
         r=submit(owner,url,'backups_setup',{'owner_password':'wrong'});check('Backups setup requires owner password','current password' in r.text.lower())
-        r=submit(owner,url,'backups_setup',{'owner_password':OWNER,'confirm':'1'});check('Owner prepares backup storage','Backup storage and records are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='backups_schema_version'")==[{'value':'1'}])
+        r=submit(owner,url,'backups_setup',{'owner_password':OWNER,'confirm':'1'});check('Owner prepares backup storage','Backup storage and records are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='backups_schema_version'")==[{'value':'2'}])
         web=requests.Session();submit(web,root+'?view=login','login',{'email':'website-staff@example.invalid','password':STAFF})
         check('Website-only staff cannot open backups',web.get(url).status_code==403)
         before=db('SELECT COUNT(*) AS c FROM ci_backups')[0]['c']
@@ -22,7 +22,7 @@ def run_browser(env,browser):
         r=submit(owner,url,'backups_create',{'retain_days':'30','notes':'Browser HTTP snapshot','confirm':'1'})
         check('Backup creation records the archive','Backup snapshot recorded' in r.text and db('SELECT COUNT(*) AS c FROM ci_backups')[0]['c']==before+1)
         row=db('SELECT * FROM ci_backups ORDER BY created_at DESC LIMIT 1')[0];bid=row['id']
-        private=ROOT/'test-runtime/existing-private/backups';archive=private/('backup-'+bid+'.zip')
+        private=ROOT/'test-runtime/private/backups';archive=private/('backup-'+bid+'.zip')
         check('Archive lives in private storage outside the site root',archive.is_file() and not str(archive).startswith(str(site)))
         manifest=json.loads(row['manifest'])
         check('Recorded manifest excludes secrets and storage',all(not n.startswith('storage/') and n not in ('config.php','.env') for n in manifest['items']))
@@ -35,6 +35,13 @@ def run_browser(env,browser):
         check('Restore is audited',db("SELECT COUNT(*) AS c FROM ci_audit WHERE action='backups.restore'")[0]['c']>=1)
         r=owner.get(url+'&download='+bid);check('Backup download is private no-store ZIP','application/zip' in r.headers.get('Content-Type','') and 'no-store' in r.headers.get('Cache-Control','') and r.content==archive.read_bytes())
         check('Staff download is refused',web.get(url+'&download='+bid).status_code in (403,404))
-        check('Anonymous download is refused',requests.get(url+'&download='+bid).status_code in (302,403,404))
+        r=requests.get(url+'&download='+bid,allow_redirects=False);check('Anonymous download is refused',r.status_code in (302,303,403,404) and 'application/zip' not in r.headers.get('Content-Type',''))
+        web.post(url,data={'csrf':token(web.get(root+'?view=dashboard')),'action':'backups_drill','backup':bid})
+        check('Website-only staff drill attempt writes nothing',db('SELECT COUNT(*) AS c FROM ci_backup_drills')[0]['c']==0)
+        r=submit(owner,url,'backups_drill',{'backup':bid})
+        check('Owner restore drill verifies every archived item','Restore drill verified all' in r.text and db('SELECT result,verified,missing,mismatched FROM ci_backup_drills WHERE backup_id=?',[bid])==[{'result':'verified','verified':int(row['items']),'missing':0,'mismatched':0}])
+        check('Drill result is shown on the backups list','Restore drill' in owner.get(url).text and 'verified' in owner.get(url).text)
+        check('Drill is audited',db("SELECT COUNT(*) AS c FROM ci_audit WHERE action='backups.drill'")[0]['c']>=1)
+        check('Drill left no scratch directories',not list(private.glob('drill-*')))
     finally:
         if fixture.exists():fixture.unlink()

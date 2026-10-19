@@ -299,6 +299,7 @@ jobs:
           "$PHP_BINARY" tests/ledger_native.php
           "$PHP_BINARY" tests/delivery_archive.php
           "$PHP_BINARY" tests/delivery_native.php
+          "$PHP_BINARY" tests/backups_native.php
           "$PHP_BINARY" tests/activity_native.php
           "$PHP_BINARY" tests/mail_templates_native.php
           "$PHP_BINARY" tests/mail_accounts_native.php

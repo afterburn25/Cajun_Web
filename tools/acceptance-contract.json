@@ -4,7 +4,7 @@
   "unchanged_test_sha256": {
     "tests/browser_acceptance.py": "c7264ae771a1c36167f668ef9553f3070eb0b260df25be2060ecff5eb172e4a1",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
-    "tests/apache_acceptance.py": "61f59f395195843f0de3192822302952689dc07d5433108657cf35cf2be6990a",
+    "tests/apache_acceptance.py": "3659b18b9fdf75467e6b2d9feeb5c18a0e18f5e9b00792d8546cfbf1758cf2be",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
     "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
     "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
@@ -31,6 +31,7 @@
     "\"$PHP_BINARY\" tests/ledger_native.php",
     "\"$PHP_BINARY\" tests/delivery_archive.php",
     "\"$PHP_BINARY\" tests/delivery_native.php",
+    "\"$PHP_BINARY\" tests/backups_native.php",
     "\"$PHP_BINARY\" tests/activity_native.php",
     "\"$PHP_BINARY\" tests/mail_templates_native.php",
     "\"$PHP_BINARY\" tests/mail_accounts_native.php",
@@ -561,17 +562,20 @@
   "non20i_native_command_extension": {
     "additions": [
       "\"$PHP_BINARY\" tests/mail_flags_native.php",
-      "\"$PHP_BINARY\" tests/mail_replies_native.php"
+      "\"$PHP_BINARY\" tests/mail_replies_native.php",
+      "\"$PHP_BINARY\" tests/backups_native.php"
     ],
     "after": {
       "\"$PHP_BINARY\" tests/mail_flags_native.php": "\"$PHP_BINARY\" tests/mail_message_native.php",
-      "\"$PHP_BINARY\" tests/mail_replies_native.php": "\"$PHP_BINARY\" tests/mail_drafts_native.php"
+      "\"$PHP_BINARY\" tests/mail_replies_native.php": "\"$PHP_BINARY\" tests/mail_drafts_native.php",
+      "\"$PHP_BINARY\" tests/backups_native.php": "\"$PHP_BINARY\" tests/delivery_native.php"
     },
     "predecessor_native_count": 152,
     "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
     "source_sha256": {
       "tests/mail_flags_native.php": "dd09c0fbc5cc6a81329b9242c857a3cf6fcd170ffc7f14a24fa357cf1611f302",
-      "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9"
+      "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
+      "tests/backups_native.php": "2cbdd077e1d5878b26f7f7e72ece28528fc8bf31d1ccec330c94d81046259c59"
     }
   }
 }
