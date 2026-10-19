@@ -1,3 +1,11 @@
+## 2026-10-19 — primary-client StackCP access candidate
+
+Branch `codex/twentyi-client-stackcp` starts at frozen owner-launch source `3d449d79be02b5e19958bc1d44bddb0371309e46` ([PR233](https://github.com/afterburn25/Cajun_Web/pull/233)). It adds explicit owner enable/disable controls and a primary-client hosting control panel page. Each launch checks fresh package membership and whole-user grants before a one-use session exchange. Local access removal does not revoke an existing remote session. [Scope and verification](docs/TWENTYI_CLIENT_STACKCP.md).
+
+Local verification passes: 68 document,79 permission,194 context,88 executor and78 renderer checks in each PHP mode; original315 owner and155 transport results remain unchanged in each mode. The closed synthetic HTTP/Chromium fixture passes59 checks; artifact helpers pass431, retaining the exact323 prior outcomes. Final installer PHP/JS/dependency refresh and independent source reviews pass. [Named local evidence](docs/evidence/client-stackcp-local.json). Native SQL, installed/full acceptance and release remain pending.
+
+The separate subdomain-notifications candidate remains preserved at `4dc05d8c9493e885693e4705dda6efc4b8acef8b` ([PR242](https://github.com/afterburn25/Cajun_Web/pull/242)); its original full run39208319191 was queued at the latest read. Main remains separately at `dcd6966c4e0c209d15f9d88c8832ef601765c336`. Full20i is unfinished; published1.25.0 remains immutable. This candidate has not been released or deployed.
+
 ## 2026-10-18 — owner StackCP launch candidate
 
 From main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`, `codex/twentyi-stackcp-launch` implements the [owner StackCP exchange and browser handoff](docs/TWENTYI_STACKCP_LAUNCH.md). It adds one-use durable admission, current-authority checks, default-brand-only transport, explicit prior-unknown consent and admin controls. Local portable, renderer and closed-proxy browser checks pass; native SQL and full application acceptance remain pending. No release or live deployment is claimed.

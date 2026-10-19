@@ -420,6 +420,17 @@ jobs:
           "$PHP_BINARY" tests/stackcp_launch_views.php qa/stackcp-launch-views-default.json
           "$PHP_BINARY" -n tests/stackcp_launch_views.php qa/stackcp-launch-views-minimal.json
           CWP_TEST_STACKCP_LAUNCH=1 "$PHP_BINARY" tests/stackcp_launch_native.php
+          "$PHP_BINARY" tests/client_stackcp_documents.php qa/client-stackcp-documents-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/client_stackcp_documents.php qa/client-stackcp-documents-minimal.json
+          "$PHP_BINARY" tests/client_stackcp_permissions.php qa/client-stackcp-permissions-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/client_stackcp_permissions.php qa/client-stackcp-permissions-minimal.json
+          "$PHP_BINARY" tests/client_stackcp_context.php qa/client-stackcp-context-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/client_stackcp_context.php qa/client-stackcp-context-minimal.json
+          "$PHP_BINARY" tests/client_stackcp_launch.php qa/client-stackcp-launch-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/client_stackcp_launch.php qa/client-stackcp-launch-minimal.json
+          "$PHP_BINARY" tests/client_stackcp_views.php qa/client-stackcp-views-default.json
+          "$PHP_BINARY" -n -d extension=pdo tests/client_stackcp_views.php qa/client-stackcp-views-minimal.json
+          CWP_TEST_CLIENT_STACKCP=1 "$PHP_BINARY" tests/client_stackcp_native.php
           "$PHP_BINARY" tests/provider_domain_search_native.php
           "$PHP_BINARY" tests/provider_mailboxes_native.php
           "$PHP_BINARY" tests/provider_operations_native.php
@@ -440,6 +451,7 @@ jobs:
         run: |
           .ci-venv/bin/python tests/browser_acceptance.py
           .ci-venv/bin/python tests/stackcp_launch_browser.py --php "$PHP_BINARY" --report qa/stackcp-launch-browser-results.json
+          .ci-venv/bin/python tests/client_stackcp_browser.py --php "$PHP_BINARY" --report qa/client-stackcp-browser-results.json
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

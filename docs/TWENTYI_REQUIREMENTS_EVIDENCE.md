@@ -1,3 +1,7 @@
+## 2026-10-19 — client StackCP candidate evidence
+
+[Primary-client access](TWENTYI_CLIENT_STACKCP.md) extends owner-launch PR233 on a separate branch. It adds explicit owner permission, fresh complete membership/grants reads and an actual client actor for one-use default StackCP launch. Whole-user scope and no remote revocation remain explicit. Portable/model HTTP checks are distinct from native SQL, complete application acceptance and released capability. Full20i is unfinished; published1.25.0 remains unchanged.
+
 ## Release 1.25.0 scope and evidence
 
 Release 1.25.0 contains the bounded INCLUDE scope in [RELEASE_SCOPE_1.25.0.md](RELEASE_SCOPE_1.25.0.md). The HOLD rows and complete20i roadmap remain unfinished. The [versioned acceptance report](TEST_REPORT_1.25.0.md) records source-specific results and the final release receipts identify publication. Development, release acceptance and live deployment are separate events.

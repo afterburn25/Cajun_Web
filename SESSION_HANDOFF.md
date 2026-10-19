@@ -1,3 +1,13 @@
+## 2026-10-19 — primary-client StackCP access candidate
+
+Branch `codex/twentyi-client-stackcp` starts at frozen owner-launch source `3d449d79be02b5e19958bc1d44bddb0371309e46` ([PR233](https://github.com/afterburn25/Cajun_Web/pull/233)). It adds explicit owner enable/disable controls and a primary-client hosting control panel page. Each launch checks fresh package membership and whole-user grants before a one-use session exchange. Local access removal does not revoke an existing remote session. [Scope and verification](docs/TWENTYI_CLIENT_STACKCP.md).
+
+Local verification passes: 68 document,79 permission,194 context,88 executor and78 renderer checks in each PHP mode; original315 owner and155 transport results remain unchanged in each mode. The closed synthetic HTTP/Chromium fixture passes59 checks; artifact helpers pass431, retaining the exact323 prior outcomes. Final installer PHP/JS/dependency refresh and independent source reviews pass. [Named local evidence](docs/evidence/client-stackcp-local.json). Native SQL, installed/full acceptance and release remain pending.
+
+The separate subdomain-notifications candidate remains preserved at `4dc05d8c9493e885693e4705dda6efc4b8acef8b` ([PR242](https://github.com/afterburn25/Cajun_Web/pull/242)); its original full run39208319191 was queued at the latest read. Main remains separately at `dcd6966c4e0c209d15f9d88c8832ef601765c336`. Full20i is unfinished; published1.25.0 remains immutable. This candidate has not been released or deployed.
+
+Next: record this reviewed candidate on GitHub and dispatch its first exact-head full acceptance; retain that run and follow it through review/integration rather than redispatching unchanged source. Preserve original queued runs; native SQL and installed acceptance cannot be replaced by portable model checks. No provider call, payment, client mail, SSH or live deployment has been performed. Devin retains the separate non-20i work.
+
 ## 2026-10-18 — continue owner StackCP launch acceptance
 
 Branch `codex/twentyi-stackcp-launch` starts from main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`; enclosing commit: `feat: add one-use owner StackCP browser handoff`. [Implementation, checks and limits](docs/TWENTYI_STACKCP_LAUNCH.md). Root integrates the independently reviewed sender/runtime, admin controls, guarded native fixture and additive acceptance wiring. The review found and corrected numeric brand credential echoes; the earlier browser harness timeout remains historical failure evidence.
