@@ -16,6 +16,34 @@ Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f6
 
 Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
 
+## 2026-10-18 — client nameserver request candidate
+
+The first clean63444bcd package build found an inherited diagnostic-folder allowlist failure. The narrow four-file development-package correction passes22 local policy checks; it does not change runtime capability status or waive pending package/native/browser/update/release gates.
+
+The [primary-client nameserver workflow](TWENTYI_CLIENT_NAMESERVER_REQUESTS.md) is implemented as a separate source candidate: local intake/withdrawal, owner review, atomic approval association, existing one-send execution, separate readback and client-safe status. Applied local portable/model, TLS, upgrade-guard, acceptance-helper and canonical build checks pass. Native, packaged browser and installed update/recovery producers are now wired into CI. Their actual runtime, source-bound CI and release gates remain open; this does not mark complete20i or the whole project complete.
+
+The separate hosting purchase inbox PR229, full catalog/image work, VPS/SSH and Devin's non20i work retain their own acceptance/integration status. Published1.25 remains immutable.
+
+## 2026-10-18 — installed nameserver change acceptance prepared
+
+[Nameserver change tests](TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md#installed-acceptance-producers--2026-10-18) now cover the intended real owner forms and published-baseline history retention. Local fixture/guard checks pass; their first installed application runs, actual captures and independent runtime review remain. Complete 20i, cloud catalog, provider images, VPS/SSH and the remaining non-20i work are still unfinished. No release or deployment occurred.
+
+## 2026-10-18 — owner nameserver change source implemented
+
+The separate [registered nameserver change candidate](TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md) now has owner consent, original complete-set binding, durable one-send ledger, pending-resource fences, exact fresh readback and completed-ledger history recovery. Local portable/renderer/layout checks pass; first native execution, packaged new-form browser tests, installed-history retention and release verification remain. This advances the registrar controls slice without marking complete20i or provider catalog/image imports complete.
+
+## 2026-10-18 — nameserver acceptance producers integrated
+
+[Registered nameserver observations](TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18) now have packaged owner-form/Chromium and actual published-baseline update/recovery producers wired into full acceptance. Local guards pass; first exact-source runtime outcomes and capture review remain. This advances acceptance preparation, not feature/release completion. The nameserver setter, complete cloud catalog and automatic provider images remain separate unfinished work.
+
+## 2026-10-18 — nameserver read lifecycle implemented, acceptance pending
+
+The [registered nameserver](TWENTYI_REGISTRAR_NAMESERVERS.md) candidate now has owner preparation, immutable observations, latest-attempt projection and admin history. Local pure/rendering checks pass. First Linux native CI, packaged HTTP/responsive browser, full application report wiring and published-baseline upgrade/recovery remain. The later setter/reservation/fence/readback work is separate and unavailable. Direct hosting catalog release checks continue separately; cloud and automatic image contracts remain unresolved, using the retained full owner reference without asking for another copy.
+
+## 2026-10-18 — registrar nameserver groundwork
+
+A separate reviewed increment adds typed registrar reads and the documented restricted full-set request boundary. It does not enable a nameserver admin action. [Exact implemented scope, local verification and next application work](TWENTYI_REGISTRAR_NAMESERVERS.md) distinguish synthetic boundary tests from pending native authority/storage/history, UI, readback and release acceptance. Full 20i and automatic catalog images remain unfinished.
+
 ## 2026-10-18 — imported-hosting checkout guidance correction
 
 The checkout successor aligns owner forms with the existing verified-receipt policy while retaining legacy manual fulfillment. The regression covers the real agreement/order/provider renderers; installed purchase navigation remains a required gate. [Details](TWENTYI_HOSTING_PURCHASE_INBOX.md#checkout-fulfillment-controls). This fixes a user-visible dead end in the existing hosting purchase journey; it does not complete the cloud catalog, provider image import or whole 20i roadmap.

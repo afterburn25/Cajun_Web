@@ -4,6 +4,81 @@ import base64,importlib.util,json,re,ssl,threading
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from cryptography.hazmat.primitives import serialization
 
+def registered_nameserver_reply(fixture, path):
+    """Closed numeric registrar GET fixture; does not admit a registrar POST."""
+    match = re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', path or '')
+    if not match:
+        return None
+    if match.group(1) not in fixture.nameservers:
+        fixture.errors.append('Unexpected registered nameserver domain')
+        return 404, b'private synthetic nameserver response'
+    if fixture.nameserver_mode == 'authentication':
+        return 403, b'private synthetic nameserver response'
+    if fixture.nameserver_mode != 'success':
+        raise ValueError('Unknown registered nameserver fixture mode')
+    return 200, json.dumps({'result': fixture.nameservers[match.group(1)]}, separators=(',', ':')).encode('utf-8')
+
+
+def registered_nameserver_change_reply(fixture, path, headers, raw):
+    """Opt-in synthetic whole-set replacement; never a verified acknowledgement.
+
+    The raw request stays in memory for the installed fixture's exact wire check.
+    Only explicit uncertain_landed mode changes the separate GET observation.
+    """
+    if fixture.nameserver_change_mode == 'disabled' or not re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', path or ''):
+        return None
+
+    def refused():
+        fixture.errors.append('Unexpected registered nameserver change request')
+        return 400, b'{"error":"synthetic nameserver change refused"}'
+
+    def names(values):
+        import ipaddress
+        if type(values) is not list or not 1 <= len(values) <= 64:
+            return False
+        for value in values:
+            if type(value) is not str or len(value) > 253 or not re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+', value):
+                return False
+            try:
+                ipaddress.ip_address(value)
+                return False
+            except ValueError:
+                pass
+        return values == sorted(set(values))
+
+    mode = fixture.nameserver_change_mode
+    client_target = (path == '/domain/14702/nameservers' and getattr(fixture, 'nameserver_client_request_enabled', False) is True and mode == 'uncertain_unlanded')
+    if mode not in ('uncertain_landed', 'uncertain_unlanded', 'authentication') or (path != '/domain/14701/nameservers' and not client_target):
+        return refused()
+    target_id = '14702' if client_target else '14701'
+    required = {'Authorization': 'Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode(),
+                'Content-Type': 'application/json', 'Accept': 'application/json'}
+    if any(headers.get(key) != value for key, value in required.items()) or headers.get('Transfer-Encoding') is not None:
+        return refused()
+    if hasattr(headers, 'get_all') and any(len(headers.get_all(key, [])) != 1 for key in (*required, 'Content-Length')):
+        return refused()
+    length = headers.get('Content-Length', '')
+    if not re.fullmatch(r'[1-9][0-9]{0,3}', length) or type(raw) is not bytes or not 0 < len(raw) <= 8192 or int(length) != len(raw):
+        return refused()
+    try:
+        payload = json.loads(raw.decode('utf-8'))
+    except (UnicodeDecodeError, ValueError, RecursionError):
+        return refused()
+    if type(payload) is not dict or list(payload) != ['ns', 'old-ns'] or not names(payload['ns']) or not names(payload['old-ns']):
+        return refused()
+    if set(payload['ns']).intersection(payload['old-ns']) or not names(fixture.nameservers.get(target_id)) or payload['old-ns'] != fixture.nameservers[target_id]:
+        return refused()
+    if raw != json.dumps(payload, separators=(',', ':'), ensure_ascii=True).encode('ascii'):
+        return refused()
+    fixture.nameserver_change_posts.append({'path': path, 'body': payload, 'raw': raw.decode('ascii')})
+    fixture.posts.append({'path': path, 'body': payload})
+    if mode == 'uncertain_landed':
+        fixture.nameservers['14701'] = list(payload['ns'])
+    if mode == 'authentication':
+        return 401, b'private synthetic nameserver change response'
+    return 202, b'{"status":"synthetic unverified acknowledgement"}'
+
+
 class ProviderServer:
     def __init__(self,root):
         runtime=(root/'test-runtime/provider-http').resolve()
@@ -17,6 +92,9 @@ class ProviderServer:
         (runtime/'server.pem').write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
         (runtime/'server.key').write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))
         self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';self.wp_installed=True;self.wp_installed_mode='success';fixture=self
+        self.nameservers={};self.nameserver_mode='success'
+        self.nameserver_change_mode='disabled';self.nameserver_change_posts=[]
+        self.nameserver_client_request_enabled=False
         self.stackcp_membership=[];self.stackcp_grants=[]
         self.package_types=[];self.package_types_mode='success'
         self.renewal_mode='success';self.renewal_posts=[]
@@ -25,6 +103,7 @@ class ProviderServer:
             def do_GET(self):
                 fixture.calls+=1
                 fixture.get_paths.append(self.path)
+                nameserver_reply=registered_nameserver_reply(fixture,self.path)
                 expiry=re.fullmatch(r'/domain/([a-z0-9.-]+)/upstreamExpiryDate',self.path or '')
                 contract=re.fullmatch(r'/domain/([a-z0-9.-]+)/contract',self.path or '')
                 php_version_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/phpVersion',self.path or '')
@@ -34,12 +113,13 @@ class ProviderServer:
                 wp_installed_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/wordpressIsInstalled',self.path or '')
                 stackcp_membership_path=re.fullmatch(r'/package/[1-9][0-9]{0,9}/stackUserList',self.path or '')
                 stackcp_grants_path=re.fullmatch(r'/reseller/\*/stackUser/[1-9][0-9]{0,9}/grants',self.path or '')
-                if (not stackcp_membership_path and not stackcp_grants_path and not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and not directory_indexing_path and not wp_installed_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders','/reseller/*/packageTypes']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
+                if (nameserver_reply is None and not stackcp_membership_path and not stackcp_grants_path and not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and not directory_indexing_path and not wp_installed_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders','/reseller/*/packageTypes']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected fixed request')
                 mode=fixture.registrar_mode if self.path=='/domain' else (fixture.cloud_mode if self.path=='/cloud_server' else fixture.mode)
                 status=401 if mode=='authentication' else 200
                 listed=json.dumps(fixture.registrar_domains if self.path=='/domain' else (fixture.cloud_servers if self.path=='/cloud_server' else fixture.packages)).encode()
                 body={'success':listed,'object':b'{}','authentication':b'private synthetic response','echo':b'["SYNTHETIC_RAW_GENERAL_KEY"]'}.get(mode,listed)
+                if nameserver_reply is not None:status,body=nameserver_reply
                 if expiry:
                     if expiry.group(1) not in fixture.expiry_dates:fixture.errors.append('Unexpected expiry domain')
                     status=403 if fixture.expiry_mode=='authentication' else 200
@@ -82,6 +162,13 @@ class ProviderServer:
                 self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)
             def do_POST(self):
                 fixture.calls+=1
+                import re
+                if fixture.nameserver_change_mode != 'disabled' and re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', self.path or ''):
+                    length = self.headers.get('Content-Length', '')
+                    raw = self.rfile.read(int(length)) if re.fullmatch(r'[1-9][0-9]{0,3}', length) and int(length) <= 8192 and self.headers.get('Transfer-Encoding') is None else b''
+                    status, body = registered_nameserver_change_reply(fixture, self.path, self.headers, raw)
+                    self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)
+                    return
                 length=int(self.headers.get('Content-Length') or '0')
                 raw=self.rfile.read(length) if 0<length<=8192 else b''
                 import re

@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, 'devin/non20i-*', 'devin/full-site-integration', codex/twentyi-hosting-purchase-inbox, codex/twentyi-purchase-inbox-browser]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-nameserver-changes, codex/twentyi-client-nameserver-requests, 'devin/non20i-*', 'devin/full-site-integration', codex/twentyi-hosting-purchase-inbox, codex/twentyi-purchase-inbox-browser]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
@@ -409,6 +409,27 @@ jobs:
           "$PHP_BINARY" tests/service_observations_native.php
           "$PHP_BINARY" tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
           "$PHP_BINARY" tests/domain_contracts_native.php
+          "$PHP_BINARY" tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-results.json
+          "$PHP_BINARY" -n tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json
+          "$PHP_BINARY" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameservers_native.php
+          "$PHP_BINARY" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_changes_native.php
+          "$PHP_BINARY" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-results.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests_native.php
           "$PHP_BINARY" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_native.php
@@ -483,6 +504,7 @@ jobs:
       - name: Real HTTP and Chromium application workflows
         id: browser
         run: |
+          .ci-venv/bin/python -B tests/registered_nameserver_changes_http_fixture_test.py --report qa/registered-nameserver-changes-http-fixture-results.json
           .ci-venv/bin/python tests/browser_acceptance.py
           .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite
           .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py > qa/hosting-purchase-handoff-guards.json
@@ -774,6 +796,12 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+          .ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json
+          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py
+          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json
+          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py
+          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade_test.py --report qa/apache-registered-nameserver-requests-upgrade-guards-results.json
+          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade.py
           .ci-venv/bin/python tests/release_126_upgrade_guards.py qa/apache-release126-guards-results.json
           .ci-venv/bin/python tests/release_126_upgrade_input_guards.py --report qa/apache-release126-input-guards-results.json
           .ci-venv/bin/python -B tests/release_126_hosting_guards.py --report qa/apache-release126-hosting-guards-results.json

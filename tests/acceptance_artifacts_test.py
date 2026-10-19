@@ -758,6 +758,102 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    nameserver_request_extension=contract['registered_nameserver_requests']
+    from registered_nameserver_requests_acceptance import verify as nameserver_requests_acceptance
+    requests_predecessor = nameserver_requests_acceptance(a, ROOT, tmp, check, deny, contract)
+    contract = requests_predecessor['contract']
+    nameserver_installed_extension=contract['registered_nameserver_changes_installed']
+    from registered_nameserver_changes_acceptance import verify as nameserver_changes_acceptance
+    changes_predecessor = nameserver_changes_acceptance(a, ROOT, tmp, check, deny, contract, requests_predecessor['source'], requests_predecessor['reports'])
+    # New write controls extend the recipe without changing predecessor assertions.
+    write_contract=contract['registered_nameserver_changes'];write_commands=write_contract['additions']
+    nameserver_contract=contract['registered_nameservers'];nameserver_commands=nameserver_contract['additions']
+    nameserver_commands_list=list(contract['native_commands'])
+    check('Nameserver change extension retains complete recipe',len(nameserver_commands_list)==write_contract['predecessor_native_count']+len(write_commands) and nameserver_commands_list==contract['native_commands'])
+    write_position=nameserver_commands_list.index(write_contract['additions_after'])+1
+    check('Seven nameserver change commands occur once after original reader native fixture',len(write_commands)==len(set(write_commands))==7 and nameserver_commands_list[write_position:write_position+7]==write_commands and all(nameserver_commands_list.count(command)==1 for command in write_commands))
+    nameserver_commands_list=[command for command in nameserver_commands_list if command not in write_commands]
+    check('Nameserver changes retain exact predecessor commands',len(nameserver_commands_list)==write_contract['predecessor_native_count'] and hashlib.sha256(json.dumps(nameserver_commands_list,separators=(',',':')).encode()).hexdigest()==write_contract['predecessor_native_sha256'])
+    contract['native_commands']=[command for command in contract['native_commands'] if command not in write_commands]
+    for path,expected_hash in write_contract['source_sha256'].items():
+        check('Nameserver change producer source retained '+path,hashlib.sha256(requests_predecessor['source'].get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))).hexdigest()==expected_hash)
+    write_original_sources={}
+    check('Nameserver change predecessor test delta is limited to the existing renderer',set(write_contract['predecessor_source_delta'])=={'tests/registered_nameservers_views.php'})
+    for path,delta in write_contract['predecessor_source_delta'].items():
+        data=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n').decode('utf-8')
+        check('Nameserver change pending status test addition is finite '+path,data.count(delta['after'])==1)
+        original=data.replace(delta['after'],delta['before'],1).encode('utf-8')
+        check('Nameserver change test addition preserves all predecessor assertions '+path,hashlib.sha256(original).hexdigest()==delta['predecessor_sha256']==contract['registered_nameservers']['source_sha256'][path])
+        write_original_sources[path]=original
+    write_reports=a.load(ROOT/'tools/acceptance-reports.json')
+    check('Nameserver change reports are required once in both aggregates',len(write_contract['reports'])==len(set(write_contract['reports']))==7 and all(write_reports['browser'].count(name)==write_reports['final'].count(name)==1 for name in write_contract['reports']))
+    check('Nameserver extension retains complete recipe',len(nameserver_commands_list)==nameserver_contract['predecessor_native_count']+len(nameserver_commands) and nameserver_commands_list==contract['native_commands'])
+    nameserver_position=nameserver_commands_list.index(nameserver_contract['additions_after'])+1
+    check('Five nameserver commands occur once in the intended position',len(nameserver_commands)==len(set(nameserver_commands))==5 and nameserver_commands_list[nameserver_position:nameserver_position+5]==nameserver_commands and all(nameserver_commands_list.count(command)==1 for command in nameserver_commands))
+    nameserver_commands_list=[command for command in nameserver_commands_list if command not in nameserver_commands]
+    check('Nameserver extension preserves exact predecessor commands',len(nameserver_commands_list)==nameserver_contract['predecessor_native_count'] and hashlib.sha256(json.dumps(nameserver_commands_list,separators=(',',':')).encode()).hexdigest()==nameserver_contract['predecessor_native_sha256'])
+    for path,expected_hash in nameserver_contract['source_sha256'].items():
+        check('Nameserver fixture source retained '+path,hashlib.sha256(write_original_sources.get(path,changes_predecessor['source'].get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')))).hexdigest()==expected_hash)
+    nameserver_server=changes_predecessor['source']['tests/provider_http_server.py'].decode('utf-8')
+    for index,change in enumerate(reversed(nameserver_contract['server_changes'])):
+        check('Nameserver synthetic GET addition is finite '+str(index),nameserver_server.count(change['after'])==change['count'])
+        nameserver_server=nameserver_server.replace(change['after'],change['before'])
+    check('Nameserver synthetic GET preserves all prior provider fixture bytes',hashlib.sha256(nameserver_server.encode('utf-8')).hexdigest()==nameserver_contract['server_predecessor_sha256'])
+    nameserver_upgrade=nameserver_contract['upgrade']
+    nameserver_apache_header='      - name: Apache protection with and without rewriting\n        id: test\n        run: |\n'
+    nameserver_apache=[line.strip() for line in changes_predecessor['workflow'].split(nameserver_apache_header,1)[1].split('      - name:',1)[0].splitlines()]
+    nameserver_upgrade_position=nameserver_apache.index(nameserver_upgrade['commands'][0])
+    check('Nameserver upgrade inserts exactly two Apache commands after the original release-125 sequence',len(nameserver_upgrade['commands'])==2 and nameserver_apache[nameserver_upgrade_position:nameserver_upgrade_position+2]==nameserver_upgrade['commands'] and nameserver_apache[:nameserver_upgrade_position]==nameserver_upgrade['predecessor_commands'] and len(nameserver_apache)==len(set(nameserver_apache)))
+    check('Nameserver upgrade preserves all prior Apache commands',hashlib.sha256(json.dumps(nameserver_apache[:nameserver_upgrade_position],separators=(',',':')).encode()).hexdigest()==nameserver_upgrade['predecessor_sha256'])
+    for path,expected_hash in nameserver_upgrade['source_sha256'].items():
+        check('Nameserver upgrade fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+    nameserver_reports=a.load(ROOT/'tools/acceptance-reports.json')
+    check('Nameserver native reports required in both aggregates',all(name in nameserver_reports['browser'] and name in nameserver_reports['final'] for name in nameserver_contract['reports']))
+    check('Nameserver Apache reports required only in final aggregate',all(name in nameserver_reports['final'] and name not in nameserver_reports['browser'] for name in nameserver_upgrade['reports']))
+    contract['native_commands']=[command for command in contract['native_commands'] if command not in nameserver_commands]
+    # The nameserver family is newer than every catalog predecessor: serve the
+    # nameserver-free contract, report, workflow and source bytes reconstructed
+    # through the verified stage delta to the deeper chain.
+    del contract['registered_nameserver_changes_installed']
+    del contract['registered_nameserver_changes']
+    del contract['registered_nameservers']
+    for pin in nameserver_contract.get('repins', []):
+        cursor = contract
+        for key in pin['keys'][:-1]:
+            cursor = cursor[key]
+        check('Nameserver strip retains pinned value ' + pin['keys'][-1], cursor[pin['keys'][-1]] == pin['after'])
+        cursor[pin['keys'][-1]] = pin['before']
+    nameserver_reports_object=a.load(ROOT/'tools/acceptance-reports.json')
+    nameserver_reports_removed={'browser':set(nameserver_request_extension['reports']['browser'])|set(nameserver_installed_extension['reports']['browser'])|set(write_contract['reports'])|set(nameserver_contract['reports']),'final':set(nameserver_request_extension['reports']['final'])|set(nameserver_installed_extension['reports']['final'])|set(write_contract['reports'])|set(nameserver_contract['reports'])|set(nameserver_upgrade['reports'])}
+    nameserver_reports_object={'browser':[name for name in nameserver_reports_object['browser'] if name not in nameserver_reports_removed['browser']],'final':[name for name in nameserver_reports_object['final'] if name not in nameserver_reports_removed['final']],'provenance':{key:value for key,value in nameserver_reports_object['provenance'].items() if 'nameserver' not in key}}
+    nameserver_reports_object['provenance']['additions']=[entry for entry in nameserver_reports_object['provenance']['additions'] if 'nameserver' not in entry]
+    nameserver_stage_sources={}
+    nameserver_served_contract=json.dumps(contract,indent=2).encode()+b'\n'
+    check('Nameserver-free contract serves the verified stage object',hashlib.sha256(nameserver_served_contract).hexdigest()==nameserver_contract['merged_stage_contract_sha256'])
+    nameserver_stage_sources[str((ROOT/'tools/acceptance-contract.json').resolve())]=nameserver_served_contract
+    nameserver_served_reports=json.dumps(nameserver_reports_object,indent=2).encode()+b'\n'
+    check('Nameserver-free reports serve the verified stage object',hashlib.sha256(nameserver_served_reports).hexdigest()==nameserver_contract['merged_stage_reports_sha256'])
+    nameserver_stage_sources[str((ROOT/'tools/acceptance-reports.json').resolve())]=nameserver_served_reports
+    for path, delta in nameserver_contract['merged_stage_delta'].items():
+        if path == 'tools/acceptance-reports.json':
+            continue
+        raw = Path.read_bytes(ROOT.joinpath(path)).replace(b'\r\n', b'\n')
+        if hashlib.sha256(raw).hexdigest() == delta['after_sha256']:
+            raw = installed_billing_options_inverse(raw, delta)
+        check('Nameserver stage source verified ' + path, hashlib.sha256(raw).hexdigest() == delta['before_sha256'])
+        nameserver_stage_sources[str((ROOT/path).resolve())] = raw
+    nameserver_stage_read_bytes=Path.read_bytes
+    nameserver_stage_read_text=Path.read_text
+    def nameserver_stage_read_file_bytes(path):
+        nameserver_served=nameserver_stage_sources.get(str(Path(path).resolve()))
+        return nameserver_served if nameserver_served is not None else nameserver_stage_read_bytes(path)
+    def nameserver_stage_read_file_text(path,*args,**kwargs):
+        nameserver_served=nameserver_stage_sources.get(str(Path(path).resolve()))
+        if nameserver_served is not None:
+            return nameserver_served.decode(kwargs.get('encoding') or (args[0] if args else 'utf-8'))
+        return nameserver_stage_read_text(path,*args,**kwargs)
+    Path.read_bytes=nameserver_stage_read_file_bytes
+    Path.read_text=nameserver_stage_read_file_text
     contract,inbox_reports=purchase_inbox_checks(a,ROOT,tmp,check,deny,named,contract)
     contract,plan_workflow,plan_reports=imported_plan_setup_checks(a,ROOT,tmp,check,deny,named,contract,inbox_reports)
     catalog_storefront_http_checks(contract)
@@ -782,8 +878,10 @@ def run(tmp):
             added=contract['provider_package_types']['browser_addition'].encode()
             check('One hosting catalog browser callback is additive',original_bytes.count(added)==1)
             original_bytes=original_bytes.replace(added,b'',1)
+            nameserver_addition=nameserver_contract['browser_addition'].encode()
+            check('Nameserver browser callback occurs once',original_bytes.count(nameserver_addition)==1)
+            original_bytes=original_bytes.replace(nameserver_addition,b'',1)
         check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)
-    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     workflow=plan_workflow
     workflow,checkout_reports=hosting_checkout_wiring_checks(tmp,workflow,contract,plan_reports)
     workflow,upgrade_reports=hosting_upgrade_wiring_checks(tmp,workflow,contract,checkout_reports)
@@ -955,8 +1053,8 @@ def retail_variants_current(current=None, registry=None):
 
 def retail_variants_checks(tmp, current, registry, section, historical):
     prior = json.loads(historical['tools/acceptance-contract.json'])
-    check('Retail variants retain all189 native commands and add five exact producers',
-          len(current['native_commands']) == 194 and len(section['native_additions']) == 5
+    check('Retail variants retain all210 native commands and add five exact producers',
+          len(current['native_commands']) == 215 and len(section['native_additions']) == 5
           and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
     check('Retail variants require six unique report producers and no new captures',
           len(section['reports']) == len(set(section['reports'])) == 6 and section['screenshots'] == [])
@@ -1006,7 +1104,7 @@ def retail_variants_checks(tmp, current, registry, section, historical):
         else:
             raise AssertionError('Stale retail variant source pin passed')
     check('Retail variants refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 211), ('final', 262)]:
+    for phase, expected in [('browser', 233), ('final', 290)]:
         check('Retail variants preserve exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1048,7 +1146,7 @@ def retail_variants_checks(tmp, current, registry, section, historical):
                 shutil.rmtree(path)
         bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
     result = combine()
-    check('Retail variants aggregate requires all262 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    check('Retail variants aggregate requires all290 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
     for name in section['reports']:
         path = jobs['native-browser']/'qa'/name
         path.unlink()
@@ -1146,8 +1244,8 @@ def billing_selector_current(current=None, registry=None):
 
 def billing_selector_checks(tmp, current, registry, section, historical):
     prior = json.loads(historical['tools/acceptance-contract.json'])
-    check('Billing selector retains all194 native commands and adds three exact producers',
-          len(current['native_commands']) == 197 and len(section['native_additions']) == 3
+    check('Billing selector retains all215 native commands and adds three exact producers',
+          len(current['native_commands']) == 218 and len(section['native_additions']) == 3
           and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
     check('Billing selector requires four unique report producers and no new captures',
           len(section['reports']) == len(set(section['reports'])) == 4 and section['screenshots'] == [])
@@ -1197,7 +1295,7 @@ def billing_selector_checks(tmp, current, registry, section, historical):
         else:
             raise AssertionError('Stale billing selector source pin passed')
     check('Billing selector refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 215), ('final', 266)]:
+    for phase, expected in [('browser', 237), ('final', 294)]:
         check('Billing selector preserves exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1239,7 +1337,7 @@ def billing_selector_checks(tmp, current, registry, section, historical):
                 shutil.rmtree(path)
         bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
     result = combine()
-    check('Billing selector aggregate requires all266 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    check('Billing selector aggregate requires all294 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
     for name in section['reports']:
         path = jobs['native-browser']/'qa'/name
         path.unlink()
@@ -1337,8 +1435,8 @@ def installed_billing_options_current(current=None, registry=None):
 
 def installed_billing_options_checks(tmp, current, registry, section, historical):
     prior = json.loads(historical['tools/acceptance-contract.json'])
-    check('Installed billing options preserve all197 commands and add one portable producer',
-          len(current['native_commands']) == 198 and len(section['native_additions']) == 1
+    check('Installed billing options preserve all218 commands and add one portable producer',
+          len(current['native_commands']) == 219 and len(section['native_additions']) == 1
           and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
     expected_captures = ['Hosting-Billing-Options-'+scene+'-'+size+'.png'
                          for scene in ('Owner-Annual','Public-Monthly','Public-Annual','Client-Annual')
@@ -1396,7 +1494,7 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
         else:
             raise AssertionError('Stale installed billing options source pin passed')
     check('Installed billing options refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 216), ('final', 267)]:
+    for phase, expected in [('browser', 238), ('final', 295)]:
         check('Installed billing options preserves exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1438,7 +1536,7 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
                 shutil.rmtree(path)
         bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
     result = combine()
-    check('Installed billing options aggregate requires all267 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    check('Installed billing options aggregate requires all295 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
     for name in section['reports']:
         path = jobs['native-browser']/'qa'/name
         path.unlink()
@@ -1468,9 +1566,9 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('Renewal invoice creation adds three mandatory native-lane checks',len(native_commands)==198 and native_commands==contract['native_commands'] and len(renewal_commands)==3 and len(set(renewal_commands))==3 and all(native_commands.count(command)==1 for command in renewal_commands) and native_commands[-3:]==renewal_commands)
+    check('Renewal invoice creation adds three mandatory native-lane checks',len(native_commands)==219 and native_commands==contract['native_commands'] and len(renewal_commands)==3 and len(set(renewal_commands))==3 and all(native_commands.count(command)==1 for command in renewal_commands) and native_commands[-3:]==renewal_commands)
     native_commands=[command for command in native_commands if command not in renewal_commands]
-    check('Renewal invoice creation preserves every original195 command in order',len(native_commands)==renewal_contract['predecessor_native_count']==195 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==renewal_contract['predecessor_native_sha256'])
+    check('Renewal invoice creation preserves every original216 command in order',len(native_commands)==renewal_contract['predecessor_native_count']==216 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==renewal_contract['predecessor_native_sha256'])
     renewal_reports=a.load(ROOT/'tools/acceptance-reports.json')
     check('Renewal invoice creation requires all three new reports in both acceptance lists',all(report in renewal_reports['browser'] and report in renewal_reports['final'] for report in renewal_contract['reports']))
     current, registry, section, historical = installed_billing_options_current()

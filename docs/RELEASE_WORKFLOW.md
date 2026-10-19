@@ -27,6 +27,10 @@ Read-only GraphQL inspection with inherited rulesets included returned zero bran
 
 Original full application/capture/release runs remain required, including the f67 catalog matrix and PR220 b7 run39137551561. Cancelled runs provide no acceptance credit. Earlier dated statements that no runs were cancelled retain their historical meaning. Do not certify a queued hosted gate from this maintenance record or count acknowledgements as terminal results.
 
+## 2026-10-18 — closed diagnostic source packaging
+
+FULL-PROJECT includes the four tracked Python sources under `ops/twentyi-catalog-schema` and `ops/twentyi-cloud-root` by exact path. The broader `ops` area remains excluded. These scripts and their tests are development source; they are not executed by packaging and are absent from COMPLETE-UPLOAD and UPDATE. Existing private-file, symlink and exact-Git-byte checks remain mandatory. The actual builder path-policy checks append to the existing build guard report. Preserve the original63444bcd failed build as evidence of the inherited allowlist omission.
+
 ## 2026-10-18 — pure-suite pull-request triggers
 
 Five additional isolated pure suites filter PR changes: estimator, email-templates, portfolio-catalog, review-requests and webmail. Each includes `foundation/FAMILY/**`, `tests/FAMILY/**` and its exact workflow path; portfolio-catalog uses the `portfolio` directories. Complete directory patterns cover new nested fixtures and helpers. Current PHP tokenization found 31 source files and 28 local import edges, all confined to their respective family. Shared application and native suites do not inherit this assumption.

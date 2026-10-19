@@ -207,6 +207,46 @@ Known remaining: Group B Codex 20i drafts still pending observed CI (runs dispat
 
 A separate companion to Devin's [PR202](https://github.com/afterburn25/Cajun_Web/pull/202) prevents revoked, superseded, expired or changed payment links from exposing current invoice metadata or a stale amount due. Prepared links display the same invoice snapshot used to validate their original fingerprint and client/project binding. [Scope, reproduction and remaining acceptance](docs/PAYMENT_LINK_VIEW_REVIEW.md). This branch starts at `750f1ab8`; it is not the main branch or a release. Native and installed-browser acceptance remain pending.
 
+## 2026-10-18 — client nameserver request candidate
+
+The first clean candidate build at63444bcd exposed an inherited package failure: the four tracked catalog diagnostic scripts were outside the builder's development-source allowlist. A bounded correction admits those four exact paths to FULL-PROJECT, retains every private-file/symlink/source-byte guard, and adds22 passing portable path-policy checks. Site files and installer inventory are unchanged. Corrected package and exact-source GitHub acceptance remain due.
+
+Primary-client nameserver requests now connect submission/withdrawal, owner review, the existing one-send approval and separate readback to client-safe status. This is source on `codex/twentyi-client-nameserver-requests`, based on af78abd8 / [PR222](https://github.com/afterburn25/Cajun_Web/pull/222). [Exact behavior and evidence](docs/TWENTYI_CLIENT_NAMESERVER_REQUESTS.md).
+
+Applied local checks pass 1,034 named portable/model executions, 91 loopback TLS checks, 39 upgrade guards and 473 acceptance-helper checks, plus canonical installer/dependency verification. The native, packaged browser and installed update/recovery producers are wired into GitHub acceptance. Synthetic layout checks pass; actual SQL, authenticated browser, installed update/recovery and exact-source GitHub acceptance remain pending. Published1.25 is unchanged; this is not a release or deployment. Hosting purchase inbox PR229 at7535f861 remains separate, with both original acceptance runs queued at the latest check. Complete20i remains unfinished.
+
+## 2026-10-18 — installed nameserver change acceptance prepared
+
+The separate nameserver-change branch now includes packaged owner-form/Chromium tests, eight scoped desktop/mobile captures, and a published-1.25 UPDATE/recovery producer for original request, ledger, readback and pending-fence history. This is acceptance preparation for source `5654649dc62095298ce703b39b54d12d56c49f09`, recorded by the enclosing **test: cover installed nameserver change recovery** commit. Application shipping files and published 1.25 are unchanged.
+
+Actual root checks pass 80 isolated TLS fixture outcomes, 31 portable upgrade guards, 334 acceptance helpers and 19 syntax/source/inventory checks. Installed SQL, actual application forms, resulting browser images and real update/recovery execution remain pending. [Scope and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md#installed-acceptance-producers--2026-10-18).
+
+## 2026-10-18 — nameserver change candidate
+
+The separate `codex/twentyi-nameserver-changes` branch adds owner-approved complete-set nameserver changes, durable request/ledger history, no automatic resend, explicit follow-up reads and narrowly scoped interrupted-history recovery. Controls are grouped inside existing domain cards; global history survives unlinking. [Scope, actual evidence and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md).
+
+Local checks pass1,350 portable PHP executions,30 changed-file syntax executions,18 synthetic responsive-layout checks and283 acceptance helpers. Native SQL, packaged owner write forms/browser, installed request-history recovery and release acceptance remain pending. Canonical installer refresh and documentation checks pass. Published1.25 and the full retained API reference are unchanged; no live provider call or deployment occurred.
+
+## 2026-10-18 — nameserver packaged acceptance wired
+
+The nameserver candidate now includes actual owner-form/Chromium checks, eight responsive captures, and a separate published-1.25 update/retry/recovery producer. The full workflow preserves its previous commands and adds five native commands and two Apache commands. Local checks pass 271 acceptance-helper outcomes, 20 upgrade guards, 19 actual published-archive guards and four PHP syntax executions; canonical refresh passes. These are local/source results, not Linux application acceptance. [Scope, corrections and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18).
+
+The full owner API documentation remains retained; no resend is needed. Published 1.25, the separate catalog/hosting candidates and Devin's non-20i work are unchanged. No new release or live deployment occurred.
+
+## 2026-10-18 — owner nameserver observations candidate
+
+The separate `codex/twentyi-registrar-nameservers` branch now includes explicit owner setup, saved registered-domain nameserver observations, latest-attempt status and dated history in the 20i connection screen. Failed or unfinished newer reads never fall back to an older current result. Previous assignments are labeled in history. [Feature and remaining acceptance](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Applied PHP 8.4.25 checks pass 144 reader, 230 operation, 64 registrar and 42 renderer outcomes in each default/minimal mode (960 named executions), plus 22 touched-file syntax executions. These are pure/synthetic checks. The isolated Linux native fixture and four-environment CI extension are present but have not executed at this source checkpoint. Packaged HTTP/browser, upgrade/recovery, full acceptance and publication remain pending. No nameserver setter or live deployment is enabled.
+
+The full owner API reference is retained and needs no resend. Hosting catalog imports are in the separate 1.26 candidate; cloud catalog mapping and automatic provider images remain unresolved. Original f67 runtime run39098588864 has four successful producer jobs and queued aggregation. Its bounded native/browser archive review validates 167 reports, including 3,149 HTTP outcomes on PHP 8.4.26 / MariaDB 10.11.19, without final-acceptance or new pixel-review credit. Corrected b7 run39137551561 remains separate. Published 1.25 stays unchanged.
+
+## 2026-10-18 — registrar nameserver boundary
+
+The separate main-based nameserver branch adds a typed registrar read and restricted request builder using the supplied SDK example. It keeps registrar IDs separate from hosting package-domain IDs and refuses unsupported partial changes. Generic write approval remains denied; admin forms, saved observation history and native authority are still pending. [Scope and next application slice](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Actual PHP 8.4.25 checks pass 144 focused and 381 existing cases in each default/minimal mode, plus 221 unchanged acceptance-helper outcomes. These are synthetic/pure checks, not provider or native application results. Focused PHP 8.2/8.4 CI is prepared. The original route-contract finding and patch-encoding failure are preserved. Published 1.25 and the separate 1.26/hosting/PHP-control branches remain unchanged.
+
 ## 2026-10-18 — reduce unrelated CI work
 
 Parent `cefb08d6c29f4faca104089bb5941b322418d2ba`, current [PR203](https://github.com/afterburn25/Cajun_Web/pull/203); branch `codex/contacts-native-fixture`; enclosing commit **Fix duplicate contacts setup in service-plan fixture**. This addresses the observed domain-renewal workflow39130068128 failure inherited by PR210: renewal checks passed, then the service-plan fixture attempted to create `spln_studio_contacts` twice. The canonical base schema already creates that table. Remove only the redundant second DDL call, retaining the schema marker and all contact, consent, worker and authority assertions.

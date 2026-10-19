@@ -2,6 +2,16 @@
 
 Extend the existing completed checkout fixture through its purchase inbox rather than synthesizing another commerce history. Owner and client reads must preserve the same invoices, agreements, orders, provider counters and business digest. The already-combined hosting head contains current main; frozen earlier branches and their original queued runs remain intact. Correct the discovered owner setup invoice link at its existing renderer; keep the client link and payment authorization unchanged. The regression must follow that generated URL through the actual payment and ledger controllers. Keep the nameserver candidate separate pending its own runtime evidence. No acceptance result transfers across source revisions. [Scope](TWENTYI_HOSTING_PURCHASE_INBOX.md#installed-purchase-navigation).
 
+## 2026-10-18 — client nameserver request candidate
+
+Preserve the original diagnostic paths and workflow references through an exact four-file development-package exception. Do not open the entire `ops` directory or omit tracked source from FULL-PROJECT. Existing private-file, symlink, immutable-blob and deployment-file boundaries stay intact. This fixes the inherited clean-build refusal without changing application behavior.
+
+Acceptance additions retain the complete predecessor command/report inventory and all 334 helper outcomes. Current source hashes are checked before finite predecessor reconstruction. The sole earlier-command correction loads tokenizer/PDO for distro PHP minimal mode; no original test or release gate is removed.
+
+Enable local nameserver intake through explicit owner setup plus the active primary client's exact registrar-domain assignment, without a separate per-client provider capability. This grants no provider-send authority. Bind static original assignment/account/owner facts so aging or failure of a later read does not remove local intake; require fresh complete observations independently at owner approval.
+
+Use v2 owner approvals that pin the original client request SHA, plus a reciprocal dispatch event pinning the owner approval SHA. Save both and the consumed grant atomically under the existing staff mutex before the unchanged one-send path. Keep graph validation acyclic and preserve v1 direct-owner history; origin loss cannot downgrade an approval. [Rationale, limits and actual tests](TWENTYI_CLIENT_NAMESERVER_REQUESTS.md). Runtime/release acceptance remains pending.
+
 ## 2026-10-18 — hosting purchase history and setup handoff
 
 A completed hosting checkout is exposed as retained purchase history and links to the existing agreement-based setup controls. Invoice payment, agreement activation and local order acceptance remain distinct. A list read never creates or repairs business history. Checkout-created agreements select their original invoice by retained origin; the prior latest-50 scan remains only for legacy agreements. This closes the discoverability and older-invoice gap without adding another order writer or bypassing owner/client consent. [Scope and verification](TWENTYI_HOSTING_PURCHASE_INBOX.md).

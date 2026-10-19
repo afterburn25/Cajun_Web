@@ -9,6 +9,47 @@ Create and reserve an invoice directly from accepted renewal terms in a selected
 
 Record completion of the 139-run obsolete CI remainder, exact PR249 package verification and the separate PR250 contacts-fixture correction. Preserve every original acceptance gate, historical failure and published 1.25 asset. This commit changes documentation only; hosted feature acceptance remains pending.
 
+## 2026-10-18 — client nameserver request candidate
+
+Correct the development package boundary for four retained catalog diagnostic scripts. They are included only in FULL-PROJECT; unknown operational files remain refused and deployment packages still derive solely from site files. The first clean63444bcd failure is retained.
+
+Adds native, packaged browser and published-1.25 upgrade/recovery acceptance producers. Local portable/TLS/guard/helper checks pass; installed acceptance and release remain pending.
+
+Added a development candidate for client nameserver requests: submit, withdraw and track a request; owner decline or approve the exact complete set; show separately verified results in the client portal. Approval and its client origin commit together, preventing a withdrawn or reassigned request from being sent from an old review. Existing direct-owner actions remain supported. [Verification and remaining acceptance](docs/TWENTYI_CLIENT_NAMESERVER_REQUESTS.md). Published1.25 is unchanged.
+
+## Unreleased — installed nameserver change acceptance
+
+- Add actual owner-form browser cases, eight complete scoped captures, two separately approved one-shot synthetic requests, interrupted local-history recovery and persistent reassignment fences.
+- Add actual published-1.25 update/retry/recovery coverage for original change history and an isolated TLS fixture check; retain all original native/browser/upgrade producers. Three required reports extend the totals to 177 browser and 225 final reports.
+- Root local checks: 334 helpers, 80 TLS fixture outcomes, 31 upgrade guards and 19 source/syntax/inventory checks pass. Installed execution and release acceptance remain pending; shipping code is unchanged. Parent `5654649d`, enclosing **test: cover installed nameserver change recovery**.
+
+## Unreleased — owner-approved registered nameserver changes
+
+- Add complete-set nameserver approval beside the current domain observation, with explicit review and current-owner password.
+- Keep immutable request/dispatch/follow-up history and block repeat changes while an outcome is unresolved, including after reassignment.
+- Add separate fresh readback and narrowly scoped local history recovery without resending a change or claiming DNS propagation.
+- Group controls within existing domain cards and preserve global request history. Native, packaged browser, upgrade and release acceptance remain pending; no live deployment occurred.
+
+## Unreleased — nameserver packaged acceptance
+
+- Exercise owner preparation and refresh through actual admin forms, with staff/client/support denials and failed/unfinished latest-result handling.
+- Add published-1.25 installed update/retry/recovery coverage for nameserver history, using exact build/file identity and explicit feature preparation.
+- Preserve prior acceptance commands and add fixed baseline inputs, reports and responsive captures. Correct test-only port and resolver assumptions; application behavior is unchanged by this follow-up.
+- Local guards and source checks pass. Linux database, packaged HTTP/browser, update/recovery and release acceptance remain pending.
+
+## Unreleased — owner registered nameserver observations
+
+- Add explicit owner setup and protected nameserver refresh for assigned registered domains, using the existing shared provider executor and durable intent.
+- Show the latest attempt separately from dated history, with stale/failed/unfinished status, previous-assignment labels and bounded history pagination.
+- Preserve current owner, credential, registrar source and assignment checks before and after the GET; fail closed on damaged saved history.
+- Add renderer and isolated native tests to the existing registrar workflow. Local portable checks pass; database, packaged browser, upgrade and release acceptance remain pending. No domain-setting write is enabled.
+
+## Unreleased — registrar nameserver boundary
+
+- Add a typed read for registered-domain nameservers with exact registrar provenance and closed failure states.
+- Add a restricted full-set request builder while keeping generic write approval denied and uncertain requests non-retryable.
+- Preserve package-domain behavior; add canonical shipping mirrors and focused PHP regression coverage. Admin actions and native observation storage remain pending.
+
 ## 2026-10-19 — installed monthly and annual purchase coverage
 
 Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](docs/TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.

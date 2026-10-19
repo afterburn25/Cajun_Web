@@ -47,6 +47,68 @@ Root owns UI, catalog selection, documentation, packaging and integration. Catal
 
 Next: inspect the first exact-source full run and native variant outcomes, then perform normal sequential integration and release acceptance. Keep the separate client HTTPS/StackCP increments frozen; do not credit their checks to this branch. No queue-driven rerun, cancellation, live provider operation or deployment.
 
+## 2026-10-18 — client nameserver request candidate
+
+Packaging follow-up: the first clean63444bcd build failed before archive creation on `ops/twentyi-catalog-schema/diagnostic.py`. The enclosing **fix: include retained diagnostic sources in development package** commit admits only the four retained diagnostic Python paths to FULL-PROJECT. All shipping bytes and workflow/report contracts remain unchanged. Root22 portable builder-path checks pass; full rebuild and exact new-source acceptance are next. Preserve original634 full39181546946 and focused39181546963 (queued attempt1 at discovery), PR230 and failed local build log; do not label those old runs as corrected-source results.
+
+Current worktree is `work/20i-hosting-dns-contract`, branch `codex/twentyi-client-nameserver-requests`, parent af78abd81ce39839cd100e1c882a59b04258a25b. The enclosing commit identifies this increment. [Service, storage, UI, tests and evidence](docs/TWENTYI_CLIENT_NAMESERVER_REQUESTS.md). Root integrated the atomic client-origin/owner-approval flow and new screens; local portable/model checks pass1,034, canonical refresh passes. Initial harness outputs are preserved externally.
+
+The isolated native fixture, packaged browser continuation, published-1.25 update/recovery producer and additive CI wiring are integrated. Root checks pass 91 TLS outcomes, 39 upgrade guards and 473 acceptance helpers, retaining all 334 predecessor helper outcomes. An independent runtime source review found no actionable issue. Full acceptance now has 173 native commands, 186 browser reports, 236 final reports and eight additional captures. One old distro minimal owner-service command explicitly loads tokenizer/PDO; official Docker/Windows minimal paths keep built-ins. Next: inspect the first exact-source focused/full GitHub results, actual screenshots and installed retention outcomes, then integrate sequentially. Keep original runs; no native success is claimed before execution.
+
+Preserve `work/release-1.25.0` at7535f861 / PR229 and its verified local packages. Full39178688005 and focused39178687979 remained queued, attempt1; no queue cause was established. Local Docker was absent and WSL reported not installed; do not bypass the Windows native-fixture refusal. Published1.25 and Devin's non20i lane are unchanged. No live provider operation or deployment is authorized by this checkpoint.
+
+## 2026-10-18 — installed nameserver change acceptance prepared
+
+The separate nameserver-change branch now includes packaged owner-form/Chromium tests, eight scoped desktop/mobile captures, and a published-1.25 UPDATE/recovery producer for original request, ledger, readback and pending-fence history. This is acceptance preparation for source `5654649dc62095298ce703b39b54d12d56c49f09`, recorded by the enclosing **test: cover installed nameserver change recovery** commit. Application shipping files and published 1.25 are unchanged.
+
+Actual root checks pass 80 isolated TLS fixture outcomes, 31 portable upgrade guards, 334 acceptance helpers and 19 syntax/source/inventory checks. Installed SQL, actual application forms, resulting browser images and real update/recovery execution remain pending. [Scope and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md#installed-acceptance-producers--2026-10-18).
+
+## 2026-10-18 — owner nameserver changes, first runtime checks next
+
+Continue `codex/twentyi-nameserver-changes`, parent `fbe00172a0a1dee683d2501203985d2537a90abc`, enclosing commit **Add owner-approved registered nameserver changes**. The previous read-only `codex/twentyi-registrar-nameservers` / draftPR221 remains atfbe. [New implementation and exact evidence](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md).
+
+Three agents supplied frozen storage/service/native proposals; root applied exact bytes, controller/forms, pending-observation hook, permission routing and shared test wiring. Corrected storage clears inherited settings under the setup mutex. All POST outcomes remain uncertain; a matching exact new GET releases the profile/domain fence only with a valid original finished ledger. Completed-ledger recovery reconstructs only a missing local terminal, without another provider call.
+
+Actual local results:1,350 named portable PHP executions,30 changed-PHP syntax executions,18 local Chromium layout/keyboard checks with four inspected captures,283 helper outcomes. Canonical installer refresh and documentation checks pass. These do not certify native SQL or authenticated HTTP. Original external wrapper/early-helper failures and corrected source are retained under `work/registered-nameserver-changes-integration/`. The exact native fixture refuses Windows; do not weaken permissions or fake native results.
+
+The new focused four-way PHP/database workflow and full164-command recipe are prepared;176 browser/checkpoint and222 final reports are required. Next inspect the first automatic push runs, preserving any failure. Add actual packaged new-form/recovery/check HTTP/browser and published-baseline request/fence/ledger retention before merge or release; inherited read-only acceptance does not cover those flows. Source VERSION stays1.25.0. No duplicate dispatch while queued, no cancelling historical runs, no live provider action or deployment.
+
+Original fbe registrar39144346808 and full39144351774 remain queued at the latest check. Keep catalogf67/b7, hosting1db, PHP7af, Devin's separate non20i work and immutable published1.25 unchanged. Full20i is unfinished; any chat percentage for this nameserver slice is a rough implementation estimate, not a measured overall completion or release result.
+
+## 2026-10-18 — nameserver browser and installed-update checks
+
+Continue `codex/twentyi-registrar-nameservers` / draft [PR221](https://github.com/afterburn25/Cajun_Web/pull/221). Starting commit is `2c5898fa665252fdb92bd2d2c91f8786fcea143c`; the enclosing commit is “Exercise nameserver forms and preserve history through updates”. Browser, published-baseline inputs, actual installed update/recovery and the combined workflow/report contract are now integrated. VERSION stays 1.25.0; the fixture distinguishes published/current builds by source and exact file bytes.
+
+Applied local checks pass: 271 helper outcomes, 20 portable upgrade guards, 19 actual published1.24 input guards, four touched-PHP syntax executions, canonical refresh and shipping dependency/syntax validation. Browser proposal's 56 portable guards and independent source reviews are retained separately. Evidence: `work/registered-nameservers-acceptance-wiring/validation/`. SQL/Apache/Chromium execution is still pending. Do not bypass Linux permission checks on Windows.
+
+RNS-UPGRADE-1/2 corrected test-only port-mapping and resolver-lock assumptions. The existing native fixture had the same port mismatch and now removes only that invalid internal-port equality; configured loopback/selected database/empty namespace remain. Original source and queued parent runs stay retained. The original browser fixture domain collision and shared-helper composition issue were corrected before applying the final frozen bytes.
+
+Next: inspect the first new-source automatic registrar matrix and application run; retain any original failure and diagnose its exact source. The full recipe is 157 native commands, with 169 browser/checkpoint reports and 215 final reports. Review the eight actual nameserver captures when produced. The installed fixture covers one subfolder/rewrite installation and complete-journal rollback; it does not replace the existing URL/rewrite matrix or interrupted-update tests. No manual duplicate, cancellation or release is needed while queued.
+
+The original catalog f67 run39098588864 now has all available partition/checkpoint/package predicates verified, with 216 reports and 340 image identities across its producers. Final aggregation remains queued; corrected b7 acceptance remains separate. Receipt `work/release126-f67-run39098588864-partition-closure/review.json` SHA256 `7ed4e5bae64bd545fff1ebf61caafd062b3d62c6bf84b85e94e33caecaf7ff92`. This supplies no final-acceptance or new pixel-review credit.
+
+## 2026-10-18 — owner nameserver observation integration
+
+Parent `17cf286394c1e5a82172a73a917af87253f402f0`; enclosing commit **Add owner registered nameserver observations and history**, branch `codex/twentyi-registrar-nameservers`, checkout `work/20i-hosting-dns-contract`. The five-file native proposal and six-file owner UI/test proposal are independently reviewed and applied byte-exact. Existing shared executor calls remain compatible; explicit feature setup does not enable renewal dates. Root also integrates the registrar-focused workflow and refreshes the canonical installer inventory. [Implementation and evidence](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Actual applied checks: 960 portable named executions and 22 PHP syntax executions. RNS-UI-1 was a missing synthetic site URL in the renderer fixture; the exact original failure is reproduced and retained externally, and the corrected test passes 42 checks per mode. No product safeguard or assertion was removed. Source review and schema-factory checks are not native SQL acceptance.
+
+Next: preserve and inspect the first exact-source registrar matrix (PHP 8.2/8.4 with MariaDB/MySQL); do not dispatch a duplicate if push already starts it. Its timeout is 20 minutes because the new fixture uses genuine cooldown waits. Add real packaged HTTP/Chromium owner/CSRF/password/support denial and responsive-history coverage, then extend full application/report contracts and published-baseline upgrade/recovery before release. Existing full acceptance remains unchanged and does not yet certify this new native/UI feature. Writes require a separate reserved, fenced, reconciled workflow; no setter is authorized here.
+
+Keep the full 20i reference, all failed/cancelled/queued originals, immutable 1.25, separate 1.26 capture correction b7, hosting correction 1db and PHP controls 7af intact. f67 run39098588864 native/browser evidence is now reviewed at `work/release126-f67-run39098588864-native-browser-review/review.json` (SHA256 `c1236d04a82e3a24627270492d3a08519f7973d8318abc53d6f3039be136a57c`); aggregation remains queued. This is not b7 acceptance or release clearance.
+
+## 2026-10-18 — registrar nameserver boundary, native read next
+
+Parent `e397d9a6e293850e8dff61a593e3ba39ee178400`; enclosing commit **Add restricted registrar nameserver reader and request boundary**, branch `codex/twentyi-registrar-nameservers`. Worktree directory is the reused `work/20i-hosting-dns-contract`; the old `codex/twentyi-hosting-dns-contract` branch at fb2f19d2 remains preserved. [Feature contract and current evidence](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+The reviewed v2 boundary is applied byte-exact, with canonical mirror generation, inventory and focused PHP 8.2/8.4 tests. Local default/minimal PHP 8.4.25 cases pass 144 nameserver, 230 operation, 64 registrar and 87 domain-contract checks per mode; 221 unchanged artifact helpers pass. The original v1 route mismatch and initial patch encoding failure stay retained. Native observation completeness and owner authority are not inferred from pure bindings or caller arrays.
+
+Next: inspect the first exact-source focused CI run, then integrate the owner-only observation lifecycle using the existing registrar/domain-contract flow. Include intent-before-credential, current context rechecks, immutable result/history and failed-latest refusal before adding owner UI. Only later add the separately gated write reservation/fence/readback. Complete application workflow/report, native/HTTP/concurrency/upgrade/recovery and release gates remain pending. Do not import queued hosting/release/PHP-control branches opportunistically or modify published 1.25.
+
+The next application source map is retained at `work/registered-nameservers-application-design/`. Reuse the shared inventory executor and registrar provenance helpers, but add nameserver-specific readiness and latest-intent ordering; do not silently enable renewal-date setup or display an older success after a failed/pending refresh. The proposed tables/services/native fixture are not implemented yet.
+
+## 2026-10-18 — CI trigger correction
+
 ## 2026-10-18 — checkout controls acceptance successor
 
 Branch `codex/twentyi-checkout-fulfillment-controls`, parent `3042f24eddc3587d67ac5d10e28df3b3294a3310` ([PR231](https://github.com/afterburn25/Cajun_Web/pull/231)); enclosing commit **fix: show supported hosting checkout fulfillment controls**. Three existing layout functions carry a presentation-only checkout flag. They suppress manual permission actions and explain the original-invoice receipt requirement. Native checkout/payment policy, legacy behavior, cancellation, provider approval and business storage remain unchanged. [Scope and local validation](docs/TWENTYI_HOSTING_PURCHASE_INBOX.md#checkout-fulfillment-controls).
