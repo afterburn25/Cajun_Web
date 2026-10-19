@@ -415,6 +415,11 @@ jobs:
           "$PHP_BINARY" tests/stackcp_access_native.php
           "$PHP_BINARY" tests/stackcp_read_snapshot_native.php
           "$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php
+          "$PHP_BINARY" tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-default.json
+          "$PHP_BINARY" -n tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-minimal.json
+          "$PHP_BINARY" tests/stackcp_launch_views.php qa/stackcp-launch-views-default.json
+          "$PHP_BINARY" -n tests/stackcp_launch_views.php qa/stackcp-launch-views-minimal.json
+          CWP_TEST_STACKCP_LAUNCH=1 "$PHP_BINARY" tests/stackcp_launch_native.php
           "$PHP_BINARY" tests/provider_domain_search_native.php
           "$PHP_BINARY" tests/provider_mailboxes_native.php
           "$PHP_BINARY" tests/provider_operations_native.php
@@ -432,7 +437,9 @@ jobs:
           "$PHP_BINARY" tests/license_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser
-        run: .ci-venv/bin/python tests/browser_acceptance.py
+        run: |
+          .ci-venv/bin/python tests/browser_acceptance.py
+          .ci-venv/bin/python tests/stackcp_launch_browser.py --php "$PHP_BINARY" --report qa/stackcp-launch-browser-results.json
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

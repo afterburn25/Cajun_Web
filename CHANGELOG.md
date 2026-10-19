@@ -1,3 +1,7 @@
+## Unreleased — owner StackCP browser handoff candidate
+
+Add password-confirmed owner access to the default StackCP address using the existing separate authentication key, assignment and current observations. Record each admission and exchange phase before its effect; repeated submissions never resend or redeliver. Show previous unknown outcomes explicitly, retain authenticated history and protect the new-tab redirect. Custom control-panel domains, delegated/client access, remote revocation and SSH remain unfinished. Local checks pass; native and complete application acceptance are pending. [Scope and evidence](docs/TWENTYI_STACKCP_LAUNCH.md).
+
 ## Unreleased — isolated pure-suite pull-request filters
 
 Limit estimator, email-template, portfolio, review-request and webmail pure-suite PR runs to their source/test directories and workflow files. Preserve every job and push/manual trigger. Source/dependency checks and independent review passed; this affects future scheduling only. No application or release version changes.

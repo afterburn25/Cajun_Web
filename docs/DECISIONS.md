@@ -1,3 +1,7 @@
+## 2026-10-18 — deliver the bounded default StackCP handoff
+
+Continue from `f688f79e` with an executable owner-only exchange using the retained SDK contract. Read actual branding before creating a token, accept only its default destination subset and never synthesize brand data or rewrite custom destinations. Preserve whole-user disclosure and require current local authority throughout the exchange. Durable admission precedes network effects; history, including unknown outcomes, is never reset to permit a retry. A distinct new approval may proceed after an unknown result only when bound to that latest outcome and explicitly acknowledged. [Details and verification limits](TWENTYI_STACKCP_LAUNCH.md). This does not authorize live testing or deployment.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 The owner clarified a completely fresh installation after deleting the prior public files. Default setup retains strict existing-table and storage refusals. Explicit fresh-start intent creates separate resources and never drops existing tables or unlocks an installed site. Routine file uploads retain config.php, keys, database and storage. Local retained locks without config lead to recovery, not automatic setup. Administrator passwords use a dedicated 12-character validator; the shared client policy remains unchanged. This supersedes the earlier update-only interpretation of this installer incident.

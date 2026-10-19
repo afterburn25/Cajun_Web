@@ -33,7 +33,7 @@ function provider_stackcp_access_render(array $view,int $page=1):void {
     echo '</article>';
 }
 function provider_stackcp_access_admin_render():void {
-    provider_settings_manager();echo '<section class="workspace-card" id="stackcp-access-observations"><h2>Check StackCP assignments</h2><p>Read package membership and whole-user grants explicitly. Results are dated observations only. Existing local assignments remain unverified setup; provider login and remote session revocation are unavailable.</p>';
+    provider_settings_manager();echo '<section class="workspace-card" id="stackcp-access-observations"><h2>Check StackCP assignments</h2><p>Read package membership and whole-user grants explicitly. Results are dated observations only. After both checks match, review the separate Open StackCP action below. Remote session revocation remains unavailable.</p>';
     try {
         $raw=$_GET['stackcp_access_page']??'1';$page=is_string($raw)&&preg_match('/\A[1-9][0-9]{0,3}\z/',$raw)?min(500,(int)$raw):1;
         $snapshot=ProviderStackCpReadProjection::ownerAccessSnapshot($page);

@@ -1,3 +1,7 @@
+## 2026-10-18 — StackCP launch implemented for candidate testing
+
+The [default-destination owner handoff](TWENTYI_STACKCP_LAUNCH.md) now has executable exchange, one-use admission/history, admin consent and browser delivery on `codex/twentyi-stackcp-launch` from `f688f79e`. Portable and isolated browser verification passed; native SQL, complete application acceptance and release delivery remain pending. Do not mark complete20i or remote login verified. Custom brands, client/delegated launch, remote lifecycle and interactive SSH remain outside this increment; full provider catalog/image import is also still unresolved.
+
 ## 2026-10-18 — verification throughput follow-through
 
 Five isolated pure suites have reviewed PR path filters, with complete current dependency coverage and unchanged tests. [Evidence and limits](RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This scheduling increment does not complete a product capability or queued acceptance. Hosting [PR231](https://github.com/afterburn25/Cajun_Web/pull/231) and nameserver [PR230](https://github.com/afterburn25/Cajun_Web/pull/230) remain separate candidates awaiting runtime and release gates; full20i remains unfinished.

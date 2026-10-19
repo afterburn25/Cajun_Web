@@ -1,3 +1,5 @@
+> Current follow-through: the [owner launch candidate](TWENTYI_STACKCP_LAUNCH.md) adds executable transport, durable admission and browser delivery. The original isolated-contract evidence below retains its historical scope. Native and release acceptance of the new candidate are pending.
+
 # StackCP support handoff: isolated contract
 
 This branch starts at `5560635bb2117556de289f0d24c5b170d48e9c77`. It adds pure PHP context/contract/sensitive-response components and synthetic tests outside the shipping tree. It does not connect to 20i, create a token/session, expose a launch action, grant provider access, or complete support handoff/SSH. Native preparation is a [separate proposed increment](TWENTYI_STACKCP_NATIVE_PREREQUISITES.md).
