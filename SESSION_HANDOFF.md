@@ -1,3 +1,11 @@
+## 2026-10-19 — superseded component queue checkpoint
+
+Branch `codex/ci-superseded-queue-cleanup` starts at main `8f734de11031938eff81a02744d5195ecdcab17c`; enclosing commit `docs: record superseded CI queue checkpoint`. Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched.
+
+[Guide](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md) and [partial receipt](docs/evidence/ci-superseded-queue-cleanup.json), SHA256 `98b3405ea2f13e67d3b88db37761571aaf0efcf1935c8e70aed2292fa72f5a23`. Preserve workspace `work/queue-review-2026-10-18` and `work/queue-cleanup-continuation-proposal`; all original plans, errors, requests and reviews remain. No cleanup process is running. Do not repeat any of the327 requests. Batch4 never started.
+
+Next after API recovery: perform only GET verification for the103 unresolved requests, starting with39132937949 (acknowledged request, missing immediate post snapshot) and39111082537 (cancelled run, stale individual-job states). Domains' local continuation verifier and VPS's append-only recorder preserve the original failures. Do not replace partial receipts; add corrections. Keep139 untouched candidates deferred. Then inspect the preserved original catalog/capture results, review actual corrected captures, and complete normal integration/exact-main/release-download gates. Do not rerun queued acceptance or completed local artifact reviews.
+
 ## 2026-10-18 — original catalog runtime review
 
 Documentation branch `codex/release126-original-evidence` starts from main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`; enclosing commit `docs: record original catalog runtime evidence`. [Evidence, source identities and remaining gates](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md). No application, test, workflow, installer or version changes are part of this branch.

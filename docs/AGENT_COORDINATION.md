@@ -1,3 +1,9 @@
+## 2026-10-19 — superseded component queue checkpoint
+
+Root owns the documentation branch from main8f734de1 and sequential cleanup operations. Catalog reviewed28 explicit workflow sources; VPS reviewed helper/plans/continuation and reconstructed the partial receipt; Domains independently verified terminal outcomes. Root locally rechecked all retained attempt hashes and224 final observations. [Scope and handoff](CI_SUPERSEDED_QUEUE_CLEANUP.md).
+
+Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched. All cleanup and API verifier processes are stopped after a retained403 rate-limit response. Domains may resume only read-only unresolved verification after recovery; root does not replay cancellation or start batch4. Current PR heads and original full gates remain separate. Catalog prepares a separate local-only proposal for three remaining pure-suite PR filters; that proposal is not applied by this checkpoint. Devin retains non20i ownership.
+
 ## Original 1.26 runtime review — 2026-10-18
 
 Root owns documentation branch `codex/release126-original-evidence` from mainf688, original artifact downloads and final independent review. Catalog reviews the exact PHP8.2/MariaDB catalog reports and ten assigned captures; Domains verifies delivered packages, Apache/recovery and populated upgrade retention; VPS authenticates each runtime's envelopes and invokes the unchanged f67 aggregation code locally. All agents work in external evidence directories and use exact Git sources. No feature checkout or queued run is changed.

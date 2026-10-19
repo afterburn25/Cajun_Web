@@ -1,3 +1,7 @@
+## Unreleased documentation — queue cleanup checkpoint
+
+Record327 acknowledged superseded component cancellation requests,224 independently verified terminal outcomes,103 unresolved verifications,31 preserved candidates and139 untouched candidates. Retain both interrupted batches and the later explicit API rate-limit failure. [Evidence and continuation](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md). Application and released package bytes are unchanged.
+
 ## Unreleased documentation — original catalog runtime evidence
 
 Record four original 1.26 runtime producer sets and successful unchanged local aggregations, authenticated artifacts, identical source-matched packages, 16 populated upgrade scopes and known capture limits. Hosted final acceptance and the corrected capture candidate remain pending. [Evidence and next gates](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md). No application, package or release bytes change.

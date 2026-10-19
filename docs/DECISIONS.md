@@ -1,3 +1,9 @@
+## 2026-10-19 — superseded component queue checkpoint
+
+The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).
+
+Never replay an ambiguous cancellation. A preflight-only failure may be reconsidered in a new reviewed plan only when durable evidence proves no request occurred; absence of a request file alone is insufficient. Stop on observation failure and preserve uncertainty. Current runs, recorded originals, full application/capture/release/diagnostic work, and assigned/executed/artifact-bearing candidates stay excluded. No acceptance or production gate changes.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 The owner clarified a completely fresh installation after deleting the prior public files. Default setup retains strict existing-table and storage refusals. Explicit fresh-start intent creates separate resources and never drops existing tables or unlocks an installed site. Routine file uploads retain config.php, keys, database and storage. Local retained locks without config lead to recovery, not automatic setup. Administrator passwords use a dedicated 12-character validator; the shared client policy remains unchanged. This supersedes the earlier update-only interpretation of this installer incident.

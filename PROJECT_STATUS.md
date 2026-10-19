@@ -1,3 +1,9 @@
+## 2026-10-19 — superseded component queue checkpoint
+
+Recorded 327 acknowledged cancellation requests for superseded, unexecuted component runs. Independent evidence confirms 224 terminal cancellations covering 888 unexecuted jobs; 103 requests still need terminal verification. Preserved 31 candidates with existing work/results and left 139 of the 497 planned candidates untouched. A later verification GET explicitly returned GitHub HTTP403 API rate limit exceeded. Cleanup is stopped, and acknowledged requests are not treated as completed cancellations. [Scope and evidence](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md).
+
+No application, workflow, installer, version or published package changed. Original full application/capture/release runs and current replacements remain excluded. The last recorded catalog/capture gates remain pending; this checkpoint has no newer result for them. Published1.25.0 remains the latest verified release, and full20i/1.26 publication remain unfinished.
+
 ## 2026-10-18 — original 1.26 runtime evidence
 
 The catalog candidate `f67b1631683b29096dd8ec1daee405e104dc0b83` in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216) now has successful build, native/database/browser, Apache and recovery jobs in all four original PHP8.2/8.4 × MariaDB10.11/MySQL8.4 runs. Their final hosted acceptance jobs remain queued. The [retained-evidence review](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md) separates completed producer evidence, local reconciliation and the unfinished hosted/release gates.
