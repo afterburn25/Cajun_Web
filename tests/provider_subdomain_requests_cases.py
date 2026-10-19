@@ -122,6 +122,47 @@ def run_browser(env, browser):
             'name="review_proof"', 'name="owner_request_id"', 'name="current_password"',
             'subdomain-private-folder', *forbidden))
 
+    def activity_address(is_owner=False):
+        return admin + '?view=activity' if is_owner else portal + '?activity=1'
+
+    def activity_rows(client, is_owner=False):
+        """Follow the actual bounded page links; never infer an off-page item."""
+        address = activity_address(is_owner)
+        rows, visited = {}, set()
+        for _ in range(20):
+            if address in visited:
+                raise AssertionError('Activity cursor repeated')
+            visited.add(address)
+            response = get(client, address)
+            if response.status_code != 200:
+                raise AssertionError('Activity page unavailable')
+            document = soup(response)
+            page_rows = document.select('[data-event-key]')
+            if len(page_rows) > 30:
+                raise AssertionError('Activity page exceeded bound')
+            for row in page_rows:
+                key = row['data-event-key']
+                if key in rows:
+                    raise AssertionError('Activity event repeated across pages')
+                rows[key] = row
+            older = document.find('a', string='Older updates →')
+            if not older:
+                return rows
+            address = urljoin(response.url, older['href'])
+            parsed = urlparse(address)
+            if parsed.netloc != urlparse(base).netloc or parsed.path != urlparse(activity_address(is_owner)).path:
+                raise AssertionError('Activity cursor escaped its local route')
+        raise AssertionError('Activity pagination exceeded fixture bound')
+
+    def activity_mark_form(client, keys, state='read', is_owner=False, csrf=None):
+        address = activity_address(is_owner)
+        page = get(client, address)
+        return post_exact(client, address, {'action': 'activity_mark', 'csrf': token(page) if csrf is None else csrf,
+                                          'keys': json.dumps(keys), 'state': state})
+
+    def activity_reads():
+        return db('SELECT * FROM ci_activity_reads ORDER BY id')
+
     def cleared(response, action):
         form = actual_form(response, action)
         return all(n.get('value', '') == '' for n in form.select('input[type=password]')) and not form.select('input[type=checkbox][checked]')
@@ -231,6 +272,8 @@ def run_browser(env, browser):
             response = submit(client, portal, 'login', {'email': email_value, 'password': CLIENT_PASSWORD})
             check(label + ' signs in through actual login', response.status_code == 200 and soup(response).select_one('form [name=action][value=logout]') is not None)
         client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']
+        check('notification continuation retains actual earlier activity preparation',
+              db("SELECT value FROM ci_settings WHERE name='activity_schema_version'") == [{'value': '1'}])
         profile = db('SELECT * FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]
         before_get = read_boundary()
         page = get(owner, owner_url)
@@ -303,6 +346,12 @@ def run_browser(env, browser):
         support_post = post_exact(owner, support_url, {'action': 'subdomain_request_create', 'csrf': 'invalid', 'request_id': 'e' * 32})
         check('support GET and POST-only intake are refused before normalization', support_get.status_code == support_post.status_code == 403
               and PARENT not in support_get.text and read_boundary() == support_before)
+        support_reads = activity_reads()
+        support_activity = get(owner, support_url + '&activity=1')
+        support_count = get(owner, base + '/existing/api/activity.php?audience=client&support=' + parse_qs(urlparse(support_url).query)['support'][0])
+        check('notification center and passive count refuse actual support context',
+              support_activity.status_code == 403 and support_count.status_code == 204
+              and activity_reads() == support_reads and read_boundary() == support_before)
         submit(owner, support_url, 'support_end', {})
         check('support end restores direct owner request access', get(owner, owner_url).status_code == 200)
 
@@ -385,6 +434,31 @@ def run_browser(env, browser):
               and CHILD not in bob_detail.text and CHILD not in bob_response.text
               and not soup(bob_detail).select('[data-subdomain-request-history]') and read_boundary() == created_snapshot)
         capture(alice, 'Subdomain-Requests-Client-Pending', detail(False, request_id), '#subdomain-request-' + request_id)
+        notify_before, notify_reads = read_boundary(), activity_reads()
+        owner_updates = activity_rows(owner, True)
+        request_key = 'subdomain-request:' + request_id
+        cancel_key = 'subdomain-request:' + cancelled_rows[-1]['id']
+        decline_key = 'subdomain-request:' + decline_rows[-1]['id']
+        expected_owner = {'subdomain-request:' + i for i in (cancelled_id, declined_id, request_id)} | {cancel_key}
+        check('notification owner gets each request and cancellation exactly once despite replay',
+              {k for k in owner_updates if k.startswith('subdomain-')} == expected_owner
+              and 'Subdomain requested' in owner_updates[request_key].get_text(' ', strip=True)
+              and 'Subdomain request withdrawn' in owner_updates[cancel_key].get_text(' ', strip=True))
+        client_updates = activity_rows(alice)
+        check('notification decline is safe and client does not receive its own request events',
+              {k for k in client_updates if k.startswith('subdomain-')} == {decline_key}
+              and 'Subdomain request declined' in client_updates[decline_key].get_text(' ', strip=True)
+              and 'website scope' not in str(client_updates[decline_key])
+              and not any(k.startswith('subdomain-') for k in activity_rows(bob)))
+        np = browser_page(owner)
+        np.goto(activity_address(True))
+        with np.expect_navigation(wait_until='load'):
+            np.locator('[data-event-key="' + request_key + '"] h2 a').click()
+        check('notification Chromium owner link opens exact immutable request',
+              parse_qs(urlparse(np.url).query).get('view') == ['subdomain-requests']
+              and parse_qs(urlparse(np.url).query).get('request_id') == [request_id])
+        check('notification listing paging and exact opening do not mark or send',
+              activity_reads() == notify_reads and read_boundary() == notify_before)
         review = get(owner, detail(True, request_id))
         approval = fields(review, 'provider_subdomain_request_approve')
         check('owner exact detail contains client identity and separate signed approval',
@@ -444,6 +518,45 @@ def run_browser(env, browser):
         check('client sees uncertain progress without private map or owner proof',
               'Subdomain requested; result not yet confirmed' in pending.text and 'does not confirm that the subdomain is ready to use' in pending.text
               and safe_client(pending, (native_id, sent['review_proof'])))
+        uncertain_updates = activity_rows(alice)
+        terminal_key = 'subdomain-terminal:' + native_id
+        dispatch_key = 'subdomain-request:' + native_id
+        check('notification finished uncertain send stays distinct from review and later observation',
+              {k for k in uncertain_updates if k.startswith('subdomain-')} == {decline_key, dispatch_key, terminal_key}
+              and 'Subdomain request reviewed' in uncertain_updates[dispatch_key].get_text(' ', strip=True)
+              and 'Subdomain result not confirmed' in uncertain_updates[terminal_key].get_text(' ', strip=True)
+              and 'may have been sent' in uncertain_updates[terminal_key].get_text(' ', strip=True)
+              and not any(k.startswith('subdomain-check:') for k in uncertain_updates))
+        notification_bytes = ''.join(str(row) for row in uncertain_updates.values())
+        check('notification metadata omits paths credentials decline notes and review proofs',
+              all(value not in notification_bytes for value in ('subdomain-private-folder', 'website scope', sent['review_proof'],
+                                                               sent['request_sha256'], 'SYNTHETIC_RAW_GENERAL_KEY', 'SYNTHETIC_RAW_AUTH_KEY')))
+        notify_before, notify_reads = read_boundary(), activity_reads()
+        legacy_key = next(k for k, row in uncertain_updates.items() if not k.startswith('subdomain-')
+                          and row.select_one('.workspace-status').get_text(strip=True) == 'Unread')
+        invalid_mark = activity_mark_form(alice, [legacy_key, terminal_key], csrf='invalid')
+        check('notification mixed mark rejects invalid CSRF without read state changes',
+              'session expired' in invalid_mark.text.lower() and activity_reads() == notify_reads)
+        forbidden_mark = activity_mark_form(alice, [legacy_key, request_key])
+        check('notification mixed inaccessible provider mark is atomic for legacy item',
+              forbidden_mark.status_code == 200 and 'Activity changed or is unavailable.' in forbidden_mark.text
+              and activity_reads() == notify_reads)
+        activity_mark_form(alice, [legacy_key, terminal_key])
+        marked = activity_reads()
+        activity_mark_form(alice, [legacy_key, terminal_key])
+        check('notification mixed mark and exact retry retain one row and first timestamp each',
+              len(marked) == len(notify_reads) + 2 and activity_reads() == marked
+              and {r['event_key'] for r in marked if r not in notify_reads} == {legacy_key, terminal_key})
+        check('notification marking does not change another audience or original business history',
+              [r for r in marked if r['actor_type'] == 'admin'] == [r for r in notify_reads if r['actor_type'] == 'admin']
+              and read_boundary() == notify_before)
+        activity_mark_form(alice, [legacy_key, terminal_key], 'unread')
+        check('notification explicit unread restores original read rows exactly', activity_reads() == notify_reads)
+        foreign_open = get(bob, activity_address() + '&open=' + terminal_key)
+        foreign_mark = activity_mark_form(bob, [terminal_key])
+        check('notification other primary account cannot open or mark captured provider key',
+              foreign_open.status_code == 403 and CHILD not in foreign_open.text and CHILD not in foreign_mark.text
+              and activity_reads() == notify_reads and read_boundary() == notify_before)
         cool()
         before_absent = provider.calls
         absent = post_form(owner, detail(True, request_id), 'provider_subdomain_request_verify', {'current_password': OWNER})
@@ -468,6 +581,30 @@ def run_browser(env, browser):
               and 'Subdomain appeared in a later check' in observed_client.text and 'DNS, certificate and website availability have not been checked.' in observed_client.text
               and not soup(observed_client).select('[data-subdomain-request-cancel],[data-subdomain-request-verify]'))
         capture(alice, 'Subdomain-Requests-Client-Observed', detail(False, request_id), '#subdomain-request-' + request_id)
+        notify_before, notify_reads = read_boundary(), activity_reads()
+        all_updates = activity_rows(alice)
+        native_checks = db('SELECT id,disposition FROM ci_provider_subdomain_add_checks WHERE request_id=? ORDER BY id', [native_id])
+        observed_key = 'subdomain-check:' + next(r['id'] for r in native_checks if r['disposition'] == 'observed')
+        different_key = 'subdomain-check:' + next(r['id'] for r in native_checks if r['disposition'] == 'different')
+        check('notification independent readbacks preserve uncertain event and exact separate keys',
+              {k for k in all_updates if k.startswith('subdomain-')} == {decline_key, dispatch_key, terminal_key, observed_key, different_key}
+              and 'Subdomain result not confirmed' in all_updates[terminal_key].get_text(' ', strip=True)
+              and 'Subdomain not observed in this check' in all_updates[different_key].get_text(' ', strip=True)
+              and 'Subdomain observed in a later check' in all_updates[observed_key].get_text(' ', strip=True)
+              and 'does not confirm DNS or website readiness' in all_updates[observed_key].get_text(' ', strip=True))
+        order = [(row.select_one('time').get_text(strip=True), key) for key, row in all_updates.items()]
+        check('notification combined HTTP pages retain strict time and key order', order == sorted(order, reverse=True)
+              and any(not key.startswith('subdomain-') for key in all_updates) and len(order) > 30)
+        nc = browser_page(alice)
+        nc.goto(activity_address())
+        with nc.expect_navigation(wait_until='load'):
+            nc.locator('[data-event-key="' + observed_key + '"] h2 a').click()
+        check('notification Chromium client readback link selects exact request detail',
+              parse_qs(urlparse(nc.url).query).get('subdomain_requests') == ['1']
+              and parse_qs(urlparse(nc.url).query).get('request_id') == [request_id]
+              and nc.locator('#subdomain-request-' + request_id).is_visible())
+        check('notification final feed and exact navigation are read only with original read state',
+              activity_reads() == notify_reads and read_boundary() == notify_before)
         reads = db('SELECT id,operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [owner_id])
         results = db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.actor_id=? ORDER BY f.seq', [owner_id])
         check('exact six successful real reads stay within fresh owner budget', [r['operation'] for r in reads] == ['packages.list', 'packages.list'] + ['package.document-roots'] * 4

@@ -757,6 +757,120 @@ def run(tmp):
     subdomain_browser_checks(tmp,current,registry,section,historical)
 
 
+_run_before_subdomain_notifications = run
+
+
+def subdomain_notifications_current():
+    current=a.load(ROOT/'tools/acceptance-contract.json')
+    section=current['subdomain_notifications']
+    for path,digest in section['source_sha256'].items():
+        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()!=digest:
+            raise ValueError('Subdomain notification source changed: '+path)
+    registry=a.load(ROOT/'tools/acceptance-reports.json')
+    prior=copy.deepcopy(current);del prior['subdomain_notifications']
+    additions=section['native_additions'];position=prior['native_commands'].index(section['native_after'])+1
+    if prior['native_commands'][position:position+len(additions)]!=additions or any(prior['native_commands'].count(c)!=1 for c in additions):
+        raise ValueError('Subdomain notification recipes changed')
+    del prior['native_commands'][position:position+len(additions)]
+    for pin in section['repins']:
+        cursor=prior
+        for key in pin['keys'][:-1]:cursor=cursor[key]
+        key=pin['keys'][-1]
+        if cursor[key]!=pin['after']:raise ValueError('Subdomain notification current pin changed')
+        cursor[key]=pin['before']
+    dump=lambda value:json.dumps(value,indent=2).encode()+b'\n'
+    if hashlib.sha256(dump(prior)).hexdigest()!=section['predecessor_contract_sha256']:
+        raise ValueError('Subdomain notification predecessor contract changed')
+    old_reports=copy.deepcopy(registry)
+    for phase in ('browser','final'):
+        if any(old_reports[phase].count(name)!=1 for name in section['reports']):raise ValueError('Subdomain notification report missing or duplicated')
+        old_reports[phase]=[name for name in old_reports[phase] if name not in section['reports']]
+    if hashlib.sha256(dump(old_reports)).hexdigest()!=section['predecessor_reports_sha256']:
+        raise ValueError('Subdomain notification predecessor reports changed')
+    historical={'tools/acceptance-contract.json':dump(prior),'tools/acceptance-reports.json':dump(old_reports)}
+    for path,delta in section['source_deltas'].items():
+        historical[path]=subdomain_browser_inverse((ROOT/path).read_bytes().replace(b'\r\n',b'\n'),delta)
+    return current,registry,section,historical
+
+
+def subdomain_notifications_checks(tmp,current,registry,section,historical):
+    prior=json.loads(historical['tools/acceptance-contract.json'])
+    check('Subdomain notifications retain all169 recipes in order and add exactly four',len(current['native_commands'])==173 and [c for c in current['native_commands'] if c not in section['native_additions']]==prior['native_commands'])
+    expected=[
+        '"$PHP_BINARY" tests/subdomain_activity.php > qa/subdomain-activity-default-results.json',
+        '"$PHP_BINARY" -n -d extension=pdo tests/subdomain_activity.php > qa/subdomain-activity-minimal-results.json',
+        '"$PHP_BINARY" tests/activity_provider_merge.php > qa/activity-provider-merge-default-results.json',
+        '"$PHP_BINARY" -n tests/activity_provider_merge.php > qa/activity-provider-merge-minimal-results.json',
+    ]
+    check('Subdomain notifications execute the selected PHP and required minimal modules',section['native_additions']==expected)
+    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    prior_workflow=historical['.github/workflows/application-tests.yml'].decode()
+    inserted=''.join('          '+command+'\n' for command in expected)
+    check('Subdomain notifications preserve every other full workflow byte',workflow.count(inserted)==1 and workflow.replace(inserted,'',1)==prior_workflow)
+    check('Subdomain notifications preserve full triggers concurrency jobs matrices and artifacts',workflow.split('jobs:\n',1)[0]==prior_workflow.split('jobs:\n',1)[0])
+    check('Subdomain notifications add no capture or new installed producer',section['screenshots']==[] and current['client_subdomain_browser']['screenshots']==prior['client_subdomain_browser']['screenshots'])
+    for path,digest in section['source_sha256'].items():
+        check('Subdomain notifications bind current source '+path,hashlib.sha256((ROOT/path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==digest)
+    for path,delta in section['source_deltas'].items():
+        check('Subdomain notifications exact full predecessor inverse '+path,hashlib.sha256(historical[path]).hexdigest()==delta['before_sha256'])
+        deny('Subdomain notifications altered current source refuses '+path,lambda path=path,delta=delta:subdomain_browser_inverse((ROOT/path).read_bytes().replace(b'\r\n',b'\n')+b'\n',delta))
+    for path in ('tests/provider_subdomain_requests_native.php','tests/provider_subdomain_requests_cases.py'):
+        import difflib as notification_diff
+        before=historical[path].decode().splitlines(keepends=True);after=(ROOT/path).read_text().splitlines(keepends=True)
+        changes=notification_diff.SequenceMatcher(None,before,after,autojunk=False).get_opcodes()
+        check('Subdomain notifications retain every original runtime producer line '+path,all(tag in ('equal','insert') for tag,*_ in changes))
+    for phase,count in [('browser',186),('final',230)]:
+        check('Subdomain notifications preserve all original '+phase+' reports and add four uniquely',len(registry[phase])==len(set(registry[phase]))==count and [name for name in registry[phase] if name not in section['reports']]==json.loads(historical['tools/acceptance-reports.json'])[phase])
+
+    root=tmp/'subdomain-notification-artifacts';source=root/'source';ctx=context();fixtures(source,ctx)
+    incoming=root/'partitions';bindings={};jobs={};input_sha='7'*64
+    for index,lane in enumerate(a.LANES):
+        job=root/('job-'+lane);job.mkdir(parents=True);jobs[lane]=job
+        if lane=='build':shutil.copytree(source/'dist',job/'dist');shutil.copytree(source/'qa',job/'qa')
+        elif lane=='native-browser':
+            for name in registry['browser']:
+                if name not in a.BUILD_QA:named(job/'qa'/name)
+        else:
+            for name in registry['final']:
+                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane):named(job/'qa'/name)
+        digest=a.seal(job,ctx,incoming/lane,lane,outcomes(lane),input_sha)
+        bindings[lane]={'result':'success','artifact_id':str(index+71),'sha256':digest,**({'input_sha256':input_sha} if lane=='build' else {}),**({'checkpoint_id':'79','checkpoint_digest':'8'*64} if lane=='native-browser' else {})}
+    seq=0
+    def combine():
+        nonlocal seq
+        seq+=1;return a.aggregate(root/('combined-'+str(seq)),ctx,incoming,bindings,registry)
+    def reseal():
+        job=jobs['native-browser']
+        for path in (job/'.acceptance/checkpoint',incoming/'native-browser'):
+            if path.exists():
+                assert path.resolve().is_relative_to(root.resolve());shutil.rmtree(path)
+        bindings['native-browser']['sha256']=a.seal(job,ctx,incoming/'native-browser','native-browser',outcomes('native-browser'),input_sha)
+    result=combine()
+    check('Subdomain notifications aggregate requires all230 reports',result['complete'] is True and set(result['reports'])==set(registry['final']))
+    for name in section['reports']:
+        path=jobs['native-browser']/'qa'/name;path.unlink();reseal();result=combine()
+        check('Subdomain notifications missing actual report refuses '+name,result['complete'] is False and 'Missing reports: '+name in result['errors'])
+        named(path,False);reseal();result=combine()
+        check('Subdomain notifications failed actual report refuses '+name,result['complete'] is False and result['reports'][name]['passed'] is False)
+        named(path)
+        check('Subdomain notifications report belongs only to native-browser '+name,a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))
+    named(jobs['native-browser']/'qa/subdomain-notifications-unexpected-results.json');reseal();result=combine()
+    check('Subdomain notifications unexpected report cannot complete',result['complete'] is False and 'Unexpected reports: subdomain-notifications-unexpected-results.json' in result['errors'])
+
+
+def run(tmp):
+    current,registry,section,historical=subdomain_notifications_current()
+    originals={str((ROOT/path).resolve()):data for path,data in historical.items()}
+    read_bytes,read_text=Path.read_bytes,Path.read_text
+    def previous_bytes(path):
+        key=str(path.resolve());return originals[key] if key in originals else read_bytes(path)
+    def previous_text(path,*args,**kwargs):
+        key=str(path.resolve());return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)
+    with patch.object(Path,'read_bytes',previous_bytes),patch.object(Path,'read_text',previous_text):
+        _run_before_subdomain_notifications(tmp)
+    subdomain_notifications_checks(tmp,current,registry,section,historical)
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None

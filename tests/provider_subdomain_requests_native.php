@@ -10,6 +10,7 @@ define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require __DIR__.'/../site/app/providers/subdomain_requests.php';
+require_once __DIR__.'/../site/app/activity/events.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,TransportException,OperationResult};
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventorySnapshot};
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
@@ -260,6 +261,7 @@ function sdrn_seed():array{
     staff_seed_owner(1);foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     foreach([1,2] as $id)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Subdomain requests client '.$id,'sdrn-client'.$id.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     sdrn_owner();provider_settings_migrate(SDRN_PASSWORD);provider_inventory_migrate(SDRN_PASSWORD);provider_operations_migrate(SDRN_PASSWORD);
+    activity_migrate(SDRN_PASSWORD);sdrn_ok('Notifications explicitly prepare real per-person read storage',activity_ready()&&sdrn_count('activity_reads')===0);
     $profile=provider_settings_save('',0,'Client subdomain request fixture',true,SDRN_SECRET,SDRN_PASSWORD);provider_document_roots_prepare(SDRN_PASSWORD);provider_subdomain_add_prepare(SDRN_PASSWORD);
     sdrn_ok('Actual package list reader records initial synthetic inventory',sdrn_hosting($profile)['state']==='complete');
     foreach([801,802] as $package)provider_inventory_link($profile,$package,$package===802?2:1,1,SDRN_PASSWORD);
@@ -271,6 +273,97 @@ function sdrn_damage(string $name,callable $mutate):void{
     global $dns,$gets,$posts;$before=sdrn_digest();$io=[$dns,$gets,$posts];$session=$_SESSION;
     staff_locked(function()use($name,$mutate):void{db()->beginTransaction();try{$mutate();unset($GLOBALS['cwp_settings']);sdrn_deny($name,fn()=>provider_subdomain_requests_state());}finally{if(db()->inTransaction())db()->rollBack();}});
     $_SESSION=$session;unset($GLOBALS['cwp_settings']);sdrn_ok($name.' exact rollback restores history',sdrn_digest()===$before&&[$dns,$gets,$posts]===$io&&is_array(sdrn_locked(fn()=>provider_subdomain_requests_state())));
+}
+/** Activity source rows are fixture-only legacy facts; provider facts above use real services. */
+function sdrn_activity_rows(string $audience):array{
+    $rows=[];$cursor='';$pages=0;
+    do{
+        if(++$pages>8)throw new RuntimeException('Unexpected activity pagination.');
+        $page=activity_feed($audience,false,$cursor);
+        if(count($page['rows'])>30)throw new RuntimeException('Activity page exceeded its bound.');
+        array_push($rows,...$page['rows']);$cursor=$page['next'];
+    }while($cursor!=='');
+    return $rows;
+}
+function sdrn_activity_keys(string $audience):array{return array_column(sdrn_activity_rows($audience),'event_key');}
+function sdrn_activity_provider_keys(string $audience):array{return array_values(array_filter(sdrn_activity_keys($audience),'activity_provider_key'));}
+function sdrn_notifications(string $cancelId,string $cancelEvent,string $declineId,string $declineEvent,string $requestId,string $approvalId,array $review):void{
+    global $dns,$gets,$posts;
+    // These legacy tables have controller-only writers, not a callable service. Use the
+    // same synthetic facts as activity_native, with real UTC timestamps and no edits.
+    $now=gmdate('Y-m-d H:i:s');
+    query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (1,?,?,?,?,?)',['Notification legacy project','Private summary','Private milestones',$now,$now]);$job=(int)db()->lastInsertId();
+    $legacy=[];for($n=0;$n<101;$n++){
+        query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'admin\',1,?,?)',[$job,'Synthetic private notification body '.$n,gmdate('Y-m-d H:i:s')]);$legacy[]='message:'.db()->lastInsertId();
+    }
+    query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'client\',1,?,?)',[$job,'Synthetic private client reply',gmdate('Y-m-d H:i:s')]);$reply='message:'.db()->lastInsertId();
+    $terminal='subdomain-terminal:'.$approvalId;$requested='subdomain-request:'.$requestId;
+    $ownerKeys=array_map(static fn($id)=>'subdomain-request:'.$id,[$cancelId,$cancelEvent,$declineId,$requestId]);
+    $clientKeys=['subdomain-request:'.$declineEvent,'subdomain-request:'.$approvalId,$terminal];
+    $checks=all('SELECT id,disposition FROM '.table('provider_subdomain_add_checks').' WHERE request_id=? ORDER BY id',[$approvalId]);
+    foreach($checks as $row)$clientKeys[]='subdomain-check:'.$row['id'];
+    sdrn_owner();$before=sdrn_digest();$io=[$dns,$gets,$posts];$ownerRows=sdrn_activity_rows('admin');
+    $actual=array_values(array_filter(array_column($ownerRows,'event_key'),'activity_provider_key'));sort($actual);sort($ownerKeys);
+    sdrn_ok('Notifications owner sees exact requests and withdrawal alongside client reply',$actual===$ownerKeys&&in_array($reply,array_column($ownerRows,'event_key'),true));
+    sdrn_ok('Notifications owner exact link opens original client request',activity_destination('admin',$requested)===admin_url('subdomain-requests',['request_id'=>$requestId]));
+    sdrn_client();$rows=sdrn_activity_rows('client');$keys=array_column($rows,'event_key');$expected=[...$legacy,...$clientKeys];sort($expected);$sorted=$keys;sort($sorted);
+    $ordered=$rows;usort($ordered,static fn($a,$b)=>strcmp($b['occurred_at'],$a['occurred_at'])?:strcmp($b['event_key'],$a['event_key']));
+    sdrn_ok('Notifications mixed paging visits every legacy and provider event exactly once',$sorted===$expected&&count(array_unique($keys))===count($keys)&&$rows===$ordered&&count($rows)>100&&activity_feed('client')['next']!=='');
+    sdrn_ok('Notifications count caps healthy mixed unread history at one hundred',activity_count('client')===100&&activity_feed('client')['count']===100);
+    sdrn_ok('Notifications client exact link opens original request without an implicit mark',activity_destination('client',$terminal)===studio_url(['subdomain_requests'=>1,'request_id'=>$requestId])&&sdrn_count('activity_reads')===0);
+    $unknown=activity_source('client',$terminal);
+    sdrn_ok('Notifications terminal remains uncertain after a later matching check',$unknown['kind']==='subdomain_uncertain'&&!str_contains(strtolower($unknown['item_title']),'success'));
+    foreach($checks as $row){$source=activity_source('client','subdomain-check:'.$row['id']);sdrn_ok('Notifications retain separate '.$row['disposition'].' readback',$source['kind']==='subdomain_'.$row['disposition']&&$source['target_id']===$requestId);}
+    $safe=json_encode([...$ownerRows,...$rows],JSON_THROW_ON_ERROR);$forbidden=[SDRN_SECRET,SDRN_PASSWORD,SDRN_OLD,'Please confirm the requested website name.','Synthetic private notification body','Private summary',$review['approval']['review_proof'],$review['request_sha256']];
+    sdrn_ok('Notifications omit private messages notes paths credentials and proof fields',array_filter($forbidden,static fn($value)=>str_contains($safe,$value))===[]&&!str_contains($safe,'credential_sha256')&&!str_contains($safe,'request_sha256'));
+    sdrn_ok('Notifications repeated feed source destination and count are read only',sdrn_digest()===$before&&[$dns,$gets,$posts]===$io);
+    activity_mark('client',[$legacy[0],$terminal],true);$readRows=all('SELECT * FROM '.table('activity_reads').' ORDER BY id');activity_mark('client',[$legacy[0],$terminal],true);
+    sdrn_ok('Notifications mixed mark retry preserves first read rows and timestamps',count($readRows)===2&&all('SELECT * FROM '.table('activity_reads').' ORDER BY id')===$readRows);
+    $unread=array_column(activity_feed('client',true)['rows'],'event_key');
+    sdrn_ok('Notifications marked provider and legacy events leave unread view',!in_array($legacy[0],$unread,true)&&!in_array($terminal,$unread,true));
+    activity_mark('client',[$legacy[0],$terminal],false);
+    sdrn_owner();activity_mark('admin',[$requested,$reply],true);sdrn_owner(3);
+    sdrn_ok('Notifications owner read states are independent',activity_count('admin')===5&&sdrn_count('activity_reads')===2);
+    sdrn_owner();sdrn_ok('Notifications first owner retains its own read state',activity_count('admin')===3);activity_mark('admin',[$requested,$reply],false);
+    sdrn_owner(2);sdrn_ok('Notifications permission rich nonowner sees legacy reply only',sdrn_activity_keys('admin')===[$reply]);sdrn_deny('Notifications nonowner cannot open provider key',fn()=>activity_destination('admin',$requested));
+    sdrn_owner();$ownerAuth=one('SELECT auth_version FROM '.table('users').' WHERE id=1')['auth_version'];
+    try{query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[bin2hex(random_bytes(16))]);sdrn_deny('Notifications stale owner session cannot read provider feed',fn()=>activity_feed('admin'));}
+    finally{query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$ownerAuth]);sdrn_owner();}
+    sdrn_client(2);sdrn_ok('Notifications foreign client has no provider event',sdrn_activity_provider_keys('client')===[]);sdrn_deny('Notifications foreign client cannot navigate original event',fn()=>activity_destination('client',$terminal));
+    sdrn_client();$before=sdrn_digest();sdrn_deny('Notifications mixed unauthorized mark is atomic',fn()=>activity_mark('client',[$legacy[0],$requested],true));sdrn_ok('Notifications refused mixed mark leaves all rows and audits unchanged',sdrn_digest()===$before);
+    foreach(['contact_id','contact_auth'] as $field){
+        sdrn_client();$_SESSION[$field]=null;$providerKeys=sdrn_activity_provider_keys('client');
+        sdrn_ok('Notifications raw '.$field.' presence excludes provider before normalization',$providerKeys===[]&&in_array($legacy[0],sdrn_activity_keys('client'),true));
+        sdrn_deny('Notifications raw '.$field.' cannot open provider key',fn()=>activity_destination('client',$terminal));
+    }
+    sdrn_client();$_GET['support']='synthetic';sdrn_deny('Notifications support query cannot read feed',fn()=>activity_feed('client'));$_GET=[];
+    $GLOBALS['cwp_support']=['client'=>one('SELECT * FROM '.table('studio_clients').' WHERE id=1')];sdrn_deny('Notifications resolved support cannot mark provider event',fn()=>activity_mark('client',[$terminal],true));unset($GLOBALS['cwp_support']);
+    $original=one('SELECT active,auth_version FROM '.table('studio_clients').' WHERE id=1');
+    foreach(['active'=>0,'auth_version'=>bin2hex(random_bytes(16))] as $field=>$value){
+        try{
+            query('UPDATE '.table('studio_clients').' SET '.$field.'=? WHERE id=1',[$value]);
+            if($field==='auth_version')sdrn_deny('Notifications stale client session cannot read provider feed',fn()=>activity_feed('client'));
+            sdrn_client();
+            if($field==='active')sdrn_deny('Notifications deactivated primary client cannot read feed',fn()=>activity_feed('client'));
+            else{sdrn_ok('Notifications new client credential does not inherit original provider event',sdrn_activity_provider_keys('client')===[]);sdrn_deny('Notifications rotated client credential cannot open original event',fn()=>activity_source('client',$terminal));}
+        }finally{query('UPDATE '.table('studio_clients').' SET '.$field.'=? WHERE id=1',[$original[$field]]);sdrn_client();}
+    }
+    // Corrupt only the disposable namespace, preserve exact cell bytes, and restore
+    // before continuing. No invented source repair and no nested mark transaction.
+    $head=sdrn_head();$before=sdrn_digest();$io=[$dns,$gets,$posts];
+    try{
+        query('UPDATE '.table('settings').' SET value=? WHERE name=?',['damaged-head','provider_subdomain_requests_head']);unset($GLOBALS['cwp_settings']);
+        $caught=false;try{activity_count('client');}catch(ActivityProviderUnavailable){$caught=true;}
+        sdrn_ok('Notifications corrupt provider graph refuses count even above legacy cap',$caught);
+        $feed=activity_feed('client');
+        sdrn_ok('Notifications corrupt provider graph retains legacy page with unknown count',$feed['count']===null&&count($feed['rows'])===30&&count($feed['notices'])===1&&str_contains($feed['notices'][0],'temporarily unavailable')&&array_filter($feed['rows'],static fn($r)=>activity_provider_key($r['event_key']))===[]);
+        sdrn_deny('Notifications corrupt provider graph refuses exact source',fn()=>activity_source('client',$terminal));
+        sdrn_deny('Notifications corrupt provider graph refuses provider cursor',fn()=>activity_feed('client',false,$terminal));
+        $damaged=sdrn_digest();sdrn_deny('Notifications corrupt provider mixed mark refuses atomically',fn()=>activity_mark('client',[$legacy[0],$terminal],true));
+        sdrn_ok('Notifications corrupt mixed mark cannot change legacy read state or audit',sdrn_digest()===$damaged);
+    }finally{query('UPDATE '.table('settings').' SET value=? WHERE name=?',[$head,'provider_subdomain_requests_head']);unset($GLOBALS['cwp_settings']);}
+    sdrn_ok('Notifications exact restoration recovers all original sources without sends',sdrn_digest()===$before&&in_array($terminal,sdrn_activity_keys('client'),true)&&[$dns,$gets,$posts]===$io);
+    sdrn_client();
 }
 if($worker)sdrn_worker();
 $handle=fopen($report,'xb');if($handle===false)exit(2);
@@ -373,6 +466,8 @@ try{
     sdrn_ok('Only separate exact hostname receipt yields observed client status',$matched['state']==='observed'&&$matchedClient['state']==='observed'&&array_keys($matchedClient['last_check'])===['disposition','recorded_epoch']&&$matchedClient['last_check']['disposition']==='observed'&&sdrn_pending($link,SDRN_NEW)===null);
     sdrn_ok('Client status and independent confirmation preserve provider ledger and all rows',sdrn_digest()===$before&&[$dns,$gets,$posts]===$io&&one('SELECT * FROM '.table('provider_operations').' WHERE id=?',[$ledger['id']])===$ledger&&$posts===1);
 
+    $stage='notification-projections';sdrn_notifications($cancelId,$cancelEvent,$declineId,$declineEvent,$mainId,$dispatch,$review);
+
     $stage='stale-review-recovery';$recoveryId=bin2hex(random_bytes(16));$recoveryChild='recover.'.SDRN_NAME;sdrn_create($recoveryId,$option,$recoveryChild);sdrn_owner();$staleReview=sdrn_item($recoveryId);
     sdrn_map($link);$before=sdrn_digest();$io=[$dns,$gets,$posts];
     sdrn_deny('An old owner proof cannot newly admit after a genuine later map',fn()=>sdrn_approve($recoveryId,$staleReview));
@@ -381,6 +476,7 @@ try{
     sdrn_ok('Terminal audit fault follows real client dispatch and one additional send',sdrn_fault('terminal',fn()=>sdrn_approve($recoveryId,$recoveryReview))&&$posts===2);
     $interrupted=sdrn_item($recoveryId);$recoveryHash=$interrupted['dispatch']['recovery_ledger_sha256'];$recoveryLedger=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',['subdomainadd:'.$recoveryOwner]);
     sdrn_ok('Failed terminal transaction retains exact origin and finished ledger',$interrupted['state']==='interrupted'&&is_string($recoveryHash)&&strlen($recoveryHash)===64&&$recoveryLedger['status']==='uncertain'&&(int)$recoveryLedger['attempts']===1&&sdrn_count('provider_subdomain_add_terminals')===$terminals);
+    sdrn_client();sdrn_ok('Notifications durable review survives failed terminal audit without invented terminal',in_array('subdomain-request:'.$recoveryOwner,sdrn_activity_keys('client'),true)&&!in_array('subdomain-terminal:'.$recoveryOwner,sdrn_activity_keys('client'),true));sdrn_owner();
     $before=sdrn_digest();$io=[$dns,$gets,$posts];sdrn_approve($recoveryId,$recoveryReview);
     sdrn_deny('Interrupted client request cannot verify before local witness recovery',fn()=>provider_subdomain_requests_verify($recoveryId,$recoveryOwner,SDRN_PASSWORD,'sdrn_read_dns','sdrn_read'));
     sdrn_deny('Recovery cannot attach a different owner approval',fn()=>provider_subdomain_requests_recover($recoveryId,$dispatch,$recoveryHash,SDRN_PASSWORD));
@@ -391,6 +487,7 @@ try{
     $recoveryBefore=sdrn_rows();$recovered=provider_subdomain_requests_recover($recoveryId,$recoveryOwner,$recoveryHash,SDRN_PASSWORD);
     sdrn_ok('Explicit local recovery appends only a terminal counter and audit without resend',$recovered['state']==='unknown'&&$recovered['dispatch']['can_verify']===true&&sdrn_count('provider_subdomain_add_terminals')===$terminals+1&&[$dns,$gets,$posts]===$io&&sdrn_recovery_delta($recoveryBefore,$recoveryOwner)&&one('SELECT * FROM '.table('provider_operations').' WHERE id=?',[$recoveryLedger['id']])===$recoveryLedger);
     sdrn_deny('Recovery cannot overwrite an existing terminal',fn()=>provider_subdomain_requests_recover($recoveryId,$recoveryOwner,$recoveryHash,SDRN_PASSWORD));
+    sdrn_client();sdrn_ok('Notifications local recovery exposes exactly one uncertain terminal',count(array_keys(sdrn_activity_keys('client'),'subdomain-terminal:'.$recoveryOwner,true))===1&&activity_source('client','subdomain-terminal:'.$recoveryOwner)['kind']==='subdomain_uncertain');sdrn_owner();
     $readBody=json_encode([SDRN_NAME=>SDRN_OLD,SDRN_NEW=>'']);$readStatus=200;$different=sdrn_verify($recoveryId,$recoveryOwner,$profile);
     sdrn_ok('A fresh map lacking recovered hostname remains unknown and fenced',$different['state']==='unknown'&&$different['last_check']['disposition']==='different'&&sdrn_pending($link,$recoveryChild)['id']===$recoveryOwner&&$posts===2);
 
@@ -436,6 +533,7 @@ try{
         sdrn_deny('Changed original client auth refuses exact owner approval replay',fn()=>sdrn_approve($revokedId,$revokedReview));
     }finally{query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=2',[$clientAuth]);sdrn_owner();}
     sdrn_ok('Original client consent and truthful no-send terminal remain retained',sdrn_graph()['requests'][$revokedId]['request']['actor']['auth_sha256']===hash('sha256',$clientAuth)&&sdrn_pending($other,$otherChild)===null);
+    sdrn_client(2);sdrn_ok('Notifications retained no-send witness is distinct from uncertain result',activity_source('client','subdomain-terminal:'.$revokedOwner)['kind']==='subdomain_not_sent');sdrn_owner();
 
     $stage='missing-completion';sdrn_map($other);sdrn_client(2);$missingId=bin2hex(random_bytes(16));$missingChild='interrupted.site802.synthetic.invalid';sdrn_create($missingId,$otherOption,$missingChild,2);sdrn_owner();$missingReview=sdrn_item($missingId);$missingOwner=$missingReview['approval']['request_id'];
     try{sdrn_approve($missingId,$missingReview,static fn()=>throw new PDOException('Synthetic interrupted resolver'));sdrn_ok('Real admitted resolver interruption propagates',false);}catch(PDOException){sdrn_ok('Real admitted resolver interruption propagates',true);}
@@ -444,7 +542,9 @@ try{
     sdrn_deny('Never-finished request cannot fabricate a terminal from missing ledger',fn()=>provider_subdomain_requests_recover($missingId,$missingOwner,str_repeat('0',64),SDRN_PASSWORD));
     sdrn_ok('Missing-ledger replay stays interrupted and fenced with no resend',$missing['state']==='interrupted'&&$missing['dispatch']['can_verify']===false&&$missing['dispatch']['recovery_ledger_sha256']===null&&sdrn_digest()===$before&&[$dns,$gets,$posts]===$io&&sdrn_pending($other,$missingChild)['id']===$missingOwner);
 
+    sdrn_client(2);sdrn_ok('Notifications missing local terminal is not invented as an outcome',!in_array('subdomain-terminal:'.$missingOwner,sdrn_activity_keys('client'),true));sdrn_owner();
     $stage='changed-assignment';provider_settings_save($profile,1,'Changed synthetic client subdomain key',true,'SYNTHETIC_CHANGED_SUBDOMAIN_REQUEST_KEY',SDRN_PASSWORD);
+    sdrn_client();sdrn_ok('Notifications changed provider credential hides original provider events but preserves legacy',sdrn_activity_provider_keys('client')===[]&&count(sdrn_activity_keys('client'))===101);sdrn_deny('Notifications changed provider credential denies stale exact link',fn()=>activity_destination('client','subdomain-terminal:'.$dispatch));sdrn_owner();
     sdrn_deny('Changed credentials refuse old client-origin dispatch replay',fn()=>sdrn_approve($recoveryId,$recoveryReview));
     sdrn_client();$historical=sdrn_item($recoveryId,1);sdrn_ok('Changed credentials retain safe unknown client history',$historical['state']==='unknown'&&$historical['current_assignment']===false&&$historical['dispatch']===null&&sdrn_pending($link,$recoveryChild)['id']===$recoveryOwner);
     sdrn_owner();provider_settings_save($profile,2,'Restored synthetic key with new revision',true,SDRN_SECRET,SDRN_PASSWORD);sdrn_ok('Replacement profile revision gets a real complete inventory',sdrn_hosting($profile)['state']==='complete');
@@ -456,6 +556,7 @@ try{
     sdrn_client();$old=sdrn_item($recoveryId,1);sdrn_ok('Original client retains historical status without current authority',$old['current_assignment']===false&&$old['state']==='unknown'&&$old['can_cancel']===false);
     sdrn_deny('Original client cannot reuse consent after actual reassignment',fn()=>sdrn_create($recoveryId,$originalOption,$recoveryChild));
 
+    sdrn_client();sdrn_ok('Notifications reassignment cannot leave former client provider events',sdrn_activity_provider_keys('client')===[]);sdrn_client(2);sdrn_deny('Notifications reassignment cannot transfer original client notification',fn()=>activity_source('client','subdomain-terminal:'.$dispatch));
     $stage='established-history';sdrn_owner();db()->exec('RENAME TABLE '.table('provider_subdomain_requests_events').' TO sdrn_hidden_request_events');
     try{sdrn_deny('Missing established request table cannot be recreated',fn()=>provider_subdomain_requests_prepare(SDRN_PASSWORD));sdrn_ok('Failed setup leaves established table absent',!sdrn_exists());}finally{db()->exec('RENAME TABLE sdrn_hidden_request_events TO '.table('provider_subdomain_requests_events'));}
     $final=sdrn_locked(fn()=>provider_subdomain_requests_state());sdrn_ok('All six real requests retain their distinct immutable transitions',count($final['requests'])===6&&$final['requests'][$cancelId]['state']==='cancelled'&&$final['requests'][$declineId]['state']==='declined'&&$final['requests'][$mainId]['state']==='dispatched'&&$final['requests'][$recoveryId]['state']==='dispatched'&&$final['requests'][$revokedId]['state']==='dispatched'&&$final['requests'][$missingId]['state']==='dispatched');

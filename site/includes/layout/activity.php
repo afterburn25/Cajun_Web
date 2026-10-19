@@ -24,24 +24,25 @@ function activity_render(string $audience,string $error=''): never {
             else echo '<p>Ask an owner to enable workspace activity.</p>';
             echo '</section>';admin_foot();exit;
         }
-        activity_actor($audience);
         if(isset($_GET['open']))redirect(activity_destination($audience,is_string($_GET['open'])?$_GET['open']:''));
         $unread=($_GET['filter']??'')==='unread';$before=is_string($_GET['before']??null)?$_GET['before']:'';
-        $feed=activity_feed($audience,$unread,$before);$count=activity_count($audience);
+        $feed=activity_feed($audience,$unread,$before);$count=$feed['count'];
     }catch(PDOException $e){report_error($e);fail_page('Workspace activity is temporarily unavailable. Your project records are unchanged.',503);}
     catch(InvalidArgumentException|RuntimeException){fail_page('Activity unavailable. Sign in with an authorized account or return to the activity center and refresh.',403);}
     if($audience==='admin')admin_head('Workspace activity','activity',staff_require('clients.manage'));
     else{site_head('Workspace activity','portal');echo '<section class="section"><div class="container"><span class="eyebrow">YOUR PROJECT UPDATES</span><h1>Workspace activity</h1><p><a href="'.esc(studio_url()).'">← All projects</a></p>';show_flash();}
     if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
-    echo '<p>Messages, reviews, files'.($audience==='client'?', invoices, payments and website releases':' and client decisions').'. Opening an update keeps its read status until you change it. All times are UTC.</p><div class="activity-toolbar"><strong>'.($count>=100?'99+':$count).' unread</strong><nav aria-label="Activity filter"><a href="'.esc(activity_url($audience)).'"'.(!$unread?' aria-current="page"':'').'>All updates</a><a href="'.esc(activity_url($audience,['filter'=>'unread'])).'"'.($unread?' aria-current="page"':'').'>Unread</a></nav>';
+    foreach($feed['notices'] as $notice)echo '<div class="notice error" role="status">'.esc($notice).'</div>';
+    echo '<p>Messages, reviews, files'.($audience==='client'?', invoices, payments, website releases and subdomain request updates':' and client decisions, plus subdomain requests for owners').'. Opening an update keeps its read status until you change it. All times are UTC.</p><div class="activity-toolbar"><strong>'.($count===null?'Unread count unavailable':($count>=100?'99+':$count).' unread').'</strong><nav aria-label="Activity filter"><a href="'.esc(activity_url($audience)).'"'.(!$unread?' aria-current="page"':'').'>All updates</a><a href="'.esc(activity_url($audience,['filter'=>'unread'])).'"'.($unread?' aria-current="page"':'').'>Unread</a></nav>';
     if($feed['rows'])activity_form($audience,array_column($feed['rows'],'event_key'),'read','Mark visible updates read');echo '</div><div class="activity-list">';
     $labels=['message'=>$audience==='client'?'Studio message':'Client message','file'=>'Private file added','review'=>'Review published','invoice'=>'Invoice issued','payment'=>'Payment history updated','release'=>'Website release published','decision'=>'Client review decision'];
+    $labels+=['subdomain_requested'=>'Subdomain requested','subdomain_withdrawn'=>'Subdomain request withdrawn','subdomain_declined'=>'Subdomain request declined','subdomain_reviewed'=>'Subdomain request reviewed','subdomain_not_sent'=>'Subdomain request was not sent','subdomain_uncertain'=>'Subdomain result not confirmed','subdomain_observed'=>'Subdomain observed in a later check','subdomain_different'=>'Subdomain not observed in this check','subdomain_unavailable'=>'Subdomain check unavailable'];
     foreach($feed['rows'] as $r){$read=$r['read_at']!==null;
         echo '<article class="workspace-card activity-item" data-event-key="'.esc($r['event_key']).'"><div><span class="workspace-status">'.($read?'Read':'Unread').'</span><span class="eyebrow">'.esc($labels[$r['kind']]).'</span><h2><a href="'.esc(activity_url($audience,['open'=>$r['event_key']])).'">'.esc($r['project_title']).'</a></h2>';
         if($r['item_title']!=='')echo '<p>'.esc($r['item_title']).'</p>';
         echo '<time>'.esc($r['occurred_at']).' UTC</time></div>';activity_form($audience,[$r['event_key']],$read?'unread':'read',$read?'Mark unread':'Mark read');echo '</article>';
     }
-    if(!$feed['rows'])echo '<section class="workspace-card"><h2>'.($unread?'You’re all caught up.':'No updates yet.').'</h2><p>New project activity will appear here.</p></section>';
+    if(!$feed['rows'])echo '<section class="workspace-card"><h2>'.($feed['notices']!==[]?'Some updates are unavailable':($unread?'You’re all caught up.':'No updates yet.')).'</h2><p>New workspace activity will appear here.</p></section>';
     echo '</div>';if($feed['next']!=='')echo '<p><a class="btn outline" href="'.esc(activity_url($audience,['filter'=>$unread?'unread':'all','before'=>$feed['next']])).'">Older updates →</a></p>';
     if($audience==='admin')admin_foot();else{echo '</div></section>';site_foot(false);}exit;
 }

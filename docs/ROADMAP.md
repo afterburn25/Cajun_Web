@@ -1,3 +1,7 @@
+## 2026-10-19 — subdomain monitoring notices
+
+The [subdomain notification candidate](TWENTYI_SUBDOMAIN_NOTIFICATIONS.md) connects retained owner/client request progress to the existing activity center and bell. Local function checks and source review are available; native SQL, installed workflow/capture acceptance, integration and publication remain pending. This advances portal monitoring without claiming complete20i, DNS readiness or website uptime monitoring.
+
 ## 2026-10-18 — subdomain installed acceptance continuation
 
 [Installed workflow coverage](TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md) follows PR236 on a separate candidate. Real owner/client HTTP handlers, loopback TLS provider responses, independent readback and six required desktop/mobile captures target the remaining verification gap. Prepared tests are not completed runtime acceptance. Full 20i and the existing integration/release gates remain unfinished.
