@@ -430,6 +430,9 @@ jobs:
           "$PHP_BINARY" tests/hosting_reconciliation_native.php
           "$PHP_BINARY" tests/client_authority_native.php
           "$PHP_BINARY" tests/license_native.php
+          "$PHP_BINARY" tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-default.json
+          "$PHP_BINARY" -n tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json
+          CWP_TEST_RENEWAL_INVOICING=1 "$PHP_BINARY" tests/domain_renewal_invoice_create_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser
         run: .ci-venv/bin/python tests/browser_acceptance.py

@@ -1,3 +1,9 @@
+## 2026-10-19 — renewal invoice creation candidate
+
+Parent `a86f6f4fa592e6f715a9420aec8de4622258642e`; branch `codex/twentyi-renewal-invoicing`; enclosing commit **feat: create invoices from accepted domain renewal terms**. [Scope and evidence](docs/TWENTYI_RENEWAL_INVOICING.md). Root owns integration and shared UI/CI seams; Domains owns backend proposal, Catalog independent review, VPS installed browser cases. Devin retains non-20i work.
+
+Finish the first candidate native/full hosted gates, review installed captures, then integrate normally and verify exact-main delivery. Do not modify or redispatch frozen PR249/250 or earlier catalog/capture acceptance. The 497-run obsolete cleanup is already fully classified and closed. Published1.25.0 remains immutable; this candidate performs no live provider request, payment, email or deployment.
+
 ## 2026-10-19 — closed queue remainder; preserve candidate heads
 
 Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/roadmap-continuity-2026-10-19`; enclosing commit **docs: record verified queue remainder and candidate handoff**. [Current work and exact gates](docs/ROADMAP_CONTINUATION_2026_10_19.md) supersede historical pending-cleanup statements below.

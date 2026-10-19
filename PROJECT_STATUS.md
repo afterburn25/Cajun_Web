@@ -1,3 +1,7 @@
+## 2026-10-19 — renewal invoicing implementation
+
+The [renewal invoicing increment](docs/TWENTYI_RENEWAL_INVOICING.md) adds an owner action to create and reserve the exact accepted renewal fee in a selected client project. Existing manual allocation and separate payment/provider approval remain. Branch `codex/twentyi-renewal-invoicing` starts at `a86f6f4f`; this is a candidate, not a published release. Source, portable, native and installed browser evidence must remain distinct. Full 20i, full product/image catalog import and 1.26 publication remain unfinished.
+
 ## 2026-10-19 — verified remainder and candidate handoff
 
 The separately reviewed139-run queue remainder is complete:139 verified terminal cancellations covering 551 unexecuted jobs. The original 497-candidate inventory now has466 verified cancellations and 31 preserved runs, with no untouched candidates or unresolved terminal verifications. All cleanup processes have exited. Original failed evidence and protected application/release gates remain preserved. [Cleanup record](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md).
