@@ -50,6 +50,9 @@
     "\"$PHP_BINARY\" tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-default.json",
     "\"$PHP_BINARY\" -n tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-minimal.json",
     "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
+    "\"$PHP_BINARY\" tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-minimal.json",
+    "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "\"$PHP_BINARY\" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json",
     "\"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json",
     "\"$PHP_BINARY\" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json",
@@ -835,8 +838,8 @@
       "tests/hosting_catalog_browser_fixture.php": "5708f1fab66c0907bd7abac9c41c289ce55085103352936a36dd2d58cc3e6080",
       "tests/hosting_catalog_cases.py": "f192e1d8a34240739e2b02beea00feeab0c4ade8658311020aa93769dd07fce1",
       "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
-      "site/app/hosting/catalog_offers.php": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
-      "site/app/hosting/catalog_offers_context.php": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+      "site/app/hosting/catalog_offers.php": "cfc966698bedf870b014944708243db2a07d00806982f405bc27fcaf9f3ae28e",
+      "site/app/hosting/catalog_offers_context.php": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b",
       "site/app/hosting/catalog_offers_storage.php": "aa15b723bbe88236dfc0936b4a98cbb9380bb2422e16513e5a736e40dc7b6768",
       "site/app/hosting/catalog_recovery.php": "bc98280a62deba07b62d5081146139fb610c4d26a90a426969e8e9a2d965b870",
       "site/app/updates/structure.php": "9085455efdb94ccce41cf8006a6e1137ec35d986f432b3259cb6e6194a71b3d6",
@@ -879,12 +882,12 @@
       "site/app/hosting/catalog_offer_views.php": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
       "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
-      "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
-      "site/portal/controllers/hosting_catalog.php": "5f176888ba0116eced1677319a0e9a0b61146a81dda68f317635262c071420d5",
-      "site/portal/views/hosting_catalog.php": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
+      "site/includes/layout/hosting_catalog.php": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a",
+      "site/portal/controllers/hosting_catalog.php": "db214c825efd4754f7ecfac9c79734d2df1138c5f2959f9193b701447294280b",
+      "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
       "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
-      "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+      "tests/hosting_checkout_views.php": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c",
       "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
       "tests/hosting_catalog_recovery_socket_test.py": "1eda38a66123e3e56c647fc8e325b2e55136158d41f313443172bfb339104fc8"
     },
@@ -1191,7 +1194,7 @@
       "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5",
       "tests/service-plans/checkout_documents.php": "e131b2ae0ea2831c55082939a5a32b3cd5fb6743303f7c83be60b39211005f2b",
       "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46",
-      "tests/hosting_checkout_views.php": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+      "tests/hosting_checkout_views.php": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c",
       "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
       "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
@@ -1312,8 +1315,8 @@
       "site/includes/layout/public.php": "4a41b36885dd9da1f7da3f66f1d6a4c3936c7fe735e0d16e17d1a96e4562b14f",
       "site/includes/urls.php": "4e5ed7e8926d8c7d51e55d558ac7ca05cbc628b63e889aa5cb365f655e55e68a",
       "site/pages/controller.php": "af453ed8cf2e9ed4d7832384d49fbfa637b0ba1e8fa66f4ce7911ad47fe550dd",
-      "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
-      "site/pages/services/hosting.php": "d4a6530f40cd17f34675214afbbf88a852bdde74fedfd3478c7671eb4cf21a8b",
+      "site/includes/layout/hosting_catalog.php": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a",
+      "site/pages/services/hosting.php": "91904fea81cbcf6494a74fcc1090cdd7d5ff8f9600c0c4b3eb1eb16893cd8e52",
       "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "tests/provider_catalog_connection_entry.php": "af57305a2fddd137e5970a4148f148aba7c2f95ffc7a1ef0c17ab4660c0a70bf",
@@ -1337,7 +1340,7 @@
       }
     },
     "unchanged_workflows": {
-      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
     },
     "scope": "Separate focused portable/native and synthetic-renderer checks; actual installed application, combined full/upgrade acceptance and provider artwork/VPS mapping remain pending."
@@ -1390,7 +1393,7 @@
       }
     },
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
@@ -1436,7 +1439,7 @@
     "predecessor_contract_sha256": "67cb48db157eae0d77f0addbe880659c418d06ed8e01f0e77308ca4c9f7065ef",
     "predecessor_reports_sha256": "383566d49b339c0c0d1ec69947fdab508252ecb553e6a9dc3ef1bab180a669d4",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
       "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
@@ -1444,10 +1447,10 @@
       "site/app/hosting/catalog_offer_setup_document.php": "cd68fb846661a2a38cb05c4f87501b17b923cf2a27d9e610286358bccb9cdb5c",
       "site/app/hosting/catalog_offer_setup_views.php": "573d00d1f5bdfb0cb2d7cd98ca9edfdeafdea9330976b6c7102d2f78b796c1c2",
       "site/app/hosting/catalog_offer_views.php": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d",
-      "site/app/hosting/catalog_offers_context.php": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+      "site/app/hosting/catalog_offers_context.php": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b",
       "site/app/plans/records.php": "e97663e3e617334fc1a4aa6d8af18228aa21b898f94ebb3f268fd534a33c68cb",
       "site/app/providers/plan_catalog.php": "86f3a23cadeccd2bfcad88b067bd671d9534ebf8bc17290d6d274301326b4bc3",
-      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+      "tests/acceptance_artifacts_test.py": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
       "tests/hosting_catalog_plan_setup_document.php": "aadbf41e64c3157459ebef173170ea35a5ee291f0ebd05bedaae5e6532f2a457",
@@ -1867,7 +1870,7 @@
     "predecessor_contract_sha256": "a4091c25c3c034a27761db7441aeff508419bb28d3e15cd79fea28860e217431",
     "predecessor_reports_sha256": "90a9bb0bb73c2129337c8c89e7f8245feaf657d47bacf4532d567e52007608c1",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_purchases.php": "c45a8ae46cffdac59d269de2e9a1cf56cd6e775f18bd4a0e181fe3c0e3e95c5b",
       "site/admin/controllers/router.php": "215de3171908b8912b2d2eae7f0d3843a10890499c4e0f425898c57ea04ded89",
@@ -1880,10 +1883,10 @@
       "site/includes/layout/admin.php": "b4fbd796bbbba5bb6bc53479d1dce242d5a743d47fc95aec31f58ee98be5d93d",
       "site/portal/controllers/hosting_purchases.php": "3f7eb38a33561b7ee3a1902e4986b67fde76a82ed5e2b8735ee22a5d51738e49",
       "site/portal/controllers/router.php": "a000a9c7fac2db0668e909a3476bbc3e2e8663e9f93d76129373650c231e5300",
-      "site/portal/views/hosting_catalog.php": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
+      "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
-      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+      "tests/acceptance_artifacts_test.py": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
       "tests/hosting_checkout_purchases_guards.php": "7135eca0924835e125371aaea84f7de56c0ed00c89e3973a2961dc405c12f95a",
       "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
       "tests/hosting_purchase_inbox_wiring.py": "1548e9a0ae23b48b104f96f91a7c69ba64ac1567363ff0007525e738ebfbb744",
@@ -2241,7 +2244,7 @@
     "predecessor_contract_sha256": "feb7d4c1088f5aa8b66284a79bdbb7583f62c1685220f08ca2707486ef5b5776",
     "predecessor_reports_sha256": "4250d481fcf080b42e9d9847c78484ae7be31e9b8b9e48b8a945446d31fb74b2",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/includes/layout/service_orders.php": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
       "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
@@ -2457,7 +2460,7 @@
     ],
     "unchanged_source_sha256": {
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
-      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+      "tests/acceptance_artifacts_test.py": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
@@ -2649,9 +2652,9 @@
       }
     ],
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
-      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+      "tests/acceptance_artifacts_test.py": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
       "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
@@ -3020,7 +3023,7 @@
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
       "site/admin/controllers/actions.php": "c1e2fbab98f8c3303abc48ad0dd7c2ac87e53f50e6e465293b7a146da968e467",
       "site/admin/controllers/auth.php": "21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb",
       "site/admin/controllers/catalog.php": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57",
@@ -3034,8 +3037,8 @@
       "site/app/hosting/catalog_offer_setup.php": "f9be99047dd3aac5a1ce7777b4b5e25705d01d5036fa110525aa0cc33ec43a52",
       "site/app/hosting/catalog_offer_setup_document.php": "cd68fb846661a2a38cb05c4f87501b17b923cf2a27d9e610286358bccb9cdb5c",
       "site/app/hosting/catalog_offer_views.php": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d",
-      "site/app/hosting/catalog_offers.php": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
-      "site/app/hosting/catalog_offers_context.php": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+      "site/app/hosting/catalog_offers.php": "cfc966698bedf870b014944708243db2a07d00806982f405bc27fcaf9f3ae28e",
+      "site/app/hosting/catalog_offers_context.php": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b",
       "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
       "site/app/hosting/catalog_offers_storage.php": "aa15b723bbe88236dfc0936b4a98cbb9380bb2422e16513e5a736e40dc7b6768",
       "site/app/marketing/growth.php": "d9bfd1968fa6bf7700cb9f9a843805a03fc0d2e0c603016983b0913039ab160f",
@@ -3055,7 +3058,7 @@
       "site/app/providers/settings.php": "15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871",
       "site/app/staff/accounts.php": "72da02001db9cbb274234bdf18510525d2d501d322ee2ab7af3d78cee5b05de7",
       "site/assets/css/admin.css": "655a82d0eaf046b9836b16d8a2887d0ed406d8181e25c329bbdf2721b5300d6f",
-      "site/assets/css/growth.css": "4189195e3abe675dc6da07c59a0fd5007b14cb28ea0e0ad019d69c6230f4c08b",
+      "site/assets/css/growth.css": "7bbc3ed26641d67cc272a13bafb17c3c6698f37407292cfd4dd3853fc96f5a6a",
       "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
       "site/assets/css/premium.css": "bde2678d7a655d124491b3041a73bc6f474031c17f18396da0e8d3c994299380",
       "site/assets/css/site.css": "ecf7a54945d89e62b86fd43741aeafbee7480a752d4133e17053ddffe251abcf",
@@ -3066,12 +3069,12 @@
       "site/database/schema/recurring_billing_schema.php": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
       "site/includes/bootstrap.php": "5bce9d17c3179e8654d293ba8d478a000d6255aeba9aad5ba46f9a09e415d409",
       "site/includes/layout/admin.php": "b4fbd796bbbba5bb6bc53479d1dce242d5a743d47fc95aec31f58ee98be5d93d",
-      "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+      "site/includes/layout/hosting_catalog.php": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a",
       "site/includes/layout/public.php": "4a41b36885dd9da1f7da3f66f1d6a4c3936c7fe735e0d16e17d1a96e4562b14f",
       "site/includes/security/csrf.php": "cf24bbccd978bd9ac94d289f822deea683624b8093e86b362a4b8e818f9a99de",
       "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
       "site/includes/security/input.php": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b",
-      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+      "tests/acceptance_artifacts_test.py": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
       "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
       "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
       "tests/hosting_catalog_plan_setup_views.php": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
@@ -3086,5 +3089,573 @@
       "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c"
     },
     "scope": "Independent local retail billing options from one retained canonical import. Actual guarded native SQL remains separate from portable documents and modeled local HTTP/Chromium; no provider write, payment or new installed capture producer."
+  },
+  "hosting_billing_selector": {
+    "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
+    "predecessor_contract_sha256": "280577cb36bf3ac6f793cd53d679e86f3171fe5e4e9c7c183ec9500ce68dce44",
+    "predecessor_reports_sha256": "074cfc2e578805a341ddbeb66a598b3f8ee2719e2650e3c1de78930ec355adb9",
+    "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-minimal.json",
+      "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php"
+    ],
+    "browser_command": ".ci-venv/bin/python -B tests/hosting_catalog_billing_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-billing-browser-results.json",
+    "reports": [
+      "hosting-catalog-billing-default.json",
+      "hosting-catalog-billing-minimal.json",
+      "hosting-catalog-billing-native-results.json",
+      "hosting-catalog-billing-browser-results.json"
+    ],
+    "screenshots": [],
+    "repins": [
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "site/app/hosting/catalog_offers.php"
+        ],
+        "before": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
+        "after": "cfc966698bedf870b014944708243db2a07d00806982f405bc27fcaf9f3ae28e"
+      },
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "site/app/hosting/catalog_offers_context.php"
+        ],
+        "before": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+        "after": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b"
+      },
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "site/includes/layout/hosting_catalog.php"
+        ],
+        "before": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+        "after": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a"
+      },
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "site/portal/controllers/hosting_catalog.php"
+        ],
+        "before": "5f176888ba0116eced1677319a0e9a0b61146a81dda68f317635262c071420d5",
+        "after": "db214c825efd4754f7ecfac9c79734d2df1138c5f2959f9193b701447294280b"
+      },
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "site/portal/views/hosting_catalog.php"
+        ],
+        "before": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
+        "after": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e"
+      },
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "tests/hosting_checkout_views.php"
+        ],
+        "before": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+        "after": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c"
+      },
+      {
+        "keys": [
+          "hosting_checkout",
+          "source_sha256",
+          "tests/hosting_checkout_views.php"
+        ],
+        "before": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+        "after": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c"
+      },
+      {
+        "keys": [
+          "catalog_storefront",
+          "source_sha256",
+          "site/includes/layout/hosting_catalog.php"
+        ],
+        "before": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+        "after": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a"
+      },
+      {
+        "keys": [
+          "catalog_storefront",
+          "source_sha256",
+          "site/pages/services/hosting.php"
+        ],
+        "before": "d4a6530f40cd17f34675214afbbf88a852bdde74fedfd3478c7671eb4cf21a8b",
+        "after": "91904fea81cbcf6494a74fcc1090cdd7d5ff8f9600c0c4b3eb1eb16893cd8e52"
+      },
+      {
+        "keys": [
+          "catalog_storefront",
+          "unchanged_workflows",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba"
+      },
+      {
+        "keys": [
+          "catalog_storefront_http",
+          "unchanged_source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          "site/app/hosting/catalog_offers_context.php"
+        ],
+        "before": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+        "after": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+        "after": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox",
+          "source_sha256",
+          "site/portal/views/hosting_catalog.php"
+        ],
+        "before": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
+        "after": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox",
+          "source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+        "after": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox_browser",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox_browser",
+          "unchanged_source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+        "after": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0"
+      },
+      {
+        "keys": [
+          "hosting_checkout_manual_policy_ui",
+          "unchanged_source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba"
+      },
+      {
+        "keys": [
+          "hosting_checkout_manual_policy_ui",
+          "unchanged_source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+        "after": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0"
+      },
+      {
+        "keys": [
+          "catalog_retail_variants",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba"
+      },
+      {
+        "keys": [
+          "catalog_retail_variants",
+          "source_sha256",
+          "site/app/hosting/catalog_offers.php"
+        ],
+        "before": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
+        "after": "cfc966698bedf870b014944708243db2a07d00806982f405bc27fcaf9f3ae28e"
+      },
+      {
+        "keys": [
+          "catalog_retail_variants",
+          "source_sha256",
+          "site/app/hosting/catalog_offers_context.php"
+        ],
+        "before": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+        "after": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b"
+      },
+      {
+        "keys": [
+          "catalog_retail_variants",
+          "source_sha256",
+          "site/assets/css/growth.css"
+        ],
+        "before": "4189195e3abe675dc6da07c59a0fd5007b14cb28ea0e0ad019d69c6230f4c08b",
+        "after": "7bbc3ed26641d67cc272a13bafb17c3c6698f37407292cfd4dd3853fc96f5a6a"
+      },
+      {
+        "keys": [
+          "catalog_retail_variants",
+          "source_sha256",
+          "site/includes/layout/hosting_catalog.php"
+        ],
+        "before": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+        "after": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a"
+      },
+      {
+        "keys": [
+          "catalog_retail_variants",
+          "source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+        "after": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0"
+      }
+    ],
+    "source_deltas": {
+      ".github/workflows/application-tests.yml": {
+        "before_sha256": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "after_sha256": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
+        "changes": [
+          {
+            "after_start": 320,
+            "after_end": 323,
+            "before": "",
+            "after": "          \"$PHP_BINARY\" tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-minimal.json\n          CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php\n"
+          },
+          {
+            "after_start": 479,
+            "after_end": 480,
+            "before": "",
+            "after": "          .ci-venv/bin/python -B tests/hosting_catalog_billing_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-billing-browser-results.json\n"
+          }
+        ]
+      },
+      "site/app/hosting/catalog_offers.php": {
+        "before_sha256": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
+        "after_sha256": "cfc966698bedf870b014944708243db2a07d00806982f405bc27fcaf9f3ae28e",
+        "changes": [
+          {
+            "after_start": 158,
+            "after_end": 160,
+            "before": "function hosting_catalog_public(int $page=1): array {\n    return HostingCatalogRead::publicPage($page);\n",
+            "after": "function hosting_catalog_public(int $page=1,string $billing='all'): array {\n    return HostingCatalogRead::publicPage($page,$billing);\n"
+          }
+        ]
+      },
+      "site/app/hosting/catalog_offers_context.php": {
+        "before_sha256": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+        "after_sha256": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b",
+        "changes": [
+          {
+            "after_start": 6,
+            "after_end": 7,
+            "before": "",
+            "after": "require_once __DIR__.'/catalog_billing.php';\n"
+          },
+          {
+            "after_start": 45,
+            "after_end": 46,
+            "before": "    public static function publicPage(int $page=1): array {\n",
+            "after": "    public static function publicPage(int $page=1,string $billing='all'): array {\n"
+          },
+          {
+            "after_start": 47,
+            "after_end": 49,
+            "before": "        return recurring_billing_locked(function()use($page):array {\n",
+            "after": "        $billing=hosting_catalog_billing($billing);\n        return recurring_billing_locked(function()use($page,$billing):array {\n"
+          },
+          {
+            "after_start": 51,
+            "after_end": 55,
+            "before": "            $rows=all(\"SELECT p.id,p.product_id FROM $publications p JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq) ORDER BY c.sort_order,c.id LIMIT 21 OFFSET \".(($page-1)*20));\n",
+            "after": "            // Select the period before pagination; later matching offers must remain reachable.\n            $filter=$billing==='all'?'':' AND BINARY c.term=?';\n            $parameters=$billing==='all'?[]:[['monthly'=>'month','annually'=>'year'][$billing]];\n            $rows=all(\"SELECT p.id,p.product_id FROM $publications p JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq)$filter ORDER BY c.sort_order,c.id LIMIT 21 OFFSET \".(($page-1)*20),$parameters);\n"
+          },
+          {
+            "after_start": 63,
+            "after_end": 68,
+            "before": "                try {$offers[]=$publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());}\n",
+            "after": "                try {\n                    $offer=$publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());\n                    if ($billing!=='all' && ($offer['cadence']??null)!==$billing) throw new RuntimeException('The hosting billing period changed.');\n                    $offers[]=$offer;\n                }\n"
+          }
+        ]
+      },
+      "site/assets/css/growth.css": {
+        "before_sha256": "4189195e3abe675dc6da07c59a0fd5007b14cb28ea0e0ad019d69c6230f4c08b",
+        "after_sha256": "7bbc3ed26641d67cc272a13bafb17c3c6698f37407292cfd4dd3853fc96f5a6a",
+        "changes": [
+          {
+            "after_start": 36,
+            "after_end": 46,
+            "before": "",
+            "after": "\n/* Hosting billing is a read-only view choice; each published price stays intact. */\n.hosting-billing-selector{margin:24px 0 32px;font-size:16px;line-height:1.6}\n.hosting-billing-selector>span{display:block;font-weight:700;margin-bottom:10px}\n.hosting-billing-selector>div{display:flex;flex-wrap:wrap;gap:10px}\n.hosting-billing-selector .btn,.hosting-billing-pages .btn{font-size:14px;line-height:1.5;min-height:44px;white-space:normal;text-align:center;max-width:100%}\n.hosting-billing-selector [aria-current=\"page\"]{background:var(--gold);color:#102235;border-color:var(--gold);font-weight:700}\n.hosting-billing-selector p{font-size:14px;line-height:1.6;margin:12px 0 0;max-width:70ch}\n.hosting-billing-selector a:focus-visible,.hosting-billing-pages a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}\n.hosting-billing-pages{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}\n"
+          }
+        ]
+      },
+      "site/includes/layout/hosting_catalog.php": {
+        "before_sha256": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+        "after_sha256": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a",
+        "changes": [
+          {
+            "after_start": 4,
+            "after_end": 27,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/app/hosting/catalog_billing.php';\n\n/** Only fixed local navigation is produced; choosing a period never changes an offer. */\nfunction hosting_catalog_billing_url(string $billing,int $page=1,bool $portal=false): string {\n    $browse=hosting_catalog_billing_query(['billing'=>$billing,'p'=>(string)$page]);\n    return $portal ? studio_url(['hosting'=>'offers','billing'=>$browse['billing'],'p'=>$browse['page']])\n        : page_url('hosting',['billing'=>$browse['billing'],'hosting_page'=>$browse['page']]).'#hosting-plans';\n}\nfunction hosting_catalog_billing_options(string $billing,bool $portal=false): void {\n    $billing=hosting_catalog_billing($billing);\n    echo '<nav class=\"hosting-billing-selector\" aria-label=\"Hosting billing period\"><span>Billing period</span><div>';\n    foreach (['all'=>'All plans','monthly'=>'Monthly','annually'=>'Annual'] as $value=>$label) {\n        echo '<a class=\"btn outline\" href=\"'.esc(hosting_catalog_billing_url($value,1,$portal)).'\"'.($billing===$value?' aria-current=\"page\"':'').'>'.esc($label).'</a>';\n    }\n    echo '</div><p>Prices show the full charge for each month or year. Each option has its own published terms.</p></nav>';\n}\nfunction hosting_catalog_billing_pages(array $page,array $browse,bool $portal=false): void {\n    $browse=hosting_catalog_billing_query(['billing'=>$browse['billing'],'p'=>(string)$browse['page']]);\n    echo '<nav class=\"button-row hosting-billing-pages\" aria-label=\"Hosting plan pages\">';\n    if ($browse['page']>1) echo '<a class=\"btn outline\" href=\"'.esc(hosting_catalog_billing_url($browse['billing'],$browse['page']-1,$portal)).'\">Previous plans</a>';\n    if ($page['has_more']&&$browse['page']<100000) echo '<a class=\"btn outline\" href=\"'.esc(hosting_catalog_billing_url($browse['billing'],$browse['page']+1,$portal)).'\">More plans</a>';\n    echo '</nav>';\n}\n"
+          },
+          {
+            "after_start": 69,
+            "after_end": 70,
+            "before": "function hosting_catalog_comparison(array $page): void {\n",
+            "after": "function hosting_catalog_comparison(array $page,?array $browse=null): void {\n"
+          },
+          {
+            "after_start": 74,
+            "after_end": 78,
+            "before": "",
+            "after": "    if ($browse!==null) {\n        $browse=hosting_catalog_billing_query(['billing'=>$browse['billing'],'p'=>(string)$browse['page']]);\n        hosting_catalog_billing_options($browse['billing']);\n    }\n"
+          },
+          {
+            "after_start": 80,
+            "after_end": 83,
+            "before": "        echo '<div class=\"hosting-comparison-empty\"><h3>'.($page['unavailable']?'We cannot show hosting plans right now.':'Let\u2019s find the right hosting for you.').'</h3><p>'.($page['unavailable']?'Please try again later, or contact us to discuss your website.':'No shared hosting plans are published yet. Tell us about your website and we\u2019ll help you plan the next step.').'</p><a class=\"btn outline\" href=\"'.esc(page_url('consultation')).'\">Discuss your hosting needs</a></div>';\n",
+            "after": "        $empty=$browse!==null?'No '.match($browse['billing']){'monthly'=>'monthly','annually'=>'annual',default=>'shared hosting'}.' plans are available on this page. Choose another billing period or contact us.':'No shared hosting plans are published yet. Tell us about your website and we\u2019ll help you plan the next step.';\n        echo '<div class=\"hosting-comparison-empty\"><h3>'.($page['unavailable']?'We cannot show hosting plans right now.':'Let\u2019s find the right hosting for you.').'</h3><p>'.esc($page['unavailable']?'Please try again later, or contact us to discuss your website.':$empty).'</p><a class=\"btn outline\" href=\"'.esc(page_url('consultation')).'\">Discuss your hosting needs</a></div>';\n        if ($browse!==null) hosting_catalog_billing_pages($page,$browse);\n"
+          },
+          {
+            "after_start": 132,
+            "after_end": 134,
+            "before": "                echo '<p>Send a request from your client portal. We\u2019ll review it with you before offering an agreement. A request does not take payment or activate hosting.</p><a class=\"btn outline\" href=\"'.esc(site_url('portal/index.php?hosting=offers')).'\">View request options</a>';\n",
+            "after": "                $requestUrl=$browse===null?site_url('portal/index.php?hosting=offers'):hosting_catalog_billing_url($browse['billing'],$browse['page'],true);\n                echo '<p>Send a request from your client portal. We\u2019ll review it with you before offering an agreement. A request does not take payment or activate hosting.</p><a class=\"btn outline\" href=\"'.esc($requestUrl).'\">View request options</a>';\n"
+          },
+          {
+            "after_start": 140,
+            "after_end": 142,
+            "before": "    if ($page['has_more']) echo '<p><a class=\"btn outline\" href=\"'.esc(site_url('portal/index.php?hosting=offers&p=2')).'\">Browse more plans in your portal</a></p>';\n",
+            "after": "    if ($browse!==null) hosting_catalog_billing_pages($page,$browse);\n    elseif ($page['has_more']) echo '<p><a class=\"btn outline\" href=\"'.esc(site_url('portal/index.php?hosting=offers&p=2')).'\">Browse more plans in your portal</a></p>';\n"
+          }
+        ]
+      },
+      "site/pages/services/hosting.php": {
+        "before_sha256": "d4a6530f40cd17f34675214afbbf88a852bdde74fedfd3478c7671eb4cf21a8b",
+        "after_sha256": "91904fea81cbcf6494a74fcc1090cdd7d5ff8f9600c0c4b3eb1eb16893cd8e52",
+        "changes": [
+          {
+            "after_start": 6,
+            "after_end": 9,
+            "before": "try {$hostingOffers=hosting_catalog_public();}\n",
+            "after": "try {$hostingBrowse=hosting_catalog_billing_query($_GET,'hosting_page');}\ncatch(InvalidArgumentException) {fail_page('Hosting page not found.',404);}\ntry {$hostingOffers=hosting_catalog_public($hostingBrowse['page'],$hostingBrowse['billing']);}\n"
+          },
+          {
+            "after_start": 13,
+            "after_end": 14,
+            "before": "<section class=\"section hosting-comparison-section\" id=\"hosting-plans\"><div class=\"container\"><span class=\"eyebrow\">YOUR WEBSITE, YOUR CHOICE</span><h2>Clear plans. Side by side.</h2><?php hosting_catalog_comparison($hostingOffers); ?></div></section>\n",
+            "after": "<section class=\"section hosting-comparison-section\" id=\"hosting-plans\"><div class=\"container\"><span class=\"eyebrow\">YOUR WEBSITE, YOUR CHOICE</span><h2>Clear plans. Side by side.</h2><?php hosting_catalog_comparison($hostingOffers,$hostingBrowse); ?></div></section>\n"
+          }
+        ]
+      },
+      "site/portal/controllers/hosting_catalog.php": {
+        "before_sha256": "5f176888ba0116eced1677319a0e9a0b61146a81dda68f317635262c071420d5",
+        "after_sha256": "db214c825efd4754f7ecfac9c79734d2df1138c5f2959f9193b701447294280b",
+        "changes": [
+          {
+            "after_start": 11,
+            "after_end": 13,
+            "before": "    $page=service_plans_form_number(['page'=>$query['p']??'1'],'page',100000);\n    if ($page<1) throw new InvalidArgumentException('Choose an available page.');\n    return ['tab'=>$tab,'page'=>$page];\n",
+            "after": "    $browse=hosting_catalog_billing_query($query);\n    return ['tab'=>$tab,'page'=>$browse['page'],'billing'=>$browse['billing']];\n"
+          },
+          {
+            "after_start": 49,
+            "after_end": 50,
+            "before": "function hosting_catalog_portal_form(array $values,bool $enabled=true,int $page=1):void {\n",
+            "after": "function hosting_catalog_portal_form(array $values,bool $enabled=true,int $page=1,string $billing='all'):void {\n"
+          },
+          {
+            "after_start": 54,
+            "after_end": 56,
+            "before": "    echo '<form method=\"post\" action=\"'.esc(studio_url(['hosting'=>$tab,'p'=>$page])).'\">'.csrf_field().'<input type=\"hidden\" name=\"action\" value=\"'.esc($action).'\">';\n",
+            "after": "    $billing=hosting_catalog_billing($billing);\n    echo '<form method=\"post\" action=\"'.esc(studio_url(['hosting'=>$tab,'p'=>$page]+($request?['billing'=>$billing]:[]))).'\">'.csrf_field().'<input type=\"hidden\" name=\"action\" value=\"'.esc($action).'\">';\n"
+          },
+          {
+            "after_start": 72,
+            "after_end": 73,
+            "before": "    try {$page=$query['tab']==='offers'?hosting_catalog_public($query['page']):hosting_catalog_client_requests((int)$client['id'],$query['page']);}\n",
+            "after": "    try {$page=$query['tab']==='offers'?hosting_catalog_public($query['page'],$query['billing']):hosting_catalog_client_requests((int)$client['id'],$query['page']);}\n"
+          }
+        ]
+      },
+      "site/portal/views/hosting_catalog.php": {
+        "before_sha256": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
+        "after_sha256": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
+        "changes": [
+          {
+            "after_start": 4,
+            "after_end": 5,
+            "before": "foreach (['offers'=>'Available plans','requests'=>'My requests'] as $key=>$label) echo '<a href=\"'.esc(studio_url(['hosting'=>$key])).'\"'.($query['tab']===$key?' aria-current=\"page\"':'').'>'.esc($label).'</a>';\n",
+            "after": "foreach (['offers'=>'Available plans','requests'=>'My requests'] as $key=>$label) echo '<a href=\"'.esc(studio_url(['hosting'=>$key]+($key==='offers'?['billing'=>$query['billing']]:[]))).'\"'.($query['tab']===$key?' aria-current=\"page\"':'').'>'.esc($label).'</a>';\n"
+          },
+          {
+            "after_start": 9,
+            "after_end": 10,
+            "before": "",
+            "after": "    hosting_catalog_billing_options($query['billing'],true);\n"
+          },
+          {
+            "after_start": 21,
+            "after_end": 22,
+            "before": "        hosting_catalog_portal_form($values,$current,$query['page']);echo '</article>';\n",
+            "after": "        hosting_catalog_portal_form($values,$current,$query['page'],$query['billing']);echo '</article>';\n"
+          },
+          {
+            "after_start": 23,
+            "after_end": 24,
+            "before": "    if (!$page['offers']&&!$unavailable&&!($page['unavailable']??false)) echo '<section class=\"workspace-card\"><h2>No plans on this page</h2><p>Contact the studio to discuss hosting for your website.</p></section>';\n",
+            "after": "    if (!$page['offers']&&!$unavailable&&!($page['unavailable']??false)) echo '<section class=\"workspace-card\"><h2>No plans for this billing period on this page</h2><p>Choose another billing period or contact the studio to discuss hosting for your website.</p></section>';\n"
+          },
+          {
+            "after_start": 47,
+            "after_end": 48,
+            "before": "    hosting_catalog_portal_form($attempt,false,$query['page']);echo '</section>';\n",
+            "after": "    hosting_catalog_portal_form($attempt,false,$query['page'],$query['billing']);echo '</section>';\n"
+          },
+          {
+            "after_start": 49,
+            "after_end": 56,
+            "before": "echo '<nav class=\"button-row\" aria-label=\"Hosting pages\">';\nif ($query['page']>1) echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['hosting'=>$query['tab'],'p'=>$query['page']-1])).'\">Previous</a>';\nif ($page['has_more']) echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['hosting'=>$query['tab'],'p'=>$query['page']+1])).'\">Next</a>';\necho '</nav>';\n",
+            "after": "if ($query['tab']==='offers') hosting_catalog_billing_pages($page,$query,true);\nelse {\n    echo '<nav class=\"button-row\" aria-label=\"Hosting pages\">';\n    if ($query['page']>1) echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['hosting'=>$query['tab'],'p'=>$query['page']-1])).'\">Previous</a>';\n    if ($page['has_more']&&$query['page']<100000) echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['hosting'=>$query['tab'],'p'=>$query['page']+1])).'\">Next</a>';\n    echo '</nav>';\n}\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "before_sha256": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+        "after_sha256": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
+        "changes": [
+          {
+            "after_start": 1077,
+            "after_end": 1268,
+            "before": "",
+            "after": "_run_before_billing_selector = run\n\n\ndef billing_selector_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Billing selector current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Billing selector inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Billing selector predecessor changed')\n    return result\n\n\ndef billing_selector_current(current=None, registry=None):\n    if current is None:\n        current = a.load(ROOT/'tools/acceptance-contract.json')\n    if registry is None:\n        registry = a.load(ROOT/'tools/acceptance-reports.json')\n    section = current['hosting_billing_selector']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Billing selector current source changed: '+path)\n    prior = copy.deepcopy(current)\n    del prior['hosting_billing_selector']\n    additions = section['native_additions']\n    position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Billing selector native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]:\n            cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']:\n            raise ValueError('Billing selector current serialized pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Billing selector predecessor contract changed')\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']):\n            raise ValueError('Billing selector report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Billing selector predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = billing_selector_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef billing_selector_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    check('Billing selector retains all186 native commands and adds three exact producers',\n          len(current['native_commands']) == 189 and len(section['native_additions']) == 3\n          and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])\n    check('Billing selector requires four unique report producers and no new captures',\n          len(section['reports']) == len(set(section['reports'])) == 4 and section['screenshots'] == [])\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    check('Billing selector workflow changes only the three native recipes and local browser command',\n          workflow.count(inserted) == 1 and workflow.count(browser) == 1\n          and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)\n    check('Billing selector browser uses selected PHP after existing Python browser setup',\n          section['browser_command'] == '.ci-venv/bin/python -B tests/hosting_catalog_billing_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-billing-browser-results.json'\n          and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Billing selector native preserves explicit Linux isolated opt-in and mapped port selection',\n          section['native_additions'][-1] == 'CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php' and valid_port_context(workflow))\n    for path, digest in section['source_sha256'].items():\n        check('Billing selector binds current source '+path,\n              hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Billing selector preserves complete parent source '+path,\n              hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Billing selector refuse modified current source '+path,\n             lambda path=path, delta=delta: billing_selector_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    wrong = copy.deepcopy(current)\n    wrong['native_commands'].pop(0)\n    deny('Billing selector refuse a removed original command', lambda: billing_selector_current(wrong, registry))\n    wrong = copy.deepcopy(current)\n    wrong['native_commands'][0] += ' changed'\n    deny('Billing selector refuse an altered original command', lambda: billing_selector_current(wrong, registry))\n    wrong = copy.deepcopy(current)\n    first = next(iter(section['source_deltas']))\n    wrong['hosting_billing_selector']['source_deltas'][first]['before_sha256'] = '0'*64\n    deny('Billing selector refuse a substituted predecessor source', lambda: billing_selector_current(wrong, registry))\n    wrong = copy.deepcopy(registry)\n    wrong['final'].remove(next(n for n in wrong['final'] if n not in section['reports']))\n    deny('Billing selector refuse removing an original report', lambda: billing_selector_current(current, wrong))\n    for pin in section['repins']:\n        wrong = copy.deepcopy(current)\n        cursor = wrong\n        for key in pin['keys'][:-1]:\n            cursor = cursor[key]\n        cursor[pin['keys'][-1]] = pin['before']\n        try:\n            billing_selector_current(wrong, registry)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('Stale billing selector source pin passed')\n    check('Billing selector refuse every stale serialized current pin', True)\n    for phase, expected in [('browser', 212), ('final', 263)]:\n        check('Billing selector preserves exact original '+phase+' reports',\n              len(registry[phase]) == len(set(registry[phase])) == expected\n              and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'billing-selector-artifacts'\n    source = root/'source'\n    ctx = context()\n    fixtures(source, ctx)\n    incoming = root/'partitions'\n    bindings = {}\n    jobs = {}\n    input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane)\n        job.mkdir(parents=True)\n        jobs[lane] = job\n        if lane == 'build':\n            shutil.copytree(source/'dist', job/'dist')\n            shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA:\n                    named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name, lane):\n                    named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1\n        return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve())\n                shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Billing selector aggregate requires all263 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name\n        path.unlink()\n        reseal()\n        result = combine()\n        check('Billing selector missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path, False)\n        reseal()\n        result = combine()\n        check('Billing selector failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Billing selector report stays in native-browser '+name,\n              a.evidence_allowed('qa/'+name, 'native-browser') and not any(a.evidence_allowed('qa/'+name, lane) for lane in ('build', 'apache', 'recovery')))\n    named(jobs['native-browser']/'qa/billing-selector-unexpected-results.json')\n    reseal()\n    result = combine()\n    check('Billing selector unexpected report refuses', result['complete'] is False and 'Unexpected reports: billing-selector-unexpected-results.json' in result['errors'])\n    for path in ('test-runtime/hosting-catalog-billing-private/provider-master.key', 'qa/hosting-catalog-billing-private/provider-master.key'):\n        deny('Billing selector private fixture file refuses '+path,\n             lambda path=path: a.evidence_allowed(path, 'native-browser'))\n\n\ndef run(tmp):\n    current, registry, section, historical = billing_selector_current()\n    originals = {str((ROOT/path).resolve()):data for path, data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve())\n        return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path, *args, **kwargs):\n        key = str(path.resolve())\n        return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path, *args, **kwargs)\n    with patch.object(Path, 'read_bytes', previous_bytes), patch.object(Path, 'read_text', previous_text):\n        _run_before_billing_selector(tmp)\n    billing_selector_checks(tmp, current, registry, section, historical)\n\n\n"
+          }
+        ]
+      },
+      "tests/hosting_checkout_views.php": {
+        "before_sha256": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
+        "after_sha256": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c",
+        "changes": [
+          {
+            "after_start": 6,
+            "after_end": 7,
+            "before": "",
+            "after": "require CWP_CODE_ROOT.'/app/hosting/catalog_billing.php';\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "8257f2b17974c66cd48f8b645ef3acf01864b4436a8c67c11681f7f91e347eba",
+      "site/app/billing/catalog.php": "3f3d0bf8dea9feba713928f92c6d93c98fd7cd960f340bd2bfa19f2841fccb86",
+      "site/app/clients/identity.php": "42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9",
+      "site/app/hosting/catalog_billing.php": "ac6497e0b09eae8d3d7796583712cd857c0a79ebdb783c747b64c86c104f5189",
+      "site/app/hosting/catalog_checkout.php": "b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2",
+      "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
+      "site/app/hosting/catalog_checkout_storage.php": "eaf98711efa2de3985fe74ad0b9dd85bc2c2e48a17e4bd4624b1f578e6d61e76",
+      "site/app/hosting/catalog_offer_setup.php": "f9be99047dd3aac5a1ce7777b4b5e25705d01d5036fa110525aa0cc33ec43a52",
+      "site/app/hosting/catalog_offer_setup_document.php": "cd68fb846661a2a38cb05c4f87501b17b923cf2a27d9e610286358bccb9cdb5c",
+      "site/app/hosting/catalog_offers.php": "cfc966698bedf870b014944708243db2a07d00806982f405bc27fcaf9f3ae28e",
+      "site/app/hosting/catalog_offers_context.php": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b",
+      "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
+      "site/app/hosting/catalog_offers_storage.php": "aa15b723bbe88236dfc0936b4a98cbb9380bb2422e16513e5a736e40dc7b6768",
+      "site/app/marketing/growth.php": "d9bfd1968fa6bf7700cb9f9a843805a03fc0d2e0c603016983b0913039ab160f",
+      "site/app/media/images.php": "9262a28d87a1d758bd2c40da67fb05e9501df6f5dc9848e476cf571684263f69",
+      "site/app/plans/documents.php": "8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c",
+      "site/app/plans/forms.php": "3fb646a0bfe944299b4111d977ca1deb46b630e77ff99423233ece4a08ddcd42",
+      "site/app/plans/records.php": "e97663e3e617334fc1a4aa6d8af18228aa21b898f94ebb3f268fd534a33c68cb",
+      "site/app/providers/catalog_import.php": "e08527169d037b33c26c8678740225f9f95076dc66187ba0cfbab1861ab52906",
+      "site/app/providers/catalog_import_document.php": "8b5e856479a5cd09ebfcd855f9453715bf4db9737214fb256208c040250746d0",
+      "site/app/providers/catalog_import_storage.php": "a922075d0d7a6499534678265617e0d017949b241dc3436f2b0f4ed4ebd7bdc7",
+      "site/app/providers/catalog_variants.php": "89ff0ca2ef72bb14f544b4481b6992510599f72883b4943451ce2a4158d414a5",
+      "site/app/providers/catalog_variants_document.php": "bd929bbad23be64994a31e3cf62a2ce23ad2457a440151d09c42c9f4b66474e1",
+      "site/app/providers/catalog_variants_storage.php": "bebd64dfef60e32fce024978fae15cd961118510cd21a5f851b4b2afd94fbaaa",
+      "site/app/providers/credentials.php": "a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186",
+      "site/app/providers/inventory.php": "0e364dc91975fb3b28576ce32edfab34fb3cec4da6733ba4749cc6cb4275e863",
+      "site/app/providers/package_types.php": "aac5e823b599b4bd886841410b077b6bc55cf887c867439f3767c8ab853a45df",
+      "site/app/providers/plan_catalog.php": "86f3a23cadeccd2bfcad88b067bd671d9534ebf8bc17290d6d274301326b4bc3",
+      "site/app/providers/settings.php": "15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871",
+      "site/app/staff/accounts.php": "72da02001db9cbb274234bdf18510525d2d501d322ee2ab7af3d78cee5b05de7",
+      "site/assets/css/growth.css": "7bbc3ed26641d67cc272a13bafb17c3c6698f37407292cfd4dd3853fc96f5a6a",
+      "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
+      "site/assets/css/premium.css": "bde2678d7a655d124491b3041a73bc6f474031c17f18396da0e8d3c994299380",
+      "site/assets/css/site.css": "ecf7a54945d89e62b86fd43741aeafbee7480a752d4133e17053ddffe251abcf",
+      "site/database/migrations/provider_catalog_variant_migrate.php": "70b27856abedb990d8eb0dbc954d73bf8fb6d12bc05612e1e526040c2d725c5c",
+      "site/database/schema/base.php": "2120f63a8ef24f67e1d3dc27475b5db9cbabf8c80ca5b5015287aca5cb5295bb",
+      "site/database/schema/provider_catalog_import_schema.php": "dc047d538a5579676b1ef01969a0d8af30700729aa59d5045d8e70e3f1e1fb8a",
+      "site/database/schema/provider_catalog_variant_schema.php": "039464e56be9e060f009ae5c9b1ccab63303a4c12ce9e2c900dfca9dfb7f77ce",
+      "site/database/schema/recurring_billing_schema.php": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
+      "site/includes/bootstrap.php": "5bce9d17c3179e8654d293ba8d478a000d6255aeba9aad5ba46f9a09e415d409",
+      "site/includes/layout/hosting_catalog.php": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a",
+      "site/includes/layout/public.php": "4a41b36885dd9da1f7da3f66f1d6a4c3936c7fe735e0d16e17d1a96e4562b14f",
+      "site/includes/security/csrf.php": "cf24bbccd978bd9ac94d289f822deea683624b8093e86b362a4b8e818f9a99de",
+      "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
+      "site/includes/security/input.php": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b",
+      "site/includes/urls.php": "4e5ed7e8926d8c7d51e55d558ac7ca05cbc628b63e889aa5cb365f655e55e68a",
+      "site/pages/services/hosting.php": "91904fea81cbcf6494a74fcc1090cdd7d5ff8f9600c0c4b3eb1eb16893cd8e52",
+      "site/portal/controllers/hosting_catalog.php": "db214c825efd4754f7ecfac9c79734d2df1138c5f2959f9193b701447294280b",
+      "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
+      "site/portal/controllers/router.php": "a000a9c7fac2db0668e909a3476bbc3e2e8663e9f93d76129373650c231e5300",
+      "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
+      "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
+      "tests/acceptance_artifacts_test.py": "671f35cfe7d646b0aa102f6f398536dd3e50f7f652c2fc58712d732aae2fd1a0",
+      "tests/hosting_catalog_billing.php": "3e7078669889310783907a350c355ff20b0c26514e8dae508715b647fd53dbc9",
+      "tests/hosting_catalog_billing_browser.py": "22ee99755548ad508a40635ee7f5da85081a81c2f8471362b304acfb889cd642",
+      "tests/hosting_catalog_billing_http_fixture.php": "ff4ee59df5e531989c497ed94f5a41c0bedba01c133d0b325da5a491c5ad1cbe",
+      "tests/hosting_catalog_billing_native.php": "2dd71d453854ee85ae03c61a9e7c3e15c5d4462addf20484f422137e5c9a99a2",
+      "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
+      "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
+      "tests/hosting_catalog_variants_native.php": "8975785bdc913293e13b94076cb8da802ee09e82e7f3e948876ee611a1c24b15",
+      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/hosting_checkout_views.php": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c",
+      "tests/provider_catalog_import_batch_native.php": "2953b71154fff44bda62e48414ba6a4d4eeedfb7a6427f1f3804062d64b0f6f5",
+      "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c"
+    },
+    "scope": "Monthly/annual browsing selects current actual publications before pagination without changing selected checkout or request terms. Guarded native SQL and modeled local HTTP/Chromium remain separate; no provider write, payment or new installed capture producer."
   }
 }

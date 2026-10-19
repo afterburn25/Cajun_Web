@@ -1,3 +1,11 @@
+## 2026-10-19 — monthly and annual hosting plan browsing
+
+Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](TWENTYI_HOSTING_BILLING_SELECTOR.md).
+
+Root owns UI, documentation, packaging and integration; Catalog owns the read service, Domains native coverage and acceptance binding, and VPS the modeled browser journey and independent review. Local portable/model checks and packaging are recorded separately from pending Linux SQL, installed application, upgrade and release gates. The initial extracted-fixture dependency failure and browser harness failures remain retained. Published 1.25.0 and the live site are unchanged. Devin retains non-20i/licensing.
+
+Preserve the separate frozen directory-listing source `b0fe332f391f5586d1a3978e9ae8f21a0605bfba` ([PR246](https://github.com/afterburn25/Cajun_Web/pull/246)) and original queued runs. Next: inspect this increment's first exact-source full run, resolve actual failures, integrate accepted branches sequentially and complete combined release verification. Queued work is not acceptance; no queue-driven restart or cancellation.
+
 ## 2026-10-19 — separate monthly and annual hosting offers
 
 Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](TWENTYI_CATALOG_BILLING_OPTIONS.md).

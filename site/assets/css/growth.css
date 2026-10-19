@@ -34,3 +34,13 @@
 .admin-body [data-catalog-variants] .catalog-variant-create{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem}
 .admin-body [data-catalog-variants] summary{cursor:pointer;font-weight:700;padding:.5rem 0}
 .admin-body [data-catalog-variants] summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+
+/* Hosting billing is a read-only view choice; each published price stays intact. */
+.hosting-billing-selector{margin:24px 0 32px;font-size:16px;line-height:1.6}
+.hosting-billing-selector>span{display:block;font-weight:700;margin-bottom:10px}
+.hosting-billing-selector>div{display:flex;flex-wrap:wrap;gap:10px}
+.hosting-billing-selector .btn,.hosting-billing-pages .btn{font-size:14px;line-height:1.5;min-height:44px;white-space:normal;text-align:center;max-width:100%}
+.hosting-billing-selector [aria-current="page"]{background:var(--gold);color:#102235;border-color:var(--gold);font-weight:700}
+.hosting-billing-selector p{font-size:14px;line-height:1.6;margin:12px 0 0;max-width:70ch}
+.hosting-billing-selector a:focus-visible,.hosting-billing-pages a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+.hosting-billing-pages{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}

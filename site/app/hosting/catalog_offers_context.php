@@ -4,6 +4,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once __DIR__.'/catalog_offers_document.php';
 require_once __DIR__.'/catalog_offers_storage.php';
+require_once __DIR__.'/catalog_billing.php';
 require_once CWP_CODE_ROOT.'/app/providers/catalog_import.php';
 require_once CWP_CODE_ROOT.'/app/providers/plan_catalog.php';
 
@@ -42,12 +43,16 @@ final class HostingCatalogRead {
             'observation'=>['refresh_id'=>$source['id'],'profile_id'=>$source['profile_id'],'profile_revision'=>(int)$source['profile_revision'],'key_fingerprint'=>$source['key_fingerprint'],'observed_epoch'=>$observation['observed_epoch'],'types'=>$observation['types']],
             'imports'=>$imports];
     }
-    public static function publicPage(int $page=1): array {
+    public static function publicPage(int $page=1,string $billing='all'): array {
         if ($page<1 || $page>100000) throw new InvalidArgumentException('Choose an available hosting page.');
-        return recurring_billing_locked(function()use($page):array {
+        $billing=hosting_catalog_billing($billing);
+        return recurring_billing_locked(function()use($page,$billing):array {
             if (!hosting_catalog_ready()) return ['offers'=>[],'has_more'=>false,'unavailable'=>false];
             $publications=table('hosting_catalog_publications');$withdrawals=table('hosting_catalog_withdrawals');$products=table('catalog_products');
-            $rows=all("SELECT p.id,p.product_id FROM $publications p JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq) ORDER BY c.sort_order,c.id LIMIT 21 OFFSET ".(($page-1)*20));
+            // Select the period before pagination; later matching offers must remain reachable.
+            $filter=$billing==='all'?'':' AND BINARY c.term=?';
+            $parameters=$billing==='all'?[]:[['monthly'=>'month','annually'=>'year'][$billing]];
+            $rows=all("SELECT p.id,p.product_id FROM $publications p JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq)$filter ORDER BY c.sort_order,c.id LIMIT 21 OFFSET ".(($page-1)*20),$parameters);
             $more=count($rows)>20;$rows=array_slice($rows,0,20);
             if (!$rows) return ['offers'=>[],'has_more'=>$more,'unavailable'=>false];
             $productIds=array_map(static fn(array $row):int=>(int)$row['product_id'],$rows);
@@ -56,7 +61,11 @@ final class HostingCatalogRead {
             $offers=[];$unavailable=false;
             foreach ($rows as $row) {
                 $publication=hosting_catalog_publication($row['id']);
-                try {$offers[]=$publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());}
+                try {
+                    $offer=$publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());
+                    if ($billing!=='all' && ($offer['cadence']??null)!==$billing) throw new RuntimeException('The hosting billing period changed.');
+                    $offers[]=$offer;
+                }
                 catch (RuntimeException $error) {if ($error instanceof PDOException) throw $error;$unavailable=true;}
             }
             return ['offers'=>$offers,'has_more'=>$more,'unavailable'=>$unavailable];
