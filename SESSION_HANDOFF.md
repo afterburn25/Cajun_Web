@@ -1,4 +1,16 @@
 # Session handoff - Devin sole-owner continuation
+## 2026-10-19 — nameserver-requests leaf merge preflight complete
+
+On `devin/preflight-commercial` at `84fa341e` (merge of renewal tip `b3dbbd15` + `codex/twentyi-client-nameserver-requests` `024b50dc`), twenty conflicts resolved semantically (PHP union branches — `isRegistrarNameservers`/`$nameserverContext` vs `packageTypes`/`allowed` sets; workflow job union; doc unions; contract/report unions; regenerated installer inventory; test-file chain splice).
+
+- Nameserver leaf adds 21 native commands, 4 contract sections and dedicated verify modules; merged leaf recipe is 219 and leaf registry is 238 browser / 295 final reports.
+- Acceptance chain is now a 28-stage nameserver-aware model: nameserver strips occupy positions 3–6 (requests→installed→changes→nameservers), shifting the old deep chain +4; nameserver sections use custom pin stages (each reads a different historical state); bridge repins on `registered_nameservers` transition deep-section file-hash pins across the stage-3→7 boundary; `merged_stage_delta` on the nameserver section stores verified stage-3→stage-7 byte deltas for the ten boundary-differing files; the overlay additionally serves the fully-stripped contract/report objects verified against `merged_stage_contract_sha256`/`merged_stage_reports_sha256` pins on the same section.
+- Stage-scoped count literals updated where the served scope still carries nameserver content: options 219/`all295`, selector 218/`all294`, variants 215/`all210`, plus their browser/final report-count pins (233/290, 237/294, 238/295).
+- `python tests/acceptance_artifacts_test.py --report <scratch>` → `{"passed": true, "checks": 1212}` (967 + 245 nameserver-family checks).
+- Reusable engine artifacts: `%TEMP%/build_ns_states3.py` (28-stage nameserver-aware state builder — allows known pin/hash field drift at stage boundaries), `%TEMP%/engine8.py` (re-anchor engine with bridge-repin pass, `merged_stage_delta` emission and post-report-update contract fixpoint). Builder/engine must be iterated to contract fixpoint after any test-file or contract edit; the requests verify module's `CONTRACT_SHA256` tracks `canon(OC[4])` and must be re-synced inside that loop.
+
+Next: observe hosted acceptance on `024b50dc` and the cumulative branch, then continue the leaf order in `docs/DEVIN_INTEGRATION_QUEUE.md` — remaining seven leaves: `0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `95ce538e`, `8fe2787a`, `ff467d7f`. Each needs the same re-anchor pipeline.
+
 ## 2026-10-19 — renewal-invoicing leaf merge preflight complete
 
 On `devin/preflight-commercial` at `b3dbbd15` (merge of commercial tip `1c7234da` + `codex/twentyi-renewal-invoicing` `632362f6`), ten conflicts resolved semantically (doc unions per the compacted-checkpoint convention, CSS append, regenerated installer inventory, acceptance contract tail, test-file renewal block).
