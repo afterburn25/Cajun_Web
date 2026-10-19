@@ -1824,3 +1824,9 @@ Main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` publish
 - Each prepared payment request now mints a 256-bit shareable link (`index.php?page=pay&t=`); the token is sealed with the payment master key and looked up only by its SHA-256 hash, grants no portal access, and the page is `noindex`/`no-referrer`/`no-store` with per-IP rate limiting.
 - Link states stay honest end-to-end: prepared requests show invoice reference, purpose, authoritative amount, expiry and the studio's instructions; revoked, superseded, expired, paid, invoice-changed and unknown links each render a truthful terminal state. No card checkout yet.
 - Payments schema 1 → 2 via additive `ALTER` (v1 rows keep `NULL` links); admin request history surfaces the link for prepared requests and the portal invoice card links the owning client to it.
+
+## Unreleased — comparison source registry (devin/non20i-comparison-sources)
+
+- `growth_sources()` now carries the C-01 source/date/plan registry: each of the four cited provider documents records its title, primary URL, review date and plan scope, rendered as a sourced list under every comparison page.
+- Squarespace export link corrected to the current help-center slug (`206566687-Exporting-your-site`); all four sources re-verified against live primary documentation on 2026-10-16, including plan-gated Squarespace code features (Core, Plus, Advanced or some legacy plans).
+- HTTP acceptance asserts the registry lists all four sources with reviewed dates/scopes and HTTPS primary links. No copied competitor claims, prices or performance guarantees added.
