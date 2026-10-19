@@ -1,3 +1,7 @@
+## Unreleased — final component PR filters and verified cleanup
+
+Limit service-plan and staff-invitation PR checks to their actual dependencies while preserving all execution settings. Confirm the remaining103 cleanup outcomes:327 total terminal cancellations,1,297 unexecuted jobs,31 preserved candidates and139 untouched. Keep the partial evidence and original failures. No application, installer, version or released package changes.
+
 ## Unreleased — remaining pure-suite PR filters
 
 Add family-scoped PR filters to access policy, provider contracts and scheduling. Preserve all tests, matrices and push/manual runs. Source/dependency/inverse review passes; no application, installer or released bytes change.

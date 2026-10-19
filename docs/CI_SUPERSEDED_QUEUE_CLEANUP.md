@@ -1,5 +1,13 @@
 # Superseded component queue cleanup
 
+## Verified bounded pass — 2026-10-19, after API recovery
+
+Read-only verification after API recovery confirms all 327 acknowledged cancellations, covering 1,297 jobs with no execution evidence. There are zero outstanding terminal verifications, 31 preserved candidates and 139 untouched candidates. The bounded pass is verified; the original 497-candidate plan is not complete. No cancellation request was repeated. The [new completion receipt](evidence/ci-superseded-queue-completion.json), SHA256 `222646256b082e916fc52b33ddb13c9456e86621f63a52190d9f6abb0b56172b`, sets `pass_review_complete: true` and `original_plan_complete: false`. It preserves the [first partial receipt](evidence/ci-superseded-queue-cleanup.json) byte-for-byte and retains all original operation history.
+
+One capacity read after05:33UTC established sufficient API allowance;309 sequential terminal GETs then resolved the103 pending requests, with complete job/artifact pagination, no new API errors and no mutations or retries. Root locally compared all original IDs and request/error evidence, then verified the103 newly retained terminal snapshots covering409 jobs. Both singled-out runs39132937949 and39111082537 are now terminally cancelled with unexecuted jobs and no artifacts. The missing immediate post-request snapshot for39132937949 remains a permanent limitation; later evidence does not fill it.
+
+All verifier processes exited. No further cleanup is in progress, and139 candidates remain untouched. Original application/capture/release tests still require their own actual results. The earlier checkpoint and continuation instructions below are retained as historical evidence; the read-only terminal follow-up they requested is now complete.
+
 Recorded 2026-10-19. Main starts at `8f734de11031938eff81a02744d5195ecdcab17c`; documentation branch `codex/ci-superseded-queue-cleanup`. This operation reduces obsolete GitHub testing work while preserving current-source coverage and release acceptance. It changes no application or workflow source.
 
 ## Reason and scope
