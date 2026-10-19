@@ -1,3 +1,9 @@
+## 2026-10-19 — separate monthly and annual hosting offers
+
+Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](docs/TWENTYI_CATALOG_BILLING_OPTIONS.md).
+
+Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
+
 ## 2026-10-18 — align checkout fulfillment controls
 
 The successor from `3042f24eddc3587d67ac5d10e28df3b3294a3310` on `codex/twentyi-checkout-fulfillment-controls` removes an unsupported manual-fulfillment choice from checkout-origin hosting agreements. The existing server already requires a verified receipt for those purchases. The owner forms and provider-setup guidance now follow that rule; eligible legacy orders retain their manual controls. [Correction and evidence](docs/TWENTYI_HOSTING_PURCHASE_INBOX.md#checkout-fulfillment-controls).

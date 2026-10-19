@@ -1,3 +1,9 @@
+## 2026-10-19 — separate monthly and annual hosting offers
+
+Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](TWENTYI_CATALOG_BILLING_OPTIONS.md).
+
+Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
+
 ## Release 1.25.0 scope and evidence
 
 Release 1.25.0 contains the bounded INCLUDE scope in [RELEASE_SCOPE_1.25.0.md](RELEASE_SCOPE_1.25.0.md). The HOLD rows and complete20i roadmap remain unfinished. The [versioned acceptance report](TEST_REPORT_1.25.0.md) records source-specific results and the final release receipts identify publication. Development, release acceptance and live deployment are separate events.

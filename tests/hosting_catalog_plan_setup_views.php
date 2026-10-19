@@ -21,6 +21,8 @@ function hsv_load(string $file,string $name): void {
 }
 foreach (['hosting_catalog_admin_owner','hosting_catalog_admin_actions','hosting_catalog_admin_values','hosting_catalog_admin_page','hosting_catalog_admin_positive','hosting_catalog_admin_intent','hosting_catalog_admin_plan_matches','hosting_catalog_admin_data','hosting_catalog_admin_selected_plan'] as $name) hsv_load('app/hosting/catalog_offer_views.php',$name);
 foreach (['hosting_catalog_admin_action','hosting_catalog_admin_retry','hosting_catalog_admin_fields','hosting_catalog_admin_confirmation','hosting_catalog_admin_preserved_submission','hosting_catalog_admin_pagination'] as $name) hsv_load('admin/controllers/hosting_catalog.php',$name);
+// Actual selector predicate; readiness below models the existing canonical-only store.
+hsv_load('app/providers/catalog_import_storage.php','provider_catalog_import_product_predicate');
 set_error_handler(static function(int $level,string $message,string $file,int $line): never {throw new ErrorException($message,0,$level,$file,$line);});
 function hsv_ok(string $name,bool $passed): void {$GLOBALS['checks'][]=['name'=>$name,'passed'=>$passed];if (!$passed) throw new RuntimeException($name);}
 function hsv_bad(string $name,callable $call): void {try {$call();} catch (InvalidArgumentException|RuntimeException|LogicException $e) {if ($e instanceof PDOException) throw $e;hsv_ok($name,true);return;}hsv_ok($name,false);}
@@ -44,6 +46,7 @@ function redirect(string $url): never {$GLOBALS['redirect']=$url;throw new HsvRe
 function recurring_billing_locked(callable $call): mixed {$GLOBALS['calls'][]='lock';return $call();}
 function hosting_catalog_ready(): bool {return true;}
 function provider_catalog_import_ready(): bool {return true;}
+function provider_catalog_variant_ready(): bool {return false;}
 function catalog_ready(): bool {return true;}
 function service_plans_require_ready(): void {}
 function table(string $name): string {return '`'.$name.'`';}

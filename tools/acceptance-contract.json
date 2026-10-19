@@ -45,6 +45,11 @@
     "\"$PHP_BINARY\" tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-default.json",
     "\"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-minimal.json",
     "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
+    "\"$PHP_BINARY\" tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-minimal.json",
+    "\"$PHP_BINARY\" tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-minimal.json",
+    "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "\"$PHP_BINARY\" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json",
     "\"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json",
     "\"$PHP_BINARY\" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json",
@@ -831,7 +836,7 @@
       "tests/hosting_catalog_cases.py": "f192e1d8a34240739e2b02beea00feeab0c4ade8658311020aa93769dd07fce1",
       "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
       "site/app/hosting/catalog_offers.php": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
-      "site/app/hosting/catalog_offers_context.php": "0186d330fc495f3818bec07ba486e6e01a6f6cb10ee3bf36e1b7a6981cf859ab",
+      "site/app/hosting/catalog_offers_context.php": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
       "site/app/hosting/catalog_offers_storage.php": "aa15b723bbe88236dfc0936b4a98cbb9380bb2422e16513e5a736e40dc7b6768",
       "site/app/hosting/catalog_recovery.php": "bc98280a62deba07b62d5081146139fb610c4d26a90a426969e8e9a2d965b870",
       "site/app/updates/structure.php": "9085455efdb94ccce41cf8006a6e1137ec35d986f432b3259cb6e6194a71b3d6",
@@ -871,7 +876,7 @@
       "site/app/hosting/orders.php": "97f40c3621f5736665d5930ec85d83919d3a0b2ff8c295ed04166b0c206f81e8",
       "site/app/hosting/order_links.php": "9799f79b6fd9f8cc9679041d44070f761b6166c74b3e16ed77460b1513f80717",
       "site/app/hosting/fulfillment.php": "deb20f0b6d232831aeb507e7222ada982cd8cf4dd1401018bc997a4f7edaac13",
-      "site/app/hosting/catalog_offer_views.php": "0b664ac7820539fe1f7af6a214f00d580869b3370efc2af6ebc55519254167b5",
+      "site/app/hosting/catalog_offer_views.php": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
       "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
       "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
@@ -1297,9 +1302,9 @@
     "source_sha256": {
       "site/app/providers/checks.php": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
       "site/admin/views/providers.php": "7b5aca61817df930873cc51b1fc6b4775d896f8989cc3f7271a5e71b4b838faa",
-      "site/app/providers/catalog_import.php": "e396beb6579888f18640f4847d27a2c468fb8467bf53e8be63216d316c3fe9b6",
+      "site/app/providers/catalog_import.php": "e08527169d037b33c26c8678740225f9f95076dc66187ba0cfbab1861ab52906",
       "site/app/providers/catalog_import_document.php": "8b5e856479a5cd09ebfcd855f9453715bf4db9737214fb256208c040250746d0",
-      "site/admin/controllers/catalog.php": "9369bc90cbb6e1eed6d5320326812fdaeb98ecf2f2bdfac7be57b2468334a08d",
+      "site/admin/controllers/catalog.php": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57",
       "site/admin/views/catalog_import.php": "1525df784e2c1f1e17634895324fcd9f2cd56733002c6354fd379c5908b9f90b",
       "site/app/hosting/catalog_login.php": "fc18b942f7e32318d0e6124eb0b3fe761f84e95b37f2af2abf8288ef9cb65c23",
       "site/portal/controllers/actions.php": "40f2ceddd2245a9ce682fcef51b4c91269a82ecad0a6643e172c016c7f67a6fd",
@@ -1332,7 +1337,7 @@
       }
     },
     "unchanged_workflows": {
-      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
     },
     "scope": "Separate focused portable/native and synthetic-renderer checks; actual installed application, combined full/upgrade acceptance and provider artwork/VPS mapping remain pending."
@@ -1385,7 +1390,7 @@
       }
     },
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
@@ -1431,23 +1436,23 @@
     "predecessor_contract_sha256": "67cb48db157eae0d77f0addbe880659c418d06ed8e01f0e77308ca4c9f7065ef",
     "predecessor_reports_sha256": "383566d49b339c0c0d1ec69947fdab508252ecb553e6a9dc3ef1bab180a669d4",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
       "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
       "site/app/hosting/catalog_offer_setup.php": "f9be99047dd3aac5a1ce7777b4b5e25705d01d5036fa110525aa0cc33ec43a52",
       "site/app/hosting/catalog_offer_setup_document.php": "cd68fb846661a2a38cb05c4f87501b17b923cf2a27d9e610286358bccb9cdb5c",
       "site/app/hosting/catalog_offer_setup_views.php": "573d00d1f5bdfb0cb2d7cd98ca9edfdeafdea9330976b6c7102d2f78b796c1c2",
-      "site/app/hosting/catalog_offer_views.php": "0b664ac7820539fe1f7af6a214f00d580869b3370efc2af6ebc55519254167b5",
-      "site/app/hosting/catalog_offers_context.php": "0186d330fc495f3818bec07ba486e6e01a6f6cb10ee3bf36e1b7a6981cf859ab",
+      "site/app/hosting/catalog_offer_views.php": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d",
+      "site/app/hosting/catalog_offers_context.php": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
       "site/app/plans/records.php": "e97663e3e617334fc1a4aa6d8af18228aa21b898f94ebb3f268fd534a33c68cb",
       "site/app/providers/plan_catalog.php": "86f3a23cadeccd2bfcad88b067bd671d9534ebf8bc17290d6d274301326b4bc3",
-      "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
       "tests/hosting_catalog_plan_setup_document.php": "aadbf41e64c3157459ebef173170ea35a5ee291f0ebd05bedaae5e6532f2a457",
       "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
-      "tests/hosting_catalog_plan_setup_views.php": "c15317594664fc32aafb655c90f6f4757373b16bbe62bbe7cd6e3baf408097e6",
+      "tests/hosting_catalog_plan_setup_views.php": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
       "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
       "tests/imported_plan_setup_wiring.py": "f672463ffefc83f2bb2a7ca25dac22f2d2fe995316d44e905e039e87c6925268",
@@ -1862,7 +1867,7 @@
     "predecessor_contract_sha256": "a4091c25c3c034a27761db7441aeff508419bb28d3e15cd79fea28860e217431",
     "predecessor_reports_sha256": "90a9bb0bb73c2129337c8c89e7f8245feaf657d47bacf4532d567e52007608c1",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_purchases.php": "c45a8ae46cffdac59d269de2e9a1cf56cd6e775f18bd4a0e181fe3c0e3e95c5b",
       "site/admin/controllers/router.php": "215de3171908b8912b2d2eae7f0d3843a10890499c4e0f425898c57ea04ded89",
@@ -1878,7 +1883,7 @@
       "site/portal/views/hosting_catalog.php": "2eb096b0bd0bce4162a40a3975ea9a91a1340c02a95adeaa044deaaed9274f4d",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
-      "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
       "tests/hosting_checkout_purchases_guards.php": "7135eca0924835e125371aaea84f7de56c0ed00c89e3973a2961dc405c12f95a",
       "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
       "tests/hosting_purchase_inbox_wiring.py": "1548e9a0ae23b48b104f96f91a7c69ba64ac1567363ff0007525e738ebfbb744",
@@ -2236,7 +2241,7 @@
     "predecessor_contract_sha256": "feb7d4c1088f5aa8b66284a79bdbb7583f62c1685220f08ca2707486ef5b5776",
     "predecessor_reports_sha256": "4250d481fcf080b42e9d9847c78484ae7be31e9b8b9e48b8a945446d31fb74b2",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/includes/layout/service_orders.php": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
       "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
@@ -2452,7 +2457,7 @@
     ],
     "unchanged_source_sha256": {
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
-      "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
       "tests/browser_acceptance.py": "aa7a671e76ba4d2fba18ddb7c0f9c0dacc3b2a4903ca507c7750da5bfd9da2dc",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
@@ -2644,9 +2649,9 @@
       }
     ],
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
-      "tests/acceptance_artifacts_test.py": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
       "tests/hosting_checkout_http_browser.py": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
       "tests/hosting_checkout_http_fixture.php": "fc0080f85ee81d07a3f4dfa16d6163b9d73ccec4e0f99cfa49bd2583ea89c3d1",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
@@ -2654,5 +2659,432 @@
       "tools/acceptance-reports.json": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     }
+  },
+  "catalog_retail_variants": {
+    "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
+    "predecessor_contract_sha256": "a1159c4a9a38cfaa181550e68be4a86d21df047dd1e0dacbe0c06677c28cd4cf",
+    "predecessor_reports_sha256": "edec217abf60292c28950b7c5dced5c491ac7ab700af6fa6ab1cecc1cd2fb7fe",
+    "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
+    "native_additions": [
+      "\"$PHP_BINARY\" tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-minimal.json",
+      "\"$PHP_BINARY\" tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-minimal.json",
+      "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php"
+    ],
+    "browser_command": ".ci-venv/bin/python -B tests/hosting_catalog_variants_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-variants-browser-results.json",
+    "reports": [
+      "hosting-catalog-variants-document-default.json",
+      "hosting-catalog-variants-document-minimal.json",
+      "hosting-catalog-variants-contract-default.json",
+      "hosting-catalog-variants-contract-minimal.json",
+      "hosting-catalog-variants-native-results.json",
+      "hosting-catalog-variants-browser-results.json"
+    ],
+    "screenshots": [],
+    "repins": [
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "site/app/hosting/catalog_offers_context.php"
+        ],
+        "before": "0186d330fc495f3818bec07ba486e6e01a6f6cb10ee3bf36e1b7a6981cf859ab",
+        "after": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c"
+      },
+      {
+        "keys": [
+          "hosting_catalog_offers",
+          "source_sha256",
+          "site/app/hosting/catalog_offer_views.php"
+        ],
+        "before": "0b664ac7820539fe1f7af6a214f00d580869b3370efc2af6ebc55519254167b5",
+        "after": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d"
+      },
+      {
+        "keys": [
+          "catalog_storefront",
+          "source_sha256",
+          "site/app/providers/catalog_import.php"
+        ],
+        "before": "e396beb6579888f18640f4847d27a2c468fb8467bf53e8be63216d316c3fe9b6",
+        "after": "e08527169d037b33c26c8678740225f9f95076dc66187ba0cfbab1861ab52906"
+      },
+      {
+        "keys": [
+          "catalog_storefront",
+          "source_sha256",
+          "site/admin/controllers/catalog.php"
+        ],
+        "before": "9369bc90cbb6e1eed6d5320326812fdaeb98ecf2f2bdfac7be57b2468334a08d",
+        "after": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57"
+      },
+      {
+        "keys": [
+          "catalog_storefront",
+          "unchanged_workflows",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "after": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b"
+      },
+      {
+        "keys": [
+          "catalog_storefront_http",
+          "unchanged_source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "after": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "after": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          "site/app/hosting/catalog_offer_views.php"
+        ],
+        "before": "0b664ac7820539fe1f7af6a214f00d580869b3370efc2af6ebc55519254167b5",
+        "after": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          "site/app/hosting/catalog_offers_context.php"
+        ],
+        "before": "0186d330fc495f3818bec07ba486e6e01a6f6cb10ee3bf36e1b7a6981cf859ab",
+        "after": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+        "after": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994"
+      },
+      {
+        "keys": [
+          "imported_plan_setup",
+          "source_sha256",
+          "tests/hosting_catalog_plan_setup_views.php"
+        ],
+        "before": "c15317594664fc32aafb655c90f6f4757373b16bbe62bbe7cd6e3baf408097e6",
+        "after": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "after": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox",
+          "source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+        "after": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox_browser",
+          "source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "after": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b"
+      },
+      {
+        "keys": [
+          "hosting_purchase_inbox_browser",
+          "unchanged_source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+        "after": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994"
+      },
+      {
+        "keys": [
+          "hosting_checkout_manual_policy_ui",
+          "unchanged_source_sha256",
+          ".github/workflows/application-tests.yml"
+        ],
+        "before": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "after": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b"
+      },
+      {
+        "keys": [
+          "hosting_checkout_manual_policy_ui",
+          "unchanged_source_sha256",
+          "tests/acceptance_artifacts_test.py"
+        ],
+        "before": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+        "after": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994"
+      }
+    ],
+    "source_deltas": {
+      ".github/workflows/application-tests.yml": {
+        "before_sha256": "26fae4a94c542d06f2cac20ef112c039da944b15de29491b53e26389ec099760",
+        "after_sha256": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+        "changes": [
+          {
+            "after_start": 315,
+            "after_end": 320,
+            "before": "",
+            "after": "          \"$PHP_BINARY\" tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-minimal.json\n          \"$PHP_BINARY\" tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-minimal.json\n          CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php\n"
+          },
+          {
+            "after_start": 475,
+            "after_end": 476,
+            "before": "",
+            "after": "          .ci-venv/bin/python -B tests/hosting_catalog_variants_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-variants-browser-results.json\n"
+          }
+        ]
+      },
+      "site/admin/controllers/catalog.php": {
+        "before_sha256": "9369bc90cbb6e1eed6d5320326812fdaeb98ecf2f2bdfac7be57b2468334a08d",
+        "after_sha256": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57",
+        "changes": [
+          {
+            "after_start": 5,
+            "after_end": 6,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/admin/controllers/catalog_variants.php';\n"
+          },
+          {
+            "after_start": 13,
+            "after_end": 14,
+            "before": "",
+            "after": "        if(in_array($action,['catalog_import_variant_prepare','catalog_import_variant_create'],true))provider_catalog_variant_admin_action($action);\n"
+          },
+          {
+            "after_start": 95,
+            "after_end": 96,
+            "before": "",
+            "after": "    <?php if($p)provider_catalog_variant_admin_view($p,$user); ?>\n"
+          }
+        ]
+      },
+      "site/app/hosting/catalog_offer_views.php": {
+        "before_sha256": "0b664ac7820539fe1f7af6a214f00d580869b3370efc2af6ebc55519254167b5",
+        "after_sha256": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d",
+        "changes": [
+          {
+            "after_start": 118,
+            "after_end": 120,
+            "before": "        $rows=all('SELECT p.id,p.title,p.sku,p.amount_cents,p.currency,p.term FROM '.table('catalog_products').' p JOIN '.table('catalog_provider_imports').\" i ON i.product_id=p.id WHERE p.family='hosting' AND p.status='draft' AND (LOCATE(?,p.title)>0 OR LOCATE(?,p.sku)>0) ORDER BY p.sort_order,p.id LIMIT 21 OFFSET \".(($page-1)*20),[$search,$search]);\n",
+            "after": "        $importPredicate=provider_catalog_import_product_predicate('p');\n        $rows=all('SELECT p.id,p.title,p.sku,p.amount_cents,p.currency,p.term FROM '.table('catalog_products').\" p WHERE \".$importPredicate.\" AND p.family='hosting' AND p.status='draft' AND (LOCATE(?,p.title)>0 OR LOCATE(?,p.sku)>0) ORDER BY p.sort_order,p.id LIMIT 21 OFFSET \".(($page-1)*20),[$search,$search]);\n"
+          },
+          {
+            "after_start": 127,
+            "after_end": 128,
+            "before": "            $row=one('SELECT p.id,p.revision,p.sku,p.title,p.family,p.status,p.term,p.currency,p.amount_cents,p.setup_cents FROM '.table('catalog_products').' p JOIN '.table('catalog_provider_imports').' i ON i.product_id=p.id WHERE p.id=?',[$productId]);\n",
+            "after": "            $row=one('SELECT p.id,p.revision,p.sku,p.title,p.family,p.status,p.term,p.currency,p.amount_cents,p.setup_cents FROM '.table('catalog_products').' p WHERE '.$importPredicate.' AND p.id=?',[$productId]);\n"
+          }
+        ]
+      },
+      "site/app/hosting/catalog_offers_context.php": {
+        "before_sha256": "0186d330fc495f3818bec07ba486e6e01a6f6cb10ee3bf36e1b7a6981cf859ab",
+        "after_sha256": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+        "changes": [
+          {
+            "after_start": 36,
+            "after_end": 37,
+            "before": "        $records=all('SELECT * FROM '.table('catalog_provider_imports').' WHERE product_id IN ('.implode(',',array_fill(0,count($productIds),'?')).')',$productIds);\n",
+            "after": "        $records=provider_catalog_import_records_in_scope($productIds);\n"
+          }
+        ]
+      },
+      "site/app/providers/catalog_import.php": {
+        "before_sha256": "e396beb6579888f18640f4847d27a2c468fb8467bf53e8be63216d316c3fe9b6",
+        "after_sha256": "e08527169d037b33c26c8678740225f9f95076dc66187ba0cfbab1861ab52906",
+        "changes": [
+          {
+            "after_start": 58,
+            "after_end": 59,
+            "before": "",
+            "after": "    $variantsReady=provider_catalog_variant_ready();\n"
+          },
+          {
+            "after_start": 60,
+            "after_end": 62,
+            "before": "        provider_catalog_import_validate_record($record);\n",
+            "after": "        // Physical canonical audit remains exact; a variant needs its separate authenticated pair.\n        provider_catalog_import_canonical_record_in_scope($record,$variantsReady);\n"
+          },
+          {
+            "after_start": 154,
+            "after_end": 162,
+            "before": "            query('UPDATE '.table('catalog_provider_imports').' SET media_id=?,media_revision=? WHERE product_id=?',[$media,$imageRevision+1,$product]);\n            catalog_audit((int)$actor['id'],'provider_import.image','Product '.$product.' image revision '.($imageRevision+1));\n",
+            "after": "            $canonical=provider_catalog_import_canonical_record($record);\n            if((int)$canonical['product_id']===$product){\n                query('UPDATE '.table('catalog_provider_imports').' SET media_id=?,media_revision=? WHERE product_id=?',[$media,$imageRevision+1,$product]);\n                catalog_audit((int)$actor['id'],'provider_import.image','Product '.$product.' image revision '.($imageRevision+1));\n            }else{\n                query('UPDATE '.table('catalog_provider_variants').' SET media_id=?,media_revision=? WHERE product_id=?',[$media,$imageRevision+1,$product]);\n                catalog_audit((int)$actor['id'],'provider_variant.image',provider_catalog_variant_image_detail($product,$imageRevision+1,$media));\n            }\n"
+          }
+        ]
+      },
+      "site/app/providers/catalog_import_storage.php": {
+        "before_sha256": "31a9f9293803e6301ffbfab3989e83ed3ed3c215c57d0cad6b690d50aba6d025",
+        "after_sha256": "a922075d0d7a6499534678265617e0d017949b241dc3436f2b0f4ed4ebd7bdc7",
+        "changes": [
+          {
+            "after_start": 4,
+            "after_end": 5,
+            "before": "",
+            "after": "require_once __DIR__.'/catalog_variants_storage.php';\n"
+          },
+          {
+            "after_start": 16,
+            "after_end": 17,
+            "before": "",
+            "after": "    $variantsReady=provider_catalog_variant_ready();\n"
+          },
+          {
+            "after_start": 22,
+            "after_end": 23,
+            "before": "        if($count||$witness||($exists&&(int)query('SELECT COUNT(*) FROM '.table('catalog_provider_imports'))->fetchColumn()!==0)) throw new RuntimeException('Imported product history needs recovery. Restore its original tables and settings.');\n",
+            "after": "        if($variantsReady||$count||$witness||($exists&&(int)query('SELECT COUNT(*) FROM '.table('catalog_provider_imports'))->fetchColumn()!==0)) throw new RuntimeException('Imported product history needs recovery. Restore its original tables and settings.');\n"
+          },
+          {
+            "after_start": 41,
+            "after_end": 43,
+            "before": "    return one('SELECT id FROM '.table('catalog_provider_imports').' WHERE media_id=? LIMIT 1',[$id])!==null;\n",
+            "after": "    return one('SELECT id FROM '.table('catalog_provider_imports').' WHERE media_id=? LIMIT 1',[$id])!==null\n        ||(provider_catalog_variant_exists()&&one('SELECT id FROM '.table('catalog_provider_variants').' WHERE media_id=? LIMIT 1',[$id])!==null);\n"
+          },
+          {
+            "after_start": 48,
+            "after_end": 49,
+            "before": "    if(!$row)return null;\n",
+            "after": "    if(!$row){$variant=provider_catalog_variant_exists()?one('SELECT * FROM '.table('catalog_provider_variants').' WHERE product_id=?',[$productId]):null;return $variant?provider_catalog_variant_resolve($variant):null;}\n"
+          },
+          {
+            "after_start": 50,
+            "after_end": 93,
+            "before": "",
+            "after": "}\n\n/** Authenticate a normalized canonical-ID/retail-product-ID pair before using original provenance. */\nfunction provider_catalog_import_canonical_record(array $record): array {\n    return provider_catalog_import_canonical_record_in_scope($record,provider_catalog_variant_ready());\n}\n/** Internal same-transaction composition after readiness; every canonical/retail pair still authenticates its own rows and witnesses. */\nfunction provider_catalog_import_canonical_record_in_scope(array $record,bool $variantsReady): array {\n    provider_catalog_import_transaction();\n    $canonical=one('SELECT * FROM '.table('catalog_provider_imports').' WHERE id=?',[$record['id']??null]);\n    if(!$canonical)throw new RuntimeException('The original hosting import needs recovery.');\n    provider_catalog_import_validate_record($canonical);\n    if((int)$canonical['product_id']===(int)($record['product_id']??0)){\n        if($canonical!=$record)throw new RuntimeException('The imported product record differs from its original source.');\n        return $canonical;\n    }\n    if(!$variantsReady)throw new RuntimeException('The hosting billing option history is unavailable.');\n    $variant=one('SELECT * FROM '.table('catalog_provider_variants').' WHERE product_id=?',[$record['product_id']??null]);\n    if(!$variant||(int)$variant['canonical_import_id']!==(int)$canonical['id']||provider_catalog_variant_resolve($variant)!=$record)throw new RuntimeException('The billing option and original hosting import do not match.');\n    return $canonical;\n}\n/** Fixed SQL composition only, never a supplied predicate or unchecked identifier. Readiness validates every origin first. */\nfunction provider_catalog_import_product_predicate(string $alias): string {\n    if(preg_match('/\\A[a-z][a-z0-9_]{0,15}\\z/',$alias)!==1)throw new InvalidArgumentException('Invalid internal product alias.');\n    if(!provider_catalog_import_ready())return '0=1';\n    $canonical='EXISTS (SELECT 1 FROM '.table('catalog_provider_imports').' pci WHERE pci.product_id='.$alias.'.id)';\n    if(!provider_catalog_variant_ready())return $canonical;\n    return '('.$canonical.' OR EXISTS (SELECT 1 FROM '.table('catalog_provider_variants').' pcv WHERE pcv.product_id='.$alias.'.id))';\n}\n/** One bounded source lookup used by existing publication snapshots. */\nfunction provider_catalog_import_records(array $productIds): array {\n    if(!provider_catalog_import_ready())return [];\n    return provider_catalog_import_records_in_scope($productIds);\n}\n/** Only synchronous guarded callers which just validated import readiness may compose this lookup. No cached state survives a call. */\nfunction provider_catalog_import_records_in_scope(array $productIds): array {\n    provider_catalog_import_transaction();\n    if(!array_is_list($productIds)||count($productIds)>20||count(array_unique($productIds,SORT_REGULAR))!==count($productIds))throw new InvalidArgumentException('Choose one page of hosting products.');\n    $records=[];foreach($productIds as $productId){provider_catalog_variant_number($productId);$record=one('SELECT * FROM '.table('catalog_provider_imports').' WHERE product_id=?',[$productId]);\n        if(!$record&&provider_catalog_variant_exists()){$row=one('SELECT * FROM '.table('catalog_provider_variants').' WHERE product_id=?',[$productId]);if($row)$record=provider_catalog_variant_resolve($row);}\n        if($record)$records[]=$record;\n    }\n    return $records;\n"
+          }
+        ]
+      },
+      "site/assets/css/growth.css": {
+        "before_sha256": "ae77e9bca33094ef3b1d7036e6cc10be65b42cc2ad20328314b63ed8e9632d91",
+        "after_sha256": "4189195e3abe675dc6da07c59a0fd5007b14cb28ea0e0ad019d69c6230f4c08b",
+        "changes": [
+          {
+            "after_start": 26,
+            "after_end": 36,
+            "before": "",
+            "after": "\n/* Imported hosting products may have independently reviewed billing options. */\n.admin-body [data-catalog-variants]{font-size:16px;line-height:1.55}\n.admin-body [data-catalog-variants] label,.admin-body [data-catalog-variants] .btn{font-size:14px}\n.admin-body [data-catalog-variants] input:not([type=\"checkbox\"]),.admin-body [data-catalog-variants] select{font-size:16px;min-height:44px}\n.admin-body [data-catalog-variants] input[type=\"checkbox\"]{width:18px;height:18px;min-width:18px;margin:0 .5rem 0 0}\n.admin-body [data-catalog-variants] .btn{min-height:44px;white-space:normal}\n.admin-body [data-catalog-variants] .catalog-variant-create{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem}\n.admin-body [data-catalog-variants] summary{cursor:pointer;font-weight:700;padding:.5rem 0}\n.admin-body [data-catalog-variants] summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px}\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "before_sha256": "e508e07fe3227c433ed829370c2d1b5965656ec56c3d7208a989214fe1d2122e",
+        "after_sha256": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+        "changes": [
+          {
+            "after_start": 886,
+            "after_end": 1077,
+            "before": "",
+            "after": "_run_before_retail_variants = run\n\n\ndef retail_variants_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Retail variants current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Retail variants inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Retail variants predecessor changed')\n    return result\n\n\ndef retail_variants_current(current=None, registry=None):\n    if current is None:\n        current = a.load(ROOT/'tools/acceptance-contract.json')\n    if registry is None:\n        registry = a.load(ROOT/'tools/acceptance-reports.json')\n    section = current['catalog_retail_variants']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Retail variants current source changed: '+path)\n    prior = copy.deepcopy(current)\n    del prior['catalog_retail_variants']\n    additions = section['native_additions']\n    position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Retail variants native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]:\n            cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']:\n            raise ValueError('Retail variants current serialized pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Retail variants predecessor contract changed')\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']):\n            raise ValueError('Retail variants report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Retail variants predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = retail_variants_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef retail_variants_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    check('Retail variants retain all181 native commands and add five exact producers',\n          len(current['native_commands']) == 186 and len(section['native_additions']) == 5\n          and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])\n    check('Retail variants require six unique report producers and no new captures',\n          len(section['reports']) == len(set(section['reports'])) == 6 and section['screenshots'] == [])\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    check('Retail variants workflow changes only the five native recipes and local browser command',\n          workflow.count(inserted) == 1 and workflow.count(browser) == 1\n          and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)\n    check('Retail variant browser uses selected PHP after existing Python browser setup',\n          section['browser_command'] == '.ci-venv/bin/python -B tests/hosting_catalog_variants_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-variants-browser-results.json'\n          and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Retail variant native preserves explicit Linux isolated opt-in and mapped port selection',\n          section['native_additions'][-1] == 'CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php' and valid_port_context(workflow))\n    for path, digest in section['source_sha256'].items():\n        check('Retail variants bind current source '+path,\n              hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Retail variants preserve complete parent source '+path,\n              hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Retail variants refuse modified current source '+path,\n             lambda path=path, delta=delta: retail_variants_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    wrong = copy.deepcopy(current)\n    wrong['native_commands'].pop(0)\n    deny('Retail variants refuse a removed original command', lambda: retail_variants_current(wrong, registry))\n    wrong = copy.deepcopy(current)\n    wrong['native_commands'][0] += ' changed'\n    deny('Retail variants refuse an altered original command', lambda: retail_variants_current(wrong, registry))\n    wrong = copy.deepcopy(current)\n    first = next(iter(section['source_deltas']))\n    wrong['catalog_retail_variants']['source_deltas'][first]['before_sha256'] = '0'*64\n    deny('Retail variants refuse a substituted predecessor source', lambda: retail_variants_current(wrong, registry))\n    wrong = copy.deepcopy(registry)\n    wrong['final'].remove(next(n for n in wrong['final'] if n not in section['reports']))\n    deny('Retail variants refuse removing an original report', lambda: retail_variants_current(current, wrong))\n    for pin in section['repins']:\n        wrong = copy.deepcopy(current)\n        cursor = wrong\n        for key in pin['keys'][:-1]:\n            cursor = cursor[key]\n        cursor[pin['keys'][-1]] = pin['before']\n        try:\n            retail_variants_current(wrong, registry)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('Stale retail variant source pin passed')\n    check('Retail variants refuse every stale serialized current pin', True)\n    for phase, expected in [('browser', 208), ('final', 259)]:\n        check('Retail variants preserve exact original '+phase+' reports',\n              len(registry[phase]) == len(set(registry[phase])) == expected\n              and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'retail-variants-artifacts'\n    source = root/'source'\n    ctx = context()\n    fixtures(source, ctx)\n    incoming = root/'partitions'\n    bindings = {}\n    jobs = {}\n    input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane)\n        job.mkdir(parents=True)\n        jobs[lane] = job\n        if lane == 'build':\n            shutil.copytree(source/'dist', job/'dist')\n            shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA:\n                    named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name, lane):\n                    named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1\n        return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve())\n                shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Retail variants aggregate requires all259 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name\n        path.unlink()\n        reseal()\n        result = combine()\n        check('Retail variants missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path, False)\n        reseal()\n        result = combine()\n        check('Retail variants failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Retail variants report stays in native-browser '+name,\n              a.evidence_allowed('qa/'+name, 'native-browser') and not any(a.evidence_allowed('qa/'+name, lane) for lane in ('build', 'apache', 'recovery')))\n    named(jobs['native-browser']/'qa/retail-variants-unexpected-results.json')\n    reseal()\n    result = combine()\n    check('Retail variants unexpected report refuses', result['complete'] is False and 'Unexpected reports: retail-variants-unexpected-results.json' in result['errors'])\n    for path in ('test-runtime/hosting-catalog-variants-private/provider-master.key', 'qa/hosting-catalog-variants-private/provider-master.key'):\n        deny('Retail variant private fixture file refuses '+path,\n             lambda path=path: a.evidence_allowed(path, 'native-browser'))\n\n\ndef run(tmp):\n    current, registry, section, historical = retail_variants_current()\n    originals = {str((ROOT/path).resolve()):data for path, data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve())\n        return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path, *args, **kwargs):\n        key = str(path.resolve())\n        return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path, *args, **kwargs)\n    with patch.object(Path, 'read_bytes', previous_bytes), patch.object(Path, 'read_text', previous_text):\n        _run_before_retail_variants(tmp)\n    retail_variants_checks(tmp, current, registry, section, historical)\n\n\n"
+          }
+        ]
+      },
+      "tests/hosting_catalog_plan_setup_views.php": {
+        "before_sha256": "c15317594664fc32aafb655c90f6f4757373b16bbe62bbe7cd6e3baf408097e6",
+        "after_sha256": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
+        "changes": [
+          {
+            "after_start": 23,
+            "after_end": 25,
+            "before": "",
+            "after": "// Actual selector predicate; readiness below models the existing canonical-only store.\nhsv_load('app/providers/catalog_import_storage.php','provider_catalog_import_product_predicate');\n"
+          },
+          {
+            "after_start": 48,
+            "after_end": 49,
+            "before": "",
+            "after": "function provider_catalog_variant_ready(): bool {return false;}\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "aa0178fbf61e10174f4e202f2307a32847be2c185f977889af42809ff6496e1b",
+      "site/admin/controllers/actions.php": "c1e2fbab98f8c3303abc48ad0dd7c2ac87e53f50e6e465293b7a146da968e467",
+      "site/admin/controllers/auth.php": "21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb",
+      "site/admin/controllers/catalog.php": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57",
+      "site/admin/controllers/catalog_variants.php": "a6d4995a5aff5c8e461593968d6113ec2f7f2dcdb1333cfc687ef11a17ead283",
+      "site/admin/controllers/studio.php": "d122c01e314a3aa10fd13f8a92e46138bd4e1b15a551741d52d71d343cb95197",
+      "site/admin/views/catalog_variants.php": "352e36772c00fa324902aa67a19ddc8a06ef48705ac5731072535da075c40596",
+      "site/app/billing/catalog.php": "3f3d0bf8dea9feba713928f92c6d93c98fd7cd960f340bd2bfa19f2841fccb86",
+      "site/app/hosting/catalog_checkout.php": "b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2",
+      "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
+      "site/app/hosting/catalog_checkout_storage.php": "eaf98711efa2de3985fe74ad0b9dd85bc2c2e48a17e4bd4624b1f578e6d61e76",
+      "site/app/hosting/catalog_offer_setup.php": "f9be99047dd3aac5a1ce7777b4b5e25705d01d5036fa110525aa0cc33ec43a52",
+      "site/app/hosting/catalog_offer_setup_document.php": "cd68fb846661a2a38cb05c4f87501b17b923cf2a27d9e610286358bccb9cdb5c",
+      "site/app/hosting/catalog_offer_views.php": "7ae13bf993a528e32b9570483af558fbc0b9909d42c321cf851fa727cb8e704d",
+      "site/app/hosting/catalog_offers.php": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
+      "site/app/hosting/catalog_offers_context.php": "7f9532dae0ddb52883e01845a052f60d7365dec966ba6b5df07615daf1c3456c",
+      "site/app/hosting/catalog_offers_document.php": "ad492921f29b83fc53098d8e7ede6f6036aae532e610929dd9cdabf524a9f314",
+      "site/app/hosting/catalog_offers_storage.php": "aa15b723bbe88236dfc0936b4a98cbb9380bb2422e16513e5a736e40dc7b6768",
+      "site/app/marketing/growth.php": "d9bfd1968fa6bf7700cb9f9a843805a03fc0d2e0c603016983b0913039ab160f",
+      "site/app/media/images.php": "9262a28d87a1d758bd2c40da67fb05e9501df6f5dc9848e476cf571684263f69",
+      "site/app/plans/documents.php": "8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c",
+      "site/app/plans/records.php": "e97663e3e617334fc1a4aa6d8af18228aa21b898f94ebb3f268fd534a33c68cb",
+      "site/app/providers/catalog_import.php": "e08527169d037b33c26c8678740225f9f95076dc66187ba0cfbab1861ab52906",
+      "site/app/providers/catalog_import_document.php": "8b5e856479a5cd09ebfcd855f9453715bf4db9737214fb256208c040250746d0",
+      "site/app/providers/catalog_import_storage.php": "a922075d0d7a6499534678265617e0d017949b241dc3436f2b0f4ed4ebd7bdc7",
+      "site/app/providers/catalog_variants.php": "89ff0ca2ef72bb14f544b4481b6992510599f72883b4943451ce2a4158d414a5",
+      "site/app/providers/catalog_variants_document.php": "bd929bbad23be64994a31e3cf62a2ce23ad2457a440151d09c42c9f4b66474e1",
+      "site/app/providers/catalog_variants_storage.php": "bebd64dfef60e32fce024978fae15cd961118510cd21a5f851b4b2afd94fbaaa",
+      "site/app/providers/credentials.php": "a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186",
+      "site/app/providers/inventory.php": "0e364dc91975fb3b28576ce32edfab34fb3cec4da6733ba4749cc6cb4275e863",
+      "site/app/providers/package_types.php": "aac5e823b599b4bd886841410b077b6bc55cf887c867439f3767c8ab853a45df",
+      "site/app/providers/plan_catalog.php": "86f3a23cadeccd2bfcad88b067bd671d9534ebf8bc17290d6d274301326b4bc3",
+      "site/app/providers/settings.php": "15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871",
+      "site/app/staff/accounts.php": "72da02001db9cbb274234bdf18510525d2d501d322ee2ab7af3d78cee5b05de7",
+      "site/assets/css/admin.css": "655a82d0eaf046b9836b16d8a2887d0ed406d8181e25c329bbdf2721b5300d6f",
+      "site/assets/css/growth.css": "4189195e3abe675dc6da07c59a0fd5007b14cb28ea0e0ad019d69c6230f4c08b",
+      "site/assets/css/hosting-comparison.css": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
+      "site/assets/css/premium.css": "bde2678d7a655d124491b3041a73bc6f474031c17f18396da0e8d3c994299380",
+      "site/assets/css/site.css": "ecf7a54945d89e62b86fd43741aeafbee7480a752d4133e17053ddffe251abcf",
+      "site/database/migrations/provider_catalog_variant_migrate.php": "70b27856abedb990d8eb0dbc954d73bf8fb6d12bc05612e1e526040c2d725c5c",
+      "site/database/schema/base.php": "2120f63a8ef24f67e1d3dc27475b5db9cbabf8c80ca5b5015287aca5cb5295bb",
+      "site/database/schema/provider_catalog_import_schema.php": "dc047d538a5579676b1ef01969a0d8af30700729aa59d5045d8e70e3f1e1fb8a",
+      "site/database/schema/provider_catalog_variant_schema.php": "039464e56be9e060f009ae5c9b1ccab63303a4c12ce9e2c900dfca9dfb7f77ce",
+      "site/database/schema/recurring_billing_schema.php": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
+      "site/includes/bootstrap.php": "5bce9d17c3179e8654d293ba8d478a000d6255aeba9aad5ba46f9a09e415d409",
+      "site/includes/layout/admin.php": "b4fbd796bbbba5bb6bc53479d1dce242d5a743d47fc95aec31f58ee98be5d93d",
+      "site/includes/layout/hosting_catalog.php": "a8a198f8a07b825109b9f0aba99ba48e044480feb88ce63f3a8d40b0d3a929e6",
+      "site/includes/layout/public.php": "4a41b36885dd9da1f7da3f66f1d6a4c3936c7fe735e0d16e17d1a96e4562b14f",
+      "site/includes/security/csrf.php": "cf24bbccd978bd9ac94d289f822deea683624b8093e86b362a4b8e818f9a99de",
+      "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
+      "site/includes/security/input.php": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b",
+      "tests/acceptance_artifacts_test.py": "4eae6c42a431655a92f0e1f9620ce38dc923c65cd681c04efdc5c41ed425f994",
+      "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
+      "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
+      "tests/hosting_catalog_plan_setup_views.php": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
+      "tests/hosting_catalog_variants_browser.py": "5be95bfe3bfeab27a56fd31c378caa60cf809e9c9b7cc426281f0f81a1b04fff",
+      "tests/hosting_catalog_variants_contract.php": "5f295784bf8f1bd55ac15e55b5627953f0737e80ffc89d77a5dc67dcf0d18af0",
+      "tests/hosting_catalog_variants_document.php": "2ddfcc3cee6033d0ad610c11bcb59873e6564a713d49d2d449e044e2745d49ae",
+      "tests/hosting_catalog_variants_http_fixture.php": "1b3e1ed5e39c00903b771e04046ec7884687f803307566eed2ec2dbce2c6a24a",
+      "tests/hosting_catalog_variants_native.php": "8975785bdc913293e13b94076cb8da802ee09e82e7f3e948876ee611a1c24b15",
+      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/provider_catalog_import_batch_native.php": "2953b71154fff44bda62e48414ba6a4d4eeedfb7a6427f1f3804062d64b0f6f5",
+      "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c"
+    },
+    "scope": "Independent local retail billing options from one retained canonical import. Actual guarded native SQL remains separate from portable documents and modeled local HTTP/Chromium; no provider write, payment or new installed capture producer."
   }
 }

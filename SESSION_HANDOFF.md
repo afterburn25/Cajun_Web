@@ -1,3 +1,11 @@
+## 2026-10-19 — separate monthly and annual hosting offers
+
+Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](docs/TWENTYI_CATALOG_BILLING_OPTIONS.md).
+
+Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
+
+Next: inspect the first exact-source full run and native variant outcomes, then perform normal sequential integration and release acceptance. Keep the separate client HTTPS/StackCP increments frozen; do not credit their checks to this branch. No queue-driven rerun, cancellation, live provider operation or deployment.
+
 ## 2026-10-18 — checkout controls acceptance successor
 
 Branch `codex/twentyi-checkout-fulfillment-controls`, parent `3042f24eddc3587d67ac5d10e28df3b3294a3310` ([PR231](https://github.com/afterburn25/Cajun_Web/pull/231)); enclosing commit **fix: show supported hosting checkout fulfillment controls**. Three existing layout functions carry a presentation-only checkout flag. They suppress manual permission actions and explain the original-invoice receipt requirement. Native checkout/payment policy, legacy behavior, cancellation, provider approval and business storage remain unchanged. [Scope and local validation](docs/TWENTYI_HOSTING_PURCHASE_INBOX.md#checkout-fulfillment-controls).

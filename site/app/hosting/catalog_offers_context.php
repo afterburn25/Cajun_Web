@@ -34,7 +34,7 @@ final class HostingCatalogRead {
         $source=one('SELECT f.*,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.skip_reasons,r.finished_at,r.elapsed_ms,r.key_fingerprint FROM '.table('provider_refreshes').' f LEFT JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.operation=? AND f.profile_id=? ORDER BY f.seq DESC LIMIT 1',['package.types',$profile['id']]);
         if (!$source || ($source['state']??null)!=='complete' || (int)$source['profile_revision']!==(int)$profile['revision']) throw new RuntimeException('Review the newest complete hosting catalog before publishing offers.');
         $observation=provider_package_types_observation($source);
-        $records=all('SELECT * FROM '.table('catalog_provider_imports').' WHERE product_id IN ('.implode(',',array_fill(0,count($productIds),'?')).')',$productIds);
+        $records=provider_catalog_import_records_in_scope($productIds);
         if (count($records)!==count($productIds)) throw new RuntimeException('An original hosting import is unavailable.');
         provider_catalog_import_origins($records);
         $imports=[];foreach ($records as $record) $imports[(int)$record['product_id']]=$record;
