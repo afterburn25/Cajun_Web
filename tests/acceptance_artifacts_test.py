@@ -366,8 +366,11 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    from registered_nameserver_requests_acceptance import verify as nameserver_requests_acceptance
+    requests_predecessor = nameserver_requests_acceptance(a, ROOT, tmp, check, deny, contract)
+    contract = requests_predecessor['contract']
     from registered_nameserver_changes_acceptance import verify as nameserver_changes_acceptance
-    changes_predecessor = nameserver_changes_acceptance(a, ROOT, tmp, check, deny, contract)
+    changes_predecessor = nameserver_changes_acceptance(a, ROOT, tmp, check, deny, contract, requests_predecessor['source'], requests_predecessor['reports'])
     driver_paths = {'tests/prepare_legacy.py'}
     check('Published1.25 input inverse is limited to the original preparation source', set(contract['published125_input_driver_delta']) == driver_paths)
     for driver in sorted(driver_paths):
@@ -399,7 +402,7 @@ def run(tmp):
     check('Nameserver changes retain exact157 predecessor commands',len(native_commands)==write_contract['predecessor_native_count']==157 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==write_contract['predecessor_native_sha256'])
     contract['native_commands']=[command for command in contract['native_commands'] if command not in write_commands]
     for path,expected_hash in write_contract['source_sha256'].items():
-        check('Nameserver change producer source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        check('Nameserver change producer source retained '+path,hashlib.sha256(requests_predecessor['source'].get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))).hexdigest()==expected_hash)
     write_original_sources={}
     check('Nameserver change predecessor test delta is limited to the existing renderer',set(write_contract['predecessor_source_delta'])=={'tests/registered_nameservers_views.php'})
     for path,delta in write_contract['predecessor_source_delta'].items():

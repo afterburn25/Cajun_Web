@@ -1,3 +1,11 @@
+## 2026-10-18 — client nameserver request candidate
+
+Acceptance additions retain the complete predecessor command/report inventory and all 334 helper outcomes. Current source hashes are checked before finite predecessor reconstruction. The sole earlier-command correction loads tokenizer/PDO for distro PHP minimal mode; no original test or release gate is removed.
+
+Enable local nameserver intake through explicit owner setup plus the active primary client's exact registrar-domain assignment, without a separate per-client provider capability. This grants no provider-send authority. Bind static original assignment/account/owner facts so aging or failure of a later read does not remove local intake; require fresh complete observations independently at owner approval.
+
+Use v2 owner approvals that pin the original client request SHA, plus a reciprocal dispatch event pinning the owner approval SHA. Save both and the consumed grant atomically under the existing staff mutex before the unchanged one-send path. Keep graph validation acyclic and preserve v1 direct-owner history; origin loss cannot downgrade an approval. [Rationale, limits and actual tests](TWENTYI_CLIENT_NAMESERVER_REQUESTS.md). Runtime/release acceptance remains pending.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 The owner clarified a completely fresh installation after deleting the prior public files. Default setup retains strict existing-table and storage refusals. Explicit fresh-start intent creates separate resources and never drops existing tables or unlocks an installed site. Routine file uploads retain config.php, keys, database and storage. Local retained locks without config lead to recovery, not automatic setup. Administrator passwords use a dedicated 12-character validator; the shared client policy remains unchanged. This supersedes the earlier update-only interpretation of this installer incident.

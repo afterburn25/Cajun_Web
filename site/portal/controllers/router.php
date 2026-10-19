@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_C
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/registered_nameserver_requests.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_registration_drafts.php';
 if(array_key_exists('registration_drafts',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_')))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_contracts.php';
@@ -38,6 +39,10 @@ if($supportRequested){
  }
  $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;
 }
+if(array_key_exists('nameserver_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'nameserver_request_'))){
+ header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
+ try{registered_nameserver_requests_portal_guard();}catch(RuntimeException){fail_page('Sign in directly as the primary client to review nameserver requests.',403);}
+}
 $client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity']))activity_render('client',$error);
@@ -53,6 +58,7 @@ if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client
 if(array_key_exists('domain_dates',$_GET))domain_contracts_client_render($client);
 if(array_key_exists('domain_expiry',$_GET))domain_expiry_client_render($client);
 if(array_key_exists('domain_renewals',$_GET))domain_renewals_client_render($client,$error);
+if(array_key_exists('nameserver_requests',$_GET))registered_nameserver_requests_client_render($client,$error);
 if(array_key_exists('service_history',$_GET))service_observations_client_render($client);
 if(array_key_exists('php_version',$_GET))provider_php_client_render($client);
 if(array_key_exists('document_roots',$_GET))provider_document_roots_client_render($client);

@@ -1,10 +1,10 @@
 name: Native registered nameserver changes
 on:
   push:
-    branches: [main, codex/twentyi-nameserver-changes]
-    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']
+    branches: [main, codex/twentyi-nameserver-changes, codex/twentyi-client-nameserver-requests]
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/portal/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameserver_requests*.php', 'tests/registered_nameserver_requests*.py', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/portal/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameserver_requests*.php', 'tests/registered_nameserver_requests*.py', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -65,7 +65,7 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-inventory-test sh -ec '
-              for source in site/app/providers/registered_nameserver*.php site/database/schema/registered_nameserver*.php site/admin/controllers/registered_nameserver*.php tests/registered_nameserver_changes*.php; do php -l "$source"; done
+              for source in site/app/providers/registered_nameserver*.php site/database/schema/registered_nameserver*.php site/admin/controllers/registered_nameserver*.php site/portal/controllers/registered_nameserver_requests.php tests/registered_nameserver_changes*.php tests/registered_nameserver_requests*.php; do php -l "$source"; done
               php tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json
               php -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json
               php tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json
@@ -73,6 +73,15 @@ jobs:
               php tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json
               php -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json
               php tests/registered_nameserver_changes_native.php
+              php tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json
+              php -n tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-no-ini-results.json
+              php tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-results.json
+              php -n tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-no-ini-results.json
+              php tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-results.json
+              php -n tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-no-ini-results.json
+              php tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-results.json
+              php -n tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-no-ini-results.json
+              php tests/registered_nameserver_requests_native.php
             '
       - name: Preserve named storage evidence
         if: always()
@@ -87,6 +96,15 @@ jobs:
             qa/registered-nameserver-changes-views-results.json
             qa/registered-nameserver-changes-views-no-ini-results.json
             qa/registered-nameserver-changes-native-results.json
+            qa/registered-nameserver-requests-document-results.json
+            qa/registered-nameserver-requests-document-no-ini-results.json
+            qa/registered-nameserver-requests-service-results.json
+            qa/registered-nameserver-requests-service-no-ini-results.json
+            qa/registered-nameserver-requests-storage-results.json
+            qa/registered-nameserver-requests-storage-no-ini-results.json
+            qa/registered-nameserver-requests-views-results.json
+            qa/registered-nameserver-requests-views-no-ini-results.json
+            qa/registered-nameserver-requests-native-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope

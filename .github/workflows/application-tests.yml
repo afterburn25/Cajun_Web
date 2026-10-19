@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-nameserver-changes]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-nameserver-changes, codex/twentyi-client-nameserver-requests]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
@@ -370,10 +370,19 @@ jobs:
           "$PHP_BINARY" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json
           "$PHP_BINARY" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json
           "$PHP_BINARY" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json
-          "$PHP_BINARY" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json
           "$PHP_BINARY" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json
           "$PHP_BINARY" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json
           "$PHP_BINARY" tests/registered_nameserver_changes_native.php
+          "$PHP_BINARY" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-results.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_requests_native.php
           "$PHP_BINARY" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_native.php
@@ -719,6 +728,8 @@ jobs:
           .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py
           .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json
           .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py
+          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade_test.py --report qa/apache-registered-nameserver-requests-upgrade-guards-results.json
+          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

@@ -1,3 +1,9 @@
+## 2026-10-18 — client nameserver request candidate
+
+The [primary-client nameserver workflow](TWENTYI_CLIENT_NAMESERVER_REQUESTS.md) is implemented as a separate source candidate: local intake/withdrawal, owner review, atomic approval association, existing one-send execution, separate readback and client-safe status. Applied local portable/model, TLS, upgrade-guard, acceptance-helper and canonical build checks pass. Native, packaged browser and installed update/recovery producers are now wired into CI. Their actual runtime, source-bound CI and release gates remain open; this does not mark complete20i or the whole project complete.
+
+The separate hosting purchase inbox PR229, full catalog/image work, VPS/SSH and Devin's non20i work retain their own acceptance/integration status. Published1.25 remains immutable.
+
 ## 2026-10-18 — installed nameserver change acceptance prepared
 
 [Nameserver change tests](TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md#installed-acceptance-producers--2026-10-18) now cover the intended real owner forms and published-baseline history retention. Local fixture/guard checks pass; their first installed application runs, actual captures and independent runtime review remain. Complete 20i, cloud catalog, provider images, VPS/SSH and the remaining non-20i work are still unfinished. No release or deployment occurred.

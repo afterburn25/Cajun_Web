@@ -17,13 +17,17 @@ function registered_nameserver_changes_admin_action(string $action): never {
         flash(registered_nameserver_changes_label($view['status']), $view['status'] === 'observed' ? 'success' : 'error');
     } elseif ($action === 'provider_nameserver_change_recover') {
         if (posted('reviewed', 1) !== '1') throw new InvalidArgumentException('Review restoring this request’s saved history first.');
-        registered_nameserver_changes_recover_finished(posted('request_id', 32), posted('ledger_sha256', 64), $password);
+        $view = registered_nameserver_changes_recover_finished(posted('request_id', 32), posted('ledger_sha256', 64), $password);
         flash('Saved request history restored. Check current nameservers separately; the change was not resent.');
     } elseif ($action === 'provider_nameserver_change_verify') {
         $view = registered_nameserver_changes_verify(posted('request_id', 32), $password);
         flash(registered_nameserver_changes_label($view['status']), $view['status'] === 'observed' ? 'success' : 'error');
     } else {
         throw new InvalidArgumentException('Unknown nameserver change action.');
+    }
+    if(isset($view)&&in_array($action,['provider_nameserver_change_verify','provider_nameserver_change_recover'],true)){
+        $origin=staff_locked(fn()=>staff_transaction(fn()=>registered_nameserver_changes_request($view['id'])['document']['client_origin']??null));
+        if($origin!==null)redirect(admin_url('nameserver-requests',['request_id'=>$origin['id']]));
     }
     redirect(admin_url('provider-settings').'#registered-nameservers');
 }

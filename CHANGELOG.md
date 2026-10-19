@@ -1,3 +1,9 @@
+## 2026-10-18 — client nameserver request candidate
+
+Adds native, packaged browser and published-1.25 upgrade/recovery acceptance producers. Local portable/TLS/guard/helper checks pass; installed acceptance and release remain pending.
+
+Added a development candidate for client nameserver requests: submit, withdraw and track a request; owner decline or approve the exact complete set; show separately verified results in the client portal. Approval and its client origin commit together, preventing a withdrawn or reassigned request from being sent from an old review. Existing direct-owner actions remain supported. [Verification and remaining acceptance](docs/TWENTYI_CLIENT_NAMESERVER_REQUESTS.md). Published1.25 is unchanged.
+
 ## Unreleased — installed nameserver change acceptance
 
 - Add actual owner-form browser cases, eight complete scoped captures, two separately approved one-shot synthetic requests, interrupted local-history recovery and persistent reassignment fences.

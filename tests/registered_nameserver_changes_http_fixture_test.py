@@ -53,6 +53,7 @@ class HandlerTests(unittest.TestCase):
         fixture = self.fixture
         fixture.mode = fixture.write_mode = fixture.nameserver_mode = 'success'
         fixture.nameserver_change_mode = 'uncertain_unlanded'
+        fixture.nameserver_client_request_enabled = False
         fixture.nameservers = {'14701': list(OLD), '14702': ['ns.other.invalid']}
         fixture.nameserver_change_posts = []
         fixture.posts = []; fixture.errors = []; fixture.get_paths = []
@@ -301,6 +302,50 @@ for label, path, matched in (
         ('trailing_slash', PATH+'/', False),
         ('encoded_id', '/domain/%31%34%37%30%31/nameservers', False)):
     setattr(HandlerTests, 'test_route_'+label, route_case(path, matched))
+
+
+def client_request_case(case):
+    def test(self):
+        target = '/domain/14702/nameservers'
+        self.fixture.nameserver_client_request_enabled = True
+        self.fixture.nameservers['14702'] = list(OLD)
+        if case == 'unlanded':
+            self.assertEqual(self.request(path=target)[0], 202)
+            self.assertEqual(self.fixture.nameserver_change_posts, [{'path': target, 'body': {'ns': NEW, 'old-ns': OLD}, 'raw': wire().decode()}])
+            self.assertEqual(self.fixture.nameservers, {'14701': OLD, '14702': OLD})
+            self.assertEqual(self.request('GET', target), (200, json.dumps({'result': OLD}, separators=(',', ':')).encode()))
+            self.fixture.nameservers['14702'] = list(NEW)
+            self.assertEqual(self.request('GET', target), (200, json.dumps({'result': NEW}, separators=(',', ':')).encode()))
+            self.assertEqual(self.fixture.nameservers['14701'], OLD)
+            self.assertEqual(self.fixture.errors, [])
+        elif case in ('numeric_flag', 'text_flag'):
+            self.fixture.nameserver_client_request_enabled = 1 if case == 'numeric_flag' else 'true'
+            self.refused(path=target)
+        elif case in ('landed_mode', 'authentication_mode'):
+            self.fixture.nameserver_change_mode = 'uncertain_landed' if case == 'landed_mode' else 'authentication'
+            self.refused(path=target)
+        elif case == 'wrong_observation':
+            self.fixture.nameservers['14702'] = ['ns.other.invalid']
+            self.refused(path=target)
+        elif case == 'missing_observation':
+            del self.fixture.nameservers['14702']
+            self.refused(path=target)
+        elif case == 'unknown_target':
+            self.fixture.nameservers['14703'] = list(OLD)
+            self.refused(path='/domain/14703/nameservers')
+        elif case == 'authorization':
+            self.refused(path=target, changes={'Authorization': 'Bearer invalid'})
+        elif case == 'extra_body_field':
+            self.refused(path=target, raw=json.dumps({'ns': NEW, 'old-ns': OLD, 'client_id': 1}, separators=(',', ':')).encode())
+        elif case == 'overlap':
+            self.refused(path=target, raw=wire(OLD, OLD))
+        else:
+            raise AssertionError('Closed additional handler case required')
+    return test
+
+
+for label in ('unlanded', 'numeric_flag', 'text_flag', 'landed_mode', 'authentication_mode', 'wrong_observation', 'missing_observation', 'unknown_target', 'authorization', 'extra_body_field', 'overlap'):
+    setattr(HandlerTests, 'test_z_client_request_' + label, client_request_case(label))
 
 
 class HelperTests(unittest.TestCase):

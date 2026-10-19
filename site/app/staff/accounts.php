@@ -131,6 +131,7 @@ function staff_reset_token(string $email): ?array {
 }
 function staff_view_permission(string $view): ?string {
     if($view==='registration-drafts')return 'staff.manage';
+    if($view==='nameserver-requests')return 'staff.manage';
     if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
     if($view==='studio-licenses')return 'staff.manage';
     if($view==='recurring-billing')return 'payments.manage';
@@ -172,6 +173,7 @@ function staff_action_permission(string $action): ?string {
     if(in_array($action,['logout','account_save'],true))return null;
     if(str_starts_with($action,'provider_renewal_dispatch_'))return 'staff.manage';
     if(str_starts_with($action,'provider_nameserver_change_'))return 'staff.manage';
+    if(str_starts_with($action,'provider_nameserver_request_'))return 'staff.manage';
     if(str_starts_with($action,'provider_settings_'))return 'staff.manage';
     if(str_starts_with($action,'provider_inventory_'))return 'staff.manage';
     if(str_starts_with($action,'mail_accounts_'))return 'staff.manage';

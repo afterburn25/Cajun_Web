@@ -9,6 +9,7 @@ require_once CWP_CODE_ROOT.'/includes/layout/activity.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_templates.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_accounts.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/providers.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/registered_nameserver_requests.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_inbox.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_message.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_notices.php';
@@ -23,12 +24,13 @@ header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,['registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['nameserver-requests','registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 if(in_array($view,['studio-clients','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_plans_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if($view==='nameserver-requests'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'provider_nameserver_request_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
 if($view==='staff-setup')staff_setup_render($error);
@@ -47,6 +49,7 @@ if(in_array($view,['service-plans','service-plan','service-agreements','service-
 if($view==='recurring-billing')recurring_billing_admin_render($error);
 if($view==='registration-drafts')registration_drafts_admin_render($error);
 if($view==='provider-settings')provider_settings_admin_render($error);
+if($view==='nameserver-requests')registered_nameserver_requests_admin_render($error);
 if($view==='domain-renewal-agreements')domain_renewal_agreements_admin_render($error);
 if($view==='domain-renewal-dispatch')domain_renewal_dispatch_admin_render($error);
 if($view==='provider-operations')provider_operations_admin_render($error);
