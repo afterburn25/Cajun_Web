@@ -59,6 +59,10 @@ On `devin/non20i-mail-sent-sync` (stacked on `devin/non20i-mail-attachments`), a
 - #213 `devin/non20i-portal-account`: portal Account page; client/contact self-service password change with current-password verification, auth_version session rotation, rate limiting, audit and support-session denial; no schema.
 
 ## 2026-10-16 — publish the concrete release freeze and branch
+## Unreleased — contacts test setup
+
+Remove duplicate contacts-table creation in the native service-plan fixture while retaining all new contact authority checks. Runtime application and published1.25 bytes are unchanged.
+
 ## Unreleased — record observed cloud null response
 ## Receive-side mail attachments with authorized downloads — 2026-10-16
 

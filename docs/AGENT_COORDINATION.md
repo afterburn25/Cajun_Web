@@ -27,3 +27,9 @@ Publish through [RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md): exact combined revie
 Keep status, handoff, roadmap, changelog, decisions, session log, release register and the fixed requirements tracker current. Implemented, tested, integrated, released and live-verified are separate states. Historical approximate chat percentages are not acceptance evidence.
 
 [Previous complete coordination history](https://github.com/afterburn25/Cajun_Web/blob/a86f6f4fa592e6f715a9420aec8de4622258642e/docs/AGENT_COORDINATION.md) preserves all old assignments, sources and queue receipts. Their results are retained; only the superseded allocation/priority instructions are replaced here.
+
+## 2026-10-19 — bounded contacts test correction
+
+Root owns `codex/contacts-native-fixture` from PR203/cefb08d6. VPS traced three real hosted failures and prepared the one-line fixture correction; Domains independently verified no setup dependency or assertion is lost. Devin retains all contacts/milestones feature work. The correction targets the earliest affected source, with fresh native/full acceptance required before integration. [Evidence](evidence/service-plan-contact-fixture.json).
+
+## Post-publication coordination — 2026-10-18

@@ -100,7 +100,7 @@ try {
     query('SELECT GET_LOCK(?,5)',[$key]);$a=sn_worker('plan-worker',['3','3','1','32','13000']);sn_ok('Owner edit worker waits on current shared authority',trim(fgets($a[1][1]))==='ready');$before=sn_all();query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=3');query('SELECT RELEASE_LOCK(?)',[$key]);sn_ok('Revoked owner cannot edit after acquiring the guard',sn_finish($a)==='denied'&&sn_all()===$before);
     // Additional contacts share the parent client identity; the current contact row is rechecked inside the shared guard.
     require_once __DIR__.'/../site/database/schema/contacts_schema.php';
-    foreach(contacts_schema(config()['db']['prefix']) as $sql)db()->exec($sql);save_setting('contacts_schema_version','1');
+    save_setting('contacts_schema_version','1');
     foreach([['Billing contact','billing-contact@example.invalid','["billing"]'],['Projects contact','projects-contact@example.invalid','["projects"]']] as $row)
         query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,permissions,enabled,auth_version,created_at) VALUES (1,?,?,?,1,?,?)',[$row[0],$row[1],$row[2],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     $contacts=array_column(all('SELECT id,email FROM '.table('studio_contacts')),'id','email');
