@@ -27,12 +27,64 @@ function backups_collect(string $root): array {
     return ['items'=>$items,'bytes'=>$bytes];
 }
 
-/** Write the collected items into a fresh ZIP archive; returns the archive size. */
-function backups_write_archive(string $root,array $items,string $dest): int {
+/** Tables whose contents are transient runtime state, never business data — excluded from the database artifact. */
+function backups_dump_excluded(string $name): bool {
+    return in_array($name,['rate_limits','resets'],true);
+}
+
+/** Checked dump write: PHP fwrite may short-write or return false, and either result must fail the backup instead of recording a partial SQL file as ready. */
+function backups_dump_write($out,string $data): void {
+    $written=fwrite($out,$data);
+    if($written===false||$written!==strlen($data))throw new RuntimeException('The database export could not write the complete SQL snapshot.');
+}
+
+/** Stream a consistent SQL dump of every non-transient table under the configured prefix into $dest; returns table/row/byte counts. The shared PDO is unbuffered only for the duration of the export and then restored. */
+function backups_dump_database(string $dest): array {
+    $prefix=config()['db']['prefix'];
+    $pdo=db();
+    $names=array_column(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE ? ORDER BY TABLE_NAME',[strtr($prefix,['%'=>'\%','_'=>'\_']).'%']),'TABLE_NAME');
+    $out=@fopen($dest,'wb');if($out===false)throw new RuntimeException('The database export file could not be created.');
+    $tables=0;$rows=0;$closed=false;
+    $oldBuffered=$pdo->getAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY);
+    $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY,false);
+    try{
+        backups_dump_write($out,"-- CajunWebPro database export\n-- This snapshot is preserved for operator-guided recovery; file restores never apply it.\nSET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS=0;\n\n");
+        foreach($names as $full){
+            $name=substr($full,strlen($prefix));
+            if(backups_dump_excluded($name))continue;
+            $ddl=one('SHOW CREATE TABLE `'.$full.'`');if(!$ddl)throw new RuntimeException('The database export could not read a table definition: '.$full);
+            $create=$ddl['Create Table']??end($ddl);
+            backups_dump_write($out,'DROP TABLE IF EXISTS `'.$full."`;\n".$create.";\n\n");
+            $stmt=$pdo->prepare('SELECT * FROM `'.$full.'`');$stmt->execute();
+            while($row=$stmt->fetch(PDO::FETCH_ASSOC)){
+                $values=[];
+                foreach($row as $v)$values[]=$v===null?'NULL':$pdo->quote((string)$v);
+                backups_dump_write($out,'INSERT INTO `'.$full.'` VALUES ('.implode(',',$values).");\n");$rows++;
+            }
+            $stmt->closeCursor();backups_dump_write($out,"\n");$tables++;
+        }
+        backups_dump_write($out,"SET FOREIGN_KEY_CHECKS=1;\n");
+        if(!fflush($out))throw new RuntimeException('The database export could not flush the complete SQL snapshot.');
+        if(!fclose($out))throw new RuntimeException('The database export could not close the complete SQL snapshot.');
+        $closed=true;
+    }finally{
+        $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY,$oldBuffered);
+        if(!$closed)@fclose($out);
+    }
+    if($tables===0)throw new RuntimeException('The database export found no application tables.');
+    $bytes=filesize($dest);if($bytes===false||$bytes===0)throw new RuntimeException('The database export was not written completely.');
+    return ['tables'=>$tables,'rows'=>$rows,'bytes'=>$bytes];
+}
+
+/** Write the collected items into a fresh ZIP archive; returns the archive size. An optional database export is embedded as its own member. */
+function backups_write_archive(string $root,array $items,string $dest,?string $database=null): int {
     if(!class_exists('ZipArchive'))throw new RuntimeException('Ask your host to enable the PHP ZIP extension before creating backups.');
     $real=realpath($root);$zip=new ZipArchive();
     if($zip->open($dest,ZipArchive::CREATE|ZipArchive::EXCL)!==true)throw new RuntimeException('Backup archive could not be created.');
-    try{foreach($items as $name=>$hash)if(!$zip->addFile($real.'/'.$name,$name))throw new RuntimeException('A source file could not be archived: '.$name);}
+    try{
+        foreach($items as $name=>$hash)if(!$zip->addFile($real.'/'.$name,$name))throw new RuntimeException('A source file could not be archived: '.$name);
+        if($database!==null&&!$zip->addFile($database,'database/snapshot.sql'))throw new RuntimeException('The database export could not be archived.');
+    }
     finally{$zip->close();}
     $size=filesize($dest);if($size===false||$size===0)throw new RuntimeException('Backup archive was not written.');return $size;
 }
@@ -136,13 +188,20 @@ function backups_create(array $data,string $key): string {
         $id=bin2hex(random_bytes(16));$created=gmdate('Y-m-d\TH:i:s\Z');$retain=gmdate('Y-m-d',strtotime('+'.$days.' days'));
         $collected=backups_collect(CWP_CODE_ROOT);
         $manifest=new BackupManifest($id,'files','staff:'.$actor['id'],$created,$collected['items'],$retain.'T00:00:00Z',$notes);
-        $file='backup-'.$id.'.zip';$dest=backups_directory().'/'.$file;$written=null;
-        try{$size=staff_transaction(function() use($id,$manifest,$file,$dest,$key,$request,$actor,$retain,&$written): int {
-            $size=backups_write_archive(CWP_CODE_ROOT,$manifest->items,$dest);$written=$dest;
-            query('INSERT INTO '.table('backups').' (id,kind,manifest,manifest_hash,items,archive_file,bytes,request_key,request_hash,status,retain_until,created_by,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',[$id,'files',json_encode(['format'=>BackupManifest::FORMAT_VERSION,'id'=>$manifest->id,'kind'=>$manifest->kind,'created_by'=>$manifest->createdBy,'created_at'=>$manifest->createdAt,'items'=>$manifest->items,'retain_until'=>$manifest->retainUntil,'notes'=>$manifest->notes],JSON_UNESCAPED_SLASHES),$manifest->manifestHash(),count($manifest->items),$file,$size,$key,$request,'ready',$retain,$actor['id'],gmdate('Y-m-d H:i:s')]);
-            backups_audit((int)$actor['id'],'create','Backup '.substr($id,0,8).' — '.count($manifest->items).' items, '.$size.' bytes');
+        $file='backup-'.$id.'.zip';$dest=backups_directory().'/'.$file;$dump=backups_directory().'/dump-'.$id.'-'.bin2hex(random_bytes(4)).'.sql';$written=null;
+        try{$size=staff_transaction(function() use($id,$manifest,$file,$dest,$dump,$key,$request,$actor,$retain,&$written): int {
+            // The export runs inside this transaction so every table reflects one
+            // consistent point-in-time view; the snapshot intentionally predates
+            // this backups row's own insertion.
+            $db=backups_dump_database($dump);
+            $size=backups_write_archive(CWP_CODE_ROOT,$manifest->items,$dest,$dump);$written=$dest;
+            $section=['format'=>1,'file'=>'database/snapshot.sql','sha256'=>hash_file('sha256',$dump),'bytes'=>$db['bytes'],'tables'=>$db['tables'],'rows'=>$db['rows']];
+            $integrity=backups_manifest_integrity_hash($manifest,$section);
+            query('INSERT INTO '.table('backups').' (id,kind,manifest,manifest_hash,items,archive_file,bytes,request_key,request_hash,status,retain_until,created_by,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',[$id,'files',json_encode(['format'=>BackupManifest::FORMAT_VERSION,'id'=>$manifest->id,'kind'=>$manifest->kind,'created_by'=>$manifest->createdBy,'created_at'=>$manifest->createdAt,'items'=>$manifest->items,'retain_until'=>$manifest->retainUntil,'notes'=>$manifest->notes,'database'=>$section],JSON_UNESCAPED_SLASHES),$integrity,count($manifest->items),$file,$size,$key,$request,'ready',$retain,$actor['id'],gmdate('Y-m-d H:i:s')]);
+            backups_audit((int)$actor['id'],'create','Backup '.substr($id,0,8).' — '.count($manifest->items).' items, '.$db['tables'].' tables, '.$size.' bytes');
             return $size;
         });}catch(Throwable $e){if($written!==null)@unlink($written);throw $e;}
+        finally{if(is_file($dump))@unlink($dump);}
         return $id;
     });
 }
@@ -219,6 +278,13 @@ function backups_drill(string $id): array {
                 if(hash_file('sha256',$target)!==$hash)throw new RuntimeException('Drill write verification failed for: '.$name);
                 $verified++;
             }
+            $db=backups_database($row);
+            if($db!==null){
+                $data=$zip->getFromName($db['file']);
+                if($data===false){$missing++;}
+                elseif(!hash_equals($db['sha256'],hash('sha256',$data))||!str_starts_with($data,"-- CajunWebPro database export\n")){$mismatched++;}
+                else{$verified++;}
+            }
         }finally{$zip->close();}
     }catch(Throwable $e){$failure=$e;}
     finally{backups_scrub($scratch);}
@@ -241,6 +307,7 @@ function backups_prune(#[\SensitiveParameter] string $password): int {
         $expired=all('SELECT * FROM '.table('backups').' WHERE retain_until < ?',[$cutoff]);$count=0;
         staff_transaction(function() use($expired,$actor,&$count): void {
             foreach($expired as $row){$path=backups_directory().'/'.$row['archive_file'];if(is_file($path)&&!is_link($path))unlink($path);query('DELETE FROM '.table('backups').' WHERE id=?',[$row['id']]);$count++;}
+            foreach(glob(backups_directory().'/dump-*.sql')?:[] as $stale)if(is_file($stale)&&!is_link($stale))unlink($stale);
             backups_audit((int)$actor['id'],'prune','Removed '.$count.' expired backups');
         });
         return $count;

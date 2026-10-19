@@ -29,8 +29,32 @@ function backups_manifest(array $row): BackupManifest {
     $data=json_decode($row['manifest'],true,64,JSON_THROW_ON_ERROR);
     if(!is_array($data)||($data['format']??0)!==BackupManifest::FORMAT_VERSION)throw new RuntimeException('This backup format is not supported by this installation.');
     $manifest=new BackupManifest($data['id'],$data['kind'],$data['created_by'],$data['created_at'],$data['items'],$data['retain_until'],$data['notes']??'');
-    if(!hash_equals($row['manifest_hash'],$manifest->manifestHash()))throw new RuntimeException('Stored backup manifest does not match its recorded integrity hash.');
+    $database=backups_database($row);
+    if(!hash_equals($row['manifest_hash'],backups_manifest_integrity_hash($manifest,$database)))throw new RuntimeException('Stored backup manifest does not match its recorded integrity hash.');
     return $manifest;
+}
+
+/** Integrity over the file manifest plus any embedded database-export section, so metadata cannot be edited independently. */
+function backups_manifest_integrity_hash(BackupManifest $manifest,?array $database): string {
+    $fileHash=$manifest->manifestHash();
+    if($database===null)return $fileHash;
+    return hash('sha256',$fileHash.'|'.json_encode($database,JSON_UNESCAPED_SLASHES));
+}
+
+/** Recorded database-export section for a backup row. A missing section is the explicitly supported pre-export legacy format; a present but malformed section is current data and fails closed. */
+function backups_database(array $row): ?array {
+    $data=json_decode($row['manifest'],true);
+    if(!is_array($data)||!array_key_exists('database',$data))return null;
+    $section=$data['database'];
+    if(!is_array($section)
+        ||($section['format']??null)!==1
+        ||($section['file']??'')!=='database/snapshot.sql'
+        ||!preg_match('/^[0-9a-f]{64}$/D',(string)($section['sha256']??''))
+        ||!is_int($section['bytes']??null)||$section['bytes']<=0
+        ||!is_int($section['tables']??null)||$section['tables']<=0
+        ||!is_int($section['rows']??null)||$section['rows']<0)
+        throw new RuntimeException('Stored database export metadata is malformed or unsupported.');
+    return $section;
 }
 function backups_download(string $id): never {
     backups_require();$row=backups_row($id);$path=backups_archive_path($row);
