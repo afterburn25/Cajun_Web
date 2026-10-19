@@ -75,10 +75,24 @@ subdomain `4dc05d8c` 16 · StackCP `ffee2e3a` 14 · renewal `632362f6` 8 ·
 reset-template `95ce538e` 9 · commercial `d2903bfb` 22. All conflicts are the
 known stale-base family (docs/SESSION records, generated inventory, acceptance
 contract, apache/browser test lists, shared routers) — site source merges
-cleanly. Merge order: catalog first (others stack on it), then each stack tip
-in dependency order; stacked tips carry their ancestors so one tip merge covers
-the stack. CI requirement: each head's dispatched application-acceptance run
-must be observed green before its merge.
+cleanly.
+
+Containment verified via `merge-base --is-ancestor`: `d2903bfb` contains
+`f67b1631`+`b7c97953`+`1db32352`; `0397a0e4` contains `f545cf93`; `8fe2787a`
+contains `e2c88d9d`. Minimal merge set — nine leaf tips: `d2903bfb`, `024b50dc`,
+`0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `632362f6`, `95ce538e`,
+`8fe2787a`. `d2903bfb` merges first (it carries the catalog the queue called the
+stack base); the rest are independent and may merge in any order.
+
+Prepared resolution: `devin/preflight-catalog` (`93e24ba0`) holds the fully
+resolved catalog merge locally — docs unioned, contract rebuilt semantically
+(268/268 checks), inventory regenerated, baseline-driver deltas re-anchored to
+the Group A predecessor bytes, 109 package-type pure checks pass. It is a
+reference for the real merge, not a merge substitute.
+
+CI requirement: each head's dispatched application-acceptance run must be
+observed green before its merge. Current dispatched runs are recorded in
+SESSION_HANDOFF.
 | Older codex hosting/service-plan drafts not already integrated | #84–#92 covered; others check per-branch | mixed |
 
 ## Group C — FOUNDATION / INCOMPLETE
