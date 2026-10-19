@@ -1,4 +1,15 @@
 # Session handoff - Devin sole-owner continuation
+## 2026-10-19 — commercial leaf merge preflight complete
+
+On `devin/preflight-commercial` at `1c7234dacac91114f3f097ec3a4a8b353b2c3d76`, Group B's largest leaf `codex/twentyi-installed-billing-options` (`d2903bfb`) is merged into integration tip `6832dde3` and pushed. This leaf carries the catalog stack base (`f67b1631` contained), so catalog preflight work is subsumed.
+
+- 22 merge conflicts resolved semantically (routers/dispatch unions, dual-lane JS/CSS, doc unions, regenerated installer artifacts). Zero residual markers; PHP lint clean.
+- Acceptance provenance fully re-anchored: 24-stage theirs-side file-state chain validated (0 errors), merged-side states built via recorded-delta reversals with 13 merge3 region resolutions, 22 deltas rebuilt, all pin maps/repins re-anchored (leaf-sha for repinned, check-stage-sha otherwise), nine-section contract strip chain converged to fixpoint, commercial-stage recipe literals +5 (non20i extension persists through strips).
+- `python tests/acceptance_artifacts_test.py --report tools/acceptance-reports.json` → `{"passed": true, "checks": 964}`.
+- Reusable engine artifacts for subsequent leaf merges: `C:\Users\after\AppData\Local\Temp\rebuild_mstate.py` (merged-state builder), `engine6.py` (final re-anchor engine), `engine4.py` (Tstate validator).
+
+Next: observe dispatched acceptance `39297756510` on `d2903bfb` and `39299409880` on `ceb06c05`, then merge this branch into `devin/full-site-integration` per the leaf order in `docs/DEVIN_INTEGRATION_QUEUE.md`. Remaining nine leaves: `024b50dc`, `0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `632362f6`, `95ce538e`, `8fe2787a`, `ff467d7f`. Each will need the same re-anchor pipeline on its own preflight branch.
+
 ## 2026-10-19 — installed monthly and annual purchase coverage
 
 Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](docs/TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
