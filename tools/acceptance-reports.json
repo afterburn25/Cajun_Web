@@ -171,7 +171,15 @@
     "twentyi-cloud-sites-integrated-results.json",
     "twentyi-mailboxes-integrated-results.json",
     "twentyi-operations-integrated-results.json",
-    "wordpress-installed-http-handler-results.json"
+    "wordpress-installed-http-handler-results.json",
+    "directory-listing-requests-document-default.json",
+    "directory-listing-requests-document-minimal.json",
+    "directory-listing-requests-storage-default.json",
+    "directory-listing-requests-storage-minimal.json",
+    "directory-listing-requests-contract-default.json",
+    "directory-listing-requests-contract-minimal.json",
+    "provider-directory-listing-requests-native-results.json",
+    "client-directory-listing-requests-browser-results.json"
   ],
   "final": [
     "activity-native-results.json",
@@ -389,7 +397,15 @@
     "twentyi-cloud-sites-integrated-results.json",
     "twentyi-mailboxes-integrated-results.json",
     "twentyi-operations-integrated-results.json",
-    "wordpress-installed-http-handler-results.json"
+    "wordpress-installed-http-handler-results.json",
+    "directory-listing-requests-document-default.json",
+    "directory-listing-requests-document-minimal.json",
+    "directory-listing-requests-storage-default.json",
+    "directory-listing-requests-storage-minimal.json",
+    "directory-listing-requests-contract-default.json",
+    "directory-listing-requests-contract-minimal.json",
+    "provider-directory-listing-requests-native-results.json",
+    "client-directory-listing-requests-browser-results.json"
   ],
   "provenance": {
     "original_source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",

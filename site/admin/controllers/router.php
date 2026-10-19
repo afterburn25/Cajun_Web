@@ -10,6 +10,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/mail_templates.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_accounts.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/providers.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/force_ssl_requests.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/directory_listing_requests.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_inbox.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_message.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_notices.php';
@@ -26,6 +27,9 @@ $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 if(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'provider_https_'))$view='https-requests';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];
 $validViews[]='https-requests';
+$validViews[]='directory-requests';
+if(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'provider_directory_request_'))$view='directory-requests';
+if($view==='directory-requests'){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='https-requests'){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $validViews=array_merge($validViews,['registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
@@ -52,6 +56,7 @@ if($view==='recurring-billing')recurring_billing_admin_render($error);
 if($view==='registration-drafts')registration_drafts_admin_render($error);
 if($view==='provider-settings')provider_settings_admin_render($error);
 if($view==='https-requests')provider_force_ssl_requests_admin_render($error);
+if($view==='directory-requests')provider_directory_indexing_requests_admin_render($error);
 if($view==='domain-renewal-agreements')domain_renewal_agreements_admin_render($error);
 if($view==='domain-renewal-dispatch')domain_renewal_dispatch_admin_render($error);
 if($view==='provider-operations')provider_operations_admin_render($error);

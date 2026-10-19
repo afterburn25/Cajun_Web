@@ -161,6 +161,7 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php provider_force_ssl_controls_admin_render(); ?>
 <p><a class="btn outline" href="<?=esc(admin_url('https-requests'))?>">Review client HTTPS requests</a></p>
 <?php provider_directory_indexing_controls_admin_render(); ?>
+<p><a class="btn outline" href="<?=esc(admin_url('directory-requests'))?>">Review client directory listing requests</a></p>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_package_wordpress_installed.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>
 
