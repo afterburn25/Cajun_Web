@@ -323,6 +323,17 @@ Files/actions: extracted `foundation/billing-calendar/BillingCalendar.php`, `tes
 Tests/verification (local): `tests/billing-calendar/calendar.php` — all checks pass on PHP 8.4 (literal/clamped leap-day and century periods, index/window bounds, invalid-input refusals, immutability and timezone independence). `php -l` clean on the class.
 
 Next: commit, push, PR, #157 update; then recurring-billing storage/screens stack, ticket-screenshot-readiness.
+
+## Complete P-07 bounded email outbox with retries — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting from `devin/non20i-notification-metrics`; new branch `devin/non20i-notification-outbox`.
+
+Actions: email `DeliveryAttempt` persistence gained a real bounded retry path — `maxAttempts 3`, 60s exponential backoff — replacing the single synchronous try. Added `DeliveryAttempt::restore` for safe hydration of persisted rows (terminal states cannot carry a retry time; retrying requires a next-attempt time). Added `notification_outbox_pump()` in `app/notifications/feed.php` selecting only due `pending`/`retrying` email rows, re-sending via `send_message`, and recording `sent`/`retrying`/`failed` with next-attempt scheduling; wired from the admin notifications view (bounded due sends per open; no daemon). Pure suite extended to 74 checks; native suite extended for persist → due-pump → reschedule → terminal-fail.
+
+Tests: `php -l` clean on all touched files; `php tests/notifications/run.php` → 74/74 pass on local PHP 8.4; `tools/build.py --refresh` clean (2,201 runtime files match canonical). MariaDB-native and browser lanes run in CI — not yet claimed.
+
+Next: commit, push, open stacked PR on `devin/non20i-notification-metrics`, update #157.
+
 ## Port P-07 notification contract layer — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.

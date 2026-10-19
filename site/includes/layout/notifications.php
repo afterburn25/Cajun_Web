@@ -54,6 +54,7 @@ function notifications_admin_render(array $user,string $error): never {
         else echo '<p>An owner must enable notifications.</p>';
         echo '</div></div></section>';admin_foot();exit;
     }
+    try{notification_outbox_pump(3);}catch(Throwable $e){report_error($e);}
     $feed=notification_feed(Notification::AUDIENCE_STAFF,(int)$user['id']);
     echo '<div class="workspace-card"><h2>Your notifications</h2><form method="post" class="inline">'.csrf_field().'<input type="hidden" name="action" value="notification_mark_all"><button class="btn outline">Mark all read</button></form>';
     notification_feed_list($feed,Notification::AUDIENCE_STAFF);

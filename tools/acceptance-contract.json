@@ -5,7 +5,6 @@
     "tests/browser_acceptance.py": "0b4ad398a26a55ceeec4b22673bc0d9b533e0705ee04ea2d026e5b94c7ba276d",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "b2a4ecaa1c1f16c50a74e0a2e7700218a1323c3b268c489d7f3d8d59b886db5a",
-
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
     "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
     "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
@@ -585,7 +584,7 @@
       "tests/mail_flags_native.php": "dd09c0fbc5cc6a81329b9242c857a3cf6fcd170ffc7f14a24fa357cf1611f302",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
       "tests/backups_native.php": "5e4311822a71c446b092d393564ab8f57ec736c4fb7f4054855c56eb51d094f8",
-      "tests/notification_feed_native.php": "99ca21b512cab8e00d58c17ca52e263cef9d1bd823a5b00ec3e0b1f2211ce608"
+      "tests/notification_feed_native.php": "5ae51eb0d65904cffa5efd7b64e4033c79c84b2c5d02b2565982359e00f2887e"
     }
   }
 }

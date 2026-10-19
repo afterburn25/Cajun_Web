@@ -53,6 +53,46 @@ final class DeliveryAttempt
         $this->nextAttemptAt = $firstAttemptAt;
     }
 
+    /**
+     * Rehydrate a persisted attempt. Validates the stored state so a corrupt
+     * or impossible record is refused before any transport call. Terminal
+     * records cannot carry a scheduled retry; a retrying record must name
+     * when it is next due.
+     */
+    public static function restore(
+        string $notificationId,
+        string $channel,
+        int $maxAttempts,
+        int $attempts,
+        string $state,
+        ?int $sentAt,
+        ?string $lastError,
+        ?int $nextAttemptAt,
+        int $backoffSeconds = 60,
+    ): self {
+        $a = new self($notificationId, $channel, $maxAttempts, $backoffSeconds, $nextAttemptAt);
+        if (!in_array($state, [self::STATE_PENDING, self::STATE_RETRYING, self::STATE_SENT, self::STATE_FAILED], true)) {
+            throw new InvalidArgumentException("Unknown delivery state '{$state}'.");
+        }
+        if ($attempts < 0 || $attempts > $maxAttempts) {
+            throw new InvalidArgumentException('Persisted attempt count is outside the configured bounds.');
+        }
+        if (($state === self::STATE_SENT || $state === self::STATE_FAILED) && $nextAttemptAt !== null) {
+            throw new InvalidArgumentException('A terminal delivery cannot schedule another attempt.');
+        }
+        if ($state === self::STATE_RETRYING && $nextAttemptAt === null) {
+            throw new InvalidArgumentException('A retrying delivery must carry its next attempt time.');
+        }
+        if ($state === self::STATE_SENT && $sentAt === null) {
+            throw new InvalidArgumentException('A sent delivery must carry its sent time.');
+        }
+        $a->state = $state;
+        $a->attempts = $attempts;
+        $a->sentAt = $sentAt;
+        $a->lastError = $lastError;
+        return $a;
+    }
+
     public function state(): string { return $this->state; }
     public function attempts(): int { return $this->attempts; }
     public function sentAt(): ?int { return $this->sentAt; }
