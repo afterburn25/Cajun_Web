@@ -5,7 +5,7 @@ boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT
 require_once CWP_CODE_ROOT.'/app/marketing/growth.php';require_once CWP_CODE_ROOT.'/app/clients/workspace.php';require_once CWP_CODE_ROOT.'/admin/controllers/studio.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';require_once CWP_CODE_ROOT.'/admin/controllers/staff.php';require_once CWP_CODE_ROOT.'/admin/controllers/support.php';require_once CWP_CODE_ROOT.'/admin/controllers/catalog.php';require_once CWP_CODE_ROOT.'/admin/controllers/payments.php';
 require_once CWP_CODE_ROOT.'/includes/layout/deliveries.php';
-require_once CWP_CODE_ROOT.'/includes/layout/activity.php';
+require_once CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_templates.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_accounts.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/providers.php';
@@ -30,6 +30,7 @@ if(in_array($view,['studio-clients','service-plans','service-plan','service-agre
 if($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if(in_array($view,['studio-clients','studio-job','studio-upgrade'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
 if($view==='staff-setup')staff_setup_render($error);
@@ -40,7 +41,7 @@ if($permission!==null&&!staff_can($permission,$user)){
     if($view==='dashboard')redirect(admin_url(staff_home($user)));
     http_response_code(403);admin_head('Access unavailable','security',$user);echo '<div class="notice error">Your account does not have access to this section.</div>';admin_foot();exit;
 }
-if($view==='studio-clients' && (support_current() || array_key_exists('support',$_GET))){
+if(in_array($view,['studio-clients','studio-job'],true) && (support_current() || array_key_exists('support',$_GET))){
     http_response_code(403);admin_head('Client administration unavailable','studio-clients',$user);echo '<div class="notice error">Leave client support before using client administration.</div>';admin_foot();exit;
 }
 if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accounts_admin_render($view,$error);

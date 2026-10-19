@@ -257,6 +257,9 @@ Devin non-20i increment on `devin/non20i-backup-restore-drill`, stacked on `devi
 ## Port A-03 backup/restore contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-backups-foundation` from main `595ac9c3`, continuing preserved `devin/backups-foundation`. Adds `foundation/backups/BackupManifest.php` (sealed sha256 item scopes; private/secret paths refused at construction; retention never born expired) and `RestorePlan.php` (preview→authorized→applied/abandoned; exact confirmation phrase, named actor, expired backups refused, newer formats rejected) with 33 pure contract checks in `tests/backups/run.php` and a PHP 8.2/8.4 workflow lane. No archive format, filesystem writes, database restore, scheduling or application integration — the adapter and restore drill remain future work. No release or deployment.
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
 
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
@@ -695,6 +698,31 @@ When an additional company contact records a version decision, the decision mess
 ## Unreleased — additional company contacts with scoped permissions (devin/non20i-client-contacts)
 
 Client accounts can carry additional company contacts: separate sign-in identities with independent project-review, billing and download permissions (P-05). Storage is a new additive `contacts_schema_version=1` (`studio_contacts`), prepared explicitly by the owner under Version & database with password reauthentication; unknown schema markers and non-empty unrecognized tables refuse adoption. Staff create/edit/disable contacts and issue 24-hour private one-time invitations shown once; raw tokens are never stored. Contact sessions ride the client session model (same idle/absolute limits) but revalidate contact enabled state, auth version and owning client on every request; disabling, editing or re-inviting a contact revokes it immediately. Portal routes and writes enforce scope server-side — `projects` gates job pages, messages, decisions, uploads and activity; `billing` gates invoices, receipts, license actions and hosting services; `downloads` gates `?file=`, releases and deliveries. Messages/uploads attribute to the contact identity and admin/client views render the contact name. Primary client accounts are unchanged when the feature is unused. No email is sent and no portal access is granted beyond the assigned permissions.
+## Unreleased — recurring service billing (Devin port)
+
+Ported preserved `codex/recurring-billing-terms` → `records/lifecycle` → `screens` → `activity` onto `devin/non20i-recurring-billing` (a merge of the project progress → planning → design-payments chain with service-plans runtime and billing-calendar, which the slice genuinely requires). Canonical `RecurringBillingTerms`/`RecurringBillingSchedule` computing whole-period eligibility from immutable anchors; additive owner-prepared `recurring_billing_*` storage; staff offer screen bound to an active client service agreement; explicit client accept/decline/end with feedback; one unique whole-period invoice per eligible period inside the existing ledger with a binding guard; `recurring-offer:`/`recurring-event:` activity notices with exact deep links and independent read state. Invoices are issued but card checkout is not activated; no production billing runs. No live deployment or release.
+
+## Unreleased — design payment agreements, schedules and bound invoices (Devin port)
+
+Ported the preserved `codex/design-payment-schedules` + `codex/design-financial-activity` stack onto `devin/non20i-design-payments` (stacked on `devin/non20i-project-planning`). Canonical `DesignPaymentSchedule` model with cent-exact deposit/installment allocation; owner-prepared additive `design_payment_*` storage with immutable offered/withdrawn/accepted/declined events; staff financial editor on the client project; explicit client consent bound to the exact offered fingerprint; one bound invoice per accepted stage guarded inside the existing ledger; `financial:` workspace-activity notices resolving to the exact frozen event. No card checkout is activated; publishing an offer records no payment. No live deployment or release.
+
+## Unreleased — structured project planning (Devin port)
+
+Ported the preserved `codex/project-planning`/`project-planning-storage`/`project-planning-screens` stack onto `devin/non20i-project-planning` (stacked on `devin/non20i-project-progress`, which it extends). Owner-prepared additive `studio_plan_events`/`studio_plan_requests`/`studio_plan_heads` storage; canonical `ProjectPlan`/`ProjectPlanEvent` models with bounded milestone dependencies and immutable revision events; staff planning editor and client dashboard/timeline inside the existing private workspace; `planning:` activity items that open the exact authorized event. Existing project free-text fields, progress history, invoices, files and deliveries remain authoritative — no legacy text is converted. No live deployment or release.
+
+## Unreleased — dated project history and client progress timeline (Devin port)
+
+- Port the preserved `codex/project-progress-screens` slice onto `main` under the 2026-10-16 allocation: `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}` canonical classes with deployment mirrors, additive `studio_progress_{events,requests,heads}` storage behind owner-gated `project_progress_setup`, and immutable hash-linked dated history for existing `studio_job` create/edit forms.
+- Admin: progress editor + bounded timeline on `studio-job`, create-project editor on `studio-clients`, setup form under Version & database; `studio-job`/`studio-upgrade` get private no-store headers and `studio-job` joins the support-session block list.
+- Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
+- Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
+- `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
+## Unreleased — service plans and client agreements (Devin port)
+
+Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `devin/non20i-service-plans` (stacked on the foundation port). Additive `service_plans`/`service_subscriptions` event-sourced tables behind owner-password setup; admin Service agreements view (create/edit plans, enroll clients); portal `?agreements` views where clients review and sign exact plan terms; `service-plans` added to the canonical mirror list. No provider, hosting or billing dependency introduced. No live deployment or release.
+## Unreleased — recurring billing calendar (Devin port)
+
+Ported `codex/billing-calendar` onto `devin/non20i-billing-calendar`. Canonical `foundation/billing-calendar/BillingCalendar.php` derives exact recurring periods (monthly/quarterly/annually × day-of-month/month-end) from an immutable anchor, with direct period/periodAt/window lookups, leap-day/century correctness and year-9999 bounds. Pure `tests/billing-calendar/calendar.php` contract + dedicated workflow. Canonical-only foundation; runtime wiring lands with recurring agreements. No live deployment or release.
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
@@ -844,6 +872,21 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Unreleased — design payment agreements, schedules and bound invoices (Devin port)
+
+Ported the preserved `codex/design-payment-schedules` + `codex/design-financial-activity` stack onto `devin/non20i-design-payments` (stacked on `devin/non20i-project-planning`). Canonical `DesignPaymentSchedule` model with cent-exact deposit/installment allocation; owner-prepared additive `design_payment_*` storage with immutable offered/withdrawn/accepted/declined events; staff financial editor on the client project; explicit client consent bound to the exact offered fingerprint; one bound invoice per accepted stage guarded inside the existing ledger; `financial:` workspace-activity notices resolving to the exact frozen event. No card checkout is activated; publishing an offer records no payment. No live deployment or release.
+
+## Unreleased — structured project planning (Devin port)
+
+Ported the preserved `codex/project-planning`/`project-planning-storage`/`project-planning-screens` stack onto `devin/non20i-project-planning` (stacked on `devin/non20i-project-progress`, which it extends). Owner-prepared additive `studio_plan_events`/`studio_plan_requests`/`studio_plan_heads` storage; canonical `ProjectPlan`/`ProjectPlanEvent` models with bounded milestone dependencies and immutable revision events; staff planning editor and client dashboard/timeline inside the existing private workspace; `planning:` activity items that open the exact authorized event. Existing project free-text fields, progress history, invoices, files and deliveries remain authoritative — no legacy text is converted. No live deployment or release.
+
+## Unreleased — dated project history and client progress timeline (Devin port)
+
+- Port the preserved `codex/project-progress-screens` slice onto `main` under the 2026-10-16 allocation: `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}` canonical classes with deployment mirrors, additive `studio_progress_{events,requests,heads}` storage behind owner-gated `project_progress_setup`, and immutable hash-linked dated history for existing `studio_job` create/edit forms.
+- Admin: progress editor + bounded timeline on `studio-job`, create-project editor on `studio-clients`, setup form under Version & database; `studio-job`/`studio-upgrade` get private no-store headers and `studio-job` joins the support-session block list.
+- Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
+- Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
+- `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
 
 ## Synchronize release entry points after review — 2026-10-15
 

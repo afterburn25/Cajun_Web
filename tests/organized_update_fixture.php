@@ -50,6 +50,20 @@ if(($argv[2]??'')==='plans'){
     }
     echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
 }
+if(($argv[2]??'')==='planning'){
+    $saved=[];foreach(['studio_plan_events'=>'job_id,revision','studio_plan_requests'=>'id','studio_plan_heads'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='financial'){
+    $financialReads=all('SELECT * FROM '.table('activity_reads')." WHERE event_key LIKE 'financial:%' ORDER BY id");
+    $saved=[];foreach(['design_payment_events'=>'job_id,sequence','design_payment_heads'=>'id','design_payment_invoices'=>'id','studio_invoices'=>'id','invoice_payments'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);$saved['financial_activity_reads']=$financialReads;
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='progress'){
+    $saved=[];
+    foreach(['studio_jobs'=>'id','studio_progress_events'=>'job_id,revision','studio_progress_requests'=>'id','studio_progress_heads'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='submissions'){
     echo json_encode(['intents'=>all('SELECT * FROM '.table('mail_submissions').' ORDER BY id'),'dispatches'=>all('SELECT * FROM '.table('mail_submission_dispatches').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('mail_submission_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
 }

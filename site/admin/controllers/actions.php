@@ -11,6 +11,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);
     if(str_starts_with($action,'registration_drafts_'))registration_drafts_admin_action($action);
     if(str_starts_with($action,'recurring_')){recurring_ui_action($action);return;}
+    if(str_starts_with($action,'design_financial_')){design_financial_admin_action($action);return;}
     if(str_starts_with($action,'service_plans_')){service_plans_admin_action($action);return;}
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);
@@ -32,6 +33,14 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'activity_'))activity_post('admin');
     if(str_starts_with($action,'delivery_'))delivery_admin_action($action);
     if(str_starts_with($action,'backups_')){backups_admin_action($action);return;}
+    if($action==='project_planning_setup'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current database backup.');project_planning_migrate(posted('password',1000));flash('Project planning is enabled. Existing details were preserved.');redirect(admin_url('studio-upgrade'));}
+    if($action==='project_planning_save'){
+        $GLOBALS['cwp_planning_attempt']=project_planning_attempt($_POST);$form=project_planning_form($GLOBALS['cwp_planning_attempt']);
+        $result=project_planning_save($form['id'],$form['client_id'],$form['request_id'],$form['expected'],$form['fields']);
+        flash($result['replayed']?'This plan was already saved. Current planning details were preserved.':'Project plan saved to the client history.');
+        redirect(admin_url('studio-job',['id'=>$result['job_id'],'focus_plan'=>$result['event_id']]).'#planning-'.$result['event_id']);
+    }
+    if($action==='project_progress_setup'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current database backup.');project_progress_migrate(posted('password',1000));flash('Project history is enabled. Existing details were preserved.');redirect(admin_url('studio-upgrade'));}
     if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}
     if($action==='logout'){support_end_browser('admin-logout');log_event('auth.logout');$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'', ['expires'=>time()-42000,'path'=>$p['path'],'secure'=>$p['secure'],'httponly'=>true,'samesite'=>'Lax']);}session_destroy();redirect(admin_url('login'));}
     require CWP_CODE_ROOT.'/admin/controllers/portfolio.php';

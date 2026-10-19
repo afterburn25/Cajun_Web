@@ -142,6 +142,8 @@ function staff_view_permission(string $view): ?string {
     if($view==='consultation-settings')return 'staff.manage';
     if(in_array($view,['consultations','consultation'],true))return 'website.manage';
     if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
+    if($view==='recurring-billing')return 'payments.manage'; // Controller also requires current clients.manage.
+    if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))return 'staff.manage';
     if(in_array($view,['provider-settings','provider-operations','staff','mail-accounts','mail-account','payment-settings','payment-trials','payment-notifications','backups'],true))return 'staff.manage';
     if(in_array($view,['payments','invoice-payments'],true))return 'payments.manage';
     if(in_array($view,['mail-templates','mail-template'],true))return 'mail.templates.manage';
@@ -185,16 +187,20 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'payments_'))return 'payments.manage';
     if(str_starts_with($action,'backups_'))return 'staff.manage'; // Restore additionally requires the current owner password and exact phrase.
     if(in_array($action,['delivery_setup','delivery_publish'],true))return 'staff.manage';
-    if($action==='activity_setup')return 'staff.manage';
+    if(in_array($action,['activity_setup','project_progress_setup','project_planning_setup','design_financial_setup'],true))return 'staff.manage';
     if(in_array($action,['activity_mark','activity_prefs'],true))return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
     if($action==='studio_contacts_setup')return 'staff.manage';
     if(in_array($action,['studio_contact','studio_contact_invite'],true))return 'clients.manage';
+    if($action==='recurring_setup')return 'staff.manage';
+    if(str_starts_with($action,'recurring_'))return 'payments.manage';
+    if(str_starts_with($action,'service_plans_'))return 'staff.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
     if(str_starts_with($action,'staff_')||in_array($action,['email_save','email_test','installer_cleanup','storage_repair','clear_limits','media_cleanup','studio_migrate'],true))return 'staff.manage';
-    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_note','studio_milestone','studio_publish','studio_upload','studio_preview','studio_invoice','studio_paid'],true))return 'clients.manage';
+    if(str_starts_with($action,'design_financial_'))return 'payments.manage';
+    if(in_array($action,['project_planning_save','studio_client','studio_invite','studio_job','studio_message','studio_note','studio_milestone','studio_publish','studio_upload','studio_preview','studio_invoice','studio_paid'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_home(array $user): string {

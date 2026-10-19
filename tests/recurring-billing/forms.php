@@ -48,6 +48,11 @@ try{
     $html=rf_html(fn()=>recurring_ui_command_form(array_replace($form,['command'=>'issue'])));rf_ok('Invoice form pins a read-only period in its action URL and submitted fields',str_contains($html,'period_date=2028-02-29')&&str_contains($html,'type="hidden" name="period_date" value="2028-02-29"')&&!str_contains($html,'type="date" name="period_date"'));
     $html=rf_html(fn()=>recurring_ui_invoice_card(['id'=>19,'reference'=>'RI-TEST','period'=>['start'=>'2028-02-29','end'=>'2028-03-31','due'=>'2028-03-14','timezone'=>'America/Chicago'],'paid_cents'=>10000,'due_cents'=>2501,'status'=>'issued'],false));
     rf_ok('Client invoice links use existing ledger and show payments separately',str_contains($html,'invoice=19')&&str_contains($html,'$100.00 USD')&&str_contains($html,'$25.01 USD')&&str_contains($html,'end exclusive'));
+    foreach([['focus_event'=>[]],['focus_event'=>'bad'],['focus_event'=>str_repeat('A',32)],['focus_event'=>str_repeat('a',32),'schedule'=>'']] as $i=>$delta)rf_deny('Invalid focus event query refuses '.$i,fn()=>recurring_ui_query(array_replace(['recurring'=>'1','job'=>'5','schedule'=>str_repeat('b',32)],$delta),false));
+    $focus=recurring_ui_query(['recurring'=>'1','job'=>'5','schedule'=>str_repeat('b',32),'focus_event'=>str_repeat('a',32)],false);rf_ok('Exact focus ID survives strict recurring query parsing',$focus['focus_event']===str_repeat('a',32));
+    rf_deny('Focused event without original agreement refuses',fn()=>recurring_ui_query(['recurring'=>'1','job'=>'5','focus_event'=>str_repeat('a',32)],false));
+    rf_deny('Missing focused event cannot fall back to a different page',fn()=>recurring_ui_history_page($doc,0,str_repeat('a',32)));
+    rf_ok('Unfocused recurring history preserves requested page',recurring_ui_history_page($doc,4,'')===4);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e.PHP_EOL);}
 $passed=!in_array(false,array_column($checks,'passed'),true);$report=['passed'=>$passed,'scope'=>'Isolated recurring form/date/render behavior; no database, HTTP or payment acceptance.','php'=>PHP_VERSION,'checks'=>$checks];
 if(isset($argv[1]))file_put_contents($argv[1],json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' recurring form checks'.PHP_EOL;exit($passed?0:1);

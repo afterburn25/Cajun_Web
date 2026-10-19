@@ -1,5 +1,9 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
+## Current recurring-billing increment
+
+Devin recurring billing port on `devin/non20i-recurring-billing` continues the preserved `codex/recurring-billing-*` stack — immutable terms/schedules, explicit client consent, unique whole-period invoices through the existing ledger, staff/client screens and `recurring-*:` workspace activity with exact retained links. [Scope](RECURRING_BILLING.md); [activity contract](RECURRING_BILLING_ACTIVITY_CONTRACT.md). P-07/HC-06 remain partial: full packaged/recovery acceptance and review run in CI; production billing activation is not authorized.
+
 Current ownership and priority: [Codex complete20i takeover](TWENTYI_CODEX_TAKEOVER.md). Earlier allocations/progress summaries below are historical; the complete requirements remain in force.
 
 ## VPS support gate interpretation (owner policy 2026-10-13)
