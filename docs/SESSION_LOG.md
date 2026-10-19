@@ -150,6 +150,19 @@ Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 o
 
 
 
+## Port C-01 comparison-facts contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-comparisons-foundation`.
+
+Actions: extracted the preserved `devin/comparisons-foundation` slice — three `foundation/comparisons/` classes, `tests/comparisons/run.php`, `comparisons.yml`, `docs/COMPARISONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/comparisons/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+
+
+
 ## Provision ext-zip for the backup archive lane — 2026-10-17
 
 Request: continue #157 repairs; `Backup checks` on PHP 8.2/8.4 failed deterministically at `archive_run.php` with the production refusal `Ask your host to enable the PHP ZIP extension`.
@@ -759,6 +772,14 @@ Request: continue the remaining non-20i roadmap (issue #157). Starting commit: m
 Actions: extracted the preserved `devin/revisions-foundation` slice — four `foundation/revisions/` classes, `tests/revisions/run.php`, `revisions.yml`, `docs/REVISIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
 
 Tests: `php -l` clean; `php tests/revisions/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+## Port C-01 comparison-facts contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-comparisons-foundation`.
+
+Actions: extracted the preserved `devin/comparisons-foundation` slice — three `foundation/comparisons/` classes, `tests/comparisons/run.php`, `comparisons.yml`, `docs/COMPARISONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/comparisons/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
 

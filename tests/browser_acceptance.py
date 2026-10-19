@@ -67,6 +67,10 @@ try:
     routes=['','index.php?page=services','index.php?page=work','index.php?page=work&cat=Construction','index.php?page=about','index.php?page=process','index.php?page=contact','index.php?page=why-custom','index.php?page=compare-wix','index.php?page=compare-squarespace','index.php?page=switch','index.php?page=packages','index.php?page=faq','index.php?page=industries','index.php?page=estimate','index.php?page=website-review','index.php?page=consultation']
     for path in routes:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Public route '+(path or 'home'),r.status_code==200 and 'CajunWebPro' in r.text and 'We could not complete this request' not in r.text)
+    r=requests.get(BASE+'/existing/index.php?page=compare-wix',timeout=15)
+    check('Wix comparison renders registry-sourced claims',r.status_code==200 and 'Wix Studio offers responsive design tools' in r.text and 'Hosting documentation' in r.text and 're-verified' not in r.text)
+    r=requests.get(BASE+'/existing/index.php?page=compare-squarespace',timeout=15)
+    check('Squarespace comparison renders registry-sourced claims',r.status_code==200 and 'code-injection features depend on the plan' in r.text and 'Export documentation' in r.text and 're-verified' not in r.text)
     for path in ['images/icons/favicon.png','favicon.ico','assets/css/growth.css','assets/js/growth.js','images/branding/logo.png']:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Asset bytes '+path,r.status_code==200 and hashlib.sha256(r.content).digest()==hashlib.sha256((ROOT/'site'/path).read_bytes()).digest())
     for path in ['includes/bootstrap.php','includes/security/csrf.php','includes/foundation/estimator/PriceRule.php','app/marketing/estimator.php','app/staff/accounts.php','config/example.php','database/schema/base.php','admin/controllers/router.php','admin/views/auth.php','portal/views/workspace.php','pages/home/body.php','includes/foundation/access/AccessContext.php','install/actions/deploy.php']:
