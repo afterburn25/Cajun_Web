@@ -1,3 +1,9 @@
+## 2026-10-19 — owner 20i reset email template controls
+
+Separate branch `codex/twentyi-reset-email-template`, from main `a86f6f4f`, adds explicit reading, exact replacement review, one admitted save and separate provider readback for the StackCP password-reset email template. Encrypted history and current owner/account checks protect the flow; no email is sent. [Behavior, actual evidence and remaining gates](docs/TWENTYI_PASSWORD_RESET_TEMPLATE.md). Native and installed-browser acceptance remain pending; this is not a release.
+
+Payment-link companion [PR253](https://github.com/afterburn25/Cajun_Web/pull/253) is pushed at `b1948eeb` with its first full acceptance queued. Separate renewal-invoicing PR252 and immutable published1.25.0 are preserved.
+
 ## 2026-10-19 — verified remainder and candidate handoff
 
 The separately reviewed139-run queue remainder is complete:139 verified terminal cancellations covering 551 unexecuted jobs. The original 497-candidate inventory now has466 verified cancellations and 31 preserved runs, with no untouched candidates or unresolved terminal verifications. All cleanup processes have exited. Original failed evidence and protected application/release gates remain preserved. [Cleanup record](docs/CI_SUPERSEDED_QUEUE_CLEANUP.md).

@@ -1,3 +1,7 @@
+## 2026-10-19 — bounded reset email template lane
+
+Root coordinates `codex/twentyi-reset-email-template` from maina86f6f4f. Domains owns the typed read/write contracts and offline tests; Catalog owns private storage and runtime admission; VPS owns native/installed-browser cases; root owns the editor, action routing, shared adapter wiring, evidence and sequential integration. [Scope and gates](TWENTYI_PASSWORD_RESET_TEMPLATE.md). These assignments use the owner's existing parallel20i authorization; Devin's non20i branches remain separate.
+
 ## 2026-10-19 — continuation evidence sealed
 
 Root owns the main-based documentation checkpoint and later sequential integration. [Current sources and gates](ROADMAP_CONTINUATION_2026_10_19.md) preserve frozen PR249/250, pending original application/capture runs and Devin's non-20i ownership. Catalog independently verified all 139 new cleanup outcomes; Domains checked exact PR249 packages and fixture applicability; VPS reviewed the cleanup boundaries and consolidation. All 139 are terminally cancelled with 551 unexecuted jobs. No cleanup process remains active, and no cancellation is to be repeated. Original 327 acknowledgements and 31 preserved runs were excluded from this new operation. This records completed bounded work, not a new product completion claim.

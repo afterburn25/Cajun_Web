@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_password_reset_template.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_schedule.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_prerequisites.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_access.php';
