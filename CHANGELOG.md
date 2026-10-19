@@ -1,3 +1,7 @@
+## Unreleased — contacts test setup
+
+Remove duplicate contacts-table creation in the native service-plan fixture while retaining all new contact authority checks. Runtime application and published1.25 bytes are unchanged.
+
 ## Unreleased — record observed cloud null response
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.

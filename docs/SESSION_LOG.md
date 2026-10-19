@@ -3426,3 +3426,11 @@ Starting at `bf788894b1acd4c07daf74e718c4f95774acef85` on `ops/twentyi-cloud-roo
 This documentation-only commit updates status, handoff, changelog and diagnostic interpretation. The next implementation is direct hosting catalog import, with documented same-type identity and preserved inventory-origin drafts. The current source does not implement that follow-through, import cloud products or fetch provider images. Enclosing commit: `docs: record cloud catalog null response`; no diagnostic code or trigger paths change.
 
 Actual root documentation checks passed 12 required documents,271 Markdown files and1,851 local links, including30 heading links; whitespace passed. Source and application tests were not rerun for this outcome record.
+
+## 2026-10-19 — contacts native fixture correction
+
+Parent `cefb08d6c29f4faca104089bb5941b322418d2ba`, current [PR203](https://github.com/afterburn25/Cajun_Web/pull/203); branch `codex/contacts-native-fixture`; enclosing commit **Fix duplicate contacts setup in service-plan fixture**. This addresses the observed domain-renewal workflow39130068128 failure inherited by PR210: renewal checks passed, then the service-plan fixture attempted to create `spln_studio_contacts` twice. The canonical base schema already creates that table. Remove only the redundant second DDL call, retaining the schema marker and all contact, consent, worker and authority assertions.
+
+[Named evidence](evidence/service-plan-contact-fixture.json) retains three original artifact digests and the87-pass/1-failure service-plan reports. Nine actual extracted schema/setup guards pass in each default/minimal PHP mode; both syntax modes and independent source review pass. These are not corrected native SQL results. Main, published1.25 and the separate20i candidates do not contain this unintegrated contact extension. Devin retains feature ownership; root supplies this bounded test correction at the earliest affected branch so the downstream stack can inherit it through normal integration.
+
+Next: first corrected-source native/full GitHub acceptance, then sequential integration with PR203 and descendants. Preserve original failed runs; no source or result is replaced and no production action occurred.
