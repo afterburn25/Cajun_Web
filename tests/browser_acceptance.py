@@ -272,6 +272,15 @@ try:
         license_release_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
+        from provider_subdomain_requests_cases import run_browser as subdomain_requests_browser
+        subdomain_browser_result=subdomain_requests_browser(globals(),browser)
+        subdomain_captures=[f'Subdomain-Requests-{state}-{size}.png' for state in ['Client-Pending','Owner-Review','Client-Observed'] for size in ['Desktop','Mobile']]
+        check('Installed client subdomain workflow reports passed outcomes and all six real captures',
+            isinstance(subdomain_browser_result,dict) and subdomain_browser_result.get('passed') is True
+            and isinstance(subdomain_browser_result.get('checks'),list) and bool(subdomain_browser_result['checks'])
+            and all(isinstance(c,dict) and isinstance(c.get('name'),str) and bool(c['name'].strip()) and c.get('passed') is True for c in subdomain_browser_result['checks'])
+            and isinstance(subdomain_browser_result.get('captures'),list) and sorted(subdomain_browser_result['captures'])==sorted(subdomain_captures)
+            and all((QA/name).is_file() and not (QA/name).is_symlink() and (QA/name).stat().st_size>8 and (QA/name).read_bytes()[:8]==b'\x89PNG\r\n\x1a\n' for name in subdomain_captures))
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

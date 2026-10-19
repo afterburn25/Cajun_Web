@@ -1,3 +1,7 @@
+## Unreleased — installed subdomain workflow acceptance
+
+Add packaged client/owner HTTP and browser coverage for subdomain requests, with a strict loopback provider fixture, separate approval/readback checks and required desktop/mobile evidence. [Scope and execution status](docs/TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md). This test increment does not claim an installed pass or a release.
+
 ## Unreleased — client subdomain requests
 
 Add a dedicated Subdomain requests section for primary clients and the owner, with assigned website choices, pending withdrawal, owner review and saved provider progress. Connect approval to the existing once-only subdomain operation and keep separate readback distinct from website availability. [Scope and acceptance](docs/TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md). This candidate remains unreleased.

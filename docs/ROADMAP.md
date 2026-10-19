@@ -1,3 +1,7 @@
+## 2026-10-18 — subdomain installed acceptance continuation
+
+[Installed workflow coverage](TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md) follows PR236 on a separate candidate. Real owner/client HTTP handlers, loopback TLS provider responses, independent readback and six required desktop/mobile captures target the remaining verification gap. Prepared tests are not completed runtime acceptance. Full 20i and the existing integration/release gates remain unfinished.
+
 ## 2026-10-18 — client subdomain request workflow
 
 [Client requests](TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) extend the owner operation from `b8c316b6` on a separate branch. The increment covers assigned parent selection, pending withdrawal, owner decline/approval, an exact provider-attempt link and safe client progress. Database, installed application and combined release acceptance remain required. Full 20i, provider catalog/image coverage and the remaining roadmap are not marked complete.
