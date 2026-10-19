@@ -4899,3 +4899,13 @@ Local corrected function/model checks and PHP syntax/installer checks are distin
 - Known blockers: GitHub-hosted concurrency starvation — ~58 runs queued, account cap serializes execution; Group B 20i merges remain gated on observed CI.
 - Next: hosted acceptance on the integration tip; merge port PRs on green; then Group B by dependency order.
 
+
+## 2026-10-19 — CI queue triage and Group B leaf-dispatch
+
+- Request: continue without stopping; CI was starving all acceptance gates.
+- Diagnosis: ~1,063 queued runs (22h+ no execution) — accumulated push/PR-triggered component suites on intermediate codex branches, stale commit heads, and already-merged `devin/non20i-*` sources. The backlog was queue starvation, not failing code.
+- Actions: force-cancelled 616 queued runs, each verified safe first — 523 on codex branches confirmed ancestors of retained leaf tips via `merge-base --is-ancestor` (leaf-tip runs cover their content) or already-integrated corrections; 55 on `devin/non20i-*` sources whose content is merged into `devin/full-site-integration`; 38 stale-SHA runs on moved branch tips; duplicated push/PR workflow runs on identical heads. No cancelled run had ever executed; no logs/reports lost.
+- Retained: combined acceptance `39299409880` on `ceb06c05` (branch tip `f73dd118` differs only in docs — `application-tests.yml` paths filter means `ceb06c05` is the current code gate); fresh dispatched application runs on all Group B leaves/heads (`d2903bfb` `024b50dc` `0397a0e4` `b0fe332f` `1a8ae850` `4dc05d8c` `8fe2787a` `ffee2e3a` `632362f6` `95ce538e` `ff467d7f` `f67b1631` `b7c97953` `1db32352` `e2c88d9d`); distinct component suites on leaf tips; dedicated component runs on port branches #257–#260.
+- Result: queue 1063 → ~415, all remaining runs being retained coverage. `39298981345` (cb8d2117) raced into in_progress during triage and was lost — `ceb06c05` supersedes it.
+- Also recorded: Group B containment map and minimal nine-leaf merge set in the integration queue doc (`f73dd118`); catalog merge resolution pre-staged on `devin/preflight-catalog` `93e24ba0` (268/268 contract, 109 package-type checks, 32 PHP lints — local only, not hosted acceptance).
+- Next: observe `39299409880`; on pass, integration branch is merge-eligible to main; then Group B leaf merges in dependency order as their dispatched runs report.

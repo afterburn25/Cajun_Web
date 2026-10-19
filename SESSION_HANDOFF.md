@@ -33,7 +33,7 @@ This session writes the takeover directive and current root/coordination instruc
 - `tests/apache_acceptance.py` conflicts are usually giant list unions; check INC-only quoted items first — often HEAD is already a strict superset (`git checkout --ours`).
 - Regenerate `site/install/inventory.generated.php` via `python tools/build.py --refresh` after every site change; artifact check is `python -B tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json` (expects 229).
 
-**Continuation 2026-10-19 (later same day):** tip `5da3ef95`. Post-Group A fixes: `cb8d2117` repaired admin notification dispatch shadowing (`payments_notification_*` prefix now precedes the generic `notification*` feed dispatch); `ceb06c05` removed a duplicate plain `require` of notifications.php in the portal router. Stale pre-fix run 39297205239 (on `9896b1f0`) cancelled — acceptance runs on `cb8d2117`/`ceb06c05`/`5da3ef95` are authoritative.
+**Continuation 2026-10-19 (later same day):** tip `5da3ef95`. Post-Group A fixes: `cb8d2117` repaired admin notification dispatch shadowing (`payments_notification_*` prefix now precedes the generic `notification*` feed dispatch); `ceb06c05` removed a duplicate plain `require` of notifications.php in the portal router. Stale pre-fix run 39297205239 (on `9896b1f0`) cancelled; run 39298981345 on `cb8d2117` was lost mid-flight during triage. Run `39299409880` on `ceb06c05` is the authoritative combined acceptance — later commits through `f73dd118` are docs-only (paths filter).
 
 **Component ports (base = integration branch, awaiting hosted runs):**
 - PR #257 `devin/vps-uncertainty-port` — VPS uncertainty-retention component from `fb395998` (311 local checks).
@@ -43,10 +43,12 @@ This session writes the takeover directive and current root/coordination instruc
 
 **PR hygiene:** closed #102–#125 (port parity verified), #32/#36/#37/#43–#46/#60/#61 (superseded; ported where needed), #109/#111 (superseded by released 20i work), and all 25 Group D ancestor PRs. Open PRs now ~101, almost all Group B awaiting CI.
 
+**CI queue triage (2026-10-19):** the ~1,063-run backlog was triaged — 616 queued runs force-cancelled after per-run safety checks (ancestor-of-leaf verification, merged sources, stale SHAs, duplicates; none had executed). ~415 retained: acceptance `39299409880` on `ceb06c05` plus dispatched runs on all Group B leaf tips/heads and port-branch component suites. Full detail: `docs/DEVIN_INTEGRATION_QUEUE.md` → "CI queue triage" and `docs/SESSION_LOG.md` 2026-10-19 tail entry.
+
 **Next actions in order:**
-1. Watch the acceptance runs on the integration branch tip; fix any combined failures.
-2. Merge the four component-port PRs once their hosted runs pass (or fold branches in directly before the main merge).
-3. Observe actual CI on Group B Codex 20i heads (catalog f67b1631, capture b7c97953, commercial d2903bfb, nameservers 024b50dc, runtime, subdomain 4dc05d8c, StackCP ffee2e3a, renewal 632362f6, reset-template 95ce538e) before any merge — runs dispatched, queue is starved by account concurrency.
+1. Watch run `39299409880` (acceptance on `ceb06c05`; tip `f73dd118` is docs-only past it) — on pass the integration branch is merge-eligible to `main`.
+2. Merge the four component-port PRs once their dedicated runs pass (or fold branches in directly before the main merge).
+3. Observe dispatched acceptance on the nine Group B leaf tips (`d2903bfb` first — carries catalog/capture/first-invoice); merge in dependency order, resolving the known 8–22-hunk stale-base conflicts (catalog resolution pre-staged on `devin/preflight-catalog` `93e24ba0`).
 4. Normal-merge integration branch into main after combined acceptance passes, then continue remaining 20i/non-20i gaps and the next verified release.
 
 ## Devin's first executable milestone

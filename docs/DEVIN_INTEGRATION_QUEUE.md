@@ -109,12 +109,46 @@ SESSION_HANDOFF.
 
 #80, #81, #82, #83, #84, #87, #88, #89, #90, #91, #92, #94, #99, #100, #133, #135, #136, #138, #139, #140, #148, #149, #150, #151, #156 — verified via `git merge-base --is-ancestor`. All 25 closed 2026-10-19 with ancestry-verification notes.
 
+## CI queue triage — 2026-10-19
+
+At takeover the Actions backlog held ~1,063 queued runs — accumulated
+push/PR-triggered component suites on intermediate codex branches, stale commit
+heads, and already-integrated `devin/non20i-*` source branches. Nothing was
+executing for ~22h; hosted acceptance was starved, not failing.
+
+Cancelled 616 redundant queued runs (verified safe per-run before cancelling):
+
+- 523 on intermediate/ancestor codex branches — every one confirmed an ancestor
+  of a retained leaf tip (`merge-base --is-ancestor`), so leaf-tip runs cover
+  their content; plus already-integrated correction branches.
+- 55 on `devin/non20i-*` Group A source branches — content already merged into
+  `devin/full-site-integration`; the combined acceptance covers them.
+- 38 stale-SHA queued runs whose branch tips had moved on.
+- Duplicated push/PR runs of the same workflow on the same head.
+
+Retained (leaf-tip coverage + gates):
+
+- `39299409880` — Application acceptance on `ceb06c05` (devin/full-site-integration).
+  Tip `f73dd118` differs only in docs; `application-tests.yml` has a paths
+  filter, so `ceb06c05` is the current authoritative code acceptance.
+- Fresh dispatched `workflow_dispatch` application runs on every Group B leaf
+  and head: `d2903bfb`, `024b50dc`, `0397a0e4`, `b0fe332f`, `1a8ae850`,
+  `4dc05d8c`, `8fe2787a`, `ffee2e3a`, `632362f6`, `95ce538e`, `ff467d7f`,
+  `f67b1631`, `b7c97953`, `1db32352`, `e2c88d9d`.
+- Distinct component-suite runs on retained leaf branch tips (the authors'
+  per-component native suites — unique coverage, not duplicates).
+- Dedicated component workflow runs on the four port branches (#257–#260).
+
+Cancelled runs retained no evidence — none had ever executed (all were
+perpetually `queued`, zero produced logs or reports).
+
 ## Concrete blockers and next actions
 
-1. Group A hosted acceptance never executed — queue starvation kept all lanes queued at takeover. Push integration branch to trigger the full required matrix on the combined source; that run IS the combined acceptance.
-2. Group A doc conflicts in SESSION_HANDOFF.md/SESSION_LOG.md — resolve by union per merge.
-3. #176/#200 show CONFLICTING on GitHub only because their PR bases are sibling branches, not main — verified clean against main locally.
-4. Codex Group B: must inspect actual run results on current heads before any merge; queued-at-takeover gates were never observed completed.
-5. #250 is a Codex correction onto Devin's contacts branch — merge as part of A2/A3.
-
-First merge group: A1–A3 (mail + contacts/account + fixture fix) — most-reviewed slices with reviewer-closed findings.
+1. Observe run `39299409880` (combined acceptance on `ceb06c05`) to completion;
+   on pass, `devin/full-site-integration` is eligible to merge to `main`.
+2. Observe dispatched application acceptance on the nine Group B leaf tips;
+   merge in dependency order (`d2903bfb` first — carries the catalog stack base).
+   All nine conflict against the integration tip (8–22 hunks, known stale-base
+   family; catalog resolution pre-staged on `devin/preflight-catalog` `93e24ba0`).
+3. Merge port PRs #257–#260 only after their dedicated component runs report.
+4. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
