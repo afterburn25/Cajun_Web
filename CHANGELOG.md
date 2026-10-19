@@ -746,6 +746,9 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Unreleased — recurring billing calendar (Devin port)
+
+Ported `codex/billing-calendar` onto `devin/non20i-billing-calendar`. Canonical `foundation/billing-calendar/BillingCalendar.php` derives exact recurring periods (monthly/quarterly/annually × day-of-month/month-end) from an immutable anchor, with direct period/periodAt/window lookups, leap-day/century correctness and year-9999 bounds. Pure `tests/billing-calendar/calendar.php` contract + dedicated workflow. Canonical-only foundation; runtime wiring lands with recurring agreements. No live deployment or release.
 
 ## Synchronize release entry points after review — 2026-10-15
 

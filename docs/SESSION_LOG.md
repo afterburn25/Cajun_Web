@@ -176,6 +176,17 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Port billing calendar — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157, item 4 recurring/maintenance prerequisites).
+
+Starting commit: `origin/main` `c8382276` — foundation-only slice, no runtime dependencies on the financial stack.
+
+Files/actions: extracted `foundation/billing-calendar/BillingCalendar.php`, `tests/billing-calendar/calendar.php`, `docs/BILLING_CALENDAR_CONTRACT.md` (ownership line updated for the Devin port), `.github/workflows/billing-calendar.yml` (`devin/non20i-*` trigger added). No `site/` mirror or build wiring — runtime consumers land with the recurring-agreements integration slice.
+
+Tests/verification (local): `tests/billing-calendar/calendar.php` — all checks pass on PHP 8.4 (literal/clamped leap-day and century periods, index/window bounds, invalid-input refusals, immutability and timezone independence). `php -l` clean on the class.
+
+Next: commit, push, PR, #157 update; then recurring-billing storage/screens stack, ticket-screenshot-readiness.
 
 ## Synchronize release entry points after review — 2026-10-15
 
