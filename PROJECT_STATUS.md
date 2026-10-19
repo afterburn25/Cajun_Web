@@ -1,3 +1,11 @@
+## 2026-10-18 — original 1.26 runtime evidence
+
+The catalog candidate `f67b1631683b29096dd8ec1daee405e104dc0b83` in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216) now has successful build, native/database/browser, Apache and recovery jobs in all four original PHP8.2/8.4 × MariaDB10.11/MySQL8.4 runs. Their final hosted acceptance jobs remain queued. The [retained-evidence review](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md) separates completed producer evidence, local reconciliation and the unfinished hosted/release gates.
+
+All four unchanged local aggregations pass 216 required reports and 28,873 named executions per run. Independent package/source review confirms identical archives across runtimes; all 16 populated upgrade scopes preserve the original data within the documented snapshot contract. The [source-bound receipt](docs/evidence/catalog126-original-runtime-review.json) records report hashes, artifact identities, actual outcomes and limitations. This does not complete a hosted job or accept a later source.
+
+The reviewed catalog images repeat the known clipped mobile imported-image capture; no new material catalog blocker was found. The capture successor [PR220](https://github.com/afterburn25/Cajun_Web/pull/220), source `b7c97953`, still awaits its original full run39137551561 and actual changed-image review. Full20i, automatic provider images/cloud catalog, candidate integration and 1.26 publication remain unfinished. Published1.25.0 is unchanged. Hosting, nameserver, StackCP and client-subdomain candidates, including [PR237](https://github.com/afterburn25/Cajun_Web/pull/237), remain separate; this documentation checkpoint imports none of them.
+
 ## 2026-10-18 — five pure-suite PR filters
 
 Branch `codex/ci-pure-family-pr-filters` starts at main `e397d9a6e293850e8dff61a593e3ba39ee178400`. Five isolated pure suites now watch their own foundation/test directories and workflow file on PRs. All jobs and push/manual triggers remain unchanged. Actual verification: 82 finite producer checks, 44 independent review checks, and root comparison of all five applied hashes and complete inverses to main. [Scope and retained evidence](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers). This is CI scheduling work, not application acceptance.

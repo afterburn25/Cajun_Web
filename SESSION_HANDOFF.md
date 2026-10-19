@@ -1,3 +1,13 @@
+## 2026-10-18 — original catalog runtime review
+
+Documentation branch `codex/release126-original-evidence` starts from main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`; enclosing commit `docs: record original catalog runtime evidence`. [Evidence, source identities and remaining gates](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md). No application, test, workflow, installer or version changes are part of this branch.
+
+Preserve the four original f67 runs39098578401/39098583508/39098588864/39098593805 and the separate default8.3 run39098482550. All producer jobs are successful; hosted final jobs remain queued. Runtime identities come from authenticated envelopes, not assumed run ordering. The later capture source `b7c97953f323004e1fdd527bdef0b2da63f01c71` remains in PR220 with original run39137551561 queued. Inspect it and the actual changed captures when ready, then complete corrected-candidate, integration, exact-main and release-download gates. Do not substitute local evidence reconciliation for a hosted completion or rerun queued work.
+
+The four original local aggregates and package/upgrade reviews are finished: each aggregate passes 216 reports and 28,873 named executions; packages match exact f67 and each other. Root rechecked all 864 report hashes and frozen review identities. [Committed receipt](docs/evidence/catalog126-original-runtime-review.json), SHA256 `bb81afeb131100c2e8a24dd7f779f427fd4def57c43436f3eeea236f69e36336`. Do not repeat this completed artifact review without a changed source, artifact or unresolved finding.
+
+The first runtime's original envelopes and compact receipts are under workspace `work/catalog126-original-acceptance-review`; new large downloads and isolated assemblies use `D:/CodexArtifacts/Cajun_Web/catalog126-2026-10-18` because C: has about2.5GiB free. Its `storage.json` maps these locations. Retain both locations. No existing files were deleted or moved. Published1.25.0, Devin branches and other Codex candidates stay separate. PR237 remains `d1493f77f4c32d49b62256df1645dc60b9768cb9`, with its original full run39198491747 pending; do not mistake this documentation checkout for that candidate.
+
 ## 2026-10-18 — pure-suite CI follow-through
 
 Starting main `e397d9a6e293850e8dff61a593e3ba39ee178400`; branch `codex/ci-pure-family-pr-filters`; enclosing commit `ci: limit isolated pure suites to relevant PR paths`. Five workflow files plus continuity/evidence documentation change. No shipping source, generated inventory, application workflow or published asset changes. [Trigger contract, actual checks and policy caveat](docs/RELEASE_WORKFLOW.md#2026-10-18--pure-suite-pull-request-triggers).
