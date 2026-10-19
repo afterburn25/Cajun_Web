@@ -80,6 +80,9 @@ try:
     check('Unknown category shows honest empty state',empty is not None and not empty.has_attr('hidden'))
     r=requests.get(BASE+'/existing/index.php?page=project&slug=magnolia-built',timeout=15);check('Published case study resolves',r.status_code==200 and 'Magnolia Built' in r.text)
     r=requests.get(BASE+'/existing/index.php?page=project&slug=no-such-project',timeout=15);check('Unknown case study returns 404',r.status_code==404)
+    doc=soup(requests.get(BASE+'/existing/index.php?page=compare-wix',timeout=15));reg=[li.get_text(' ',strip=True) for li in doc.select('.growth-source-list li')]
+    check('Comparison source registry lists reviewed scope per source',len(reg)==4 and all('Reviewed 2026-' in t and '·' in t for t in reg))
+    check('Comparison registry links primary documentation',all(a.get('href','').startswith('https://') for a in doc.select('.growth-source-list a')))
     s=requests.Session();r=s.get(BASE+'/existing/index.php?page=estimate');data=form_data(soup(r).select_one('[data-growth-form]'));data.update({'action':'calculate','project_type':'business','pages':'7','low':'1','high':'2'})
     r=s.post(BASE+'/existing/index.php?page=estimate',data=data,headers={'Accept':'application/json'});check('HTTP estimator ignores browser total',r.status_code==200 and r.json()['estimate']['low']==110000)
     data.update({'action':'growth_submit','name':'HTTP prospect','email':'http@example.invalid','message':'We would like a website with clear organized services.','consent':'1'})

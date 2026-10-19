@@ -753,6 +753,8 @@ Capture existing website, business goals, and contact details in the lead inbox.
 
 ### C-01 — Why custom / Wix and Squarespace comparisons
 
+Verified on `devin/non20i-comparison-sources`: `growth_sources()` now carries a per-source registry — title, primary URL, review date and plan scope — rendered under each comparison page, and the Squarespace export link was updated to its current slug. The homepage teaser, scoped comparison pages and switch guidance were already on main.
+
 Build an engaging homepage teaser plus detailed, separately scoped comparison content and migration explanations. Compare service model, design process, customization, integrations, responsibilities, content portability, operating costs, and support only with current primary-source evidence. Separate provider/plan facts from CajunWebPro's actual offered deliverables. Include who each route may suit and switching considerations. Acceptance: source/date/plan registry, no copied unsupported mockup claims, no guarantees of rankings/speed/conversion or universal superiority, and a clear consultation CTA.
 
 ### C-02 — Packages, FAQ, local/industry information

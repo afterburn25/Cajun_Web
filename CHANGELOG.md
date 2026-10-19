@@ -1579,3 +1579,8 @@ Owner request: continue full20i while Devin completes non-20i. Parent819c3ea3; c
 ## Main documentation synchronization
 
 Main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` publishes the same owner release freeze, canonical b98b96eb branch and scope/map to make them discoverable. Its12 Markdown-only changes add no runtime, installer, schema or version delta. The release branch normally merges that checkpoint; its existing release-specific status and all prior histories remain, rather than copying main's pre-integration runtime wording. Both sources agree on frozen capabilities, licensing corrections, complete supported acceptance, published1.24 and no live deployment.
+## Unreleased — comparison source registry (devin/non20i-comparison-sources)
+
+- `growth_sources()` now carries the C-01 source/date/plan registry: each of the four cited provider documents records its title, primary URL, review date and plan scope, rendered as a sourced list under every comparison page.
+- Squarespace export link corrected to the current help-center slug (`206566687-Exporting-your-site`); all four sources re-verified against live primary documentation on 2026-10-16, including plan-gated Squarespace code features (Core, Plus, Advanced or some legacy plans).
+- HTTP acceptance asserts the registry lists all four sources with reviewed dates/scopes and HTTPS primary links. No copied competitor claims, prices or performance guarantees added.
