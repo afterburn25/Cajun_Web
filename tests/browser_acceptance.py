@@ -228,6 +228,8 @@ try:
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser
         submissions_browser(globals(),browser)
+        from mail_reply_cases import run_browser as reply_browser
+        reply_browser(globals(),browser)
         from client_authority_cases import run_browser as client_authority_browser
         client_authority_browser(globals(),browser)
         from service_plan_cases import run_browser as service_plan_browser

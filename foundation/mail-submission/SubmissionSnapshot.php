@@ -6,9 +6,11 @@ namespace CajunWebPro\Foundation\MailSubmission;
 if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
 
 use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailCompose\MessageThread;
 use InvalidArgumentException;
 
 require_once __DIR__.'/../mail-compose/DraftContent.php';
+require_once __DIR__.'/../mail-compose/MessageThread.php';
 
 /**
  * Immutable input to future maintained MIME preparation, not a dispatch grant.
@@ -32,6 +34,8 @@ final readonly class SubmissionSnapshot
         string $from,
         public DraftContent $content,
         public int $preparedEpoch,
+        public ?MessageThread $thread = null,
+        public ?string $originFingerprint = null,
     ) {
         foreach ([$id,$draftId,$accountId] as $opaque) {
             if (!preg_match('/\A[a-f0-9]{32}\z/',$opaque)) {
@@ -47,6 +51,14 @@ final readonly class SubmissionSnapshot
         }
         if (count($content->to)+count($content->cc)+count($content->bcc)===0) {
             throw new InvalidArgumentException('Select at least one recipient before preparing a submission.');
+        }
+        // Copied-content submissions bind their immutable origin and thread
+        // context together; one without the other is not a supported shape.
+        if (($thread===null)!==($originFingerprint===null)) {
+            throw new InvalidArgumentException('Copied-content submissions require thread context and origin binding together.');
+        }
+        if ($originFingerprint!==null && !preg_match('/\A[a-f0-9]{64}\z/',$originFingerprint)) {
+            throw new InvalidArgumentException('Invalid copied draft origin binding.');
         }
         // Share the established bare-address validation; no second address grammar.
         $sender=new DraftContent([$from],[],[],'','');
@@ -69,7 +81,7 @@ final readonly class SubmissionSnapshot
     /** Sensitive complete preparation payload: never put in logs, URLs or bells. */
     public function privatePayload():array
     {
-        return [
+        $payload=[
             'format'=>1,'id'=>$this->id,'author_id'=>$this->authorId,
             'draft_id'=>$this->draftId,'draft_revision'=>$this->draftRevision,
             'account_id'=>$this->accountId,'account_revision'=>$this->accountRevision,
@@ -77,5 +89,12 @@ final readonly class SubmissionSnapshot
             'to'=>$this->content->to,'cc'=>$this->content->cc,'bcc'=>$this->content->bcc,
             'subject'=>$this->content->subject,'body'=>$this->content->body,
         ];
+        // Format 2 appends origin/thread fields; format-1 bytes stay identical.
+        if ($this->thread!==null) {
+            $payload['format']=2;
+            $payload['thread']=$this->thread->toArray();
+            $payload['origin_fingerprint']=$this->originFingerprint;
+        }
+        return $payload;
     }
 }

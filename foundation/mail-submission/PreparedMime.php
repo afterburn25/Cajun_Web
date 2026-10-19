@@ -37,6 +37,13 @@ final readonly class PreparedMime
             $mail->Subject=$mail->literalSubject($snapshot->content->subject);
             $mail->Body=str_replace("\n","\r\n",$snapshot->content->body);
             $mail->isHTML(false);
+            // RFC 5322 reply threading from the saved, exact snapshot context.
+            if($snapshot->thread!==null) {
+                $expected=0;
+                if($snapshot->thread->inReplyTo!==null){$expected++;if(!$mail->addCustomHeader('In-Reply-To',$snapshot->thread->inReplyTo))throw new PreparationFailure('encoding_failed');}
+                if($snapshot->thread->references!==[]){$expected++;if(!$mail->addCustomHeader('References',implode(' ',$snapshot->thread->references)))throw new PreparationFailure('encoding_failed');}
+                if(count($mail->getCustomHeaders())!==$expected)throw new PreparationFailure('encoding_failed');
+            }
             if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');
             $bytes=$mail->getSentMIMEMessage();
             if(strlen($bytes)>self::MAX_BYTES || !str_contains($bytes,"\r\n\r\n")

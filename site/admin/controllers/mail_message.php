@@ -3,6 +3,9 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/messages.php';
 require_once CWP_CODE_ROOT.'/app/mail/notices.php';
+require_once CWP_CODE_ROOT.'/app/mail/replies.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php';
+use CajunWebPro\Foundation\MailCompose\ReplyDraft;
 function mail_message_route(): array {
     $id=$_GET['account_id']??null;$revision=$_GET['revision']??null;$validity=$_GET['uidvalidity']??null;$uid=$_GET['uid']??null;
     if(!is_string($id)||!is_string($revision)||!preg_match('/\A[1-9][0-9]{0,9}\z/D',$revision)||(float)$revision>4294967295)throw new InvalidArgumentException('Open a message from the current inbox headers.');
@@ -15,10 +18,21 @@ function mail_message_admin_action(string $action): array {
     if($action==='mail_message_setup') {
         mail_messages_migrate(posted('current_password',200));flash('Message request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
-    if($action!=='mail_message_read'||($_GET['view']??null)!=='mail-message')throw new InvalidArgumentException('Open the current message form before requesting content.');
+    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_reply','mail_message_forward'],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
     $route=mail_message_route();
     foreach($route as $key=>$value)if(posted($key,32)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected inbox message.');
-    return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);
+    if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);
+    // Reply/Forward: stable posted draft identity resolves an exact replay without another mailbox request.
+    $mode=$action==='mail_message_reply'?'reply':'forward';
+    $draftId=posted('draft_id',32);mail_drafts_id($draftId);
+    [$sender,$senderRevision]=mail_drafts_form_reference(posted('sender',43));
+    if(mail_reply_drafts_existing($draftId,$route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],$mode,$sender,$senderRevision)) {
+        flash('Your existing draft for this message is open. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$draftId]));
+    }
+    $read=mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null,true);
+    if($read['code']!=='ok')return $read;
+    mail_reply_drafts_create($draftId,$sender,$senderRevision,$read,ReplyDraft::prepare($mode,$read['content']['source']));
+    flash('An editable draft was created from the loaded message. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$draftId]));
 }
 /** Caller supplies only BodyDecoder's sanitized output in a currently authorized response. */
 function mail_message_document(#[\SensitiveParameter] string $sanitized): string {
@@ -38,6 +52,15 @@ function mail_message_admin_render(string $error,#[\SensitiveParameter] ?array $
         if($result!==null) {
             [$current]=mail_message_authority($accountId,(int)$route['revision']);
             if($result['account_id']!==$accountId||$result['actor_id']!==(int)$current['id']||$result['account_revision']!==(int)$route['revision']||$result['uidvalidity']!==$route['uidvalidity']||$result['uid']!==$route['uid']||($result['notice_handle']??null)!==($route['notice']??null))throw new RuntimeException('Reload the current inbox before viewing this message.');
+        }
+        // Reply/Forward senders: only accounts with a current Send grant for this actor.
+        $replySenders=[];
+        if($result!==null&&$result['code']==='ok'&&mail_replies_ready()&&mail_drafts_ready()) {
+            try {
+                staff_locked(function()use(&$replySenders):void {
+                    foreach(array_slice(mail_accounts_assigned(1),0,20) as $assigned)if($assigned['can_send'])$replySenders[$assigned['id']]=mail_drafts_account($assigned['id']);
+                });
+            }catch(InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;$replySenders=[];}
         }
     }catch(InvalidArgumentException|RuntimeException $e) {
         if($e instanceof PDOException)throw $e;

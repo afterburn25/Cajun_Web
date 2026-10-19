@@ -158,12 +158,13 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'service_plans_'))return 'staff.manage';
     if($action==='mail_submissions_setup')return 'staff.manage';
     if(str_starts_with($action,'mail_submissions_'))return null; // Current author/Send/mailbox/review checks in submission controller.
-    if($action==='mail_drafts_setup')return 'staff.manage';
+    if(in_array($action,['mail_drafts_setup','mail_drafts_replies_setup'],true))return 'staff.manage';
     if(str_starts_with($action,'mail_drafts_'))return null; // Strict actor/account/author checks in every draft action.
     if($action==='mail_notices_setup')return 'staff.manage';
     if($action==='mail_notices_dismiss')return null; // Current mail actor plus exact tuple/grant rechecked by the action.
     if($action==='mail_message_setup')return 'staff.manage';
     if($action==='mail_message_read')return null; // mail_message_read enforces the exact current account scope.
+    if(in_array($action,['mail_message_reply','mail_message_forward'],true))return null; // Reply/Forward revalidate exact read authority and current Send access internally.
     if($action==='mail_inbox_setup')return 'staff.manage';
     if($action==='mail_inbox_read')return null; // mail_inbox_read enforces the exact account scope.
     if(str_starts_with($action,'mail_inbox_'))return 'mail.read';
