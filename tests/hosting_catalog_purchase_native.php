@@ -36,6 +36,10 @@ $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME
 $_SERVER['DOCUMENT_ROOT']=CWP_CODE_ROOT;ini_set('session.save_path',$runtime.'/sessions');start_session();
 date_default_timezone_set('UTC');
 $checks=[];$step='clock';$result=['passed'=>false,'phase'=>$phase,'simulated_application_clock'=>$phase==='prepare','checks'=>[]];
+if(!str_starts_with($phase,'portal-'))register_shutdown_function(static function()use($phase,&$result,&$checks,&$step):void{
+    if(!empty($GLOBALS['hp_phase_report_written']))return;
+    fwrite(STDERR,json_encode(['phase_diagnostic'=>'terminated-before-report','phase'=>$phase,'step'=>$step,'checks'=>count($checks),'last_error'=>error_get_last(),'ini'=>['error_log'=>(string)ini_get('error_log'),'output_buffering'=>ini_get('output_buffering'),'display_errors'=>ini_get('display_errors'),'log_errors'=>ini_get('log_errors'),'memory_limit'=>ini_get('memory_limit'),'max_execution_time'=>ini_get('max_execution_time')]],JSON_UNESCAPED_SLASHES)."\n");
+});
 /** Counts executed prepared statements without retaining SQL or parameters. No performance threshold. */
 final class HostingPurchaseStatement extends PDOStatement {
     protected function __construct(){}
@@ -97,7 +101,7 @@ function hp_read(array $p,string $secret,string $address,callable $authorize,str
     $credential=new ProviderCredential('twenty-i',$p['id'],static function()use($authorize,$secret):string{$authorize();return $secret;});
     return InventoryReader::read(new HostingPurchaseTransport(Closure::fromCallable($authorize)),$credential,$operation,0,time());
 }
-function hp_write(string $name,array $value):void{global $qa,$fullSuite;if($fullSuite)$name='hosting-purchase-'.$name;$f=fopen($qa.'/'.$name,'x');if(!$f)throw new RuntimeException('Purchase evidence already exists');try{fwrite($f,json_encode($value,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");}finally{fclose($f);}}
+function hp_write(string $name,array $value):void{global $qa,$fullSuite;if($fullSuite)$name='hosting-purchase-'.$name;$f=fopen($qa.'/'.$name,'x');if(!$f)throw new RuntimeException('Purchase evidence already exists');try{fwrite($f,json_encode($value,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");}finally{fclose($f);}$GLOBALS['hp_phase_report_written']=true;}
 
 try{
     db()->setAttribute(PDO::ATTR_STATEMENT_CLASS,[HostingPurchaseStatement::class,[]]);
