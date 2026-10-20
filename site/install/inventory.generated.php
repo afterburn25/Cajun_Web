@@ -2859,7 +2859,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/twentyi-inventory/InventoryResource.php'=>'337ebe795b625e2d421374f4636bb136a268d3a98d8a0da0d869ce3f943d8b40',
     'includes/foundation/twentyi-inventory/InventorySnapshot.php'=>'57f39c7b9116810aeec65dca1635895c932a719f5a8f90c23c4ea89b28ec4395',
     'includes/foundation/twentyi-inventory/RegistrationPeriod.php'=>'bdb6e3011d9019beec3c661cf07b1689e13f631b3770c5bc16e5bcc10ed7ac8c',
-    'includes/foundation/twentyi-operations/CloudWebsiteCreate.php'=>'791d676f8a0fd129268a98b61355dbf557a9b7bed1f838723d81ac6285102524',
+    'includes/foundation/twentyi-operations/CloudWebsiteCreate.php'=>'4266e1a1d7fcab6841f5bf580fa5bc899687d89254919b9fb36c46d95c8391ba',
     'includes/foundation/twentyi-operations/DirectoryIndexingChange.php'=>'6b2f1b9ada82c1055f834a7e3115e8a7860ef566dc0ba42d035475751e9fb98c',
     'includes/foundation/twentyi-operations/DomainRenewal.php'=>'529351ffcaacfd1e1c9005af7f216bcf5088e7b84257872fcc26289f11d5e223',
     'includes/foundation/twentyi-operations/ForceSslChange.php'=>'a9df60e2700b288b46158f55a3d638dee46bda415752823cccbaa50df3c59017',
