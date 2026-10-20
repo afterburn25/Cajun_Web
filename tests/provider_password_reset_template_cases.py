@@ -153,7 +153,10 @@ def run_browser(env, browser):
         check('final form seals exactly the browser-submitted reviewed text', sent_text == desired.replace('\n', '\r\n'))
         captured.update({'current_password': OWNER, 'reviewed': '1'})
         review_locator.locator('[name=reviewed]').check(); review_locator.locator('[name=current_password]').fill(OWNER)
-        review_locator.locator('button').click(); expect(page.locator('[data-reset-template-history]')).to_be_visible()
+        review_locator.locator('button').click()
+        # The save follows POST-redirect-GET, so the workspace details renders collapsed; open it as the owner would.
+        page.locator('#password-reset-template summary').click()
+        expect(page.locator('[data-reset-template-history]')).to_be_visible()
         check('actual save click records one pending acknowledgment without changing GET text',
               '20i acknowledged the request; confirmation pending' in page.locator('[data-reset-template-history]').inner_text()
               and provider.calls == calls + 2 and provider.posts == posts + [{'path': route, 'body': {'content': sent_text}}]
