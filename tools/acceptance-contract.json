@@ -844,7 +844,7 @@
       "browser": "7f19172de8409939275e8faf1b6b2407c2d7ce987d400158d8546a70b6022d11",
       "final": "8927fbcdbc633f1fe051d2d67e062eb16298d80dbd36fd2f49b0d54e86ca6af5"
     },
-    "predecessor_workflow_sha256": "12b20e85989cda921137c9de51138afdba876d2ff450026918321aef70370e63",
+    "predecessor_workflow_sha256": "9f7972e3bc9643b0f8537950bdcf4deca38b495d51738c7e4c76064aace5e74f",
     "workflow_delta": [
       {
         "before": "          \"$PHP_BINARY\" tests/provider_package_types_native.php\n",
@@ -961,7 +961,7 @@
         "after": "          sudo apt-get -o Acquire::Retries=5 install -y libfaketime \"php${CWP_PHP_VERSION}-cli\" \"php${CWP_PHP_VERSION}-mysql\" \"php${CWP_PHP_VERSION}-gd\" \"php${CWP_PHP_VERSION}-zip\" \"php${CWP_PHP_VERSION}-curl\" \"php${CWP_PHP_VERSION}-xml\" \"php${CWP_PHP_VERSION}-mbstring\"\n          export PHP_BINARY=\"/usr/bin/php${CWP_PHP_VERSION}\"\n"
       }
     ],
-    "predecessor_workflow_sha256": "e6f4093e67ac8e1ca538c362707f5374bea264f4299a9f5560cee5b7efb60f69",
+    "predecessor_workflow_sha256": "f871cb553c9c2083e6106a22f1b14874c9a2b6472ada0f3213dc65045fe74e2c",
     "reports": [
       "hosting-purchase-prepare-results.json",
       "hosting-purchase-due-results.json",
@@ -1021,7 +1021,7 @@
   },
   "published125_hosting_extension": {
     "source_base": "10142c7e97c8ba9986e0c18d9ab0190ccc432727",
-    "predecessor_workflow_sha256": "6f8ed970abf557dccda043ca3c89133abec55646d7b276239bc8b2a726d2d02a",
+    "predecessor_workflow_sha256": "cfa1f9c8c1ff3e2e16f2d646f3c0984e959c6f0e8aa0017164b3068bb1f1d25f",
     "workflow_delta": {
       "before": "          .ci-venv/bin/python tests/release_126_upgrade_acceptance.py\n",
       "after": "          .ci-venv/bin/python -B tests/release_126_hosting_guards.py --report qa/apache-release126-hosting-guards-results.json\n          .ci-venv/bin/python tests/release_126_upgrade_acceptance.py\n"
@@ -1155,7 +1155,7 @@
   },
   "hosting_checkout": {
     "source_base": "7703cb73172c81e347eaf87885ad71315ae6563c",
-    "predecessor_workflow_sha256": "bd608b38f2ed79ffb849465db2b17a5fd856fcc177ca15aa31b624074a9ea54c",
+    "predecessor_workflow_sha256": "138ccc71977e13d75ebbe498dcd4d3ab99dd9d496229d0910669e567bef057f5",
     "predecessor_native_count": 170,
     "predecessor_native_sha256": "318a3c0a93a9a45dde7f856c8b5cb40a13aec7176805b608d2c63891fd8c8856",
     "additions_after": "CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php",
@@ -1331,7 +1331,7 @@
       "b7c97953f323004e1fdd527bdef0b2da63f01c71",
       "1db3235286f915935e4ab621e2be5a2f14288997"
     ],
-    "predecessor_contract_sha256": "b08d20d9367946669923e17eb8743f9aa83e8df24b2f54756a8ad6b8996c80a2",
+    "predecessor_contract_sha256": "623889a9e84b0bd2f314cd0baff636d3d4b395b5b468beaa990e36206e712711",
     "source_sha256": {
       "site/app/providers/checks.php": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
       "site/admin/views/providers.php": "2427f9c82d73e51301039a7465fdacafbe957627cac2ad230b6eeeb4e986df9a",
@@ -1370,14 +1370,14 @@
       }
     },
     "unchanged_workflows": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5"
     },
     "scope": "Separate focused portable/native and synthetic-renderer checks; actual installed application, combined full/upgrade acceptance and provider artwork/VPS mapping remain pending."
   },
   "catalog_storefront_http": {
     "source_predecessor": "9b450c4b8daafd79f4242c39ddd65e2bdb56b624",
-    "predecessor_contract_sha256": "6f932252dbf900e700899ea1eeecec123072db9ba2ba9e6e61c9d45dbcac3634",
+    "predecessor_contract_sha256": "2587dbae2d480b39c43282657314fbcfacde7db53a8131d7fb8c3ca4b854ec4c",
     "updated_pins": {
       "tests/provider_package_types_cases.py": "provider_package_types",
       "tests/hosting_checkout_http_browser.py": "hosting_checkout"
@@ -1423,7 +1423,7 @@
       }
     },
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
@@ -1466,10 +1466,10 @@
       "Hosting-Plan-Setup-Preview-Mobile.png"
     ],
     "http_report": "hosting-checkout-http-results.json",
-    "predecessor_contract_sha256": "3184b613fb371ee15b939f05f07b55b688e8ef07c130018a02a1a51f9b4d7a30",
+    "predecessor_contract_sha256": "53d359f738cf19d8937aa4a1ac5364386bd27201826ff833e97bbafda5b67356",
     "predecessor_reports_sha256": "60b7639b4c17a555c441021b17e34fa73d8053962b502e39aee4f671d724fce4",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
       "site/admin/views/hosting_catalog.php": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
@@ -1499,8 +1499,8 @@
             "after": "          CWP_TEST_HOSTING_CHECKOUT=1 \"$PHP_BINARY\" tests/hosting_checkout_native.php\n          \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_document.php qa/hosting-catalog-plan-setup-document-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_plan_setup_document.php qa/hosting-catalog-plan-setup-document-minimal.json\n          \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-minimal.json\n          CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php\n          \"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json\n"
           }
         ],
-        "current_sha256": "386fb1447765aacd16c2cebb0bb9e7a273c1fcaf293e899a847dfea649f87392",
-        "predecessor_sha256": "6a1cb8699dfe958a81792d83367084005013e2b101ac75955e0cb6f2f797340a"
+        "current_sha256": "f8c9c0a4a92135677e03908e38a16c9cb4fe558604962fabcb08b32b31559b43",
+        "predecessor_sha256": "fd31334634f3d01762947b81935d962d4a3f42afbc76f8ecb612f21d72fd9ba8"
       },
       ".github/workflows/catalog-storefront.yml": {
         "predecessor_sha256": "9f9b2113dc966e3ce698339dee8527c8eea2a65bf598a8233cb1f1f95e76913a",
@@ -1828,8 +1828,8 @@
           "unchanged_workflows"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "6a1cb8699dfe958a81792d83367084005013e2b101ac75955e0cb6f2f797340a",
-        "current_sha256": "386fb1447765aacd16c2cebb0bb9e7a273c1fcaf293e899a847dfea649f87392"
+        "predecessor_sha256": "fd31334634f3d01762947b81935d962d4a3f42afbc76f8ecb612f21d72fd9ba8",
+        "current_sha256": "f8c9c0a4a92135677e03908e38a16c9cb4fe558604962fabcb08b32b31559b43"
       },
       {
         "location": [
@@ -1855,8 +1855,8 @@
           "unchanged_source_sha256"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "6a1cb8699dfe958a81792d83367084005013e2b101ac75955e0cb6f2f797340a",
-        "current_sha256": "386fb1447765aacd16c2cebb0bb9e7a273c1fcaf293e899a847dfea649f87392"
+        "predecessor_sha256": "fd31334634f3d01762947b81935d962d4a3f42afbc76f8ecb612f21d72fd9ba8",
+        "current_sha256": "f8c9c0a4a92135677e03908e38a16c9cb4fe558604962fabcb08b32b31559b43"
       },
       {
         "location": [
@@ -1901,10 +1901,10 @@
       "hosting-checkout-purchases-native-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "212a7a58eb4b05461276af1956f0d34336b253c316faa4bbb1e09c90a0ef7e16",
+    "predecessor_contract_sha256": "0737ad3d5994da85d0237136a30e14e336c65847b437f2c7190c85028d1fcc84",
     "predecessor_reports_sha256": "5f82c4872d9528c0fa9e5f9b45542d0862039f01afc80e2fe548c023652328b0",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/admin/controllers/hosting_purchases.php": "c45a8ae46cffdac59d269de2e9a1cf56cd6e775f18bd4a0e181fe3c0e3e95c5b",
       "site/admin/controllers/router.php": "921b5515334cd8db38cc640cd661ca04805ebba39667062283a206d19f4e975e",
@@ -1940,8 +1940,8 @@
             "after": "          CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php\n          \"$PHP_BINARY\" tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo -d extension=tokenizer tests/hosting_checkout_purchases_guards.php > qa/hosting-checkout-purchases-minimal.json\n          \"$PHP_BINARY\" tests/hosting_purchases_views.php > qa/hosting-purchases-views-default.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer tests/hosting_purchases_views.php > qa/hosting-purchases-views-minimal.json\n          CWP_TEST_HOSTING_PURCHASES=1 \"$PHP_BINARY\" tests/hosting_checkout_purchases_native.php\n          \"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json\n"
           }
         ],
-        "current_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16",
-        "predecessor_sha256": "386fb1447765aacd16c2cebb0bb9e7a273c1fcaf293e899a847dfea649f87392"
+        "current_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809",
+        "predecessor_sha256": "f8c9c0a4a92135677e03908e38a16c9cb4fe558604962fabcb08b32b31559b43"
       },
       ".github/workflows/catalog-storefront.yml": {
         "predecessor_sha256": "79b5c679d401fffc20699e87f855a7fec0fd4ca1c596b3016ae947ba433e0acd",
@@ -2208,8 +2208,8 @@
           "unchanged_workflows"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "386fb1447765aacd16c2cebb0bb9e7a273c1fcaf293e899a847dfea649f87392",
-        "current_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16"
+        "predecessor_sha256": "f8c9c0a4a92135677e03908e38a16c9cb4fe558604962fabcb08b32b31559b43",
+        "current_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809"
       },
       {
         "location": [
@@ -2217,8 +2217,8 @@
           "unchanged_source_sha256"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "386fb1447765aacd16c2cebb0bb9e7a273c1fcaf293e899a847dfea649f87392",
-        "current_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16"
+        "predecessor_sha256": "f8c9c0a4a92135677e03908e38a16c9cb4fe558604962fabcb08b32b31559b43",
+        "current_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809"
       },
       {
         "location": [
@@ -2244,8 +2244,8 @@
           "source_sha256"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "386fb1447765aacd16c2cebb0bb9e7a273c1fcaf293e899a847dfea649f87392",
-        "current_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16"
+        "predecessor_sha256": "f8c9c0a4a92135677e03908e38a16c9cb4fe558604962fabcb08b32b31559b43",
+        "current_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809"
       },
       {
         "location": [
@@ -2315,10 +2315,10 @@
       "Hosting-Purchase-Inbox-Client-Mobile.png"
     ],
     "result_check": "Installed purchase inbox follows exact original records without new business writes",
-    "predecessor_contract_sha256": "69f69d42deeae008567c61aef3d4e67005667befbd69a15dd2dc7c797664ba6a",
+    "predecessor_contract_sha256": "fb7f768f5f739f13d932b5b8ec9311af57fa172d0f084f00baaed2c570f0dce7",
     "predecessor_reports_sha256": "2afa7b37763688f455f367ecc1fddaccdeef8bd4f4332d12baf83d75c6989f6c",
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/includes/layout/service_orders.php": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
@@ -2334,8 +2334,8 @@
             "after": "    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, 'devin/non20i-*', 'devin/full-site-integration', codex/twentyi-hosting-purchase-inbox, codex/twentyi-purchase-inbox-browser]\n"
           }
         ],
-        "current_sha256": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39",
-        "predecessor_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16"
+        "current_sha256": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1",
+        "predecessor_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809"
       },
       ".github/workflows/catalog-storefront.yml": {
         "predecessor_sha256": "33c6673d0c1d6b9cf6ea0459f4c64a1769d778e0ace31d3afb2bf361d22070bc",
@@ -2457,8 +2457,8 @@
           "unchanged_workflows"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16",
-        "current_sha256": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "predecessor_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809",
+        "current_sha256": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "location": [
@@ -2475,8 +2475,8 @@
           "unchanged_source_sha256"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16",
-        "current_sha256": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "predecessor_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809",
+        "current_sha256": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "location": [
@@ -2493,8 +2493,8 @@
           "source_sha256"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16",
-        "current_sha256": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "predecessor_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809",
+        "current_sha256": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "location": [
@@ -2520,8 +2520,8 @@
           "source_sha256"
         ],
         "path": ".github/workflows/application-tests.yml",
-        "predecessor_sha256": "1c9b4b20f19aa9e18ba31ead8a072c4f8063f28860ef1ddab6963d4d5bd64c16",
-        "current_sha256": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "predecessor_sha256": "c172bbc98edfda12eb12008b93d1cf0ab6c73b012bdf5319913997608ad13809",
+        "current_sha256": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "location": [
@@ -2580,7 +2580,7 @@
     "added_commands": [],
     "added_reports": [],
     "added_captures": [],
-    "predecessor_contract_sha256": "936337fec6ded0489eca852b92ebf97024d2815a4d96d1794c1449dc46c442c7",
+    "predecessor_contract_sha256": "e7afa4139a17524b123a358c70cb3475cfa66f5c0738d14df765efb04b932668",
     "predecessor_reports_sha256": "2afa7b37763688f455f367ecc1fddaccdeef8bd4f4332d12baf83d75c6989f6c",
     "source_sha256": {
       "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
@@ -2770,7 +2770,7 @@
       }
     ],
     "unchanged_source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
@@ -2783,7 +2783,7 @@
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "962ecc47695476d3d7a4cc5051324baad861ee9d3806ab2fae938171e0bec327",
+    "predecessor_contract_sha256": "5cf2c2606eb7c41c328c0c3f7df3666c4d16864da954a52a7463f852fdbe1e7c",
     "predecessor_reports_sha256": "2d1215ad024966d0448da44fcdcdc4195be1c8a8d914807613b7585cd8db15a2",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
@@ -2846,8 +2846,8 @@
           "unchanged_workflows",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "after": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027"
+        "before": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "after": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1"
       },
       {
         "keys": [
@@ -2855,8 +2855,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "after": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027"
+        "before": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "after": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1"
       },
       {
         "keys": [
@@ -2864,8 +2864,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "after": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027"
+        "before": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "after": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1"
       },
       {
         "keys": [
@@ -2909,8 +2909,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "after": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027"
+        "before": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "after": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1"
       },
       {
         "keys": [
@@ -2927,8 +2927,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "after": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027"
+        "before": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "after": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1"
       },
       {
         "keys": [
@@ -2945,8 +2945,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "after": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027"
+        "before": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "after": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1"
       },
       {
         "keys": [
@@ -2962,20 +2962,20 @@
       ".github/workflows/application-tests.yml": {
         "changes": [
           {
-            "after_start": 320,
-            "after_end": 325,
+            "after_start": 316,
+            "after_end": 321,
             "after": "          \"$PHP_BINARY\" tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-minimal.json\n          \"$PHP_BINARY\" tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_variants_contract.php > qa/hosting-catalog-variants-contract-minimal.json\n          CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php\n",
             "before": ""
           },
           {
-            "after_start": 509,
-            "after_end": 510,
+            "after_start": 505,
+            "after_end": 506,
             "after": "          .ci-venv/bin/python -B tests/hosting_catalog_variants_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-variants-browser-results.json\n",
             "before": ""
           }
         ],
-        "after_sha256": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "before_sha256": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528"
+        "after_sha256": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "before_sha256": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784"
       },
       "site/admin/controllers/catalog.php": {
         "before_sha256": "9369bc90cbb6e1eed6d5320326812fdaeb98ecf2f2bdfac7be57b2468334a08d",
@@ -3165,7 +3165,7 @@
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       "site/admin/controllers/actions.php": "0cba6b8dd0584bfa3a2a3120f792761e7963926a728657b21bd1aea568409a25",
       "site/admin/controllers/auth.php": "21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb",
       "site/admin/controllers/catalog.php": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57",
@@ -3234,7 +3234,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "d81f9d60bca9b54fad19c98642e203e76a9748c6dbf3f74373484fb767eeb862",
+    "predecessor_contract_sha256": "5ef60ae09f7e1b2f015f5e6e75a2c685499cb8d0d28f8d1bfc5e78e159d3895a",
     "predecessor_reports_sha256": "36c2e58786e17505c6836b8dbee027ba0224738ee100263115d0b6cb337bdf1a",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3338,8 +3338,8 @@
           "unchanged_workflows",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "after": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "before": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "after": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       {
         "keys": [
@@ -3347,8 +3347,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "after": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "before": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "after": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       {
         "keys": [
@@ -3356,8 +3356,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "after": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "before": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "after": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       {
         "keys": [
@@ -3383,8 +3383,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "after": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "before": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "after": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       {
         "keys": [
@@ -3410,8 +3410,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "after": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "before": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "after": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       {
         "keys": [
@@ -3428,8 +3428,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "after": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "before": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "after": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       {
         "keys": [
@@ -3446,8 +3446,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027",
-        "after": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "before": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1",
+        "after": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       {
         "keys": [
@@ -3499,20 +3499,20 @@
       ".github/workflows/application-tests.yml": {
         "changes": [
           {
-            "after_start": 325,
-            "after_end": 328,
+            "after_start": 321,
+            "after_end": 324,
             "after": "          \"$PHP_BINARY\" tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-minimal.json\n          CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php\n",
             "before": ""
           },
           {
-            "after_start": 513,
-            "after_end": 514,
+            "after_start": 509,
+            "after_end": 510,
             "after": "          .ci-venv/bin/python -B tests/hosting_catalog_billing_browser.py --php \"$PHP_BINARY\" --report qa/hosting-catalog-billing-browser-results.json\n",
             "before": ""
           }
         ],
-        "after_sha256": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "before_sha256": "acdfb4a00d9f123a70aa051940ec728f79a307a0077241862782f6a8f896f027"
+        "after_sha256": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "before_sha256": "54c85c1e0fa29220243b75722868e5973c6368344386dbe58bc81c361587c8a1"
       },
       "site/app/hosting/catalog_offers.php": {
         "before_sha256": "2addee802e6496b2f6b7dd1476e7a6581cb810ed01394ca6fb8ad7a763ce2b5f",
@@ -3750,7 +3750,7 @@
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       "site/app/billing/catalog.php": "676701ac6d5cccf93b4937390ed4363bcedacd836f3df9bbc8e3f6b92dd9cda9",
       "site/app/clients/identity.php": "2b58ebc30886af8ccdf6d0076c35ee7ada87617237f1de91ac9a16425b4c55e3",
       "site/app/hosting/catalog_billing.php": "ac6497e0b09eae8d3d7796583712cd857c0a79ebdb783c747b64c86c104f5189",
@@ -3820,7 +3820,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "27e03e586d91c5475a12408b869fb4337a500ac3eec891629e6591e81c716a0a",
+    "predecessor_contract_sha256": "af0c199fd40ee2f44267dad2300e1443f9b052db88ccd173772b43ea1e11f049",
     "predecessor_reports_sha256": "677b49d9e7775a92a9c9fcbe992c7b695bd57e19870eaf2b56a4e14d79863b8f",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -3872,8 +3872,8 @@
           "unchanged_workflows",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -3890,8 +3890,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -3899,8 +3899,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -3935,8 +3935,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -3971,8 +3971,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -4007,8 +4007,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -4043,8 +4043,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -4061,8 +4061,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "before": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e",
-        "after": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef"
+        "before": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621",
+        "after": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca"
       },
       {
         "keys": [
@@ -4078,14 +4078,14 @@
       ".github/workflows/application-tests.yml": {
         "changes": [
           {
-            "after_start": 328,
-            "after_end": 329,
+            "after_start": 324,
+            "after_end": 325,
             "after": "          python3 -B tests/hosting_billing_options_wiring.py --report qa/hosting-billing-options-wiring-results.json\n",
             "before": ""
           }
         ],
-        "after_sha256": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
-        "before_sha256": "9fef5a7eacbf2bed8e2e14ad003d635d2851079339aa3624ef2ea9b28399577e"
+        "after_sha256": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
+        "before_sha256": "ca2e181ad3f1462418b2011369976738c011879b14e72a07207f7a30102ec621"
       },
       "tests/acceptance_artifacts_test.py": {
         "changes": [
@@ -4191,7 +4191,7 @@
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "18b4823aec2f6ee61ee7262803d90f80a5b5a31609870fff86541c86331725ef",
+      ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       "site/admin/controllers/actions.php": "0cba6b8dd0584bfa3a2a3120f792761e7963926a728657b21bd1aea568409a25",
       "site/admin/controllers/catalog_variants.php": "a6d4995a5aff5c8e461593968d6113ec2f7f2dcdb1333cfc687ef11a17ead283",
       "site/admin/controllers/hosting_catalog.php": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
@@ -4393,8 +4393,8 @@
           "unchanged_workflows",
           ".github/workflows/application-tests.yml"
         ],
-        "after": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "before": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "after": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "before": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "keys": [
@@ -4402,8 +4402,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "after": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "before": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "after": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "before": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "keys": [
@@ -4411,8 +4411,8 @@
           "unchanged_source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "after": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "before": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "after": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "before": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "keys": [
@@ -4429,8 +4429,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "after": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "before": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "after": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "before": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "keys": [
@@ -4447,8 +4447,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "after": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "before": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "after": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "before": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "keys": [
@@ -4465,8 +4465,8 @@
           "source_sha256",
           ".github/workflows/application-tests.yml"
         ],
-        "after": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "before": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "after": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "before": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       {
         "keys": [
@@ -4488,26 +4488,26 @@
             "before": "    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, 'devin/non20i-*', 'devin/full-site-integration', codex/twentyi-hosting-purchase-inbox, codex/twentyi-purchase-inbox-browser]\n"
           },
           {
-            "after_start": 402,
-            "after_end": 423,
+            "after_start": 398,
+            "after_end": 419,
             "after": "          \"$PHP_BINARY\" tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-results.json\n          \"$PHP_BINARY\" -n tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json\n          \"$PHP_BINARY\" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameservers_native.php\n          \"$PHP_BINARY\" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json\n          \"$PHP_BINARY\" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json\n          \"$PHP_BINARY\" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameserver_changes_native.php\n          \"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json\n          \"$PHP_BINARY\" -n tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-results.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_requests.php > qa/registered-nameserver-requests-service-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-results.json\n          \"$PHP_BINARY\" -n tests/registered_nameserver_requests_storage.php > qa/registered-nameserver-requests-storage-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-results.json\n          \"$PHP_BINARY\" -n tests/registered_nameserver_requests_views.php > qa/registered-nameserver-requests-views-no-ini-results.json\n          \"$PHP_BINARY\" tests/registered_nameserver_requests_native.php\n",
             "before": ""
           },
           {
-            "after_start": 497,
-            "after_end": 498,
+            "after_start": 493,
+            "after_end": 494,
             "after": "          .ci-venv/bin/python -B tests/registered_nameserver_changes_http_fixture_test.py --report qa/registered-nameserver-changes-http-fixture-results.json\n",
             "before": ""
           },
           {
-            "after_start": 787,
-            "after_end": 793,
+            "after_start": 783,
+            "after_end": 789,
             "after": "          .ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade_test.py --report qa/apache-registered-nameserver-requests-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade.py\n",
             "before": ""
           }
         ],
-        "after_sha256": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "before_sha256": "f3d0e4b6a5df9e3fff632b050307efdda18eb570c73f4dc7331c5ddf52eead39"
+        "after_sha256": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "before_sha256": "da6893f421ecfec5884ac10ab4030f754586b680371359748f9da3974eba28f1"
       },
       ".github/workflows/provider-nameserver-changes.yml": {
         "changes": [
@@ -4763,7 +4763,7 @@
       }
     },
     "merged_stage_reports_sha256": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
-    "merged_stage_contract_sha256": "6b12817f80d9ad40f4932ea14bc0c19ea61e7a71abf93468cb4057c9e71676ac"
+    "merged_stage_contract_sha256": "dccba0c31ab996198402f3ef6e6cc74886c16462adbf802dc0e2c069dc326c74"
   },
   "registered_nameserver_changes": {
     "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
@@ -4805,7 +4805,7 @@
   },
   "registered_nameserver_changes_installed": {
     "source_predecessor": "5654649dc62095298ce703b39b54d12d56c49f09",
-    "predecessor_contract_sha256": "c6c3ef6815b133e6f8958776d6f2e1a7977e4f296eeae2fe8c82a20890bdaaf1",
+    "predecessor_contract_sha256": "0c88a7486eb28eb30aedac139305f9f45d553845f8b0b19ea5504ecaedfc6c2f",
     "predecessor_reports_sha256": "cf671d64e7f5ff8551bccd080d9b270c93c437c9a729b4b9b274eda65420ce38",
     "reports": {
       "browser": [
@@ -4818,7 +4818,7 @@
       ]
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "97a34f386ee69f3dcd50d284fdc288377ac191d670daf335fd0f7d248efee641",
+      ".github/workflows/application-tests.yml": "0359df634fa7a17c51098b2040ea9972a8e19286535c0da2995339f7eb3d0d73",
       ".github/workflows/provider-nameserver-changes.yml": "7de097af4e6af5162352f60b70ec13f181ed296e24174683c56460120db6ef3c",
       "tests/acceptance_artifacts_test.py": "f2b2e962728980e62d6ef4f1245a4d26c83c4e6e214b0b62b1578b3939d5ff47",
       "tests/provider_http_server.py": "d15b2c0e73481f2c690980cc84c0794f7a117cef93bbdf0b9a0bd7580a6f47a7",
@@ -4847,8 +4847,8 @@
             "after": "          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py\n          .ci-venv/bin/python tests/release_126_upgrade_guards.py qa/apache-release126-guards-results.json\n"
           }
         ],
-        "current_sha256": "97a34f386ee69f3dcd50d284fdc288377ac191d670daf335fd0f7d248efee641",
-        "predecessor_sha256": "2859df60e9b49a457dd3b642bd928247fcbcfcb94224760ae0d4eea75302f7d4"
+        "current_sha256": "0359df634fa7a17c51098b2040ea9972a8e19286535c0da2995339f7eb3d0d73",
+        "predecessor_sha256": "70928fd13c07afbd783467dacec97c13edd293d98d199ab89a2db6f9221bcf8d"
       },
       ".github/workflows/provider-nameserver-changes.yml": {
         "predecessor_sha256": "ff6553df33db1895dcd9dfffab37b59efefb0e0aa0456a1b7efdb81ef0690308",
@@ -4924,7 +4924,7 @@
   },
   "registered_nameserver_requests": {
     "source_predecessor": "af78abd81ce39839cd100e1c882a59b04258a25b",
-    "predecessor_contract_sha256": "7dd5e007bc2db51cd65f3000677c6e257250fd88df464636a2b03f4180c67df1",
+    "predecessor_contract_sha256": "cafb48d3690399496383eba3756ffda92676624b3de4dd1ff8f19ab1658cbc33",
     "predecessor_reports_sha256": "d9deda2c31332ec7448cb2aa377ec695a9caebb3092d0520d853c9616bb1a5ae",
     "native_additions": [
       "\"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json",
@@ -4982,7 +4982,7 @@
       "Client-Nameserver-Request-Client-Observed-Mobile.png"
     ],
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
+      ".github/workflows/application-tests.yml": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
       ".github/workflows/provider-nameserver-changes.yml": "c86415c1671d02cb0a69c0edc691c68f577c808ca60c80b255fb03575683779e",
       ".github/workflows/provider-registrar.yml": "e34915e8e92f6dd16c57ebb6fc1c1ce67ad39ea7a1632cfe54bad8791c4458e4",
       "site/admin/controllers/actions.php": "0cba6b8dd0584bfa3a2a3120f792761e7963926a728657b21bd1aea568409a25",
@@ -5025,7 +5025,7 @@
       "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
-      "tests/registered_nameserver_requests_acceptance.py": "741247ec34083127d79746c939d7829a2c2a328b17356eb93af05c54ad16a3d8",
+      "tests/registered_nameserver_requests_acceptance.py": "70fd7639db3618c60b53f1536fe138e2d15ff60f8311ef57ab083d27c607fafc",
       "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
       "tests/registered_nameserver_requests_native.php": "481767c5f8c4ca237608f8465ebeb324368c09d073a6fa6813eea93519eaea0a",
@@ -5059,8 +5059,8 @@
             "after": "          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade_test.py --report qa/apache-registered-nameserver-requests-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade.py\n          .ci-venv/bin/python tests/release_126_upgrade_guards.py qa/apache-release126-guards-results.json\n"
           }
         ],
-        "current_sha256": "ec71b2d39f74ac0af92102138c7c7350d78266ee29cf25314f4c73c806343528",
-        "predecessor_sha256": "97a34f386ee69f3dcd50d284fdc288377ac191d670daf335fd0f7d248efee641"
+        "current_sha256": "3d7b625384ccb36da263fb0e107796541a1b9bae33a73ba60e6dbc02b776f784",
+        "predecessor_sha256": "0359df634fa7a17c51098b2040ea9972a8e19286535c0da2995339f7eb3d0d73"
       },
       ".github/workflows/provider-nameserver-changes.yml": {
         "predecessor_sha256": "7de097af4e6af5162352f60b70ec13f181ed296e24174683c56460120db6ef3c",
@@ -5192,7 +5192,7 @@
       }
     },
     "predecessor_source_sha256": {
-      ".github/workflows/application-tests.yml": "97a34f386ee69f3dcd50d284fdc288377ac191d670daf335fd0f7d248efee641",
+      ".github/workflows/application-tests.yml": "0359df634fa7a17c51098b2040ea9972a8e19286535c0da2995339f7eb3d0d73",
       ".github/workflows/provider-nameserver-changes.yml": "7de097af4e6af5162352f60b70ec13f181ed296e24174683c56460120db6ef3c",
       "tests/acceptance_artifacts_test.py": "f2b2e962728980e62d6ef4f1245a4d26c83c4e6e214b0b62b1578b3939d5ff47",
       "tests/provider_http_server.py": "d15b2c0e73481f2c690980cc84c0794f7a117cef93bbdf0b9a0bd7580a6f47a7",
