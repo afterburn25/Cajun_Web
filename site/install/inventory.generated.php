@@ -249,7 +249,7 @@ function setup_expected_files(): array { return [
     'app/providers/directory_listing_storage.php'=>'6420eaa85ba4b3c13c20009fd0d882bba298dd3529e477bb7660ec135323d0ea',
     'app/providers/directory_listing_views.php'=>'fbed98e66875666a111e20a4d7af950c3514498880781c60d2b3bca03f874bd6',
     'app/providers/document_roots.php'=>'56f02eff5e74f30babaea4fd4ee838f90dcbb1b1b58870631fccb080ae71cb15',
-    'app/providers/document_roots_storage.php'=>'6bdbd34a2819353d1af30e236b9dfcfff2b953bec9eb9ae36629ac62c377b667',
+    'app/providers/document_roots_storage.php'=>'a05eca304382a127022c8a4b3070461762f05d42d1aca0a4f074ec4047840ef7',
     'app/providers/document_roots_views.php'=>'d624d2f61248455f9f36c5cc40aa5b55aa721eaa6ebf63156a3bcb705f461e86',
     'app/providers/domain_contracts.php'=>'33fa34b6b751a5bf204f61f759bb3f35c1cf9db53c6d37805b57615d22a8722d',
     'app/providers/domain_contracts_storage.php'=>'fe81e68debb3d65734e7fac08b69a2a7c7150595bf29f03c7bbff4290edda118',
