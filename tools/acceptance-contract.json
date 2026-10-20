@@ -571,7 +571,7 @@
       "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
       "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a",
       "tests/structure_helpers.py": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
-      "tests/staff_cases.py": "35ea19f22c0ae324d1ce785e6e60ec504a9a9150a34284ca679a7bbe18c14315",
+      "tests/staff_cases.py": "b778c9cc08c71a1e99ab50bd3c63185814d58466a23eed972332ad52a47ace05",
       "tests/support_cases.py": "4a4345979fe294ace1db1ca6280cd6254fb98144f0712a10452ee24a4e9b3735",
       "tests/catalog_cases.py": "fbc8584862f41c960c41bf937f855d2d17625ce56e0ae7d9ee523fc7c7f2f99d",
       "tests/payments_cases.py": "efe7078b2c7ac2ced1de0f9c3bfcc66b0fd99c6e675bb2fa03437b013839fe57",
@@ -583,7 +583,7 @@
       "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
       "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
       "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
-      "tests/delivery_cases.py": "acf7bf48823c159c288c184a8642ae0f9ca6d2ed81b51fa02cfc4f9137db5ce0"
+      "tests/delivery_cases.py": "897ddda70058146fffd72699e418e032054305b26a6fe9678216a0381812a4ff"
     },
     "additional_screenshots": [
       "Admin-Overview-Desktop.png",
@@ -4205,6 +4205,24 @@
         ],
         "before": "80e855b0288385001575beda5872724a0ab6b5140361a97f75bd13b34225c75e",
         "after": "31bafc72074376503ede3f7e7f3aa20785d7bb09b2a539554df82c8322840545"
+      },
+      {
+        "keys": [
+          "release_acceptance_corrections",
+          "source_sha256",
+          "tests/staff_cases.py"
+        ],
+        "before": "35ea19f22c0ae324d1ce785e6e60ec504a9a9150a34284ca679a7bbe18c14315",
+        "after": "b778c9cc08c71a1e99ab50bd3c63185814d58466a23eed972332ad52a47ace05"
+      },
+      {
+        "keys": [
+          "release_acceptance_corrections",
+          "source_sha256",
+          "tests/delivery_cases.py"
+        ],
+        "before": "acf7bf48823c159c288c184a8642ae0f9ca6d2ed81b51fa02cfc4f9137db5ce0",
+        "after": "897ddda70058146fffd72699e418e032054305b26a6fe9678216a0381812a4ff"
       }
     ],
     "source_deltas": {
