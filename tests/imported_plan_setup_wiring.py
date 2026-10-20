@@ -100,7 +100,7 @@ def previous_contract(contract):
 def previous_reports(reports, extension):
     require(extension['reports'] == REPORTS, 'Imported-plan required reports changed')
     prior = copy.deepcopy(reports)
-    for lane, count in [('browser', 200), ('final', 251)]:
+    for lane, count in [('browser', 201), ('final', 252)]:
         values = reports[lane]
         require(len(values) == len(set(values)) == count and values[-5:] == REPORTS and all(values.count(name) == 1 for name in REPORTS), 'Imported-plan required report union differs')
         prior[lane] = [name for name in values if name not in REPORTS]
@@ -213,7 +213,7 @@ def run(a, root, tmp, check, deny, named, contract, reports=None):
     prior_workflow = historical_bytes(root, '.github/workflows/application-tests.yml').decode()
     reports = a.load(root/'tools/acceptance-reports.json') if reports is None else reports
     prior_reports = previous_reports(reports, ext)
-    check('Imported plan setup adds five required reports without dropping predecessors', len(prior_reports['browser'])==195 and len(prior_reports['final'])==246)
+    check('Imported plan setup adds five required reports without dropping predecessors', len(prior_reports['browser'])==196 and len(prior_reports['final'])==247)
     for label in ['missing', 'duplicate', 'changed predecessor']:
         wrong = copy.deepcopy(reports)
         if label == 'missing':wrong['browser'].remove(REPORTS[0])

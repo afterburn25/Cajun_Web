@@ -88,8 +88,8 @@ UNCHANGED_PATHS = {
     'tests/registered_nameservers_upgrade_test.py',
     'tools/acceptance_artifacts.py',
 }
-CONTRACT_SHA256 = '8ea7d17e3dbcbb044be3e35caf6cb6394a2a34baf54e7ec6ef88acc11cf202fe'
-REPORTS_SHA256 = 'd9deda2c31332ec7448cb2aa377ec695a9caebb3092d0520d853c9616bb1a5ae'
+CONTRACT_SHA256 = '148df59c9e04cbf591e6376c977856f7e4773a88b9ea01236bb7ba021a351128'
+REPORTS_SHA256 = '7b8f8c8fcfef843a222de28676504cd4f6eb5b8329affd8876f47b332a15d6df'
 # END FIXED SOURCE INVENTORY
 OLD_MINIMAL = '"$PHP_BINARY" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json'
 FIXED_MINIMAL = '"$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json'
@@ -152,7 +152,7 @@ def reports_predecessor(reports, extension):
     for lane, names in additions.items():
         require(len(reports[lane]) == len(set(reports[lane])) and all(reports[lane].count(n) == 1 for n in names), 'Missing or duplicate client-request report')
         prior[lane] = [name for name in reports[lane] if name not in names]
-    require(len(prior['browser']) == 218 and len(prior['final']) == 273
+    require(len(prior['browser']) == 219 and len(prior['final']) == 274
             and sha(canonical(prior)) == extension['predecessor_reports_sha256'], 'Original complete report sequence changed')
     return prior
 
@@ -192,7 +192,7 @@ def verify(a, root, tmp, check, deny, contract):
     reports = a.load(root / 'tools/acceptance-reports.json')
     preceding_reports = reports_predecessor(reports, extension)
     check('Client nameserver actual report inventory is227 browser and284 final',
-          len(reports['browser']) == 227 and len(reports['final']) == 284
+          len(reports['browser']) == 228 and len(reports['final']) == 285
           and sha(canonical(preceding_reports)) == REPORTS_SHA256)
     for label in ('missing', 'duplicate', 'changed predecessor'):
         wrong = copy.deepcopy(reports)

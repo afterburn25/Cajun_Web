@@ -841,8 +841,8 @@
       "Hosting-Offers-Client-Agreement-Mobile.png"
     ],
     "predecessor_reports_sha256": {
-      "browser": "7f19172de8409939275e8faf1b6b2407c2d7ce987d400158d8546a70b6022d11",
-      "final": "8927fbcdbc633f1fe051d2d67e062eb16298d80dbd36fd2f49b0d54e86ca6af5"
+      "browser": "36153d2393b8d884a6307928a0be1b198d0806184a2180caa13851330133d0b9",
+      "final": "cc795fefbcc1a0c1d6c2aefb46aa4d49127e3787db9191536102c2ffc1a913ae"
     },
     "predecessor_workflow_sha256": "9f7972e3bc9643b0f8537950bdcf4deca38b495d51738c7e4c76064aace5e74f",
     "workflow_delta": [
@@ -972,8 +972,8 @@
       "hosting-purchase-http-results.json"
     ],
     "predecessor_reports_sha256": {
-      "browser": "78aa2890b045f06b68e27cc169a8f65b9f4c76a0560e7ff15722d3fa19544005",
-      "final": "80c58c05d53de53f5245083c596ef64d4132c1e7567afccc28413de574878b73"
+      "browser": "5949598394cb538376ad092a2ee69eeafc35317bc6bde97996ed5996dcaf3ba6",
+      "final": "7925bfc2101a8e8dd45bc0d004f7d14ee13bb709c53c8e57194694c561eea94a"
     },
     "screenshots": [
       "Hosting-Purchase-Owner-Linked-Desktop.png",
@@ -1128,8 +1128,8 @@
     },
     "predecessor_upgrade_contract_sha256": "df1f78bb41b5b40c610da4fad4b37b4d02605fb87c2c57d6d1da7ceabe3d01fd",
     "predecessor_reports_sha256": {
-      "browser": "b0a6c7da0ecb568a9d2e4575c6ba5cce429207ea822dc386dcea462db0418c89",
-      "final": "d73317fd23b0cb3653faf4b0e56cefc217a44105ef28ea92d1d4534e053730f3"
+      "browser": "57a0dbeeaac328db3274a99e643b77c16451f9743a1145820901fa5433623e1e",
+      "final": "c762134cbecc40da9bb847ffcb934cf833846d7773d0e5e81db8500ac1c304cc"
     },
     "reports": [
       "apache-release126-hosting-guards-results.json",
@@ -1185,8 +1185,8 @@
       }
     ],
     "predecessor_reports_sha256": {
-      "browser": "b0a6c7da0ecb568a9d2e4575c6ba5cce429207ea822dc386dcea462db0418c89",
-      "final": "da7c1a8b576defd1b7546709aae9aa04353b7a2048bbdb007351ff4dff82c62f"
+      "browser": "57a0dbeeaac328db3274a99e643b77c16451f9743a1145820901fa5433623e1e",
+      "final": "53cf57ba6507e4411f498ac9c4e18e79ef11f698631b63787aeb23c5d7eb32cd"
     },
     "reports": [
       "hosting-checkout-document-default.json",
@@ -1331,7 +1331,7 @@
       "b7c97953f323004e1fdd527bdef0b2da63f01c71",
       "1db3235286f915935e4ab621e2be5a2f14288997"
     ],
-    "predecessor_contract_sha256": "749656695ce8f4a2f002cca1875b8a7fe6dcb2f2898ee4a54d6b5e526b579273",
+    "predecessor_contract_sha256": "13dff017ecc2edfdad9816c245a971b3129614f3b71dd7de8ae7015bcd59734a",
     "source_sha256": {
       "site/app/providers/checks.php": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
       "site/admin/views/providers.php": "2427f9c82d73e51301039a7465fdacafbe957627cac2ad230b6eeeb4e986df9a",
@@ -1377,7 +1377,7 @@
   },
   "catalog_storefront_http": {
     "source_predecessor": "9b450c4b8daafd79f4242c39ddd65e2bdb56b624",
-    "predecessor_contract_sha256": "775847c1e2bf726acc335e1a984830867b7d05fe538984018b064a890fbfff45",
+    "predecessor_contract_sha256": "cb4048648e881e8adaad3a0d95f5efed3f69ef8c135493fef2a92b25cfa0d9f4",
     "updated_pins": {
       "tests/provider_package_types_cases.py": "provider_package_types",
       "tests/hosting_checkout_http_browser.py": "hosting_checkout"
@@ -1429,7 +1429,7 @@
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
-      "tools/acceptance-reports.json": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4"
+      "tools/acceptance-reports.json": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5"
     },
     "screenshots": [
       "Catalog-Storefront-Connection-Desktop.png",
@@ -1466,8 +1466,8 @@
       "Hosting-Plan-Setup-Preview-Mobile.png"
     ],
     "http_report": "hosting-checkout-http-results.json",
-    "predecessor_contract_sha256": "f774ff2e2627ed7720eeb361297aff4aca8a86fd18ae09b4b2f95529a64db10d",
-    "predecessor_reports_sha256": "60b7639b4c17a555c441021b17e34fa73d8053962b502e39aee4f671d724fce4",
+    "predecessor_contract_sha256": "268326708a47618c7add616105f92aed9fd52021afb0e6905783187d74ec8876",
+    "predecessor_reports_sha256": "9521b174ba05a87aadffffd7a66f0aaa65df012333ef52b15b5f87158a46303e",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
@@ -1480,7 +1480,7 @@
       "site/app/hosting/catalog_offers_context.php": "3f086c5d7f0cc873270a5ccb120a499132fa8f484db43b20e2655f24516e916b",
       "site/app/plans/records.php": "dfb524c0386938ab22cee8afa05c995348c7f0d1404abdf5a2c5a7082d927f34",
       "site/app/providers/plan_catalog.php": "86f3a23cadeccd2bfcad88b067bd671d9534ebf8bc17290d6d274301326b4bc3",
-      "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
+      "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
       "tests/hosting_catalog_plan_setup_document.php": "aadbf41e64c3157459ebef173170ea35a5ee291f0ebd05bedaae5e6532f2a457",
@@ -1488,8 +1488,8 @@
       "tests/hosting_catalog_plan_setup_views.php": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
-      "tests/imported_plan_setup_wiring.py": "1b11adb610883d95210b2c2c28e0d52c09171db331f2cfc49bdb36ef3bf83857",
-      "tools/acceptance-reports.json": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4"
+      "tests/imported_plan_setup_wiring.py": "670dd0143d2e08281f82f123fe177216456c7d723ca70baa1a20bb0d9156d0e7",
+      "tools/acceptance-reports.json": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5"
     },
     "historical_delta": {
       ".github/workflows/application-tests.yml": {
@@ -1679,8 +1679,8 @@
             "after": "    workflow=plan_workflow\n    workflow,checkout_reports=hosting_checkout_wiring_checks(tmp,workflow,contract,plan_reports)\n"
           }
         ],
-        "current_sha256": "c57864b4790b11c57027fc56b5b2c71eeff6a8df3a997ce490bfab6e3a8cc0a8",
-        "predecessor_sha256": "95471d924cb402ee7f083b993fb999b6230174f5d1fc96b8dac764fa3dedaf11"
+        "current_sha256": "23a61d42c3c39f6275e1b6db7e7562b286e1f5817a0346df2d3b21c31fef16ff",
+        "predecessor_sha256": "0c2d7946d9e89fc1f7dc0a3ae2797d6e83fce167f67c76eeb3de99a20cec43bc"
       },
       "tests/catalog_storefront_checkout_cases.py": {
         "predecessor_sha256": "2922860632ec6e5e7302d31399c336a6b75a541675931b800c39b9c395108429",
@@ -1727,8 +1727,8 @@
             "after": "    \"hosting-checkout-native-results.json\",\n    \"hosting-checkout-http-guards.json\",\n    \"hosting-checkout-http-results.json\",\n    \"hosting-catalog-plan-setup-document-default.json\",\n    \"hosting-catalog-plan-setup-document-minimal.json\",\n    \"hosting-catalog-plan-setup-views-default.json\",\n    \"hosting-catalog-plan-setup-views-minimal.json\",\n    \"hosting-catalog-plan-setup-native-results.json\"\n  ],\n  \"provenance\": {\n"
           }
         ],
-        "current_sha256": "5f9be3162df34176c5ab4a7c69f45d52e448a888bbe9af41e826755e0a5566fd",
-        "predecessor_sha256": "ebe12c9478176da4e94b28f79a4f1e92f3b53cc71e54523e1e62ba20376327d5"
+        "current_sha256": "9d0064f7bdba51374d4428104bfb973ddbafbef47e377a5f9c99530285cc5573",
+        "predecessor_sha256": "d58acd0925dcb148fb4e1cd4e49708fb3e2a729ad5eaac3670fd4612c129c63f"
       }
     },
     "updated_pins": [
@@ -1873,8 +1873,8 @@
           "unchanged_source_sha256"
         ],
         "path": "tools/acceptance-reports.json",
-        "predecessor_sha256": "ebe12c9478176da4e94b28f79a4f1e92f3b53cc71e54523e1e62ba20376327d5",
-        "current_sha256": "5f9be3162df34176c5ab4a7c69f45d52e448a888bbe9af41e826755e0a5566fd"
+        "predecessor_sha256": "d58acd0925dcb148fb4e1cd4e49708fb3e2a729ad5eaac3670fd4612c129c63f",
+        "current_sha256": "9d0064f7bdba51374d4428104bfb973ddbafbef47e377a5f9c99530285cc5573"
       }
     ],
     "unchanged_source_sha256": {
@@ -1901,8 +1901,8 @@
       "hosting-checkout-purchases-native-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "c005ecdf808c590d9b1d3bcf11c55f04699e43020112f72c8e8264878ea6b824",
-    "predecessor_reports_sha256": "5f82c4872d9528c0fa9e5f9b45542d0862039f01afc80e2fe548c023652328b0",
+    "predecessor_contract_sha256": "5aec05cd155f03f5743f650f8b868961f1afa6f94cabd0a7a9706f971c2412a8",
+    "predecessor_reports_sha256": "ad11bd4d804f1089411424dc4ca395c5cff1a7d3251c4e138d3ea289c1ff7dfa",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
@@ -1920,13 +1920,13 @@
       "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
-      "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
+      "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
       "tests/hosting_checkout_purchases_guards.php": "7135eca0924835e125371aaea84f7de56c0ed00c89e3973a2961dc405c12f95a",
       "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
-      "tests/hosting_purchase_inbox_wiring.py": "85160b1227bf5d1edae4f6ecd51e3e3aaa2d50ebadafd803891b1479bee4f078",
+      "tests/hosting_purchase_inbox_wiring.py": "3b060261f2d738fe70f4d1250812acf51ac868fab16547f94060e44c62d7dded",
       "tests/hosting_purchases_views.php": "a3f1a1aa1835be4eb9009ecaaa70b5c4c84c48c08f0690d77b35aa0bc070d0be",
-      "tests/imported_plan_setup_wiring.py": "1b11adb610883d95210b2c2c28e0d52c09171db331f2cfc49bdb36ef3bf83857",
-      "tools/acceptance-reports.json": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4"
+      "tests/imported_plan_setup_wiring.py": "670dd0143d2e08281f82f123fe177216456c7d723ca70baa1a20bb0d9156d0e7",
+      "tools/acceptance-reports.json": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5"
     },
     "source_delta": {
       ".github/workflows/application-tests.yml": {
@@ -2076,8 +2076,8 @@
             "after": "    contract,inbox_reports=purchase_inbox_checks(a,ROOT,tmp,check,deny,named,contract)\n    contract,plan_workflow,plan_reports=imported_plan_setup_checks(a,ROOT,tmp,check,deny,named,contract,inbox_reports)\n"
           }
         ],
-        "current_sha256": "042e32d62ac5213f95340da076ca94130eecdb296ec28b69dc64fb9f8f5a46bd",
-        "predecessor_sha256": "c57864b4790b11c57027fc56b5b2c71eeff6a8df3a997ce490bfab6e3a8cc0a8"
+        "current_sha256": "cc306b5108f1621764bbb14e83755b4c91a25c34d9bd57540438b115d8067cb3",
+        "predecessor_sha256": "23a61d42c3c39f6275e1b6db7e7562b286e1f5817a0346df2d3b21c31fef16ff"
       },
       "tests/imported_plan_setup_wiring.py": {
         "replacements": [
@@ -2138,12 +2138,12 @@
             "after": "    check('Imported plan setup leaves transfer helper and original browser unchanged', all(sha(inbox_source(root, p))==h for p,h in ext['unchanged_source_sha256'].items()))\n"
           }
         ],
-        "current_sha256": "1b11adb610883d95210b2c2c28e0d52c09171db331f2cfc49bdb36ef3bf83857",
-        "predecessor_sha256": "0f64a2a7990d9434eaf023d6eb2c613c6fd89f4fd1cb45bbf8c73e134ab9d981"
+        "current_sha256": "670dd0143d2e08281f82f123fe177216456c7d723ca70baa1a20bb0d9156d0e7",
+        "predecessor_sha256": "41c25a2ae8f3c8a415ef705a0c82bd1f28a52355729ae11d7e01e7b847a4fa22"
       },
       "tools/acceptance-reports.json": {
-        "predecessor_sha256": "5f9be3162df34176c5ab4a7c69f45d52e448a888bbe9af41e826755e0a5566fd",
-        "current_sha256": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
+        "predecessor_sha256": "9d0064f7bdba51374d4428104bfb973ddbafbef47e377a5f9c99530285cc5573",
+        "current_sha256": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5",
         "replacements": [
           {
             "before": "    \"hosting-catalog-plan-setup-document-minimal.json\",\n    \"hosting-catalog-plan-setup-views-default.json\",\n    \"hosting-catalog-plan-setup-views-minimal.json\",\n    \"hosting-catalog-plan-setup-native-results.json\"\n  ],\n  \"final\": [\n    \"activity-native-results.json\",\n",
@@ -2235,8 +2235,8 @@
           "unchanged_source_sha256"
         ],
         "path": "tools/acceptance-reports.json",
-        "predecessor_sha256": "5f9be3162df34176c5ab4a7c69f45d52e448a888bbe9af41e826755e0a5566fd",
-        "current_sha256": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4"
+        "predecessor_sha256": "9d0064f7bdba51374d4428104bfb973ddbafbef47e377a5f9c99530285cc5573",
+        "current_sha256": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5"
       },
       {
         "location": [
@@ -2271,8 +2271,8 @@
           "source_sha256"
         ],
         "path": "tests/acceptance_artifacts_test.py",
-        "predecessor_sha256": "c57864b4790b11c57027fc56b5b2c71eeff6a8df3a997ce490bfab6e3a8cc0a8",
-        "current_sha256": "042e32d62ac5213f95340da076ca94130eecdb296ec28b69dc64fb9f8f5a46bd"
+        "predecessor_sha256": "23a61d42c3c39f6275e1b6db7e7562b286e1f5817a0346df2d3b21c31fef16ff",
+        "current_sha256": "cc306b5108f1621764bbb14e83755b4c91a25c34d9bd57540438b115d8067cb3"
       },
       {
         "location": [
@@ -2280,8 +2280,8 @@
           "source_sha256"
         ],
         "path": "tests/imported_plan_setup_wiring.py",
-        "predecessor_sha256": "0f64a2a7990d9434eaf023d6eb2c613c6fd89f4fd1cb45bbf8c73e134ab9d981",
-        "current_sha256": "1b11adb610883d95210b2c2c28e0d52c09171db331f2cfc49bdb36ef3bf83857"
+        "predecessor_sha256": "41c25a2ae8f3c8a415ef705a0c82bd1f28a52355729ae11d7e01e7b847a4fa22",
+        "current_sha256": "670dd0143d2e08281f82f123fe177216456c7d723ca70baa1a20bb0d9156d0e7"
       },
       {
         "location": [
@@ -2289,8 +2289,8 @@
           "source_sha256"
         ],
         "path": "tools/acceptance-reports.json",
-        "predecessor_sha256": "5f9be3162df34176c5ab4a7c69f45d52e448a888bbe9af41e826755e0a5566fd",
-        "current_sha256": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4"
+        "predecessor_sha256": "9d0064f7bdba51374d4428104bfb973ddbafbef47e377a5f9c99530285cc5573",
+        "current_sha256": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5"
       }
     ],
     "unchanged_source_sha256": {
@@ -2315,15 +2315,15 @@
       "Hosting-Purchase-Inbox-Client-Mobile.png"
     ],
     "result_check": "Installed purchase inbox follows exact original records without new business writes",
-    "predecessor_contract_sha256": "d29742fb723f125f302efa9717cb884d8feee3e369fda6bd73b1f634fedcbdec",
-    "predecessor_reports_sha256": "2afa7b37763688f455f367ecc1fddaccdeef8bd4f4332d12baf83d75c6989f6c",
+    "predecessor_contract_sha256": "0b715631b918391bc447f0d3de93209d798fcdb1f37e62f34a4b00b33b0a76be",
+    "predecessor_reports_sha256": "14ed5aa7dc246d11dd63fa6f90ce6e1bf16c6d9a9778205e788625ba13e98fde",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
       "site/includes/layout/service_orders.php": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
       "tests/hosting_purchase_inbox_cases.py": "ad714d79c1dce6ba21f243c4d81fbe0e2349ba52375cda8a8a1ac75331d57600",
-      "tests/hosting_purchase_inbox_wiring.py": "85160b1227bf5d1edae4f6ecd51e3e3aaa2d50ebadafd803891b1479bee4f078",
+      "tests/hosting_purchase_inbox_wiring.py": "3b060261f2d738fe70f4d1250812acf51ac868fab16547f94060e44c62d7dded",
       "tests/hosting_purchases_views.php": "a3f1a1aa1835be4eb9009ecaaa70b5c4c84c48c08f0690d77b35aa0bc070d0be"
     },
     "source_delta": {
@@ -2415,11 +2415,11 @@
           },
           {
             "before": "    check('Installed purchase inbox preserves the complete7535 contract and189 native recipes', len(prior['native_commands']) == 189)\n    check('Checkout policy correction preserves the complete3042 contract and189 native recipes', len(prior['native_commands']) == 189)\n",
-            "after": "    check('Installed purchase inbox preserves the complete7535 contract and189 native recipes', len(prior['native_commands']) == 189)\n    wrong = copy.deepcopy(contract); wrong['native_commands'][0] += ' changed'\n    deny('Installed purchase inbox rejects altered historical recipe', lambda:browser_contract(wrong))\n    for pin in ext['updated_pins']:\n        wrong = copy.deepcopy(contract); value = wrong\n        for key in pin['location']:value = value[key]\n        value[pin['path']] = '0' * 64\n        deny('Installed purchase inbox rejects stale serialized pin ' + '/'.join(pin['location']) + '/' + pin['path'], lambda w=wrong:browser_contract(w))\n    reports = a.load(root/'tools/acceptance-reports.json')\n    check('Installed purchase inbox preserves all205 browser and256 final report requirements',\n          len(reports['browser']) == 205 and len(reports['final']) == 256\n          and sha(canonical(reports)) == ext['predecessor_reports_sha256'])\n    for path in ('.github/workflows/application-tests.yml', '.github/workflows/catalog-storefront.yml'):\n        current = root.joinpath(path).read_text(encoding='utf-8')\n        previous = browser_source(root, path).decode('utf-8')\n        line = next(line for line in previous.splitlines(True) if line.startswith('    branches: ['))\n        check('Installed purchase inbox only appends its push branch in ' + path,\n              current == previous.replace(line, line.replace(']\\n', ', ' + BROWSER_BRANCH + ']\\n'), 1))\n    runner_path = root/'tests/hosting_checkout_http_browser.py'\n    tree = ast.parse(runner_path.read_text(encoding='utf-8'))\n    case_tree = ast.parse(root.joinpath('tests/hosting_purchase_inbox_cases.py').read_text(encoding='utf-8'))\n    captures_node = [n for n in case_tree.body if isinstance(n, ast.Assign)\n                     and any(isinstance(t, ast.Name) and t.id == 'CAPTURES' for t in n.targets)]\n    require(len(captures_node) == 1, 'Exact installed inbox capture declaration required')\n    constants = {}; exec(compile(ast.Module(body=captures_node, type_ignores=[]), 'capture-constant', 'exec'), constants)\n    check('Installed purchase inbox declares exactly four new capture names', constants['CAPTURES'] == tuple(BROWSER_CAPTURES))\n    predecessor_tree = ast.parse(browser_source(root, 'tests/hosting_checkout_http_browser.py').decode())\n    old_checks = [ast.dump(n, include_attributes=False) for n in ast.walk(predecessor_tree)\n                  if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == 'check']\n    current_checks = [ast.dump(n, include_attributes=False) for n in ast.walk(tree)\n                      if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == 'check']\n    check('Installed purchase inbox retains every original runner check expression and order',\n          [n for n in current_checks if n in set(old_checks)] == old_checks)\n    # Execute current output-collision code only, with no web process or fixture.\n    names = {'require', 'output_paths', 'prepare_outputs'}\n    definitions = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]\n    require(len(definitions) == 3, 'Exact runner output guards required')\n    local = tmp/'purchase-inbox-output';local.mkdir();qa = local/'qa';qa.mkdir()\n    def no_runtime(path):raise AssertionError('Collision guard reached runtime creation')\n    env = {'ROOT':local, 'WEB':local/'web', 'SITE':local/'web/site', 'SESSIONS':local/'sessions',\n           'ALL_CAPTURES':tuple(BROWSER_CAPTURES), 'fresh_directory':no_runtime}\n    exec(compile(ast.Module(body=definitions, type_ignores=[]), str(runner_path), 'exec'), env)\n    for name in BROWSER_CAPTURES:\n        target = qa/name;target.write_bytes(b'original')\n        try:env['prepare_outputs'](True)\n        except RuntimeError as error:refused = str(error) == 'Preserve prior checkout HTTP outputs'\n        else:refused = False\n        check('Installed purchase inbox refuses capture overwrite ' + name, refused and target.read_bytes() == b'original' and not env['WEB'].exists())\n        target.unlink()\n        check('Installed purchase inbox capture stays in native-browser ' + name,\n              a.evidence_allowed('qa/'+name,'native-browser') and all(not a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    label = ext['result_check']\n    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)\n             and isinstance(n.value.func, ast.Name) and n.value.func.id == 'check' and n.value.args\n             and isinstance(n.value.args[0], ast.Constant) and n.value.args[0].value == label]\n    require(len(calls) == 1, 'Actual runner must require the inbox result exactly once')\n    predicate = compile(ast.Module(body=calls, type_ignores=[]), str(runner_path), 'exec')\n    result = {'purchase_inbox':{'passed':True,'captures':[{'name':n} for n in BROWSER_CAPTURES]}}\n    for name in BROWSER_CAPTURES:(qa/name).write_bytes(b'synthetic guard only')\n    def exact_check(name, condition):require(name == label and condition is True, 'Installed inbox actual result predicate refused')\n    def verify(value):exec(predicate, {'result':value,'qa':qa,'INBOX_CAPTURES':tuple(BROWSER_CAPTURES),'check':exact_check})\n    verify(result);check('Installed purchase inbox actual result predicate accepts exact bounded output',True)\n    for title, mutate in [\n        ('failed result',lambda r:r['purchase_inbox'].update(passed=False)),\n        ('truthy nonboolean result',lambda r:r['purchase_inbox'].update(passed=1)),\n        ('missing result',lambda r:r.pop('purchase_inbox')),\n        ('missing capture',lambda r:r['purchase_inbox']['captures'].pop()),\n        ('reordered captures',lambda r:r['purchase_inbox']['captures'].reverse()),\n        ('duplicate capture',lambda r:r['purchase_inbox']['captures'].__setitem__(1,r['purchase_inbox']['captures'][0])),\n    ]:\n        bad = copy.deepcopy(result);mutate(bad)\n        deny('Installed purchase inbox runner refuses '+title, lambda r=bad:verify(r))\n    for mode in ('missing','empty'):\n        path = qa/BROWSER_CAPTURES[0]\n        if mode == 'missing':path.unlink()\n        else:path.write_bytes(b'')\n        deny('Installed purchase inbox runner refuses '+mode+' PNG',lambda:verify(result))\n        path.write_bytes(b'synthetic guard only')\n    check('Installed purchase inbox keeps business fixture and private-runtime transport unchanged',\n          sha(root.joinpath('tests/hosting_checkout_http_fixture.php').read_bytes().replace(b'\\r\\n',b'\\n')) == ext['unchanged_source_sha256']['tests/hosting_checkout_http_fixture.php'])\n    check('Installed purchase inbox never exports private session state',\n          a.evidence_allowed('test-runtime/hosting-checkout-browser-sessions/sess_private','native-browser') is False)\n    return prior\n\n\ndef run(a, root, tmp, check, deny, named, contract):\n    prior = browser_checks(a, root, tmp, check, deny, named, contract)\n    return _run_inbox_predecessor(a, root, tmp, check, deny, named, prior)\n    check('Checkout policy correction preserves the complete3042 contract and189 native recipes', len(prior['native_commands']) == 189)\n"
+            "after": "    check('Installed purchase inbox preserves the complete7535 contract and189 native recipes', len(prior['native_commands']) == 189)\n    wrong = copy.deepcopy(contract); wrong['native_commands'][0] += ' changed'\n    deny('Installed purchase inbox rejects altered historical recipe', lambda:browser_contract(wrong))\n    for pin in ext['updated_pins']:\n        wrong = copy.deepcopy(contract); value = wrong\n        for key in pin['location']:value = value[key]\n        value[pin['path']] = '0' * 64\n        deny('Installed purchase inbox rejects stale serialized pin ' + '/'.join(pin['location']) + '/' + pin['path'], lambda w=wrong:browser_contract(w))\n    reports = a.load(root/'tools/acceptance-reports.json')\n    check('Installed purchase inbox preserves all206 browser and257 final report requirements',\n          len(reports['browser']) == 206 and len(reports['final']) == 257\n          and sha(canonical(reports)) == ext['predecessor_reports_sha256'])\n    for path in ('.github/workflows/application-tests.yml', '.github/workflows/catalog-storefront.yml'):\n        current = root.joinpath(path).read_text(encoding='utf-8')\n        previous = browser_source(root, path).decode('utf-8')\n        line = next(line for line in previous.splitlines(True) if line.startswith('    branches: ['))\n        check('Installed purchase inbox only appends its push branch in ' + path,\n              current == previous.replace(line, line.replace(']\\n', ', ' + BROWSER_BRANCH + ']\\n'), 1))\n    runner_path = root/'tests/hosting_checkout_http_browser.py'\n    tree = ast.parse(runner_path.read_text(encoding='utf-8'))\n    case_tree = ast.parse(root.joinpath('tests/hosting_purchase_inbox_cases.py').read_text(encoding='utf-8'))\n    captures_node = [n for n in case_tree.body if isinstance(n, ast.Assign)\n                     and any(isinstance(t, ast.Name) and t.id == 'CAPTURES' for t in n.targets)]\n    require(len(captures_node) == 1, 'Exact installed inbox capture declaration required')\n    constants = {}; exec(compile(ast.Module(body=captures_node, type_ignores=[]), 'capture-constant', 'exec'), constants)\n    check('Installed purchase inbox declares exactly four new capture names', constants['CAPTURES'] == tuple(BROWSER_CAPTURES))\n    predecessor_tree = ast.parse(browser_source(root, 'tests/hosting_checkout_http_browser.py').decode())\n    old_checks = [ast.dump(n, include_attributes=False) for n in ast.walk(predecessor_tree)\n                  if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == 'check']\n    current_checks = [ast.dump(n, include_attributes=False) for n in ast.walk(tree)\n                      if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == 'check']\n    check('Installed purchase inbox retains every original runner check expression and order',\n          [n for n in current_checks if n in set(old_checks)] == old_checks)\n    # Execute current output-collision code only, with no web process or fixture.\n    names = {'require', 'output_paths', 'prepare_outputs'}\n    definitions = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]\n    require(len(definitions) == 3, 'Exact runner output guards required')\n    local = tmp/'purchase-inbox-output';local.mkdir();qa = local/'qa';qa.mkdir()\n    def no_runtime(path):raise AssertionError('Collision guard reached runtime creation')\n    env = {'ROOT':local, 'WEB':local/'web', 'SITE':local/'web/site', 'SESSIONS':local/'sessions',\n           'ALL_CAPTURES':tuple(BROWSER_CAPTURES), 'fresh_directory':no_runtime}\n    exec(compile(ast.Module(body=definitions, type_ignores=[]), str(runner_path), 'exec'), env)\n    for name in BROWSER_CAPTURES:\n        target = qa/name;target.write_bytes(b'original')\n        try:env['prepare_outputs'](True)\n        except RuntimeError as error:refused = str(error) == 'Preserve prior checkout HTTP outputs'\n        else:refused = False\n        check('Installed purchase inbox refuses capture overwrite ' + name, refused and target.read_bytes() == b'original' and not env['WEB'].exists())\n        target.unlink()\n        check('Installed purchase inbox capture stays in native-browser ' + name,\n              a.evidence_allowed('qa/'+name,'native-browser') and all(not a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    label = ext['result_check']\n    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)\n             and isinstance(n.value.func, ast.Name) and n.value.func.id == 'check' and n.value.args\n             and isinstance(n.value.args[0], ast.Constant) and n.value.args[0].value == label]\n    require(len(calls) == 1, 'Actual runner must require the inbox result exactly once')\n    predicate = compile(ast.Module(body=calls, type_ignores=[]), str(runner_path), 'exec')\n    result = {'purchase_inbox':{'passed':True,'captures':[{'name':n} for n in BROWSER_CAPTURES]}}\n    for name in BROWSER_CAPTURES:(qa/name).write_bytes(b'synthetic guard only')\n    def exact_check(name, condition):require(name == label and condition is True, 'Installed inbox actual result predicate refused')\n    def verify(value):exec(predicate, {'result':value,'qa':qa,'INBOX_CAPTURES':tuple(BROWSER_CAPTURES),'check':exact_check})\n    verify(result);check('Installed purchase inbox actual result predicate accepts exact bounded output',True)\n    for title, mutate in [\n        ('failed result',lambda r:r['purchase_inbox'].update(passed=False)),\n        ('truthy nonboolean result',lambda r:r['purchase_inbox'].update(passed=1)),\n        ('missing result',lambda r:r.pop('purchase_inbox')),\n        ('missing capture',lambda r:r['purchase_inbox']['captures'].pop()),\n        ('reordered captures',lambda r:r['purchase_inbox']['captures'].reverse()),\n        ('duplicate capture',lambda r:r['purchase_inbox']['captures'].__setitem__(1,r['purchase_inbox']['captures'][0])),\n    ]:\n        bad = copy.deepcopy(result);mutate(bad)\n        deny('Installed purchase inbox runner refuses '+title, lambda r=bad:verify(r))\n    for mode in ('missing','empty'):\n        path = qa/BROWSER_CAPTURES[0]\n        if mode == 'missing':path.unlink()\n        else:path.write_bytes(b'')\n        deny('Installed purchase inbox runner refuses '+mode+' PNG',lambda:verify(result))\n        path.write_bytes(b'synthetic guard only')\n    check('Installed purchase inbox keeps business fixture and private-runtime transport unchanged',\n          sha(root.joinpath('tests/hosting_checkout_http_fixture.php').read_bytes().replace(b'\\r\\n',b'\\n')) == ext['unchanged_source_sha256']['tests/hosting_checkout_http_fixture.php'])\n    check('Installed purchase inbox never exports private session state',\n          a.evidence_allowed('test-runtime/hosting-checkout-browser-sessions/sess_private','native-browser') is False)\n    return prior\n\n\ndef run(a, root, tmp, check, deny, named, contract):\n    prior = browser_checks(a, root, tmp, check, deny, named, contract)\n    return _run_inbox_predecessor(a, root, tmp, check, deny, named, prior)\n    check('Checkout policy correction preserves the complete3042 contract and189 native recipes', len(prior['native_commands']) == 189)\n"
           }
         ],
-        "current_sha256": "cb59a89194a740968d64dee850e71e250af2a46d40a00e4c2bd7f2ccb66e54c9",
-        "predecessor_sha256": "b202b6a626b11f0cc2de294086bc53e5fa47c97510de467bea437389c9cbd7c8"
+        "current_sha256": "e481a17e8aaac276c7447bdaf599951fbe6e91d888c34c112102f8445e00ed47",
+        "predecessor_sha256": "81ddc6dc95e90f4a39759629f653e1083ac03bd9a98499e2b78443035fa486ab"
       },
       "tests/hosting_purchases_views.php": {
         "predecessor_sha256": "9fc5e8354508f6fa83a497ea15bff9d39bcb07d4f0994ac77ee185634a35d742",
@@ -2538,8 +2538,8 @@
           "source_sha256"
         ],
         "path": "tests/hosting_purchase_inbox_wiring.py",
-        "predecessor_sha256": "b202b6a626b11f0cc2de294086bc53e5fa47c97510de467bea437389c9cbd7c8",
-        "current_sha256": "cb59a89194a740968d64dee850e71e250af2a46d40a00e4c2bd7f2ccb66e54c9"
+        "predecessor_sha256": "81ddc6dc95e90f4a39759629f653e1083ac03bd9a98499e2b78443035fa486ab",
+        "current_sha256": "e481a17e8aaac276c7447bdaf599951fbe6e91d888c34c112102f8445e00ed47"
       },
       {
         "location": [
@@ -2562,7 +2562,7 @@
     ],
     "unchanged_source_sha256": {
       ".github/workflows/hosting-catalog-offers.yml": "b6e5acbd38f611e94bb626a479927012e7c308acf0e16a241a907d5992275ee5",
-      "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
+      "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
@@ -2570,8 +2570,8 @@
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
       "tests/hosting_checkout_native.php": "f3906a76e904ad8967483f1fea4435ce13ec738b8b123b664163bf19dd82c45f",
       "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
-      "tests/imported_plan_setup_wiring.py": "1b11adb610883d95210b2c2c28e0d52c09171db331f2cfc49bdb36ef3bf83857",
-      "tools/acceptance-reports.json": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
+      "tests/imported_plan_setup_wiring.py": "670dd0143d2e08281f82f123fe177216456c7d723ca70baa1a20bb0d9156d0e7",
+      "tools/acceptance-reports.json": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     }
   },
@@ -2580,14 +2580,14 @@
     "added_commands": [],
     "added_reports": [],
     "added_captures": [],
-    "predecessor_contract_sha256": "924fe97679bc08f86c506cf40d3ed9df0e3f193034c6e26d8a86857cfc5d1aac",
-    "predecessor_reports_sha256": "2afa7b37763688f455f367ecc1fddaccdeef8bd4f4332d12baf83d75c6989f6c",
+    "predecessor_contract_sha256": "ad561a4664ef5327046c3f027320a66aa233b4d7c31495a703b4a0bd03c2d33c",
+    "predecessor_reports_sha256": "14ed5aa7dc246d11dd63fa6f90ce6e1bf16c6d9a9778205e788625ba13e98fde",
     "source_sha256": {
       "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
       "site/includes/layout/hosting_order_links.php": "81633d29f4580f11fc78aa1422fdb8909efc4600667c1ec83be977fa1e8be155",
       "site/includes/layout/service_orders.php": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
       "tests/hosting_purchase_inbox_cases.py": "ad714d79c1dce6ba21f243c4d81fbe0e2349ba52375cda8a8a1ac75331d57600",
-      "tests/hosting_purchase_inbox_wiring.py": "85160b1227bf5d1edae4f6ecd51e3e3aaa2d50ebadafd803891b1479bee4f078",
+      "tests/hosting_purchase_inbox_wiring.py": "3b060261f2d738fe70f4d1250812acf51ac868fab16547f94060e44c62d7dded",
       "tests/hosting_purchases_views.php": "a3f1a1aa1835be4eb9009ecaaa70b5c4c84c48c08f0690d77b35aa0bc070d0be"
     },
     "source_delta": {
@@ -2675,11 +2675,11 @@
           },
           {
             "before": "    check('Checkout policy correction preserves the complete3042 contract and189 native recipes', len(prior['native_commands']) == 189)\n",
-            "after": "    check('Checkout policy correction preserves the complete3042 contract and189 native recipes', len(prior['native_commands']) == 189)\n    for label, mutate in [\n        ('removed original command', lambda value:value['native_commands'].pop()),\n        ('altered original command', lambda value:value['native_commands'].__setitem__(0, 'changed')),\n    ]:\n        wrong = copy.deepcopy(contract); mutate(wrong)\n        deny('Checkout policy correction refuses ' + label, lambda value=wrong:policy_contract(value))\n    for pin in ext['updated_pins']:\n        wrong = copy.deepcopy(contract); value = wrong\n        for part in pin['location']:\n            value = value[part]\n        value[pin['path']] = '0' * 64\n        try:\n            policy_contract(wrong)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('Checkout policy stale current pin passed')\n    check('Checkout policy correction refuses every stale current serialized pin', True)\n    reports = a.load(root/'tools/acceptance-reports.json')\n    check('Checkout policy correction preserves all205 browser and256 final reports',\n          len(reports['browser']) == 205 and len(reports['final']) == 256\n          and sha(canonical(reports)) == ext['predecessor_reports_sha256'])\n    check('Checkout policy correction leaves both workflows and installed fixture unchanged',\n          all(sha(root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')) == expected\n              for path, expected in ext['unchanged_source_sha256'].items()))\n    path = 'tests/hosting_purchase_inbox_cases.py'\n    old_tree = ast.parse(before[path].decode())\n    current_tree = ast.parse(root.joinpath(path).read_text(encoding='utf-8'))\n    def checks(tree):\n        return [ast.dump(node, include_attributes=False) for node in ast.walk(tree)\n                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'check']\n    old_checks = checks(old_tree); current_checks = checks(current_tree)\n    check('Checkout policy correction retains every original installed inbox check expression and order',\n          [item for item in current_checks if item in set(old_checks)] == old_checks)\n    new_checks = [node for node in ast.walk(current_tree)\n                  if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'check'\n                  and ast.dump(node, include_attributes=False) not in set(old_checks)]\n    check('Checkout policy correction adds only its installed verified-payment assertion',\n          len(new_checks) == 1 and isinstance(new_checks[0].args[0], ast.Constant)\n          and new_checks[0].args[0].value == 'Checkout owner uses verified-payment setup without legacy manual controls')\n    def captures(tree):\n        return [ast.dump(node, include_attributes=False) for node in tree.body\n                if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'CAPTURES' for t in node.targets)]\n    check('Checkout policy correction preserves the four original capture declarations',\n          len(captures(old_tree)) == 1 and captures(current_tree) == captures(old_tree))\n    return prior\n\n\ndef run(a, root, tmp, check, deny, named, contract):\n    prior = policy_checks(a, root, check, deny, contract)\n    return _run_policy_predecessor(a, root, tmp, check, deny, named, prior)\n"
+            "after": "    check('Checkout policy correction preserves the complete3042 contract and189 native recipes', len(prior['native_commands']) == 189)\n    for label, mutate in [\n        ('removed original command', lambda value:value['native_commands'].pop()),\n        ('altered original command', lambda value:value['native_commands'].__setitem__(0, 'changed')),\n    ]:\n        wrong = copy.deepcopy(contract); mutate(wrong)\n        deny('Checkout policy correction refuses ' + label, lambda value=wrong:policy_contract(value))\n    for pin in ext['updated_pins']:\n        wrong = copy.deepcopy(contract); value = wrong\n        for part in pin['location']:\n            value = value[part]\n        value[pin['path']] = '0' * 64\n        try:\n            policy_contract(wrong)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('Checkout policy stale current pin passed')\n    check('Checkout policy correction refuses every stale current serialized pin', True)\n    reports = a.load(root/'tools/acceptance-reports.json')\n    check('Checkout policy correction preserves all206 browser and257 final reports',\n          len(reports['browser']) == 206 and len(reports['final']) == 257\n          and sha(canonical(reports)) == ext['predecessor_reports_sha256'])\n    check('Checkout policy correction leaves both workflows and installed fixture unchanged',\n          all(sha(root.joinpath(path).read_bytes().replace(b'\\r\\n', b'\\n')) == expected\n              for path, expected in ext['unchanged_source_sha256'].items()))\n    path = 'tests/hosting_purchase_inbox_cases.py'\n    old_tree = ast.parse(before[path].decode())\n    current_tree = ast.parse(root.joinpath(path).read_text(encoding='utf-8'))\n    def checks(tree):\n        return [ast.dump(node, include_attributes=False) for node in ast.walk(tree)\n                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'check']\n    old_checks = checks(old_tree); current_checks = checks(current_tree)\n    check('Checkout policy correction retains every original installed inbox check expression and order',\n          [item for item in current_checks if item in set(old_checks)] == old_checks)\n    new_checks = [node for node in ast.walk(current_tree)\n                  if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'check'\n                  and ast.dump(node, include_attributes=False) not in set(old_checks)]\n    check('Checkout policy correction adds only its installed verified-payment assertion',\n          len(new_checks) == 1 and isinstance(new_checks[0].args[0], ast.Constant)\n          and new_checks[0].args[0].value == 'Checkout owner uses verified-payment setup without legacy manual controls')\n    def captures(tree):\n        return [ast.dump(node, include_attributes=False) for node in tree.body\n                if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'CAPTURES' for t in node.targets)]\n    check('Checkout policy correction preserves the four original capture declarations',\n          len(captures(old_tree)) == 1 and captures(current_tree) == captures(old_tree))\n    return prior\n\n\ndef run(a, root, tmp, check, deny, named, contract):\n    prior = policy_checks(a, root, check, deny, contract)\n    return _run_policy_predecessor(a, root, tmp, check, deny, named, prior)\n"
           }
         ],
-        "current_sha256": "85160b1227bf5d1edae4f6ecd51e3e3aaa2d50ebadafd803891b1479bee4f078",
-        "predecessor_sha256": "cb59a89194a740968d64dee850e71e250af2a46d40a00e4c2bd7f2ccb66e54c9"
+        "current_sha256": "3b060261f2d738fe70f4d1250812acf51ac868fab16547f94060e44c62d7dded",
+        "predecessor_sha256": "e481a17e8aaac276c7447bdaf599951fbe6e91d888c34c112102f8445e00ed47"
       },
       "tests/hosting_purchases_views.php": {
         "predecessor_sha256": "65000b09de02f2a9ec3f4c85158f216e124fdb3ed96ee2c75462cd3958df7f69",
@@ -2720,8 +2720,8 @@
           "source_sha256"
         ],
         "path": "tests/hosting_purchase_inbox_wiring.py",
-        "predecessor_sha256": "cb59a89194a740968d64dee850e71e250af2a46d40a00e4c2bd7f2ccb66e54c9",
-        "current_sha256": "85160b1227bf5d1edae4f6ecd51e3e3aaa2d50ebadafd803891b1479bee4f078"
+        "predecessor_sha256": "e481a17e8aaac276c7447bdaf599951fbe6e91d888c34c112102f8445e00ed47",
+        "current_sha256": "3b060261f2d738fe70f4d1250812acf51ac868fab16547f94060e44c62d7dded"
       },
       {
         "location": [
@@ -2756,8 +2756,8 @@
           "source_sha256"
         ],
         "path": "tests/hosting_purchase_inbox_wiring.py",
-        "predecessor_sha256": "cb59a89194a740968d64dee850e71e250af2a46d40a00e4c2bd7f2ccb66e54c9",
-        "current_sha256": "85160b1227bf5d1edae4f6ecd51e3e3aaa2d50ebadafd803891b1479bee4f078"
+        "predecessor_sha256": "e481a17e8aaac276c7447bdaf599951fbe6e91d888c34c112102f8445e00ed47",
+        "current_sha256": "3b060261f2d738fe70f4d1250812acf51ac868fab16547f94060e44c62d7dded"
       },
       {
         "location": [
@@ -2772,19 +2772,19 @@
     "unchanged_source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
       ".github/workflows/catalog-storefront.yml": "e38f8945d7d500a26478a206e44a8ff1f86017279b63309faf6c2de6d8da5b7c",
-      "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
+      "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
-      "tools/acceptance-reports.json": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
+      "tools/acceptance-reports.json": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     }
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "95053708fb2a28371cc244fb1697b0c920a7a392d086b192f568d655700b619a",
-    "predecessor_reports_sha256": "2d1215ad024966d0448da44fcdcdc4195be1c8a8d914807613b7585cd8db15a2",
+    "predecessor_contract_sha256": "f426c6b5426e8c7c02b7420c6ddc00f01637f8975a85ce24d897f6c7e66a98e1",
+    "predecessor_reports_sha256": "4622765acf10b3bad92b8ddcc5219d0abd2c91c589ddb35a3bbdb9f2feeae071",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
       "\"$PHP_BINARY\" tests/hosting_catalog_variants_document.php > qa/hosting-catalog-variants-document-default.json",
@@ -2891,8 +2891,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "after": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120"
+        "before": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "after": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551"
       },
       {
         "keys": [
@@ -2918,8 +2918,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "after": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120"
+        "before": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "after": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551"
       },
       {
         "keys": [
@@ -2936,8 +2936,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "after": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120"
+        "before": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "after": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551"
       },
       {
         "keys": [
@@ -2954,8 +2954,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "after": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120"
+        "before": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "after": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551"
       }
     ],
     "source_deltas": {
@@ -3142,8 +3142,8 @@
             "before": ""
           }
         ],
-        "after_sha256": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120",
-        "before_sha256": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd"
+        "after_sha256": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551",
+        "before_sha256": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463"
       },
       "tests/hosting_catalog_plan_setup_views.php": {
         "before_sha256": "c15317594664fc32aafb655c90f6f4757373b16bbe62bbe7cd6e3baf408097e6",
@@ -3216,7 +3216,7 @@
       "site/includes/security/csrf.php": "cf24bbccd978bd9ac94d289f822deea683624b8093e86b362a4b8e818f9a99de",
       "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
       "site/includes/security/input.php": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b",
-      "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
+      "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
       "tests/hosting_catalog_native.php": "1dcf9f596283e6cfd5b6e90a618e5535d1385bee2b33c27f2435531ffc261cf7",
       "tests/hosting_catalog_plan_setup_native.php": "639170559746c52e9cd65d79b49133e98afd53d77f905196d6bac9d5b91cecec",
       "tests/hosting_catalog_plan_setup_views.php": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
@@ -3234,8 +3234,8 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "b5cd9eb9df36b5a2a9d29421ed317ab0f469a0cca4bd6798843ef36674daa875",
-    "predecessor_reports_sha256": "36c2e58786e17505c6836b8dbee027ba0224738ee100263115d0b6cb337bdf1a",
+    "predecessor_contract_sha256": "64438eeca0da1dc5851600bfb992ad62b2c8333044f6e71c0c530b97fe1fcbdd",
+    "predecessor_reports_sha256": "7a36f18ee4deaa59267c8e55422546d0f133738c9a0c63c38ec607f0ea30818a",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
       "\"$PHP_BINARY\" tests/hosting_catalog_billing.php > qa/hosting-catalog-billing-default.json",
@@ -3374,8 +3374,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120",
-        "after": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59"
+        "before": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551",
+        "after": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2"
       },
       {
         "keys": [
@@ -3401,8 +3401,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120",
-        "after": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59"
+        "before": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551",
+        "after": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2"
       },
       {
         "keys": [
@@ -3419,8 +3419,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120",
-        "after": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59"
+        "before": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551",
+        "after": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2"
       },
       {
         "keys": [
@@ -3437,8 +3437,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120",
-        "after": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59"
+        "before": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551",
+        "after": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2"
       },
       {
         "keys": [
@@ -3491,8 +3491,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120",
-        "after": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59"
+        "before": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551",
+        "after": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2"
       }
     ],
     "source_deltas": {
@@ -3733,8 +3733,8 @@
             "before": ""
           }
         ],
-        "after_sha256": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59",
-        "before_sha256": "340257b542aa6a116fdb9884c338618c000a1d3c610061f29441faeba834e120"
+        "after_sha256": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2",
+        "before_sha256": "d8330df067428df52927aa99118e45d1a688057b34a5da36b1aa37ce57185551"
       },
       "tests/hosting_checkout_views.php": {
         "before_sha256": "bc977d761ff47c240728ff9a43b49b5c49020c79143661c635ccdf2f23d36e1c",
@@ -3802,7 +3802,7 @@
       "site/portal/controllers/router.php": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
       "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
-      "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
+      "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
       "tests/hosting_catalog_billing.php": "3e7078669889310783907a350c355ff20b0c26514e8dae508715b647fd53dbc9",
       "tests/hosting_catalog_billing_browser.py": "22ee99755548ad508a40635ee7f5da85081a81c2f8471362b304acfb889cd642",
       "tests/hosting_catalog_billing_http_fixture.php": "ff4ee59df5e531989c497ed94f5a41c0bedba01c133d0b325da5a491c5ad1cbe",
@@ -3820,8 +3820,8 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "ef907b9f83e9b95a03183e6f5b7c105db1eda7ef4eaec01f540b6a5b43a88c78",
-    "predecessor_reports_sha256": "677b49d9e7775a92a9c9fcbe992c7b695bd57e19870eaf2b56a4e14d79863b8f",
+    "predecessor_contract_sha256": "698530102fe01d3280867a1d1635adc3a5145e6252fae498e4b93bcb5c49fc26",
+    "predecessor_reports_sha256": "b70651e3c9c3623abbc71f429c80b6a793eb2af2fbbee4e0728a8108e4c20f4a",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
       "python3 -B tests/hosting_billing_options_wiring.py --report qa/hosting-billing-options-wiring-results.json"
@@ -3908,8 +3908,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59",
-        "after": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7"
+        "before": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2",
+        "after": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87"
       },
       {
         "keys": [
@@ -3944,8 +3944,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59",
-        "after": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7"
+        "before": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2",
+        "after": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87"
       },
       {
         "keys": [
@@ -3989,8 +3989,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59",
-        "after": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7"
+        "before": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2",
+        "after": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87"
       },
       {
         "keys": [
@@ -4016,8 +4016,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59",
-        "after": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7"
+        "before": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2",
+        "after": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87"
       },
       {
         "keys": [
@@ -4052,8 +4052,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59",
-        "after": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7"
+        "before": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2",
+        "after": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87"
       },
       {
         "keys": [
@@ -4070,8 +4070,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59",
-        "after": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7"
+        "before": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2",
+        "after": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87"
       }
     ],
     "source_deltas": {
@@ -4126,8 +4126,8 @@
             "before": ""
           }
         ],
-        "after_sha256": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
-        "before_sha256": "b9e2f58818a3e3447ab6e71de2ff4ff5570b9f5a687e79b6ba7fe52f8a61df59"
+        "after_sha256": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
+        "before_sha256": "f7cf02760e72d9903846b7729f8539aab79a5cf35c398ae5da9f1b3c2dbc9ea2"
       },
       "tests/hosting_checkout_http_browser.py": {
         "before_sha256": "c004f92d887637dcdbae523197f7658223f0e1127db0ad5f5ec15337c35a412f",
@@ -4235,7 +4235,7 @@
       "site/portal/controllers/router.php": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
-      "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
+      "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_billing_options_cases.py": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60",
@@ -4274,7 +4274,7 @@
     "source_sha256": {
       "tests/mail_flags_native.php": "dd09c0fbc5cc6a81329b9242c857a3cf6fcd170ffc7f14a24fa357cf1611f302",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
-      "tests/backups_native.php": "5e4311822a71c446b092d393564ab8f57ec736c4fb7f4054855c56eb51d094f8",
+      "tests/backups_native.php": "cd21e3e91974331239df91981831fbe13a60d75208f34947c0ff8c2b292660be",
       "tests/notification_feed_native.php": "77d288b51fbab67fd3d4fa5fdf11443b0a12ee683e5ab27dd58df6c0191138d1",
       "tests/support_tickets_native.php": "64adb30582eb4e62b5d91429745c412213fb6b7faa30e532fb0bca0b19f5b46c"
     }
@@ -4420,8 +4420,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "after": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "before": "042e32d62ac5213f95340da076ca94130eecdb296ec28b69dc64fb9f8f5a46bd"
+        "after": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "before": "cc306b5108f1621764bbb14e83755b4c91a25c34d9bd57540438b115d8067cb3"
       },
       {
         "keys": [
@@ -4438,8 +4438,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "after": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "before": "042e32d62ac5213f95340da076ca94130eecdb296ec28b69dc64fb9f8f5a46bd"
+        "after": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "before": "cc306b5108f1621764bbb14e83755b4c91a25c34d9bd57540438b115d8067cb3"
       },
       {
         "keys": [
@@ -4456,8 +4456,8 @@
           "unchanged_source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "after": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "before": "042e32d62ac5213f95340da076ca94130eecdb296ec28b69dc64fb9f8f5a46bd"
+        "after": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "before": "cc306b5108f1621764bbb14e83755b4c91a25c34d9bd57540438b115d8067cb3"
       },
       {
         "keys": [
@@ -4474,8 +4474,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "after": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "before": "042e32d62ac5213f95340da076ca94130eecdb296ec28b69dc64fb9f8f5a46bd"
+        "after": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "before": "cc306b5108f1621764bbb14e83755b4c91a25c34d9bd57540438b115d8067cb3"
       }
     ],
     "merged_stage_delta": {
@@ -4574,12 +4574,12 @@
           {
             "after_start": 995,
             "after_end": 1009,
-            "after": "    check('Retail variants retain all210 native commands and add five exact producers',\n          len(current['native_commands']) == 215 and len(section['native_additions']) == 5\n    for phase, expected in [('browser', 233), ('final', 290)]:\n    check('Retail variants aggregate requires all290 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    check('Billing selector retains all215 native commands and adds three exact producers',\n          len(current['native_commands']) == 218 and len(section['native_additions']) == 3\n    for phase, expected in [('browser', 237), ('final', 294)]:\n    check('Billing selector aggregate requires all294 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    check('Installed billing options preserve all218 commands and add one portable producer',\n          len(current['native_commands']) == 219 and len(section['native_additions']) == 1\n    for phase, expected in [('browser', 238), ('final', 295)]:\n    check('Installed billing options aggregate requires all295 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    check('Renewal invoice creation adds three mandatory native-lane checks',len(native_commands)==219 and native_commands==contract['native_commands'] and len(renewal_commands)==3 and len(set(renewal_commands))==3 and all(native_commands.count(command)==1 for command in renewal_commands) and native_commands[-3:]==renewal_commands)\n    check('Renewal invoice creation preserves every original216 command in order',len(native_commands)==renewal_contract['predecessor_native_count']==216 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==renewal_contract['predecessor_native_sha256'])\n",
+            "after": "    check('Retail variants retain all210 native commands and add five exact producers',\n          len(current['native_commands']) == 215 and len(section['native_additions']) == 5\n    for phase, expected in [('browser', 234), ('final', 291)]:\n    check('Retail variants aggregate requires all290 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    check('Billing selector retains all215 native commands and adds three exact producers',\n          len(current['native_commands']) == 218 and len(section['native_additions']) == 3\n    for phase, expected in [('browser', 238), ('final', 295)]:\n    check('Billing selector aggregate requires all294 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    check('Installed billing options preserve all218 commands and add one portable producer',\n          len(current['native_commands']) == 219 and len(section['native_additions']) == 1\n    for phase, expected in [('browser', 239), ('final', 296)]:\n    check('Installed billing options aggregate requires all295 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    check('Renewal invoice creation adds three mandatory native-lane checks',len(native_commands)==219 and native_commands==contract['native_commands'] and len(renewal_commands)==3 and len(set(renewal_commands))==3 and all(native_commands.count(command)==1 for command in renewal_commands) and native_commands[-3:]==renewal_commands)\n    check('Renewal invoice creation preserves every original216 command in order',len(native_commands)==renewal_contract['predecessor_native_count']==216 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==renewal_contract['predecessor_native_sha256'])\n",
             "before": "    check('Retail variants retain all189 native commands and add five exact producers',\n          len(current['native_commands']) == 194 and len(section['native_additions']) == 5\n    check('Billing selector retains all194 native commands and adds three exact producers',\n          len(current['native_commands']) == 197 and len(section['native_additions']) == 3\n    check('Installed billing options preserve all197 commands and add one portable producer',\n          len(current['native_commands']) == 198 and len(section['native_additions']) == 1\n"
           }
         ],
-        "after_sha256": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "before_sha256": "042e32d62ac5213f95340da076ca94130eecdb296ec28b69dc64fb9f8f5a46bd"
+        "after_sha256": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "before_sha256": "cc306b5108f1621764bbb14e83755b4c91a25c34d9bd57540438b115d8067cb3"
       },
       "tests/provider_http_server.py": {
         "changes": [
@@ -4668,8 +4668,8 @@
             "before": "    workflow = root.joinpath('.github/workflows/application-tests.yml').read_text(encoding='utf-8')\n"
           }
         ],
-        "after_sha256": "6a4268c8947d947458e563c74b9db10879a9288db354e1c5d54f7ab171df1678",
-        "before_sha256": "d8e6a1f510d0b874df0d8ab656f82e9a002500270d813d578d7609406efa31e0"
+        "after_sha256": "37fe4485305e8a6faabf2c1f9e9b5b0eb5658b732f58a0f2991d3f29da27893a",
+        "before_sha256": "c5e76ae65894e6316396833091d339cdae27ac10248aac68838c796343537b31"
       },
       "tests/registered_nameserver_changes_http_fixture_test.py": {
         "changes": [
@@ -4762,8 +4762,8 @@
         "before_sha256": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4"
       }
     },
-    "merged_stage_reports_sha256": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
-    "merged_stage_contract_sha256": "0e78c6d8553041a31a1ce2a5c9d992e22d088ec178b2e0fc590fbe2f59c6caf8"
+    "merged_stage_reports_sha256": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5",
+    "merged_stage_contract_sha256": "7b35414cb61c184a2a3a1d977dce854968e9e7dc1bceecd4f4fd1f7ab211a626"
   },
   "registered_nameserver_changes": {
     "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
@@ -4805,8 +4805,8 @@
   },
   "registered_nameserver_changes_installed": {
     "source_predecessor": "5654649dc62095298ce703b39b54d12d56c49f09",
-    "predecessor_contract_sha256": "f731dc948ba63eee0009a4ac4ceebf30739cff4629fa77a229697441a3b861cb",
-    "predecessor_reports_sha256": "cf671d64e7f5ff8551bccd080d9b270c93c437c9a729b4b9b274eda65420ce38",
+    "predecessor_contract_sha256": "efe5dbc68f3c34e9e247818e4386bfd65f01d73a097024a6e6863a94f7c913a3",
+    "predecessor_reports_sha256": "689b276aba98ec1e4af44d765153b16e797c479246dd878023d70a12459d83bf",
     "reports": {
       "browser": [
         "registered-nameserver-changes-http-fixture-results.json"
@@ -4820,7 +4820,7 @@
     "source_sha256": {
       ".github/workflows/application-tests.yml": "0359df634fa7a17c51098b2040ea9972a8e19286535c0da2995339f7eb3d0d73",
       ".github/workflows/provider-nameserver-changes.yml": "7de097af4e6af5162352f60b70ec13f181ed296e24174683c56460120db6ef3c",
-      "tests/acceptance_artifacts_test.py": "f2b2e962728980e62d6ef4f1245a4d26c83c4e6e214b0b62b1578b3939d5ff47",
+      "tests/acceptance_artifacts_test.py": "6260f651c6b3d49b153578a68e0b8c96cc1cec6f1de284e596845242dea4b17d",
       "tests/provider_http_server.py": "d15b2c0e73481f2c690980cc84c0794f7a117cef93bbdf0b9a0bd7580a6f47a7",
       "tests/registered_nameservers_cases.py": "7cfec6fcd0aefb16f6165a8874a18ae89bb464d47a5beb84e957b7da902fe593",
       "tests/registered_nameserver_changes_cases.py": "aad25fa9502c2ab6be37d2dea543193b1319ba1a5d29e9ea3e5b11de0402d48f",
@@ -4828,8 +4828,8 @@
       "tests/registered_nameserver_changes_upgrade.py": "80e855b0288385001575beda5872724a0ab6b5140361a97f75bd13b34225c75e",
       "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
-      "tests/registered_nameserver_changes_acceptance.py": "d8e6a1f510d0b874df0d8ab656f82e9a002500270d813d578d7609406efa31e0",
-      "tools/acceptance-reports.json": "dd3d4ddd57d72a5518a3d895ba5ac28c662a795801a106eedb51decaa59d7d8e"
+      "tests/registered_nameserver_changes_acceptance.py": "c5e76ae65894e6316396833091d339cdae27ac10248aac68838c796343537b31",
+      "tools/acceptance-reports.json": "224bb89e602ee18b6efa4feb4063318b3edf3c9961bcc1132810a64d1f01c5a9"
     },
     "source_delta": {
       ".github/workflows/application-tests.yml": {
@@ -4871,8 +4871,8 @@
             "after": "    contract=a.load(ROOT/'tools/acceptance-contract.json')\n    nameserver_installed_extension=contract['registered_nameserver_changes_installed']\n    from registered_nameserver_changes_acceptance import verify as nameserver_changes_acceptance\n    changes_predecessor = nameserver_changes_acceptance(a, ROOT, tmp, check, deny, contract, requests_predecessor['source'], requests_predecessor['reports'])\n    # New write controls extend the recipe without changing predecessor assertions.\n"
           }
         ],
-        "current_sha256": "f2b2e962728980e62d6ef4f1245a4d26c83c4e6e214b0b62b1578b3939d5ff47",
-        "predecessor_sha256": "d97c361233bd864d93dc8da4122bfbfb14922037c5c51a2a0786087486f951bd"
+        "current_sha256": "6260f651c6b3d49b153578a68e0b8c96cc1cec6f1de284e596845242dea4b17d",
+        "predecessor_sha256": "2befca9f5978ac989626f38238359b4e5f78ad6fc68e16b15899aaec68934e56"
       },
       "tests/provider_http_server.py": {
         "replacements": [
@@ -4924,8 +4924,8 @@
   },
   "registered_nameserver_requests": {
     "source_predecessor": "af78abd81ce39839cd100e1c882a59b04258a25b",
-    "predecessor_contract_sha256": "8ea7d17e3dbcbb044be3e35caf6cb6394a2a34baf54e7ec6ef88acc11cf202fe",
-    "predecessor_reports_sha256": "d9deda2c31332ec7448cb2aa377ec695a9caebb3092d0520d853c9616bb1a5ae",
+    "predecessor_contract_sha256": "148df59c9e04cbf591e6376c977856f7e4773a88b9ea01236bb7ba021a351128",
+    "predecessor_reports_sha256": "7b8f8c8fcfef843a222de28676504cd4f6eb5b8329affd8876f47b332a15d6df",
     "native_additions": [
       "\"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json",
       "\"$PHP_BINARY\" -n tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-no-ini-results.json",
@@ -5013,11 +5013,11 @@
       "site/portal/controllers/registered_nameserver_requests.php": "c436167f15601f2e4f1c2358f250d7c435398a27a289968a61d3ff05d5ed83cb",
       "site/portal/controllers/router.php": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
       "site/portal/views/registered_nameserver_requests.php": "6849c7d55b8222cb6cb26bb5e9adbf844cd3cb89e9a526ae1eb289ad68137583",
-      "tests/acceptance_artifacts_test.py": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
+      "tests/acceptance_artifacts_test.py": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
       "tests/provider_http_server.py": "1a92670de82a16247218aa359781be4d9dec843d87bb6cb30256da3420dcc013",
       "tests/registered_nameserver_changes.php": "1bab3fcb29761a22157544d514b5454a22f958c92bcc8d2ebe9d33c015866357",
-      "tests/registered_nameserver_changes_acceptance.py": "6a4268c8947d947458e563c74b9db10879a9288db354e1c5d54f7ab171df1678",
+      "tests/registered_nameserver_changes_acceptance.py": "37fe4485305e8a6faabf2c1f9e9b5b0eb5658b732f58a0f2991d3f29da27893a",
       "tests/registered_nameserver_changes_cases.py": "aad25fa9502c2ab6be37d2dea543193b1319ba1a5d29e9ea3e5b11de0402d48f",
       "tests/registered_nameserver_changes_http_fixture_test.py": "fae28a5389f0d705c373a67b8a250492b3c5350a07b97d849c2de7d9d56d292b",
       "tests/registered_nameserver_changes_native.php": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
@@ -5025,7 +5025,7 @@
       "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
-      "tests/registered_nameserver_requests_acceptance.py": "7b84f784af2e5cd128ed5f6e4a61b37fbcdaf793d36450c45d64545514763192",
+      "tests/registered_nameserver_requests_acceptance.py": "c06646cf2f3f024ba25b78bcdaed8b512df77ac94e09696f1a1c2b6a2c2d1d40",
       "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
       "tests/registered_nameserver_requests_native.php": "481767c5f8c4ca237608f8465ebeb324368c09d073a6fa6813eea93519eaea0a",
@@ -5037,7 +5037,7 @@
       "tests/registered_nameservers_cases.py": "c1eb5e3abbee06fc325026cad90ac5188e7a314507d63d31a40525df82c504ce",
       "tests/registered_nameservers_native.php": "8d0fb6f8b97c15ee25d856f8703cf7157f0e3ac377400752ff3d4bb36a952ce5",
       "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
-      "tools/acceptance-reports.json": "2d1215ad024966d0448da44fcdcdc4195be1c8a8d914807613b7585cd8db15a2"
+      "tools/acceptance-reports.json": "4622765acf10b3bad92b8ddcc5219d0abd2c91c589ddb35a3bbdb9f2feeae071"
     },
     "source_delta": {
       ".github/workflows/application-tests.yml": {
@@ -5091,8 +5091,8 @@
             "after": "    contract=a.load(ROOT/'tools/acceptance-contract.json')\n    nameserver_request_extension=contract['registered_nameserver_requests']\n    from registered_nameserver_requests_acceptance import verify as nameserver_requests_acceptance\n    requests_predecessor = nameserver_requests_acceptance(a, ROOT, tmp, check, deny, contract)\n    contract = requests_predecessor['contract']\n    nameserver_installed_extension=contract['registered_nameserver_changes_installed']\n"
           }
         ],
-        "current_sha256": "998eaf7d6f47b57b8e0e157e26f349ba8dbc9b73bc4729a1db9dbe99fb3269cd",
-        "predecessor_sha256": "f2b2e962728980e62d6ef4f1245a4d26c83c4e6e214b0b62b1578b3939d5ff47"
+        "current_sha256": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
+        "predecessor_sha256": "6260f651c6b3d49b153578a68e0b8c96cc1cec6f1de284e596845242dea4b17d"
       },
       "tests/provider_http_server.py": {
         "replacements": [
@@ -5149,8 +5149,8 @@
             "after": "    workflow = source('.github/workflows/application-tests.yml').decode('utf-8')\n"
           }
         ],
-        "current_sha256": "6a4268c8947d947458e563c74b9db10879a9288db354e1c5d54f7ab171df1678",
-        "predecessor_sha256": "d8e6a1f510d0b874df0d8ab656f82e9a002500270d813d578d7609406efa31e0"
+        "current_sha256": "37fe4485305e8a6faabf2c1f9e9b5b0eb5658b732f58a0f2991d3f29da27893a",
+        "predecessor_sha256": "c5e76ae65894e6316396833091d339cdae27ac10248aac68838c796343537b31"
       },
       "tests/registered_nameserver_changes_http_fixture_test.py": {
         "predecessor_sha256": "1ffcf7a47fc3fccba50e7bacd3f4c6e2f1a69a48285bb0201cdc0fb4d0b9b000",
@@ -5187,20 +5187,20 @@
             "after": "    \"apache-registered-nameserver-changes-upgrade-results.json\",\n    \"registered-nameserver-requests-document-results.json\",\n    \"registered-nameserver-requests-document-no-ini-results.json\",\n    \"registered-nameserver-requests-service-results.json\",\n    \"registered-nameserver-requests-service-no-ini-results.json\",\n    \"registered-nameserver-requests-storage-results.json\",\n    \"registered-nameserver-requests-storage-no-ini-results.json\",\n    \"registered-nameserver-requests-views-results.json\",\n    \"registered-nameserver-requests-views-no-ini-results.json\",\n    \"registered-nameserver-requests-native-results.json\",\n    \"apache-registered-nameserver-requests-upgrade-guards-results.json\",\n    \"apache-registered-nameserver-requests-upgrade-results.json\"\n"
           }
         ],
-        "current_sha256": "2d1215ad024966d0448da44fcdcdc4195be1c8a8d914807613b7585cd8db15a2",
-        "predecessor_sha256": "dd3d4ddd57d72a5518a3d895ba5ac28c662a795801a106eedb51decaa59d7d8e"
+        "current_sha256": "4622765acf10b3bad92b8ddcc5219d0abd2c91c589ddb35a3bbdb9f2feeae071",
+        "predecessor_sha256": "224bb89e602ee18b6efa4feb4063318b3edf3c9961bcc1132810a64d1f01c5a9"
       }
     },
     "predecessor_source_sha256": {
       ".github/workflows/application-tests.yml": "0359df634fa7a17c51098b2040ea9972a8e19286535c0da2995339f7eb3d0d73",
       ".github/workflows/provider-nameserver-changes.yml": "7de097af4e6af5162352f60b70ec13f181ed296e24174683c56460120db6ef3c",
-      "tests/acceptance_artifacts_test.py": "f2b2e962728980e62d6ef4f1245a4d26c83c4e6e214b0b62b1578b3939d5ff47",
+      "tests/acceptance_artifacts_test.py": "6260f651c6b3d49b153578a68e0b8c96cc1cec6f1de284e596845242dea4b17d",
       "tests/provider_http_server.py": "d15b2c0e73481f2c690980cc84c0794f7a117cef93bbdf0b9a0bd7580a6f47a7",
       "tests/registered_nameserver_changes.php": "7035fa6cec58c317eebc0a2813af4e6fbc5efa87dc390bef0fd33e5e4b1cd189",
-      "tests/registered_nameserver_changes_acceptance.py": "d8e6a1f510d0b874df0d8ab656f82e9a002500270d813d578d7609406efa31e0",
+      "tests/registered_nameserver_changes_acceptance.py": "c5e76ae65894e6316396833091d339cdae27ac10248aac68838c796343537b31",
       "tests/registered_nameserver_changes_http_fixture_test.py": "1ffcf7a47fc3fccba50e7bacd3f4c6e2f1a69a48285bb0201cdc0fb4d0b9b000",
       "tests/registered_nameservers_cases.py": "7cfec6fcd0aefb16f6165a8874a18ae89bb464d47a5beb84e957b7da902fe593",
-      "tools/acceptance-reports.json": "dd3d4ddd57d72a5518a3d895ba5ac28c662a795801a106eedb51decaa59d7d8e"
+      "tools/acceptance-reports.json": "224bb89e602ee18b6efa4feb4063318b3edf3c9961bcc1132810a64d1f01c5a9"
     },
     "unchanged_source_sha256": {
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",

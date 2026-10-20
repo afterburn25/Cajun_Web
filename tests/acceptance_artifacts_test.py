@@ -221,7 +221,7 @@ def hosting_checkout_report_predecessor(reports, checkout):
         'billing-default', 'billing-minimal', 'views-default', 'views-minimal', 'native-results', 'http-guards', 'http-results')]
     a.require(checkout['reports'] == expected, 'Eleven exact checkout report names required')
     original = copy.deepcopy(reports)
-    for lane, count in [('browser', 195), ('final', 246)]:
+    for lane, count in [('browser', 196), ('final', 247)]:
         current = reports[lane]; prior = [n for n in current if n not in expected]
         a.require(len(current) == len(set(current)) == count and all(current.count(n) == 1 for n in expected), 'Missing or duplicate checkout reports')
         a.require(hashlib.sha256(json.dumps(prior, separators=(',', ':')).encode()).hexdigest() == checkout['predecessor_reports_sha256'][lane], 'Original report sequence changed')
@@ -259,7 +259,7 @@ def hosting_checkout_wiring_checks(tmp, workflow, contract, reports=None):
           and set(checkout['unchanged_source_sha256']) == {'tests/browser_acceptance.py', 'tools/acceptance_artifacts.py'})
     reports = a.load(ROOT / 'tools/acceptance-reports.json') if reports is None else reports
     prior_reports = hosting_checkout_report_predecessor(reports, checkout)
-    check('Checkout adds eleven required reports while retaining184 browser and235 final reports', len(prior_reports['browser']) == 184 and len(prior_reports['final']) == 235)
+    check('Checkout adds eleven required reports while retaining185 browser and236 final reports', len(prior_reports['browser']) == 185 and len(prior_reports['final']) == 236)
     for label in ('missing', 'duplicate', 'changed predecessor'):
         wrong = copy.deepcopy(reports)
         if label == 'missing': wrong['final'].remove(checkout['reports'][0])
@@ -338,7 +338,7 @@ def hosting_upgrade_wiring_checks(tmp, workflow, contract, reports=None):
     expected = ['apache-release126-hosting-guards-results.json', 'apache-release126-hosting-results.json']
     check('Hosting upgrade adds exactly two required reports', extension['reports'] == expected)
     reports = a.load(ROOT / 'tools/acceptance-reports.json') if reports is None else reports
-    for lane, count in [('browser', 184), ('final', 235)]:
+    for lane, count in [('browser', 185), ('final', 236)]:
         current = reports[lane]
         additions = expected if lane == 'final' else []
         prior = [name for name in current if name not in additions]
@@ -407,7 +407,7 @@ def hosting_purchase_wiring_checks(tmp, workflow, commands, contract, reports=No
     expected=['hosting-purchase-'+p+'-results.json' for p in ('prepare','due','portal-own','portal-other','joined')]+['hosting-purchase-handoff-guards.json','hosting-purchase-http-results.json']
     check('Joined purchase requires exact five native phase runner reports and two handoff reports',joined['reports']==expected and len(set(expected))==7)
     if reports is None: reports=a.load(ROOT/'tools/acceptance-reports.json')
-    for lane,count in [('browser',184),('final',233)]:
+    for lane,count in [('browser',185),('final',234)]:
         current=reports[lane];prior=[n for n in current if n not in expected]
         check('Joined purchase retains every original report '+lane,len(current)==len(set(current))==count and all(current.count(n)==1 for n in expected) and hashlib.sha256(json.dumps(prior,separators=(',',':')).encode()).hexdigest()==joined['predecessor_reports_sha256'][lane])
         reports[lane]=prior
@@ -486,7 +486,7 @@ def hosting_wiring_checks(tmp, workflow, commands, contract, reports=None):
                       'hosting-catalog-recovery-guard-default.json', 'hosting-catalog-recovery-guard-minimal.json',
                       'hosting-catalog-recovery-native-results.json']
     check('Hosting requires exactly seven distinct named reports', names == expected_names and len(set(names)) == 7)
-    for lane, count in [('browser', 177), ('final', 226)]:
+    for lane, count in [('browser', 178), ('final', 227)]:
         current = reports[lane]; prior = [n for n in current if n not in names]
         check('Hosting preserves exact original report union ' + lane, len(current) == len(set(current)) == count and all(current.count(n) == 1 for n in names) and hashlib.sha256(json.dumps(prior, separators=(',', ':')).encode()).hexdigest() == hosting['predecessor_reports_sha256'][lane])
     report_root = tmp / 'hosting-reports'
@@ -1104,7 +1104,7 @@ def retail_variants_checks(tmp, current, registry, section, historical):
         else:
             raise AssertionError('Stale retail variant source pin passed')
     check('Retail variants refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 233), ('final', 290)]:
+    for phase, expected in [('browser', 234), ('final', 291)]:
         check('Retail variants preserve exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1295,7 +1295,7 @@ def billing_selector_checks(tmp, current, registry, section, historical):
         else:
             raise AssertionError('Stale billing selector source pin passed')
     check('Billing selector refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 237), ('final', 294)]:
+    for phase, expected in [('browser', 238), ('final', 295)]:
         check('Billing selector preserves exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1494,7 +1494,7 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
         else:
             raise AssertionError('Stale installed billing options source pin passed')
     check('Installed billing options refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 238), ('final', 295)]:
+    for phase, expected in [('browser', 239), ('final', 296)]:
         check('Installed billing options preserves exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])

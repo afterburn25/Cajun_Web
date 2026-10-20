@@ -90,8 +90,8 @@ def verify(a, root, tmp, check, deny, contract, source_predecessors=None, report
     reports = a.load(root / 'tools/acceptance-reports.json') if reports_predecessor is None else reports_predecessor
     preceding_reports = report_predecessor(reports, extension)
     check('Nameserver installed reports retain all217 browser and270 final predecessors',
-          len(preceding_reports['browser']) == 217 and len(preceding_reports['final']) == 270
-          and len(reports['browser']) == 218 and len(reports['final']) == 273)
+          len(preceding_reports['browser']) == 218 and len(preceding_reports['final']) == 271
+          and len(reports['browser']) == 219 and len(reports['final']) == 274)
     for label in ('missing', 'duplicate', 'changed original'):
         wrong = copy.deepcopy(reports)
         if label == 'missing': wrong['final'].remove(REPORTS['final'][-1])
