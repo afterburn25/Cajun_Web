@@ -29,7 +29,12 @@ function mf_transport(array $row,#[SensitiveParameter] array $secrets,string $ad
     return $response;
 }
 function mf_mark(string $id,bool $seen=true,int $revision=1,string $folder='INBOX'):array {return mail_message_mark($id,$revision,$folder,'4294967295','4294967295',$seen,'mf_resolve','mf_transport');}
-function mf_age():void {query('UPDATE '.table('mail_flag_requests').' SET started_epoch=?',[time()-7200]);}
+/** Aging also pins each request to a distinct staggered epoch; equal started_epoch values leave InnoDB history ordering undefined. */
+function mf_age():void {
+    global $mfSeq;$mfSeq=$mfSeq??0;
+    foreach(all('SELECT id FROM '.table('mail_flag_requests').' WHERE started_epoch>? ORDER BY started_epoch,started_at,id',[time()-600]) as $row)
+        query('UPDATE '.table('mail_flag_requests').' SET started_epoch=? WHERE id=?',[time()-7200+(++$mfSeq),$row['id']]);
+}
 function mf_audit_failure(callable $fn,string $action):bool {
     db()->exec('CREATE TRIGGER mfci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='mail_accounts.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic flag audit failure'; END IF; END");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER mfci_fail');}return $failed;
