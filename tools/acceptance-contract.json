@@ -878,13 +878,13 @@
       "tests/force_ssl_requests_contract.php": "92a3a4eb5bccc0915a27fde018b42997c9d3b64bc64d776773ce0bc501a97a56",
       "tests/force_ssl_requests_document.php": "2d0512f7bd6b783fe3b81de71bab15bd5651f6a816efff333002b576c817ac7d",
       "tests/force_ssl_requests_storage.php": "d1417c61a5077bb24200508058de24192dcd4cc7030b13570ed2266d334574c1",
-      "tests/provider_force_ssl_requests_native.php": "f1bfc734b354545c23cfabcf0fd6ad42e3df47a455d0f6d2582d0d1547873c58"
+      "tests/provider_force_ssl_requests_native.php": "74fc891cbad0932daf0235c4585d1bfe4b7e2be77e4b76467eb6e95ac3f09d44"
     },
     "scope": "Primary-client HTTPS request, owner review and existing Force SSL dispatch/readback. Portable and modeled HTTP/browser evidence is separate from guarded native SQL and installed acceptance; no live provider operation."
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "b642674c9a8a0d2c34a4107aad1195b73b4a8eb34f5d6b4c61a1895c7235a966",
+    "predecessor_contract_sha256": "8e28cfbb7c38d227af3922b20c2be2b3fb5c13e1d822d249f0aba4c2df078695",
     "predecessor_reports_sha256": "c3f49512d6579fd7881fbe0761779f6e05870b5c88f0828ddeef8704bf5caefa",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [
@@ -1302,7 +1302,7 @@
       "tests/directory_listing_requests_storage.php": "fe99d96acd03a4a2a3b3d85cafb82b4c1065c788895bc89728881a1bc0d34f76",
       "tests/provider_directory_listing_controls_native.php": "4cfc7f4eaf62a1aa7fcafc9b9fe7c1eb011543e84d8d8cdbd75c28a61bac37a5",
       "tests/provider_directory_listing_requests_native.php": "e8e2f34b324259b95c261ad78171bf43a2a0a103ed2a03ef84d31df6d001c1f2",
-      "tests/provider_force_ssl_requests_native.php": "f1bfc734b354545c23cfabcf0fd6ad42e3df47a455d0f6d2582d0d1547873c58",
+      "tests/provider_force_ssl_requests_native.php": "74fc891cbad0932daf0235c4585d1bfe4b7e2be77e4b76467eb6e95ac3f09d44",
       "tools/acceptance_artifacts.py": "adace461adbf6568050e52a54703a030e5d4247ce487bd45c951ed4df92cd2a5"
     },
     "scope": "Primary-client directory listing request, owner review and existing DirectoryIndexingChange dispatch/readback. Portable/model HTTP evidence is separate from guarded native SQL and installed acceptance. No live provider or actual file visibility claim."
