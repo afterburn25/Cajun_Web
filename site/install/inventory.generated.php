@@ -351,7 +351,7 @@ function setup_expected_files(): array { return [
     'database/migrations/notifications_migrate.php'=>'8e14d0831ce6c63c92a18c74b41a555a7a7bb5d358c873d1e0b1540e1e823d74',
     'database/migrations/payments_migrate.php'=>'6a85ee49f9cf21e82acb0c65830b0597d8b4eb61b686c4d4337e402019e8d877',
     'database/migrations/provider_catalog_import_migrate.php'=>'e9adb494690961e397bdfb7cf63f04fbdc142e74e21fe18e52fc4e043ac91d52',
-    'database/migrations/provider_document_root_requests_migrate.php'=>'4fb97ed64a8b86804bbbc9b439abaa53aafe7a9bb9c97dcf14d63ac21df880db',
+    'database/migrations/provider_document_root_requests_migrate.php'=>'b5d48f027d7e2f73ba9218a2bb84ae56e00795a5b42ae12ec04142fc1e469f96',
     'database/migrations/provider_domain_search_migrate.php'=>'30bc3ee451a2c64692ece5c0e9a751ca9127a92806781a7958916843e3e7cd60',
     'database/migrations/provider_inventory_migrate.php'=>'df8accd80ae5782bb1884768f5e9f12723508f6fa945339fa78ee7f069b0a1f2',
     'database/migrations/provider_operations_migrate.php'=>'0dcedc96e98dbef3c3ad7a83fdf3de2d793c9e9af6a06090d4bfaae525a34456',
