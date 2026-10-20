@@ -424,6 +424,9 @@ jobs:
           "$PHP_BINARY" tests/provider_mailboxes_native.php
           "$PHP_BINARY" tests/provider_operations_native.php
           "$PHP_BINARY" tests/provider_operations_execute_native.php
+          "$PHP_BINARY" tests/twentyi-provider-templates/run.php > qa/password-reset-template-contract-results.json
+          "$PHP_BINARY" -n tests/twentyi-provider-templates/run.php > qa/password-reset-template-contract-minimal-results.json
+          CWP_TEST_PASSWORD_RESET_TEMPLATE=1 "$PHP_BINARY" tests/provider_password_reset_template_native.php
           "$PHP_BINARY" tests/service_plans_native.php
           "$PHP_BINARY" tests/recurring_billing_native.php
           "$PHP_BINARY" tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json

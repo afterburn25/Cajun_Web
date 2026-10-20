@@ -2,7 +2,7 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "bc124cd52768ea266ab27e34ab12d63389e11673d2e70f5fdbcefca8209f0bdf",
+    "tests/browser_acceptance.py": "19f7a21c2649bdc3a8adc45b22d10e730f2d9d001e64886b218f2efde90786a7",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "ee213d66d120313219614928abadc6e8b462ff5fb55541791dec20320e2c184a",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
@@ -156,6 +156,9 @@
     "\"$PHP_BINARY\" tests/provider_mailboxes_native.php",
     "\"$PHP_BINARY\" tests/provider_operations_native.php",
     "\"$PHP_BINARY\" tests/provider_operations_execute_native.php",
+    "\"$PHP_BINARY\" tests/twentyi-provider-templates/run.php > qa/password-reset-template-contract-results.json",
+    "\"$PHP_BINARY\" -n tests/twentyi-provider-templates/run.php > qa/password-reset-template-contract-minimal-results.json",
+    "CWP_TEST_PASSWORD_RESET_TEMPLATE=1 \"$PHP_BINARY\" tests/provider_password_reset_template_native.php",
     "\"$PHP_BINARY\" tests/service_plans_native.php",
     "\"$PHP_BINARY\" tests/recurring_billing_native.php",
     "\"$PHP_BINARY\" tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json",
@@ -565,6 +568,25 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "password_reset_template": {
+    "after": "\"$PHP_BINARY\" tests/provider_operations_execute_native.php",
+    "commands": [
+      "\"$PHP_BINARY\" tests/twentyi-provider-templates/run.php > qa/password-reset-template-contract-results.json",
+      "\"$PHP_BINARY\" -n tests/twentyi-provider-templates/run.php > qa/password-reset-template-contract-minimal-results.json",
+      "CWP_TEST_PASSWORD_RESET_TEMPLATE=1 \"$PHP_BINARY\" tests/provider_password_reset_template_native.php"
+    ],
+    "predecessor_count": 157,
+    "predecessor_sha256": "c302bf3821961204fb4992dec424e2b298780dbba8d945fb67ce79517b2636e7",
+    "predecessor_browser_sha256": "bc124cd52768ea266ab27e34ab12d63389e11673d2e70f5fdbcefca8209f0bdf",
+    "predecessor_reports_sha256": {
+      "browser": "3ffa9a32a09ac341a3f3fc3bcdaf41e1c2f94ead86bcfce3ee245300d984717a",
+      "final": "a32ffede6f98a7aa7af4a328c7aec78b55fdcf0fd4535e6b803416667191985a"
+    },
+    "screenshots": [
+      "Password-Reset-Template-Review-Desktop.png",
+      "Password-Reset-Template-Review-Mobile.png"
+    ]
   },
   "non20i_native_command_extension": {
     "additions": [

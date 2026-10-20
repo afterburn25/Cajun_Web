@@ -281,6 +281,8 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    from reset_template_acceptance_contract import predecessor_contract
+    contract,native_commands=predecessor_contract(ROOT,contract,native_commands,check)
     ext=contract.get('non20i_native_command_extension')
     if ext:
         ext_commands=ext['additions']

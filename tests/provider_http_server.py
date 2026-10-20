@@ -19,6 +19,7 @@ class ProviderServer:
         self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';self.wp_installed=True;self.wp_installed_mode='success';fixture=self
         self.stackcp_membership=[];self.stackcp_grants=[]
         self.renewal_mode='success';self.renewal_posts=[]
+        self.reset_template='';self.reset_template_mode='success';self.reset_template_write_mode='accepted'
         self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
@@ -31,9 +32,10 @@ class ProviderServer:
                 force_ssl_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')
                 directory_indexing_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')
                 wp_installed_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/wordpressIsInstalled',self.path or '')
+                reset_template_path=self.path=='/reseller/*/passwordResetEmail'
                 stackcp_membership_path=re.fullmatch(r'/package/[1-9][0-9]{0,9}/stackUserList',self.path or '')
                 stackcp_grants_path=re.fullmatch(r'/reseller/\*/stackUser/[1-9][0-9]{0,9}/grants',self.path or '')
-                if (not stackcp_membership_path and not stackcp_grants_path and not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and not directory_indexing_path and not wp_installed_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
+                if (not reset_template_path and not stackcp_membership_path and not stackcp_grants_path and not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and not directory_indexing_path and not wp_installed_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected fixed request')
                 mode=fixture.registrar_mode if self.path=='/domain' else (fixture.cloud_mode if self.path=='/cloud_server' else fixture.mode)
                 status=401 if mode=='authentication' else 200
@@ -73,26 +75,40 @@ class ProviderServer:
                 if wp_installed_path:
                     status=401 if fixture.wp_installed_mode=='authentication' else 200
                     body={'success':json.dumps(fixture.wp_installed).encode(),'null':b'null','object':b'{"value":true}','authentication':b'private synthetic WordPress installation response'}.get(fixture.wp_installed_mode,b'null')
+                if reset_template_path:
+                    status,body={'success':(200,json.dumps(fixture.reset_template).encode()),'empty':(200,b'""'),'null':(200,b'null'),'object':(200,b'{"content":"wrong envelope"}'),'authentication':(401,b'private synthetic reset-template error')}[fixture.reset_template_mode]
                 if stackcp_membership_path:status,body=200,json.dumps(fixture.stackcp_membership).encode()
                 if stackcp_grants_path:status,body=200,json.dumps(fixture.stackcp_grants).encode()
                 self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)
             def do_POST(self):
                 fixture.calls+=1
                 length=int(self.headers.get('Content-Length') or '0')
-                raw=self.rfile.read(length) if 0<length<=8192 else b''
+                reset_template_write=self.path=='/reseller/*/passwordResetEmail'
+                maximum=65536*6+14 if reset_template_write else 8192
+                raw=self.rfile.read(length) if 0<length<=maximum else b''
                 import re
                 mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')
                 force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')
                 directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')
                 renewal_write=self.path=='/reseller/*/renewDomain'
-                if not (renewal_write or force_ssl_write or directory_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
+                if not (reset_template_write or renewal_write or force_ssl_write or directory_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected write request '+str(self.path))
                 try:payload=json.loads(raw)
                 except Exception:payload=None;fixture.errors.append('Unparseable write body')
                 if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')
                 if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')
                 fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})
-                if renewal_write:
+                if reset_template_write:
+                    valid=isinstance(payload,dict) and list(payload)==['content'] and isinstance(payload['content'],str)
+                    if valid:
+                        try:encoded=payload['content'].encode('utf-8')
+                        except UnicodeError:valid=False
+                        else:valid=0<len(encoded)<=65536 and not re.search(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]',payload['content'])
+                    if not valid:fixture.errors.append('Unexpected reset template body')
+                    status,body={'accepted':(200,b'1'),'zero':(200,b'0'),'boolean':(200,b'true'),'failure':(400,b'private synthetic template refusal'),'uncertain':(202,b'1'),'authentication':(401,b'private synthetic template error')}[fixture.reset_template_write_mode]
+                    if not valid:status,body=400,b'{"error":"synthetic template scope refused"}'
+                    # No POST mode changes the independently supplied GET string.
+                elif renewal_write:
                     valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool
                     if not valid:fixture.errors.append('Unexpected renewal scope body')
                     fixture.renewal_posts.append({'path':self.path,'body':payload})

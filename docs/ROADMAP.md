@@ -1,3 +1,7 @@
+## 2026-10-19 — StackCP reset email template increment
+
+[Owner template controls](TWENTYI_PASSWORD_RESET_TEMPLATE.md) are implemented on a separate branch with explicit read/review/save/readback and encrypted history. Offline checks and installed acceptance are distinguished; the source is unreleased. This does not complete StackCP login, general webmail or the full20i catalog/registrar scope.
+
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Evidence](evidence/ci-remaining-pure-pr-filters.json). This scheduling correction completes no product feature. PR239's cleanup checkpoint is merged, with103 terminal verifications still pending; continue original20i acceptance after the current CI-only integration.

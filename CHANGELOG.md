@@ -2,6 +2,12 @@
 
 Integration branch `devin/full-site-integration` (not on main): fixed admin notification dispatch shadowing (`payments_notification_*` handled before generic feed dispatch) and removed a duplicate notification-layout `require` in the portal router. Carried the scheduling adapter contract doc onto the branch. Ported four isolated contract components onto the current tree as PRs based on the integration branch: VPS uncertainty retention (#257), SSH access model (#258), provider capability catalog (#259) and the domain commerce model (#260) — local suites pass 311/70/50+171/81 checks respectively; hosted runs pending. No main merge, release or deployment.
 
+## Unreleased — 20i password-reset email template
+
+- Added owner-only reading, replacement review, password-confirmed save and separate readback for the documented StackCP reset email template.
+- Preserved exact reviewed text, encrypted local history and one-use requests; uncertain writes cannot automatically resend.
+- Added offline contracts and installed SQL/browser regressions. Full acceptance and publication remain pending.
+
 ## Unreleased documentation — verified remainder and candidate handoff
 
 Record completion of the 139-run obsolete CI remainder, exact PR249 package verification and the separate PR250 contacts-fixture correction. Preserve every original acceptance gate, historical failure and published 1.25 asset. This commit changes documentation only; hosted feature acceptance remains pending.

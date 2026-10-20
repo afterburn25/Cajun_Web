@@ -1,6 +1,13 @@
 # CajunWebPro current status
-# CajunWebPro current status
 ## 2026-10-19 — Group A non-20i integration merged (A1–A25)
+
+## 2026-10-19 — owner 20i reset email template controls
+
+Leaf `devin/fix-reset-email-ops-whitelist` (from `codex/twentyi-reset-email-template`), merged into `devin/full-site-integration` after full acceptance run 39422487199, adds explicit reading, exact replacement review, one admitted save and separate provider readback for the StackCP password-reset email template. Encrypted history and current owner/account checks protect the flow; no email is sent. [Behavior, actual evidence and remaining gates](docs/TWENTYI_PASSWORD_RESET_TEMPLATE.md). This is integrated source, not a release.
+
+Payment-link companion [PR253](https://github.com/afterburn25/Cajun_Web/pull/253) is pushed at `b1948eeb` with its first full acceptance queued. Separate renewal-invoicing PR252 and immutable published1.25.0 are preserved.
+
+## 2026-10-19 — verified remainder and candidate handoff
 
 All 25 reviewed Devin non-20i slices are sequentially merged into `devin/full-site-integration` (tip `9896b1f0`, based on main `1067757d`). Families: mail (replies/flags/attachments/copies/HTML compose), contacts and account permissions, protected previews, stage history, payment links + isolation, backups runtime/archive/restore-drill/database-export, project progress and planning, design-payment agreements, recurring billing, notifications (announcements/events/outbox), support tickets + notifications, service plans, pipeline, proposals, revisions, comparison registry + sources, billing calendar, homepage device depth, and the support-access contract foundation.
 
