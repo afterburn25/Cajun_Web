@@ -157,13 +157,25 @@ Retained (leaf-tip coverage + gates):
 Cancelled runs retained no evidence — none had ever executed (all were
 perpetually `queued`, zero produced logs or reports).
 
+## Merge-first standing priority — 2026-10-20
+
+Owner directive: land completed, tested work into `main` promptly; keep `main`
+caught up; check this queue before opening new branches. Full text in
+`AGENTS.md` (Standing owner directive 2026-10-20). Merge order stays
+dependency-gated: green leaf -> Group B (`devin/preflight-commercial`) ->
+combined `devin/full-site-integration` acceptance -> normal merge to `main`.
+
 ## Concrete blockers and next actions
 
-1. Observe run `39299409880` (combined acceptance on `ceb06c05`) to completion;
-   on pass, `devin/full-site-integration` is eligible to merge to `main`.
-2. Observe dispatched application acceptance on the nine Group B leaf tips;
-   merge in dependency order (`d2903bfb` first — carries the catalog stack base).
-   All nine conflict against the integration tip (8–22 hunks, known stale-base
-   family; catalog resolution pre-staged on `devin/preflight-catalog` `93e24ba0`).
-3. Merge port PRs #257–#260 only after their dedicated component runs report.
-4. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
+1. Nine corrected-head acceptance runs in flight (2026-10-20 redispatch);
+   merge each leaf only after its own run reports green on the corrected head:
+   - fsi `f6cacdcd` -> run `39474415962`
+   - preflight `4cb0f4a3` -> run `39477280053` (native job failed inside the
+     isolated-runtime prep step before any test executed — environmental;
+     apache lane carries the named `failed_checks` diagnostic)
+   - stackcp `1727f6fc` -> `39477425662`; cloud `d39fae8c` -> `39477432779`
+   - docroots `5adfac76` -> `39477439335`; php-controls `a3c4bd1c` -> `39477446040`
+   - nameserver `a982ae71` -> `39477452542`; force-ssl `02e7b0d4` -> `39477459453`
+   - dir-listing `ace1f69b` -> `39477467791`
+2. Merge port PRs #257–#260 only after their dedicated component runs report.
+3. The 50+ Group A source PRs auto-resolve when their heads reach `main`.

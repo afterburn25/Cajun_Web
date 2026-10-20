@@ -141,6 +141,12 @@ demand if their last green runs age out.
 **Not merge claims:** green contract verifiers are local; no leaf merges
 until its hosted run passes. No PR lifecycle state asserted.
 
+## Owner directive — 2026-10-20 (merge-first, standing)
+
+Owner directive recorded: merging completed, tested work into `main` is a standing top priority; keep `main` caught up with completed development. Full text recorded in `AGENTS.md` under "Standing owner directive - 2026-10-20 (merge-first)". The integration queue at `docs/DEVIN_INTEGRATION_QUEUE.md` stays current; status reports distinguish implemented / awaiting-test-or-review / ready-to-merge / merged / verified-on-main / released.
+
+Current merge-blocker state at recording: nine corrected-head acceptance runs in flight (fsi `f6cacdcd`->39474415962, preflight `4cb0f4a3`->39477280053, leaves: stackcp `1727f6fc`->39477425662, cloud `d39fae8c`->39477432779, docroots `5adfac76`->39477439335, php-controls `a3c4bd1c`->39477446040, nameserver `a982ae71`->39477452542, force-ssl `02e7b0d4`->39477459453, dir-listing `ace1f69b`->39477467791). Leaf lanes merge into `devin/preflight-commercial` (Group B) only after their own green run, then preflight verifies, then the combined FSI acceptance, then the normal main merge — each stage gates the next; nothing lands on an assumed pass.
+
 ## Devin's first executable milestone
 
 1. Preserve local work; fetch current main, all relevant feature branches and paginated PR/run/review evidence. Check for concurrent writers.
