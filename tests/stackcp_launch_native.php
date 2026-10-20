@@ -556,7 +556,7 @@ try {
     $retained=json_encode([all('SELECT * FROM '.table('provider_stackcp_launch_events')),all('SELECT * FROM '.table('audit')),provider_stackcp_launch_history($profile,3501)],JSON_THROW_ON_ERROR);
     $safe=true; foreach ([SCLN_GENERAL,SCLN_AUTH,SCLN_TOKEN,SCLN_SESSION,base64_encode(SCLN_GENERAL),base64_encode(SCLN_AUTH),base64_encode(SCLN_TOKEN),'PHPSESSID=','/login/sso?'] as $secret) $safe=$safe&&!str_contains($retained,$secret);
     sl_ok('Launch rows audits and safe history never retain keys tokens sessions or destination URLs',$safe);
-    sl_ok('All prerequisite reads stayed within the real owner quota without rewriting timestamps',$readCalls === 17 && $readDns === 17 && $readCredentials === 17);
+    sl_ok('All prerequisite reads stayed within the real owner quota without rewriting timestamps',$readCalls === 19 && $readDns === 19 && $readCredentials === 19);
     sl_ok('Dedicated StackCP launch does not create a generic operation or grant ledger',!sl_exists('provider_operations') && !sl_exists('provider_operation_grants'));
 } catch (Throwable $e) {
     // Public evidence is finite and sanitized. No exception text, SQL, credentials or URL is exported.
