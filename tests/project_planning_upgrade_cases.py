@@ -38,7 +38,8 @@ def run(env):
                     value = control.get('value', '')
                 result[control['name']] = value
             return result
-        raise AssertionError('Missing expected planning upgrade form: '+operation)
+        found=[(form.select_one('[name=action]') or {}).get('value') for form in BeautifulSoup(response.text,'html.parser').select('form')]
+        raise AssertionError('Missing expected planning upgrade form: '+operation+' url='+response.url+' found='+repr(found))
 
     def submit(session, target, operation, changes, client_id=None):
         return session.post(target, data=dict(fields(session, target, operation, client_id), **changes))
