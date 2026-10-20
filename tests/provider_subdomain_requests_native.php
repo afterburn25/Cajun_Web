@@ -177,6 +177,7 @@ function sdrn_blocked(array &$worker):void{
 }
 function sdrn_join(array &$worker):array{
     $exit=null;$deadline=microtime(true)+12;
+    $deadline=microtime(true)+25;
     try{do{
         $worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);
         if(strlen($worker['stdout'])>8192||strlen($worker['stderr'])>2048)throw new RuntimeException('Worker result bound exceeded.');
@@ -235,13 +236,18 @@ function sdrn_worker():never{
         if(!is_string($in['request_sha256'])||!preg_match('/\A[a-f0-9]{64}\z/',$in['request_sha256'])||!is_string($in['review_proof'])||strlen($in['review_proof'])>4096)throw new RuntimeException('Invalid worker proof.');
         if($in['action']==='cancel')sdrn_client();else sdrn_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();
+        for($attempt=1;;$attempt++):
         $outcome='completed';try{
             if($in['action']==='cancel')provider_subdomain_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
             else provider_subdomain_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['review_proof'],true,SDRN_PASSWORD,'sdrn_write_dns','sdrn_perform');
+            break;
         }catch(InvalidArgumentException|RuntimeException $e){
+            if($e->getMessage()==='Another account change is in progress. Please retry.'&&$attempt<3)continue;
             $expected=$in['action']==='cancel'?'This subdomain request changed. Reload its review.':'This request was already reviewed or withdrawn.';
             if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';
+            break;
         }
+        endfor;
         echo json_encode(['outcome'=>$outcome,'dns'=>$dns,'gets'=>$gets,'posts'=>$posts],JSON_THROW_ON_ERROR)."\n";exit;
     }catch(Throwable $e){echo json_encode(['failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null]],JSON_THROW_ON_ERROR)."\n";exit(1);}
 }

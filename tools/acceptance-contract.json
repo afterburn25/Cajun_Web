@@ -724,7 +724,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "e50c8c12100db42ccabd8f7fbb99a6788b07dee211dab305efb1f3ff695f3023",
+      "tests/provider_subdomain_requests_native.php": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -974,7 +974,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "e50c8c12100db42ccabd8f7fbb99a6788b07dee211dab305efb1f3ff695f3023",
+      "tests/provider_subdomain_requests_native.php": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -1107,7 +1107,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "e50c8c12100db42ccabd8f7fbb99a6788b07dee211dab305efb1f3ff695f3023",
+      "tests/provider_subdomain_requests_native.php": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -1159,7 +1159,7 @@
       },
       "tests/provider_subdomain_requests_native.php": {
         "before_sha256": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after_sha256": "e50c8c12100db42ccabd8f7fbb99a6788b07dee211dab305efb1f3ff695f3023",
+        "after_sha256": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
         "replacements": [
           {
             "before": "require __DIR__.'/../site/includes/bootstrap.php';\nrequire __DIR__.'/../site/database/schema/base.php';\nrequire __DIR__.'/../site/app/providers/subdomain_requests.php';\nuse CajunWebPro\\Foundation\\Provider\\{HttpTransport,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,TransportException,OperationResult};\nuse CajunWebPro\\Foundation\\TwentyIInventory\\{InventoryRead,InventorySnapshot};\nuse CajunWebPro\\Foundation\\TwentyIInventoryReader\\InventoryReader;\n",
@@ -1196,6 +1196,14 @@
           {
             "before": "    sdrn_client();$old=sdrn_item($recoveryId,1);sdrn_ok('Original client retains historical status without current authority',$old['current_assignment']===false&&$old['state']==='unknown'&&$old['can_cancel']===false);\n    sdrn_deny('Original client cannot reuse consent after actual reassignment',fn()=>sdrn_create($recoveryId,$originalOption,$recoveryChild));\n\n    $stage='established-history';sdrn_owner();db()->exec('RENAME TABLE '.table('provider_subdomain_requests_events').' TO sdrn_hidden_request_events');\n    try{sdrn_deny('Missing established request table cannot be recreated',fn()=>provider_subdomain_requests_prepare(SDRN_PASSWORD));sdrn_ok('Failed setup leaves established table absent',!sdrn_exists());}finally{db()->exec('RENAME TABLE sdrn_hidden_request_events TO '.table('provider_subdomain_requests_events'));}\n    $final=sdrn_locked(fn()=>provider_subdomain_requests_state());sdrn_ok('All six real requests retain their distinct immutable transitions',count($final['requests'])===6&&$final['requests'][$cancelId]['state']==='cancelled'&&$final['requests'][$declineId]['state']==='declined'&&$final['requests'][$mainId]['state']==='dispatched'&&$final['requests'][$recoveryId]['state']==='dispatched'&&$final['requests'][$revokedId]['state']==='dispatched'&&$final['requests'][$missingId]['state']==='dispatched');\n",
             "after": "    sdrn_client();$old=sdrn_item($recoveryId,1);sdrn_ok('Original client retains historical status without current authority',$old['current_assignment']===false&&$old['state']==='unknown'&&$old['can_cancel']===false);\n    sdrn_deny('Original client cannot reuse consent after actual reassignment',fn()=>sdrn_create($recoveryId,$originalOption,$recoveryChild));\n\n    sdrn_client();sdrn_ok('Notifications reassignment cannot leave former client provider events',sdrn_activity_provider_keys('client')===[]);sdrn_client(2);sdrn_deny('Notifications reassignment cannot transfer original client notification',fn()=>activity_source('client','subdomain-terminal:'.$dispatch));\n    $stage='established-history';sdrn_owner();db()->exec('RENAME TABLE '.table('provider_subdomain_requests_events').' TO sdrn_hidden_request_events');\n    try{sdrn_deny('Missing established request table cannot be recreated',fn()=>provider_subdomain_requests_prepare(SDRN_PASSWORD));sdrn_ok('Failed setup leaves established table absent',!sdrn_exists());}finally{db()->exec('RENAME TABLE sdrn_hidden_request_events TO '.table('provider_subdomain_requests_events'));}\n    $final=sdrn_locked(fn()=>provider_subdomain_requests_state());sdrn_ok('All six real requests retain their distinct immutable transitions',count($final['requests'])===6&&$final['requests'][$cancelId]['state']==='cancelled'&&$final['requests'][$declineId]['state']==='declined'&&$final['requests'][$mainId]['state']==='dispatched'&&$final['requests'][$recoveryId]['state']==='dispatched'&&$final['requests'][$revokedId]['state']==='dispatched'&&$final['requests'][$missingId]['state']==='dispatched');\n"
+          },
+          {
+            "before": "        $outcome='completed';try{\n            if($in['action']==='cancel')provider_subdomain_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);\n            else provider_subdomain_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['review_proof'],true,SDRN_PASSWORD,'sdrn_write_dns','sdrn_perform');\n        }catch(InvalidArgumentException|RuntimeException $e){\n            $expected=$in['action']==='cancel'?'This subdomain request changed. Reload its review.':'This request was already reviewed or withdrawn.';\n            if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';\n        }",
+            "after": "        for($attempt=1;;$attempt++):\n        $outcome='completed';try{\n            if($in['action']==='cancel')provider_subdomain_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);\n            else provider_subdomain_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['review_proof'],true,SDRN_PASSWORD,'sdrn_write_dns','sdrn_perform');\n            break;\n        }catch(InvalidArgumentException|RuntimeException $e){\n            if($e->getMessage()==='Another account change is in progress. Please retry.'&&$attempt<3)continue;\n            $expected=$in['action']==='cancel'?'This subdomain request changed. Reload its review.':'This request was already reviewed or withdrawn.';\n            if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';\n            break;\n        }\n        endfor;"
+          },
+          {
+            "before": "    $exit=null;$deadline=microtime(true)+12;",
+            "after": "    $exit=null;$deadline=microtime(true)+12;\n    $deadline=microtime(true)+25;"
           }
         ]
       },
@@ -1280,7 +1288,7 @@
           "tests/provider_subdomain_requests_native.php"
         ],
         "before": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after": "e50c8c12100db42ccabd8f7fbb99a6788b07dee211dab305efb1f3ff695f3023"
+        "after": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691"
       },
       {
         "keys": [
@@ -1307,7 +1315,7 @@
           "tests/provider_subdomain_requests_native.php"
         ],
         "before": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after": "e50c8c12100db42ccabd8f7fbb99a6788b07dee211dab305efb1f3ff695f3023"
+        "after": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691"
       },
       {
         "keys": [
