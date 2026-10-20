@@ -74,6 +74,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
     probe=root/'cache-probe.php';probe.write_text("<?php $s=opcache_get_status(false); echo json_encode(['enabled'=>$s['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php'),'capacity_mib'=>ini_get('opcache.memory_consumption'),'status'=>$s]);")
+    session.get(url+'/index.php')
     cache=session.get(url+'/cache-probe.php').json();probe.unlink()
     (qa/('organized-'+label+'-cache-before.json')).write_text(json.dumps(cache,indent=2)+'\n')
     if not (cache['enabled'] and cache['timestamps']=='0' and cache['cached']):
