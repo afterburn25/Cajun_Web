@@ -48,6 +48,8 @@ def run(env):
     client=requests.Session()
     submit(client,portal,'login',{'email':'organized-client@example.invalid','password':'Synthetic retained progress client passphrase'})
     original=records();keys={name:(private/name).read_bytes() for name in ['mail-master.key','provider-master.key','retained-customer.php']}
+    response=submit(owner,admin+'?view=payments','payments_migrate',{'owner_password':password,'confirm':'1'})
+    check(label+' upgraded payment schema precedes financial agreement preparation','Payment preparation enabled' in response.text)
     check(label+' upgraded financial terms require deliberate owner preparation','Prepare financial agreement storage' in owner.get(editor).text)
     response=submit(owner,admin+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})
     check(label+' upgraded workspace schema precedes financial agreement setup','Database update completed' in response.text)
