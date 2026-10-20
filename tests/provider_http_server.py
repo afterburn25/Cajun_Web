@@ -25,7 +25,7 @@ def registered_nameserver_change_reply(fixture, path, headers, raw):
     The raw request stays in memory for the installed fixture's exact wire check.
     Only explicit uncertain_landed mode changes the separate GET observation.
     """
-    if fixture.nameserver_change_mode == 'disabled' or not re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', path or ''):
+    if getattr(fixture, 'nameserver_change_mode', 'disabled') == 'disabled' or not re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', path or ''):
         return None
 
     def refused():
@@ -163,7 +163,7 @@ class ProviderServer:
             def do_POST(self):
                 fixture.calls+=1
                 import re
-                if fixture.nameserver_change_mode != 'disabled' and re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', self.path or ''):
+                if getattr(fixture, 'nameserver_change_mode', 'disabled') != 'disabled' and re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', self.path or ''):
                     length = self.headers.get('Content-Length', '')
                     raw = self.rfile.read(int(length)) if re.fullmatch(r'[1-9][0-9]{0,3}', length) and int(length) <= 8192 and self.headers.get('Transfer-Encoding') is None else b''
                     status, body = registered_nameserver_change_reply(fixture, self.path, self.headers, raw)
