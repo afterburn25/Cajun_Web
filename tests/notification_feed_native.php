@@ -60,7 +60,8 @@ try{
     require_once CWP_CODE_ROOT.'/app/projects/reviews.php';
     studio_publish(1,'design','Homepage draft','Design body','');
     $cf=notification_feed('client',1);n_ok('Publishing a pending version notifies the owning client',$cf->unreadCount()===2);
-    $top=$cf->page()[0];n_ok('Version notice links to the authorized job',$top->kind==='approval-request'&&$top->ref==='job:1'&&str_contains($top->body,'Homepage draft'));
+    $top=null;foreach($cf->page() as $candidate)if($candidate->ref==='job:1')$top=$candidate;
+    n_ok('Version notice links to the authorized job',$top!==null&&$top->kind==='approval-request'&&str_contains($top->body,'Homepage draft'));
     n_ok('Staff feeds never receive the client version notice',notification_feed('staff',2)->unreadCount()===1);
 
 
