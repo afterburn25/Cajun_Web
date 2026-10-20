@@ -4,6 +4,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER, STAFF
+from cloud_assignment_fixture import dedicated_cloud_owner
 
 
 def run_browser(env, browser):
@@ -12,7 +13,8 @@ def run_browser(env, browser):
     admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings'
     portal = base + '/existing/portal/index.php'; services = portal + '?services=1'
     db('DELETE FROM ci_rate_limits')
-    owner = requests.Session(); submit(owner, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    setup = requests.Session(); submit(setup, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    owner, actor = dedicated_cloud_owner(env, setup, 'cloud-providers-owner@example.invalid', 'Cloud providers evidence owner'); setup.close()
     member = requests.Session(); submit(member, admin + '?view=login', 'login', {'email': 'request-staff@example.invalid', 'password': STAFF})
     client = requests.Session(); submit(client, portal, 'login', {'email': 'alice@example.invalid', 'password': 'Synthetic client passphrase 2026'})
     profile = db('SELECT id,revision FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]
@@ -56,8 +58,13 @@ def run_browser(env, browser):
     cool(); provider.cloud_providers_mode = 'object'; response = post(refresh)
     section = soup(response).select_one('#cloud-providers')
     if section is None or 'Historical observation only' not in section.text or 'provider-A' not in section.text:
-        raise AssertionError('malformed-read section status=%s present=%s text=%s' % (
-            response.status_code, section is not None, (section.get_text(' ', strip=True)[:240] if section else 'NONE')))
+        raise AssertionError('malformed-read section status=%s present=%s budget=%s latest=%s flash=%s text=%s' % (
+            response.status_code, section is not None,
+            db('SELECT COUNT(*) AS c FROM ci_provider_refreshes WHERE actor_id=? AND started_epoch>?', [actor['id'], int(time.time()) - 3600])[0]['c'],
+            db('SELECT f.operation, r.state FROM ci_provider_refreshes f LEFT JOIN ci_provider_refresh_results r ON r.id=f.id ORDER BY f.seq DESC LIMIT 4'),
+            ((soup(response).select_one('.notice') or soup(response).select_one('[role=status]')).get_text(' ', strip=True)[:160]
+             if soup(response).select_one('.notice') or soup(response).select_one('[role=status]') else 'NONE'),
+            (section.get_text(' ', strip=True)[:400] if section else 'NONE')))
     check('Cloud providers malformed read marks prior list historical', True)
     check('Cloud providers malformed read retains prior row', db('SELECT * FROM ci_provider_observation_cloud_providers') == [saved])
     check('Cloud providers malformed read made one provider call', provider.calls == calls + 2)
