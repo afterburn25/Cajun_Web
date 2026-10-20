@@ -58,14 +58,14 @@ Independent foundations merged only where a runtime needs them; pure contract-on
 | Family | PRs / heads | Disposition |
 |---|---|---|
 | Catalog + captures | #216 `f67b1631`, #220 `b7c97953` | PENDING — original catalog f67 gates + capture run 39137551561 were queued at takeover; verify actual results before merge |
-| Commercial stack | #223→#228→#229→#231→#235→#245→#247→#248 (`d2903bfb` tip) | PENDING — stacked on catalog; first-invoice identity must be preserved |
-| First invoice | #219 `1db32352` (base codex/twentyi-hosting-full-acceptance) | PENDING — check base branch state |
-| Nameservers | #221 `fbe00172`→#222→#230 `024b50dc` | PENDING |
-| Runtime/folders | #224 `ff467d7f`, #225 `f545cf93`+#249 `0397a0e4`, #244 `1a8ae850`+#246 `b0fe332f` | PENDING — PHP setter evidence gap noted in takeover |
-| Subdomain/cloud websites | #226 `e2c88d9d`+#227, #234 `b8c316b6`→#236→#237→#242 `4dc05d8c` | PENDING |
-| StackCP | #233 `3d449d79`→#243→#255 `ffee2e3a` | PENDING |
-| Renewal invoicing | #252 `632362f6` | PENDING |
-| Reset email template | #254 `95ce538e` | PENDING |
+| Commercial stack | #223→#228→#229→#231→#235→#245→#247→#248 (`d2903bfb` tip) | MERGED `1c7234da` — cumulative acceptance pending on latest tip |
+| First invoice | #219 `1db32352` (base codex/twentyi-hosting-full-acceptance) | CONTAINED — inside `d2903bfb` ancestry (verified via merge-base) |
+| Nameservers | #221 `fbe00172`→#222→#230 `024b50dc` | MERGED `84fa341e` + fixture fix `126577e5`; leaf still needs getattr backport for its own run |
+| Runtime/folders | #224 `ff467d7f`, #225 `f545cf93`+#249 `0397a0e4`, #244 `1a8ae850`+#246 `b0fe332f` | IN PROGRESS — `0397a0e4` worker-retry fix on `devin/diag-docroots-worker` `6309dcb3` (run `39355242274`); `b0fe332f` ops-whitelist fix on `devin/fix-directory-listing-ops-whitelist` (run `39356480999`); `ff467d7f` native/apache failures undiagnosed |
+| Subdomain/cloud websites | #226 `e2c88d9d`+#227, #234 `b8c316b6`→#236→#237→#242 `4dc05d8c` | IN PROGRESS — `4dc05d8c` build-seal fix on `devin/fix-force-ssl-ops-whitelist` `7041bdb2` (run `39356550310`); `8fe2787a` (cloud intake, contains `e2c88d9d`) native/apache failures undiagnosed |
+| StackCP | #233 `3d449d79`→#243→#255 `ffee2e3a` | IN PROGRESS — build-seal fix on `devin/fix-stackcp-ops-whitelist` `962b2445` (run `39356556923`) |
+| Renewal invoicing | #252 `632362f6` | MERGED `b3dbbd15` — cumulative acceptance pending on latest tip |
+| Reset email template | #254 `95ce538e` | IN PROGRESS — build-seal fix on `devin/fix-reset-email-ops-whitelist` `5c8af321` (run `39356563976`) |
 | Old codex draft stacks #102–#125 (tickets/progress/planning/payments/recurring) | heads on codex/* bases | CLOSED SUPERSEDED — port parity verified (no missing files; codex support-tickets.yml redundant with the pinned native recipe); all closed 2026-10-19 |
 
 Merge preflight vs the integration tip (`git merge-tree` conflict-hunk counts, 2026-10-19):
