@@ -164,7 +164,7 @@ function rnc_launch(array $input):array{
 }
 function rnc_join(array $worker):array{
     global $workerFailure;
-    [$process,$pipes]=$worker;$out='';$err='';$exit=null;$deadline=microtime(true)+20;
+    [$process,$pipes]=$worker;$out='';$err='';$exit=null;$deadline=microtime(true)+25;
     try{do{
         $out.=stream_get_contents($pipes[1]);$err.=stream_get_contents($pipes[2]);
         if(strlen($out)>4096||strlen($err)>4096)throw new RuntimeException('Worker output bound exceeded.');
@@ -198,7 +198,9 @@ if($worker){
         foreach(['request','link','anchor'] as $field)if(!is_string($input[$field])||!preg_match('/\A[a-f0-9]{32}\z/',$input[$field]))throw new RuntimeException('Invalid worker identity.');
         if(!is_string($input['binding'])||!preg_match('/\A[a-f0-9]{64}\z/',$input['binding'])||$input['desired']!==RNC_NEW)throw new RuntimeException('Invalid worker reviewed set.');
         rnc_owner();
-        $out=registered_nameserver_changes_change($input['request'],$input['link'],$input['anchor'],$input['binding'],$input['desired'],true,RNC_PASSWORD,'rnc_write_dns','rnc_perform');
+        for($attempt=1;;$attempt++)try{
+            $out=registered_nameserver_changes_change($input['request'],$input['link'],$input['anchor'],$input['binding'],$input['desired'],true,RNC_PASSWORD,'rnc_write_dns','rnc_perform');break;
+        }catch(RuntimeException $e){if($e instanceof PDOException||$e->getMessage()!=='Another account change is in progress. Please retry.'||$attempt>=3)throw $e;}
         echo json_encode(['status'=>$out['status'],'posts'=>$posts,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR);exit;
     }catch(Throwable $e){echo json_encode(['failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),
         'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null]],JSON_THROW_ON_ERROR);exit(1);}
