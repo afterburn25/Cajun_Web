@@ -110,12 +110,12 @@ def run_browser(env, browser):
               bool(db('SHOW TABLES LIKE "ci_provider_document_root_changes"')) and not db('SELECT id FROM ci_provider_document_root_changes') and provider.calls == calls)
         check('Folder controls reject nonowner and support route access', member.get(url).status_code == 403 and owner.get(url + '&support=fixture').status_code == 403)
         hostname = 'folder-controls.synthetic.invalid'; desired = 'public_html/newsite'
-        check('Folder controls dedicated package starts absent', not db('SELECT id FROM ci_provider_package_links WHERE package_id=2701'))
+        check('Folder controls dedicated package starts absent', not db('SELECT id FROM ci_provider_package_links WHERE package_id=2703'))
         provider.mode = 'success'; provider.document_roots_mode = 'success'
-        provider.packages = [*old['packages'], {'id': 2701, 'typeRef': 12, 'name': hostname, 'names': [hostname], 'enabled': True, 'created': '2000-01-01T00:00:00Z'}]
+        provider.packages = [*old['packages'], {'id': 2703, 'typeRef': 12, 'name': hostname, 'names': [hostname], 'enabled': True, 'created': '2000-01-01T00:00:00Z'}]
         cool(); post('provider_inventory_refresh')
-        post('provider_inventory_link', package_id='2701', client_id=str(client_id))
-        link = db('SELECT * FROM ci_provider_package_links WHERE profile_id=? AND package_id=2701', [profile['id']])[0]
+        post('provider_inventory_link', package_id='2703', client_id=str(client_id))
+        link = db('SELECT * FROM ci_provider_package_links WHERE profile_id=? AND package_id=2703', [profile['id']])[0]
         cool(); post('provider_inventory_refresh')
         provider.document_roots = {hostname: '../legacy/<folder> & text'}
         cool(); ready = post(refresh, link_id=link['id'])
@@ -187,7 +187,7 @@ def run_browser(env, browser):
         request = db('SELECT * FROM ci_provider_document_root_changes WHERE link_id=?', [link['id']])[0]
         ledger = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['documentroot:' + request['id']])[0]
         terminal = db('SELECT * FROM ci_provider_document_root_dispatch_ends WHERE id=?', [request['id']])[0]
-        expected_post = {'path': '/package/2701/web/updateDocRoot', 'body': {'update': {hostname: desired}}}
+        expected_post = {'path': '/package/2703/web/updateDocRoot', 'body': {'update': {hostname: desired}}}
         check('Folder controls approve one exact synthetic POST with uncertain terminal',
               request['id'] == fields['request_id'] and provider.calls == calls + 1 and provider.posts == posts + [expected_post]
               and ledger['status'] == 'uncertain' and ledger['attempts'] == 1 and terminal['disposition'] == 'attempted'
