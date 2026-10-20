@@ -83,6 +83,7 @@ def run_browser(env, browser):
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
+        post.last = data
         return owner.post(url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
@@ -110,7 +111,7 @@ def run_browser(env, browser):
     cool(); provider.directory_indexing = True; response = post(refresh, link_id=link['id'])
     evidence('Complete Directory listing observation', response)
     saved = db('SELECT * FROM ci_provider_directory_indexing_observations')[0]
-    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
+    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#directory-listing')
     check('Directory listing owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2001/web/directoryIndexing' and section is not None and 'Reported enabled' in section.text and 'Latest saved directory listing setting' in section.text)
     check('Directory listing true is retained as an exact boolean document', saved['value_json'] == 'true')

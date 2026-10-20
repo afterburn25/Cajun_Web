@@ -91,6 +91,7 @@ def run_browser(env, browser):
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
+        post.last = data
         return owner.post(url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
@@ -119,7 +120,7 @@ def run_browser(env, browser):
     cool(); provider.document_roots = {'roots-observation.synthetic.invalid': '../private/<folder> é', 'empty.synthetic.invalid': ''}; response = post(refresh, link_id=link['id'])
     evidence('Complete Document roots observation', response)
     saved = db('SELECT * FROM ci_provider_document_roots_observations')[0]
-    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
+    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#document-roots')
     check('Document roots owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/1801/web/documentRoots' and section is not None and '../private/<folder> é' in section.text and 'Latest saved website folders' in section.text)
     check('Document roots displays exact escaped text without filesystem links', section.select_one('pre').text == '../private/<folder> é' and '<folder>' not in response.text and '&lt;folder&gt;' in response.text and not any('../private' in n.get('href', '') for n in section.select('a[href]')) and 'Empty text value' in section.text)
