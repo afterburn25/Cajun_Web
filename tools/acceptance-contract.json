@@ -470,7 +470,7 @@
       "tests/release_125_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
       "tests/release_125_retention_fixture.php": "102635706356d8f52b38f6cd495444290677ba1254889eedf8e96b1eaaf8788c",
       "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
-      "tests/release_125_upgrade_cases.py": "f5673e293b74d1809a6500e819908c00e513b5827f5766d15411440e4db2ee56",
+      "tests/release_125_upgrade_cases.py": "7f4f782ba976b78e939742ba56aef6e5d7ebdcd7127cbe4fb7e9ca1b84be8ad6",
       "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
       "tests/release_125_upgrade_input_guards.py": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
     },
