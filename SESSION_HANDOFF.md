@@ -51,6 +51,96 @@ This session writes the takeover directive and current root/coordination instruc
 3. Observe dispatched acceptance on the ten Group B leaf tips (`d2903bfb` first — carries catalog/capture/first-invoice; `ff467d7f` php-version-controls is a standalone tenth leaf); merge in dependency order, resolving the known 8–22-hunk stale-base conflicts (catalog resolution pre-staged on `devin/preflight-catalog` `93e24ba0`).
 4. Normal-merge integration branch into main after combined acceptance passes, then continue remaining 20i/non-20i gaps and the next verified release.
 
+## Devin leaf-repair session — 2026-10-20 (Group B preflight)
+
+**Branch strategy:** the ten Group B leaf tips each get a `devin/fix-*` repair
+branch; hosted acceptance must pass on the repair tip before its leaf merges
+into `devin/preflight-commercial` (Group B container) and ultimately
+`devin/full-site-integration`. Leaf contracts are cumulative, so each repair
+repins its own section and every dependent staged anchor — never delete or
+weaken a historical assertion.
+
+**Root causes found and fixed this session (all fixture/shipping defects, no
+assertions weakened):**
+
+- Worker-mutex contention class (5 fixtures): `proc_open` children that lost
+  the `GET_LOCK` staff-mutex race died on the transient
+  `Another account change is in progress. Please retry.` instead of retrying.
+  Each worker now uses the bounded 3-attempt retry already proven in
+  `registered_nameserver_changes_native.php`; join deadlines raised to 25s.
+  Fixes: nameserver requests `bdfb1734` (devin/fix-nameserver-fixture-getattr),
+  directory-listing `a9e08b51`, force-ssl `ef5724ce`,
+  subdomain-requests on lf-4d (same commit), docroots `c2163e16`.
+- Docroots `withdraw-decline` hang, root-caused via process-state capture on
+  `8fa6df68` (devin/diag-docroots-worker, diagnostic-only branch): the worker
+  was NOT blocked on the mutex — it sat in MariaDB `Statistics` inside the
+  `KEY_COLUMN_USAGE JOIN REFERENTIAL_CONSTRAINTS` information_schema scan.
+  That join materializes every table's referential metadata, so its cost
+  grows with total `cwp_test` table count and flakes late-suite workers.
+  Replaced with two constant-filtered single-table lookups joined in PHP —
+  verified row-identical and ~350x faster on local MariaDB 10.11
+  (486ms→1.4ms per 20 runs). Applied to the three docroot files on the leaf
+  (`17f02f4e`+`69c43c25`+`9577021e` on devin/fix-docroots-worker-retry) and to
+  `document_roots_storage.php` on both integration branches (fsi `0ce088e3`,
+  preflight `c9e245ed`). The same join shape exists in ~35 other
+  storage/migrate files; fix on demand if another leaf flakes.
+- CRLF/installer-hash trap: `inventory.generated.php` must be regenerated on
+  LF-normalized bytes — a Windows CRLF working copy produces a committed
+  inventory that CI's LF checkout cannot reproduce
+  (`Installer dependency hashes are stale`). Fixed on the docroots leaf by
+  normalizing the migrate file to LF and re-refreshing.
+- StackCP leaf `3f88eb09` (devin/fix-stackcp-ops-whitelist): three native
+  fixtures used plain `require` for `clients/accounts.php` after
+  `schema/base.php` had already loaded it transitively → function
+  redeclaration. Now `require_once`. Also rebaselined the StackCP access
+  render contract for a post-freeze header change (`3d449d79` era).
+- PHP-controls leaf `23213c52` (devin/fix-php-controls-minimal):
+  (a) MariaDB auto-names CHECK constraints `CONSTRAINT_1` per table, so the
+  lifecycle validator's `CHECK_CONSTRAINTS` join matched every table's
+  same-named check — scoped the join to its own table (`4d262e1f`);
+  (b) CI `php -n` lacks the tokenizer — replaced `token_get_all` extraction
+  in two `-n` fixtures with an extension-free scanner (`b27694e7`);
+  (c) `SHOW TABLES LIKE ?` bound-param probes fail under server-side
+  prepares — switched to the information_schema lookup the suite already
+  uses (`23213c52`).
+- Cloud-intake leaf `fe989846` (devin/fix-cloud-intake-ctype): `ctype_digit`
+  is absent under `php -n` — regex equivalent (also applied to the merged
+  copies on both integration branches).
+- Catalog schema validators (fsi `0c1f2ad9` + preflight equivalent):
+  `catalog/pipeline/proposals` migrate fixtures expected plain INDEX names in
+  the unique-keys set — a merge-resolution artifact; expected keys corrected
+  to `['request_key']` only, matching both ancestors' intent.
+- Backup fixture (fsi `63040237` + preflight `b44d48ef`/`d9615381`):
+  `backup_drills` (FK child) must drop before `backups`; the legacy-manifest
+  check needed the fully-qualified
+  `\CajunWebPro\Foundation\Backups\BackupManifest`.
+- Support-tickets native report was produced but unregistered; added
+  `support-tickets-native-results.json` to both report lanes and re-anchored
+  the entire staged-era contract chain (preflight verifier green at 1212
+  checks).
+- Upgraded-suite portal diagnostic: `fields()` helpers now name the rendered
+  page when no login form is found (both integration branches).
+- Upgraded-site opcache check on lf-02: an opcache OOM restart wiped
+  `num_cached_scripts` mid-probe — the check now warms `defaults.php`
+  immediately before asserting (proves OPcache active + timestamps=0).
+- Portal `contact_activate` does not auto-login: the upgraded-suite
+  invitation flow lands on `contact_activate`, not `login` — diagnostics
+  confirmed the page renders correctly; the check reads the wrong form name.
+
+**Leaf contract-verifier green states recorded locally:** nameserver 473,
+stackcp 547, php-controls 390, docroots 360, preflight 1212, fsi 229.
+
+**Dispatched hosted runs pending observation (2026-10-20):**
+fsi `0ce088e3`→39370796221; preflight `c9e245ed`→39370792288;
+docroots `9577021e`→39371157407; php-controls `23213c52`→39369886724;
+nameserver `bdfb1734`→39369797516; stackcp `3f88eb09`→39369583927;
+cloud-intake `fe989846`→39365510876 (redispatched after apt-get 403 infra
+failure). dir-listing/force-ssl/reset-email fix branches pushed; dispatch on
+demand if their last green runs age out.
+
+**Not merge claims:** green contract verifiers are local; no leaf merges
+until its hosted run passes. No PR lifecycle state asserted.
+
 ## Devin's first executable milestone
 
 1. Preserve local work; fetch current main, all relevant feature branches and paginated PR/run/review evidence. Check for concurrent writers.

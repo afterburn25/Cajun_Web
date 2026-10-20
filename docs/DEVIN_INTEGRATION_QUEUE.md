@@ -96,6 +96,18 @@ reference for the real merge, not a merge substitute.
 CI requirement: each head's dispatched application-acceptance run must be
 observed green before its merge. Current dispatched runs are recorded in
 SESSION_HANDOFF.
+
+Leaf repair branches (2026-10-20): defects found during leaf-tip acceptance
+are fixed on `devin/fix-*` branches so merges carry verified tips —
+nameserver `bdfb1734` (worker retry), directory-listing `a9e08b51` (worker
+retry), force-ssl+subdomain `ef5724ce` (worker retry), docroots `9577021e`
+(worker retry + information_schema FK-join split + LF inventory), StackCP
+`3f88eb09` (require_once + render baseline), php-controls `23213c52`
+(CHECK join scoping + tokenizer-free extraction + SHOW TABLES probe),
+cloud-intake `fe989846` (ctype-free validation), reset-email `5c8af321`
+(ops whitelist). Diagnostic-only `devin/diag-docroots-worker` `8fa6df68`
+captured the docroot worker's blocked-state and is evidence, not a merge
+candidate. See SESSION_LOG 2026-10-20 for root causes.
 | Older codex hosting/service-plan drafts not already integrated | #84–#92 covered; others check per-branch | mixed |
 
 ## Group C — FOUNDATION / INCOMPLETE
