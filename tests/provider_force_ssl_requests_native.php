@@ -256,13 +256,13 @@ function fsrn_worker():never{
         foreach(['request_sha256','binding_sha256'] as $key)if(!is_string($in[$key])||!preg_match('/\A[a-f0-9]{64}\z/',$in[$key]))throw new RuntimeException('Invalid worker proof.');
         if($in['action']==='cancel')fsrn_client();else fsrn_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();$outcome='completed';
-        for($attempt=1;;$attempt++)try{if($in['action']==='cancel')provider_force_ssl_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
+        for($budget=microtime(true)+40;;)try{if($in['action']==='cancel')provider_force_ssl_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
             else provider_force_ssl_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['anchor_id'],$in['binding_sha256'],true,FSRN_PASSWORD,'fsrn_write_dns','fsrn_perform');
             break;
         }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;
-            if($e->getMessage()==='Another account change is in progress. Please retry.'&&$attempt<3)continue;
+            if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<$budget)continue;
             $message=$in['action']==='cancel'?'This HTTPS request changed. Reload its review.':'This request was already reviewed or withdrawn.';
-            if($e->getMessage()!==$message)throw $e;$outcome='refused';}
+            if($e->getMessage()!==$message)throw $e;$outcome='refused';break;}
         echo json_encode(['outcome'=>$outcome,'dns'=>$dns,'gets'=>$gets,'posts'=>$posts],JSON_THROW_ON_ERROR)."\n";exit;
     }catch(Throwable $e){echo json_encode(['failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null]],JSON_THROW_ON_ERROR)."\n";exit(1);}
 }
