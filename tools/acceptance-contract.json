@@ -840,7 +840,7 @@
       "tests/document_root_requests_storage.php": "5f8eda3db3f49170727dbe748b9bb5516e5928237a88f3b48bea58a492826e4e",
       "tests/document_root_requests_views.php": "b880a282fe8a6f6049065d4b6b140b092644228307bd3652f9980eac20839964",
       "tests/provider_document_root_requests_cases.py": "8ef5f2346ebddfacf02f32d21a455bc68001848e8fc6275c1b19e51007563eb4",
-      "tests/provider_document_root_requests_native.php": "124eb68afa81ddb44a665c7c78404f6dd8893e8bd617144f8579e320d7844a5d",
+      "tests/provider_document_root_requests_native.php": "c4dda8d59c2bbeaf7e68c2b480b5f6750d3cbe2ce2fc79b46389a20d8704106d",
       "tests/provider_document_root_requests_upgrade.py": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
       "tests/provider_document_root_requests_upgrade_fixture.php": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
       "tests/provider_document_root_requests_upgrade_test.py": "4c29393bd51978a888a5b075e00f0d58f2eb92a43b797cca82c77443f63deae5"
