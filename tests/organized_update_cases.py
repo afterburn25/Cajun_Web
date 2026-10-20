@@ -213,7 +213,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     if version=='1.17.0':
         check(label+' update retains nonempty inbox and earlier private history',records('inbox')==prior_inbox and len(prior_inbox['requests'])==1 and records('mail-checks')==prior_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key)
         account=prior_accounts['accounts'][0];library=url+'/admin/index.php?view=mail-accounts'
-        route={'account_id':account['id'],'revision':str(account['revision']),'uidvalidity':'1234','uid':'82'}
+        route={'account_id':account['id'],'revision':str(account['revision']),'uidvalidity':'1234','uid':'82','folder':'INBOX'}
         from urllib.parse import urlencode
         message=url+'/admin/index.php?view=mail-message&'+urlencode(route)
         check(label+' upgraded messages wait for explicit owner preparation','must prepare message reading' in session.get(message).text)
