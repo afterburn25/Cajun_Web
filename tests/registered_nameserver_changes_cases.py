@@ -212,7 +212,8 @@ def run_browser(env, browser):
         check('Chromium explicitly prepares empty nameserver change history',
               db('SELECT value FROM ci_settings WHERE name=?', ['registered_nameserver_changes_schema_version']) == [{'value': '1'}]
               and not db('SELECT * FROM ci_provider_nameserver_change_requests') and provider.calls == calls and provider.posts == posts)
-        check('Prepared changes still refuse the inherited unfinished read', page.locator(selector + ' [data-nameserver-change-form]').count() == 0 and 'Refresh nameservers for this assignment before approving a change.' in page.locator(selector).inner_text())
+        check('Prepared changes hide the approval form while the inherited read is unfinished', page.locator(selector + ' [data-nameserver-change-form]').count() == 0)
+        check('Prepared changes explain the inherited-read refusal', 'Refresh nameservers for this assignment before approving a change.' in page.locator(selector).inner_text())
         provider.registrar_domains = [row for row in original[0] if str(row.get('id')) != '14701'] + [{'id': 14701, 'name': link['domain']}]
         provider.registrar_mode = 'success'; provider.nameservers = {**original[2], '14701': list(NS)}
         provider.nameserver_mode = 'success'; provider.nameserver_change_mode = 'uncertain_unlanded'
