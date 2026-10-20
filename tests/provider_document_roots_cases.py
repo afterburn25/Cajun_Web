@@ -118,12 +118,12 @@ def run_browser(env, browser):
         check('Document roots refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_document_roots_reads'))
     cool(); provider.document_roots = {'roots-observation.synthetic.invalid': '../private/<folder> é', 'empty.synthetic.invalid': ''}; response = post(refresh, link_id=link['id'])
     evidence('Complete Document roots observation', response)
+    saved = db('SELECT * FROM ci_provider_document_roots_observations')[0]
+    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#document-roots')
     check('Document roots owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/1801/web/documentRoots' and section is not None and '../private/<folder> é' in section.text and 'Latest saved website folders' in section.text)
     check('Document roots displays exact escaped text without filesystem links', section.select_one('pre').text == '../private/<folder> é' and '<folder>' not in response.text and '&lt;folder&gt;' in response.text and not any('../private' in n.get('href', '') for n in section.select('a[href]')) and 'Empty text value' in section.text)
-    saved = db('SELECT * FROM ci_provider_document_roots_observations')[0]
     check('Document roots owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved folders' in section.text and '../private/<folder> é' not in soup(client.get(target)).text)
-    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
     check('Document roots immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_document_roots_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)
