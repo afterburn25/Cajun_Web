@@ -16,7 +16,7 @@ require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
 if(($argv[2]??'')==='recurring'){
-    $saved=[];foreach(['recurring_billing_sources'=>'id','recurring_billing_schedules'=>'id','recurring_billing_events'=>'schedule_id,revision','recurring_billing_invoices'=>'id','studio_invoices'=>'id','invoice_payments'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    $saved=[];foreach(['recurring_billing_sources'=>'id','recurring_billing_schedules'=>'id','recurring_billing_events'=>'schedule_id,revision','recurring_billing_invoices'=>'id','studio_invoices'=>'id','invoice_payments'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
     echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
 }
 if(in_array($argv[2]??'',['owner-rate-exhaust','owner-rate-reset'],true)){
