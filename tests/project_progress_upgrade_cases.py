@@ -46,6 +46,8 @@ def run(env):
     original=records();earlier={name:records(name) for name in ['submissions','drafts','provider','mail-accounts','templates']}
     keys={name:(private/name).read_bytes() for name in ['mail-master.key','provider-master.key','retained-customer.php']}
     check(label+' upgraded project history requires explicit owner setup','Enable project history' in owner.get(setup).text)
+    response=submit(owner,setup,'studio_migrate',{'confirm':'1'})
+    check(label+' upgraded workspace schema precedes project history setup','Database update completed' in response.text)
     response=submit(owner,setup,'project_progress_setup',{'password':password,'confirm':'1'})
     empty=records('progress')
     check(label+' additive progress setup preserves real existing projects without fabricated history','Dated project updates are enabled' in response.text and not empty['studio_progress_events'] and records()['studio_jobs']==original['studio_jobs'])

@@ -37,6 +37,8 @@ def run(env):
             for name in ['mail-master.key', 'provider-master.key', 'retained-customer.php']}
     check(label + ' recurring upgrade requires explicit owner preparation',
           'Prepare recurring billing' in owner.get(listing).text)
+    response = submit(owner, admin + '?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
+    check(label + ' upgraded workspace schema precedes recurring billing setup', 'Database update completed' in response.text)
     payments = records('payments')
     check(label + ' organized upgrade retains payment marker 1 before owner migration',
           payments['marker'] == '1' and 'payment_requests' in payments['tables']

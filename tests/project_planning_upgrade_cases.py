@@ -45,6 +45,8 @@ def run(env):
 
     original = records(); keys = {name: (private/name).read_bytes() for name in ['mail-master.key', 'provider-master.key', 'retained-customer.php']}
     check(label+' upgraded planning requires explicit owner setup', 'Enable project planning' in owner.get(setup).text)
+    response = submit(owner, setup, 'studio_migrate', {'confirm': '1'})
+    check(label+' upgraded workspace schema precedes project planning setup', 'Database update completed' in response.text)
     response = submit(owner, setup, 'project_planning_setup', {'password': password, 'confirm': '1'})
     check(label+' additive planning setup preserves existing project without inventing a plan', 'Structured project plans and dated snapshots are enabled' in response.text and not records('planning')['studio_plan_events'] and records()['studio_jobs'] == original['studio_jobs'])
 

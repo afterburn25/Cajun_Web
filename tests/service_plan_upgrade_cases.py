@@ -45,6 +45,8 @@ def run(env):
 
     check(label+' updated owner must explicitly prepare service agreements',
           'Prepare service agreements' in owner.get(listing).text)
+    response = submit(owner, admin+'?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
+    check(label+' upgraded workspace schema precedes service agreement setup', 'Database update completed' in response.text)
     response = submit(owner, listing, 'service_plans_setup', {'current_password': password})
     check(label+' additive agreement setup preserves prior invoices and clients',
           'Service agreements are ready' in response.text
