@@ -168,10 +168,16 @@ def validate_report(report, expected):
         require(digest(log["sha256"]) and integer(log["php_diagnostics"]) and log["raw_log_private"] is True, "Private log boundary missing")
     if "failure" in report:
         error = report["failure"]
-        closed(error, {"class", "file", "line"})
+        closed(error, {"class", "file", "line", "message"})
         require(type(error["class"]) is str and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,99}", error["class"])
                 and type(error["file"]) is str and re.fullmatch(r"[A-Za-z0-9_.-]{0,150}", error["file"])
                 and integer(error["line"]), "Unsafe failure diagnostic")
+        require(type(error["message"]) is str and len(error["message"]) <= 400
+                and error["message"].isascii()
+                and all(ch.isprintable() or ch in "\n\r\t" for ch in error["message"])
+                and not any(secret in error["message"] for secret in
+                          ("SYNTHETIC_PHP_UI_KEY", "Synthetic PHP UI owner passphrase",
+                           "Synthetic PHP UI client passphrase")), "Unsafe failure message")
     if "cleanup_failures" in report:
         require(type(report["cleanup_failures"]) is list and 1 <= len(report["cleanup_failures"]) <= 3, "Invalid cleanup failure list")
         steps = set()
