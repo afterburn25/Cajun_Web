@@ -46,6 +46,7 @@ def run(env):
 
     check(label+' updated owner must explicitly prepare service agreements',
           'Prepare service agreements' in owner.get(listing).text)
+    prior_records = records()
     response = submit(owner, admin+'?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
     check(label+' upgraded workspace schema precedes service agreement setup', 'Database update completed' in response.text)
     response = submit(owner, listing, 'service_plans_setup', {'current_password': password})
@@ -53,13 +54,13 @@ def run(env):
         notices = [n.get_text(' ', strip=True)[:200] for n in BeautifulSoup(response.text, 'html.parser').select('.notice.error')]
         raise AssertionError('service_plans_setup rendered no ready flash; notices='+repr(notices))
     now = records()
-    drift = [name for name in ['studio_clients', 'studio_jobs', 'studio_invoices'] if now[name] != env['before'][name]]
+    drift = [name for name in ['studio_clients', 'studio_jobs', 'studio_invoices'] if now[name] != prior_records[name]]
     if drift:
-        detail = {name: {'before': env['before'][name], 'after': now[name]} for name in drift}
+        detail = {name: {'before': prior_records[name], 'after': now[name]} for name in drift}
         raise AssertionError(label+' record drift before agreement check: '+repr(detail)[:1500])
     check(label+' additive agreement setup preserves prior invoices and clients',
           'Service agreements are ready' in response.text
-          and all(records()[name] == env['before'][name] for name in ['studio_clients', 'studio_jobs', 'studio_invoices']))
+          and all(records()[name] == prior_records[name] for name in ['studio_clients', 'studio_jobs', 'studio_invoices']))
     new = admin+'?view=service-plan'
     response = submit(owner, new, 'service_plans_create', {
         'name': 'Retained website care', 'cadence': 'monthly', 'price': '129.00',
