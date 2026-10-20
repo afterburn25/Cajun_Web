@@ -260,7 +260,7 @@ def run_browser(env, browser, owner, client, other, profile):
               and state() == failed_state)
         cancel = form(client, intake, 'cloud_website_request_cancel', cancel_id)
         before = state()
-        post(other, intake, cancel, csrf=token(get(other, intake)), confirm='1')
+        post(other, intake, cancel, csrf=token(get(other, portal)), confirm='1')
         check('other authenticated client cannot cancel original request', state() == before)
         post(client, intake, cancel, confirm='1')
         check('client cancellation is durable and has no creation send',
@@ -287,7 +287,7 @@ def run_browser(env, browser, owner, client, other, profile):
         accepted = form(client, intake, 'cloud_website_request_create')
         accepted.update(domain='client-request-accepted.example', aliases='www.client-request-accepted.example', request_confirm='1')
         before = state()
-        post(other, intake, accepted, csrf=token(get(other, intake)))
+        post(other, intake, accepted, csrf=token(get(other, portal)))
         check('foreign client cannot borrow current assignment or intake context', state() == before)
         # Real support session and real support CSRF, not a fabricated browser cookie.
         support_page = get(owner, admin + '?view=support')
