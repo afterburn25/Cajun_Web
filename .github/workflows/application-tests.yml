@@ -378,11 +378,11 @@ jobs:
           "$PHP_BINARY" tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-results.json
           "$PHP_BINARY" -n tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-no-ini-results.json
           "$PHP_BINARY" tests/provider_php_controls_reads.php > qa/php-controls-reads-results.json
-          "$PHP_BINARY" -n tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json
+          "$PHP_BINARY" -n -d extension=pdo tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json
           "$PHP_BINARY" tests/provider_php_controls_changes.php > qa/php-controls-changes-results.json
-          "$PHP_BINARY" -n tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json
+          "$PHP_BINARY" -n -d extension=pdo tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json
           "$PHP_BINARY" tests/provider_php_controls_screen.php > qa/php-controls-screen-results.json
-          "$PHP_BINARY" -n tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json
+          "$PHP_BINARY" -n -d extension=pdo tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json
           "$PHP_BINARY" tests/provider_php_controls_views.php qa/php-controls-views-results.json
           "$PHP_BINARY" -n tests/provider_php_controls_views.php qa/php-controls-views-no-ini-results.json
           "$PHP_BINARY" tests/provider_php_controls_http.php > qa/php-controls-http-results.json

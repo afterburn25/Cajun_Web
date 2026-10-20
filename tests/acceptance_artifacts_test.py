@@ -289,7 +289,7 @@ def php_controls_wiring_checks(tmp, contract):
     paths = {command.split(' tests/', 1)[1].split()[0] for command in commands}
     focused = ROOT.joinpath('.github/workflows/provider-package-php.yml').read_text(encoding='utf-8')
     selected = [line.strip() for line in focused.splitlines()
-                if re.match(r'^\s+php(?: -n)? tests/', line)
+                if re.match(r'^\s+php(?: -n)?(?: -d extension=[a-z_]+)* tests/', line)
                 and line.strip().split(' tests/', 1)[1].split()[0] in paths]
     check('PHP controls commands preserve exact focused arguments and default minimal order',
           commands == ['"$PHP_BINARY"' + command[3:] for command in selected])

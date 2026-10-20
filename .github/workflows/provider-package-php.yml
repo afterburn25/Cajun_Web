@@ -80,12 +80,12 @@ jobs:
               php tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-results.json
               php -n tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-no-ini-results.json
               php tests/provider_php_controls_reads.php > qa/php-controls-reads-results.json
-              php -n tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json
+              php -n -d extension=pdo tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json
               php tests/provider_php_controls_changes.php > qa/php-controls-changes-results.json
-              php -n tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json
+              php -n -d extension=pdo tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json
               for source in site/admin/controllers/provider_php_controls.php site/portal/controllers/php_controls.php tests/provider_php_controls_screen.php tests/provider_php_controls_views.php tests/provider_php_controls_http.php; do php -l "$source"; done
               php tests/provider_php_controls_screen.php > qa/php-controls-screen-results.json
-              php -n tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json
+              php -n -d extension=pdo tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json
               php tests/provider_php_controls_views.php qa/php-controls-views-results.json
               php -n tests/provider_php_controls_views.php qa/php-controls-views-no-ini-results.json
               php tests/provider_php_controls_http.php > qa/php-controls-http-results.json
