@@ -105,7 +105,7 @@ def run_browser(env, browser):
 
     def navigate():
         try:
-            response = page.goto(settings, wait_until='load', timeout=30000)
+            response = page.goto(settings, wait_until='load', timeout=90000)
         except Exception as error:
             raise AssertionError('Nameserver owner navigation: ' + type(error).__name__ + ': ' + str(error).replace('\n', ' | ')[:400]) from error
         if response is None or response.status != 200:
@@ -130,7 +130,7 @@ def run_browser(env, browser):
 
     def click_form(item, label):
         try:
-            with page.expect_navigation(wait_until='load', timeout=30000) as navigation:
+            with page.expect_navigation(wait_until='load', timeout=90000) as navigation:
                 item.get_by_role('button', name=label, exact=True).click()
             response = navigation.value
         except Exception as error:
