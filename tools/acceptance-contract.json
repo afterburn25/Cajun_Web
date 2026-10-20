@@ -510,7 +510,7 @@
       "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
       "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
       "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
-      "tests/delivery_cases.py": "3b4c02cb476790c18437899deaca0674467fcf3edd1c152211d7fa990bcab80e",
+      "tests/delivery_cases.py": "897ddda70058146fffd72699e418e032054305b26a6fe9678216a0381812a4ff",
       "tests/payment_link_view_cases.php": "276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990"
     },
     "additional_screenshots": [
