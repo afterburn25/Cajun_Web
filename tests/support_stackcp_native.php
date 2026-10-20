@@ -26,7 +26,7 @@ define('CWP_BOOT', true);
 require $root.'/site/includes/bootstrap.php';
 require $root.'/site/database/schema/base.php';
 require $root.'/site/app/providers/stackcp_access.php';
-require $root.'/site/app/clients/accounts.php';
+require_once $root.'/site/app/clients/accounts.php';
 require $root.'/site/app/providers/support_stackcp_launch.php';
 require $root.'/site/app/providers/client_stackcp_launch.php';
 require $root.'/site/app/support/sessions.php';

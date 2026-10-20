@@ -26,7 +26,7 @@ define('CWP_BOOT', true);
 require $root.'/site/includes/bootstrap.php';
 require $root.'/site/database/schema/base.php';
 require $root.'/site/app/providers/stackcp_access.php';
-require $root.'/site/app/clients/accounts.php';
+require_once $root.'/site/app/clients/accounts.php';
 require $root.'/site/app/providers/stackcp_launch.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport, ProviderCredential, TransportRequest, TransportResponse, TransportException};
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead, InventorySnapshot};
