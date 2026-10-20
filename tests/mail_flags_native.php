@@ -29,7 +29,12 @@ function mf_transport(array $row,#[SensitiveParameter] array $secrets,string $ad
     return $response;
 }
 function mf_mark(string $id,bool $seen=true,int $revision=1,string $folder='INBOX'):array {return mail_message_mark($id,$revision,$folder,'4294967295','4294967295',$seen,'mf_resolve','mf_transport');}
-function mf_age():void {query('UPDATE '.table('mail_flag_requests').' SET started_epoch=?',[time()-7200]);}
+/** Aging also pins each request to a distinct staggered epoch; equal started_epoch values leave InnoDB history ordering undefined. */
+function mf_age():void {
+    global $mfSeq;$mfSeq=$mfSeq??0;
+    foreach(all('SELECT id FROM '.table('mail_flag_requests').' WHERE started_epoch>? ORDER BY started_epoch,started_at,id',[time()-600]) as $row)
+        query('UPDATE '.table('mail_flag_requests').' SET started_epoch=? WHERE id=?',[time()-7200+(++$mfSeq),$row['id']]);
+}
 function mf_audit_failure(callable $fn,string $action):bool {
     db()->exec('CREATE TRIGGER mfci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='mail_accounts.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic flag audit failure'; END IF; END");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER mfci_fail');}return $failed;
@@ -61,7 +66,9 @@ try {
     mf_age();$r=mf_mark($id,false);mf_ok('Mark unread records the remove intent',$r['code']==='ok'&&$r['seen']===false&&(int)one('SELECT mark_seen FROM '.table('mail_flag_requests').' WHERE id=?',[$r['request_id']])['mark_seen']===0);
     mf_age();$mode='unchanged';$r=mf_mark($id);mf_ok('Already-matching server state records unchanged',$r['code']==='unchanged'&&$r['applied']===false);$mode='ok';
     mf_age();mf_grant($id,2);mf_actor(2);$r=mf_mark($id);mf_ok('Currently assigned non-owner can mark the exact message',$r['code']==='ok'&&$r['actor_id']===2);mf_actor();
-    $ownerHistory=mail_flags_history($id);mf_ok('Flag history is private to the requesting staff member',count($ownerHistory)===3&&array_map('intval',array_column($ownerHistory,'mark_seen'))===[1,0,1]&&!isset($ownerHistory[0]['actor_id']));
+    $ownerHistory=mail_flags_history($id);
+    if(!(count($ownerHistory)===3&&array_map('intval',array_column($ownerHistory,'mark_seen'))===[1,0,1]&&!isset($ownerHistory[0]['actor_id'])))throw new RuntimeException('history detail n='.count($ownerHistory).' seen='.implode(',',array_map('intval',array_column($ownerHistory,'mark_seen'))).' actor='.(isset($ownerHistory[0]['actor_id'])?'yes':'no').' keys='.implode(',',array_keys($ownerHistory[0]??[])));
+    mf_ok('Flag history is private to the requesting staff member',true);
     mf_actor(2);$readerHistory=mail_flags_history($id);mf_ok('Reader sees only their own flag history',count($readerHistory)===1&&(int)$readerHistory[0]['mark_seen']===1);mf_actor();
     foreach(['flags'=>'flags','throw'=>'connection','folder'=>'protocol','uid'=>'protocol','expire'=>'access_changed','after'=>'access_changed','unconfirmed'=>'unconfirmed'] as $flagMode=>$expected) {
         mf_age();$mode=$flagMode;$r=mf_mark($id);mf_ok('Transport '.$flagMode.' returns a finite failure',$r['code']===$expected);$mode='ok';mf_grant($id);

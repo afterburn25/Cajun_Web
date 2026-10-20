@@ -52,6 +52,8 @@ def run(env):
     if 'Service agreements are ready' not in response.text:
         notices = [n.get_text(' ', strip=True)[:200] for n in BeautifulSoup(response.text, 'html.parser').select('.notice.error')]
         raise AssertionError('service_plans_setup rendered no ready flash; notices='+repr(notices))
+    drift = [name for name in ['studio_clients', 'studio_jobs', 'studio_invoices'] if records()[name] != env['before'][name]]
+    if drift:raise AssertionError(label+' record drift before agreement check: '+repr(drift))
     check(label+' additive agreement setup preserves prior invoices and clients',
           'Service agreements are ready' in response.text
           and all(records()[name] == env['before'][name] for name in ['studio_clients', 'studio_jobs', 'studio_invoices']))
