@@ -9,7 +9,9 @@ On `devin/preflight-commercial` at `84fa341e` (merge of renewal tip `b3dbbd15` +
 - `python tests/acceptance_artifacts_test.py --report <scratch>` → `{"passed": true, "checks": 1212}` (967 + 245 nameserver-family checks).
 - Reusable engine artifacts: `%TEMP%/build_ns_states3.py` (28-stage nameserver-aware state builder — allows known pin/hash field drift at stage boundaries), `%TEMP%/engine8.py` (re-anchor engine with bridge-repin pass, `merged_stage_delta` emission and post-report-update contract fixpoint). Builder/engine must be iterated to contract fixpoint after any test-file or contract edit; the requests verify module's `CONTRACT_SHA256` tracks `canon(OC[4])` and must be re-synced inside that loop.
 
-Next: observe hosted acceptance on `024b50dc` and the cumulative branch, then continue the leaf order in `docs/DEVIN_INTEGRATION_QUEUE.md` — remaining seven leaves: `0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `95ce538e`, `8fe2787a`, `ff467d7f`. Each needs the same re-anchor pipeline.
+Post-merge fix on `devin/preflight-commercial` (`126577e5`): hosted leaf acceptance `39297759990` on `024b50dc` failed in native-browser with `AttributeError: 'types.SimpleNamespace' object has no attribute 'nameserver_change_mode'` — the leaf's nameserver-change POST interception reads the attribute unconditionally while five HTTP contract tests drive `ProviderServer` with bare `SimpleNamespace` fixtures. Fixed with `getattr(..., 'disabled')` defaults at both interception sites on the integration branch (harness still 1212); the leaf branch needs the same two-line backport for its own acceptance. The same run also failed Apache at `no-rewrite 1.19.0 prior organized version actually cached` (opcache `cached:false` after an `oom_restarts:1` — likely environmental; the leaf rerun will confirm).
+
+Next: observe dispatched cumulative acceptance `39347410639` on `126577e5`, then continue the leaf order in `docs/DEVIN_INTEGRATION_QUEUE.md` — remaining seven leaves: `0397a0e4`, `b0fe332f`, `4dc05d8c`, `ffee2e3a`, `95ce538e`, `8fe2787a`, `ff467d7f`. Each needs the same re-anchor pipeline.
 
 ## 2026-10-19 — renewal-invoicing leaf merge preflight complete
 
