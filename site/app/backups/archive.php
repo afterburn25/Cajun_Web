@@ -220,6 +220,7 @@ function backups_restore_phrase(array $row): string {return 'RESTORE '.strtouppe
 function backups_restore(string $id,string $confirmation,#[\SensitiveParameter] string $password): void {
     staff_locked(function() use($id,$confirmation,$password): void {
         $actor=staff_owner($password);$row=backups_row($id);
+        if(strtotime($row['retain_until'])<=time())throw new RuntimeException('This backup has expired and can no longer be restored.');
         $plan=backups_preview($row);
         $plan=$plan->authorize('staff:'.$actor['id'],$confirmation,backups_restore_phrase($row),time());
         staff_transaction(function() use($row,$actor): void {
