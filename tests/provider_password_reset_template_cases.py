@@ -155,7 +155,7 @@ def run_browser(env, browser):
         review_locator.locator('[name=reviewed]').check(); review_locator.locator('[name=current_password]').fill(OWNER)
         review_locator.locator('button').click()
         # The save follows POST-redirect-GET, so the workspace details renders collapsed; open it as the owner would.
-        page.locator('#password-reset-template summary').click()
+        page.locator('#password-reset-template > summary').click()
         expect(page.locator('[data-reset-template-history]')).to_be_visible()
         check('actual save click records one pending acknowledgment without changing GET text',
               '20i acknowledged the request; confirmation pending' in page.locator('[data-reset-template-history]').inner_text()
