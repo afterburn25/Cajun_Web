@@ -88,7 +88,7 @@ UNCHANGED_PATHS = {
     'tests/registered_nameservers_upgrade_test.py',
     'tools/acceptance_artifacts.py',
 }
-CONTRACT_SHA256 = 'bcb84da3fd93f3d07a87ea8ff3138d67253ab93e30da3fdb996e0eb41b9d047e'
+CONTRACT_SHA256 = '703b854a0e4e37550042e14c294106ff81ffa4265fa140add6e923c4e5cc4ce6'
 REPORTS_SHA256 = '7b8f8c8fcfef843a222de28676504cd4f6eb5b8329affd8876f47b332a15d6df'
 # END FIXED SOURCE INVENTORY
 OLD_MINIMAL = '"$PHP_BINARY" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json'
