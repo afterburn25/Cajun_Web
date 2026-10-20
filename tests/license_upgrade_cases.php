@@ -87,7 +87,7 @@ try{
     $settings=all('SELECT * FROM '.table('settings').' ORDER BY name');$audit=all('SELECT * FROM '.table('audit').' ORDER BY id');$tables=all('SHOW TABLES');
     lu_deny('Fresh pending journal without its exact begin witness refuses',fn()=>license_migrate($password),'Licensing audit history needs recovery. Existing records were not recreated.');
     lic_ok('Orphan fresh journal refusal creates no schema or audit',all('SHOW TABLES')===$tables&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settings&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$audit);
-    license_audit(1,'setup.begin','Preserved license upgrade; invoice cutover 0');$begin=all('SELECT * FROM '.table('audit').' ORDER BY id');
+    license_audit(1,'setup.begin','Preserved license upgrade; invoice cutover 0');$begin=all('SELECT * FROM '.table('audit')." WHERE action='license.setup.begin' ORDER BY id");
     $schema=license_schema('licpartial_');db()->exec($schema['website_licenses']);
     lic_ok('Interrupted fresh fixture has only one empty licensing table and one exact begin audit',one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['licpartial_website_licenses'])!==null&&one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['licpartial_license_domains'])===null&&(int)query('SELECT COUNT(*) FROM '.table('website_licenses'))->fetchColumn()===0&&count($begin)===1);
     license_migrate($password);
