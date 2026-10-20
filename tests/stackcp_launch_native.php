@@ -507,6 +507,7 @@ try {
     sl_ok('Foreign package without its own fresh membership and grants remains unavailable',provider_stackcp_launch_review($profile,3502)['available'] === false && sl_digest() === $before && sl_calls() === $calls);
 
     $stage = 'latest intent';
+    sl_packages($profile);
     $captured = sl_review($profile); $readStatus = 401; $failed = sl_access($profile,B::GRANTS); $readStatus = 200;
     sl_ok('A genuine latest failed grant GET masks older successful grants', $failed['state'] !== 'complete' && provider_stackcp_launch_review($profile,3501)['available'] === false);
     $calls = sl_calls(); $before = sl_digest(); sl_deny('Captured launch cannot bypass a later failed read',fn()=>sl_open($captured));
@@ -556,7 +557,7 @@ try {
     $retained=json_encode([all('SELECT * FROM '.table('provider_stackcp_launch_events')),all('SELECT * FROM '.table('audit')),provider_stackcp_launch_history($profile,3501)],JSON_THROW_ON_ERROR);
     $safe=true; foreach ([SCLN_GENERAL,SCLN_AUTH,SCLN_TOKEN,SCLN_SESSION,base64_encode(SCLN_GENERAL),base64_encode(SCLN_AUTH),base64_encode(SCLN_TOKEN),'PHPSESSID=','/login/sso?'] as $secret) $safe=$safe&&!str_contains($retained,$secret);
     sl_ok('Launch rows audits and safe history never retain keys tokens sessions or destination URLs',$safe);
-    sl_ok('All prerequisite reads stayed within the real owner quota without rewriting timestamps',$readCalls === 19 && $readDns === 19 && $readCredentials === 19);
+    sl_ok('All prerequisite reads stayed within the real owner quota without rewriting timestamps',$readCalls === 20 && $readDns === 20 && $readCredentials === 20);
     sl_ok('Dedicated StackCP launch does not create a generic operation or grant ledger',!sl_exists('provider_operations') && !sl_exists('provider_operation_grants'));
 } catch (Throwable $e) {
     // Public evidence is finite and sanitized. No exception text, SQL, credentials or URL is exported.
