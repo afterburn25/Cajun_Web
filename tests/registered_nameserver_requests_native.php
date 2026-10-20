@@ -463,7 +463,7 @@ try{
     rncr_ok('Final fixture retains one provider POST and original unresolved resource fence',$posts===1&&rncr_pending($newLink)['id']===$fenceDispatch&&count($wire)===1);
 }catch(Throwable $e){
     $checks[]=['name'=>'Unexpected native failure','passed'=>false];
-    $failure=['stage'=>$stage,'class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null];
+    $failure=['stage'=>$stage,'class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null,'detail'=>substr((string)$e->getMessage(),0,500)];
 }
 $databaseVersion=null;try{$databaseVersion=(string)query('SELECT VERSION()')->fetchColumn();}catch(PDOException){}
 $ok=count($checks)>0&&!array_filter($checks,fn($row)=>$row['passed']!==true);
