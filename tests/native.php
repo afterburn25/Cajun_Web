@@ -67,6 +67,7 @@ try {
     db()->exec(studio_schema('ci_')['studio_clients']);
     admin_session();studio_migrate();
     $studioTables=array_column(all("SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE 'ci_studio_%' ORDER BY table_name"),'table_name');$expectedTables=array_map(fn($t)=>'ci_'.$t,array_keys(studio_schema('ci_')));sort($expectedTables);
+    if($studioTables!==$expectedTables)fwrite(STDERR,'workspace tables actual: '.implode(',',$studioTables).' expected: '.implode(',',$expectedTables)."\n");
     ok('Additive upgrade creates the complete workspace schema',$studioTables===$expectedTables);
     ok('Upgrade retains populated lead',one('SELECT * FROM '.table('leads').' WHERE id=1')===$oldLead);
     ok('Upgrade retains owner account',one('SELECT * FROM '.table('users').' WHERE id=1')===$owner);
