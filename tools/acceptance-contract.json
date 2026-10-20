@@ -498,7 +498,7 @@
       "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
       "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a",
       "tests/structure_helpers.py": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
-      "tests/staff_cases.py": "9d8e615cd1d930b7d66304f4b39bab8d428f1c7c4b6b7c90641d3d3a796adede",
+      "tests/staff_cases.py": "35ea19f22c0ae324d1ce785e6e60ec504a9a9150a34284ca679a7bbe18c14315",
       "tests/support_cases.py": "4a4345979fe294ace1db1ca6280cd6254fb98144f0712a10452ee24a4e9b3735",
       "tests/catalog_cases.py": "fbc8584862f41c960c41bf937f855d2d17625ce56e0ae7d9ee523fc7c7f2f99d",
       "tests/payments_cases.py": "efe7078b2c7ac2ced1de0f9c3bfcc66b0fd99c6e675bb2fa03437b013839fe57",
