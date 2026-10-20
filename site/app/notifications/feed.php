@@ -73,9 +73,9 @@ function notification_emit(string $audience,int $recipientId,string $kind,string
  */
 function notification_outbox_pump(int $limit=3): void {
     if(!notifications_feed_ready()||setting('email_mode','disabled')==='disabled')return;
-    $rows=all('SELECT d.*,f.audience,f.recipient_id,f.title,f.body FROM '.table('notification_deliveries').' d JOIN '.table('notification_feed')." f ON f.id=d.notification_id WHERE d.channel='email' AND d.state='retrying' AND d.next_at IS NOT NULL AND d.next_at<=? ORDER BY d.next_at LIMIT ".max(1,min(10,$limit)),[gmdate('Y-m-d H:i:s')]);
+    $rows=all('SELECT d.*,f.audience,f.recipient_id,f.title,f.body FROM '.table('notification_deliveries').' d JOIN '.table('notification_feed')." f ON f.id=d.notification_id WHERE d.channel='email' AND d.state='retrying' AND d.next_at IS NOT NULL AND d.next_at<=? ORDER BY d.next_at LIMIT ".max(1,min(10,$limit)),[time()]);
     foreach($rows as $d){
-        try{$attempt=DeliveryAttempt::restore($d['notification_id'],DeliveryAttempt::CHANNEL_EMAIL,3,(int)$d['attempts'],$d['state'],$d['sent_at']!==null?(int)strtotime($d['sent_at'].' UTC'):null,$d['last_error']!==''?$d['last_error']:null,(int)strtotime($d['next_at'].' UTC'));}catch(Throwable $e){query('UPDATE '.table('notification_deliveries')." SET state='failed',last_error=?,next_at=NULL,updated_at=? WHERE notification_id=? AND channel='email'",['Corrupt delivery record refused.',gmdate('Y-m-d H:i:s'),$d['notification_id']]);continue;}
+        try{$attempt=DeliveryAttempt::restore($d['notification_id'],DeliveryAttempt::CHANNEL_EMAIL,3,(int)$d['attempts'],$d['state'],$d['sent_at']!==null?(int)$d['sent_at']:null,$d['last_error']!==''?$d['last_error']:null,(int)$d['next_at']);}catch(Throwable $e){query('UPDATE '.table('notification_deliveries')." SET state='failed',last_error=?,next_at=NULL,updated_at=? WHERE notification_id=? AND channel='email'",['Corrupt delivery record refused.',gmdate('Y-m-d H:i:s'),$d['notification_id']]);continue;}
         $email=notification_recipient_email($d['audience'],(int)$d['recipient_id']);
         if($email===null){$attempt->recordFailure(time(),'Recipient has no email address.');notification_persist_delivery($d['notification_id'],$attempt);continue;}
         require_once CWP_CODE_ROOT.'/app/mail/transport.php';
