@@ -55,7 +55,10 @@ def run_browser(env, browser):
     capture(client, 'Cloud-Providers-Client', services, 'main')
     cool(); provider.cloud_providers_mode = 'object'; response = post(refresh)
     section = soup(response).select_one('#cloud-providers')
-    check('Cloud providers malformed read marks prior list historical', section is not None and 'Historical observation only' in section.text and 'provider-A' in section.text)
+    if section is None or 'Historical observation only' not in section.text or 'provider-A' not in section.text:
+        raise AssertionError('malformed-read section status=%s present=%s text=%s' % (
+            response.status_code, section is not None, (section.get_text(' ', strip=True)[:240] if section else 'NONE')))
+    check('Cloud providers malformed read marks prior list historical', True)
     check('Cloud providers malformed read retains prior row', db('SELECT * FROM ci_provider_observation_cloud_providers') == [saved])
     check('Cloud providers malformed read made one provider call', provider.calls == calls + 2)
     capture(owner, 'Cloud-Providers-Historical', url, '#cloud-providers')
