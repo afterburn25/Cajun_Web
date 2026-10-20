@@ -96,7 +96,10 @@ def run(root, work, check, deny):
           and "['exists'=>false,'rows'=>[]]" in body and "['exists'=>true,'rows'=>$hashes]" in body
           and "throw new RuntimeException('Original provider read history missing')" in body
           and 'strlen($encoded)>262144' in body and '$total>1500' in body)
-    old_checks = [ast.dump(node, include_attributes=False) for node in ast.walk(runner)
+    def canonical_dump(node):
+        dumped = re.sub(r'\(\w+=\[\], ', '(', ast.dump(node, include_attributes=False))
+        return re.sub(r'\(\w+=\[\]', '(', re.sub(r', \w+=\[\]', '', dumped))
+    old_checks = [canonical_dump(node) for node in ast.walk(runner)
                   if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                   and node.func.id == 'check' and not (node.args and isinstance(node.args[0], ast.Constant)
                                                       and node.args[0].value == RESULT_CHECK)]

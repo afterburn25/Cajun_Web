@@ -4239,7 +4239,7 @@
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_billing_options_cases.py": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60",
-      "tests/hosting_billing_options_wiring.py": "0076b244674f69a1cb19b02baba391badb86a041fabc0097041d878669eab3ea",
+      "tests/hosting_billing_options_wiring.py": "99976805311601a6f45b9eff82247ed1391ded34803ceec5fe3c0a8c39476038",
       "tests/hosting_catalog_browser.py": "a1cd0c04b686523cd2e8752385bb56497b1342538d8cf8bf15076e14782d2c21",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
       "tests/hosting_catalog_purchase.py": "eea7b2ce5b30ad03be3da7acfd661359890ce1184ebd113ff0a83e671431ed0c",
