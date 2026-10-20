@@ -243,7 +243,8 @@ def main():
             raise RuntimeError("Private CLI phase timed out: " + phase) from None
         if result.returncode or result.stderr or len(result.stdout) > 65536:
             retain(result.stdout, result.stderr)
-            raise RuntimeError("Private CLI phase failed: " + phase)
+            detail = (result.stdout or b"")[-320:].decode("utf-8", "replace")
+            raise RuntimeError("Private CLI phase failed: " + phase + " output=" + detail)
         try:
             value = json.loads(result.stdout)
         except (ValueError, UnicodeError):
@@ -314,7 +315,8 @@ def main():
         report["passed"] = True
     except BaseException as error:
         frames = traceback.extract_tb(error.__traceback__)
-        report["failure"] = {"class": type(error).__name__, "file": Path(frames[-1].filename).name if frames else "", "line": frames[-1].lineno if frames else 0}
+        report["failure"] = {"class": type(error).__name__, "file": Path(frames[-1].filename).name if frames else "", "line": frames[-1].lineno if frames else 0,
+                             "message": str(error)[:400]}
         report["passed"] = False
         try:
             private_write(runtime / "failure.txt", traceback.format_exc().encode())
