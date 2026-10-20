@@ -105,7 +105,12 @@ function drrq_join(array &$worker):array{
         $worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);
         if(strlen($worker['stdout'])>8192||strlen($worker['stderr'])>2048)throw new RuntimeException('Worker result bound exceeded.');
         $status=proc_get_status($worker['process']);if(!$status['running']){$exit=$status['exitcode'];break;}
-        if(microtime(true)>$deadline)throw new RuntimeException('Worker result deadline exceeded.');usleep(20000);
+        if(microtime(true)>$deadline){
+            $detail='Worker result deadline exceeded.';$row=null;
+            if($worker['connection']!==null)try{$row=one('SELECT ID,STATE,INFO,TIME FROM information_schema.PROCESSLIST WHERE ID=?',[$worker['connection']]);}catch(Throwable $e){$row=['error'=>$e->getMessage()];}
+            $detail.=' conn='.($worker['connection']===null?'null':json_encode($row)).' out='.substr(trim($worker['stdout']),0,300).' err='.substr(trim($worker['stderr']),0,200);
+            global $checks;$checks[]=['name'=>substr($detail,0,700),'passed'=>false];throw new RuntimeException('Worker result deadline exceeded.');
+        }usleep(20000);
     }while(true);$worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);}
     finally{$status=proc_get_status($worker['process']);if($status['running'])proc_terminate($worker['process']);fclose($worker['pipes'][1]);fclose($worker['pipes'][2]);$closed=proc_close($worker['process']);if($exit===null)$exit=$closed;}
     if($exit!==0||$worker['stderr']!==''||strlen($worker['stdout'])>8192){global $checks;$checks[]=['name'=>'Worker failure detail exit='.$exit.' out='.substr(trim($worker['stdout']),0,700).' err='.substr(trim($worker['stderr']),0,200),'passed'=>false];throw new RuntimeException('Worker failed after real lock contention.');}
