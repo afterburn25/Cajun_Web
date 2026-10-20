@@ -51,7 +51,7 @@ if(array_key_exists('nameserver_requests',$_GET)||(is_string($_POST['action']??n
  header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
  try{registered_nameserver_requests_portal_guard();}catch(RuntimeException){fail_page('Sign in directly as the primary client to review nameserver requests.',403);}
 }
-$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
+$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';$cinvite=is_string($_GET['cinvite']??null)?$_GET['cinvite']:'';
 
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity'])){if($client&&!contact_can('projects')&&!contact_can('billing')&&!contact_can('downloads'))fail_page('Your contact permissions do not include workspace activity.',403);activity_render('client',$error);}

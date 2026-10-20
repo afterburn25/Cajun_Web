@@ -1916,7 +1916,7 @@
       "site/app/staff/accounts.php": "bf697664f3301014f355b3f579e1f43c0daf2a3308f4b886db121d034c0eb3c2",
       "site/includes/layout/admin.php": "5fafc8d7e142b712a1b070cd63373ffaeb6ac848b796ee169a0e10a02d87e7a7",
       "site/portal/controllers/hosting_purchases.php": "3f7eb38a33561b7ee3a1902e4986b67fde76a82ed5e2b8735ee22a5d51738e49",
-      "site/portal/controllers/router.php": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
+      "site/portal/controllers/router.php": "dca328a6250fc5705a538ca6021cd8231582813a5fcebf8b5bdbfbb98ed13209",
       "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
@@ -2042,8 +2042,8 @@
             "after": "require CWP_CODE_ROOT.'/portal/views/auth.php';\nif(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);\nif(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);\n"
           }
         ],
-        "current_sha256": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
-        "predecessor_sha256": "f045cfe839d33e78766112ad518e201fac15cdb5ee2aa067065135d0a5aae208"
+        "current_sha256": "dca328a6250fc5705a538ca6021cd8231582813a5fcebf8b5bdbfbb98ed13209",
+        "predecessor_sha256": "c7647da2f1325e3db613f9ce30d7ba42ce38ac0a1919dc7cc90cec0c5fb2d64e"
       },
       "site/portal/views/hosting_catalog.php": {
         "predecessor_sha256": "bb311d8e70cee7726d4fbb189af7b65f4e10eecae157b9a8ffd14bedcf9026bc",
@@ -2315,7 +2315,7 @@
       "Hosting-Purchase-Inbox-Client-Mobile.png"
     ],
     "result_check": "Installed purchase inbox follows exact original records without new business writes",
-    "predecessor_contract_sha256": "26402bbb1fb3747a9577625933be8dbd452099121f3f8ec4255bbb577f4f3346",
+    "predecessor_contract_sha256": "331c571d6df4fa6e10b55bd1726db25ab6de266349785d17683ec916276b4a38",
     "predecessor_reports_sha256": "14ed5aa7dc246d11dd63fa6f90ce6e1bf16c6d9a9778205e788625ba13e98fde",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
@@ -2580,7 +2580,7 @@
     "added_commands": [],
     "added_reports": [],
     "added_captures": [],
-    "predecessor_contract_sha256": "d1eb7e8eaa1137c7cdd3993a7821b15aadcbd557a9c99fcc4ea71094ea53c614",
+    "predecessor_contract_sha256": "40c1625cd3620042222c85c0c3a9367d8529b45655b27de42714cae6629026d5",
     "predecessor_reports_sha256": "14ed5aa7dc246d11dd63fa6f90ce6e1bf16c6d9a9778205e788625ba13e98fde",
     "source_sha256": {
       "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
@@ -2783,7 +2783,7 @@
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "e352d571c9df6d7194928d233e5d68d216b41b5186ee12d5aa73b15621263604",
+    "predecessor_contract_sha256": "f7be0ffc59be75cb9f770ff7e6106022f242088a18006f27813d6734c28a8964",
     "predecessor_reports_sha256": "4622765acf10b3bad92b8ddcc5219d0abd2c91c589ddb35a3bbdb9f2feeae071",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
@@ -3234,7 +3234,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "c28bf196a5b95153cba2706d656f045689e7ee1c430b1c99aced1accf51b4066",
+    "predecessor_contract_sha256": "7f45f29bd7ac2245a24d3ed340e4b05a03463a64df95e7fee48bed374f15a1a9",
     "predecessor_reports_sha256": "7a36f18ee4deaa59267c8e55422546d0f133738c9a0c63c38ec607f0ea30818a",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3799,7 +3799,7 @@
       "site/pages/services/hosting.php": "91904fea81cbcf6494a74fcc1090cdd7d5ff8f9600c0c4b3eb1eb16893cd8e52",
       "site/portal/controllers/hosting_catalog.php": "db214c825efd4754f7ecfac9c79734d2df1138c5f2959f9193b701447294280b",
       "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
-      "site/portal/controllers/router.php": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
+      "site/portal/controllers/router.php": "dca328a6250fc5705a538ca6021cd8231582813a5fcebf8b5bdbfbb98ed13209",
       "site/portal/views/hosting_catalog.php": "729691764cb7d4d4a61e6474f6a42f05ac545ad29302839aef1bcfe46b9efc3e",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
@@ -3820,7 +3820,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "3556c8f2d3b563e5cab67be7fcba3504edadac910f0d0e8ebe53ee397cf18870",
+    "predecessor_contract_sha256": "456f02148f3a230b023f0277c9238fe20a53ea7f9186cc7dc2afe24ac2442510",
     "predecessor_reports_sha256": "b70651e3c9c3623abbc71f429c80b6a793eb2af2fbbee4e0728a8108e4c20f4a",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -4232,7 +4232,7 @@
       "site/portal/controllers/actions.php": "1168c0d04a4898dc63091220d81d8d3168fff4be95c4c81ec2f217fd30bf084b",
       "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
       "site/portal/controllers/hosting_purchases.php": "3f7eb38a33561b7ee3a1902e4986b67fde76a82ed5e2b8735ee22a5d51738e49",
-      "site/portal/controllers/router.php": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
+      "site/portal/controllers/router.php": "dca328a6250fc5705a538ca6021cd8231582813a5fcebf8b5bdbfbb98ed13209",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
       "tests/acceptance_artifacts_test.py": "531f0181833ac012bdac901a7881d421fa6fee4a48a7d7efa84fe63975301f87",
@@ -4763,7 +4763,7 @@
       }
     },
     "merged_stage_reports_sha256": "5835fb18614a3df2444dcf8b994e1d955aa29fcb49eb23e300102abf1366bab5",
-    "merged_stage_contract_sha256": "7c24241fc6c46921a07ed9514b7125e83f7c57d84b0ab40583abdd9078963d5f"
+    "merged_stage_contract_sha256": "4233d558ecdf39263ce1220e6b4ac60ac64ffc06003155e64e040fb7f199b526"
   },
   "registered_nameserver_changes": {
     "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
@@ -4805,7 +4805,7 @@
   },
   "registered_nameserver_changes_installed": {
     "source_predecessor": "5654649dc62095298ce703b39b54d12d56c49f09",
-    "predecessor_contract_sha256": "641feda810de8d55c0de4385de4567fc757aa35921ad46a8e973d51c40881e4b",
+    "predecessor_contract_sha256": "9965afea4a6d4b4ed20360e9e85d1da18bd370e10fc70bb6af52fe2a956d94da",
     "predecessor_reports_sha256": "689b276aba98ec1e4af44d765153b16e797c479246dd878023d70a12459d83bf",
     "reports": {
       "browser": [
@@ -4924,7 +4924,7 @@
   },
   "registered_nameserver_requests": {
     "source_predecessor": "af78abd81ce39839cd100e1c882a59b04258a25b",
-    "predecessor_contract_sha256": "d575a77b7aa833fa941e7b96757c4ac310056e414b926b6005ae40a63f8baceb",
+    "predecessor_contract_sha256": "8ad3c78e9b413be6dc7a31b8f331389f8e11d317a5083f2c0806eb2ab792eb9d",
     "predecessor_reports_sha256": "7b8f8c8fcfef843a222de28676504cd4f6eb5b8329affd8876f47b332a15d6df",
     "native_additions": [
       "\"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json",
@@ -5011,7 +5011,7 @@
       "site/includes/layout/provider_services.php": "dd78bfb8a70ca3daa7b72e7350d5899c35aa8c4d079980a846042b790f0a5b45",
       "site/portal/controllers/actions.php": "1168c0d04a4898dc63091220d81d8d3168fff4be95c4c81ec2f217fd30bf084b",
       "site/portal/controllers/registered_nameserver_requests.php": "c436167f15601f2e4f1c2358f250d7c435398a27a289968a61d3ff05d5ed83cb",
-      "site/portal/controllers/router.php": "e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4",
+      "site/portal/controllers/router.php": "dca328a6250fc5705a538ca6021cd8231582813a5fcebf8b5bdbfbb98ed13209",
       "site/portal/views/registered_nameserver_requests.php": "6849c7d55b8222cb6cb26bb5e9adbf844cd3cb89e9a526ae1eb289ad68137583",
       "tests/acceptance_artifacts_test.py": "929b2f65885e31884e1880448f9cdf7308dbfa9e2ae8ed7971a57fb4e6beb463",
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
@@ -5025,7 +5025,7 @@
       "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
-      "tests/registered_nameserver_requests_acceptance.py": "344de98e7ab6b1eb312b2fc62a8d7da9e3c86d0dbbf9d786f4b333759d0097e3",
+      "tests/registered_nameserver_requests_acceptance.py": "a399e911ab7de40f1502c0b4af9dbab3ef25d53889aa85ac0d76bf5d23065722",
       "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
       "tests/registered_nameserver_requests_native.php": "481767c5f8c4ca237608f8465ebeb324368c09d073a6fa6813eea93519eaea0a",
