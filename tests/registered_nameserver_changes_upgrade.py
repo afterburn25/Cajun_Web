@@ -115,6 +115,11 @@ def main():
                     safe[key] = detail[key]
             if type(detail.get('line')) is int and 0 < detail['line'] <= 100000:
                 safe['line'] = detail['line']
+            # The helper reports named literal checks; surface only the failed names.
+            failed_names = [item['name'] for item in body.get('checks', [])
+                            if type(item) is dict and item.get('passed') is False and type(item.get('name')) is str]
+            if 0 < len(failed_names) <= 64 and all(len(name) <= 200 and name.isascii() for name in failed_names):
+                safe['failed_checks'] = failed_names
             helper_failures.append(safe)
         assert result.returncode == 0 and not result.stderr, ('Installed helper failed', mode, result.returncode)
         assert body['passed'] is True
