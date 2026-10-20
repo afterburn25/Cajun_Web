@@ -316,7 +316,10 @@ function sl_join(array &$child): array {
 
 function sl_review(string $profile): array {
     $review = provider_stackcp_launch_review($profile, 3501);
-    if ($review['available'] !== true || $review['ready'] !== true) throw new LogicException('Synthetic launch prerequisites are not current.');
+    if ($review['available'] !== true || $review['ready'] !== true) {
+        $GLOBALS['sl_review_failure'] = ['ready' => $review['ready'], 'available' => $review['available'], 'reason' => $review['reason']];
+        throw new LogicException('Synthetic launch prerequisites are not current.');
+    }
     return $review;
 }
 function sl_replay(string $name, array $review, array $expected): void {
@@ -557,7 +560,9 @@ try {
     sl_ok('Dedicated StackCP launch does not create a generic operation or grant ledger',!sl_exists('provider_operations') && !sl_exists('provider_operation_grants'));
 } catch (Throwable $e) {
     // Public evidence is finite and sanitized. No exception text, SQL, credentials or URL is exported.
-    $checks[]=['name'=>'Unexpected native failure during '.$stage,'passed'=>false,'error_class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine()];
+    $failedCheck=['name'=>'Unexpected native failure during '.$stage,'passed'=>false,'error_class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'call_line'=>$e->getTrace()[0]['line']??null];
+    if(isset($GLOBALS['sl_review_failure']))$failedCheck['review']=$GLOBALS['sl_review_failure'];
+    $checks[]=$failedCheck;
 }
 $passed = $checks !== [] && !array_filter($checks,fn($c)=>$c['passed']!==true);
 $output = ['passed'=>$passed,'scope'=>'Actual disposable Linux SQL, owner wrappers, encrypted credentials, signed histories, blocked mutex process, real cooldowns and synthetic fixed transport/browser callback only. No provider-account request, real OAuth session, browser login or live StackCP effect.','checks'=>$checks];
