@@ -108,7 +108,7 @@ function drrq_join(array &$worker):array{
         if(microtime(true)>$deadline)throw new RuntimeException('Worker result deadline exceeded.');usleep(20000);
     }while(true);$worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);}
     finally{$status=proc_get_status($worker['process']);if($status['running'])proc_terminate($worker['process']);fclose($worker['pipes'][1]);fclose($worker['pipes'][2]);$closed=proc_close($worker['process']);if($exit===null)$exit=$closed;}
-    if($exit!==0||$worker['stderr']!==''||strlen($worker['stdout'])>8192)throw new RuntimeException('Worker failed after real lock contention.');
+    if($exit!==0||$worker['stderr']!==''||strlen($worker['stdout'])>8192){global $checks;$checks[]=['name'=>'Worker failure detail exit='.$exit.' out='.substr(trim($worker['stdout']),0,700).' err='.substr(trim($worker['stderr']),0,200),'passed'=>false];throw new RuntimeException('Worker failed after real lock contention.');}
     $result=json_decode(trim($worker['stdout']),true,5,JSON_THROW_ON_ERROR);
     if(!is_array($result)||array_keys($result)!==['outcome','dns','gets','posts']||!in_array($result['outcome'],['completed','refused'],true))throw new RuntimeException('Invalid worker result.');
     foreach(['dns','gets','posts'] as $key)if(!is_int($result[$key])||$result[$key]<0)throw new RuntimeException('Invalid worker transport counter.');return $result;
