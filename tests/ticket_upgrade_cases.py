@@ -47,6 +47,8 @@ def run(env):
     earlier = {name: records(name) for name in ['submissions', 'drafts', 'provider', 'mail-accounts', 'templates']}
     keys = {name: (private/name).read_bytes() for name in ['mail-master.key', 'provider-master.key', 'retained-customer.php']}
     check(label+' updated owner must explicitly prepare support tickets', 'Prepare support tickets' in owner.get(listing).text)
+    response = submit(owner, admin+'?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
+    check(label+' upgraded workspace schema precedes support ticket setup', 'Database update completed' in response.text)
     response = submit(owner, listing, 'tickets_setup', {'current_password': password})
     check(label+' additive ticket setup preserves existing projects clients and invoices',
           'Support tickets are ready' in response.text and all(records()[name]==original[name] for name in ['studio_clients', 'studio_jobs', 'studio_invoices']) and all(not rows for rows in records('tickets').values()))

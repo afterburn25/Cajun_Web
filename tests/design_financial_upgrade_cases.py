@@ -48,6 +48,8 @@ def run(env):
     submit(client,portal,'login',{'email':'organized-client@example.invalid','password':'Synthetic retained progress client passphrase'})
     original=records();keys={name:(private/name).read_bytes() for name in ['mail-master.key','provider-master.key','retained-customer.php']}
     check(label+' upgraded financial terms require deliberate owner preparation','Prepare financial agreement storage' in owner.get(editor).text)
+    response=submit(owner,admin+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})
+    check(label+' upgraded workspace schema precedes financial agreement setup','Database update completed' in response.text)
     submit(owner,editor,'design_financial_setup',{'owner_password':password,'confirm':'1'})
     check(label+' additive financial setup preserves existing invoices and payments',not records('financial')['design_payment_events'] and records()['studio_invoices']==original['studio_invoices'])
     submit(owner,editor,'studio_publish',{'kind':'proposal','title':'Retained financial scope','body':'Website service after upgrade','preview_url':''})
