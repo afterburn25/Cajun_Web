@@ -199,7 +199,11 @@ function rncu_probes():void{
         'terminal'=>fn()=>query('DELETE FROM '.table('provider_nameserver_change_terminals').' WHERE id=?',[RNCU_FIRST]),
         'check'=>fn()=>query('DELETE FROM '.table('provider_nameserver_change_checks').' WHERE id=?',[$check['id']]),
         'ledger'=>fn()=>query('DELETE FROM '.table('provider_operations').' WHERE idempotency_key=?',['nameservers:'.RNCU_FIRST]),
-        'readback set'=>fn()=>query('DELETE FROM '.table('registered_nameserver_sets').' WHERE id=?',[$check['receipt_id']]),
+        'readback set'=>function():void{
+            $rows=all('SELECT s.id FROM '.table('registered_nameserver_sets').' s LEFT JOIN '.table('provider_nameserver_change_checks').' c ON c.receipt_id=s.id ORDER BY (c.request_id IS NULL),s.id');
+            if(!$rows)throw new RuntimeException('Installed readiness fixture requires an observed nameserver set.');
+            query('DELETE FROM '.table('registered_nameserver_sets').' WHERE id=?',[$rows[0]['id']]);
+        },
         'marker'=>fn()=>query('DELETE FROM '.table('settings').' WHERE name=?',['registered_nameserver_changes_schema_version']),
         'counter'=>fn()=>save_setting('registered_nameserver_changes_check_count','00'),
         'terminal audit'=>fn()=>query('DELETE FROM '.table('audit').' WHERE BINARY action=?',['provider.registered_nameserver_changes_terminal']),

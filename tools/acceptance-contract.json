@@ -4112,7 +4112,7 @@
           "tests/registered_nameserver_changes_upgrade_fixture.php"
         ],
         "before": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
-        "after": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c"
+        "after": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7"
       },
       {
         "keys": [
@@ -4121,7 +4121,7 @@
           "tests/registered_nameserver_changes_upgrade_fixture.php"
         ],
         "before": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
-        "after": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c"
+        "after": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7"
       },
       {
         "keys": [
@@ -4139,7 +4139,7 @@
           "tests/registered_nameserver_changes_upgrade_fixture.php"
         ],
         "before": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
-        "after": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c"
+        "after": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7"
       },
       {
         "keys": [
@@ -4335,13 +4335,19 @@
       "tests/registered_nameserver_changes_upgrade_fixture.php": {
         "changes": [
           {
-            "after_start": 228,
-            "after_end": 229,
+            "after_start": 201,
+            "after_end": 206,
+            "after": "        'readback set'=>function():void{\n            $rows=all('SELECT s.id FROM '.table('registered_nameserver_sets').' s LEFT JOIN '.table('provider_nameserver_change_checks').' c ON c.receipt_id=s.id ORDER BY (c.request_id IS NULL),s.id');\n            if(!$rows)throw new RuntimeException('Installed readiness fixture requires an observed nameserver set.');\n            query('DELETE FROM '.table('registered_nameserver_sets').' WHERE id=?',[$rows[0]['id']]);\n        },\n",
+            "before": "        'readback set'=>fn()=>query('DELETE FROM '.table('registered_nameserver_sets').' WHERE id=?',[$check['receipt_id']]),\n"
+          },
+          {
+            "after_start": 232,
+            "after_end": 233,
             "after": "        require_once CWP_CODE_ROOT.'/app/clients/accounts.php';if(!studio_ready())studio_migrate();$client=studio_client_save(0,'','Nameserver change upgrade client','rnsc-upgrade-client@example.invalid',true);\n",
             "before": "        require_once CWP_CODE_ROOT.'/app/clients/accounts.php';$client=studio_client_save(0,'','Nameserver change upgrade client','rnsc-upgrade-client@example.invalid',true);\n"
           }
         ],
-        "after_sha256": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
+        "after_sha256": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
         "before_sha256": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1"
       },
       "tests/registered_nameserver_changes_native.php": {
@@ -5047,7 +5053,7 @@
       "tests/registered_nameserver_changes_cases.py": "aad25fa9502c2ab6be37d2dea543193b1319ba1a5d29e9ea3e5b11de0402d48f",
       "tests/registered_nameserver_changes_http_fixture_test.py": "1ffcf7a47fc3fccba50e7bacd3f4c6e2f1a69a48285bb0201cdc0fb4d0b9b000",
       "tests/registered_nameserver_changes_upgrade.py": "31bafc72074376503ede3f7e7f3aa20785d7bb09b2a539554df82c8322840545",
-      "tests/registered_nameserver_changes_upgrade_fixture.php": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
+      "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_changes_acceptance.py": "c5e76ae65894e6316396833091d339cdae27ac10248aac68838c796343537b31",
       "tools/acceptance-reports.json": "224bb89e602ee18b6efa4feb4063318b3edf3c9961bcc1132810a64d1f01c5a9"
@@ -5243,7 +5249,7 @@
       "tests/registered_nameserver_changes_http_fixture_test.py": "fae28a5389f0d705c373a67b8a250492b3c5350a07b97d849c2de7d9d56d292b",
       "tests/registered_nameserver_changes_native.php": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d",
       "tests/registered_nameserver_changes_upgrade.py": "31bafc72074376503ede3f7e7f3aa20785d7bb09b2a539554df82c8322840545",
-      "tests/registered_nameserver_changes_upgrade_fixture.php": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
+      "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
       "tests/registered_nameserver_requests_acceptance.py": "7bc1647d5e95f16b018f473dbaf1025d8950a24a524a2ac7f035ee53f086e88c",
@@ -5427,7 +5433,7 @@
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
       "tests/registered_nameserver_changes_native.php": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d",
       "tests/registered_nameserver_changes_upgrade.py": "31bafc72074376503ede3f7e7f3aa20785d7bb09b2a539554df82c8322840545",
-      "tests/registered_nameserver_changes_upgrade_fixture.php": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
+      "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
       "tests/registered_nameservers_upgrade_fixture.php": "98ed42859369120ff2fd75e58c8394da69b6aea44c373617844ed1bf093306c7",
