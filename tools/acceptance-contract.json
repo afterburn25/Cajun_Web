@@ -724,7 +724,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
+      "tests/provider_subdomain_requests_native.php": "97dbad4bd441f80b4ae242450fb4a93bc52f5f839962108d6cd49cfb2db7525e",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -974,7 +974,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
+      "tests/provider_subdomain_requests_native.php": "97dbad4bd441f80b4ae242450fb4a93bc52f5f839962108d6cd49cfb2db7525e",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -1107,7 +1107,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
+      "tests/provider_subdomain_requests_native.php": "97dbad4bd441f80b4ae242450fb4a93bc52f5f839962108d6cd49cfb2db7525e",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -1159,7 +1159,7 @@
       },
       "tests/provider_subdomain_requests_native.php": {
         "before_sha256": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after_sha256": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691",
+        "after_sha256": "97dbad4bd441f80b4ae242450fb4a93bc52f5f839962108d6cd49cfb2db7525e",
         "replacements": [
           {
             "before": "require __DIR__.'/../site/includes/bootstrap.php';\nrequire __DIR__.'/../site/database/schema/base.php';\nrequire __DIR__.'/../site/app/providers/subdomain_requests.php';\nuse CajunWebPro\\Foundation\\Provider\\{HttpTransport,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,TransportException,OperationResult};\nuse CajunWebPro\\Foundation\\TwentyIInventory\\{InventoryRead,InventorySnapshot};\nuse CajunWebPro\\Foundation\\TwentyIInventoryReader\\InventoryReader;\n",
@@ -1204,6 +1204,14 @@
           {
             "before": "    $exit=null;$deadline=microtime(true)+12;",
             "after": "    $exit=null;$deadline=microtime(true)+12;\n    $deadline=microtime(true)+25;"
+          },
+          {
+            "before": "        if(microtime(true)>$deadline)throw new RuntimeException('Worker result deadline exceeded.');usleep(20000);",
+            "after": "        if(microtime(true)>$deadline){global $checks;$proc='none';try{$proc=json_encode(all('SELECT STATE,TIME,INFO FROM information_schema.PROCESSLIST WHERE ID=?',[$worker['connection']]),JSON_PARTIAL_OUTPUT_ON_ERROR);}catch(Throwable){}$checks[]=['name'=>'Worker deadline detail out='.substr(trim($worker['stdout']),0,300).' err='.substr(trim($worker['stderr']),0,200).' proc='.substr((string)$proc,0,300),'passed'=>false];}\n        if(microtime(true)>$deadline)throw new RuntimeException('Worker result deadline exceeded.');usleep(20000);"
+          },
+          {
+            "before": "    if($exit!==0||$worker['stderr']!==''||strlen($worker['stdout'])>8192)throw new RuntimeException('Worker failed after real lock contention.');",
+            "after": "    if($exit!==0||$worker['stderr']!==''||strlen($worker['stdout'])>8192){global $checks;$checks[]=['name'=>'Worker failure detail exit='.$exit.' out='.substr(trim($worker['stdout']),0,300).' err='.substr(trim($worker['stderr']),0,200),'passed'=>false];}\n    if($exit!==0||$worker['stderr']!==''||strlen($worker['stdout'])>8192)throw new RuntimeException('Worker failed after real lock contention.');"
           }
         ]
       },
@@ -1288,7 +1296,7 @@
           "tests/provider_subdomain_requests_native.php"
         ],
         "before": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691"
+        "after": "97dbad4bd441f80b4ae242450fb4a93bc52f5f839962108d6cd49cfb2db7525e"
       },
       {
         "keys": [
@@ -1315,7 +1323,7 @@
           "tests/provider_subdomain_requests_native.php"
         ],
         "before": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after": "04b789b8bbce8dc171c7850a9e1693fe9f950e98a2b34009b63e2978153fc691"
+        "after": "97dbad4bd441f80b4ae242450fb4a93bc52f5f839962108d6cd49cfb2db7525e"
       },
       {
         "keys": [
