@@ -70,7 +70,7 @@ try{
     if(!mkdir($private,0700,true)||!mkdir($private.'/media',0700))throw new RuntimeException('Cannot create protected fixture directory.');
     $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath($root.'/site');start_session();
     foreach(schema_statements(HPS_PREFIX) as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     foreach([1,2,3] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Plan setup staff '.$id,'plan-setup'.$id.'@example.invalid',password_hash(HPS_PASSWORD,PASSWORD_DEFAULT),str_repeat(dechex($id),32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>'owner',3=>'administrator'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()),JSON_THROW_ON_ERROR)]);
     query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Plan setup client','plan-setup-client@example.invalid',password_hash(HPS_PASSWORD,PASSWORD_DEFAULT),str_repeat('c',32),gmdate('Y-m-d H:i:s')]);

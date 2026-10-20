@@ -6,7 +6,7 @@
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "ee213d66d120313219614928abadc6e8b462ff5fb55541791dec20320e2c184a",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
-    "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
+    "tests/stackcp_access_read_snapshot_native.php": "a4c10beaa8cb0b0c4f20887ecd9f0dd6795e8f3a1f353ff03e732bec94e3f691",
     "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
   },
   "native_commands": [
@@ -632,7 +632,7 @@
     ],
     "source_sha256": {
       "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
-      "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c",
+      "tests/provider_catalog_import_native.php": "34a6440a62f4d9e4a2bee07afea7575626375b44b606074e04e8f653eef76ffd",
       "tests/provider_catalog_import_cases.py": "5ae2d360360a9f4ce0cedc2bb851282369b62f7db9067595955fde59305472f3"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout.",
@@ -665,7 +665,7 @@
     "browser_addition": "        from provider_package_types_cases import run_browser as package_types_browser\n        package_types_browser(globals(),browser)\n",
     "source_sha256": {
       "tests/provider_package_types.php": "e5812a35e8e034c3a54c8f90b4011e10dd08eadbe759a6204899cdd224636533",
-      "tests/provider_package_types_native.php": "ef3876b71ad15736271d9f9de17b8278a953035a722c81e766d7bf73ed2d2b8d",
+      "tests/provider_package_types_native.php": "e50d85867d0ff67877cd76e36be011a2d1d0785e7dbdcded475c986e57478da3",
       "tests/provider_package_types_cases.py": "23f7825e86bf4e23c0a76038c1857bbf65453d817b33c5ca14a0076568d0f16b"
     },
     "scope": "Direct hosting catalog typed read, durable observations, current-owner refresh and source-aware draft import with synthetic transport; no live provider writes or images."
@@ -861,7 +861,7 @@
     ],
     "source_sha256": {
       "tests/hosting_catalog_document.php": "7897b57e40d7f4cfde599b695ef37a7cc1aec8c33d7474b7fbd9ae05aadd3a70",
-      "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
+      "tests/hosting_catalog_native.php": "1dcf9f596283e6cfd5b6e90a618e5535d1385bee2b33c27f2435531ffc261cf7",
       "tests/hosting_catalog_recovery_guard.php": "2518f102c537ca0b0197a49c9243d4454d076ff0081a9a602ae89e80b7f6f7d1",
       "tests/hosting_catalog_recovery_native.php": "45f16f7c17cc5addbc8a61501732e6a9eb81caf2e4543e2a272d8b6573b520b8",
       "tests/hosting_catalog_browser.py": "a1cd0c04b686523cd2e8752385bb56497b1342538d8cf8bf15076e14782d2c21",
@@ -895,13 +895,13 @@
       "site/database/migrations/service_plans_checkout_migrate.php": "6d058be8375efc790ab7d236b40209d7c5e3987720c8f37d2df8790dec69602b",
       "site/database/migrations/service_plans_migrate.php": "f2795bd9d83d15dc00afdcc5e88a1d7d617a45d0378d31cee2e9782d98cf5e57",
       "site/database/schema/service_plans_schema.php": "6734d2ab445fe6822df2314395363ba6e21e96252dbd69157b63dfdbe342b2d7",
-      "tests/service_plans_checkout_native.php": "fec99594a17f40fe8d9cdce991b2af6af3a4ef07f87c17d45bc20521de86c1b7",
+      "tests/service_plans_checkout_native.php": "df094e6222d3c2362072af7b19a810788869c1d2ad4ab4e956baf4d49e81aa66",
       "site/app/billing/recurring_billing.php": "4c950388fe472855458ae8fe84284015c87e3669c6c8b83eee3d9eff8a60383f",
       "site/app/billing/recurring_billing_invoices.php": "2de4dbe3b9e3b8d84dac859d37a78dc1f547d4c17d038a1103bf247cc59caf33",
       "site/database/migrations/recurring_billing_checkout_migrate.php": "188e8df9b32489866936bbb6f6870bb5caddd0012f6ddfeb080819d4ef5927de",
       "site/database/migrations/recurring_billing_migrate.php": "9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9",
       "site/database/schema/recurring_billing_schema.php": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
-      "tests/recurring_billing_checkout_native.php": "99e5b7c4806455fd2ea478d248c4c035f004544c373ce97d1ed7937a153487a1",
+      "tests/recurring_billing_checkout_native.php": "065c61923915cc9a4470495e16e387c392cc247991bb44d82bdb6dc7fcde925c",
       "site/app/hosting/catalog_checkout.php": "b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2",
       "site/app/hosting/catalog_checkout_storage.php": "eaf98711efa2de3985fe74ad0b9dd85bc2c2e48a17e4bd4624b1f578e6d61e76",
       "site/database/migrations/hosting_checkout_migrate.php": "8f605c4b0f3e10faf7e44a057ac382fa3cf164b8242070c50f71180ced9a53c7",
@@ -918,7 +918,7 @@
       "site/portal/controllers/hosting_checkout.php": "5d580748e79a208a5f14a62893e4e7a9f0d67c8e8c6de277710b6cd0ef593f97",
       "site/portal/views/hosting_checkout.php": "2878c07d181c2822d675c513c05d1eb75c0ac02a20f7873863b7b9e18d92e88b",
       "tests/hosting_checkout_views.php": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c",
-      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_checkout_native.php": "f3906a76e904ad8967483f1fea4435ce13ec738b8b123b664163bf19dd82c45f",
       "tests/hosting_catalog_recovery_socket_test.py": "1eda38a66123e3e56c647fc8e325b2e55136158d41f313443172bfb339104fc8"
     },
     "raw_evidence": {
@@ -1000,7 +1000,7 @@
       "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
       "tests/hosting_catalog_purchase.py": "eea7b2ce5b30ad03be3da7acfd661359890ce1184ebd113ff0a83e671431ed0c",
       "tests/hosting_catalog_purchase_guards.py": "ce89db86d42ec541103cc1e6d129bc83600197cbfc96eb2c4c4d4fadc3225ced",
-      "tests/hosting_catalog_purchase_native.php": "be2c318ace66803a27740d0dc3db11fd3dceea40df5c2a2ce5813b5b71161e20",
+      "tests/hosting_catalog_purchase_native.php": "8f5fc4d06f289100f57e2130737b1788421db9bc9c12ff5d79cb2b56fe46672d",
       "tests/hosting_purchase_handoff_browser.py": "9f0a9b2a40fe61d02d6714deead77ef08213e19ecd314b428b7c889003bdb483",
       "tests/hosting_purchase_handoff_cases.py": "0178e333b27b61065cc1ba258d39c32c1f7eafcec5b030b541dd0369c7931cb1",
       "tests/hosting_purchase_handoff_fixture.php": "65e6dfbbc51ae0c1af833667c11fcf9d0d19d26ac0c4cc216e8e5c0239b036c7",
@@ -1225,7 +1225,7 @@
       "tests/service-plans/checkout_documents.php": "e131b2ae0ea2831c55082939a5a32b3cd5fb6743303f7c83be60b39211005f2b",
       "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46",
       "tests/hosting_checkout_views.php": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c",
-      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_checkout_native.php": "f3906a76e904ad8967483f1fea4435ce13ec738b8b123b664163bf19dd82c45f",
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
@@ -1331,7 +1331,7 @@
       "b7c97953f323004e1fdd527bdef0b2da63f01c71",
       "1db3235286f915935e4ab621e2be5a2f14288997"
     ],
-    "predecessor_contract_sha256": "97a35bc7637d3ef5bb4b569a67ac5ae5dd8d72072e3deb4610a43257333a6d7d",
+    "predecessor_contract_sha256": "749656695ce8f4a2f002cca1875b8a7fe6dcb2f2898ee4a54d6b5e526b579273",
     "source_sha256": {
       "site/app/providers/checks.php": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
       "site/admin/views/providers.php": "2427f9c82d73e51301039a7465fdacafbe957627cac2ad230b6eeeb4e986df9a",
@@ -1352,7 +1352,7 @@
       "tests/provider_catalog_connection_entry.php": "af57305a2fddd137e5970a4148f148aba7c2f95ffc7a1ef0c17ab4660c0a70bf",
       "tests/provider_catalog_import_batch.php": "48299dc9aaf55c665d5323baf2478130b5475d453532a77d1a863a7de97eaea3",
       "tests/provider_catalog_import_batch_views.php": "80dd47177a3404320fad762fac9e239292d05922f8a3504d55c6ec13dd876891",
-      "tests/provider_catalog_import_batch_native.php": "2953b71154fff44bda62e48414ba6a4d4eeedfb7a6427f1f3804062d64b0f6f5",
+      "tests/provider_catalog_import_batch_native.php": "0d1157c5404081820d33cfac840c2a70f41b655c0a653d21951b62bea7258ebf",
       "tests/hosting_catalog_login.php": "67005960cde15fe5fabe3b90c3cc3703cb5e641b2d2fbb2f047f3dd5dc859170",
       "tests/hosting_catalog_comparison.php": "90a01a115a7c2218ea755a3887f69fe2c8f8ef158b8b539a0196249ed4532293",
       "tests/hosting_catalog_comparison_browser.py": "9d6ae7e05048ff7a6f1769dcc955e74bc3aff32f134ee2391e239fa47724204a"
@@ -1377,7 +1377,7 @@
   },
   "catalog_storefront_http": {
     "source_predecessor": "9b450c4b8daafd79f4242c39ddd65e2bdb56b624",
-    "predecessor_contract_sha256": "c82347b9ea2248db4432c900b75dd51e5941901548ce88a33b6f63be466a43fb",
+    "predecessor_contract_sha256": "775847c1e2bf726acc335e1a984830867b7d05fe538984018b064a890fbfff45",
     "updated_pins": {
       "tests/provider_package_types_cases.py": "provider_package_types",
       "tests/hosting_checkout_http_browser.py": "hosting_checkout"
@@ -1466,7 +1466,7 @@
       "Hosting-Plan-Setup-Preview-Mobile.png"
     ],
     "http_report": "hosting-checkout-http-results.json",
-    "predecessor_contract_sha256": "ecfeb50c7e35e61cbd662859ea17ad42008d06552b3786e9efe826110c4e324c",
+    "predecessor_contract_sha256": "f774ff2e2627ed7720eeb361297aff4aca8a86fd18ae09b4b2f95529a64db10d",
     "predecessor_reports_sha256": "60b7639b4c17a555c441021b17e34fa73d8053962b502e39aee4f671d724fce4",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
@@ -1484,7 +1484,7 @@
       "tests/catalog_storefront_checkout_cases.py": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
       "tests/hosting_catalog_plan_setup_document.php": "aadbf41e64c3157459ebef173170ea35a5ee291f0ebd05bedaae5e6532f2a457",
-      "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
+      "tests/hosting_catalog_plan_setup_native.php": "639170559746c52e9cd65d79b49133e98afd53d77f905196d6bac9d5b91cecec",
       "tests/hosting_catalog_plan_setup_views.php": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
@@ -1901,7 +1901,7 @@
       "hosting-checkout-purchases-native-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "3a68284583181538a6ef5fee6e7a3e0811e325ad05c7d625686f39db71a136cb",
+    "predecessor_contract_sha256": "c005ecdf808c590d9b1d3bcf11c55f04699e43020112f72c8e8264878ea6b824",
     "predecessor_reports_sha256": "5f82c4872d9528c0fa9e5f9b45542d0862039f01afc80e2fe548c023652328b0",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
@@ -1922,7 +1922,7 @@
       "site/portal/views/hosting_purchases.php": "80aed808efa04678d454b733cd8bf8b8c2e06cc81822347a89957fc81d106301",
       "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
       "tests/hosting_checkout_purchases_guards.php": "7135eca0924835e125371aaea84f7de56c0ed00c89e3973a2961dc405c12f95a",
-      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
       "tests/hosting_purchase_inbox_wiring.py": "85160b1227bf5d1edae4f6ecd51e3e3aaa2d50ebadafd803891b1479bee4f078",
       "tests/hosting_purchases_views.php": "a3f1a1aa1835be4eb9009ecaaa70b5c4c84c48c08f0690d77b35aa0bc070d0be",
       "tests/imported_plan_setup_wiring.py": "1b11adb610883d95210b2c2c28e0d52c09171db331f2cfc49bdb36ef3bf83857",
@@ -2315,7 +2315,7 @@
       "Hosting-Purchase-Inbox-Client-Mobile.png"
     ],
     "result_check": "Installed purchase inbox follows exact original records without new business writes",
-    "predecessor_contract_sha256": "1c5e6327f46a706962f75261896fac0a7d42fd67c2809faab37e3cb210f84554",
+    "predecessor_contract_sha256": "d29742fb723f125f302efa9717cb884d8feee3e369fda6bd73b1f634fedcbdec",
     "predecessor_reports_sha256": "2afa7b37763688f455f367ecc1fddaccdeef8bd4f4332d12baf83d75c6989f6c",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "23a5939355fa703afa12a29122c0c5d2e2f3d2dd34590bcc718f156cc1e988ca",
@@ -2568,8 +2568,8 @@
       "tests/hosting_catalog_plan_setup_cases.py": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
-      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
-      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/hosting_checkout_native.php": "f3906a76e904ad8967483f1fea4435ce13ec738b8b123b664163bf19dd82c45f",
+      "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
       "tests/imported_plan_setup_wiring.py": "1b11adb610883d95210b2c2c28e0d52c09171db331f2cfc49bdb36ef3bf83857",
       "tools/acceptance-reports.json": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
@@ -2580,7 +2580,7 @@
     "added_commands": [],
     "added_reports": [],
     "added_captures": [],
-    "predecessor_contract_sha256": "f39ec342153570238bee946437589024742ef16cd360cb0abf8532446318f5bf",
+    "predecessor_contract_sha256": "924fe97679bc08f86c506cf40d3ed9df0e3f193034c6e26d8a86857cfc5d1aac",
     "predecessor_reports_sha256": "2afa7b37763688f455f367ecc1fddaccdeef8bd4f4332d12baf83d75c6989f6c",
     "source_sha256": {
       "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
@@ -2776,14 +2776,14 @@
       "tests/hosting_checkout_http_browser.py": "823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3",
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
-      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
       "tools/acceptance-reports.json": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     }
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "18007d75149d73d88973f40c13a3353867c7fdf3d1a5362e0497b212fcdf3d41",
+    "predecessor_contract_sha256": "95053708fb2a28371cc244fb1697b0c920a7a392d086b192f568d655700b619a",
     "predecessor_reports_sha256": "2d1215ad024966d0448da44fcdcdc4195be1c8a8d914807613b7585cd8db15a2",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
@@ -3217,24 +3217,24 @@
       "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
       "site/includes/security/input.php": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b",
       "tests/acceptance_artifacts_test.py": "69fd78951a49eedeb3eb2f19a31c33ab8c69f4f4e3712d5865b38d0a39afc9c7",
-      "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
-      "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
+      "tests/hosting_catalog_native.php": "1dcf9f596283e6cfd5b6e90a618e5535d1385bee2b33c27f2435531ffc261cf7",
+      "tests/hosting_catalog_plan_setup_native.php": "639170559746c52e9cd65d79b49133e98afd53d77f905196d6bac9d5b91cecec",
       "tests/hosting_catalog_plan_setup_views.php": "fef71366cf6ab2b0dbc49b4f8d874779927a4920af3e5bef2d34cdf944cfc8d4",
       "tests/hosting_catalog_variants_browser.py": "5be95bfe3bfeab27a56fd31c378caa60cf809e9c9b7cc426281f0f81a1b04fff",
       "tests/hosting_catalog_variants_contract.php": "5f295784bf8f1bd55ac15e55b5627953f0737e80ffc89d77a5dc67dcf0d18af0",
       "tests/hosting_catalog_variants_document.php": "2ddfcc3cee6033d0ad610c11bcb59873e6564a713d49d2d449e044e2745d49ae",
       "tests/hosting_catalog_variants_http_fixture.php": "1b3e1ed5e39c00903b771e04046ec7884687f803307566eed2ec2dbce2c6a24a",
-      "tests/hosting_catalog_variants_native.php": "8975785bdc913293e13b94076cb8da802ee09e82e7f3e948876ee611a1c24b15",
-      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
-      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
-      "tests/provider_catalog_import_batch_native.php": "2953b71154fff44bda62e48414ba6a4d4eeedfb7a6427f1f3804062d64b0f6f5",
-      "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c"
+      "tests/hosting_catalog_variants_native.php": "da3c6185f393460dfbb0b6de5b5900a0ef0b68de8ae48b056db7f5e59c2317e8",
+      "tests/hosting_checkout_native.php": "f3906a76e904ad8967483f1fea4435ce13ec738b8b123b664163bf19dd82c45f",
+      "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
+      "tests/provider_catalog_import_batch_native.php": "0d1157c5404081820d33cfac840c2a70f41b655c0a653d21951b62bea7258ebf",
+      "tests/provider_catalog_import_native.php": "34a6440a62f4d9e4a2bee07afea7575626375b44b606074e04e8f653eef76ffd"
     },
     "scope": "Independent local retail billing options from one retained canonical import. Actual guarded native SQL remains separate from portable documents and modeled local HTTP/Chromium; no provider write, payment or new installed capture producer."
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "785601dd1a550bc80a4145048edd37dca3c3e08e9c3cb3a356eee3674efcb29d",
+    "predecessor_contract_sha256": "b5cd9eb9df36b5a2a9d29421ed317ab0f469a0cca4bd6798843ef36674daa875",
     "predecessor_reports_sha256": "36c2e58786e17505c6836b8dbee027ba0224738ee100263115d0b6cb337bdf1a",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3806,21 +3806,21 @@
       "tests/hosting_catalog_billing.php": "3e7078669889310783907a350c355ff20b0c26514e8dae508715b647fd53dbc9",
       "tests/hosting_catalog_billing_browser.py": "22ee99755548ad508a40635ee7f5da85081a81c2f8471362b304acfb889cd642",
       "tests/hosting_catalog_billing_http_fixture.php": "ff4ee59df5e531989c497ed94f5a41c0bedba01c133d0b325da5a491c5ad1cbe",
-      "tests/hosting_catalog_billing_native.php": "2dd71d453854ee85ae03c61a9e7c3e15c5d4462addf20484f422137e5c9a99a2",
-      "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
-      "tests/hosting_catalog_plan_setup_native.php": "79247169733196851842de79f85c2a2ea32b039d18f7fcdf1c0e573b03ab79de",
-      "tests/hosting_catalog_variants_native.php": "8975785bdc913293e13b94076cb8da802ee09e82e7f3e948876ee611a1c24b15",
-      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
-      "tests/hosting_checkout_purchases_native.php": "99a100656eb585f5e0a8d519361d0ac7ebb0de8c21286de5e13c3b849ba578fc",
+      "tests/hosting_catalog_billing_native.php": "034150edd250e74c789661f1895fd4d90e3b94ae81cf93bb3796cb714c9f4045",
+      "tests/hosting_catalog_native.php": "1dcf9f596283e6cfd5b6e90a618e5535d1385bee2b33c27f2435531ffc261cf7",
+      "tests/hosting_catalog_plan_setup_native.php": "639170559746c52e9cd65d79b49133e98afd53d77f905196d6bac9d5b91cecec",
+      "tests/hosting_catalog_variants_native.php": "da3c6185f393460dfbb0b6de5b5900a0ef0b68de8ae48b056db7f5e59c2317e8",
+      "tests/hosting_checkout_native.php": "f3906a76e904ad8967483f1fea4435ce13ec738b8b123b664163bf19dd82c45f",
+      "tests/hosting_checkout_purchases_native.php": "60afa7538a8843389ad080dfa64ea90d62790d7e0af57f0d31984fde44de0a7c",
       "tests/hosting_checkout_views.php": "414bbeb4c404379ac468fd9f9b60998068cf2d870721b7b0dbff41ba175e6e8c",
-      "tests/provider_catalog_import_batch_native.php": "2953b71154fff44bda62e48414ba6a4d4eeedfb7a6427f1f3804062d64b0f6f5",
-      "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c"
+      "tests/provider_catalog_import_batch_native.php": "0d1157c5404081820d33cfac840c2a70f41b655c0a653d21951b62bea7258ebf",
+      "tests/provider_catalog_import_native.php": "34a6440a62f4d9e4a2bee07afea7575626375b44b606074e04e8f653eef76ffd"
     },
     "scope": "Monthly/annual browsing selects current actual publications before pagination without changing selected checkout or request terms. Guarded native SQL and modeled local HTTP/Chromium remain separate; no provider write, payment or new installed capture producer."
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "58b278c89963ac7b78a33aaaa3dd0360d780bfb127a981a457e22ac898a89f6b",
+    "predecessor_contract_sha256": "ef907b9f83e9b95a03183e6f5b7c105db1eda7ef4eaec01f540b6a5b43a88c78",
     "predecessor_reports_sha256": "677b49d9e7775a92a9c9fcbe992c7b695bd57e19870eaf2b56a4e14d79863b8f",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -4247,7 +4247,7 @@
       "tests/hosting_checkout_http_cases.py": "454d03ace515f3f584d14ee6b171bd964259e81c074e0ce5f86a8554cdf01ff0",
       "tests/hosting_checkout_http_fixture.php": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
       "tests/hosting_checkout_http_guards.py": "cb3c348d6766a27decd16b28285f123573ee476ac137e4662d704a931e0288b2",
-      "tests/hosting_checkout_native.php": "6cec436ce9b200070537b774f8e7ca32137250201fcd1456cbb5cd2aeab3dfef",
+      "tests/hosting_checkout_native.php": "f3906a76e904ad8967483f1fea4435ce13ec738b8b123b664163bf19dd82c45f",
       "tests/hosting_purchase_handoff_browser.py": "9f0a9b2a40fe61d02d6714deead77ef08213e19ecd314b428b7c889003bdb483",
       "tests/hosting_purchase_handoff_cases.py": "0178e333b27b61065cc1ba258d39c32c1f7eafcec5b030b541dd0369c7931cb1",
       "tests/hosting_purchase_inbox_cases.py": "ad714d79c1dce6ba21f243c4d81fbe0e2349ba52375cda8a8a1ac75331d57600"
@@ -4275,8 +4275,8 @@
       "tests/mail_flags_native.php": "dd09c0fbc5cc6a81329b9242c857a3cf6fcd170ffc7f14a24fa357cf1611f302",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
       "tests/backups_native.php": "5e4311822a71c446b092d393564ab8f57ec736c4fb7f4054855c56eb51d094f8",
-      "tests/notification_feed_native.php": "5ae51eb0d65904cffa5efd7b64e4033c79c84b2c5d02b2565982359e00f2887e",
-      "tests/support_tickets_native.php": "cf801d9d040583bb2cfa9bba66866b9e58011844bc601cbdd7f566404383887c"
+      "tests/notification_feed_native.php": "77d288b51fbab67fd3d4fa5fdf11443b0a12ee683e5ab27dd58df6c0191138d1",
+      "tests/support_tickets_native.php": "64adb30582eb4e62b5d91429745c412213fb6b7faa30e532fb0bca0b19f5b46c"
     }
   },
   "source_sha256": {},
@@ -4763,7 +4763,7 @@
       }
     },
     "merged_stage_reports_sha256": "9308cbae8d0e466010525f63a9c04980c7de6273abf2892baded78f54d371cc4",
-    "merged_stage_contract_sha256": "61b662bc66f544117aa8996aec386870dd89c1087e0f27be93d36118cd22f152"
+    "merged_stage_contract_sha256": "0e78c6d8553041a31a1ce2a5c9d992e22d088ec178b2e0fc590fbe2f59c6caf8"
   },
   "registered_nameserver_changes": {
     "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
@@ -4805,7 +4805,7 @@
   },
   "registered_nameserver_changes_installed": {
     "source_predecessor": "5654649dc62095298ce703b39b54d12d56c49f09",
-    "predecessor_contract_sha256": "8f9bb5427c5245fcc2485850c8a4f1b7df33c8d36293c273e418e3231f38d9c2",
+    "predecessor_contract_sha256": "f731dc948ba63eee0009a4ac4ceebf30739cff4629fa77a229697441a3b861cb",
     "predecessor_reports_sha256": "cf671d64e7f5ff8551bccd080d9b270c93c437c9a729b4b9b274eda65420ce38",
     "reports": {
       "browser": [
@@ -4924,7 +4924,7 @@
   },
   "registered_nameserver_requests": {
     "source_predecessor": "af78abd81ce39839cd100e1c882a59b04258a25b",
-    "predecessor_contract_sha256": "ecce2ecc7f171c2ca775bda5d20cab51050d2fb89a226e42c91d94afb3c653c4",
+    "predecessor_contract_sha256": "8ea7d17e3dbcbb044be3e35caf6cb6394a2a34baf54e7ec6ef88acc11cf202fe",
     "predecessor_reports_sha256": "d9deda2c31332ec7448cb2aa377ec695a9caebb3092d0520d853c9616bb1a5ae",
     "native_additions": [
       "\"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json",
@@ -5025,7 +5025,7 @@
       "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
-      "tests/registered_nameserver_requests_acceptance.py": "ee6e67f913388bc9cca704073128a0bd6480c0e949140d9504c832b65dc393c8",
+      "tests/registered_nameserver_requests_acceptance.py": "7b84f784af2e5cd128ed5f6e4a61b37fbcdaf793d36450c45d64545514763192",
       "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
       "tests/registered_nameserver_requests_native.php": "481767c5f8c4ca237608f8465ebeb324368c09d073a6fa6813eea93519eaea0a",

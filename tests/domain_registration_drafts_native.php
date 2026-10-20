@@ -32,7 +32,7 @@ if(($argv[1]??'')==='worker'){
 }
 try{
     $base=['settings','users','audit','studio_clients','staff_profiles','resets','rate_limits'];foreach(schema_statements($prefix) as $name=>$sql)if(in_array($name,$base,true))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Draft owner '.$id,'draft-owner'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",[json_encode(array_keys(staff_permissions()))]);
     foreach([1,2] as $id)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Draft client '.$id,'draft-client'.$id.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     rg_owner();$optional=['provider_profiles','provider_operations','provider_refreshes','service_plans','service_subscriptions','payment_requests','payment_attempts','studio_invoices'];$absent=fn():bool=>!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('.implode(',',array_fill(0,count($optional),'?')).') LIMIT 1',array_map(fn($n)=>$prefix.$n,$optional));

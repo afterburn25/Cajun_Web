@@ -71,7 +71,7 @@ try {
     if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,5)=? LIMIT 1',['hofc_']))throw new RuntimeException('Disposable hofc_ prefix already exists; preserve the earlier run and use a clean test database.');
     if (!db()->setAttribute(PDO::ATTR_STATEMENT_CLASS,[HostingCatalogReadProbeStatement::class])) throw new RuntimeException('Read probe statement class is unavailable.');
     foreach(schema_statements('hofc_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Hosting staff '.$id,'hosting-staff'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat($id===1?'a':'b',32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[2,json_encode(array_keys(staff_permissions()))]);
     foreach([1,2] as $id){query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Hosting client '.$id,'hosting-client'.$id.'@example.invalid',str_repeat($id===1?'c':'d',32),gmdate('Y-m-d H:i:s')]);query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,'Hosting project '.$id,'Synthetic project','[]',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);}

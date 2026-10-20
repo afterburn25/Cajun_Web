@@ -69,7 +69,7 @@ try {
     if((new ReflectionFunction('hosting_catalog_preview'))->getNumberOfParameters()!==4 || (new ReflectionFunction('hosting_catalog_publish'))->getNumberOfParameters()!==6)throw new RuntimeException('Reviewed checkout publication policy API is not integrated.');
     hcc_ok('Explicit Linux disposable database and empty hcc namespace are selected',config()['db']['name']==='cwp_test'&&config()['db']['prefix']==='hcc_'&&PHP_OS_FAMILY==='Linux');
     $stage='seed';foreach(schema_statements('hcc_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Checkout owner','checkout-owner@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('a',32),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);
     foreach([1,2] as $id){query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Checkout client '.$id,'checkout-client'.$id.'@example.invalid',password_hash('Synthetic checkout client',PASSWORD_DEFAULT),str_repeat($id===1?'c':'d',32),gmdate('Y-m-d H:i:s')]);query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,'Existing project '.$id,'Synthetic native project','',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);}
     hcc_owner();catalog_migrate($password);provider_catalog_import_prepare($password);provider_settings_migrate($password);

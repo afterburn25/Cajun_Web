@@ -29,7 +29,7 @@ function scn_setup(string $prefix):void {
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (id,name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?,?)',[$id,'Migration operator '.$id,'migration'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat((string)$id,32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (2,?,1,?)',['administrator',json_encode(array_keys(staff_permissions()),JSON_THROW_ON_ERROR)]);
     foreach([9,10] as $id)query('INSERT INTO '.table('studio_clients').' (id,name,email,auth_version,created_at) VALUES (?,?,?,?,?)',[$id,'Migration client '.$id,'migration-client'.$id.'@example.invalid',str_repeat('a',32),gmdate('Y-m-d H:i:s')]);
-    save_setting('studio_schema_version','2');scn_owner();service_plans_migrate($password);
+    save_setting('studio_schema_version','4');scn_owner();service_plans_migrate($password);
 }
 function scn_rows():array {
     $rows=[];foreach(['service_plans','service_plan_events','service_subscriptions','service_subscription_events','audit'] as $name)$rows[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');return $rows;

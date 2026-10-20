@@ -23,7 +23,7 @@ if(($argv[1]??'')==='worker'){
     try{project_progress_save((int)$argv[3],(int)$argv[4],$argv[5],$argv[6],$fields);echo 'saved';}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
 try {
-    foreach(schema_statements('pgrs_') as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(schema_statements('pgrs_') as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Project staff '.$i,'progress-staff'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);
     foreach([2=>['clients.manage'],3=>['support.login'],4=>[]] as $id=>$grants)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,\'administrator\',1,?)',[$id,json_encode($grants)]);
     for($i=1;$i<=2;$i++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Progress client '.$i,'progress-client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);pg_staff();

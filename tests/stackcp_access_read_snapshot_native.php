@@ -166,7 +166,7 @@ try {
     $runtime=['php'=>PHP_VERSION,'pdo_driver'=>db()->getAttribute(PDO::ATTR_DRIVER_NAME),'database_server'=>db()->getAttribute(PDO::ATTR_SERVER_VERSION)];
     sap_ok('Isolated fixture prefix starts without inherited tables',all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,5)=?',['sapr_'])===[]);
     foreach (schema_statements('sapr_') as $name=>$sql) if (!str_starts_with($name,'provider_')) db()->exec($sql);
-    foreach (default_settings() as $key=>$value) save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach (default_settings() as $key=>$value) save_setting($key,$value);save_setting('studio_schema_version','4');
     foreach ([1,2] as $id) {query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Access snapshot owner '.$id,'accesssnapshotowner'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner($id);query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Access snapshot client '.$id,'accesssnapshotclient'.$id.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);}
     sap_actor();provider_settings_migrate($password);provider_inventory_migrate($password);
     sap_html_equivalent('No account retains exact original HTML and absent access storage','Save your 20i account first.');

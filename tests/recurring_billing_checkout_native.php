@@ -28,7 +28,7 @@ function rcn_setup(string $prefix):void {
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (id,name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?,?)',[$id,'Recurring operator '.$id,'recurring-operator'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat((string)$id,32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (2,?,1,?)',['administrator',json_encode(array_keys(staff_permissions()),JSON_THROW_ON_ERROR)]);
     foreach([1,2] as $id){query('INSERT INTO '.table('studio_clients').' (id,name,email,auth_version,created_at) VALUES (?,?,?,?,?)',[$id,'Recurring client '.$id,'recurring-client'.$id.'@example.invalid',str_repeat('a',32),gmdate('Y-m-d H:i:s')]);query('INSERT INTO '.table('studio_jobs').' (id,client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',[$id,$id,'Existing project '.$id,'Retained scope','design','','2020-01-01 00:00:00','2020-01-01 00:00:00']);}
-    foreach(['studio_schema_version'=>'2','payments_schema_version'=>'1','invoice_ledger_schema_version'=>'1'] as $k=>$v)save_setting($k,$v);
+    foreach(['studio_schema_version'=>'4','payments_schema_version'=>'1','invoice_ledger_schema_version'=>'1'] as $k=>$v)save_setting($k,$v);
     rcn_owner();service_plans_migrate($password);service_plans_checkout_migrate($password);recurring_billing_migrate($password);
 }
 function rcn_insert(string $name,array $row):void {

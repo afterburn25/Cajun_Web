@@ -127,7 +127,7 @@ try{
     if($phase==='prepare'){
         $step='fresh-schema';hp_ok('Dedicated purchase namespace starts empty',all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,5)=?',['hpci_'])===[]);
         foreach(schema_statements('hpci_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-        foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+        foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
         query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Purchase owner','purchase-owner@example.invalid',password_hash(HPC_PASSWORD,PASSWORD_DEFAULT),str_repeat('a',32),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);
         foreach([1,2] as $id){query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Purchase client '.$id,'purchase-client'.$id.'@example.invalid',password_hash(HPC_CLIENT_PASSWORD,PASSWORD_DEFAULT),str_repeat($id===1?'b':'c',32),gmdate('Y-m-d H:i:s')]);query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,'Purchase project '.$id,'Synthetic project','[]',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);}
         hp_owner();catalog_migrate(HPC_PASSWORD);provider_catalog_import_prepare(HPC_PASSWORD);provider_settings_migrate(HPC_PASSWORD);

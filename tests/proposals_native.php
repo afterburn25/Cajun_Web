@@ -15,12 +15,12 @@ function p_input(string $title='Synthetic proposal'): array {return ['title'=>$t
 function p_event_failure(callable $fn): bool {db()->exec('CREATE TRIGGER propci_fail BEFORE INSERT ON '.table('proposal_events')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic history failure'");try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER propci_fail');}return $failed;}
 try{
     foreach(schema_statements('propci_') as $sql)db()->exec($sql);
-    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');save_setting('staff_schema_version','1');
+    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','4');save_setting('staff_schema_version','1');
     $now=gmdate('Y-m-d H:i:s');for($id=1;$id<=3;$id++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Proposal staff '.$id,'proposal'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);staff_seed_owner(1);
     foreach([2=>['clients.manage'],3=>['website.manage']] as $id=>$grants)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($grants)]);p_actor();
     for($id=1;$id<=2;$id++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Proposal client '.$id,'proposal-client'.$id.'@example.invalid',str_repeat((string)$id,32),$now]);
     p_deny('Setup requires owner reauthentication',fn()=>proposals_migrate('wrong'));
-    p_deny('Setup requires the client workspace schema',function() use($password){save_setting('studio_schema_version','0');try{proposals_migrate($password);}finally{save_setting('studio_schema_version','2');}});
+    p_deny('Setup requires the client workspace schema',function() use($password){save_setting('studio_schema_version','0');try{proposals_migrate($password);}finally{save_setting('studio_schema_version','4');}});
     proposals_migrate($password);p_ok('Setup creates additive proposal schema',proposals_ready());proposals_migrate($password);p_ok('Repeated setup is safe',proposals_ready());
     p_actor(3);p_deny('Website-only staff cannot create proposals',fn()=>proposal_create(1,p_input(),bin2hex(random_bytes(32))));p_deny('Website-only staff cannot run owner setup',fn()=>proposals_migrate($password));p_actor(2);
     p_deny('Proposal needs a deliverable',fn()=>proposal_create(1,['title'=>'x','deliverables'=>''],bin2hex(random_bytes(32))));

@@ -42,7 +42,7 @@ try{
     if(!mkdir($private,0700,true)||!mkdir($private.'/media',0700))throw new RuntimeException('Cannot prepare private batch fixture storage.');
     $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath($root.'/site');start_session();
     foreach(schema_statements('pcbci_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Batch staff '.$id,'batch'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat($id===1?'a':'b',32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[2,json_encode(array_keys(staff_permissions()))]);pcbn_actor();catalog_migrate($password);provider_catalog_import_prepare($password);provider_settings_migrate($password);$profile=provider_settings_save('',0,'Synthetic batch fixture',true,$secret,$password);provider_inventory_migrate($password);provider_package_types_prepare($password);
     $engines=all('SELECT TABLE_NAME,ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,6)=BINARY ?',['pcbci_']);

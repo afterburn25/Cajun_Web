@@ -23,7 +23,7 @@ function ptn_refresh(string $profile):string{global $password;if(provider_packag
 if(($argv[1]??'')==='browser-config'){echo '<?php return '.var_export(config(),true).';';exit;}
 try{
     foreach(schema_statements('ptici_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Package types staff '.$id,'types'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat($id===1?'a':'b',32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[2,json_encode(array_keys(staff_permissions()))]);ptn_actor();catalog_migrate($password);provider_catalog_import_prepare($password);provider_settings_migrate($password);$profile=provider_settings_save('',0,'Catalog-only fixture',true,$secret,$password);provider_inventory_migrate($password);
     ptn_ok('Package types legacy inventory fixture completes',provider_inventory_refresh($profile,1,$password,static fn()=>'8.8.8.8','ptn_read')==='complete');
