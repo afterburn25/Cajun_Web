@@ -49,10 +49,10 @@ try{
     $d=one('SELECT * FROM '.table('notification_deliveries').' d JOIN '.table('notification_feed').' f ON f.id=d.notification_id WHERE d.channel=? AND f.ref=?',['email','invoice:5']);
     n_ok('Failed email attempt records bounded retry state', $d!==null && $d['state']==='retrying' && $d['last_error']!=='' && (int)$d['attempts']===1 && $d['next_at']!==null);
     notification_outbox_pump();n_ok('Undue retry is not re-attempted',(int)one('SELECT attempts FROM '.table('notification_deliveries').' WHERE notification_id=? AND channel=?',[$d['notification_id'],'email'])['attempts']===1);
-    query('UPDATE '.table('notification_deliveries').' SET next_at=? WHERE notification_id=?',[gmdate('Y-m-d H:i:s',time()-10),$d['notification_id']]);
+    query('UPDATE '.table('notification_deliveries').' SET next_at=? WHERE notification_id=?',[time()-10,$d['notification_id']]);
     notification_outbox_pump();$d2=one('SELECT * FROM '.table('notification_deliveries').' WHERE notification_id=? AND channel=?',[$d['notification_id'],'email']);
-    n_ok('Due retry re-attempts and reschedules',(int)$d2['attempts']===2&&$d2['state']==='retrying'&&$d2['next_at']>gmdate('Y-m-d H:i:s'));
-    query('UPDATE '.table('notification_deliveries').' SET next_at=? WHERE notification_id=?',[gmdate('Y-m-d H:i:s',time()-10),$d['notification_id']]);
+    n_ok('Due retry re-attempts and reschedules',(int)$d2['attempts']===2&&$d2['state']==='retrying'&&(int)$d2['next_at']>time());
+    query('UPDATE '.table('notification_deliveries').' SET next_at=? WHERE notification_id=?',[time()-10,$d['notification_id']]);
     notification_outbox_pump();n_ok('Third failure terminates honestly',one('SELECT state,next_at FROM '.table('notification_deliveries').' WHERE notification_id=?',[$d['notification_id']])===['state'=>'failed','next_at'=>null]);
     n_ok('Client feed is audience-isolated',notification_feed('client',1)->unreadCount()===0);
     notification_emit('client',1,'download-ready','release:'.str_repeat('a',32),'Website download published','v1.0.0');
