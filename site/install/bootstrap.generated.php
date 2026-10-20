@@ -98,7 +98,7 @@ function admin_user(): ?array {
     $_SESSION['last_activity']=time(); return $u;
 }
 
-function require_admin(): array { $u=admin_user(); if(!$u) redirect(admin_url('login')); return $u; }
+function require_admin(): array { $u=admin_user(); if(!$u){ if(PHP_SAPI==='cli')throw new RuntimeException('Administrator access is required.'); redirect(admin_url('login')); } return $u; }
 
 function login_user(array $u): void { session_regenerate_id(true); $_SESSION['uid']=(int)$u['id']; $_SESSION['auth_version']=(string)$u['auth_version']; $_SESSION['login_at']=$_SESSION['last_activity']=time(); $_SESSION['csrf']=bin2hex(random_bytes(32)); query('UPDATE '.table('users').' SET last_login=? WHERE id=?',[gmdate('Y-m-d H:i:s'),$u['id']]); }
 
