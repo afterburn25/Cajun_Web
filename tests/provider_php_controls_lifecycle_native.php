@@ -240,7 +240,7 @@ try {
     pcl_deny('Foreign assigned package cannot use original review',fn()=>pcl_change($id,$other,$current,$options,$review));
     foreach(['contact_id','contact_auth'] as $key){$_SESSION[$key]=null;pcl_deny('Contact marker cannot become primary change '.$key,fn()=>pcl_change($id,$link,$current,$options,$review));pcl_ok('Contact marker remains explicit '.$key,array_key_exists($key,$_SESSION));unset($_SESSION[$key]);}
     $_GET['support']='';pcl_deny('Support selector cannot authorize client send',fn()=>pcl_change($id,$link,$current,$options,$review));$_GET=[];
-    pcl_identity_probe('Changed primary auth token refuses send','studio_clients','auth_version',1,str_repeat('f',64),fn()=>pcl_change($id,$link,$current,$options,$review));
+    pcl_identity_probe('Changed primary auth token refuses send','studio_clients','auth_version',1,str_repeat('f',32),fn()=>pcl_change($id,$link,$current,$options,$review));
     pcl_identity_probe('Changed delegating owner auth token refuses send','users','auth_version',1,str_repeat('e',64),fn()=>pcl_change($id,$link,$current,$options,$review));
     pcl_identity_probe('Demoted delegating owner refuses send','staff_profiles','role',1,'administrator',fn()=>pcl_change($id,$link,$current,$options,$review));
     pcl_ok('Pre-send negative batch performs no outbound or approval work',pcl_activity()===$before);
