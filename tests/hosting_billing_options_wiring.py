@@ -100,8 +100,10 @@ def run(root, work, check, deny):
                   if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                   and node.func.id == 'check' and not (node.args and isinstance(node.args[0], ast.Constant)
                                                       and node.args[0].value == RESULT_CHECK)]
-    check('All twelve predecessor runner check expressions retain exact order and bodies',
-          len(old_checks) == 12 and digest(json.dumps(old_checks, separators=(',', ':')).encode()) == OLD_CHECKS_SHA256)
+    check('Predecessor runner retains twelve check expressions after the result check',
+          len(old_checks) == 12)
+    check('Predecessor runner check expressions retain exact order and bodies',
+          digest(json.dumps(old_checks, separators=(',', ':')).encode()) == OLD_CHECKS_SHA256)
 
     checkout_tree = ast.parse(source(root, 'tests/hosting_checkout_http_cases.py'))
     stems = constant(checkout_tree, 'CAPTURE_STEMS')
