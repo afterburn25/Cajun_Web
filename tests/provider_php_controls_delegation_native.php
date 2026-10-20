@@ -119,7 +119,7 @@ try {
     pcd_owner();provider_settings_migrate(PCD_PASSWORD);provider_inventory_migrate(PCD_PASSWORD);provider_php_prepare(PCD_PASSWORD);
     $profile=provider_settings_save('',0,'Synthetic PHP delegation',true,PCD_SECRET,PCD_PASSWORD);
     pcd_ok('Production vault retains real POSIX private key permissions',(fileperms($private.'/provider-master.key')&0777)===0600);
-    pcd_ok('Unprepared read returns false without creating delegation table',!pcd_ready()&&!one('SHOW TABLES LIKE ?',[PCD_PREFIX.'provider_php_control_delegations']));
+    pcd_ok('Unprepared read returns false without creating delegation table',!pcd_ready()&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[PCD_PREFIX.'provider_php_control_delegations']));
     pcd_deny('Readiness without staff mutex refuses',fn()=>provider_php_controls_ready());
     staff_locked(fn()=>pcd_deny('Context without a transaction refuses',fn()=>provider_php_controls_owner_context(str_repeat('a',32))));
     db()->beginTransaction();pcd_deny('Preparation refuses inherited transaction before DDL',fn()=>provider_php_controls_prepare(PCD_PASSWORD));pcd_ok('Caller transaction remains active after refusal',db()->inTransaction());db()->rollBack();
@@ -139,7 +139,7 @@ try {
     pcd_damage('Unknown extension audit refuses',fn()=>provider_settings_audit(1,'php_control_delegation_unknown','Synthetic unknown'));
     pcd_damage('Missing preparation witness refuses',fn()=>query('DELETE FROM '.table('audit').' WHERE action=?',['provider.php_control_delegation_prepared']));
     $exactTable=table('provider_php_control_delegations');db()->exec('RENAME TABLE '.$exactTable.' TO `ppctl_retained_delegations`');
-    try{pcd_deny('Marked missing table refuses preparation instead of recreation',fn()=>provider_php_controls_prepare(PCD_PASSWORD));pcd_ok('Missing marked table is not recreated',!one('SHOW TABLES LIKE ?',[PCD_PREFIX.'provider_php_control_delegations']));}
+    try{pcd_deny('Marked missing table refuses preparation instead of recreation',fn()=>provider_php_controls_prepare(PCD_PASSWORD));pcd_ok('Missing marked table is not recreated',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[PCD_PREFIX.'provider_php_control_delegations']));}
     finally{db()->exec('RENAME TABLE `ppctl_retained_delegations` TO '.$exactTable);}pcd_ok('Exact table restoration restores readiness',pcd_ready());
     db()->exec('CREATE TABLE `ppctl_provider_php_control_delegation_unknown` (id INT PRIMARY KEY) ENGINE=InnoDB');
     try{pcd_deny('Unknown extension table refuses readiness',fn()=>pcd_ready());}finally{db()->exec('DROP TABLE `ppctl_provider_php_control_delegation_unknown`');}
@@ -206,7 +206,7 @@ try {
     pcd_deny('Reassigned client inherits no old delegation',fn()=>pcd_scope(fn()=>provider_php_controls_client_context(2,$reassigned)));pcd_owner();
     $public=json_encode([all('SELECT * FROM '.table('provider_php_control_delegations')),all('SELECT * FROM '.table('audit'))],JSON_THROW_ON_ERROR);
     pcd_ok('Delegation and audit retain no raw credential or passwords',!str_contains($public,PCD_SECRET)&&!str_contains($public,PCD_PASSWORD)&&!str_contains($public,PCD_CLIENT_PASSWORD));
-    pcd_ok('No PHP provider read or write was executed',pcd_count('provider_php_reads')===0&&!one('SHOW TABLES LIKE ?',[PCD_PREFIX.'provider_operations']));
+    pcd_ok('No PHP provider read or write was executed',pcd_count('provider_php_reads')===0&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[PCD_PREFIX.'provider_operations']));
     pcd_ok('Final delegation history and original observation schema remain ready',pcd_ready()&&provider_php_ready());
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected native delegation failure','passed'=>false];$failure=['stage'=>$stage,'class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine()];fwrite(STDERR,json_encode($failure,JSON_THROW_ON_ERROR).PHP_EOL);}
 $passed=count(array_filter($checks,fn($row)=>$row['passed']!==true))===0;
