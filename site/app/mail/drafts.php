@@ -33,6 +33,7 @@ function mail_drafts_account(string $id,?int $revision=null):array {
 function mail_drafts_id(string $id):void {if(!preg_match('/^[a-f0-9]{32}$/D',$id))throw new InvalidArgumentException('Draft unavailable.');}
 /** Bounded optional formatted alternative; '' input means plain text only. */
 function mail_drafts_html(string $raw):?string {
+    if($raw==='')return null;
     try {return ComposeHtml::sanitize($raw)?:null;}
     catch(ReceivingFailure $e){throw new InvalidArgumentException($e->getMessage()==='limit'?'The formatted message text is too long.':'The formatted message text is not valid HTML.');}
 }

@@ -218,7 +218,7 @@ function setup_expected_files(): array { return [
     'app/mail/copies.php'=>'71bf50cce3fec449cdac90063f65a69423accd71e14e60aa39060a419c7b711b',
     'app/mail/credentials.php'=>'6f458c7e7cf0f649e8a2f14e48f655682babfa21f654a337b6d9d6b10249a5d5',
     'app/mail/document.php'=>'37f300f3806f6fdd2f97057b665b2bb810a64fa375dcd5d73ee69063b2422999',
-    'app/mail/drafts.php'=>'b9db7a92538a09e8534dfd786933cb629dd7971021a7f3409a3bd6f51a62c35a',
+    'app/mail/drafts.php'=>'2072c7856b0e3ae08dbf3ae1f11337aede9c45f74dd15929faba528d239acf7b',
     'app/mail/files.php'=>'b7155abbb807b4bb0c3286c44238bf1bce3ca92ee6fd889c0d46ceb9c059bc4f',
     'app/mail/flags.php'=>'0e2325681456096ca78ca4da8bde9ee2b45e78b0743edf3ee7c374f1dcda7cd7',
     'app/mail/inbox.php'=>'1441123aa651d1c89b23a8a55d781d82a2b9b0638405ca4f7120e418d91dc294',

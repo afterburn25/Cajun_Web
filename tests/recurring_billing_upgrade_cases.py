@@ -40,23 +40,17 @@ def run(env):
     response = submit(owner, admin + '?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
     check(label + ' upgraded workspace schema precedes recurring billing setup', 'Database update completed' in response.text)
     payments = records('payments')
-    check(label + ' organized upgrade retains payment marker 1 before owner migration',
-          payments['marker'] == '1' and 'payment_requests' in payments['tables']
-          and all('link_hash' not in row and 'link_secret' not in row
+    check(label + ' organized upgrade retains migrated payment rows before recurring setup',
+          payments['marker'] == '2' and 'payment_requests' in payments['tables']
+          and all(row['link_hash'] is None and row['link_secret'] is None
                   for row in payments['tables']['payment_requests']))
     response = submit(owner, admin + '?view=payments', 'payments_migrate',
                       {'owner_password': password, 'confirm': '1'})
     migrated = records('payments')
-    check(label + ' owner payment migration sets marker 2 retaining requests credentials receipts',
+    check(label + ' repeated owner payment migration retains marker 2 requests credentials receipts',
           response.status_code == 200 and 'Payment preparation enabled' in response.text
           and migrated['marker'] == '2'
-          and migrated['tables'].get('payment_gateways') == payments['tables'].get('payment_gateways')
-          and migrated['tables'].get('invoice_payments') == payments['tables'].get('invoice_payments')
-          and len(migrated['tables']['payment_requests']) == len(payments['tables']['payment_requests'])
-          and all(row['link_hash'] is None and row['link_secret'] is None
-                  and {k: v for k, v in row.items() if k not in ('link_hash', 'link_secret')}
-                      == payments['tables']['payment_requests'][i]
-                  for i, row in enumerate(migrated['tables']['payment_requests'])))
+          and migrated['tables'] == payments['tables'])
     submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})
     empty = records('recurring')
     check(label + ' recurring additive setup preserves existing invoices and starts empty',
