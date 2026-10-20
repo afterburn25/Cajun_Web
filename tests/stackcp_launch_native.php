@@ -521,7 +521,7 @@ try {
     sl_ok('Whole-user sibling access is not treated as selected-package restriction',provider_stackcp_launch_review($profile,3501)['available'] === false);
     sl_ok('Exact single-package read is independently required again',sl_access($profile,B::GRANTS)['state'] === 'complete' && sl_review($profile)['available']);
     $stage = 'late authorization';
-    sl_packages($profile);
+    sl_packages($profile); sl_access($profile); sl_access($profile,B::GRANTS);
     $r = sl_review($profile); $counts = $launchCalls;
     $duringLookup = function()use($profile):void { sl_auth($profile,false); };
     $out = sl_open($r);
