@@ -222,7 +222,7 @@ function rncr_blocked(array &$worker):void{
     }while(true);
 }
 function rncr_join(array &$worker):array{
-    $exit=null;$deadline=microtime(true)+12;
+    $exit=null;$deadline=microtime(true)+25;
     try{do{
         $worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);
         if(strlen($worker['stdout'])>8192||strlen($worker['stderr'])>2048)throw new RuntimeException('Worker result bound exceeded.');
@@ -245,12 +245,15 @@ function rncr_worker():never{
         foreach(['request_sha256','review_sha256'] as $key)if(!is_string($input[$key])||!preg_match('/\A[a-f0-9]{64}\z/',$input[$key]))throw new RuntimeException('Invalid worker digest.');
         if($input['action']==='cancel')rncr_client();else rncr_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();
-        $outcome='completed';try{
+        $outcome='completed';
+        for($attempt=1;;$attempt++)try{
             if($input['action']==='cancel')registered_nameserver_requests_change($input['id'],$input['expected'],$input['event'],'cancel','',1);
             else registered_nameserver_requests_approve($input['id'],$input['expected'],$input['request_sha256'],$input['event'],$input['review_sha256'],true,RNCR_PASSWORD,'rncr_write_dns','rncr_perform');
+            break;
         }catch(InvalidArgumentException|RuntimeException $e){
+            if(!($e instanceof PDOException)&&$e->getMessage()==='Another account change is in progress. Please retry.'&&$attempt<3)continue;
             $expected=$input['action']==='cancel'?'This nameserver request changed. Reload its review.':'This request was already reviewed or withdrawn.';
-            if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';
+            if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';break;
         }
         echo json_encode(['outcome'=>$outcome,'dns'=>$dns,'gets'=>$gets,'posts'=>$posts],JSON_THROW_ON_ERROR)."\n";exit;
     }catch(Throwable $e){echo json_encode(['failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null]],JSON_THROW_ON_ERROR)."\n";exit(1);}
