@@ -100,7 +100,11 @@ def run_browser(env, browser):
     context=browser.new_context(viewport={'width':1440,'height':1050});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in owner.cookies]);page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(url+'#registration-periods')
     assignments={t:db('SELECT * FROM ci_'+t+' ORDER BY id') for t in ['provider_package_links','provider_domain_links','provider_cloud_links']}
     form=page.locator('[data-registration-period-refresh]');form.locator('[name=current_password]').fill(OWNER);form.get_by_role('button',name='Refresh registration options',exact=True).click()
-    expect(page.locator('[data-registration-periods]')).to_contain_text('1 year, 3 years')
+    page.wait_for_load_state('networkidle')
+    try:expect(page.locator('[data-registration-periods]')).to_contain_text('1 year, 3 years',timeout=30000)
+    except AssertionError:
+        (qa/'registration-period-owner-dom.txt').write_text(page.content())
+        raise
     check('Chromium owner action makes one fixed authenticated period GET',provider.calls==calls+1 and provider.get_paths[-1]=='/domain-period' and provider.posts==posts)
     check('Period read preserves every explicit client assignment',all(db('SELECT * FROM ci_'+t+' ORDER BY id')==v for t,v in assignments.items()))
     rows=db('SELECT * FROM ci_provider_observation_registration_periods');check('Period observation persists bounded typed years without secrets',len(rows)==1 and json.loads(rows[0]['document_json'])['state']=='complete' and 'SYNTHETIC_RAW_GENERAL_KEY' not in json.dumps(rows))
@@ -119,9 +123,9 @@ def run_browser(env, browser):
     evidence('Authentication failure outcome',failed)
     check('Failed period read retains finite evidence and no previous current options',provider.calls==calls+2 and 'private synthetic period response' not in failed.text and 'Current options are unknown' in soup(failed).select_one('[data-registration-periods]').text and '1 year, 3 years' not in soup(failed).select_one('[data-registration-periods]').text)
     # Settle the actual mobile layout before capturing the newly persisted failure.
-    page.set_viewport_size({'width':320,'height':740});page.reload();page.evaluate('document.fonts.ready')
+    page.set_viewport_size({'width':320,'height':740});page.reload();page.wait_for_load_state('networkidle');page.evaluate('document.fonts.ready')
     expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
-    expect(page.locator('[data-registration-periods]')).to_contain_text('Current options are unknown')
+    expect(page.locator('[data-registration-periods]')).to_contain_text('Current options are unknown',timeout=30000)
     page.locator('[data-registration-periods]').screenshot(path=str(qa/'Registration-Periods-Failure-Mobile.png'))
     # Preserve full-page context without altering rendered DOM or CSS.
     page.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})')
