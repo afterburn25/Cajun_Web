@@ -665,7 +665,7 @@
       "tests/provider_php_controls_delegation_native.php": "e674f1f58d8ac426e22ec0287c86fcab32a48168d14c348dea221923b5392ef6",
       "tests/provider_php_controls_http.php": "bd804706abfc8673b8379537d03157fa404f020ae898fec2570adb586a8e4714",
       "tests/provider_php_controls_lifecycle.php": "fcee77c8d121701f2eb7eaa123e5f07928307d412989d2e7c4a67bfe06d229ae",
-      "tests/provider_php_controls_lifecycle_native.php": "b4a37abfafdc25baa5c89152054c4069e3ebd822715bf58f87737e441734835f",
+      "tests/provider_php_controls_lifecycle_native.php": "4378d2104428dceaa5dbcfb91de7604bb67c7727279d49ba07a7cd999cf853df",
       "tests/provider_php_controls_lifecycle_storage.php": "4b55422fb19e9e476dc57aaa52ff6f4c1af0edd87d5793ce9aa4bc7ad923830b",
       "tests/provider_php_controls_reads.php": "c618f8d125642fbe47949cf680907d1a91d7bcbf1d37b72329e36c5f136a8b03",
       "tests/provider_php_controls_screen.php": "37a39e08a4ed4984d6072e3ed733d30037372033ed0820eaaaa68c516cb80ebe",
