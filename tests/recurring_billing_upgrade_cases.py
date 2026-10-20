@@ -44,8 +44,10 @@ def run(env):
           payments['marker'] == '2' and 'payment_requests' in payments['tables']
           and all(row['link_hash'] is None and row['link_secret'] is None
                   for row in payments['tables']['payment_requests']))
-    response = submit(owner, admin + '?view=payments', 'payments_migrate',
-                      {'owner_password': password, 'confirm': '1'})
+    csrf = fields(owner, listing, 'recurring_setup')['csrf']
+    response = owner.post(admin + '?view=payments', data={
+        'csrf': csrf, 'action': 'payments_migrate',
+        'owner_password': password, 'confirm': '1'})
     migrated = records('payments')
     check(label + ' repeated owner payment migration retains marker 2 requests credentials receipts',
           response.status_code == 200 and 'Payment preparation enabled' in response.text
