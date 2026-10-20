@@ -246,12 +246,12 @@ function rncr_worker():never{
         if($input['action']==='cancel')rncr_client();else rncr_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();
         $outcome='completed';
-        for($attempt=1;;$attempt++)try{
+        for($budget=microtime(true)+40;;)try{
             if($input['action']==='cancel')registered_nameserver_requests_change($input['id'],$input['expected'],$input['event'],'cancel','',1);
             else registered_nameserver_requests_approve($input['id'],$input['expected'],$input['request_sha256'],$input['event'],$input['review_sha256'],true,RNCR_PASSWORD,'rncr_write_dns','rncr_perform');
             break;
         }catch(InvalidArgumentException|RuntimeException $e){
-            if(!($e instanceof PDOException)&&$e->getMessage()==='Another account change is in progress. Please retry.'&&$attempt<3)continue;
+            if(!($e instanceof PDOException)&&$e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<$budget)continue;
             $expected=$input['action']==='cancel'?'This nameserver request changed. Reload its review.':'This request was already reviewed or withdrawn.';
             if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';break;
         }
