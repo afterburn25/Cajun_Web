@@ -405,7 +405,7 @@ function setup_expected_files(): array { return [
     'database/migrations/staff_migrate.php'=>'82f168f347443b19c2a687426e680cb7a85c0372b3f3cea48cec20ab589b0a10',
     'database/migrations/support_migrate.php'=>'a5a69c0adcbd879a49ee44ee74eb4e619eab8c48b8c267787b8b9171d6024f8b',
     'database/migrations/support_tickets_migrate.php'=>'3541de2ae56d49f054a44195b8f7d502a4fbaa9655d62d3745eafad1d98bd2f8',
-    'database/migrations/workspace.php'=>'87b84d3960c3ba0cdd9b322457273fe23c49dfb68ffdf627c2a2ba183b16c242',
+    'database/migrations/workspace.php'=>'9b6b7ad3fff07b31ebda3592189e3fb4b2a61699977f29bb7895814d5bcff885',
     'database/schema/activity_schema.php'=>'587e70fcaeaf6104972044d336314c8eddd3e51b5f5bc9aedd803b99075ce1bc',
     'database/schema/appointments_schema.php'=>'425af919f50e6b519547915715995b8d25771244cc4857f236debfd3f836dfac',
     'database/schema/attempts_schema.php'=>'829320b6b6e8f692586406ce844b31a70185d7352a4fdab7fa41d0d2fd3b5d63',
