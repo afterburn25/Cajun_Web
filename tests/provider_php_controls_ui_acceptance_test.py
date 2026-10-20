@@ -41,7 +41,8 @@ def successful():
 
 def failed():
     return {"passed": False, "scope": bridge.SCOPE, "checks": [], "count": 0,
-            "failure": {"class": "RuntimeError", "file": "provider_php_controls_ui_browser.py", "line": 200}}
+            "failure": {"class": "RuntimeError", "file": "provider_php_controls_ui_browser.py", "line": 200,
+                        "message": "Synthetic bounded failure for export validation"}}
 
 
 def emit(root, value, images=True):
