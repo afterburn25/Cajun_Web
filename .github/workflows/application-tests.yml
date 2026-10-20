@@ -329,7 +329,7 @@ jobs:
           "$PHP_BINARY" -n -d extension=tokenizer tests/hosting_purchases_views.php > qa/hosting-purchases-views-minimal.json
           CWP_TEST_HOSTING_PURCHASES=1 "$PHP_BINARY" tests/hosting_checkout_purchases_native.php
           "$PHP_BINARY" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json
-          "$PHP_BINARY" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json
+          "$PHP_BINARY" -n -d extension=pdo -d extension=tokenizer tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json
           .ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py
           .ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite
           "$PHP_BINARY" tests/payments_native.php
