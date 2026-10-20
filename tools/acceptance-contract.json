@@ -1,860 +1,860 @@
 {
-  "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
-  "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
-  "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "2c899d14afa3b0408167ffd3b03cb9817d28789c03b4c0a456e26afe1114ea2c",
-    "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
-    "tests/apache_acceptance.py": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703",
-    "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
-    "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
-    "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
-  },
-  "native_commands": [
-    "\"$PHP_BINARY\" tests/service-plans/forms.php > qa/service-plans-forms-results.json",
-    "\"$PHP_BINARY\" tests/service-plans/documents.php > qa/service-plans-documents-results.json",
-    "\"$PHP_BINARY\" tests/service-plans/run.php > qa/service-plans-supplied-default.txt",
-    "\"$PHP_BINARY\" tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json",
-    "\"$PHP_BINARY\" tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json",
-    "\"$PHP_BINARY\" tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json",
-    "\"$PHP_BINARY\" tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json",
-    "\"$PHP_BINARY\" tests/estimator_adapter.php",
-    "\"$PHP_BINARY\" tests/native.php",
-    "\"$PHP_BINARY\" tests/staff_native.php",
-    "\"$PHP_BINARY\" tests/support_native.php",
-    "\"$PHP_BINARY\" tests/catalog_native.php",
-    "\"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json",
-    "\"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json",
-    "\"$PHP_BINARY\" tests/provider_catalog_import_native.php",
-    "\"$PHP_BINARY\" tests/payments_native.php",
-    "\"$PHP_BINARY\" tests/attempts_native.php",
-    "\"$PHP_BINARY\" tests/notifications_native.php",
-    "\"$PHP_BINARY\" tests/ledger_native.php",
-    "\"$PHP_BINARY\" tests/delivery_archive.php",
-    "\"$PHP_BINARY\" tests/delivery_native.php",
-    "\"$PHP_BINARY\" tests/activity_native.php",
-    "\"$PHP_BINARY\" tests/mail_templates_native.php",
-    "\"$PHP_BINARY\" tests/mail_accounts_native.php",
-    "\"$PHP_BINARY\" tests/reviews_native.php",
-    "\"$PHP_BINARY\" tests/appointments_native.php",
-    "\"$PHP_BINARY\" tests/mail_connections_native.php",
-    "\"$PHP_BINARY\" tests/mail_inbox_native.php",
-    "\"$PHP_BINARY\" tests/mail_message_native.php",
-    "\"$PHP_BINARY\" tests/mail_notices_native.php",
-    "\"$PHP_BINARY\" tests/mail_drafts_native.php",
-    "\"$PHP_BINARY\" tests/mail_drafts_form.php",
-    "cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json",
-    "\"$PHP_BINARY\" -n tests/mail_drafts_form.php",
-    "\"$PHP_BINARY\" tests/mail_submissions_native.php",
-    "\"$PHP_BINARY\" tests/mail_submission_dispatch_native.php",
-    "\"$PHP_BINARY\" tests/mail_submission_forms.php",
-    "cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json",
-    "\"$PHP_BINARY\" -n tests/mail_submission_forms.php",
-    ".ci-venv/bin/python tests/mail_submission_combined.py",
-    "\"$PHP_BINARY\" tests/provider_settings_native.php",
-    "\"$PHP_BINARY\" tests/provider_checks_native.php",
-    "\"$PHP_BINARY\" tests/provider_schedule_document.php",
-    "\"$PHP_BINARY\" -n tests/provider_schedule_document.php",
-    "\"$PHP_BINARY\" tests/provider_schedule_native.php",
-    "\"$PHP_BINARY\" tests/provider_inventory_native.php",
-    "\"$PHP_BINARY\" tests/provider_cloud_sites_native.php",
-    "\"$PHP_BINARY\" tests/provider_cloud_confirmation_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
-    "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
-    "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
-    "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
-    "\"$PHP_BINARY\" tests/provider_cloud_assignment_native.php",
-    "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json",
-    "\"$PHP_BINARY\" tests/provider_forwarding_contract.php",
-    "\"$PHP_BINARY\" tests/provider_forwarding_native.php",
-    "\"$PHP_BINARY\" tests/provider_cloud_providers_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json",
-    "\"$PHP_BINARY\" tests/provider_inventory_upgrade_native.php",
-    "\"$PHP_BINARY\" tests/provider_registrar_native.php",
-    "\"$PHP_BINARY\" tests/provider_registration_periods_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/domain_renewals_native.php",
-    "\"$PHP_BINARY\" tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json",
-    "\"$PHP_BINARY\" -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json",
-    "\"$PHP_BINARY\" tests/domain_renewal_agreements_native.php",
-    "\"$PHP_BINARY\" tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
-    "\"$PHP_BINARY\" -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
-    "\"$PHP_BINARY\" tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
-    "\"$PHP_BINARY\" -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
-    "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
-    "\"$PHP_BINARY\" tests/domain_renewal_dispatch_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
-    "\"$PHP_BINARY\" tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
-    "\"$PHP_BINARY\" -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
-    "\"$PHP_BINARY\" tests/domain_registration_drafts_native.php",
-    "\"$PHP_BINARY\" tests/service_observations_native.php",
-    "\"$PHP_BINARY\" tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json",
-    "\"$PHP_BINARY\" tests/domain_contracts_native.php",
-    "\"$PHP_BINARY\" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json",
-    "\"$PHP_BINARY\" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json",
-    "\"$PHP_BINARY\" tests/domain_expiry_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-package-php/run.php > qa/package-php-document-results.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/provider_package_php_native.php",
-    "\"$PHP_BINARY\" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json",
-    "\"$PHP_BINARY\" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json",
-    "\"$PHP_BINARY\" tests/provider_document_roots_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/provider_package_force_ssl_native.php",
-    "\"$PHP_BINARY\" tests/directory_listing_contract.php > qa/directory-listing-document-results.json",
-    "\"$PHP_BINARY\" -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/directory_listing_transport.php > qa/directory-listing-transport-results.json",
-    "\"$PHP_BINARY\" -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/provider_directory_listing_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json",
-    "\"$PHP_BINARY\" -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json",
-    "\"$PHP_BINARY\" -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
-    "\"$PHP_BINARY\" tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
-    "\"$PHP_BINARY\" -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
-    "\"$PHP_BINARY\" -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
-    "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json",
-    "python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json",
-    "\"$PHP_BINARY\" tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
-    "\"$PHP_BINARY\" -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json",
-    "\"$PHP_BINARY\" tests/provider_package_wordpress_installed_native.php",
-    "\"$PHP_BINARY\" tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
-    "\"$PHP_BINARY\" -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
-    "\"$PHP_BINARY\" tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
-    "\"$PHP_BINARY\" -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
-    "\"$PHP_BINARY\" tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
-    "\"$PHP_BINARY\" -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
-    "\"$PHP_BINARY\" tests/stackcp_prerequisites_native.php",
-    "\"$PHP_BINARY\" tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
-    "\"$PHP_BINARY\" -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
-    "\"$PHP_BINARY\" tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
-    "\"$PHP_BINARY\" -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
-    "\"$PHP_BINARY\" tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
-    "\"$PHP_BINARY\" -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
-    "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
-    "\"$PHP_BINARY\" tests/stackcp_access_native.php",
-    "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
-    "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php",
-    "\"$PHP_BINARY\" tests/provider_domain_search_native.php",
-    "\"$PHP_BINARY\" tests/provider_mailboxes_native.php",
-    "\"$PHP_BINARY\" tests/provider_operations_native.php",
-    "\"$PHP_BINARY\" tests/provider_operations_execute_native.php",
-    "\"$PHP_BINARY\" tests/service_plans_native.php",
-    "\"$PHP_BINARY\" tests/recurring_billing_native.php",
-    "\"$PHP_BINARY\" tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json",
-    "\"$PHP_BINARY\" -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json",
-    "\"$PHP_BINARY\" tests/hosting_records_native.php",
-    "\"$PHP_BINARY\" tests/hosting_operations_native.php",
-    "\"$PHP_BINARY\" tests/hosting_retry_native.php",
-    "\"$PHP_BINARY\" tests/hosting_delete_retry_native.php",
-    "\"$PHP_BINARY\" tests/hosting_reconciliation_native.php",
-    "\"$PHP_BINARY\" tests/client_authority_native.php",
-    "\"$PHP_BINARY\" tests/license_native.php"
+ "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
+ "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
+ "unchanged_test_sha256": {
+  "tests/browser_acceptance.py": "2c899d14afa3b0408167ffd3b03cb9817d28789c03b4c0a456e26afe1114ea2c",
+  "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
+  "tests/apache_acceptance.py": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703",
+  "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
+  "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
+  "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
+ },
+ "native_commands": [
+  "\"$PHP_BINARY\" tests/service-plans/forms.php > qa/service-plans-forms-results.json",
+  "\"$PHP_BINARY\" tests/service-plans/documents.php > qa/service-plans-documents-results.json",
+  "\"$PHP_BINARY\" tests/service-plans/run.php > qa/service-plans-supplied-default.txt",
+  "\"$PHP_BINARY\" tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json",
+  "\"$PHP_BINARY\" tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json",
+  "\"$PHP_BINARY\" tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json",
+  "\"$PHP_BINARY\" tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json",
+  "\"$PHP_BINARY\" tests/estimator_adapter.php",
+  "\"$PHP_BINARY\" tests/native.php",
+  "\"$PHP_BINARY\" tests/staff_native.php",
+  "\"$PHP_BINARY\" tests/support_native.php",
+  "\"$PHP_BINARY\" tests/catalog_native.php",
+  "\"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json",
+  "\"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json",
+  "\"$PHP_BINARY\" tests/provider_catalog_import_native.php",
+  "\"$PHP_BINARY\" tests/payments_native.php",
+  "\"$PHP_BINARY\" tests/attempts_native.php",
+  "\"$PHP_BINARY\" tests/notifications_native.php",
+  "\"$PHP_BINARY\" tests/ledger_native.php",
+  "\"$PHP_BINARY\" tests/delivery_archive.php",
+  "\"$PHP_BINARY\" tests/delivery_native.php",
+  "\"$PHP_BINARY\" tests/activity_native.php",
+  "\"$PHP_BINARY\" tests/mail_templates_native.php",
+  "\"$PHP_BINARY\" tests/mail_accounts_native.php",
+  "\"$PHP_BINARY\" tests/reviews_native.php",
+  "\"$PHP_BINARY\" tests/appointments_native.php",
+  "\"$PHP_BINARY\" tests/mail_connections_native.php",
+  "\"$PHP_BINARY\" tests/mail_inbox_native.php",
+  "\"$PHP_BINARY\" tests/mail_message_native.php",
+  "\"$PHP_BINARY\" tests/mail_notices_native.php",
+  "\"$PHP_BINARY\" tests/mail_drafts_native.php",
+  "\"$PHP_BINARY\" tests/mail_drafts_form.php",
+  "cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json",
+  "\"$PHP_BINARY\" -n tests/mail_drafts_form.php",
+  "\"$PHP_BINARY\" tests/mail_submissions_native.php",
+  "\"$PHP_BINARY\" tests/mail_submission_dispatch_native.php",
+  "\"$PHP_BINARY\" tests/mail_submission_forms.php",
+  "cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json",
+  "\"$PHP_BINARY\" -n tests/mail_submission_forms.php",
+  ".ci-venv/bin/python tests/mail_submission_combined.py",
+  "\"$PHP_BINARY\" tests/provider_settings_native.php",
+  "\"$PHP_BINARY\" tests/provider_checks_native.php",
+  "\"$PHP_BINARY\" tests/provider_schedule_document.php",
+  "\"$PHP_BINARY\" -n tests/provider_schedule_document.php",
+  "\"$PHP_BINARY\" tests/provider_schedule_native.php",
+  "\"$PHP_BINARY\" tests/provider_inventory_native.php",
+  "\"$PHP_BINARY\" tests/provider_cloud_sites_native.php",
+  "\"$PHP_BINARY\" tests/provider_cloud_confirmation_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
+  "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
+  "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
+  "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
+  "\"$PHP_BINARY\" tests/provider_cloud_assignment_native.php",
+  "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json",
+  "\"$PHP_BINARY\" tests/provider_forwarding_contract.php",
+  "\"$PHP_BINARY\" tests/provider_forwarding_native.php",
+  "\"$PHP_BINARY\" tests/provider_cloud_providers_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json",
+  "\"$PHP_BINARY\" tests/provider_inventory_upgrade_native.php",
+  "\"$PHP_BINARY\" tests/provider_registrar_native.php",
+  "\"$PHP_BINARY\" tests/provider_registration_periods_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/domain_renewals_native.php",
+  "\"$PHP_BINARY\" tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json",
+  "\"$PHP_BINARY\" -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json",
+  "\"$PHP_BINARY\" tests/domain_renewal_agreements_native.php",
+  "\"$PHP_BINARY\" tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
+  "\"$PHP_BINARY\" -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
+  "\"$PHP_BINARY\" tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
+  "\"$PHP_BINARY\" -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
+  "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
+  "\"$PHP_BINARY\" tests/domain_renewal_dispatch_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
+  "\"$PHP_BINARY\" tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
+  "\"$PHP_BINARY\" -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
+  "\"$PHP_BINARY\" tests/domain_registration_drafts_native.php",
+  "\"$PHP_BINARY\" tests/service_observations_native.php",
+  "\"$PHP_BINARY\" tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json",
+  "\"$PHP_BINARY\" tests/domain_contracts_native.php",
+  "\"$PHP_BINARY\" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json",
+  "\"$PHP_BINARY\" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json",
+  "\"$PHP_BINARY\" tests/domain_expiry_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-package-php/run.php > qa/package-php-document-results.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/provider_package_php_native.php",
+  "\"$PHP_BINARY\" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json",
+  "\"$PHP_BINARY\" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json",
+  "\"$PHP_BINARY\" tests/provider_document_roots_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/provider_package_force_ssl_native.php",
+  "\"$PHP_BINARY\" tests/directory_listing_contract.php > qa/directory-listing-document-results.json",
+  "\"$PHP_BINARY\" -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/directory_listing_transport.php > qa/directory-listing-transport-results.json",
+  "\"$PHP_BINARY\" -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/provider_directory_listing_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json",
+  "\"$PHP_BINARY\" -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json",
+  "\"$PHP_BINARY\" -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
+  "\"$PHP_BINARY\" tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
+  "\"$PHP_BINARY\" -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
+  "\"$PHP_BINARY\" -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
+  "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json",
+  "python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json",
+  "\"$PHP_BINARY\" tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
+  "\"$PHP_BINARY\" -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json",
+  "\"$PHP_BINARY\" tests/provider_package_wordpress_installed_native.php",
+  "\"$PHP_BINARY\" tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
+  "\"$PHP_BINARY\" -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
+  "\"$PHP_BINARY\" tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
+  "\"$PHP_BINARY\" -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
+  "\"$PHP_BINARY\" tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
+  "\"$PHP_BINARY\" -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
+  "\"$PHP_BINARY\" tests/stackcp_prerequisites_native.php",
+  "\"$PHP_BINARY\" tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
+  "\"$PHP_BINARY\" -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
+  "\"$PHP_BINARY\" tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
+  "\"$PHP_BINARY\" -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
+  "\"$PHP_BINARY\" tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
+  "\"$PHP_BINARY\" -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
+  "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
+  "\"$PHP_BINARY\" tests/stackcp_access_native.php",
+  "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
+  "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php",
+  "\"$PHP_BINARY\" tests/provider_domain_search_native.php",
+  "\"$PHP_BINARY\" tests/provider_mailboxes_native.php",
+  "\"$PHP_BINARY\" tests/provider_operations_native.php",
+  "\"$PHP_BINARY\" tests/provider_operations_execute_native.php",
+  "\"$PHP_BINARY\" tests/service_plans_native.php",
+  "\"$PHP_BINARY\" tests/recurring_billing_native.php",
+  "\"$PHP_BINARY\" tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json",
+  "\"$PHP_BINARY\" -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json",
+  "\"$PHP_BINARY\" tests/hosting_records_native.php",
+  "\"$PHP_BINARY\" tests/hosting_operations_native.php",
+  "\"$PHP_BINARY\" tests/hosting_retry_native.php",
+  "\"$PHP_BINARY\" tests/hosting_delete_retry_native.php",
+  "\"$PHP_BINARY\" tests/hosting_reconciliation_native.php",
+  "\"$PHP_BINARY\" tests/client_authority_native.php",
+  "\"$PHP_BINARY\" tests/license_native.php"
+ ],
+ "native_command_baseline": {
+  "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
+  "count": 105,
+  "sha256": "efdedcd4467b0ff308e7f61f96ceb148448c9bf6df94e38e7721017236e55719",
+  "additions_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
+  "additions_after": "php8.3 tests/domain_renewal_agreements_native.php",
+  "additions": [
+   "php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
+   "php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
+   "php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
+   "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
+   "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
+   "php8.3 tests/domain_renewal_dispatch_native.php"
+  ]
+ },
+ "directory_control_command_baseline": {
+  "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
+  "count": 105,
+  "sha256": "efdedcd4467b0ff308e7f61f96ceb148448c9bf6df94e38e7721017236e55719",
+  "additions_proposal_sha256": "abdef32316fe6ceb32259218286e5905af9140326320b9a27ba0b09dd1e463d7",
+  "additions_after": "php8.3 tests/provider_force_ssl_controls_native.php",
+  "additions": [
+   "php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
+   "php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
+   "php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
+   "php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
+   "php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
+   "php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
+   "php8.3 tests/provider_directory_listing_controls_native.php",
+   "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json"
+  ]
+ },
+ "stackcp_native_command_baseline": {
+  "source": "1d026026d711a602df5705aa10cf9492574b1108",
+  "count": 119,
+  "sha256": "a961751ed338491835cc7620044d2a61c31696bf5f5b46b80d9453971c909ba2",
+  "additions_after": "php8.3 tests/provider_package_wordpress_installed_native.php",
+  "additions": [
+   "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
+   "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
+   "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
+   "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
+   "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
+   "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
+   "php8.3 tests/stackcp_prerequisites_native.php"
+  ]
+ },
+ "registration_draft_command_baseline": {
+  "source": "9538ef1c87884167de8e0c1d84d1f9c28203423c",
+  "count": 126,
+  "sha256": "91264c4f0921a7a05408250444353a4f121a58ba61f6d9f3425a2c6d59d39208",
+  "owned_ancestry": "2e86e4e021980364b8f6d340e100e66779cf6fb0",
+  "additions_after": "php8.3 tests/domain_renewal_dispatch_native.php",
+  "additions": [
+   "php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
+   "php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
+   "php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
+   "php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
+   "php8.3 tests/domain_registration_drafts_native.php"
+  ]
+ },
+ "stackcp_access_command_baseline": {
+  "source": "9779879bc93e030bab70be383186700aabea3982",
+  "count": 131,
+  "sha256": "bebd874d4996871ba12828e61997b998da05effdc53234445de3f88fb732a0ed",
+  "additions_after": "php8.3 tests/stackcp_prerequisites_native.php",
+  "additions": [
+   "php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
+   "php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
+   "php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
+   "php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
+   "php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
+   "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
+   "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
+   "php8.3 tests/stackcp_access_native.php"
+  ]
+ },
+ "cloud_assignment_native_command_baseline": {
+  "source": "819c3ea39b4ebbef8f37280dc5ede59cf06fd01c",
+  "source_file_sha256": "b0df625dfedebcbc31653e78f84651d000e3bed8c0ed396afc2c3acc76393530",
+  "count": 139,
+  "sha256": "5052dc82e3bf89dbb80c764c0562b03067fa868785a58ce278993b09d4227fd5",
+  "additions_after": "php8.3 tests/provider_cloud_confirmation_native.php",
+  "additions": [
+   "php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
+   "php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
+   "php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
+   "php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
+   "php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
+   "php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
+   "php8.3 tests/provider_cloud_assignment_native.php",
+   "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json"
+  ]
+ },
+ "stackcp_snapshot_native_command_baseline": {
+  "source": "5bfd9c695d35103c3bf27e8eaf66b054c59741cf",
+  "count": 147,
+  "sha256": "a4b7a286f28dbbfd8c3d3998f0d0e30aa0b4374c04b3f412c2b590141b8ec4f5",
+  "additions_after": "php8.3 tests/stackcp_access_native.php",
+  "additions": [
+   "php8.3 tests/stackcp_read_snapshot_native.php"
+  ]
+ },
+ "release_environment_predecessor": {
+  "source": "3fa72d7b3b447fa3d281cc981ed861c508f850f2",
+  "count": 148,
+  "sha256": "15530357b81006e6d0f8f208ff830776f3a13ad299e6d2c404c5645198ee0f65",
+  "commands": [
+   "php8.3 tests/service-plans/forms.php > qa/service-plans-forms-results.json",
+   "php8.3 tests/service-plans/documents.php > qa/service-plans-documents-results.json",
+   "php8.3 tests/service-plans/run.php > qa/service-plans-supplied-default.txt",
+   "php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json",
+   "php8.3 tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json",
+   "php8.3 tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json",
+   "php8.3 tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json",
+   "php8.3 tests/estimator_adapter.php",
+   "php8.3 tests/native.php",
+   "php8.3 tests/staff_native.php",
+   "php8.3 tests/support_native.php",
+   "php8.3 tests/catalog_native.php",
+   "php8.3 tests/payments_native.php",
+   "php8.3 tests/attempts_native.php",
+   "php8.3 tests/notifications_native.php",
+   "php8.3 tests/ledger_native.php",
+   "php8.3 tests/delivery_archive.php",
+   "php8.3 tests/delivery_native.php",
+   "php8.3 tests/activity_native.php",
+   "php8.3 tests/mail_templates_native.php",
+   "php8.3 tests/mail_accounts_native.php",
+   "php8.3 tests/reviews_native.php",
+   "php8.3 tests/appointments_native.php",
+   "php8.3 tests/mail_connections_native.php",
+   "php8.3 tests/mail_inbox_native.php",
+   "php8.3 tests/mail_message_native.php",
+   "php8.3 tests/mail_notices_native.php",
+   "php8.3 tests/mail_drafts_native.php",
+   "php8.3 tests/mail_drafts_form.php",
+   "cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json",
+   "php8.3 -n tests/mail_drafts_form.php",
+   "php8.3 tests/mail_submissions_native.php",
+   "php8.3 tests/mail_submission_dispatch_native.php",
+   "php8.3 tests/mail_submission_forms.php",
+   "cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json",
+   "php8.3 -n tests/mail_submission_forms.php",
+   ".ci-venv/bin/python tests/mail_submission_combined.py",
+   "php8.3 tests/provider_settings_native.php",
+   "php8.3 tests/provider_checks_native.php",
+   "php8.3 tests/provider_schedule_document.php",
+   "php8.3 -n tests/provider_schedule_document.php",
+   "php8.3 tests/provider_schedule_native.php",
+   "php8.3 tests/provider_inventory_native.php",
+   "php8.3 tests/provider_cloud_sites_native.php",
+   "php8.3 tests/provider_cloud_confirmation_native.php",
+   "php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
+   "php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
+   "php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
+   "php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
+   "php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
+   "php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
+   "php8.3 tests/provider_cloud_assignment_native.php",
+   "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json",
+   "php8.3 tests/provider_forwarding_contract.php",
+   "php8.3 tests/provider_forwarding_native.php",
+   "php8.3 tests/provider_cloud_providers_native.php",
+   "php8.3 tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json",
+   "php8.3 -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json",
+   "php8.3 tests/provider_inventory_upgrade_native.php",
+   "php8.3 tests/provider_registrar_native.php",
+   "php8.3 tests/provider_registration_periods_native.php",
+   "php8.3 tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json",
+   "php8.3 -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json",
+   "php8.3 tests/domain_renewals_native.php",
+   "php8.3 tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json",
+   "php8.3 -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json",
+   "php8.3 tests/domain_renewal_agreements_native.php",
+   "php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
+   "php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
+   "php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
+   "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
+   "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
+   "php8.3 tests/domain_renewal_dispatch_native.php",
+   "php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
+   "php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
+   "php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
+   "php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
+   "php8.3 tests/domain_registration_drafts_native.php",
+   "php8.3 tests/service_observations_native.php",
+   "php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json",
+   "php8.3 tests/domain_contracts_native.php",
+   "php8.3 tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json",
+   "php8.3 tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json",
+   "php8.3 tests/domain_expiry_native.php",
+   "php8.3 tests/twentyi-package-php/run.php > qa/package-php-document-results.json",
+   "php8.3 -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json",
+   "php8.3 tests/provider_package_php_native.php",
+   "php8.3 tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json",
+   "php8.3 tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json",
+   "php8.3 tests/provider_document_roots_native.php",
+   "php8.3 tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json",
+   "php8.3 -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json",
+   "php8.3 tests/provider_package_force_ssl_native.php",
+   "php8.3 tests/directory_listing_contract.php > qa/directory-listing-document-results.json",
+   "php8.3 -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json",
+   "php8.3 tests/directory_listing_transport.php > qa/directory-listing-transport-results.json",
+   "php8.3 -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json",
+   "php8.3 tests/provider_directory_listing_native.php",
+   "php8.3 tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json",
+   "php8.3 -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json",
+   "php8.3 tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json",
+   "php8.3 -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json",
+   "php8.3 tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json",
+   "php8.3 -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json",
+   "php8.3 tests/provider_force_ssl_controls_native.php",
+   "php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
+   "php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
+   "php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
+   "php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
+   "php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
+   "php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
+   "php8.3 tests/provider_directory_listing_controls_native.php",
+   "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json",
+   "python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json",
+   "php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
+   "php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json",
+   "php8.3 tests/provider_package_wordpress_installed_native.php",
+   "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
+   "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
+   "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
+   "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
+   "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
+   "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
+   "php8.3 tests/stackcp_prerequisites_native.php",
+   "php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
+   "php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
+   "php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
+   "php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
+   "php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
+   "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
+   "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
+   "php8.3 tests/stackcp_access_native.php",
+   "php8.3 tests/stackcp_read_snapshot_native.php",
+   "php8.3 tests/provider_domain_search_native.php",
+   "php8.3 tests/provider_mailboxes_native.php",
+   "php8.3 tests/provider_operations_native.php",
+   "php8.3 tests/provider_operations_execute_native.php",
+   "php8.3 tests/service_plans_native.php",
+   "php8.3 tests/recurring_billing_native.php",
+   "php8.3 tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json",
+   "php8.3 -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json",
+   "php8.3 tests/hosting_records_native.php",
+   "php8.3 tests/hosting_operations_native.php",
+   "php8.3 tests/hosting_retry_native.php",
+   "php8.3 tests/hosting_delete_retry_native.php",
+   "php8.3 tests/hosting_reconciliation_native.php",
+   "php8.3 tests/client_authority_native.php",
+   "php8.3 tests/license_native.php"
   ],
-  "native_command_baseline": {
-    "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
-    "count": 105,
-    "sha256": "efdedcd4467b0ff308e7f61f96ceb148448c9bf6df94e38e7721017236e55719",
-    "additions_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
-    "additions_after": "php8.3 tests/domain_renewal_agreements_native.php",
-    "additions": [
-      "php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
-      "php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
-      "php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
-      "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
-      "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
-      "php8.3 tests/domain_renewal_dispatch_native.php"
+  "only_executable_change": "php8.3 -> quoted PHP_BINARY environment path; all arguments, redirects, non-PHP commands and order retained"
+ },
+ "published_release_upgrade": {
+  "baseline_source": "7190b582a02be8a1daa501db14b5899cfc1eb5d0",
+  "baseline_archive": "CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip",
+  "baseline_sha256": "aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e",
+  "baseline_members": 2591,
+  "candidate_version": "1.25.0",
+  "contexts": [
+   "root-rewrite",
+   "subfolder-rewrite",
+   "root-no-rewrite",
+   "subfolder-no-rewrite"
+  ],
+  "reports": [
+   "apache-release125-guards-results.json",
+   "apache-release125-input-guards-results.json",
+   "apache-release125-results.json"
+  ],
+  "snapshots": [
+   "apache-release125-r125_ron_-original-retention.json",
+   "apache-release125-r125_ron_-upgrade-retention.json",
+   "apache-release125-r125_son_-original-retention.json",
+   "apache-release125-r125_son_-upgrade-retention.json",
+   "apache-release125-r125_roff_-original-retention.json",
+   "apache-release125-r125_roff_-upgrade-retention.json",
+   "apache-release125-r125_soff_-original-retention.json",
+   "apache-release125-r125_soff_-upgrade-retention.json"
+  ],
+  "screenshots": [
+   "apache-release125-r125_ron_-Upgraded-Client-Desktop.png",
+   "apache-release125-r125_ron_-Upgraded-Client-Mobile.png",
+   "apache-release125-r125_son_-Upgraded-Client-Desktop.png",
+   "apache-release125-r125_son_-Upgraded-Client-Mobile.png",
+   "apache-release125-r125_roff_-Upgraded-Client-Desktop.png",
+   "apache-release125-r125_roff_-Upgraded-Client-Mobile.png",
+   "apache-release125-r125_soff_-Upgraded-Client-Desktop.png",
+   "apache-release125-r125_soff_-Upgraded-Client-Mobile.png"
+  ],
+  "source_sha256": {
+   "tests/organized_update_fixture.php": "70d026111c4dffaefb31c4f6c8ec896ef725584e0566d223a7fec023ad9c6ade",
+   "tests/release_125_later_records.py": "0902efd051b96eba613c266ed5aba49272bdfa3a00e7b005e2310c19bf131e61",
+   "tests/release_125_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
+   "tests/release_125_retention_fixture.php": "102635706356d8f52b38f6cd495444290677ba1254889eedf8e96b1eaaf8788c",
+   "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
+   "tests/release_125_upgrade_cases.py": "f5673e293b74d1809a6500e819908c00e513b5827f5766d15411440e4db2ee56",
+   "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
+   "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
+  },
+  "scope": "Actual published original and synthetic business records; later agreement/recurring/licensing families are created only after candidate upgrade; all prior acceptance remains required."
+ },
+ "release_acceptance_corrections": {
+  "parent": "85f0b489b30d4e9e6db839e2cf7da02f512176c5",
+  "reviewed_driver_changes": {
+   "tests/browser_acceptance.py": {
+    "before": "562ba767e24e1bbc30683d187a58f09a426ed48682830bc4379cc1808aaf02ad",
+    "after": "092b2ecc03f9827e96494e6515c0b9e95debbb7f5b4ab2f9952e72ebb3c26238"
+   },
+   "tests/apache_acceptance.py": {
+    "before": "83ac9dcfb4f90e6ba3df000d137b94bae6a5d42bb68f719c5b60860fc8aa823e",
+    "after": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703"
+   }
+  },
+  "source_sha256": {
+   "tests/release_cases.py": "807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af",
+   "tests/license_release_cases.py": "f4734915f8c50afd652bfd352888f363e3144d4ba7f3515a49ff729881fa1599",
+   "tests/license_release_browser_fixture.php": "9b0b4f72b1ed9281332afbf3b5060fef98d43501e3685bd4bc3c51c703d91bc9",
+   "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
+   "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a",
+   "tests/structure_helpers.py": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
+   "tests/staff_cases.py": "77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f",
+   "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
+   "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
+   "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
+   "tests/payments_native.php": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
+   "tests/provider_package_wordpress_installed_native.php": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
+   "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
+   "tests/domain_expiry_native.php": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
+   "tests/domain_contracts_native.php": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd",
+   "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
+   "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
+   "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
+   "tests/delivery_cases.py": "d89f8b51e16cd95be0461010b005be6138b69cf07f5d05b083db423bbfa9b944"
+  },
+  "additional_screenshots": [
+   "Admin-Overview-Desktop.png",
+   "Admin-Overview-Mobile.png",
+   "Client-Projects-Desktop.png",
+   "Client-Projects-Mobile.png",
+   "Licensing-Legacy-Setup-Desktop.png",
+   "Licensing-Legacy-Setup-Mobile.png",
+   "Licensing-Customer-Downloads-Desktop.png",
+   "Licensing-Customer-Downloads-Mobile.png",
+   "Licensing-Owner-Invoice-Review-Desktop.png",
+   "Licensing-Owner-Invoice-Review-Mobile.png"
+  ],
+  "scope": "Additive landing-page captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
+ },
+ "stackcp_access_snapshot_native_command_baseline": {
+  "source": "60c053b5c9f5a5fded943930500ea57cddd20ff8",
+  "count": 148,
+  "sha256": "c639df7617a88a3e5fb5a7a538a2c38e7ea87839dabb7dc6a2df6ad8a4b1558a",
+  "additions_after": "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
+  "additions": [
+   "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php"
+  ],
+  "report": "stackcp-access-read-snapshot-native-results.json",
+  "seed_diagnostic": "stackcp-access-read-snapshot-seed.json",
+  "seed_scope": "Finite synthetic metadata only, with no checks array; never application input or acceptance authority."
+ },
+ "provider_catalog_import": {
+  "source_base": "e8ccefc931829aa9245a71d4ba0d310db2d0add6",
+  "predecessor_native_count": 149,
+  "predecessor_native_sha256": "9d3f22b23532d5c87d651cf76874c9bd9e9da5f4b115fc8593ae7d5bb8aba6aa",
+  "additions_after": "\"$PHP_BINARY\" tests/catalog_native.php",
+  "additions": [
+   "\"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json",
+   "\"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json",
+   "\"$PHP_BINARY\" tests/provider_catalog_import_native.php"
+  ],
+  "reports": [
+   "provider-catalog-import-default.json",
+   "provider-catalog-import-minimal.json",
+   "provider-catalog-import-native-results.json"
+  ],
+  "screenshots": [
+   "20i-Product-Import-Desktop.png",
+   "20i-Product-Import-Mobile.png"
+  ],
+  "source_sha256": {
+   "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
+   "tests/provider_catalog_import_native.php": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+   "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
+  },
+  "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+ },
+ "document_root_controls": {
+  "parent": "642fa02a00d2fe22c9c13a2f4c409aec1f059ca0",
+  "native_additions": [
+   "CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 \"$PHP_BINARY\" tests/provider_document_root_controls_native.php",
+   "python3 -B tests/provider_document_root_controls_http_contract.py > qa/provider-document-root-controls-handler-results.json"
+  ],
+  "native_after": "\"$PHP_BINARY\" tests/provider_document_roots_native.php",
+  "browser_after": "        document_roots_browser(globals(),browser)\n",
+  "browser_hook": "        from provider_document_root_controls_cases import run_browser as document_root_controls_browser\n        document_root_controls_browser(globals(),browser)\n",
+  "source_extensions": {
+   "tests/browser_acceptance.py": {
+    "predecessor_sha256": "2c899d14afa3b0408167ffd3b03cb9817d28789c03b4c0a456e26afe1114ea2c",
+    "current_sha256": "2cbd4f2c94fc792b93a48e773e953513549e85041477121b35a5cfb761c524db",
+    "edits": [
+     {
+      "before": "        domain_expiry_browser(globals(),browser)\n        from provider_document_roots_cases import run_browser as document_roots_browser\n        document_roots_browser(globals(),browser)\n        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser\n        package_force_ssl_browser(globals(),browser)\n        from provider_directory_listing_cases import run_browser as directory_listing_browser\n",
+      "after": "        domain_expiry_browser(globals(),browser)\n        from provider_document_roots_cases import run_browser as document_roots_browser\n        document_roots_browser(globals(),browser)\n        from provider_document_root_controls_cases import run_browser as document_root_controls_browser\n        document_root_controls_browser(globals(),browser)\n        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser\n        package_force_ssl_browser(globals(),browser)\n        from provider_directory_listing_cases import run_browser as directory_listing_browser\n"
+     }
     ]
-  },
-  "directory_control_command_baseline": {
-    "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
-    "count": 105,
-    "sha256": "efdedcd4467b0ff308e7f61f96ceb148448c9bf6df94e38e7721017236e55719",
-    "additions_proposal_sha256": "abdef32316fe6ceb32259218286e5905af9140326320b9a27ba0b09dd1e463d7",
-    "additions_after": "php8.3 tests/provider_force_ssl_controls_native.php",
-    "additions": [
-      "php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
-      "php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
-      "php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
-      "php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
-      "php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
-      "php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
-      "php8.3 tests/provider_directory_listing_controls_native.php",
-      "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json"
+   },
+   "tests/provider_http_server.py": {
+    "predecessor_sha256": "d98da874c5f486c76d9d314bad3ef6551d6d94f841c3c0132736630e938031ee",
+    "current_sha256": "e17ae42b426ae48ff0a1e3bcd0f410c720c4d4841354c749d75be7b563d0503d",
+    "edits": [
+     {
+      "before": "                mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')\n                force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')\n                directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')\n                renewal_write=self.path=='/reseller/*/renewDomain'\n                if not (renewal_write or force_ssl_write or directory_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':\n                    fixture.errors.append('Unexpected write request '+str(self.path))\n                try:payload=json.loads(raw)\n                except Exception:payload=None;fixture.errors.append('Unparseable write body')\n                if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')\n                if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')\n                fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})\n                if renewal_write:\n                    valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool\n",
+      "after": "                mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')\n                force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')\n                directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')\n                document_root_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/updateDocRoot',self.path or '')\n                renewal_write=self.path=='/reseller/*/renewDomain'\n                if not (renewal_write or force_ssl_write or directory_write or document_root_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':\n                    fixture.errors.append('Unexpected write request '+str(self.path))\n                try:payload=json.loads(raw)\n                except Exception:payload=None;fixture.errors.append('Unparseable write body')\n                if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')\n                if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')\n                if document_root_write:\n                    update=payload.get('update') if isinstance(payload,dict) else None\n                    document_root_valid=(isinstance(payload,dict) and list(payload)==['update'] and isinstance(update,dict) and len(update)==1\n                        and all(isinstance(name,str) and len(name)<=253 and re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+',name)\n                            and isinstance(path,str) and 0<len(path)<=1024 and re.fullmatch(r'[A-Za-z0-9_-][A-Za-z0-9._-]*(?:/[A-Za-z0-9_-][A-Za-z0-9._-]*)*',path) for name,path in update.items())\n                        and json.dumps(payload,separators=(',',':'),ensure_ascii=True).encode()==raw)\n                    if not document_root_valid:fixture.errors.append('Unexpected single-website folder change body')\n                fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})\n                if renewal_write:\n                    valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool\n"
+     },
+     {
+      "before": "                    fixture.renewal_posts.append({'path':self.path,'body':payload})\n                    status,body={'success':(200,b'true'),'failure':(200,b'false'),'null':(200,b'null'),'object':(200,b'{\"result\":true}'),'authentication':(401,b'private synthetic renewal response'),'uncertain':(202,b'true'),'echo':(200,b'\"SYNTHETIC_RAW_GENERAL_KEY\"')}[fixture.renewal_mode]\n                    if not valid:status,body=400,b'{\"error\":\"synthetic renewal scope refused\"}'\n                elif fixture.write_mode in ('success','uncertain_landed'):\n                    status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}\n                    if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):\n                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})\n                    body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()\n                    if force_ssl_write or directory_write:\n                        body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.\n                    if mailbox_path:\n                        mailbox=payload['new']['mailbox']\n",
+      "after": "                    fixture.renewal_posts.append({'path':self.path,'body':payload})\n                    status,body={'success':(200,b'true'),'failure':(200,b'false'),'null':(200,b'null'),'object':(200,b'{\"result\":true}'),'authentication':(401,b'private synthetic renewal response'),'uncertain':(202,b'true'),'echo':(200,b'\"SYNTHETIC_RAW_GENERAL_KEY\"')}[fixture.renewal_mode]\n                    if not valid:status,body=400,b'{\"error\":\"synthetic renewal scope refused\"}'\n                elif document_root_write and not document_root_valid:\n                    status,body=400,b'{\"error\":\"synthetic folder change scope refused\"}'\n                elif fixture.write_mode in ('success','uncertain_landed'):\n                    status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}\n                    if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):\n                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})\n                    body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()\n                    if force_ssl_write or directory_write or document_root_write:\n                        body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.\n                    if mailbox_path:\n                        mailbox=payload['new']['mailbox']\n"
+     }
     ]
-  },
-  "stackcp_native_command_baseline": {
-    "source": "1d026026d711a602df5705aa10cf9492574b1108",
-    "count": 119,
-    "sha256": "a961751ed338491835cc7620044d2a61c31696bf5f5b46b80d9453971c909ba2",
-    "additions_after": "php8.3 tests/provider_package_wordpress_installed_native.php",
-    "additions": [
-      "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
-      "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
-      "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
-      "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
-      "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
-      "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
-      "php8.3 tests/stackcp_prerequisites_native.php"
+   },
+   "tests/prepare_legacy.py": {
+    "predecessor_sha256": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
+    "current_sha256": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
+    "edits": [
+     {
+      "before": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n",
+      "after": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n\n# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n"
+     }
     ]
+   }
   },
-  "registration_draft_command_baseline": {
-    "source": "9538ef1c87884167de8e0c1d84d1f9c28203423c",
-    "count": 126,
-    "sha256": "91264c4f0921a7a05408250444353a4f121a58ba61f6d9f3425a2c6d59d39208",
-    "owned_ancestry": "2e86e4e021980364b8f6d340e100e66779cf6fb0",
-    "additions_after": "php8.3 tests/domain_renewal_dispatch_native.php",
-    "additions": [
-      "php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
-      "php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
-      "php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
-      "php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
-      "php8.3 tests/domain_registration_drafts_native.php"
+  "source_sha256": {
+   "tests/provider_document_root_controls_native.php": "668654ca2bce3da5e5b18a32f00b1d0cbdf8fca64c4bc0f482aed753fdeb0932",
+   "tests/provider_document_root_controls_cases.py": "c6dd55725f82fdd18e9d97cc8ad07f64bd2e9ff521c9f1b91c0414c7df70d9a6",
+   "tests/provider_document_root_controls_http_contract.py": "78f09487832f92fccca942b1bc30a14eaa09dce25ae6c61266fee1419063ac78",
+   "tests/document_root_controls_acceptance_contract.py": "cb8ca9496a8d6c3f8baadd815f0eda0a6ca219a0c153514b786e5f634233f1f8",
+   ".github/workflows/provider-document-root-controls.yml": "aba2f9c99e8bd4ab521152829d86fa72f5217e2020094e66db8446dfb6e43d15"
+  },
+  "reports": [
+   "provider-document-root-controls-native-results.json",
+   "provider-document-root-controls-handler-results.json"
+  ],
+  "predecessor_reports": {
+   "browser": {
+    "count": 164,
+    "sha256": "3d86de54f903edf0dd64cba2b293d5632a3f8fcb38e11ac719f2240a73253487"
+   },
+   "final": {
+    "count": 208,
+    "sha256": "0f39300542fdab4ace1b3dc0e63510a3d4cb6f9b73a6d22fd811f330b8bee8f9"
+   }
+  },
+  "screenshots": [
+   "Document-Root-Control-Ready-Desktop.png",
+   "Document-Root-Control-Ready-Mobile.png",
+   "Document-Root-Control-Requested-Desktop.png",
+   "Document-Root-Control-Requested-Mobile.png",
+   "Document-Root-Control-Different-Desktop.png",
+   "Document-Root-Control-Different-Mobile.png",
+   "Document-Root-Control-Observed-Desktop.png",
+   "Document-Root-Control-Observed-Mobile.png"
+  ],
+  "scope": "Owner folder control native/browser/handler wiring; predecessor recipes, evidence, browser calls and synthetic routes retained. Native/browser execution and installed-upgrade acceptance remain required."
+ },
+ "document_root_controls_upgrade": {
+  "parent": "8558119bcea66722af4180d6e3db3d1bd923adf2",
+  "apache_after": "          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n",
+  "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade_test.py --report qa/apache-document-root-controls-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
+  "predecessor_workflow_sha256": "1f1cebc2a15a5387d21bc922d4c221df05db5d6389e744dad7fdc4bcfa4de9ee",
+  "reports": [
+   "apache-document-root-controls-upgrade-guard-results.json",
+   "apache-document-root-controls-upgrade-results.json"
+  ],
+  "predecessor_reports": {
+   "browser": {
+    "count": 166,
+    "sha256": "7f52c7d7d4cf19fe1d421ee0d0fedf5c21b1bcaab56abda18e5915ece763f456"
+   },
+   "final": {
+    "count": 210,
+    "sha256": "840d742d324d79e6b8236b24645f77a4c92692d7f88cef7672058768abbfac80"
+   }
+  },
+  "source_sha256": {
+   "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+   "tools/legacy-release-files.json": "4c4c74f156e9e1d12f5dfcc07f21977f8af5a4fea1c17039a2d10148cc269fca",
+   "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
+   "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
+   "tests/provider_document_root_controls_upgrade.py": "34ded6e92834ebd97044969ef6945b7c72abfaee13d355cbd849026b068dec9e",
+   "tests/provider_document_root_controls_upgrade_test.py": "261e30198a72b484071ecc19607b56f2c7e5609a22085d4e5507d893e61f63a7",
+   "tests/provider_document_root_controls_upgrade_fixture.php": "a02c455a30913670ffc2a613303ee6657937e0e83de79637ae8a0a3eb1ea1043"
+  },
+  "old_baseline_guard": {
+   "path": "tests/release_125_upgrade_input_guards.py",
+   "before_sha256": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99",
+   "after_sha256": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
+   "edits": [
+    {
+     "before": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n",
+     "after": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n"
+    }
+   ],
+   "raw_inverse": true,
+   "exact_donor_file": true
+  },
+  "baseline_source": "b79c67110829126916e3a65e616191542448bccc",
+  "baseline_archive_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
+  "baseline_bytes": 15843208,
+  "baseline_members": 2895,
+  "scope": "One real published1.25 subfolder/rewrite installation followed by exact candidate UPDATE and populated folder-control retry, complete-journal rollback, reapply and narrow local terminal recovery. No native/installed outcome follows from portable checks."
+ },
+ "client_document_root_requests": {
+  "parent": "3bd43ca891c9faefc6c07a293e4d2d59e00d4a62",
+  "native_after": "CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 \"$PHP_BINARY\" tests/provider_document_root_controls_native.php",
+  "native_additions": [
+   "\"$PHP_BINARY\" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json",
+   "\"$PHP_BINARY\" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json",
+   "\"$PHP_BINARY\" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json",
+   "\"$PHP_BINARY\" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json",
+   "\"$PHP_BINARY\" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json",
+   "\"$PHP_BINARY\" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json",
+   "\"$PHP_BINARY\" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json",
+   "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json",
+   "CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 \"$PHP_BINARY\" tests/provider_document_root_requests_native.php"
+  ],
+  "browser_command": ".ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json",
+  "browser_step": "      - name: Website folder request layout models\n        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json\n",
+  "browser_after": "        document_root_controls_browser(globals(),browser)\n",
+  "browser_hook": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n",
+  "apache_after": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
+  "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py\n",
+  "reports": [
+   "document-root-requests-document-default-results.json",
+   "document-root-requests-document-minimal-results.json",
+   "document-root-requests-storage-default-results.json",
+   "document-root-requests-storage-minimal-results.json",
+   "document-root-requests-contract-default-results.json",
+   "document-root-requests-contract-minimal-results.json",
+   "document-root-requests-views-default-results.json",
+   "document-root-requests-views-minimal-results.json",
+   "provider-document-root-requests-native-results.json",
+   "document-root-requests-modeled-browser-results.json"
+  ],
+  "apache_reports": [
+   "apache-document-root-requests-upgrade-guard-results.json",
+   "apache-document-root-requests-upgrade-results.json"
+  ],
+  "predecessor_contract_sha256": "34aa96f9ed22969c902227412c062278748dfd3fc7ce4fb84bb48f32c18d4fd8",
+  "source_deltas": {
+   ".github/workflows/application-tests.yml": {
+    "before_sha256": "cb51a74c10a0a46e7f2216c7e101b086f9fa668a625be84ed74c5915af86659a",
+    "after_sha256": "a359d42fa7547c3bda819e57b8a60fce6063054b005be1ab71bda43eeb5b39fb",
+    "changes": [
+     {
+      "after_start": 374,
+      "after_end": 383,
+      "before": "",
+      "after": "          \"$PHP_BINARY\" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json\n          CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 \"$PHP_BINARY\" tests/provider_document_root_requests_native.php\n"
+     },
+     {
+      "after_start": 446,
+      "after_end": 448,
+      "before": "",
+      "after": "      - name: Website folder request layout models\n        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json\n"
+     },
+     {
+      "after_start": 718,
+      "after_end": 720,
+      "before": "",
+      "after": "          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py\n"
+     }
     ]
-  },
-  "stackcp_access_command_baseline": {
-    "source": "9779879bc93e030bab70be383186700aabea3982",
-    "count": 131,
-    "sha256": "bebd874d4996871ba12828e61997b998da05effdc53234445de3f88fb732a0ed",
-    "additions_after": "php8.3 tests/stackcp_prerequisites_native.php",
-    "additions": [
-      "php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
-      "php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
-      "php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
-      "php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
-      "php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
-      "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
-      "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
-      "php8.3 tests/stackcp_access_native.php"
+   },
+   "tests/browser_acceptance.py": {
+    "before_sha256": "2cbd4f2c94fc792b93a48e773e953513549e85041477121b35a5cfb761c524db",
+    "after_sha256": "b3f87e1ea599d8bcac904c803dbd93da2d646cfa7cc33e0f2900623f8ee8f7d7",
+    "changes": [
+     {
+      "after_start": 250,
+      "after_end": 253,
+      "before": "",
+      "after": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n"
+     }
     ]
-  },
-  "cloud_assignment_native_command_baseline": {
-    "source": "819c3ea39b4ebbef8f37280dc5ede59cf06fd01c",
-    "source_file_sha256": "b0df625dfedebcbc31653e78f84651d000e3bed8c0ed396afc2c3acc76393530",
-    "count": 139,
-    "sha256": "5052dc82e3bf89dbb80c764c0562b03067fa868785a58ce278993b09d4227fd5",
-    "additions_after": "php8.3 tests/provider_cloud_confirmation_native.php",
-    "additions": [
-      "php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
-      "php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
-      "php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
-      "php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
-      "php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
-      "php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
-      "php8.3 tests/provider_cloud_assignment_native.php",
-      "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json"
+   },
+   "tests/acceptance_artifacts_test.py": {
+    "before_sha256": "e7c9caba2592584656ac025d962bf2dce8c7696dba5c3900a372bc03ce116d2b",
+    "after_sha256": "90a007855a9e7cdf2a2ea3635cb7724d2bd93f1a46cb4594cdd114105e623d37",
+    "changes": [
+     {
+      "after_start": 442,
+      "after_end": 449,
+      "before": "",
+      "after": "_run_before_client_document_root_requests = run\n\ndef run(tmp):\n    from document_root_requests_acceptance import run as client_folder_acceptance\n    client_folder_acceptance(globals(), tmp, _run_before_client_document_root_requests)\n\n\n"
+     }
     ]
-  },
-  "stackcp_snapshot_native_command_baseline": {
-    "source": "5bfd9c695d35103c3bf27e8eaf66b054c59741cf",
-    "count": 147,
-    "sha256": "a4b7a286f28dbbfd8c3d3998f0d0e30aa0b4374c04b3f412c2b590141b8ec4f5",
-    "additions_after": "php8.3 tests/stackcp_access_native.php",
-    "additions": [
-      "php8.3 tests/stackcp_read_snapshot_native.php"
+   },
+   "tools/acceptance-reports.json": {
+    "before_sha256": "45684289a4b1c23846c62cb203ccb835a051d813eb9d8deb8d284768032bcd77",
+    "after_sha256": "3233465b3f5cf31a620e1225865200e9085947e2930270e235a2f9a21238014a",
+    "changes": [
+     {
+      "after_start": 31,
+      "after_end": 40,
+      "before": "",
+      "after": "    \"document-root-requests-contract-default-results.json\",\n    \"document-root-requests-contract-minimal-results.json\",\n    \"document-root-requests-document-default-results.json\",\n    \"document-root-requests-document-minimal-results.json\",\n    \"document-root-requests-modeled-browser-results.json\",\n    \"document-root-requests-storage-default-results.json\",\n    \"document-root-requests-storage-minimal-results.json\",\n    \"document-root-requests-views-default-results.json\",\n    \"document-root-requests-views-minimal-results.json\",\n"
+     },
+     {
+      "after_start": 119,
+      "after_end": 120,
+      "before": "",
+      "after": "    \"provider-document-root-requests-native-results.json\",\n"
+     },
+     {
+      "after_start": 183,
+      "after_end": 185,
+      "before": "",
+      "after": "    \"apache-document-root-requests-upgrade-guard-results.json\",\n    \"apache-document-root-requests-upgrade-results.json\",\n"
+     },
+     {
+      "after_start": 223,
+      "after_end": 232,
+      "before": "",
+      "after": "    \"document-root-requests-contract-default-results.json\",\n    \"document-root-requests-contract-minimal-results.json\",\n    \"document-root-requests-document-default-results.json\",\n    \"document-root-requests-document-minimal-results.json\",\n    \"document-root-requests-modeled-browser-results.json\",\n    \"document-root-requests-storage-default-results.json\",\n    \"document-root-requests-storage-minimal-results.json\",\n    \"document-root-requests-views-default-results.json\",\n    \"document-root-requests-views-minimal-results.json\",\n"
+     },
+     {
+      "after_start": 343,
+      "after_end": 344,
+      "before": "",
+      "after": "    \"provider-document-root-requests-native-results.json\",\n"
+     },
+     {
+      "after_start": 417,
+      "after_end": 419,
+      "before": "      \"two folder-control installed-update guard and actual Apache reports; exact published1.25 original input added alongside preserved1.24\"\n",
+      "after": "      \"two folder-control installed-update guard and actual Apache reports; exact published1.25 original input added alongside preserved1.24\",\n      \"ten client website-folder document/storage/service/view/native/modeled reports plus two installed-upgrade reports; actual packaged client-to-owner workflow and eight distinct captures remain additive in the HTTP report\"\n"
+     }
     ]
+   }
   },
-  "release_environment_predecessor": {
-    "source": "3fa72d7b3b447fa3d281cc981ed861c508f850f2",
-    "count": 148,
-    "sha256": "15530357b81006e6d0f8f208ff830776f3a13ad299e6d2c404c5645198ee0f65",
-    "commands": [
-      "php8.3 tests/service-plans/forms.php > qa/service-plans-forms-results.json",
-      "php8.3 tests/service-plans/documents.php > qa/service-plans-documents-results.json",
-      "php8.3 tests/service-plans/run.php > qa/service-plans-supplied-default.txt",
-      "php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json",
-      "php8.3 tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json",
-      "php8.3 tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json",
-      "php8.3 tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json",
-      "php8.3 tests/estimator_adapter.php",
-      "php8.3 tests/native.php",
-      "php8.3 tests/staff_native.php",
-      "php8.3 tests/support_native.php",
-      "php8.3 tests/catalog_native.php",
-      "php8.3 tests/payments_native.php",
-      "php8.3 tests/attempts_native.php",
-      "php8.3 tests/notifications_native.php",
-      "php8.3 tests/ledger_native.php",
-      "php8.3 tests/delivery_archive.php",
-      "php8.3 tests/delivery_native.php",
-      "php8.3 tests/activity_native.php",
-      "php8.3 tests/mail_templates_native.php",
-      "php8.3 tests/mail_accounts_native.php",
-      "php8.3 tests/reviews_native.php",
-      "php8.3 tests/appointments_native.php",
-      "php8.3 tests/mail_connections_native.php",
-      "php8.3 tests/mail_inbox_native.php",
-      "php8.3 tests/mail_message_native.php",
-      "php8.3 tests/mail_notices_native.php",
-      "php8.3 tests/mail_drafts_native.php",
-      "php8.3 tests/mail_drafts_form.php",
-      "cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json",
-      "php8.3 -n tests/mail_drafts_form.php",
-      "php8.3 tests/mail_submissions_native.php",
-      "php8.3 tests/mail_submission_dispatch_native.php",
-      "php8.3 tests/mail_submission_forms.php",
-      "cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json",
-      "php8.3 -n tests/mail_submission_forms.php",
-      ".ci-venv/bin/python tests/mail_submission_combined.py",
-      "php8.3 tests/provider_settings_native.php",
-      "php8.3 tests/provider_checks_native.php",
-      "php8.3 tests/provider_schedule_document.php",
-      "php8.3 -n tests/provider_schedule_document.php",
-      "php8.3 tests/provider_schedule_native.php",
-      "php8.3 tests/provider_inventory_native.php",
-      "php8.3 tests/provider_cloud_sites_native.php",
-      "php8.3 tests/provider_cloud_confirmation_native.php",
-      "php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
-      "php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
-      "php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
-      "php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
-      "php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
-      "php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
-      "php8.3 tests/provider_cloud_assignment_native.php",
-      "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json",
-      "php8.3 tests/provider_forwarding_contract.php",
-      "php8.3 tests/provider_forwarding_native.php",
-      "php8.3 tests/provider_cloud_providers_native.php",
-      "php8.3 tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json",
-      "php8.3 -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json",
-      "php8.3 tests/provider_inventory_upgrade_native.php",
-      "php8.3 tests/provider_registrar_native.php",
-      "php8.3 tests/provider_registration_periods_native.php",
-      "php8.3 tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json",
-      "php8.3 -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json",
-      "php8.3 tests/domain_renewals_native.php",
-      "php8.3 tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json",
-      "php8.3 -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json",
-      "php8.3 tests/domain_renewal_agreements_native.php",
-      "php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
-      "php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
-      "php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
-      "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
-      "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
-      "php8.3 tests/domain_renewal_dispatch_native.php",
-      "php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
-      "php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
-      "php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
-      "php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
-      "php8.3 tests/domain_registration_drafts_native.php",
-      "php8.3 tests/service_observations_native.php",
-      "php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json",
-      "php8.3 tests/domain_contracts_native.php",
-      "php8.3 tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json",
-      "php8.3 tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json",
-      "php8.3 tests/domain_expiry_native.php",
-      "php8.3 tests/twentyi-package-php/run.php > qa/package-php-document-results.json",
-      "php8.3 -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json",
-      "php8.3 tests/provider_package_php_native.php",
-      "php8.3 tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json",
-      "php8.3 tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json",
-      "php8.3 tests/provider_document_roots_native.php",
-      "php8.3 tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json",
-      "php8.3 -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json",
-      "php8.3 tests/provider_package_force_ssl_native.php",
-      "php8.3 tests/directory_listing_contract.php > qa/directory-listing-document-results.json",
-      "php8.3 -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json",
-      "php8.3 tests/directory_listing_transport.php > qa/directory-listing-transport-results.json",
-      "php8.3 -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json",
-      "php8.3 tests/provider_directory_listing_native.php",
-      "php8.3 tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json",
-      "php8.3 -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json",
-      "php8.3 tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json",
-      "php8.3 -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json",
-      "php8.3 tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json",
-      "php8.3 -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json",
-      "php8.3 tests/provider_force_ssl_controls_native.php",
-      "php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
-      "php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
-      "php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
-      "php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
-      "php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
-      "php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
-      "php8.3 tests/provider_directory_listing_controls_native.php",
-      "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json",
-      "python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json",
-      "php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
-      "php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json",
-      "php8.3 tests/provider_package_wordpress_installed_native.php",
-      "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
-      "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
-      "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
-      "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
-      "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
-      "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
-      "php8.3 tests/stackcp_prerequisites_native.php",
-      "php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
-      "php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
-      "php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
-      "php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
-      "php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
-      "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
-      "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
-      "php8.3 tests/stackcp_access_native.php",
-      "php8.3 tests/stackcp_read_snapshot_native.php",
-      "php8.3 tests/provider_domain_search_native.php",
-      "php8.3 tests/provider_mailboxes_native.php",
-      "php8.3 tests/provider_operations_native.php",
-      "php8.3 tests/provider_operations_execute_native.php",
-      "php8.3 tests/service_plans_native.php",
-      "php8.3 tests/recurring_billing_native.php",
-      "php8.3 tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json",
-      "php8.3 -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json",
-      "php8.3 tests/hosting_records_native.php",
-      "php8.3 tests/hosting_operations_native.php",
-      "php8.3 tests/hosting_retry_native.php",
-      "php8.3 tests/hosting_delete_retry_native.php",
-      "php8.3 tests/hosting_reconciliation_native.php",
-      "php8.3 tests/client_authority_native.php",
-      "php8.3 tests/license_native.php"
-    ],
-    "only_executable_change": "php8.3 -> quoted PHP_BINARY environment path; all arguments, redirects, non-PHP commands and order retained"
+  "source_sha256": {
+   ".github/workflows/provider-document-root-requests.yml": "8d8659033ce8f820e1138ec1ccd81de74b690275e9b72d66f92017dd1804e6a5",
+   "site/admin/controllers/actions.php": "90f712f2bd6c508ee6fc0b53a5ed857be05d8eeead38db0eb7e96c4aa83e05a8",
+   "site/admin/controllers/document_root_requests.php": "f693e0f0c317e6f38d08df2eb5ea335d78795421e7e2f8ed319a1e01c2168295",
+   "site/admin/controllers/router.php": "4afde0ea88bfc8b733e1d6ba23ec72eab1484dfb6306dd9f33c35b511f794208",
+   "site/admin/views/providers.php": "ce22f2aa87bdc709a30f8081b6ac8261056909ebe19974e0cd19a6ae23696477",
+   "site/app/providers/document_root_controls.php": "bc42cfa6761b47a43e432a949e6de544ba8ddc6a8db87c5b75e697adcc0c9d9d",
+   "site/app/providers/document_root_controls_storage.php": "50476ee25b4b12b37afdf7e6ba0161fc878a287f4fb1909ee5a60e4c6392794e",
+   "site/app/providers/document_root_requests.php": "d2ed027234301c873201f2ba7919ec50452ce1a3f55670051c868d20ff586265",
+   "site/app/providers/document_root_requests_document.php": "314705fec3083461e3873f07c2cf18911cfebca5b62ad5f3b8c4563534b39ad9",
+   "site/app/providers/document_root_requests_storage.php": "57011802543acf9b6896d1e5cc24be0b842906e2dc1880fb29e22adfdecbf821",
+   "site/app/providers/document_root_requests_views.php": "8cbb40a1e85fd2440adf92fd59871c20f4e123e1396fca9943cea98d346eaff0",
+   "site/app/staff/accounts.php": "d774461631326d5122d5218d0e9a46ad5d9c1f7a7b2af226d6f9ff871ef35de5",
+   "site/assets/css/growth.css": "ddf623c73fb280b19f29690abea62d2f182ee4c8ec10ee0bbb4a18eece6cf975",
+   "site/database/migrations/provider_document_root_requests_migrate.php": "b5d48f027d7e2f73ba9218a2bb84ae56e00795a5b42ae12ec04142fc1e469f96",
+   "site/database/schema/provider_document_root_requests_schema.php": "cd287d3db8fb51470895bd1ee649092cbd281a604070a1a13121df375f8bfe3a",
+   "site/includes/layout/admin.php": "302d399ec5be0a9bb0990018ae691ac4705fda3157b2fe6af12aedf4c9e031ac",
+   "site/includes/layout/provider_services.php": "1b870cf393b429dacff80be6945add2a5e937c0e5b25bdbc5fed35641e56796a",
+   "site/install/inventory.generated.php": "7fb3c76c15a052d9dd22fe57607fe94813cea66cccb653a3a7639de22b5ce824",
+   "site/portal/controllers/actions.php": "93b76759a95785d1ee54eb02f1f57670abaddd7c3110a3a6dfb83ccdcc9f5e5d",
+   "site/portal/controllers/document_root_requests.php": "fc2d43f31032272c38e57c55898f075111ab555cce4c57378f818bfdbb04af5d",
+   "site/portal/controllers/router.php": "c45e40600dbb50ab2c1648b79bb7edc09c2a216db08f4fbbb827e9e7792c1065",
+   "site/portal/views/document_root_requests.php": "a44d16ae781d5a445db593eb046c362d910ef143a32192a6bc8bc3c6dbe4c641",
+   "tests/document_root_requests_acceptance.py": "2ac337c8d1e2bbe2a7cb00b5a02265452a615c59a222fc29add9c407cd196d9b",
+   "tests/document_root_requests_browser.py": "15f591d68a953d8f847e57879870de2f482dd4871a8e96eff1b885cd046d887a",
+   "tests/document_root_requests_contract.php": "f6e3c99773264f325bdb22949b6d3a590bb650a6c9ee3d24e1f03ee7b9116541",
+   "tests/document_root_requests_document.php": "d46c4de8e1adadb53f11835e81a35e28b5006f69a052f51002ec657e1b66333b",
+   "tests/document_root_requests_storage.php": "a06718a3708c7865c54f1fa543b0bf88146aebedc0581f13c1446d93a6c8e4ca",
+   "tests/document_root_requests_views.php": "b880a282fe8a6f6049065d4b6b140b092644228307bd3652f9980eac20839964",
+   "tests/provider_document_root_requests_cases.py": "8ef5f2346ebddfacf02f32d21a455bc68001848e8fc6275c1b19e51007563eb4",
+   "tests/provider_document_root_requests_native.php": "5380f40b17bf3fe0cca2ad6de2145b1af2753996125a35ec379affc7bd630346",
+   "tests/provider_document_root_requests_upgrade.py": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
+   "tests/provider_document_root_requests_upgrade_fixture.php": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
+   "tests/provider_document_root_requests_upgrade_test.py": "4c29393bd51978a888a5b075e00f0d58f2eb92a43b797cca82c77443f63deae5"
   },
-  "published_release_upgrade": {
-    "baseline_source": "7190b582a02be8a1daa501db14b5899cfc1eb5d0",
-    "baseline_archive": "CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip",
-    "baseline_sha256": "aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e",
-    "baseline_members": 2591,
-    "candidate_version": "1.25.0",
-    "contexts": [
-      "root-rewrite",
-      "subfolder-rewrite",
-      "root-no-rewrite",
-      "subfolder-no-rewrite"
-    ],
-    "reports": [
-      "apache-release125-guards-results.json",
-      "apache-release125-input-guards-results.json",
-      "apache-release125-results.json"
-    ],
-    "snapshots": [
-      "apache-release125-r125_ron_-original-retention.json",
-      "apache-release125-r125_ron_-upgrade-retention.json",
-      "apache-release125-r125_son_-original-retention.json",
-      "apache-release125-r125_son_-upgrade-retention.json",
-      "apache-release125-r125_roff_-original-retention.json",
-      "apache-release125-r125_roff_-upgrade-retention.json",
-      "apache-release125-r125_soff_-original-retention.json",
-      "apache-release125-r125_soff_-upgrade-retention.json"
-    ],
-    "screenshots": [
-      "apache-release125-r125_ron_-Upgraded-Client-Desktop.png",
-      "apache-release125-r125_ron_-Upgraded-Client-Mobile.png",
-      "apache-release125-r125_son_-Upgraded-Client-Desktop.png",
-      "apache-release125-r125_son_-Upgraded-Client-Mobile.png",
-      "apache-release125-r125_roff_-Upgraded-Client-Desktop.png",
-      "apache-release125-r125_roff_-Upgraded-Client-Mobile.png",
-      "apache-release125-r125_soff_-Upgraded-Client-Desktop.png",
-      "apache-release125-r125_soff_-Upgraded-Client-Mobile.png"
-    ],
-    "source_sha256": {
-      "tests/organized_update_fixture.php": "70d026111c4dffaefb31c4f6c8ec896ef725584e0566d223a7fec023ad9c6ade",
-      "tests/release_125_later_records.py": "0902efd051b96eba613c266ed5aba49272bdfa3a00e7b005e2310c19bf131e61",
-      "tests/release_125_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
-      "tests/release_125_retention_fixture.php": "102635706356d8f52b38f6cd495444290677ba1254889eedf8e96b1eaaf8788c",
-      "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
-      "tests/release_125_upgrade_cases.py": "f5673e293b74d1809a6500e819908c00e513b5827f5766d15411440e4db2ee56",
-      "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
-      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
-    },
-    "scope": "Actual published original and synthetic business records; later agreement/recurring/licensing families are created only after candidate upgrade; all prior acceptance remains required."
-  },
-  "release_acceptance_corrections": {
-    "parent": "85f0b489b30d4e9e6db839e2cf7da02f512176c5",
-    "reviewed_driver_changes": {
-      "tests/browser_acceptance.py": {
-        "before": "562ba767e24e1bbc30683d187a58f09a426ed48682830bc4379cc1808aaf02ad",
-        "after": "092b2ecc03f9827e96494e6515c0b9e95debbb7f5b4ab2f9952e72ebb3c26238"
-      },
-      "tests/apache_acceptance.py": {
-        "before": "83ac9dcfb4f90e6ba3df000d137b94bae6a5d42bb68f719c5b60860fc8aa823e",
-        "after": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703"
-      }
-    },
-    "source_sha256": {
-      "tests/release_cases.py": "807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af",
-      "tests/license_release_cases.py": "f4734915f8c50afd652bfd352888f363e3144d4ba7f3515a49ff729881fa1599",
-      "tests/license_release_browser_fixture.php": "9b0b4f72b1ed9281332afbf3b5060fef98d43501e3685bd4bc3c51c703d91bc9",
-      "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
-      "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a",
-      "tests/structure_helpers.py": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
-      "tests/staff_cases.py": "77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f",
-      "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
-      "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
-      "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
-      "tests/payments_native.php": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
-      "tests/provider_package_wordpress_installed_native.php": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
-      "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
-      "tests/domain_expiry_native.php": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
-      "tests/domain_contracts_native.php": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd",
-      "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
-      "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
-      "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
-      "tests/delivery_cases.py": "d89f8b51e16cd95be0461010b005be6138b69cf07f5d05b083db423bbfa9b944"
-    },
-    "additional_screenshots": [
-      "Admin-Overview-Desktop.png",
-      "Admin-Overview-Mobile.png",
-      "Client-Projects-Desktop.png",
-      "Client-Projects-Mobile.png",
-      "Licensing-Legacy-Setup-Desktop.png",
-      "Licensing-Legacy-Setup-Mobile.png",
-      "Licensing-Customer-Downloads-Desktop.png",
-      "Licensing-Customer-Downloads-Mobile.png",
-      "Licensing-Owner-Invoice-Review-Desktop.png",
-      "Licensing-Owner-Invoice-Review-Mobile.png"
-    ],
-    "scope": "Additive landing-page captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
-  },
-  "stackcp_access_snapshot_native_command_baseline": {
-    "source": "60c053b5c9f5a5fded943930500ea57cddd20ff8",
-    "count": 148,
-    "sha256": "c639df7617a88a3e5fb5a7a538a2c38e7ea87839dabb7dc6a2df6ad8a4b1558a",
-    "additions_after": "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
-    "additions": [
-      "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php"
-    ],
-    "report": "stackcp-access-read-snapshot-native-results.json",
-    "seed_diagnostic": "stackcp-access-read-snapshot-seed.json",
-    "seed_scope": "Finite synthetic metadata only, with no checks array; never application input or acceptance authority."
-  },
-  "provider_catalog_import": {
-    "source_base": "e8ccefc931829aa9245a71d4ba0d310db2d0add6",
-    "predecessor_native_count": 149,
-    "predecessor_native_sha256": "9d3f22b23532d5c87d651cf76874c9bd9e9da5f4b115fc8593ae7d5bb8aba6aa",
-    "additions_after": "\"$PHP_BINARY\" tests/catalog_native.php",
-    "additions": [
-      "\"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json",
-      "\"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json",
-      "\"$PHP_BINARY\" tests/provider_catalog_import_native.php"
-    ],
-    "reports": [
-      "provider-catalog-import-default.json",
-      "provider-catalog-import-minimal.json",
-      "provider-catalog-import-native-results.json"
-    ],
-    "screenshots": [
-      "20i-Product-Import-Desktop.png",
-      "20i-Product-Import-Mobile.png"
-    ],
-    "source_sha256": {
-      "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
-      "tests/provider_catalog_import_native.php": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
-      "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
-    },
-    "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
-  },
-  "document_root_controls": {
-    "parent": "642fa02a00d2fe22c9c13a2f4c409aec1f059ca0",
-    "native_additions": [
-      "CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 \"$PHP_BINARY\" tests/provider_document_root_controls_native.php",
-      "python3 -B tests/provider_document_root_controls_http_contract.py > qa/provider-document-root-controls-handler-results.json"
-    ],
-    "native_after": "\"$PHP_BINARY\" tests/provider_document_roots_native.php",
-    "browser_after": "        document_roots_browser(globals(),browser)\n",
-    "browser_hook": "        from provider_document_root_controls_cases import run_browser as document_root_controls_browser\n        document_root_controls_browser(globals(),browser)\n",
-    "source_extensions": {
-      "tests/browser_acceptance.py": {
-        "predecessor_sha256": "2c899d14afa3b0408167ffd3b03cb9817d28789c03b4c0a456e26afe1114ea2c",
-        "current_sha256": "2cbd4f2c94fc792b93a48e773e953513549e85041477121b35a5cfb761c524db",
-        "edits": [
-          {
-            "before": "        domain_expiry_browser(globals(),browser)\n        from provider_document_roots_cases import run_browser as document_roots_browser\n        document_roots_browser(globals(),browser)\n        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser\n        package_force_ssl_browser(globals(),browser)\n        from provider_directory_listing_cases import run_browser as directory_listing_browser\n",
-            "after": "        domain_expiry_browser(globals(),browser)\n        from provider_document_roots_cases import run_browser as document_roots_browser\n        document_roots_browser(globals(),browser)\n        from provider_document_root_controls_cases import run_browser as document_root_controls_browser\n        document_root_controls_browser(globals(),browser)\n        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser\n        package_force_ssl_browser(globals(),browser)\n        from provider_directory_listing_cases import run_browser as directory_listing_browser\n"
-          }
-        ]
-      },
-      "tests/provider_http_server.py": {
-        "predecessor_sha256": "d98da874c5f486c76d9d314bad3ef6551d6d94f841c3c0132736630e938031ee",
-        "current_sha256": "e17ae42b426ae48ff0a1e3bcd0f410c720c4d4841354c749d75be7b563d0503d",
-        "edits": [
-          {
-            "before": "                mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')\n                force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')\n                directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')\n                renewal_write=self.path=='/reseller/*/renewDomain'\n                if not (renewal_write or force_ssl_write or directory_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':\n                    fixture.errors.append('Unexpected write request '+str(self.path))\n                try:payload=json.loads(raw)\n                except Exception:payload=None;fixture.errors.append('Unparseable write body')\n                if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')\n                if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')\n                fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})\n                if renewal_write:\n                    valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool\n",
-            "after": "                mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')\n                force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')\n                directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')\n                document_root_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/updateDocRoot',self.path or '')\n                renewal_write=self.path=='/reseller/*/renewDomain'\n                if not (renewal_write or force_ssl_write or directory_write or document_root_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':\n                    fixture.errors.append('Unexpected write request '+str(self.path))\n                try:payload=json.loads(raw)\n                except Exception:payload=None;fixture.errors.append('Unparseable write body')\n                if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')\n                if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')\n                if document_root_write:\n                    update=payload.get('update') if isinstance(payload,dict) else None\n                    document_root_valid=(isinstance(payload,dict) and list(payload)==['update'] and isinstance(update,dict) and len(update)==1\n                        and all(isinstance(name,str) and len(name)<=253 and re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+',name)\n                            and isinstance(path,str) and 0<len(path)<=1024 and re.fullmatch(r'[A-Za-z0-9_-][A-Za-z0-9._-]*(?:/[A-Za-z0-9_-][A-Za-z0-9._-]*)*',path) for name,path in update.items())\n                        and json.dumps(payload,separators=(',',':'),ensure_ascii=True).encode()==raw)\n                    if not document_root_valid:fixture.errors.append('Unexpected single-website folder change body')\n                fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})\n                if renewal_write:\n                    valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool\n"
-          },
-          {
-            "before": "                    fixture.renewal_posts.append({'path':self.path,'body':payload})\n                    status,body={'success':(200,b'true'),'failure':(200,b'false'),'null':(200,b'null'),'object':(200,b'{\"result\":true}'),'authentication':(401,b'private synthetic renewal response'),'uncertain':(202,b'true'),'echo':(200,b'\"SYNTHETIC_RAW_GENERAL_KEY\"')}[fixture.renewal_mode]\n                    if not valid:status,body=400,b'{\"error\":\"synthetic renewal scope refused\"}'\n                elif fixture.write_mode in ('success','uncertain_landed'):\n                    status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}\n                    if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):\n                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})\n                    body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()\n                    if force_ssl_write or directory_write:\n                        body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.\n                    if mailbox_path:\n                        mailbox=payload['new']['mailbox']\n",
-            "after": "                    fixture.renewal_posts.append({'path':self.path,'body':payload})\n                    status,body={'success':(200,b'true'),'failure':(200,b'false'),'null':(200,b'null'),'object':(200,b'{\"result\":true}'),'authentication':(401,b'private synthetic renewal response'),'uncertain':(202,b'true'),'echo':(200,b'\"SYNTHETIC_RAW_GENERAL_KEY\"')}[fixture.renewal_mode]\n                    if not valid:status,body=400,b'{\"error\":\"synthetic renewal scope refused\"}'\n                elif document_root_write and not document_root_valid:\n                    status,body=400,b'{\"error\":\"synthetic folder change scope refused\"}'\n                elif fixture.write_mode in ('success','uncertain_landed'):\n                    status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}\n                    if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):\n                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})\n                    body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()\n                    if force_ssl_write or directory_write or document_root_write:\n                        body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.\n                    if mailbox_path:\n                        mailbox=payload['new']['mailbox']\n"
-          }
-        ]
-      },
-      "tests/prepare_legacy.py": {
-        "predecessor_sha256": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
-        "current_sha256": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
-        "edits": [
-          {
-            "before": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n",
-            "after": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n\n# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n"
-          }
-        ]
-      }
-    },
-    "source_sha256": {
-      "tests/provider_document_root_controls_native.php": "668654ca2bce3da5e5b18a32f00b1d0cbdf8fca64c4bc0f482aed753fdeb0932",
-      "tests/provider_document_root_controls_cases.py": "c6dd55725f82fdd18e9d97cc8ad07f64bd2e9ff521c9f1b91c0414c7df70d9a6",
-      "tests/provider_document_root_controls_http_contract.py": "78f09487832f92fccca942b1bc30a14eaa09dce25ae6c61266fee1419063ac78",
-      "tests/document_root_controls_acceptance_contract.py": "cb8ca9496a8d6c3f8baadd815f0eda0a6ca219a0c153514b786e5f634233f1f8",
-      ".github/workflows/provider-document-root-controls.yml": "aba2f9c99e8bd4ab521152829d86fa72f5217e2020094e66db8446dfb6e43d15"
-    },
-    "reports": [
-      "provider-document-root-controls-native-results.json",
-      "provider-document-root-controls-handler-results.json"
-    ],
-    "predecessor_reports": {
-      "browser": {
-        "count": 164,
-        "sha256": "3d86de54f903edf0dd64cba2b293d5632a3f8fcb38e11ac719f2240a73253487"
-      },
-      "final": {
-        "count": 208,
-        "sha256": "0f39300542fdab4ace1b3dc0e63510a3d4cb6f9b73a6d22fd811f330b8bee8f9"
-      }
-    },
-    "screenshots": [
-      "Document-Root-Control-Ready-Desktop.png",
-      "Document-Root-Control-Ready-Mobile.png",
-      "Document-Root-Control-Requested-Desktop.png",
-      "Document-Root-Control-Requested-Mobile.png",
-      "Document-Root-Control-Different-Desktop.png",
-      "Document-Root-Control-Different-Mobile.png",
-      "Document-Root-Control-Observed-Desktop.png",
-      "Document-Root-Control-Observed-Mobile.png"
-    ],
-    "scope": "Owner folder control native/browser/handler wiring; predecessor recipes, evidence, browser calls and synthetic routes retained. Native/browser execution and installed-upgrade acceptance remain required."
-  },
-  "document_root_controls_upgrade": {
-    "parent": "8558119bcea66722af4180d6e3db3d1bd923adf2",
-    "apache_after": "          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n",
-    "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade_test.py --report qa/apache-document-root-controls-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
-    "predecessor_workflow_sha256": "1f1cebc2a15a5387d21bc922d4c221df05db5d6389e744dad7fdc4bcfa4de9ee",
-    "reports": [
-      "apache-document-root-controls-upgrade-guard-results.json",
-      "apache-document-root-controls-upgrade-results.json"
-    ],
-    "predecessor_reports": {
-      "browser": {
-        "count": 166,
-        "sha256": "7f52c7d7d4cf19fe1d421ee0d0fedf5c21b1bcaab56abda18e5915ece763f456"
-      },
-      "final": {
-        "count": 210,
-        "sha256": "840d742d324d79e6b8236b24645f77a4c92692d7f88cef7672058768abbfac80"
-      }
-    },
-    "source_sha256": {
-      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
-      "tools/legacy-release-files.json": "4c4c74f156e9e1d12f5dfcc07f21977f8af5a4fea1c17039a2d10148cc269fca",
-      "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
-      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
-      "tests/provider_document_root_controls_upgrade.py": "34ded6e92834ebd97044969ef6945b7c72abfaee13d355cbd849026b068dec9e",
-      "tests/provider_document_root_controls_upgrade_test.py": "261e30198a72b484071ecc19607b56f2c7e5609a22085d4e5507d893e61f63a7",
-      "tests/provider_document_root_controls_upgrade_fixture.php": "a02c455a30913670ffc2a613303ee6657937e0e83de79637ae8a0a3eb1ea1043"
-    },
-    "old_baseline_guard": {
-      "path": "tests/release_125_upgrade_input_guards.py",
-      "before_sha256": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99",
-      "after_sha256": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
-      "edits": [
-        {
-          "before": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n",
-          "after": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n"
-        }
-      ],
-      "raw_inverse": true,
-      "exact_donor_file": true
-    },
-    "baseline_source": "b79c67110829126916e3a65e616191542448bccc",
-    "baseline_archive_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
-    "baseline_bytes": 15843208,
-    "baseline_members": 2895,
-    "scope": "One real published1.25 subfolder/rewrite installation followed by exact candidate UPDATE and populated folder-control retry, complete-journal rollback, reapply and narrow local terminal recovery. No native/installed outcome follows from portable checks."
-  },
-  "client_document_root_requests": {
-    "parent": "3bd43ca891c9faefc6c07a293e4d2d59e00d4a62",
-    "native_after": "CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 \"$PHP_BINARY\" tests/provider_document_root_controls_native.php",
-    "native_additions": [
-      "\"$PHP_BINARY\" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json",
-      "\"$PHP_BINARY\" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json",
-      "\"$PHP_BINARY\" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json",
-      "\"$PHP_BINARY\" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json",
-      "\"$PHP_BINARY\" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json",
-      "\"$PHP_BINARY\" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json",
-      "\"$PHP_BINARY\" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json",
-      "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json",
-      "CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 \"$PHP_BINARY\" tests/provider_document_root_requests_native.php"
-    ],
-    "browser_command": ".ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json",
-    "browser_step": "      - name: Website folder request layout models\n        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json\n",
-    "browser_after": "        document_root_controls_browser(globals(),browser)\n",
-    "browser_hook": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n",
-    "apache_after": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
-    "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py\n",
-    "reports": [
-      "document-root-requests-document-default-results.json",
-      "document-root-requests-document-minimal-results.json",
-      "document-root-requests-storage-default-results.json",
-      "document-root-requests-storage-minimal-results.json",
-      "document-root-requests-contract-default-results.json",
-      "document-root-requests-contract-minimal-results.json",
-      "document-root-requests-views-default-results.json",
-      "document-root-requests-views-minimal-results.json",
-      "provider-document-root-requests-native-results.json",
-      "document-root-requests-modeled-browser-results.json"
-    ],
-    "apache_reports": [
-      "apache-document-root-requests-upgrade-guard-results.json",
-      "apache-document-root-requests-upgrade-results.json"
-    ],
-    "predecessor_contract_sha256": "34aa96f9ed22969c902227412c062278748dfd3fc7ce4fb84bb48f32c18d4fd8",
-    "source_deltas": {
-      ".github/workflows/application-tests.yml": {
-        "before_sha256": "cb51a74c10a0a46e7f2216c7e101b086f9fa668a625be84ed74c5915af86659a",
-        "after_sha256": "a359d42fa7547c3bda819e57b8a60fce6063054b005be1ab71bda43eeb5b39fb",
-        "changes": [
-          {
-            "after_start": 374,
-            "after_end": 383,
-            "before": "",
-            "after": "          \"$PHP_BINARY\" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json\n          CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 \"$PHP_BINARY\" tests/provider_document_root_requests_native.php\n"
-          },
-          {
-            "after_start": 446,
-            "after_end": 448,
-            "before": "",
-            "after": "      - name: Website folder request layout models\n        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json\n"
-          },
-          {
-            "after_start": 718,
-            "after_end": 720,
-            "before": "",
-            "after": "          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py\n"
-          }
-        ]
-      },
-      "tests/browser_acceptance.py": {
-        "before_sha256": "2cbd4f2c94fc792b93a48e773e953513549e85041477121b35a5cfb761c524db",
-        "after_sha256": "b3f87e1ea599d8bcac904c803dbd93da2d646cfa7cc33e0f2900623f8ee8f7d7",
-        "changes": [
-          {
-            "after_start": 250,
-            "after_end": 253,
-            "before": "",
-            "after": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n"
-          }
-        ]
-      },
-      "tests/acceptance_artifacts_test.py": {
-        "before_sha256": "e7c9caba2592584656ac025d962bf2dce8c7696dba5c3900a372bc03ce116d2b",
-        "after_sha256": "90a007855a9e7cdf2a2ea3635cb7724d2bd93f1a46cb4594cdd114105e623d37",
-        "changes": [
-          {
-            "after_start": 442,
-            "after_end": 449,
-            "before": "",
-            "after": "_run_before_client_document_root_requests = run\n\ndef run(tmp):\n    from document_root_requests_acceptance import run as client_folder_acceptance\n    client_folder_acceptance(globals(), tmp, _run_before_client_document_root_requests)\n\n\n"
-          }
-        ]
-      },
-      "tools/acceptance-reports.json": {
-        "before_sha256": "45684289a4b1c23846c62cb203ccb835a051d813eb9d8deb8d284768032bcd77",
-        "after_sha256": "3233465b3f5cf31a620e1225865200e9085947e2930270e235a2f9a21238014a",
-        "changes": [
-          {
-            "after_start": 31,
-            "after_end": 40,
-            "before": "",
-            "after": "    \"document-root-requests-contract-default-results.json\",\n    \"document-root-requests-contract-minimal-results.json\",\n    \"document-root-requests-document-default-results.json\",\n    \"document-root-requests-document-minimal-results.json\",\n    \"document-root-requests-modeled-browser-results.json\",\n    \"document-root-requests-storage-default-results.json\",\n    \"document-root-requests-storage-minimal-results.json\",\n    \"document-root-requests-views-default-results.json\",\n    \"document-root-requests-views-minimal-results.json\",\n"
-          },
-          {
-            "after_start": 119,
-            "after_end": 120,
-            "before": "",
-            "after": "    \"provider-document-root-requests-native-results.json\",\n"
-          },
-          {
-            "after_start": 183,
-            "after_end": 185,
-            "before": "",
-            "after": "    \"apache-document-root-requests-upgrade-guard-results.json\",\n    \"apache-document-root-requests-upgrade-results.json\",\n"
-          },
-          {
-            "after_start": 223,
-            "after_end": 232,
-            "before": "",
-            "after": "    \"document-root-requests-contract-default-results.json\",\n    \"document-root-requests-contract-minimal-results.json\",\n    \"document-root-requests-document-default-results.json\",\n    \"document-root-requests-document-minimal-results.json\",\n    \"document-root-requests-modeled-browser-results.json\",\n    \"document-root-requests-storage-default-results.json\",\n    \"document-root-requests-storage-minimal-results.json\",\n    \"document-root-requests-views-default-results.json\",\n    \"document-root-requests-views-minimal-results.json\",\n"
-          },
-          {
-            "after_start": 343,
-            "after_end": 344,
-            "before": "",
-            "after": "    \"provider-document-root-requests-native-results.json\",\n"
-          },
-          {
-            "after_start": 417,
-            "after_end": 419,
-            "before": "      \"two folder-control installed-update guard and actual Apache reports; exact published1.25 original input added alongside preserved1.24\"\n",
-            "after": "      \"two folder-control installed-update guard and actual Apache reports; exact published1.25 original input added alongside preserved1.24\",\n      \"ten client website-folder document/storage/service/view/native/modeled reports plus two installed-upgrade reports; actual packaged client-to-owner workflow and eight distinct captures remain additive in the HTTP report\"\n"
-          }
-        ]
-      }
-    },
-    "source_sha256": {
-      ".github/workflows/provider-document-root-requests.yml": "8d8659033ce8f820e1138ec1ccd81de74b690275e9b72d66f92017dd1804e6a5",
-      "site/admin/controllers/actions.php": "90f712f2bd6c508ee6fc0b53a5ed857be05d8eeead38db0eb7e96c4aa83e05a8",
-      "site/admin/controllers/document_root_requests.php": "f693e0f0c317e6f38d08df2eb5ea335d78795421e7e2f8ed319a1e01c2168295",
-      "site/admin/controllers/router.php": "4afde0ea88bfc8b733e1d6ba23ec72eab1484dfb6306dd9f33c35b511f794208",
-      "site/admin/views/providers.php": "ce22f2aa87bdc709a30f8081b6ac8261056909ebe19974e0cd19a6ae23696477",
-      "site/app/providers/document_root_controls.php": "bc42cfa6761b47a43e432a949e6de544ba8ddc6a8db87c5b75e697adcc0c9d9d",
-      "site/app/providers/document_root_controls_storage.php": "50476ee25b4b12b37afdf7e6ba0161fc878a287f4fb1909ee5a60e4c6392794e",
-      "site/app/providers/document_root_requests.php": "d2ed027234301c873201f2ba7919ec50452ce1a3f55670051c868d20ff586265",
-      "site/app/providers/document_root_requests_document.php": "314705fec3083461e3873f07c2cf18911cfebca5b62ad5f3b8c4563534b39ad9",
-      "site/app/providers/document_root_requests_storage.php": "57011802543acf9b6896d1e5cc24be0b842906e2dc1880fb29e22adfdecbf821",
-      "site/app/providers/document_root_requests_views.php": "8cbb40a1e85fd2440adf92fd59871c20f4e123e1396fca9943cea98d346eaff0",
-      "site/app/staff/accounts.php": "d774461631326d5122d5218d0e9a46ad5d9c1f7a7b2af226d6f9ff871ef35de5",
-      "site/assets/css/growth.css": "ddf623c73fb280b19f29690abea62d2f182ee4c8ec10ee0bbb4a18eece6cf975",
-      "site/database/migrations/provider_document_root_requests_migrate.php": "b5d48f027d7e2f73ba9218a2bb84ae56e00795a5b42ae12ec04142fc1e469f96",
-      "site/database/schema/provider_document_root_requests_schema.php": "cd287d3db8fb51470895bd1ee649092cbd281a604070a1a13121df375f8bfe3a",
-      "site/includes/layout/admin.php": "302d399ec5be0a9bb0990018ae691ac4705fda3157b2fe6af12aedf4c9e031ac",
-      "site/includes/layout/provider_services.php": "1b870cf393b429dacff80be6945add2a5e937c0e5b25bdbc5fed35641e56796a",
-      "site/install/inventory.generated.php": "7fb3c76c15a052d9dd22fe57607fe94813cea66cccb653a3a7639de22b5ce824",
-      "site/portal/controllers/actions.php": "93b76759a95785d1ee54eb02f1f57670abaddd7c3110a3a6dfb83ccdcc9f5e5d",
-      "site/portal/controllers/document_root_requests.php": "fc2d43f31032272c38e57c55898f075111ab555cce4c57378f818bfdbb04af5d",
-      "site/portal/controllers/router.php": "c45e40600dbb50ab2c1648b79bb7edc09c2a216db08f4fbbb827e9e7792c1065",
-      "site/portal/views/document_root_requests.php": "a44d16ae781d5a445db593eb046c362d910ef143a32192a6bc8bc3c6dbe4c641",
-      "tests/document_root_requests_acceptance.py": "2ac337c8d1e2bbe2a7cb00b5a02265452a615c59a222fc29add9c407cd196d9b",
-      "tests/document_root_requests_browser.py": "15f591d68a953d8f847e57879870de2f482dd4871a8e96eff1b885cd046d887a",
-      "tests/document_root_requests_contract.php": "f6e3c99773264f325bdb22949b6d3a590bb650a6c9ee3d24e1f03ee7b9116541",
-      "tests/document_root_requests_document.php": "d46c4de8e1adadb53f11835e81a35e28b5006f69a052f51002ec657e1b66333b",
-      "tests/document_root_requests_storage.php": "a06718a3708c7865c54f1fa543b0bf88146aebedc0581f13c1446d93a6c8e4ca",
-      "tests/document_root_requests_views.php": "b880a282fe8a6f6049065d4b6b140b092644228307bd3652f9980eac20839964",
-      "tests/provider_document_root_requests_cases.py": "8ef5f2346ebddfacf02f32d21a455bc68001848e8fc6275c1b19e51007563eb4",
-      "tests/provider_document_root_requests_native.php": "a7ae1a0b3048f2b75e35faa31e506ab5afb1092166d8c86eb053722e7ab31fb8",
-      "tests/provider_document_root_requests_upgrade.py": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
-      "tests/provider_document_root_requests_upgrade_fixture.php": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
-      "tests/provider_document_root_requests_upgrade_test.py": "4c29393bd51978a888a5b075e00f0d58f2eb92a43b797cca82c77443f63deae5"
-    },
-    "screenshots": [
-      "Website-Folder-Requests-Client-Pending-Desktop.png",
-      "Website-Folder-Requests-Client-Pending-Mobile.png",
-      "Website-Folder-Requests-Owner-Review-Desktop.png",
-      "Website-Folder-Requests-Owner-Review-Mobile.png",
-      "Website-Folder-Requests-Owner-Readback-Desktop.png",
-      "Website-Folder-Requests-Owner-Readback-Mobile.png",
-      "Website-Folder-Requests-Client-Observed-Desktop.png",
-      "Website-Folder-Requests-Client-Observed-Mobile.png"
-    ],
-    "scope": "Exact additive client request and owner dispatch acceptance. Portable/model checks do not certify Linux SQL, installed browser, populated upgrade, live20i or release."
-  }
+  "screenshots": [
+   "Website-Folder-Requests-Client-Pending-Desktop.png",
+   "Website-Folder-Requests-Client-Pending-Mobile.png",
+   "Website-Folder-Requests-Owner-Review-Desktop.png",
+   "Website-Folder-Requests-Owner-Review-Mobile.png",
+   "Website-Folder-Requests-Owner-Readback-Desktop.png",
+   "Website-Folder-Requests-Owner-Readback-Mobile.png",
+   "Website-Folder-Requests-Client-Observed-Desktop.png",
+   "Website-Folder-Requests-Client-Observed-Mobile.png"
+  ],
+  "scope": "Exact additive client request and owner dispatch acceptance. Portable/model checks do not certify Linux SQL, installed browser, populated upgrade, live20i or release."
+ }
 }

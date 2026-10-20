@@ -259,18 +259,18 @@ function drrq_worker():never{
         foreach(['request_sha256','binding_sha256'] as $key)if(!is_string($in[$key])||!preg_match('/\A[a-f0-9]{64}\z/',$in[$key]))throw new RuntimeException('Invalid worker proof.');
         if($in['action']==='cancel')drrq_client();else drrq_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();$outcome='completed';
-        for($attempt=1;;$attempt++)try{if($in['action']==='cancel')provider_document_root_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
+        for($budget=microtime(true)+40;;)try{if($in['action']==='cancel')provider_document_root_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
             else provider_document_root_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['anchor_id'],$in['binding_sha256'],true,DRRQ_PASSWORD,'drrq_write_dns','drrq_perform');
             break;
         }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;
-            if($e->getMessage()==='Another account change is in progress. Please retry.'&&$attempt<3)continue;
+            if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<$budget)continue;
             $message=match($in['action']){
                 'cancel'=>'This website folder request changed. Reload its review.',
                 'approve-owner-revoked'=>'An active owner account is required for provider settings.',
                 'approve-client-revoked'=>'The client account changed. Ask for a new website folder request.',
                 default=>'This request was already reviewed or withdrawn.',
             };
-            if($e->getMessage()!==$message)throw $e;$outcome='refused';}
+            if($e->getMessage()!==$message)throw $e;$outcome='refused';break;}
         echo json_encode(['outcome'=>$outcome,'dns'=>$dns,'gets'=>$gets,'posts'=>$posts],JSON_THROW_ON_ERROR)."\n";exit;
     }catch(Throwable $e){echo json_encode(['failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null]],JSON_THROW_ON_ERROR)."\n";exit(1);}
 }
