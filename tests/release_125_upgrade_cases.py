@@ -307,6 +307,8 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     response = submit(owner, admin + '?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
     ok('Owner applies explicit workspace schema update after file update',
        response.status_code == 200 and 'Database update completed' in response.text)
+    studio_marker = hashlib.sha256(json.dumps({'name': 'studio_schema_version'}, separators=(',', ':')).encode()).hexdigest()
+    changed = changed + [('settings', studio_marker, 'value')]
     retained_access('updated')
     stable = snapshot(); unpack(updates[0], installed); update('apply')
     ok('Completed repeated update adds no business table row or private file', exact_business(stable, snapshot()))

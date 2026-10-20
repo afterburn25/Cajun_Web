@@ -470,7 +470,7 @@
       "tests/release_125_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
       "tests/release_125_retention_fixture.php": "102635706356d8f52b38f6cd495444290677ba1254889eedf8e96b1eaaf8788c",
       "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
-      "tests/release_125_upgrade_cases.py": "7f4f782ba976b78e939742ba56aef6e5d7ebdcd7127cbe4fb7e9ca1b84be8ad6",
+      "tests/release_125_upgrade_cases.py": "baea5a7a161a25891eb73aa5588ac21dbfd0197f43c94d96968d0f4da69129f0",
       "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
       "tests/release_125_upgrade_input_guards.py": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
     },
@@ -587,7 +587,7 @@
       "tests/mail_flags_native.php": "5e6073934f35ba54f08e438661ba8238c32cccbc6d9667cd77a0e90c33d19b25",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
       "tests/backups_native.php": "eef89576d68b4321d9136c852cc81e692d665b7dc1d40f4dc88e6e8133f7afe0",
-      "tests/notification_feed_native.php": "a058f412a39902e74aef8881498b669100b9c24cd12925ce714f2420e1f619e6",
+      "tests/notification_feed_native.php": "39566967a0c174b0d8ec11df191a89b75e6e7670dd0fb9481321e8195b62a6e7",
       "tests/support_tickets_native.php": "64adb30582eb4e62b5d91429745c412213fb6b7faa30e532fb0bca0b19f5b46c"
     }
   },

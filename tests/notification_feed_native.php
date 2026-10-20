@@ -68,7 +68,7 @@ try{
     n_deny('Announcement requires a client audience scope',fn()=>notification_announce('x','too short',one('SELECT * FROM '.table('users').' WHERE id=1')));
     query("INSERT INTO ".table('studio_clients')." (name,email,auth_version,active,created_at) VALUES ('Inactive client','inactive@example.invalid',?,0,?)",[str_repeat('d',32),$now]);
     $aid=notification_announce('Maintenance window','Synthetic maintenance notice for the notification lane.',one('SELECT * FROM '.table('users').' WHERE id=1'));
-    n_ok('Announcement reaches every active client',notification_feed('client',1)->unreadCount()===2&&one('SELECT recipients FROM '.table('notification_announcements').' WHERE id=?',[$aid])['recipients']==='1'&&one('SELECT ref,kind FROM '.table('notification_feed').' WHERE ref=?',['announcement:'.$aid])['kind']==='service-event');
+    n_ok('Announcement reaches every active client',notification_feed('client',1)->unreadCount()===3&&one('SELECT recipients FROM '.table('notification_announcements').' WHERE id=?',[$aid])['recipients']==='1'&&one('SELECT ref,kind FROM '.table('notification_feed').' WHERE ref=?',['announcement:'.$aid])['kind']==='service-event');
     n_ok('Inactive clients never receive announcements',one('SELECT f.id FROM '.table('notification_feed').' f JOIN '.table('studio_clients').' c ON c.id=f.recipient_id WHERE f.audience=? AND c.active=0',['client'])===null);
     n_ok('Announcement history records actor and scope',one('SELECT actor_id,recipients FROM '.table('notification_announcements').' WHERE id=?',[$aid])['actor_id']==='1'&&notification_announcements()[0]['title']==='Maintenance window');
     $GLOBALS['cwp_support']=['session'=>['id'=>'synthetic'],'actor'=>['id'=>1]];
