@@ -126,7 +126,16 @@ def run_browser(env, browser):
         # HTML normalizes CRLF, but preserves the leading LF after the renderer's deliberate sentinel LF.
         check('actual editor preserves leading newline and treats opaque markup as text',
               textarea.input_value() == before_text.replace('\r\n', '\n') and page.evaluate('typeof window.templateLeak') == 'undefined')
-        textarea.fill(desired); section.locator('[data-reset-template-edit] button').click()
+        textarea.fill(desired)
+        with page.expect_response(lambda r: r.request.method == 'POST' and 'provider-settings' in r.url) as response_info:
+            section.locator('[data-reset-template-edit] button').click()
+        review_response = response_info.value
+        review_body = review_response.body()
+        if b'data-reset-template-review' not in review_body or not review_body.rstrip().endswith(b'</html>'):
+            raise AssertionError('review response status=%s bytes=%d ends_html=%s has_section=%s has_review=%s notice=%s truncated_at=%s' % (
+                review_response.status, len(review_body), review_body.rstrip().endswith(b'</html>'),
+                b'id="password-reset-template"' in review_body, b'data-reset-template-review' in review_body,
+                b'notice error' in review_body, review_body.rstrip()[-120:].decode('utf-8', 'replace').replace('PRIVATE_TEMPLATE_', 'REDACTED_')))
         review_locator = page.locator('[data-reset-template-review]'); expect(review_locator).to_be_visible()
         check('Chromium review has escaped original and proposed source',
               review_locator.locator('pre').all_text_contents() == [before_text.replace('\r\n', '\n'), desired]
