@@ -13,8 +13,30 @@ function ps_id(int $i):string{return str_pad(dechex($i),32,'0',STR_PAD_LEFT);}
 function ps_hash(int $i):string{return str_pad(dechex($i),64,'0',STR_PAD_LEFT);}
 /** Load the exact production function bodies; only their SQL/authority dependencies are modeled below. */
 function ps_load():void {
-    $tokens=token_get_all(file_get_contents(CWP_CODE_ROOT.'/app/providers/php_controls_lifecycle_storage.php'));$parts=[];$active=false;$depth=0;$opened=false;$part='';
-    foreach($tokens as $token){if(!$active&&is_array($token)&&$token[0]===T_FUNCTION){$active=true;$part='';$opened=false;$depth=0;}if(!$active)continue;$text=is_array($token)?$token[1]:$token;$part.=$text;if(!is_array($token)&&$token==='{'){$depth++;$opened=true;}elseif(!is_array($token)&&$token==='}'&&--$depth===0&&$opened){$parts[]=$part;$active=false;}}
+    $code=file_get_contents(CWP_CODE_ROOT.'/app/providers/php_controls_lifecycle_storage.php');$parts=[];$n=strlen($code);$i=0;
+    while($i<$n){
+        $ch=$code[$i];
+        if($ch==='"'||$ch==="'"){$q=$ch;$i++;while($i<$n&&$code[$i]!==$q)$i+=$code[$i]==='\\'?2:1;$i++;continue;}
+        if($ch==='#'){while($i<$n&&$code[$i]!=="\n")$i++;continue;}
+        if($ch==='/'&&$i+1<$n&&$code[$i+1]==='/'){while($i<$n&&$code[$i]!=="\n")$i++;continue;}
+        if($ch==='/'&&$i+1<$n&&$code[$i+1]==='*'){$i+=2;while($i+1<$n&&($code[$i]!=='*'||$code[$i+1]!=='/'))$i++;$i+=2;continue;}
+        if(substr($code,$i,8)==='function'&&($i===0||preg_match('/\w/',$code[$i-1])!==1)&&preg_match('/\G\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(/',$code,$m,0,$i+8)===1){
+            $open=strpos($code,'{',$i);if($open===false)throw new RuntimeException('Function extraction failed.');
+            $depth=0;$j=$open;
+            while($j<$n){
+                $c=$code[$j];
+                if($c==='"'||$c==="'"){$q=$c;$j++;while($j<$n&&$code[$j]!==$q)$j+=$code[$j]==='\\'?2:1;$j++;continue;}
+                if($c==='#'){while($j<$n&&$code[$j]!=="\n")$j++;continue;}
+                if($c==='/'&&$j+1<$n&&$code[$j+1]==='/'){while($j<$n&&$code[$j]!=="\n")$j++;continue;}
+                if($c==='/'&&$j+1<$n&&$code[$j+1]==='*'){$j+=2;while($j+1<$n&&($code[$j]!=='*'||$code[$j+1]!=='/'))$j++;$j+=2;continue;}
+                if($c==='{')$depth++;elseif($c==='}'&&--$depth===0){$j++;break;}
+                $j++;
+            }
+            if($depth!==0)throw new RuntimeException('Function extraction failed.');
+            $parts[]=substr($code,$i,$j-$i);$i=$j;continue;
+        }
+        $i++;
+    }
     eval(implode("\n",$parts));
 }
 function config():array{return ['db'=>['prefix'=>'plsm_','name'=>'modeled-no-database']];}

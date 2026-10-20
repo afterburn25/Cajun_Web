@@ -13,15 +13,41 @@ function pc_seal(array $d):array {
     $r=['format'=>1,'link_id'=>$d['link_id'],'enabled'=>$d['enabled'],'previous_id'=>$d['previous_id'],'previous_sha256'=>$d['previous_sha256'],'owner_id'=>$d['owner_id'],'owner_auth_version'=>$d['owner_auth_version'],'client_auth_version'=>$d['client_auth_version'],'binding'=>$d['binding']];$d['review_sha256']=hash('sha256',provider_php_controls_json($r));return $d;
 }
 /** Load only these exact production functions; SQL, sessions and authority prerequisites below are modeled seams. */
+function pc_function_bounds(string $code):array {
+    $out=[];$n=strlen($code);$i=0;
+    while($i<$n){
+        $ch=$code[$i];
+        if($ch==='"'||$ch==="'"){$q=$ch;$i++;while($i<$n&&$code[$i]!==$q)$i+=$code[$i]==='\\'?2:1;$i++;continue;}
+        if($ch==='#'){while($i<$n&&$code[$i]!=="\n")$i++;continue;}
+        if($ch==='/'&&$i+1<$n&&$code[$i+1]==='/'){while($i<$n&&$code[$i]!=="\n")$i++;continue;}
+        if($ch==='/'&&$i+1<$n&&$code[$i+1]==='*'){$i+=2;while($i+1<$n&&($code[$i]!=='*'||$code[$i+1]!=='/'))$i++;$i+=2;continue;}
+        if(substr($code,$i,8)==='function'&&($i===0||preg_match('/\w/',$code[$i-1])!==1)&&preg_match('/\G\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/',$code,$m,0,$i+8)===1){
+            $open=strpos($code,'{',$i);if($open===false)throw new RuntimeException('Function extraction failed.');
+            $depth=0;$j=$open;
+            while($j<$n){
+                $c=$code[$j];
+                if($c==='"'||$c==="'"){$q=$c;$j++;while($j<$n&&$code[$j]!==$q)$j+=$code[$j]==='\\'?2:1;$j++;continue;}
+                if($c==='#'){while($j<$n&&$code[$j]!=="\n")$j++;continue;}
+                if($c==='/'&&$j+1<$n&&$code[$j+1]==='/'){while($j<$n&&$code[$j]!=="\n")$j++;continue;}
+                if($c==='/'&&$j+1<$n&&$code[$j+1]==='*'){$j+=2;while($j+1<$n&&($code[$j]!=='*'||$code[$j+1]!=='/'))$j++;$j+=2;continue;}
+                if($c==='{')$depth++;elseif($c==='}'&&--$depth===0){$j++;break;}
+                $j++;
+            }
+            if($depth!==0)throw new RuntimeException('Function extraction failed.');
+            $out[]=[$m[1],substr($code,$i,$j-$i)];$i=$j;continue;
+        }
+        $i++;
+    }
+    return $out;
+}
 function pc_load(string $relative,array $names):void {
-    $tokens=token_get_all(file_get_contents(CWP_CODE_ROOT.'/'.$relative));$found=[];
-    for($i=0;$i<count($tokens);$i++)if(is_array($tokens[$i])&&$tokens[$i][0]===T_FUNCTION){
-        $start=$i;$j=$i+1;while(isset($tokens[$j])&&is_array($tokens[$j])&&$tokens[$j][0]===T_WHITESPACE)$j++;
-        if(!is_array($tokens[$j]??null)||$tokens[$j][0]!==T_STRING||!in_array($tokens[$j][1],$names,true))continue;
-        $name=$tokens[$j][1];$text='';$depth=0;$body=false;
-        for($k=$start;$k<count($tokens);$k++){$t=$tokens[$k];$text.=is_array($t)?$t[1]:$t;if($t==='{'){$body=true;$depth++;}elseif($t==='}'){$depth--;if($body&&$depth===0)break;}}
-        if(!$body||$depth!==0||isset($found[$name]))throw new RuntimeException('Function extraction failed.');eval($text);$found[$name]=true;$i=$k;
-    }if(count($found)!==count($names))throw new RuntimeException('Expected function missing.');
+    $found=[];
+    foreach(pc_function_bounds(file_get_contents(CWP_CODE_ROOT.'/'.$relative)) as [$name,$text]){
+        if(!in_array($name,$names,true))continue;
+        if(isset($found[$name]))throw new RuntimeException('Function extraction failed.');
+        eval($text);$found[$name]=true;
+    }
+    if(count($found)!==count($names))throw new RuntimeException('Expected function missing.');
 }
 function provider_php_controls_guard(bool $transaction=false):void {global $model;if(!$model['mutex']||($transaction&&!$model['transaction']))throw new LogicException('Modeled guard refused.');}
 function support_current():?array {global $model;return $model['support']?['client'=>$model['client']]:null;}
