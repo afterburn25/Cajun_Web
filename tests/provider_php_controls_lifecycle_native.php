@@ -287,7 +287,8 @@ try {
     pcl_ok('Owner restores only terminal with truthful distinct recorder',$recovered['recovered_from_ledger']===true&&$restored['document']['request_actor']['kind']==='client'&&$restored['document']['recorded_by']['kind']==='staff'&&pcl_activity()===$before&&one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',['phpversion:'.$id2])===$ledger2);
     $currentValue='php84';pcl_cool();$ownerObserved=provider_php_controls_verify_owner($id2,PCL_PASSWORD,'pcl_dns','pcl_transport');
     pcl_ok('Independent owner readback preserves original client requester',$ownerObserved['readback']==='observed'&&pcl_get('request',$id2)['document']['review']['context']['actor']['kind']==='client'&&$writes===2);
-    $before=pcl_activity();$binding=pcl_scope(fn()=>provider_php_binding($link));
+    $binding=pcl_scope(fn()=>provider_php_binding($link));
+    pcl_read($link,'current');$before=pcl_activity();
     pcl_deny('Old scalar refresh honors new lifecycle read cooldown',fn()=>provider_php_refresh($link,$binding,PCL_PASSWORD,'pcl_dns','pcl_legacy_transport'));
     pcl_ok('Legacy quota refusal has no outbound or ledger work',pcl_activity()===$before);
     pcl_cool();$newLegacy=provider_php_refresh($link,$binding,PCL_PASSWORD,'pcl_dns','pcl_legacy_transport');$history=pcl_scope(fn()=>provider_php_project($link,true));
