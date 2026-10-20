@@ -4094,6 +4094,52 @@
         ],
         "before": "b92ec05a385f198d946b1a77751c8e6e5e2d018a2a0873f77a7e0181b3e2cb37",
         "after": "ebf865254c35419fb3c20eed14dd8dcf3d228f1a7de02e22c19ed8d3b839de18"
+      },
+      {
+        "keys": [
+          "registered_nameservers",
+          "upgrade",
+          "source_sha256",
+          "tests/registered_nameservers_upgrade_fixture.php"
+        ],
+        "before": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789",
+        "after": "98ed42859369120ff2fd75e58c8394da69b6aea44c373617844ed1bf093306c7"
+      },
+      {
+        "keys": [
+          "registered_nameserver_changes_installed",
+          "source_sha256",
+          "tests/registered_nameserver_changes_upgrade_fixture.php"
+        ],
+        "before": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
+        "after": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c"
+      },
+      {
+        "keys": [
+          "registered_nameserver_requests",
+          "source_sha256",
+          "tests/registered_nameserver_changes_upgrade_fixture.php"
+        ],
+        "before": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
+        "after": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c"
+      },
+      {
+        "keys": [
+          "registered_nameserver_requests",
+          "unchanged_source_sha256",
+          "tests/registered_nameservers_upgrade_fixture.php"
+        ],
+        "before": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789",
+        "after": "98ed42859369120ff2fd75e58c8394da69b6aea44c373617844ed1bf093306c7"
+      },
+      {
+        "keys": [
+          "registered_nameserver_requests",
+          "unchanged_source_sha256",
+          "tests/registered_nameserver_changes_upgrade_fixture.php"
+        ],
+        "before": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
+        "after": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c"
       }
     ],
     "source_deltas": {
@@ -4210,6 +4256,30 @@
             "after": "if($operation==='billing-state'){\n    // Separate bounded read contract; the original state response below is unchanged.\n    $result=hosting_checkout_locked(function():array{\n        hosting_checkout_require();\n        if(!provider_catalog_import_ready())throw new RuntimeException('Original catalog required');\n        $variantsReady=provider_catalog_variant_ready();\n        $counts=[];foreach(['reviews'=>'hosting_checkout_reviews','results'=>'hosting_checkout_results','jobs'=>'studio_jobs','invoices'=>'studio_invoices','receipts'=>'invoice_payments','attempts'=>'payment_attempts','publications'=>'hosting_catalog_publications','products'=>'catalog_products','media'=>'media','plans'=>'service_plans','plan_events'=>'service_plan_events','mappings'=>'provider_plan_catalog','provider_refreshes'=>'provider_refreshes','provider_checks'=>'provider_checks']as$key=>$name){\n            $counts[$key]=hch_count($name);if($counts[$key]>128)throw new RuntimeException('Disposable billing fixture exceeded its bound');\n        }\n        $counts['variants']=$variantsReady?hch_count('catalog_provider_variants'):0;\n        if($counts['variants']>128)throw new RuntimeException('Disposable variants exceeded their bound');\n        $products=[];\n        foreach(all('SELECT id,revision,sku,title,term,amount_cents,status FROM '.table('catalog_products').' ORDER BY id LIMIT 129')as$p){\n            $id=(int)$p['id'];$origin=provider_catalog_import_record($id);if(!$origin)continue;\n            $canonical=provider_catalog_import_canonical_record($origin);\n            $variant=$variantsReady?one('SELECT id FROM '.table('catalog_provider_variants').' WHERE product_id=?',[$id]):null;\n            $products[(string)$id]=['id'=>$id,'revision'=>(int)$p['revision'],'sku'=>$p['sku'],'title'=>$p['title'],'term'=>$p['term'],'amount_cents'=>$p['amount_cents']===null?null:(int)$p['amount_cents'],'status'=>$p['status'],\n                'canonical_import_id'=>(int)$canonical['id'],'canonical_product_id'=>(int)$canonical['product_id'],'variant_id'=>$variant['id']??null,'media_id'=>$origin['media_id'],'media_revision'=>(int)$origin['media_revision']];\n        }\n        $publications=[];foreach(all('SELECT id FROM '.table('hosting_catalog_publications').' ORDER BY seq LIMIT 129')as$row){\n            $publication=hosting_catalog_publication($row['id']);$plan=ServicePlanDocument::fromJson($publication->data()['plan_json']);\n            $publications[$row['id']]=$publication->historicalProjection()+['plan_id'=>$plan->data()['id']];\n        }\n        $reviews=[];foreach(all('SELECT * FROM '.table('hosting_checkout_reviews').' ORDER BY id LIMIT 129')as$row){\n            $review=hosting_checkout_review_row($row);$r=$review->data();\n            $reviews[$row['id']]=['request_id'=>$r['request_id'],'review_sha256'=>$review->fingerprint(),'publication_id'=>$r['publication_id'],'publication_sha256'=>$r['publication_sha256'],'client_id'=>$r['client_id'],'project'=>$r['project'],'billing'=>$r['billing']];\n        }\n        $results=[];foreach(all('SELECT * FROM '.table('hosting_checkout_results').' ORDER BY id LIMIT 129')as$row){\n            $validated=hosting_checkout_result_row($row);$d=$validated['document'];\n            $map=one('SELECT snapshot_json FROM '.table('recurring_billing_invoices').' WHERE id=?',[$d['issuance_id']]);\n            $snapshot=json_decode($map['snapshot_json'],true,8,JSON_THROW_ON_ERROR);\n            $results[$row['id']]=hosting_checkout_projection($validated,true)+['publication_id'=>$d['publication_id'],'publication_sha256'=>$d['publication_sha256'],'client_id'=>$d['client_id'],'billing'=>$reviews[$row['id']]['billing'],'issued_period'=>$snapshot['period']];\n        }\n        // Hash original financial rows without exporting their contents. Fixed namespace, no caller selectors.\n        $retained=[];$total=0;\n        foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,4)=BINARY ? ORDER BY TABLE_NAME',['hcc_'])as$t){\n            if(!preg_match('/\\Ahcc_[a-z0-9_]+\\z/',$t['name']))throw new LogicException('Unknown table');$n=substr($t['name'],4);\n            if(!preg_match('/\\A(?:service_|recurring_|payment_)/',$n)&&!in_array($n,['studio_jobs','studio_invoices','invoice_payments','hosting_checkout_reviews','hosting_checkout_results','catalog_provider_imports','hosting_catalog_publications','media'],true))continue;\n            $rows=all('SELECT * FROM `'.$t['name'].'` LIMIT 129');$total+=count($rows);\n            if(count($rows)>128||$total>1500)throw new RuntimeException('Disposable retained history exceeded its bound');\n            $hashes=array_map(static fn(array$r):string=>hash('sha256',json_encode($r,JSON_THROW_ON_ERROR)),$rows);sort($hashes,SORT_STRING);$retained[$n]=$hashes;\n        }\n        $audits=all('SELECT * FROM '.table('audit').\" WHERE action LIKE 'hosting_checkout.%' OR action LIKE 'hosting_catalog.%' OR action LIKE 'recurring_billing.%' OR action LIKE 'service_plans.%' OR action LIKE 'payments.%' ORDER BY id LIMIT 129\");\n        if(count($audits)>128)throw new RuntimeException('Disposable business audit exceeded its bound');\n        $hashes=array_map(static fn(array$r):string=>hash('sha256',json_encode($r,JSON_THROW_ON_ERROR)),$audits);sort($hashes,SORT_STRING);$retained['business_audits']=$hashes;\n        $io=[];foreach(['provider_refreshes','provider_refresh_results','provider_checks','provider_check_results','provider_operations','provider_operation_grants']as$name){\n            $exists=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['hcc_'.$name])!==null;\n            if(!$exists){if(!in_array($name,['provider_operations','provider_operation_grants'],true))throw new RuntimeException('Original provider read history missing');$io[$name]=['exists'=>false,'rows'=>[]];continue;}\n            $rows=all('SELECT * FROM '.table($name).' LIMIT 129');if(count($rows)>128)throw new RuntimeException('Disposable provider history exceeded its bound');\n            $hashes=array_map(static fn(array$r):string=>hash('sha256',json_encode($r,JSON_THROW_ON_ERROR)),$rows);sort($hashes,SORT_STRING);$io[$name]=['exists'=>true,'rows'=>$hashes];\n        }\n        return['counts'=>$counts,'variants_ready'=>$variantsReady,'products'=>$products,'publications'=>$publications,'reviews'=>$reviews,'results'=>$results,'retained_rows'=>$retained,'provider_io_sha256'=>hash('sha256',json_encode($io,JSON_THROW_ON_ERROR))];\n    });\n    $encoded=json_encode($result,JSON_THROW_ON_ERROR);if(strlen($encoded)>262144)throw new RuntimeException('Disposable billing state exceeded its output bound');echo $encoded;exit;\n}\n"
           }
         ]
+      },
+      "tests/registered_nameservers_upgrade_fixture.php": {
+        "changes": [
+          {
+            "after_start": 108,
+            "after_end": 109,
+            "after": "        if(!studio_ready())studio_migrate();\n",
+            "before": ""
+          }
+        ],
+        "after_sha256": "98ed42859369120ff2fd75e58c8394da69b6aea44c373617844ed1bf093306c7",
+        "before_sha256": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789"
+      },
+      "tests/registered_nameserver_changes_upgrade_fixture.php": {
+        "changes": [
+          {
+            "after_start": 228,
+            "after_end": 229,
+            "after": "        require_once CWP_CODE_ROOT.'/app/clients/accounts.php';if(!studio_ready())studio_migrate();$client=studio_client_save(0,'','Nameserver change upgrade client','rnsc-upgrade-client@example.invalid',true);\n",
+            "before": "        require_once CWP_CODE_ROOT.'/app/clients/accounts.php';$client=studio_client_save(0,'','Nameserver change upgrade client','rnsc-upgrade-client@example.invalid',true);\n"
+          }
+        ],
+        "after_sha256": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
+        "before_sha256": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1"
       }
     },
     "source_sha256": {
@@ -4403,7 +4473,7 @@
       "predecessor_sha256": "c4eea0a190c5e736dc44b5bc73002b22f4fa26e83c84d1e5c784b2b6642e10bf",
       "source_sha256": {
         "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
-        "tests/registered_nameservers_upgrade_fixture.php": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789",
+        "tests/registered_nameservers_upgrade_fixture.php": "98ed42859369120ff2fd75e58c8394da69b6aea44c373617844ed1bf093306c7",
         "tests/registered_nameservers_upgrade_test.py": "c9b650c4fcf32894d24e23488df730a13ebc34b52b5e93ab5f2c326eac748e07"
       },
       "scope": "Actual pinned published1.25 update/recovery at unchanged version using build and file identity; no new browser captures."
@@ -4884,7 +4954,7 @@
       "tests/registered_nameserver_changes_cases.py": "aad25fa9502c2ab6be37d2dea543193b1319ba1a5d29e9ea3e5b11de0402d48f",
       "tests/registered_nameserver_changes_http_fixture_test.py": "1ffcf7a47fc3fccba50e7bacd3f4c6e2f1a69a48285bb0201cdc0fb4d0b9b000",
       "tests/registered_nameserver_changes_upgrade.py": "80e855b0288385001575beda5872724a0ab6b5140361a97f75bd13b34225c75e",
-      "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
+      "tests/registered_nameserver_changes_upgrade_fixture.php": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_changes_acceptance.py": "c5e76ae65894e6316396833091d339cdae27ac10248aac68838c796343537b31",
       "tools/acceptance-reports.json": "224bb89e602ee18b6efa4feb4063318b3edf3c9961bcc1132810a64d1f01c5a9"
@@ -5080,7 +5150,7 @@
       "tests/registered_nameserver_changes_http_fixture_test.py": "fae28a5389f0d705c373a67b8a250492b3c5350a07b97d849c2de7d9d56d292b",
       "tests/registered_nameserver_changes_native.php": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
       "tests/registered_nameserver_changes_upgrade.py": "80e855b0288385001575beda5872724a0ab6b5140361a97f75bd13b34225c75e",
-      "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
+      "tests/registered_nameserver_changes_upgrade_fixture.php": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
       "tests/registered_nameserver_requests_acceptance.py": "7bc1647d5e95f16b018f473dbaf1025d8950a24a524a2ac7f035ee53f086e88c",
@@ -5264,10 +5334,10 @@
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
       "tests/registered_nameserver_changes_native.php": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
       "tests/registered_nameserver_changes_upgrade.py": "80e855b0288385001575beda5872724a0ab6b5140361a97f75bd13b34225c75e",
-      "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
+      "tests/registered_nameserver_changes_upgrade_fixture.php": "750f7bd8cba8e05f358196c913dabebd1a12c5df46b431195372385298f8614c",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
-      "tests/registered_nameservers_upgrade_fixture.php": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789",
+      "tests/registered_nameservers_upgrade_fixture.php": "98ed42859369120ff2fd75e58c8394da69b6aea44c373617844ed1bf093306c7",
       "tests/registered_nameservers_upgrade_test.py": "c9b650c4fcf32894d24e23488df730a13ebc34b52b5e93ab5f2c326eac748e07",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     }

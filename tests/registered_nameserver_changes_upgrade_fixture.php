@@ -226,7 +226,7 @@ try{
         rncu_ok('Read and operation prerequisites never silently prepare change authority',!rncu_ready());
         registered_nameserver_changes_prepare(RNCU_PASSWORD);$before=rncu_digest();registered_nameserver_changes_prepare(RNCU_PASSWORD);
         rncu_ok('Explicit installed change setup is idempotent',rncu_ready()&&rncu_digest()===$before);
-        require_once CWP_CODE_ROOT.'/app/clients/accounts.php';$client=studio_client_save(0,'','Nameserver change upgrade client','rnsc-upgrade-client@example.invalid',true);
+        require_once CWP_CODE_ROOT.'/app/clients/accounts.php';if(!studio_ready())studio_migrate();$client=studio_client_save(0,'','Nameserver change upgrade client','rnsc-upgrade-client@example.invalid',true);
         $readBody='[{"id":701,"name":"upgrade.synthetic.invalid"}]';
         $source=provider_inventory_refresh_attempt($profile,1,RNCU_PASSWORD,'rncu_read_dns','rncu_read',InventoryRead::DOMAINS_LIST);
         rncu_ok('Installed registrar source is a genuine complete synthetic GET',$source['state']==='complete');provider_registrar_link($profile,701,$client,1,$source['id'],RNCU_PASSWORD);$link=rncu_link();
