@@ -1441,8 +1441,8 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
     expected_captures = ['Hosting-Billing-Options-'+scene+'-'+size+'.png'
                          for scene in ('Owner-Annual','Public-Monthly','Public-Annual','Client-Annual')
                          for size in ('Desktop','Mobile')]
-    check('Installed billing options require one new report and eight exact unique captures',
-          section['reports'] == ['hosting-billing-options-wiring-results.json']
+    check('Installed billing options require three new reports and eight exact unique captures',
+          section['reports'] == ['hosting-billing-options-wiring-results.json','mail-flags-native-results.json','mail-replies-native-results.json']
           and section['screenshots'] == expected_captures and len(set(expected_captures)) == 8)
     workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()
     previous = historical['.github/workflows/application-tests.yml'].decode()
@@ -1494,7 +1494,7 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
         else:
             raise AssertionError('Stale installed billing options source pin passed')
     check('Installed billing options refuse every stale serialized current pin', True)
-    for phase, expected in [('browser', 239), ('final', 296)]:
+    for phase, expected in [('browser', 241), ('final', 298)]:
         check('Installed billing options preserves exact original '+phase+' reports',
               len(registry[phase]) == len(set(registry[phase])) == expected
               and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
@@ -1536,7 +1536,7 @@ def installed_billing_options_checks(tmp, current, registry, section, historical
                 shutil.rmtree(path)
         bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)
     result = combine()
-    check('Installed billing options aggregate requires all295 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
+    check('Installed billing options aggregate requires all297 current reports', result['complete'] is True and set(result['reports']) == set(registry['final']))
     for name in section['reports']:
         path = jobs['native-browser']/'qa'/name
         path.unlink()
