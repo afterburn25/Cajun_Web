@@ -429,7 +429,12 @@ def run_browser(env, browser):
         check('second ID for same pending hostname is refused', 'A request for this hostname still needs studio review.' in duplicate.text and read_boundary() == created_snapshot)
         bob_detail = get(bob, detail(False, request_id))
         bob_cancel = fields(get(alice, detail(False, request_id)), 'subdomain_request_cancel')
+        # Bob has no assigned parent website, so his request page renders no
+        # form. The workspace sign-out form carries the same session token.
+        real_token = token
+        token = lambda response: real_token(get(bob, portal))
         bob_response = post_exact(bob, client_url, {**bob_cancel, 'csrf': token(get(bob, client_url)), 'confirmed': '1'})
+        token = real_token
         check('other primary client cannot inspect or cancel captured request', bob_detail.status_code == bob_response.status_code == 200
               and CHILD not in bob_detail.text and CHILD not in bob_response.text
               and not soup(bob_detail).select('[data-subdomain-request-history]') and read_boundary() == created_snapshot)

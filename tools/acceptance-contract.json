@@ -990,7 +990,7 @@
       "tests/browser_acceptance.py": "c30f8c9a72f4a99fc51ed22f72415e787a1988d143a1a30860ca4b19989cd04b",
       "tests/provider_http_server.py": "9be1a7c89427cf7098d1cc29385c42df9172f4bf6132ec6767fa00339a7eddec",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
-      "tests/provider_subdomain_requests_cases.py": "b33c6813a6493f417304c34b55a01dae4f744018fd24db87e19aaf57f3d20234"
+      "tests/provider_subdomain_requests_cases.py": "01a998a89f5e2b87e446a36008c482253ba4c6b6b7d2cc15c520c2cd5aff52f8"
     },
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
@@ -1123,7 +1123,7 @@
       "tests/browser_acceptance.py": "c30f8c9a72f4a99fc51ed22f72415e787a1988d143a1a30860ca4b19989cd04b",
       "tests/provider_http_server.py": "9be1a7c89427cf7098d1cc29385c42df9172f4bf6132ec6767fa00339a7eddec",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
-      "tests/provider_subdomain_requests_cases.py": "b33c6813a6493f417304c34b55a01dae4f744018fd24db87e19aaf57f3d20234",
+      "tests/provider_subdomain_requests_cases.py": "01a998a89f5e2b87e446a36008c482253ba4c6b6b7d2cc15c520c2cd5aff52f8",
       "site/app/providers/subdomain_activity.php": "38e3484f0c54facb4cbd0b20bb694180d4ad3a8897d8d488701dea2a57f35fdd",
       "site/app/activity/events.php": "432193c5df790d71b5854bbe1a4097d19365c41dfc3330f80b33b4222e9803c4",
       "site/app/activity/provider_sources.php": "55aa3f7b98ff80c9f38609f05e2718cdfc617487590656e0d3894e678404957d",
@@ -1221,7 +1221,7 @@
       },
       "tests/provider_subdomain_requests_cases.py": {
         "before_sha256": "584a085859d179356123a021f6a88ce1820abc4d2c17ccc14bba16eb82710aff",
-        "after_sha256": "b33c6813a6493f417304c34b55a01dae4f744018fd24db87e19aaf57f3d20234",
+        "after_sha256": "01a998a89f5e2b87e446a36008c482253ba4c6b6b7d2cc15c520c2cd5aff52f8",
         "replacements": [
           {
             "before": "            'name=\"review_proof\"', 'name=\"owner_request_id\"', 'name=\"current_password\"',\n            'subdomain-private-folder', *forbidden))\n\n    def cleared(response, action):\n        form = actual_form(response, action)\n        return all(n.get('value', '') == '' for n in form.select('input[type=password]')) and not form.select('input[type=checkbox][checked]')\n",
@@ -1246,6 +1246,10 @@
           {
             "before": "              and 'Subdomain appeared in a later check' in observed_client.text and 'DNS, certificate and website availability have not been checked.' in observed_client.text\n              and not soup(observed_client).select('[data-subdomain-request-cancel],[data-subdomain-request-verify]'))\n        capture(alice, 'Subdomain-Requests-Client-Observed', detail(False, request_id), '#subdomain-request-' + request_id)\n        reads = db('SELECT id,operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [owner_id])\n        results = db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.actor_id=? ORDER BY f.seq', [owner_id])\n        check('exact six successful real reads stay within fresh owner budget', [r['operation'] for r in reads] == ['packages.list', 'packages.list'] + ['package.document-roots'] * 4\n",
             "after": "              and 'Subdomain appeared in a later check' in observed_client.text and 'DNS, certificate and website availability have not been checked.' in observed_client.text\n              and not soup(observed_client).select('[data-subdomain-request-cancel],[data-subdomain-request-verify]'))\n        capture(alice, 'Subdomain-Requests-Client-Observed', detail(False, request_id), '#subdomain-request-' + request_id)\n        notify_before, notify_reads = read_boundary(), activity_reads()\n        all_updates = activity_rows(alice)\n        native_checks = db('SELECT id,disposition FROM ci_provider_subdomain_add_checks WHERE request_id=? ORDER BY id', [native_id])\n        observed_key = 'subdomain-check:' + next(r['id'] for r in native_checks if r['disposition'] == 'observed')\n        different_key = 'subdomain-check:' + next(r['id'] for r in native_checks if r['disposition'] == 'different')\n        check('notification independent readbacks preserve uncertain event and exact separate keys',\n              {k for k in all_updates if k.startswith('subdomain-')} == {decline_key, dispatch_key, terminal_key, observed_key, different_key}\n              and 'Subdomain result not confirmed' in all_updates[terminal_key].get_text(' ', strip=True)\n              and 'Subdomain not observed in this check' in all_updates[different_key].get_text(' ', strip=True)\n              and 'Subdomain observed in a later check' in all_updates[observed_key].get_text(' ', strip=True)\n              and 'does not confirm DNS or website readiness' in all_updates[observed_key].get_text(' ', strip=True))\n        order = [(row.select_one('time').get_text(strip=True), key) for key, row in all_updates.items()]\n        check('notification combined HTTP pages retain strict time and key order', order == sorted(order, reverse=True)\n              and any(not key.startswith('subdomain-') for key in all_updates) and len(order) > 30)\n        nc = browser_page(alice)\n        nc.goto(activity_address())\n        with nc.expect_navigation(wait_until='load'):\n            nc.locator('[data-event-key=\"' + observed_key + '\"] h2 a').click()\n        check('notification Chromium client readback link selects exact request detail',\n              parse_qs(urlparse(nc.url).query).get('subdomain_requests') == ['1']\n              and parse_qs(urlparse(nc.url).query).get('request_id') == [request_id]\n              and nc.locator('#subdomain-request-' + request_id).is_visible())\n        check('notification final feed and exact navigation are read only with original read state',\n              activity_reads() == notify_reads and read_boundary() == notify_before)\n        reads = db('SELECT id,operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [owner_id])\n        results = db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.actor_id=? ORDER BY f.seq', [owner_id])\n        check('exact six successful real reads stay within fresh owner budget', [r['operation'] for r in reads] == ['packages.list', 'packages.list'] + ['package.document-roots'] * 4\n"
+          },
+          {
+            "before": "        bob_response = post_exact(bob, client_url, {**bob_cancel, 'csrf': token(get(bob, client_url)), 'confirmed': '1'})\n",
+            "after": "        # Bob has no assigned parent website, so his request page renders no\n        # form. The workspace sign-out form carries the same session token.\n        real_token = token\n        token = lambda response: real_token(get(bob, portal))\n        bob_response = post_exact(bob, client_url, {**bob_cancel, 'csrf': token(get(bob, client_url)), 'confirmed': '1'})\n        token = real_token\n"
           }
         ]
       },
@@ -1354,7 +1358,7 @@
           "tests/provider_subdomain_requests_cases.py"
         ],
         "before": "584a085859d179356123a021f6a88ce1820abc4d2c17ccc14bba16eb82710aff",
-        "after": "b33c6813a6493f417304c34b55a01dae4f744018fd24db87e19aaf57f3d20234"
+        "after": "01a998a89f5e2b87e446a36008c482253ba4c6b6b7d2cc15c520c2cd5aff52f8"
       }
     ]
   }
