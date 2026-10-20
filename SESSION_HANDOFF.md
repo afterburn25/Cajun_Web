@@ -1,4 +1,15 @@
 # Session handoff - Devin sole-owner continuation
+## 2026-10-20 — document-roots worker defect fixed; upgrade-sequencing + collation defects fixed
+
+Document-roots diagnosis resolved: run `39350203216` artifact showed the failing worker is the **cancel** worker in the "Approval-wins race" (`provider_document_root_requests_native.php`), not the revoked-authority workers (those passed at checks 56–59). Worker's real error: `RuntimeException` at `accounts.php:40` — `staff_locked`'s `GET_LOCK(?,5)` legitimately expired because the parent's winner is a full `drrq_approve` (transport POST + 5 boundary probes) executed inside the `staff_locked` hold — exceeding the worker's 5-second lock budget on CI. **Test-fixture defect, not an application defect** — a real client receives "please retry" and retries. Fix on `devin/diag-docroots-worker` `6309dcb3`: worker retries the action up to 3 attempts on the mutex-busy message and still must land the expected state-based refusal after acquiring; `drrq_join` deadline 12s→25s. Leaf contract pin updated; leaf-local 360 checks. Diagnostic run `39355242274` dispatched. Backport note for Codex fleet.
+
+Cumulative run `39353398062` on `57c5eedc` finished — build + recovery green, Apache + native still red with two **newly identified defects**, both fixed in `b86b5f2a` (preflight) and `c9b7a9c0` (fsi):
+
+- **Apache upgrade sequencing** (`organized_update_cases.py` + six `*_upgrade_cases.py` suites): released 1.23.0 stores `studio_schema_version='2'`; current `studio_ready()` requires `'4'`. The file update (`action('apply')`) only replaces files — the workspace DB update is the separate `studio_migrate` admin action, which none of the six 1.23.0-block suites called. `project_progress_migrate` → `studio_client_manager()` → `!studio_ready()` → RuntimeException swallowed into `$error` → `aor1_studio_progress_events` never created → `records('progress')` fatal. Root cause confirmed by tracing `433c6094` (original port had `studio_ready()==='2'`). Fix: each of the six suites now submits `studio_migrate` first (idempotent, real-owner sequence) — progress/planning/financial/tickets/service-plans/recurring. Also removed a merge-duplicated third `if version=='1.23.0'` block that replayed progress/planning/financial (would fail deterministically once enabled).
+- **Native workspace-schema check**: identical 10-table set — MariaDB `ORDER BY` collation sorts `version_files` after `versions` while PHP `sort()` orders by bytes. Fix: sort the actual list in PHP; kept the stderr actual/expected diagnostic.
+
+Contract re-anchored via builder→engine8 fixpoint (0 issues); local `{"passed": true, "checks": 1212}`. New runs: preflight `b86b5f2a`→`39356092581`; fsi `c9b7a9c0`→`39356092763` (push-triggered; duplicate dispatch `39356095411` cancelled). Stale fsi run `39353395578` on `3c97214e` still pending and will fail on the same defects — its results remain evidence.
+
 ## 2026-10-19 — build-lane evidence boundary restored + document-roots leaf under diagnosis
 
 On `devin/preflight-commercial` at `fbf03973` (on top of `53bbdd28`):
