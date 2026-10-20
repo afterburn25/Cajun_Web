@@ -106,6 +106,7 @@ try{
         registered_nameservers_prepare(RNU_PASSWORD);registered_nameservers_prepare(RNU_PASSWORD);
         rnu_check('Explicit nameserver setup is idempotent',registered_nameservers_ready()&&(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE BINARY action=?',['registered_nameservers.prepared'])->fetchColumn()===1);
         require_once CWP_CODE_ROOT.'/app/clients/accounts.php';
+        if(!studio_ready())studio_migrate();
         $clientId=studio_client_save(0,'','Nameserver upgrade client','rns-upgrade-client@example.invalid',true);
         $GLOBALS['rnu_body']='[{"id":701,"name":"upgrade.synthetic.invalid"}]';
         $source=provider_inventory_refresh_attempt($profile,1,RNU_PASSWORD,'rnu_resolve','rnu_transport',\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::DOMAINS_LIST);
