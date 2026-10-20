@@ -112,7 +112,7 @@ def prepare(repo, installed, base, php, owner, client, other, client_id, job_id,
     licenses = admin + '?view=studio-licenses'
     response = submit(owner, licenses, 'studio_license_setup', {'current_password': password})
     ok('Candidate explicitly prepares licensing while keeping original records', response.status_code == 200
-       and 'Website licensing storage prepared' in response.text and retained(before, snapshot()))
+       and 'Website licensing storage prepared' in response.text and retained(before, snapshot(), changed_cells=[marker_cell]))
     response = submit(owner, licenses, 'studio_license_create', {'customer_id': str(client_id), 'product_id': 'generic'})
     forms = BeautifulSoup(response.text, 'html.parser').select('input[name=action][value=studio_domain_add]')
     ok('Candidate creates one normal client license without building another product', response.status_code == 200
