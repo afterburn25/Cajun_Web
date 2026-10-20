@@ -6,7 +6,7 @@
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "ee213d66d120313219614928abadc6e8b462ff5fb55541791dec20320e2c184a",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
-    "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
+    "tests/stackcp_access_read_snapshot_native.php": "a4c10beaa8cb0b0c4f20887ecd9f0dd6795e8f3a1f353ff03e732bec94e3f691",
     "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
   },
   "native_commands": [
@@ -561,7 +561,7 @@
     ],
     "source_sha256": {
       "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
-      "tests/provider_catalog_import_native.php": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "tests/provider_catalog_import_native.php": "720b18afe1dcf255f7657125715d88d166a16c27567b679c96c25028375680be",
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
@@ -587,8 +587,8 @@
       "tests/mail_flags_native.php": "dd09c0fbc5cc6a81329b9242c857a3cf6fcd170ffc7f14a24fa357cf1611f302",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
       "tests/backups_native.php": "5e4311822a71c446b092d393564ab8f57ec736c4fb7f4054855c56eb51d094f8",
-      "tests/notification_feed_native.php": "5ae51eb0d65904cffa5efd7b64e4033c79c84b2c5d02b2565982359e00f2887e",
-      "tests/support_tickets_native.php": "cf801d9d040583bb2cfa9bba66866b9e58011844bc601cbdd7f566404383887c"
+      "tests/notification_feed_native.php": "77d288b51fbab67fd3d4fa5fdf11443b0a12ee683e5ab27dd58df6c0191138d1",
+      "tests/support_tickets_native.php": "64adb30582eb4e62b5d91429745c412213fb6b7faa30e532fb0bca0b19f5b46c"
     }
   },
   "source_sha256": {}

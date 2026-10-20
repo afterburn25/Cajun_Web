@@ -13,9 +13,16 @@ function studio_migrate(): void {
   if(!in_array($marker,['','0','1','2','3','4'],true))throw new RuntimeException('This workspace schema version is not supported by this installation. No changes were made.');
   $schema=studio_schema(config()['db']['prefix']);$present=[];
   foreach($schema as $key=>$sql)$present[$key]=(bool)one('SELECT table_name FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].$key]);
-  $v3Tables=array_values(array_diff(array_keys($schema),['studio_stage_events']));
+  // studio_milestones was added after marker 4, so each family below holds
+  // only the tables a real migration at that marker guaranteed to create.
+  $v4Tables=array_values(array_diff(array_keys($schema),['studio_milestones']));
+  $v3Tables=array_values(array_diff($v4Tables,['studio_stage_events']));
   $v2Tables=array_values(array_diff($v3Tables,['studio_version_files']));
-  $required=$marker==='4'?array_keys($schema):($marker==='3'?$v3Tables:($marker==='2'?$v2Tables:[]));
+  $required=$marker==='4'?$v4Tables:($marker==='3'?$v3Tables:($marker==='2'?$v2Tables:[]));
+  // Released installers write marker 2 through default settings without
+  // creating workspace tables; only an actually-present v2 family may
+  // refuse recreation of missing established history.
+  if($marker==='2'&&!array_filter($required,fn(string $key):bool=>$present[$key]))$required=[];
   foreach($required as $key)if(!$present[$key])throw new RuntimeException('Established workspace history is missing '.config()['db']['prefix'].$key.'. Recover the table instead of recreating empty records. No changes were made.');
   foreach($schema as $key=>$sql){
    if($present[$key]){$columns=all('SHOW COLUMNS FROM '.table($key));$cols=array_column($columns,'Field');preg_match_all('/(?:\(|,)\s*([a-z_][a-z0-9_]*) (?:INT|BIGINT|VARCHAR|CHAR|TINYINT|DATETIME|LONGTEXT|TEXT)/',$sql,$m);if($cols!==$m[1]||!studio_schema_compatible($key,$sql,$columns))throw new RuntimeException('An incompatible table already uses '.$key.'. No existing table was overwritten.');}

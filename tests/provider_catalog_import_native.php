@@ -24,7 +24,7 @@ if(($argv[1]??'')==='browser-config'){$config=config();$config['site_url']='http
 if(($argv[1]??'')==='import-worker'){pim_actor();try{echo provider_catalog_import_create($argv[2],$argv[3],'PARALLEL-HOST','month',$password);exit;}catch(Throwable $e){fwrite(STDERR,$e::class.': '.$e->getMessage());exit(1);}}
 try {
     foreach(schema_statements('pimci_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','4');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Import staff '.$id,'import'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat((string)$id,32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,\'administrator\',1,?)',[2,json_encode(array_keys(staff_permissions()))]);pim_actor();catalog_migrate($password);
     $tables=all('SHOW TABLES');pim_ok('Unprepared import read creates no tables',provider_catalog_import_ready()===false&&all('SHOW TABLES')===$tables);

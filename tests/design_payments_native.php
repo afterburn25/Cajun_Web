@@ -37,7 +37,7 @@ if(($argv[1]??'')==='worker'){
     }catch(InvalidArgumentException|RuntimeException|LogicException|JsonException $error){if($error instanceof PDOException)throw $error;echo 'denied';}exit;
 }
 try{
-    foreach(schema_statements($prefix) as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);foreach(['studio_schema_version'=>'2','payments_schema_version'=>'1','support_schema_version'=>'1'] as $key=>$value)save_setting($key,$value);
+    foreach(schema_statements($prefix) as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);foreach(['studio_schema_version'=>'4','payments_schema_version'=>'1','support_schema_version'=>'1'] as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=5;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Financial staff '.$i,'finance'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);
     foreach([2=>['clients.manage','payments.manage'],3=>['clients.manage'],4=>['payments.manage'],5=>['clients.manage','support.login']] as $id=>$permissions)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($permissions)]);
     for($i=1;$i<=2;$i++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Financial client '.$i,'finance-client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
