@@ -90,7 +90,7 @@ function activity_projection(array $actor): array {
     if(!$parts&&!$recurring)return ["SELECT '' AS event_key,'none' AS kind,'' AS source_id,0 AS target_id,0 AS job_id,0 AS client_id,'' AS project_title,'' AS item_title,'1970-01-01 00:00:00' AS occurred_at,'' AS author_type,0 AS sort_sequence WHERE 1=0",[]];
     return [implode(' UNION ALL ',[...$parts,...$recurring]),[...$args,...$recurringArgs]];
 }
-function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision|stage|progress|planning|financial):[1-9][0-9]{0,19}|(?:recurring-offer|recurring-event|file|release):[a-f0-9]{32}|milestone:[1-9][0-9]{0,19}(?::[a-f0-9]{16})?)$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
+function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision|stage):[1-9][0-9]{0,19}|(?:recurring-offer|recurring-event|file|release|progress|planning|financial):[a-f0-9]{32}|milestone:[1-9][0-9]{0,19}(?::[a-f0-9]{16})?)$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
 /** Keep projection, personal reads and current identity in the same shared transaction. */
 function activity_read_locked(callable $work):mixed {
     static $depth=0;
