@@ -2983,7 +2983,7 @@ function setup_expected_files(): array { return [
     'includes/layout/provider_plan_catalog.php'=>'81760284d4d115e97c44c5563d7b103bc7233cbf68fd78cbc960aab5486ffa26',
     'includes/layout/provider_services.php'=>'dd78bfb8a70ca3daa7b72e7350d5899c35aa8c4d079980a846042b790f0a5b45',
     'includes/layout/public.php'=>'87e3039981abc1764e851e10c0817b77bf8a881e4e8302a6c481004e7642f9a7',
-    'includes/layout/recurring_billing.php'=>'26745404c2f9d8a4539de4492bd89960542c927c38e5ef0712bb102a294b49b1',
+    'includes/layout/recurring_billing.php'=>'137773bb649b9786f0c5fd6ed74f4f03fa5af7447ebb1697a6736f287ead04a0',
     'includes/layout/service_orders.php'=>'c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496',
     'includes/layout/ticket_activity.php'=>'e8667f2d67ed895d0f2e1d57665ef9d7eb2a2ac6b5b28e8035c152ae003224e9',
     'includes/layout/tickets.php'=>'bf12bf2b206e2095a4150c8553c89a89a9043777eea25f3624f4b1a5a9ee6956',

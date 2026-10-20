@@ -94,7 +94,7 @@ function recurring_ui_invoice_card(array $invoice,bool $staff):void {
 }
 function recurring_ui_detail(array $v):void {
     $staff=$v['staff'];$doc=$v['document'];$data=$doc->data();$t=$data['terms'];$terms=RecurringBillingTerms::fromArray($t);$params=['job'=>$v['project']['id'],'schedule'=>$t['id']];
-    echo '<section class="workspace-card recurring-agreement">';recurring_ui_terms($t);
+    echo '<section id="recurring-offer-'.esc($t['id']).'" class="workspace-card recurring-agreement">';recurring_ui_terms($t);
     echo '<p>Latest recorded decision: <strong>'.esc(ucfirst($doc->phase())).'</strong>. This may describe a scheduled future change. Review its effective date in the history below.</p><p>Service agreement now: '.esc($v['source']['state']).'.</p></section>';
     echo '<details class="workspace-card"><summary>Read the agreed service scope</summary>';service_plans_terms_view($v['source']['plan']);echo '</details>';
     $a=$v['assessment'];$p=$a['period'];echo '<section class="workspace-card recurring-agreement"><h2>Review a billing period</h2><form method="get">';
@@ -119,7 +119,7 @@ function recurring_ui_detail(array $v):void {
     echo '<section class="workspace-card"><h2>Billing history</h2>';
     if($data['format']===2)echo '<p>Confirmed by Client #'.(int)$data['created_by_client'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';
     else echo '<p>Offered by Studio #'.(int)$data['created_by'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';
-    foreach($v['history']['items'] as $event){echo '<li><strong>'.esc(recurring_ui_command_label($event['command'])).'</strong> · '.esc(str_replace(['staff:','client:'],['Studio #','Client #'],$event['actor'])).' · '.esc(gmdate('Y-m-d H:i:s',$event['at'])).' UTC';
+    foreach($v['history']['items'] as $event){echo '<li id="recurring-event-'.esc($event['id']).'"><strong>'.esc(recurring_ui_command_label($event['command'])).'</strong> · '.esc(str_replace(['staff:','client:'],['Studio #','Client #'],$event['actor'])).' · '.esc(gmdate('Y-m-d H:i:s',$event['at'])).' UTC';
         if(isset($event['arguments']['period_index']))echo '<p>Effective '.esc($terms->period($event['arguments']['period_index'])['start']).' ('.esc($t['timezone']).').</p>';
         if(isset($event['arguments']['reason']))echo '<p class="recurring-text">'.esc($event['arguments']['reason']).'</p>';echo '</li>';
     }echo '</ol>';recurring_ui_pages($v['history'],'history_page',$staff,$params);echo '</section><section class="workspace-card"><h2>Period invoices</h2>';
