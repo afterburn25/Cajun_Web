@@ -584,7 +584,7 @@
     "predecessor_native_count": 152,
     "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
     "source_sha256": {
-      "tests/mail_flags_native.php": "78ff481710be3183cbaf331d9018f9344d1938587cc9c2cfc68b2a3c22eda4c2",
+      "tests/mail_flags_native.php": "5e6073934f35ba54f08e438661ba8238c32cccbc6d9667cd77a0e90c33d19b25",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9",
       "tests/backups_native.php": "eef89576d68b4321d9136c852cc81e692d665b7dc1d40f4dc88e6e8133f7afe0",
       "tests/notification_feed_native.php": "77d288b51fbab67fd3d4fa5fdf11443b0a12ee683e5ab27dd58df6c0191138d1",
