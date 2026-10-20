@@ -236,5 +236,6 @@ foreach(['settings','services','projects','studio_clients','studio_jobs','studio
     $rows=query('SELECT * FROM '.table($name))->fetchAll();
     $encoded=array_map(fn($row)=>json_encode($row,JSON_THROW_ON_ERROR),$rows);sort($encoded);
     $result[$name]=['count'=>count($rows),'sha256'=>hash('sha256',json_encode($encoded,JSON_THROW_ON_ERROR))];
+    if(in_array($name,['studio_clients','studio_jobs','studio_invoices'],true))$result[$name]['rows']=array_map(fn($row)=>substr($row,0,160),array_slice($encoded,0,12));
 }
 echo json_encode($result,JSON_THROW_ON_ERROR);
