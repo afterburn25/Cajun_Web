@@ -188,12 +188,12 @@ function sl_read(array $row, string $secret, string $address, callable $authoriz
     if ($stackcpAccessContext) return AccessReader::read($transport, $credential, $stackcpAccessContext, time());
     return InventoryReader::read($transport, $credential, $operation, 0, time());
 }
-function sl_packages(string $profile): array {
-    sl_cool($profile); sl_owner();
+function sl_packages(string $profile, int $owner = 1): array {
+    sl_cool($profile); sl_owner($owner);
     return provider_inventory_refresh_attempt($profile, (int)provider_settings_load($profile)['revision'], SCLN_PASSWORD, 'sl_read_dns', 'sl_read');
 }
-function sl_access(string $profile, string $operation = B::MEMBERSHIP, int $package = 3501): array {
-    sl_cool($profile); sl_owner();
+function sl_access(string $profile, string $operation = B::MEMBERSHIP, int $package = 3501, int $owner = 1): array {
+    sl_cool($profile); sl_owner($owner);
     $binding = staff_locked(fn()=>provider_stackcp_access_binding($profile, $package, $operation));
     return provider_stackcp_access_refresh($profile, $package, $operation, $binding->sha256, SCLN_PASSWORD, 'sl_read_dns', 'sl_read');
 }
@@ -522,7 +522,7 @@ try {
     sl_ok('Whole-user sibling access is not treated as selected-package restriction',provider_stackcp_launch_review($profile,3501)['available'] === false);
     sl_ok('Exact single-package read is independently required again',sl_access($profile,B::GRANTS)['state'] === 'complete' && sl_review($profile)['available']);
     $stage = 'late authorization';
-    sl_packages($profile); sl_access($profile); sl_access($profile,B::GRANTS);
+    sl_packages($profile,3); sl_access($profile,B::MEMBERSHIP,3501,3); sl_access($profile,B::GRANTS,3501,3);
     $r = sl_review($profile); $counts = $launchCalls;
     $duringLookup = function()use($profile):void { sl_auth($profile,false); };
     $out = sl_open($r);
@@ -530,7 +530,7 @@ try {
     sl_replay('Revoked admission stays historical and cannot send',$r,$out);
     $restoredAuth = sl_auth($profile);
     sl_ok('Restoring key text cannot restore its previous approval or assignment', $restoredAuth['status'] === 'configured' && provider_stackcp_launch_review($profile,3501)['available'] === false);
-    sl_assign($profile); sl_packages($profile); sl_access($profile); sl_access($profile,B::GRANTS);
+    sl_assign($profile); sl_packages($profile,3); sl_access($profile,B::MEMBERSHIP,3501,3); sl_access($profile,B::GRANTS,3501,3);
     $r = sl_review($profile); $counts = $launchCalls;
     $duringLaunch = function(string $phase):void {
         if ($phase !== 'brand') throw new LogicException('Unexpected revocation phase.');
@@ -542,7 +542,7 @@ try {
     sl_replay('Current client revocation cannot erase or reissue the consumed admission',$r,$out);
     $client=one('SELECT * FROM '.table('studio_clients').' WHERE id=1'); studio_client_save(1,$client['auth_version'],$client['name'],$client['email'],true);
     $link=one('SELECT * FROM '.table('provider_package_links').' WHERE profile_id=? AND package_id=3501',[$profile]);
-    provider_inventory_unlink($link['id'],SCLN_PASSWORD); provider_inventory_link($profile,3501,1,1,SCLN_PASSWORD); sl_assign($profile); sl_packages($profile); sl_access($profile); sl_access($profile,B::GRANTS);
+    provider_inventory_unlink($link['id'],SCLN_PASSWORD); provider_inventory_link($profile,3501,1,1,SCLN_PASSWORD); sl_assign($profile); sl_packages($profile,3); sl_access($profile,B::MEMBERSHIP,3501,3); sl_access($profile,B::GRANTS,3501,3);
     $stage = 'mutex race';
     $r = sl_review($profile); $counts = sl_calls();
     $child = staff_locked(function()use($r):array {
