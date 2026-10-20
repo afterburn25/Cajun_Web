@@ -556,7 +556,7 @@ try {
     sl_ok('Dedicated StackCP launch does not create a generic operation or grant ledger',!sl_exists('provider_operations') && !sl_exists('provider_operation_grants'));
 } catch (Throwable $e) {
     // Public evidence is finite and sanitized. No exception text, SQL, credentials or URL is exported.
-    $checks[]=['name'=>'Unexpected native failure during '.$stage,'passed'=>false,'error_class'=>get_class($e),'line'=>$e->getLine()];
+    $checks[]=['name'=>'Unexpected native failure during '.$stage,'passed'=>false,'error_class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine()];
 }
 $passed = $checks !== [] && !array_filter($checks,fn($c)=>$c['passed']!==true);
 $output = ['passed'=>$passed,'scope'=>'Actual disposable Linux SQL, owner wrappers, encrypted credentials, signed histories, blocked mutex process, real cooldowns and synthetic fixed transport/browser callback only. No provider-account request, real OAuth session, browser login or live StackCP effect.','checks'=>$checks];
