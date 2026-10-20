@@ -3055,7 +3055,7 @@ function setup_expected_files(): array { return [
     'portal/controllers/plans.php'=>'5795b748e25723c373e9d036881e50e9ae5e991978c118aeec7fb5df886cf567',
     'portal/controllers/recurring_billing.php'=>'7dd29b09617f490eca60e93137ae33d91d79db981822d9be109e94880a1e6ee3',
     'portal/controllers/registered_nameserver_requests.php'=>'c436167f15601f2e4f1c2358f250d7c435398a27a289968a61d3ff05d5ed83cb',
-    'portal/controllers/router.php'=>'e1daade7ee92f0ce59491e8ffc5567c125ec9c1003f8934c0a5595730811b0a4',
+    'portal/controllers/router.php'=>'dca328a6250fc5705a538ca6021cd8231582813a5fcebf8b5bdbfbb98ed13209',
     'portal/controllers/service_observations.php'=>'18fc9463d08585d85660d4d1a401c90a3988319b40d9595be326e0250782f18c',
     'portal/controllers/tickets.php'=>'1ff5e9d69e5602f1e4e81fb61da51d6a12040e33f01adebbc063ada9169bab81',
     'portal/index.php'=>'2f2c2bdbb10a089c0853ad3b2102f0f9aeef5c9809fcf22e5e5e3f53586521a4',

@@ -195,7 +195,7 @@ def hosting_checkout_recipe_predecessor(commands, contract):
         '"$PHP_BINARY" tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-default.json',
         '"$PHP_BINARY" -n tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-minimal.json',
         '"$PHP_BINARY" tests/hosting_checkout_views.php > qa/hosting-checkout-views-default.json',
-        '"$PHP_BINARY" -n tests/hosting_checkout_views.php > qa/hosting-checkout-views-minimal.json',
+        '"$PHP_BINARY" -n -d extension=tokenizer tests/hosting_checkout_views.php > qa/hosting-checkout-views-minimal.json',
         'CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" tests/hosting_checkout_native.php',
     ]
     a.require(additions == expected and checkout['additions_after'] == 'CWP_TEST_HOSTING_RECOVERY=1 "$PHP_BINARY" tests/hosting_catalog_native.php', 'Exact checkout command block required')
