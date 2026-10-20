@@ -70,7 +70,10 @@ def run(env):
     if BeautifulSoup(owner.get(admin+'?view=activity').text,'html.parser').select_one('[value=activity_setup]') is not None:
         submit(owner,admin+'?view=activity','activity_setup',{'password':password})
     key='progress:'+first['request_id'];response=client.get(activity+'&open='+key)
-    check(label+' upgraded client resolves the exact dated progress update',BeautifulSoup(response.text,'html.parser').select_one('#progress-'+first['request_id']) is not None and 'focus_progress='+first['request_id'] in response.url)
+    soup=BeautifulSoup(response.text,'html.parser');found=soup.select_one('#progress-'+first['request_id'])
+    if not (found is not None and 'focus_progress='+first['request_id'] in response.url):
+        title=(soup.select_one('title').get_text() if soup.select_one('title') else '');print(label+' activity-open evidence:',response.status_code,response.url,'anchor' if found else 'missing','title='+title.strip()[:120],flush=True)
+    check(label+' upgraded client resolves the exact dated progress update',found is not None and 'focus_progress='+first['request_id'] in response.url)
     submit(client,activity,'activity_mark',{'keys':json.dumps([key]),'state':'read'})
     saved=records('progress')
     check(label+' upgraded progress retains atomic history anchor requests and personal read state',len(saved['studio_progress_events'])==3 and len(saved['studio_progress_requests'])==2 and len(saved['studio_progress_heads'])==1 and any(r['event_key']==key and r['actor_type']=='client' for r in saved['activity_reads']))
