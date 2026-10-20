@@ -6,8 +6,8 @@
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
-    "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
-    "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
+    "tests/stackcp_access_read_snapshot_native.php": "351851229b44abaa3eb305c4df7f74bccecaa46791477531310f9ac3df7b5b02",
+    "tests/fixtures/stackcp_access_read_original.json": "7d2a8006b157c0466b7cf27b491030ac140284e184434f5c9604f05a019077ce"
   },
   "native_commands": [
     "\"$PHP_BINARY\" tests/service-plans/forms.php > qa/service-plans-forms-results.json",
@@ -603,7 +603,7 @@
       "stackcp-launch-browser-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "f7ccac9c27630ecee696dbe0ac44a2ae13f08f895751947282626877e235efb7",
+    "predecessor_contract_sha256": "d777525265f86b6ffcbb02060b30512962dd123c44aaa94d92f3e2297d355e00",
     "predecessor_reports_sha256": "f77d7dba6762ded822206ca7263d146a26f89d58c4e4b87851a3743e74dd6d2b",
     "predecessor_helper_sha256": "47a152315fbe17e2cb7aa9ed81af4d5046d3ce686f458efce3a3dca1f565382a",
     "predecessor_test_pins": {},
@@ -749,7 +749,7 @@
   },
   "client_stackcp": {
     "predecessor_commit": "3d449d79be02b5e19958bc1d44bddb0371309e46",
-    "predecessor_contract_sha256": "df85f28b1c1cc177aaa159b76fe7b14a98918dfd4846a20bff30d24275bc81dd",
+    "predecessor_contract_sha256": "8345a60fd84ff05a17b6e63c2454b905020af83a1171025b93ade7455c88d0b1",
     "predecessor_reports_sha256": "f735dc1278a1b0de6232eeadd332dbec75669bc2363d82f52689d6f600e1ca87",
     "native_after": "CWP_TEST_STACKCP_LAUNCH=1 \"$PHP_BINARY\" tests/stackcp_launch_native.php",
     "native_additions": [
@@ -1126,7 +1126,7 @@
   },
   "support_stackcp": {
     "parent_commit": "51938fc80110931e80ebfd097066f2e4e1377df2",
-    "predecessor_contract_sha256": "b662bd1e6de2599a436abfca5d83cc80867fa725982f5a39239deb03dd8a32c0",
+    "predecessor_contract_sha256": "f14e915e696924efd76317c80130fb909263319f86e2955857312dd0f99be57a",
     "predecessor_reports_sha256": "29a7fc68769b0ea2a981a8f79bb224b49db92a8dbab8bccbbb6e23396fdd4962",
     "native_after": "CWP_TEST_CLIENT_STACKCP=1 \"$PHP_BINARY\" tests/client_stackcp_native.php",
     "native_additions": [

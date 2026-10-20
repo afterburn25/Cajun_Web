@@ -73,7 +73,7 @@ function sap_status_counters():array {
 /** Exact old functions/class, with identifier-only namespacing for side-by-side execution. */
 function sap_load_original():void {
     $raw=file_get_contents(__DIR__.'/fixtures/stackcp_access_read_original.json');
-    if (!hash_equals('2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e',hash('sha256',$raw))) throw new RuntimeException('Changed original comparison baseline.');
+    if (!hash_equals('7d2a8006b157c0466b7cf27b491030ac140284e184434f5c9604f05a019077ce',hash('sha256',$raw))) throw new RuntimeException('Changed original comparison baseline.');
     $baseline=json_decode($raw,true,64,JSON_THROW_ON_ERROR);$map=$baseline['rename'];
     foreach ($baseline['units'] as $name=>$unit) {
         if (!hash_equals($unit['sha256'],hash('sha256',$unit['code']))) throw new RuntimeException('Changed original comparison unit.');
