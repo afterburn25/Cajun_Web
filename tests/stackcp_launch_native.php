@@ -552,7 +552,10 @@ try {
     });
     $workerResult = sl_join($child); sl_owner(3);
     sl_ok('Owner revoked while actually blocked is denied before any DNS phase or browser work', $workerResult === ['outcome'=>'refused','launch_dns'=>0,'launch_calls'=>['brand'=>0,'token'=>0,'session'=>0,'browser'=>0]] && sl_calls() === $counts);
-    sl_ok('Original owner revocation preserves readable history but makes new launch unavailable',provider_stackcp_launch_history($profile,3501)['items'] !== [] && provider_stackcp_launch_review($profile,3501)['available'] === false && sl_ready());
+    $revHist=provider_stackcp_launch_history($profile,3501); $revReview=provider_stackcp_launch_review($profile,3501);
+    sl_ok('Original owner revocation preserves readable history',$revHist['items'] !== []);
+    sl_ok('Original owner revocation makes new launch unavailable',$revReview['available'] === false);
+    sl_ok('Launch storage stays readable after owner revocation',sl_ready());
     $stage = 'confidentiality';
     $retained=json_encode([all('SELECT * FROM '.table('provider_stackcp_launch_events')),all('SELECT * FROM '.table('audit')),provider_stackcp_launch_history($profile,3501)],JSON_THROW_ON_ERROR);
     $safe=true; foreach ([SCLN_GENERAL,SCLN_AUTH,SCLN_TOKEN,SCLN_SESSION,base64_encode(SCLN_GENERAL),base64_encode(SCLN_AUTH),base64_encode(SCLN_TOKEN),'PHPSESSID=','/login/sso?'] as $secret) $safe=$safe&&!str_contains($retained,$secret);
