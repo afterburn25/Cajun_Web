@@ -238,13 +238,13 @@ function sdrn_worker():never{
         if(!is_string($in['request_sha256'])||!preg_match('/\A[a-f0-9]{64}\z/',$in['request_sha256'])||!is_string($in['review_proof'])||strlen($in['review_proof'])>4096)throw new RuntimeException('Invalid worker proof.');
         if($in['action']==='cancel')sdrn_client();else sdrn_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();
-        for($attempt=1;;$attempt++):
+        for($budget=microtime(true)+40;;):
         $outcome='completed';try{
             if($in['action']==='cancel')provider_subdomain_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
             else provider_subdomain_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['review_proof'],true,SDRN_PASSWORD,'sdrn_write_dns','sdrn_perform');
             break;
         }catch(InvalidArgumentException|RuntimeException $e){
-            if($e->getMessage()==='Another account change is in progress. Please retry.'&&$attempt<3)continue;
+            if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<$budget)continue;
             $expected=$in['action']==='cancel'?'This subdomain request changed. Reload its review.':'This request was already reviewed or withdrawn.';
             if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';
             break;
