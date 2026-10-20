@@ -138,14 +138,14 @@ def run(env):
     # intentional receipt need not rewrite the baseline for unrelated financial terms.
     for fixture in ['financial', 'payments']:
         for name in ['studio_invoices', 'invoice_payments']:
-            earlier[fixture]['tables'].pop(name, None)
+            earlier[fixture].get('tables', {}).pop(name, None)
             earlier[fixture].pop(name, None)
 
     def retained(expected):
         current = {name: records(name) for name in earlier}
         for fixture in ['financial', 'payments']:
             for name in ['studio_invoices', 'invoice_payments']:
-                current[fixture]['tables'].pop(name, None)
+                current[fixture].get('tables', {}).pop(name, None)
                 current[fixture].pop(name, None)
         return (records('recurring') == expected and current == earlier
                 and all(records()[name] == stable[name] for name in ['studio_clients', 'studio_jobs'])
