@@ -355,7 +355,7 @@ if ($worker) {
         if ($raw === false || strlen($raw) > 8192) exit(2);
         $review = json_decode($raw, true, 6, JSON_THROW_ON_ERROR);
         if (!is_array($review) || !isset($review['admission_id'],$review['profile_id'],$review['package_id'],$review['expires_epoch'],$review['review_proof'])) exit(2);
-        sl_owner();
+        sl_owner(3);
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()], JSON_THROW_ON_ERROR)."\n"; fflush(STDOUT);
         $outcome = 'completed';
         try { sl_open($review); } catch (RuntimeException $e) { if ($e instanceof PDOException) throw $e; $outcome = 'refused'; }
@@ -547,7 +547,7 @@ try {
     $r = sl_review($profile); $counts = sl_calls();
     $child = staff_locked(function()use($r):array {
         $child=sl_spawn($r); sl_blocked($child); sl_ok('Independent owner process is observed blocked on the actual owning mutex',true);
-        sl_owner(3); staff_save(1,'Launch staff 1','launchstaff1@example.invalid','administrator',true,array_keys(staff_permissions()),SCLN_PASSWORD);
+        sl_owner(1); staff_save(3,'Launch staff 3','launchstaff3@example.invalid','owner',true,array_keys(staff_permissions()),SCLN_PASSWORD);
         return $child;
     });
     $workerResult = sl_join($child); sl_owner(3);
