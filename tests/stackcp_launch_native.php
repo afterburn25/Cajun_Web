@@ -518,6 +518,7 @@ try {
     sl_ok('Whole-user sibling access is not treated as selected-package restriction',provider_stackcp_launch_review($profile,3501)['available'] === false);
     sl_ok('Exact single-package read is independently required again',sl_access($profile,B::GRANTS)['state'] === 'complete' && sl_review($profile)['available']);
     $stage = 'late authorization';
+    sl_packages($profile);
     $r = sl_review($profile); $counts = $launchCalls;
     $duringLookup = function()use($profile):void { sl_auth($profile,false); };
     $out = sl_open($r);
@@ -552,7 +553,7 @@ try {
     $retained=json_encode([all('SELECT * FROM '.table('provider_stackcp_launch_events')),all('SELECT * FROM '.table('audit')),provider_stackcp_launch_history($profile,3501)],JSON_THROW_ON_ERROR);
     $safe=true; foreach ([SCLN_GENERAL,SCLN_AUTH,SCLN_TOKEN,SCLN_SESSION,base64_encode(SCLN_GENERAL),base64_encode(SCLN_AUTH),base64_encode(SCLN_TOKEN),'PHPSESSID=','/login/sso?'] as $secret) $safe=$safe&&!str_contains($retained,$secret);
     sl_ok('Launch rows audits and safe history never retain keys tokens sessions or destination URLs',$safe);
-    sl_ok('All prerequisite reads stayed within the real owner quota without rewriting timestamps',$readCalls === 15 && $readDns === 15 && $readCredentials === 15);
+    sl_ok('All prerequisite reads stayed within the real owner quota without rewriting timestamps',$readCalls === 16 && $readDns === 16 && $readCredentials === 16);
     sl_ok('Dedicated StackCP launch does not create a generic operation or grant ledger',!sl_exists('provider_operations') && !sl_exists('provider_operation_grants'));
 } catch (Throwable $e) {
     // Public evidence is finite and sanitized. No exception text, SQL, credentials or URL is exported.
