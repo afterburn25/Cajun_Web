@@ -498,7 +498,7 @@
       "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
       "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a",
       "tests/structure_helpers.py": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
-      "tests/staff_cases.py": "5c44ed29d27eecb169fa8b74c10f413e08298fd103bec360d113d364f8fe2c60",
+      "tests/staff_cases.py": "9d8e615cd1d930b7d66304f4b39bab8d428f1c7c4b6b7c90641d3d3a796adede",
       "tests/support_cases.py": "4a4345979fe294ace1db1ca6280cd6254fb98144f0712a10452ee24a4e9b3735",
       "tests/catalog_cases.py": "fbc8584862f41c960c41bf937f855d2d17625ce56e0ae7d9ee523fc7c7f2f99d",
       "tests/payments_cases.py": "efe7078b2c7ac2ced1de0f9c3bfcc66b0fd99c6e675bb2fa03437b013839fe57",
@@ -580,8 +580,8 @@
     "predecessor_sha256": "c302bf3821961204fb4992dec424e2b298780dbba8d945fb67ce79517b2636e7",
     "predecessor_browser_sha256": "bc124cd52768ea266ab27e34ab12d63389e11673d2e70f5fdbcefca8209f0bdf",
     "predecessor_reports_sha256": {
-      "browser": "3ffa9a32a09ac341a3f3fc3bcdaf41e1c2f94ead86bcfce3ee245300d984717a",
-      "final": "a32ffede6f98a7aa7af4a328c7aec78b55fdcf0fd4535e6b803416667191985a"
+      "browser": "bd1ecdf1f93c8b1ed65462793e01bbb910921aca3220beb845a6bf53e720777e",
+      "final": "b2eccedb62dd5a780a562111687ab95ff4c72c01bd10933fca474fac5c2beb8c"
     },
     "screenshots": [
       "Password-Reset-Template-Review-Desktop.png",

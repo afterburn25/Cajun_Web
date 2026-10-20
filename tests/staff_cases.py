@@ -130,7 +130,7 @@ def run_browser(env,browser):
     expect(nav.get_by_role('link',name='Portfolio',exact=True)).to_be_visible()
     check('Assigned website navigation hides owner and client sections',nav.get_by_role('link',name='Portfolio',exact=True).count()==1 and nav.get_by_role('link',name='Administrators',exact=True,include_hidden=True).count()==0 and nav.get_by_role('link',name='Client workspace',exact=True,include_hidden=True).count()==0 and nav.get_by_role('link',name='Email delivery',exact=True,include_hidden=True).count()==0)
     web=requests.Session();r=submit(web,BASE+'/existing/admin/index.php?view=login','login',{'email':'website-staff@example.invalid','password':STAFF})
-    chosen_form(web,BASE+'/existing/admin/index.php?view=studio-pipeline','studio_pipeline','id',1,{'status':'qualified','notes':'Website staff saved this note','follow_up':''})
+    chosen_form(web,BASE+'/existing/admin/index.php?view=studio-pipeline','studio_pipeline','id',1,{'status':'contacted','notes':'Website staff saved this note','follow_up':''})
     check('Website staff can save authorized inquiry work',db('SELECT notes FROM ci_leads WHERE id=1')[0]['notes']=='Website staff saved this note')
     for view in ['staff','email','health','studio-upgrade','studio-clients','studio-job&id=1','studio-job&file=1']:
         r=web.get(BASE+'/existing/admin/index.php?view='+view);check('Direct website staff denial '+view,r.status_code==403)
