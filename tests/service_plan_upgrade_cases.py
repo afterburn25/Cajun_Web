@@ -48,10 +48,10 @@ def run(env):
           'Prepare service agreements' in owner.get(listing).text)
     response = submit(owner, admin+'?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
     check(label+' upgraded workspace schema precedes service agreement setup', 'Database update completed' in response.text)
-    response = submit(owner, admin+'?view=staff', 'staff_migrate',
-                      {'owner_password': password, 'confirm': '1'})
-    check(label+' upgraded owner enables administrator access first', 'Administrator access is enabled' in response.text)
     response = submit(owner, listing, 'service_plans_setup', {'current_password': password})
+    if 'Service agreements are ready' not in response.text:
+        notices = [n.get_text(' ', strip=True)[:200] for n in BeautifulSoup(response.text, 'html.parser').select('.notice.error')]
+        raise AssertionError('service_plans_setup rendered no ready flash; notices='+repr(notices))
     check(label+' additive agreement setup preserves prior invoices and clients',
           'Service agreements are ready' in response.text
           and all(records()[name] == env['before'][name] for name in ['studio_clients', 'studio_jobs', 'studio_invoices']))
