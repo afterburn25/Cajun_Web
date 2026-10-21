@@ -178,6 +178,7 @@ function sdrn_blocked(array &$worker):void{
 function sdrn_join(array &$worker):array{
     $exit=null;$deadline=microtime(true)+12;
     $deadline=microtime(true)+25;
+    $deadline=microtime(true)+150;
     try{do{
         $worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);
         if(strlen($worker['stdout'])>8192||strlen($worker['stderr'])>2048)throw new RuntimeException('Worker result bound exceeded.');
@@ -238,12 +239,14 @@ function sdrn_worker():never{
         if(!is_string($in['request_sha256'])||!preg_match('/\A[a-f0-9]{64}\z/',$in['request_sha256'])||!is_string($in['review_proof'])||strlen($in['review_proof'])>4096)throw new RuntimeException('Invalid worker proof.');
         if($in['action']==='cancel')sdrn_client();else sdrn_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();
+        $b120=microtime(true)+120;
         for($budget=microtime(true)+40;;):
         $outcome='completed';try{
             if($in['action']==='cancel')provider_subdomain_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
             else provider_subdomain_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['review_proof'],true,SDRN_PASSWORD,'sdrn_write_dns','sdrn_perform');
             break;
         }catch(InvalidArgumentException|RuntimeException $e){
+            if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<=$b120)continue;
             if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<$budget)continue;
             $expected=$in['action']==='cancel'?'This subdomain request changed. Reload its review.':'This request was already reviewed or withdrawn.';
             if($e instanceof PDOException||$e->getMessage()!==$expected)throw $e;$outcome='refused';

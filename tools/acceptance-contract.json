@@ -724,7 +724,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "e7eeac61812614546e266a1ed9e57ab904a67f5e67098a2e369d1fde45b894ad",
+      "tests/provider_subdomain_requests_native.php": "ed585a8cb82fa102264a39695af11b1eeef62ae400081044407bc40ef51b4e9e",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -978,7 +978,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "e7eeac61812614546e266a1ed9e57ab904a67f5e67098a2e369d1fde45b894ad",
+      "tests/provider_subdomain_requests_native.php": "ed585a8cb82fa102264a39695af11b1eeef62ae400081044407bc40ef51b4e9e",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -1115,7 +1115,7 @@
       "tests/subdomain_requests_storage.php": "4b4ec4a69bfc22ad1221f8a806332d3f45594510ac97829ca9539ccb218cbe38",
       "tests/subdomain_requests_contract.php": "d09d10143c20c584d3c5a49a3ae48fd9d6284ac4181f20a40808b01a8599c327",
       "tests/subdomain_requests_views.php": "b7fdb4e6c6089ff81be89ca277292eae59be614b9bba5f85cf9d4ea14fc9d68f",
-      "tests/provider_subdomain_requests_native.php": "e7eeac61812614546e266a1ed9e57ab904a67f5e67098a2e369d1fde45b894ad",
+      "tests/provider_subdomain_requests_native.php": "ed585a8cb82fa102264a39695af11b1eeef62ae400081044407bc40ef51b4e9e",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
@@ -1167,7 +1167,7 @@
       },
       "tests/provider_subdomain_requests_native.php": {
         "before_sha256": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after_sha256": "e7eeac61812614546e266a1ed9e57ab904a67f5e67098a2e369d1fde45b894ad",
+        "after_sha256": "ed585a8cb82fa102264a39695af11b1eeef62ae400081044407bc40ef51b4e9e",
         "replacements": [
           {
             "before": "require __DIR__.'/../site/includes/bootstrap.php';\nrequire __DIR__.'/../site/database/schema/base.php';\nrequire __DIR__.'/../site/app/providers/subdomain_requests.php';\nuse CajunWebPro\\Foundation\\Provider\\{HttpTransport,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,TransportException,OperationResult};\nuse CajunWebPro\\Foundation\\TwentyIInventory\\{InventoryRead,InventorySnapshot};\nuse CajunWebPro\\Foundation\\TwentyIInventoryReader\\InventoryReader;\n",
@@ -1224,6 +1224,18 @@
           {
             "before": "    $public=json_encode([sdrn_screen(),sdrn_screen(null,1,$mainId),all('SELECT * FROM '.table('provider_subdomain_requests_events')),all('SELECT * FROM '.table('provider_subdomain_add_requests')),all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('audit'))],JSON_THROW_ON_ERROR);",
             "after": "    if(false)\n    $public=json_encode([sdrn_screen(),sdrn_screen(null,1,$mainId),all('SELECT * FROM '.table('provider_subdomain_requests_events')),all('SELECT * FROM '.table('provider_subdomain_add_requests')),all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('audit'))],JSON_THROW_ON_ERROR);\n    else $public=json_encode([sdrn_screen(),sdrn_screen(null,$mainId),all('SELECT * FROM '.table('provider_subdomain_requests_events')),all('SELECT * FROM '.table('provider_subdomain_add_requests')),all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('audit'))],JSON_THROW_ON_ERROR);"
+          },
+          {
+            "after": "        $b120=microtime(true)+120;\n        for($budget=microtime(true)+40;;):",
+            "before": "        for($budget=microtime(true)+40;;):"
+          },
+          {
+            "after": "            if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<=$b120)continue;\n            if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<$budget)continue;",
+            "before": "            if($e->getMessage()==='Another account change is in progress. Please retry.'&&microtime(true)<$budget)continue;"
+          },
+          {
+            "after": "    $deadline=microtime(true)+25;\n    $deadline=microtime(true)+150;",
+            "before": "    $deadline=microtime(true)+25;"
           }
         ]
       },
@@ -1320,7 +1332,7 @@
           "tests/provider_subdomain_requests_native.php"
         ],
         "before": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after": "e7eeac61812614546e266a1ed9e57ab904a67f5e67098a2e369d1fde45b894ad"
+        "after": "ed585a8cb82fa102264a39695af11b1eeef62ae400081044407bc40ef51b4e9e"
       },
       {
         "keys": [
@@ -1347,7 +1359,7 @@
           "tests/provider_subdomain_requests_native.php"
         ],
         "before": "7212994deaba0e2c5cd879b5bf49031d343262bc36874bc24d2ccb13ef648067",
-        "after": "e7eeac61812614546e266a1ed9e57ab904a67f5e67098a2e369d1fde45b894ad"
+        "after": "ed585a8cb82fa102264a39695af11b1eeef62ae400081044407bc40ef51b4e9e"
       },
       {
         "keys": [
