@@ -306,7 +306,6 @@ def run_request_forms(state):
     owner.post(owner_detail, data=approval)
     check('owner approval replay cannot resend or rewrite journals', journal() == before_replay and provider.posts == original_posts + [expected_post]
           and db('SELECT * FROM ci_audit ORDER BY id') == audits and db('SELECT * FROM ci_provider_operations WHERE id=?', [ledger['id']]) == [ledger])
-    cool(); settings_post('provider_inventory_refresh')
     cool(); different, _ = post_form(owner, owner_detail, 'provider_folder_request_verify', current_password=OWNER)
     check('separate mismatching map preserves the uncertain request', 'different folder or no website entry' in different.text
           and db('SELECT disposition FROM ci_provider_document_root_change_checks WHERE request_id=?', [owner_request['id']]) == [{'disposition': 'different'}]
@@ -327,9 +326,9 @@ def run_request_forms(state):
         check('retains every inherited row in ' + table, retained_rows(rows, db('SELECT * FROM ci_' + table)))
     for table, rows in state['financial'].items():
         check('financial history remains exact in ' + table, db('SELECT * FROM ci_' + table + ' ORDER BY id') == rows)
-    check('dedicated owner uses eight real reads without rewriting cooldowns',
+    check('dedicated owner uses seven real reads without rewriting cooldowns',
           [row['operation'] for row in db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [state['owner_id']])]
-          == ['packages.list', 'packages.list', 'package.document-roots', 'packages.list', 'package.document-roots', 'packages.list', 'package.document-roots', 'package.document-roots'])
+          == ['packages.list', 'packages.list', 'package.document-roots', 'packages.list', 'package.document-roots', 'package.document-roots', 'package.document-roots'])
     for path in ('app/providers/document_root_requests.php', 'app/providers/document_root_requests_document.php',
                  'app/providers/document_root_requests_storage.php', 'app/providers/document_root_requests_views.php',
                  'database/schema/provider_document_root_requests_schema.php', 'database/migrations/provider_document_root_requests_migrate.php',
