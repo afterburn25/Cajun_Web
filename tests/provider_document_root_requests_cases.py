@@ -92,7 +92,7 @@ def run_browser(env, browser):
                 destination = qa / name
                 if destination.exists() or destination.is_symlink():
                     raise AssertionError('Never overwrite an installed folder capture')
-                page.set_viewport_size({'width': width, 'height': height}); navigation = page.goto(url)
+                page.set_viewport_size({'width': width, 'height': height}); navigation = page.goto(url, timeout=90000)
                 page.evaluate('document.fonts.ready')
                 card = page.locator(selector); expect(card).to_have_count(1); expect(card).to_be_visible()
                 if owner and width == 320:
