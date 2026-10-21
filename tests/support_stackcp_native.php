@@ -330,9 +330,10 @@ function ssn_fault(string $kind,string $phase,callable $call):bool {
     $action=$prepared?'provider.support_stackcp_prepared':'provider.support_stackcp_event';
     $condition=$prepared?'1=1':"EXISTS (SELECT 1 FROM ".table('provider_support_stackcp_events')." WHERE BINARY kind='".$kind."' AND BINARY phase='".$phase."' AND BINARY NEW.detail=BINARY CONCAT('Support StackCP event ',id,' ',document_sha256,' ',proof))";
     db()->exec('CREATE TRIGGER '.$trigger.' BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF BINARY NEW.action='".$action."' AND ".$condition." THEN SET @ssln_fault_hits=COALESCE(@ssln_fault_hits,0)+1; SET @ssln_fault_rows=(SELECT COUNT(*) FROM ".table('provider_support_stackcp_events')."); SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic support launch audit fault'; END IF; END");
-    query('SET @ssln_fault_hits=0,@ssln_fault_rows=0');$caught=false;
-    try {$call();}catch(PDOException $e){$w=one('SELECT @ssln_fault_hits AS hits,@ssln_fault_rows AS rows_seen');$caught=$e->getCode()==='45000'&&str_contains($e->getMessage(),'Synthetic support launch audit fault')&&(int)$w['hits']===1&&($prepared?(int)$w['rows_seen']===0:(int)$w['rows_seen']>$before);}
-    finally {db()->exec('DROP TRIGGER '.$trigger);}return $caught;
+    query('SET @ssln_fault_hits=0,@ssln_fault_rows=0');$caught=false;$diag=['kind'=>$kind,'phase'=>$phase,'before'=>$before,'completed'=>false];
+    try {$call();$diag['completed']=true;}catch(PDOException $e){$w=one('SELECT @ssln_fault_hits AS hits,@ssln_fault_rows AS rows_seen');$diag+=['code'=>$e->getCode(),'msg'=>substr($e->getMessage(),0,200),'hits'=>$w['hits']??null,'rows_seen'=>$w['rows_seen']??null];$caught=$e->getCode()==='45000'&&str_contains($e->getMessage(),'Synthetic support launch audit fault')&&(int)$w['hits']===1&&($prepared?(int)$w['rows_seen']===0:(int)$w['rows_seen']>$before);}
+    catch(Throwable $t){$diag+=['non_pdo'=>get_class($t),'msg'=>substr($t->getMessage(),0,200)];fwrite(STDERR,'SSNFAULT '.json_encode($diag)."\n");throw $t;}
+    finally {db()->exec('DROP TRIGGER '.$trigger);}if(!$caught)fwrite(STDERR,'SSNFAULT '.json_encode($diag)."\n");return $caught;
 }
 function ssn_current_probe(string $name,string $permissionId,callable $mutate):void {
     $before=ssn_digest();$calls=ssn_calls();staff_locked(function()use($name,$permissionId,$mutate):void {db()->beginTransaction();try {$p=provider_support_stackcp_permission($permissionId);$mutate();ssn_ok($name,!provider_support_stackcp_current($p));}finally{db()->rollBack();unset($GLOBALS['cwp_settings']);}});
