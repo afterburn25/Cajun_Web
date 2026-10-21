@@ -157,6 +157,7 @@ try {
         $state=phui_state();
         if($phase==='status'){phui_keys(['request_ids']);$output=phui_status($state,$input['request_ids']);}
         elseif($phase==='cool'){phui_keys([]);$output=['passed'=>true,'phase'=>'cool','waited_ms'=>phui_cool($state['profile_id'])];}
+        elseif($phase==='inventory'){phui_keys([]);phui_inventory($state['profile_id']);$output=['passed'=>true,'phase'=>'inventory'];}
         elseif($phase==='options'){
             phui_keys(['session_id','actor','link_id','mode']);if(!is_string($input['session_id'])||!in_array($input['actor'],['owner','client'],true)||!in_array($input['mode'],['normal','empty','unavailable'],true)||!in_array($input['link_id'],[$state['link_id'],$state['other_link_id']],true))throw new InvalidArgumentException('Invalid synthetic options request.');
             phui_session($input['session_id']);$GLOBALS['phui_option_mode']=$input['mode'];$transport=$input['mode']==='unavailable'?null:'phui_options_transport';

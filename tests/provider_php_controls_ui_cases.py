@@ -280,6 +280,7 @@ def run_browser(env, browser):
         owner.post(form_action(opened, end_form), data=fields(end_form), timeout=30)
 
         provider.php_value = "php82"
+        fixture("inventory", {})
         read(owner, owner_url, "current", True)
         check("Owner scalar read records true staff actor", state()["latest"]["current"]["actor_kind"] == "staff" and state()["latest"]["current"]["actor_id"] == 1)
         options(owner, "owner", "empty")
@@ -352,6 +353,7 @@ def run_browser(env, browser):
         check("Client later scalar is separately observed", request_row(client_request)["readback"] == "observed")
         capture(client, "PHP-Controls-Client-History", client_url, f'[data-php-request="{client_request}"]')
 
+        fixture("inventory", {})
         read(client, client_url, "current", False); options(client, "client")
         fault_confirmation = review(client, client_url, "php84")
         fault_request = fault_confirmation["request_id"]; request_ids.append(fault_request)
