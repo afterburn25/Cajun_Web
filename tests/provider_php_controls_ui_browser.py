@@ -231,7 +231,7 @@ def main():
             raise AssertionError(name)
 
     def fixture(phase, payload):
-        if phase not in ("seed", "status", "cool", "options", "contact-add", "contact-clear", "fault-arm", "fault-clear"):
+        if phase not in ("seed", "status", "cool", "options", "inventory", "contact-add", "contact-clear", "fault-arm", "fault-clear"):
             raise AssertionError("Unknown private fixture phase")
         def retain(stdout, stderr):
             private_write(runtime / ("bridge-failure-" + str(time.time_ns()) + ".txt"), (stdout or b"")[-65536:] + b"\n" + (stderr or b"")[-65536:])
