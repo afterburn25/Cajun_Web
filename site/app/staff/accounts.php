@@ -133,6 +133,8 @@ function staff_view_permission(string $view): ?string {
     if($view==='activity')return null; // Current project/ticket actors independently authorize the activity controller.
     if(in_array($view,['hosting-offers','hosting-purchases'],true))return 'staff.manage';
     if(in_array($view,['tickets','ticket','ticket-new'],true))return 'support.tickets';
+    if($view==='https-requests')return 'staff.manage';
+    if($view==='directory-requests')return 'staff.manage';
     if($view==='registration-drafts')return 'staff.manage';
     if($view==='nameserver-requests')return 'staff.manage';
     if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
@@ -161,6 +163,8 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'hosting_catalog_'))return 'staff.manage';
     if($action==='tickets_setup')return 'staff.manage';
     if(str_starts_with($action,'tickets_'))return 'support.tickets';
+    if(str_starts_with($action,'provider_https_'))return 'staff.manage';
+    if(str_starts_with($action,'provider_directory_request_'))return 'staff.manage';
     if(str_starts_with($action,'registration_drafts_'))return 'staff.manage';
     if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
     if(str_starts_with($action,'recurring_'))return 'payments.manage';

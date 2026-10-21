@@ -16,7 +16,19 @@ require_once CWP_CODE_ROOT.'/portal/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_php.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/document_roots.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_force_ssl.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/force_ssl_requests.php';
+$httpsRequestRoute=array_key_exists('https_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'https_request_'));
+if($httpsRequestRoute){
+    header('Cache-Control: no-store, private');
+    if(provider_force_ssl_requests_session_blocked())fail_page('Sign in directly to your primary client account to manage HTTPS requests.',403);
+}
 require_once CWP_CODE_ROOT.'/portal/controllers/directory_listing.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/directory_listing_requests.php';
+$directoryRequestRoute=array_key_exists('directory_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'directory_request_'));
+if($directoryRequestRoute){
+    header('Cache-Control: no-store, private');
+    if(provider_directory_indexing_requests_session_blocked())fail_page('Sign in directly to your primary client account to manage directory-listing requests.',403);
+}
 require_once CWP_CODE_ROOT.'/portal/controllers/package_wordpress_installed.php';
 if(array_key_exists('force_ssl',$_GET))header('Cache-Control: no-store, private');
 if(array_key_exists('directory_indexing',$_GET))header('Cache-Control: no-store, private');
@@ -68,6 +80,8 @@ if(array_key_exists('tickets',$_GET)||array_key_exists('ticket',$_GET)||array_ke
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);
 if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
+if($httpsRequestRoute)provider_force_ssl_requests_client_render($client,$error);
+if($directoryRequestRoute)provider_directory_indexing_requests_client_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);

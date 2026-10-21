@@ -1,3 +1,4 @@
+
 ## 2026-10-19 — monthly and annual hosting plan browsing
 
 Branch `codex/twentyi-hosting-billing-selector` continues exact `e7deced05e0b625994ee2facf628ebe337030081` (draft [PR245](https://github.com/afterburn25/Cajun_Web/pull/245)). The enclosing commit is **Add monthly and annual hosting plan browsing**. Shared Hosting and portal Available plans gain All plans / Monthly / Annual links and matching pagination. Filtering happens before the page limit; each offer retains its own full price, image, terms and exact checkout identity. Existing requests and invoices remain unchanged. [Behavior and evidence](TWENTYI_HOSTING_BILLING_SELECTOR.md).
@@ -11,6 +12,25 @@ Preserve the separate frozen directory-listing source `b0fe332f391f5586d1a3978e9
 Branch `codex/twentyi-catalog-retail-variants` continues exact parent `3b96f48f69e1a32370509dc123fee03d5e338cad` (PR235). The enclosing implementation commit is **Add independent billing options for imported hosting**. Owners can create separate unpriced monthly/annual drafts for one retained 20i import, configure independent prices/images, and publish through the existing plan and checkout workflow. Canonical reimport identity and existing invoices remain unchanged. Missing established variant history fails closed. [Behavior and verification](TWENTYI_CATALOG_BILLING_OPTIONS.md).
 
 Root owns UI, catalog selection, documentation, packaging and integration. Catalog owns additive variant records and service checks; Domains owns the guarded native fixture and additive acceptance binding; VPS owns actual-source modeled HTTP/browser checks and independent review. Local portable/model evidence is distinct from pending Linux SQL, installed application, upgrade and release acceptance. The first plan-editor model failure and browser-fixture styling failures remain preserved; corrections do not erase them. Published1.25.0, existing release assets and the live site are unchanged.
+
+## 2026-10-19 — client directory listing requests
+
+Parent `1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab`; branch `codex/twentyi-client-directory-listing`; enclosing commit `feat: add client directory listing requests and owner review`.
+
+Primary clients can request Enabled or Disabled for an explicitly shared directory listing setting, withdraw pending requests and read dated outcomes. Owners review or decline under **Hosting & Domains → Directory listing requests**, approve one change with their current password and separately check the provider's reported flag. Missing history cannot be mistaken for fresh setup when a client-origin approval survives. Existing direct owner records retain their version-1 format; uncertain requests never automatically resend.
+
+Local backend checks pass: document 105, storage 92 and service 62 in default and minimal PHP; unchanged owner controls 78, transport 37 and recovery 57 in both modes. Final-source actual-controller/render HTTP/Chromium checks pass111 with modeled business storage; all416 acceptance-helper checks pass, preserving the original309 outcomes and order. Root verified2910 installer dependency hashes and readable mobile/desktop request panels. Native Linux SQL and full installed application acceptance remain pending. [Behavior and limits](TWENTYI_CLIENT_DIRECTORY_REQUESTS.md), [named local evidence](evidence/client-directory-requests-local.json).
+
+The separately frozen catalog billing options source `e7deced05e0b625994ee2facf628ebe337030081` is in [PR245](https://github.com/afterburn25/Cajun_Web/pull/245); its first full run [39222120206](https://github.com/afterburn25/Cajun_Web/actions/runs/39222120206) remains queued at the latest check. Preserve that source, client HTTPS [PR244](https://github.com/afterburn25/Cajun_Web/pull/244), StackCP [PR243](https://github.com/afterburn25/Cajun_Web/pull/243), the catalog candidate's original run39098578401 and Devin's separate work. None is integrated or certified by this increment. Published1.25.0 stays immutable; full20i and1.26 publication remain unfinished. No live deployment or provider operation occurred.
+
+## 2026-10-19 — client HTTPS redirect requests
+
+| Capability | Current scope | Evidence / remaining work |
+|---|---|---|
+| Client HTTPS requests | Branch-tested client intake/withdrawal, owner review/decline, exact existing Force SSL dispatch and separately checked reported flag | [Guide](TWENTYI_CLIENT_HTTPS_REQUESTS.md); [named local reports](evidence/client-https-requests-local.json). Default/minimal portable and modeled HTTP/browser checks pass. Guarded native SQL, installed application and full candidate/main/release gates remain. No certificate or public-site health claim. |
+
+Parent `dcd6966c4e0c209d15f9d88c8832ef601765c336`; branch `codex/twentyi-client-force-ssl`; enclosing commit `feat: add client HTTPS redirect requests and owner review`. Published 1.25.0 and other frozen candidates remain unchanged. Historical release and checkpoint statements below retain their original scope.
+
 
 ## Release 1.25.0 scope and evidence
 

@@ -1,3 +1,4 @@
+
 ## 2026-10-19 — installed monthly and annual purchase coverage
 
 Branch `codex/twentyi-installed-billing-options` continues exact billing-selector826 after normal development main-sync0e813d21. Add the real packaged owner-to-client monthly/annual purchase journey after the existing purchase inbox, with separate read-only billing observations and original financial-history retention. [Scope, evidence and next action](TWENTYI_INSTALLED_BILLING_OPTIONS.md). Shipping source and published1.25 are unchanged; installed runtime acceptance remains pending.
@@ -148,6 +149,23 @@ The [direct hosting catalog increment](TWENTYI_HOSTING_CATALOG.md) adds an expli
 ## 2026-10-19 — renewal invoicing candidate
 
 [Direct renewal invoice creation](TWENTYI_RENEWAL_INVOICING.md) removes the separate manual invoice-creation step after exact client consent and owner activation. The owner selects the client's project and creates one permanently reserved invoice. Candidate acceptance and publication remain pending. Automatic renewal, complete registration/transfer, database controls and VPS/catalog contract gaps remain open; this increment does not complete those scopes.
+
+## 2026-10-19 — client directory listing requests
+
+Parent `1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab`; branch `codex/twentyi-client-directory-listing`; enclosing commit `feat: add client directory listing requests and owner review`.
+
+Primary clients can request Enabled or Disabled for an explicitly shared directory listing setting, withdraw pending requests and read dated outcomes. Owners review or decline under **Hosting & Domains → Directory listing requests**, approve one change with their current password and separately check the provider's reported flag. Missing history cannot be mistaken for fresh setup when a client-origin approval survives. Existing direct owner records retain their version-1 format; uncertain requests never automatically resend.
+
+Local backend checks pass: document 105, storage 92 and service 62 in default and minimal PHP; unchanged owner controls 78, transport 37 and recovery 57 in both modes. Final-source actual-controller/render HTTP/Chromium checks pass111 with modeled business storage; all416 acceptance-helper checks pass, preserving the original309 outcomes and order. Root verified2910 installer dependency hashes and readable mobile/desktop request panels. Native Linux SQL and full installed application acceptance remain pending. [Behavior and limits](TWENTYI_CLIENT_DIRECTORY_REQUESTS.md), [named local evidence](evidence/client-directory-requests-local.json).
+
+The separately frozen catalog billing options source `e7deced05e0b625994ee2facf628ebe337030081` is in [PR245](https://github.com/afterburn25/Cajun_Web/pull/245); its first full run [39222120206](https://github.com/afterburn25/Cajun_Web/actions/runs/39222120206) remains queued at the latest check. Preserve that source, client HTTPS [PR244](https://github.com/afterburn25/Cajun_Web/pull/244), StackCP [PR243](https://github.com/afterburn25/Cajun_Web/pull/243), the catalog candidate's original run39098578401 and Devin's separate work. None is integrated or certified by this increment. Published1.25.0 stays immutable; full20i and1.26 publication remain unfinished. No live deployment or provider operation occurred.
+
+## 2026-10-19 — client HTTPS redirect requests
+
+**Branch-tested, unreleased:** primary-client HTTPS redirect requests through current assignment/shared observation, owner approval or decline, withdrawal, separate reported-flag verification and request status. This extends existing Force SSL controls using the documented endpoint; it does not certify a certificate or public HTTPS reachability.
+
+[Implementation and named evidence](TWENTYI_CLIENT_HTTPS_REQUESTS.md). Local portable/model/browser/helper checks pass; native SQL, installed application, combined integration and release gates remain. Automatic provider images/cloud catalog, distinct VPS/SSH contracts and the other complete20i items remain separate. Published 1.25.0 is unchanged.
+
 
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 

@@ -1,3 +1,4 @@
+
 # CajunWebPro current status
 ## 2026-10-19 — nameserver-requests leaf merge preflighted (024b50dc)
 
@@ -190,6 +191,28 @@ This starts from hosting successor `512656850e1d9855b921ab4e3b9b4a891b636b16`; i
 The hosting successor adds an explicit HTTP-test opt-in after its exact-source COMPLETE and UPDATE packages are built. Four isolated installed copies exercise the real staged owner page with absent, empty, published and withdrawn hosting history. Tests cover package validation, CSRF, current owner/password, backup confirmation, permitted recovery and retained-history refusal. They verify business rows, table definitions, files and private media while separately checking expected authentication/rate/audit bookkeeping. [Scope and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
 
 All 88 original hosting assertions and the separate 44-case native recovery continuation are preserved. Source/syntax review, 57 portable checks and 18 modeled bookkeeping checks per PHP mode pass; actual packaged SQL/HTTP results remain pending. This uses complete synthetic journals with real same-source packages, not a published-baseline or interrupted-upgrade acceptance result. The 1.26 release candidate remains separate. CI-only [PR218](https://github.com/afterburn25/Cajun_Web/pull/218) is merged on main; its trigger changes do not alter these preserved original runs.
+
+## 2026-10-19 — client directory listing requests
+
+Parent `1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab`; branch `codex/twentyi-client-directory-listing`; enclosing commit `feat: add client directory listing requests and owner review`.
+
+Primary clients can request Enabled or Disabled for an explicitly shared directory listing setting, withdraw pending requests and read dated outcomes. Owners review or decline under **Hosting & Domains → Directory listing requests**, approve one change with their current password and separately check the provider's reported flag. Missing history cannot be mistaken for fresh setup when a client-origin approval survives. Existing direct owner records retain their version-1 format; uncertain requests never automatically resend.
+
+Local backend checks pass: document 105, storage 92 and service 62 in default and minimal PHP; unchanged owner controls 78, transport 37 and recovery 57 in both modes. Final-source actual-controller/render HTTP/Chromium checks pass111 with modeled business storage; all416 acceptance-helper checks pass, preserving the original309 outcomes and order. Root verified2910 installer dependency hashes and readable mobile/desktop request panels. Native Linux SQL and full installed application acceptance remain pending. [Behavior and limits](docs/TWENTYI_CLIENT_DIRECTORY_REQUESTS.md), [named local evidence](docs/evidence/client-directory-requests-local.json).
+
+The separately frozen catalog billing options source `e7deced05e0b625994ee2facf628ebe337030081` is in [PR245](https://github.com/afterburn25/Cajun_Web/pull/245); its first full run [39222120206](https://github.com/afterburn25/Cajun_Web/actions/runs/39222120206) remains queued at the latest check. Preserve that source, client HTTPS [PR244](https://github.com/afterburn25/Cajun_Web/pull/244), StackCP [PR243](https://github.com/afterburn25/Cajun_Web/pull/243), the catalog candidate's original run39098578401 and Devin's separate work. None is integrated or certified by this increment. Published1.25.0 stays immutable; full20i and1.26 publication remain unfinished. No live deployment or provider operation occurred.
+
+Next: push the reviewed branch and start its first exact-source full application run; review its original results before normal integration, exact-main acceptance, packaging and release download verification.
+
+## 2026-10-19 — client HTTPS redirect requests
+
+Primary clients can request On/Off for an explicitly shared HTTPS redirect setting and withdraw a pending request. Owners review or decline from **Hosting & Domains → HTTPS requests**, approve one exact change with their current password, and separately read the reported flag. The request and owner approval retain their original actors and current assignment/sharing authority. Uncertain results never automatically resend. Direct owner controls retain their prior behavior.
+
+Local verification passes: document 105, storage 92 and service 53 named checks in both default and minimal PHP; existing owner controls 76, transport 37 and recovery 57 in both modes; 92 actual-controller/render HTTP/Chromium checks with modeled identities/business storage; 309 acceptance-helper checks. PHP/JavaScript syntax, canonical installer refresh, and documentation checks pass. The guarded native fixture has syntax/Windows-refusal evidence only: Linux SQL execution and full installed application acceptance remain pending. Named results and exact scopes are retained in the evidence receipt.
+
+[Behavior and limits](docs/TWENTYI_CLIENT_HTTPS_REQUESTS.md), [named local evidence](docs/evidence/client-https-requests-local.json). Next: publish this branch as a draft PR and dispatch its first exact-source full application run, then review the original results before normal integration, exact-main acceptance, package creation and download verification. Preserve the frozen StackCP candidate `51938fc8` in PR243 and its original full run 39212294132; the latest read still reports queued. Catalog source `f67b1631` retains original run 39098578401 with its final acceptance job queued. Do not repeat those runs or the completed queue-cleanup work. Published 1.25.0 remains unchanged; full 20i and 1.26 publication remain unfinished. No live deployment or provider operation occurred.
+
+
 ## 2026-10-19 — component filters and verified queue cleanup
 
 All 25 reviewed Devin non-20i slices are sequentially merged into `devin/full-site-integration` (tip `9896b1f0`, based on main `1067757d`). Families: mail (replies/flags/attachments/copies/HTML compose), contacts and account permissions, protected previews, stage history, payment links + isolation, backups runtime/archive/restore-drill/database-export, project progress and planning, design-payment agreements, recurring billing, notifications (announcements/events/outbox), support tickets + notifications, service plans, pipeline, proposals, revisions, comparison registry + sources, billing calendar, homepage device depth, and the support-access contract foundation.
