@@ -22,7 +22,7 @@ class InboxServer:
         while not self.stopped.is_set():
             try:s,_=self.listener.accept()
             except socket.timeout:continue
-            except OSError:return
+            except OSError as accept_error:self.errors.append('accept:'+type(accept_error).__name__+':'+str(accept_error)[:120]);return
             self.connections+=1;mode=self.mode
             try:
                 s.settimeout(4);s=self.context.wrap_socket(s,server_side=True)
@@ -63,8 +63,20 @@ class InboxServer:
                     expect('CWF004 UID FETCH 82 (UID FLAGS)')
                     if mode=='flag-gone':send('CWF004 OK flags');continue
                     send('* 2 FETCH (UID 82 FLAGS ())' if mode in ['flag','flag-refused'] else '* 2 FETCH (UID 82 FLAGS (\\Seen))');send('CWF004 OK flags')
-                    expect('CWF005 UID STORE 82 +FLAGS.SILENT (\\Seen)' if mode in ['flag','flag-refused'] else 'CWF005 UID STORE 82 -FLAGS.SILENT (\\Seen)');                    send('CWF005 NO refused' if mode=='flag-refused' else 'CWF005 OK stored')
-                    if mode!='flag-refused':expect('CWF006 LOGOUT')
+                    data=b''
+                    while not data.endswith(b'\r\n'):
+                        part=s.recv(1)
+                        if not part:raise EOFError()
+                        data+=part
+                        assert len(data)<4096
+                    line=data[:-2].decode()
+                    if line=='CWF005 LOGOUT':self.commands.append('LOGOUT');continue
+                    wanted='CWF005 UID STORE 82 +FLAGS.SILENT (\\Seen)' if mode in ['flag','flag-refused'] else 'CWF005 UID STORE 82 -FLAGS.SILENT (\\Seen)'
+                    assert line==wanted,'Unexpected synthetic IMAP command';self.commands.append(line)
+                    send('CWF005 NO refused' if mode=='flag-refused' else 'CWF005 OK stored')
+                    if mode=='flag-refused':continue
+                    expect('CWF006 UID FETCH 82 (UID FLAGS)');send('* 2 FETCH (UID 82 FLAGS ())' if mode=='flag-unseen' else '* 2 FETCH (UID 82 FLAGS (\\Seen))');send('CWF006 OK flags')
+                    expect('CWF007 LOGOUT','LOGOUT')
                     continue
                 expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
                 expect('CWR002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWR002 OK authenticated')
@@ -125,8 +137,9 @@ class InboxServer:
                         send(')')
                     send('CWR004 OK fetched')
                 expect('CWR004 LOGOUT' if mode=='empty' else 'CWR005 LOGOUT')
-            except (OSError,EOFError):pass
+            except (OSError,EOFError) as e:self.errors.append(type(e).__name__+':'+str(e)[:160])
             except AssertionError as e:self.errors.append(str(e))
+            except BaseException as e:self.errors.append('fatal:'+type(e).__name__+':'+str(e)[:200]);raise
             finally:s.close()
     def close(self):
         self.stopped.set();self.listener.close();self.thread.join(5)

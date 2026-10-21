@@ -1,3 +1,26 @@
+## 2026-10-21 — StackCP lane: third distinct failure point; ssn_deny diagnostics armed
+
+lf-ff rerun `39667249666` failed at a third distinct point: 'Final committed permission revocation blocks browser delivery' (check 82, RuntimeException at ssn_ok line 59). All three `ssn_fault` checks and the earlier suite head passed again — the pattern is a rolling reveal, not a single defect: `ssn_ok` aborts at the first failed check, so each run only exposes the next unverified check (check 82 had never run before; runs 1-2 aborted at ~46 and 90). Mechanically the intended deny is sound (trigger revokes `staff_profiles.permissions` on the terminal-delivery audit insert; `staff_can`/`staff_profile` re-read fresh, so `launch_authorize($admission,true)` should throw), meaning `ssn_open` returned a value instead — either a recognized pre-terminal error path (launch failure → recorded disposition → returns summary) or a passed final authorize. `ssn_deny` now emits `SSN_DENY` stderr diagnostics on silent returns (returned summary JSON) and wrong-message catches; contract repinned (`940ed962`), 549 artifact checks green. Committed `e90aacf9`, run `39683770230` dispatched — the next failure will name the actual gate.
+
+## 2026-10-21 — flag mark-read still failing on fixture-fixed tip; diagnostics armed
+
+FSI run `39672681227` (`2a2dbb33`, flag-fixture fix) failed the same 'Explicit mark-read issues exactly one bounded flag write' — the verify-fetch desync fix was necessary but not sufficient (or the refusal occurs earlier: authority/throttle/dedupe). The artifact's fixture observation snapshots are taken at message-load time and never cover the flag connection, so `beca67d4`/`257c29f1` now write `qa/flag-mark-read-diagnostics.json` immediately after `mark(owner)`: response status/URL, notice excerpt, connection count, last 15 fixture commands, fixture errors, and both flag tables. Run pair in flight: FSI `39681276870`, preflight `39681298604` (superseded `39672770815` cancelled).
+
+## 2026-10-21 — flag fixture protocol gap + directory-listing cooldown reorder
+
+Two further hosted-acceptance defects resolved:
+
+- **Flag fixture missing verify-fetch** (FSI `39662155732` fail 'Explicit mark-read issues exactly one bounded flag write'): the synthetic IMAP fixture modeled `CWF005 STORE` → `CWF006 LOGOUT`, but `FlagSession::mark()` issues a post-STORE `CWF006 UID FETCH` to verify exact post-command state before `CWF007 LOGOUT` — the expect desynced, the verify read failed, `confirmed=false` produced the 'unconfirmed' flash. `tests/mail_inbox_http_server.py` now reads the post-fetch command and branches: `CWF005 LOGOUT` (recorded as 'LOGOUT' label) covers the unchanged/no-write path; `CWF005 UID STORE` is followed by the `CWF006 UID FETCH` reply (post-state flags per mode) and `CWF007 LOGOUT`. Applied identically on both trunks (`2a2dbb33`/`aac9adf5`); all assertions unchanged.
+- **Directory-listing cooldown timing** (lf-03 `39649921774` fail 'immediate repeat obeys common cooldown'): same class as the WordPress fix — the repeat POST ran ~40s after refresh (evidence+checks in between), escaping the 30s window; the retry loop then performed real refreshes. Repeat now issues immediately after the refresh POST with the refusal evidence/assertions retained (`0e579bc1`, contract 360 green). Run `39673191439` dispatched.
+
+## 2026-10-21 — StackCP lane: ssn_fault transient confirmed; rate-window flake surfaced
+
+lf-ff run `39646362318` (`69d88ea6`) failed 'Sixth actual staff admission is rate limited before effects' + 'Unexpected native failure during rate window' (RuntimeException at ssn_ok). The three `accepted */terminal delivery` ssn_fault checks PASSED — the earlier false returns were transient (consistent with the observed MariaDB instability this session), and the armed stderr diagnostics never fired. Because `ssn_ok` aborts the suite at the first failure, earlier runs never reached the rate-window section. The rate check enforces a real rolling 60s/5-admission window: after `ssn_admission_cool(true)` drains to zero, five review+open pairs under `membership-missing` must land inside 60s; the sixth open was admitted, meaning the window partially lapsed under load (avg >~9s/op) — same environment class as the ssn_fault flake, not a deterministic defect (passed on run 1). Rerun `39667249666` dispatched on `69d88ea6` with diagnostics still armed to distinguish flake from defect.
+
+## 2026-10-21 — mail-flag mark bound corrected (d2a8c90e / ab339f08)
+
+FSI run `39651567053` (`d05eb3be`) failed 'Malformed flag POST refused before network {'mark': 'flagged'}' — the first check in mail_message_cases.py that could run only after the pipeline/mail-seed blockers cleared. Root cause: `posted('mark',6)` in site/admin/controllers/mail_message.php throws 'Please check the length and format of mark.' for 7-char 'flagged' before the enum check can emit the intended domain refusal 'Choose whether to mark the message read or unread.' — the enum error was partially dead code. Fix: `posted('mark',32)` so malformed enum values reach the domain check (still bounded; strict in_array unchanged; no assertion weakened). Same latent defect on both trunks; both corrected, installer inventories refreshed (LF-clean). The check had never run green — earlier FSI runs died at the pipeline dispatch gate before reaching the flags suite. Runs redispatched: FSI `39662155732` (push) / `39662169006` (cancelled duplicate), preflight `39662173772`. Stale preflight run `39651573652` (`3b118fc3`, doomed at mail-seed checks) cancelled.
+
 ## 2026-10-21 — pipeline_setup dispatch defect found and fixed (e5c0cb48 / 6e542fd0)
 
 Browser acceptance failure 'Pipeline history setup requires owner password' (HTTP 200, no gate phrases) traced to an app defect, not a fixture defect: `pipeline_setup` was handled inside `studio_admin_action()` but the dispatcher only routed `studio_`-prefixed actions, so the POST fell through to 'Unknown administration action.' rendered inline. The action had been unreachable since introduction (`611cf8e4`). Fix: route `pipeline_setup` into `studio_admin_action`; the existing handler then enforces confirm, workspace readiness, staff mutex and `staff_owner()` password. Also fixed `gate_marker` passing `r.text` to `soup()` (AttributeError before diagnostics). actions.php repinned on preflight via a replacement delta in the https/directory era chain; 1468 artifact checks green. Independent review (subagent) confirmed the root cause, found the permission map already knew `pipeline_setup` (staff_action_permission -> staff.manage), and caught a second latent defect: the branch's enabled flash was overwritten by the dispatcher tail's `flash('Saved.')`, making 'Pipeline stage history is enabled.' unreachable — fixed with an in-branch redirect (163f654a / 6ee4781e, matching sibling setup actions; same overwrite quirk pre-exists on studio_pipeline/license branches, cosmetic only). studio.php repinned in catalog_retail_variants with a five-section predecessor fixpoint (4 pred updates, variants unchanged); 1468 artifact checks green. Runs redispatched: preflight 39637972526, FSI 39637976540; intermediate runs cancelled.
@@ -5650,3 +5673,63 @@ Review corrected a nested request-reference error in the new corruption probe, k
 The first draft pull request supplies one focused and one complete application run. Only the current PHP feature branch is removed from the focused push trigger to avoid duplicate push/PR work; main, the older read branch, pull-request/manual triggers and all focused jobs remain. No feature push trigger or duplicate manual full dispatch is added. Original `7af25ed5` focused run [39132700033](https://github.com/afterburn25/Cajun_Web/actions/runs/39132700033) was still queued at 18:06 UTC; original cancelled metadata/native runs remain preserved without replacement.
 
 Next: inspect the first exact-successor runtime results, review all 16 actual images and original-history retention, finish the verified provider options mapping, then sequential integration and release acceptance. Separate nameserver PR222, catalog PR223 and Devin non-20i work remain preserved. Full 20i and the whole-project roadmap are unfinished; no live provider mutation or deployment occurred. The enclosing commit is described as `test: connect PHP controls to full acceptance`.
+
+
+### 2026-10-21 — lf-02/lf-pc defects corrected and redispatched
+
+- lf-02 `7860972d` failed in the BUILD job at `Client nameserver acceptance retains the complete original contract`: the `registered_nameserver_requests` section's `predecessor_contract_sha256`/`CONTRACT_SHA256` literal embeds the prior contract, which includes `registered_nameserver_changes_installed.source_sha256[cases.py]` — the earlier single-file repin changed that embedded pin. Recomputed the predecessor hash over the serialized prior (module canonical = sort_keys compact, no trailing newline), updated the field + literal + the verify file's own source pin; local contract verifier 473 checks green on `1f529efd`. Run `39660574125` — the armed page-state diagnostic for the form-count crash is still pending a browser-stage result.
+- lf-pc `6b288593` failed in the browser stage: `php-controls-packaged-ui-results.json` reported `AssertionError: Unknown private fixture phase` at `provider_php_controls_ui_browser.py:235`. The `6b288593` fixture-inventory work added `fixture("inventory")` calls but not the phase to the browser whitelist tuple; the PHP fixture already handles it (line 160). Added `'inventory'` to the whitelist + repinned (390 checks green) on `51a7df9c`. Run `39660893502`.
+- Merge prep for php-controls->preflight committed on `devin/mergeprep-php-controls` `7b06df28` (keyed to `6b288593`; will be regenerated against `51a7df9c` when green — only the browser.py bytes + its pin changed).
+
+Runs in flight: `39651573652` (preflight), `39651567053` (FSI), `39660574125` (lf-02 diag), `39649921774` (lf-03), `39652977566` (lf-4d), `39660893502` (lf-pc), `39646362318` (lf-ff diag).
+
+No production provider request, charge, mail, SSH or deployment occurred.
+
+## 2026-10-21 — leaf failure diagnosis wave 2
+
+- lf-4d run 39652977566 (75609104): Locator.click timed out at 'Approve and request
+  subdomain' despite the earlier 90s navigation timeout — click's internal
+  'waiting for scheduled navigations' uses the action timeout
+  (set_default_timeout), not the navigation timeout. Switched to
+  op.set_default_timeout(120000) matching the line-213 convention; delta rep9,
+  both source pins and repin-6 refreshed; 610 artifact checks green. New tip
+  fcaffc27, run 39688201970.
+- lf-pc run 39660893502 (51a7df9c): 'Private CLI phase failed: inventory output='
+  at ui_browser.py:247 — the inventory handler existed but the fixture's argv
+  whitelist (line 6) still rejected the phase (exit 2, empty stdout). Added
+  'inventory'; single source pin refreshed; 390 checks green. New tip cdcff642,
+  run 39687914779.
+- C: temp drive hit 100% capacity; cleared Devin overflow/scratch zips (~2.8G).
+  Artifact downloads resumed.
+
+## 2026-10-21 — FSI flag failure root-caused to fixture socket layer
+
+- FSI run 39681276870 (beca67d4): flag diagnostics revealed result_code=
+  'connection' at 4ms, zero CWF commands — the FlagSession TCP/TLS connect to the
+  synthetic inbox failed before protocol; reads through the same connector work.
+  The fixture swallows OSError/EOFError at accept and per-connection, hiding the
+  cause. Instrumented serve(): accept-loop failures, per-connection exception
+  classes, fatal exits, plus listener liveness in the mark diagnostics
+  (f3188ef3 / preflight ae3e91b4). Runs 39691200805 / 39691242679.
+- lf-02 run 39660574125 (1f529efd): form-count check showed url=provider-settings
+  (page correct, open) while fields() had already parsed the form — count is
+  ambiguous between 0 and 2+. Added instant locator count + failing-DOM dump to
+  qa/nameserver-change-form-failure.html; re-anchored the requests-era
+  predecessor hash with the module canonical serialization. 2378880d -> run
+  39690273230.
+- Artifact caveat: stale extraction dirs in local temp can masquerade as current
+  evidence; verify partition.json identity.run_id before trusting contents.
+- Cancelled: duplicate FSI dispatch 39691209406; superseded preflight run
+  39681298604 (pre-instrumentation tip).
+
+## 2026-10-21 — lf-03 WordPress double-provider-call diagnosed
+
+- lf-03 run 39673191439 (0e579bc1): 'WordPress installation owner form sends
+  one exact assigned-package GET' — diagnostics showed provider_calls 120->122
+  across the refresh + repeat. The repeated post() performed a full
+  settings-page GET for a fresh CSRF token inside the 30s cooldown window;
+  under runner load the repeat escaped the window and executed a real refresh
+  (results rows grew 2->4, state 'complete'). Fixed by reusing post.last for
+  a direct repeat POST, matching the directory-listing/document-roots/
+  force-SSL sibling convention; CSRF is session-stable. Unpinned file. New tip
+  d35a1103, run 39692451698.
