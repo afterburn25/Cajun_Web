@@ -60,11 +60,13 @@ function ssn_ok(string $name, bool $passed): void {
 }
 
 function ssn_deny(string $name, callable $call, ?string $message = null): void {
-    $caught = null;
-    try { $call(); } catch (LogicException|RuntimeException $e) {
+    $caught = null; $returned = null; $returnedSet = false;
+    try { $returned = $call(); $returnedSet = true; } catch (LogicException|RuntimeException $e) {
         if ($e instanceof PDOException) throw $e;
         $caught = $e;
     }
+    if ($caught === null && $returnedSet) fwrite(STDERR, 'SSN_DENY '.$name.' returned: '.json_encode($returned)."\n");
+    if ($caught !== null && $message !== null && $caught->getMessage() !== $message) fwrite(STDERR, 'SSN_DENY '.$name.' wrong message: '.$caught->getMessage()."\n");
     ssn_ok($name, $caught !== null && ($message === null || $caught->getMessage() === $message));
 }
 
