@@ -1,3 +1,7 @@
+## 2026-10-21 — flag mark-read still failing on fixture-fixed tip; diagnostics armed
+
+FSI run `39672681227` (`2a2dbb33`, flag-fixture fix) failed the same 'Explicit mark-read issues exactly one bounded flag write' — the verify-fetch desync fix was necessary but not sufficient (or the refusal occurs earlier: authority/throttle/dedupe). The artifact's fixture observation snapshots are taken at message-load time and never cover the flag connection, so `beca67d4`/`257c29f1` now write `qa/flag-mark-read-diagnostics.json` immediately after `mark(owner)`: response status/URL, notice excerpt, connection count, last 15 fixture commands, fixture errors, and both flag tables. Run pair in flight: FSI `39681276870`, preflight `39681298604` (superseded `39672770815` cancelled).
+
 ## 2026-10-21 — flag fixture protocol gap + directory-listing cooldown reorder
 
 Two further hosted-acceptance defects resolved:
