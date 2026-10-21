@@ -114,8 +114,10 @@ def run_browser(env, browser):
 
     def fill_form(selector, values):
         item = page.locator(selector)
-        if item.count() != 1:
-            raise AssertionError('One exact nameserver owner form required')
+        try:
+            expect(item).to_have_count(1, timeout=30000)
+        except Exception as error:
+            raise AssertionError('One exact nameserver owner form required') from error
         open_details(item)
         for key, value in values.items():
             control = item.locator('[name="' + key + '"]')

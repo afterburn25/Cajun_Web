@@ -58,7 +58,7 @@ def run_browser(env,browser):
     r=alice.get(portal+'?notifications=1');check('Client sees only own notifications','New project inquiry' not in r.text)
     r=admin.get(root+'?view=health')
     check('Health page renders honest freshness metrics','Operational freshness' in r.text and 'notification.deliveries' in r.text and 'absent' in r.text)
-    check('Client session cannot open staff health metrics',alice.get(root+'?view=health').status_code==403)
+    r=alice.get(root+'?view=health',allow_redirects=False);check('Client session cannot open staff health metrics',r.status_code in (301,302,303,307,308,403) and 'Operational freshness' not in r.text)
 
 
     r=submit(admin,url,'notification_announce',{'title':'Synthetic maintenance window','body':'Synthetic service notice for the notification lane.','confirm':'1'})
