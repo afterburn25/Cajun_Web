@@ -162,6 +162,7 @@ def run_browser(env, browser):
             finally:
                 context.close()
 
+        cool(); post('provider_inventory_refresh')
         capture('Ready', selector)
         fields = {n['name']: n.get('value', '') for n in ready_form.select('input[name]')}
         fields.update(name=hostname, desired_path=desired, reviewed='1', current_password=OWNER)
@@ -205,6 +206,7 @@ def run_browser(env, browser):
         history_selector = '[data-document-root-control-history]:has(input[name=request_id][value="' + request['id'] + '"])'
         check('Folder controls unresolved request makes shared observation historical',
               'Historical observation' in client.get(target).text and change not in client.get(target).text and request['id'] not in client.get(target).text)
+        cool(); post('provider_inventory_refresh')
         capture('Requested', history_selector)
         cool(); different = post(verify, request_id=request['id'])
         check('Folder controls independent unchanged map records different and remains fenced',
@@ -226,8 +228,8 @@ def run_browser(env, browser):
         shared = client.get(target)
         check('Folder controls separately shared client sees observation without owner controls',
               desired in shared.text and 'Latest saved observation' in shared.text and change not in shared.text and request['id'] not in shared.text)
-        check('Folder controls exactly six dedicated reads preserve all original history',
-              [r['operation'] for r in db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [actor])] == ['packages.list', 'packages.list'] + ['package.document-roots'] * 4
+        check('Folder controls exactly eight dedicated reads preserve all original history',
+              [r['operation'] for r in db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [actor])] == ['packages.list', 'packages.list', 'package.document-roots', 'packages.list', 'packages.list', 'package.document-roots', 'package.document-roots', 'package.document-roots']
               and db('SELECT * FROM ci_provider_refreshes WHERE seq<=? ORDER BY seq', [max((r['seq'] for r in inherited), default=0)]) == inherited
               and db('SELECT * FROM ci_audit WHERE id<=? ORDER BY id', [max((r['id'] for r in inherited_audits), default=0)]) == inherited_audits)
         check('Folder controls preserve original owner account and role after setup login',
