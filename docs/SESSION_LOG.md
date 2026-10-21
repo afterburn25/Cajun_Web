@@ -5509,3 +5509,15 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39588461303` (preflight `e9fd70e9`), `39588464675` (FSI `b08c7f32`), `39588468020` (lf-ff `9d2ee6c3`), `39588471062` (lf-4d `be76dce9`), `39588474553` (lf-02 `7a81c043`), `39588477274` (lf-pc `4a28c423`), `39588480425` (lf-03 `5c68aa74`). Next: merge green leaf tips into preflight (lf-b0/lf-8f ancestry-only), re-verify the combined artifact chain, merge preflight into FSI (lf-95 ancestry-only), then `main` with exact-main acceptance.
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — nameserver race-worker backport; ci_leads fixture placeholder; errno=28 reclassified
+
+- Preflight `39588461303` died at the approval-wins race in `registered_nameserver_requests_native.php` (42/43 checks). The worker's `staff_locked` uses `GET_LOCK(?,5)` — a five-second budget while the parent's winning section runs; loaded runners expire it, and `rncr_join` discarded the worker's failure JSON. Ported the canonical lf-02 hardening verbatim: 40s retry on the exact busy-lock message, 25s join deadline, surfaced exit/stderr/stdout, `detail` field in the failure record. Real lock contention and independent worker identity preserved; no sleeps or simulated state. Contract cascade: source pin `481767c5`→`50f37a08` plus five successor predecessor hashes recomputed by serving each `*_current` the correct era contract (fixpoint converged in 4 passes; verifier 1468 green). Committed `6ca9159f`.
+- The recurring `errno=28 No space left on device` in `site/app/backups/archive.php` was reclassified: it is the intentional `/dev/full` write-failure test in `backups_native.php`, not runner exhaustion — the reclaim step showed 98G free. The reclaim step remains a worthwhile hygiene fix but earlier attributions to it were a red herring.
+- FSI `39588464675` and earlier `39588415271` died at `fixture_db.php` exit 255 immediately after the pipeline stage began — the `ci_leads` INSERT in `tests/pipeline_cases.py` listed sixteen columns with fifteen values (one placeholder short after the literal consent flag): deterministic SQL 1136, not environment. Added the missing placeholder on FSI `cb2354c4` and preflight `8a8b0fc2`; no assertion changed.
+- lf-ff `39588468020` failed on the `support_ready()` redeclare one commit before the `require_once` fix tip (`e26615dc`); redispatched on the fixed tip.
+- Preserved failure evidence: `39588461303`, `39588415271`, `39588464675`, `39588468020`, `39550310872` (real earlier disk event), plus cancelled superseded runs.
+
+Runs in flight: `39604978085` (preflight `8a8b0fc2`), `39604946616` (FSI `cb2354c4`), `39603894095` (lf-ff `e26615dc`), `39588480425` (lf-03 `5c68aa74`), `39588477274` (lf-pc `4a28c423`), `39588474553` (lf-02 `7a81c043`), `39588471062` (lf-4d `be76dce9`). Next: merge green leaf tips into preflight/FSI, combined acceptance, then `main` with exact-main acceptance.
+
+No production provider request, charge, mail, SSH or deployment occurred.
