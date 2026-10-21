@@ -5489,3 +5489,12 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39571873524` (preflight `e449911a`), `39571786317` (FSI `1a5f20b4`), `39571879023` (lf-4d `947bb9f0`), `39571886035` (lf-02 `3685ad92`), `39571892696` (lf-pc `2801bb71`), `39571898641` (lf-ff `5319d511`), `39571904314` (lf-03 `59c10ee0`). Next: merge green leaf tips into preflight (lf-b0/lf-8f ancestry-only), re-verify the combined artifact chain, merge preflight into FSI (lf-95 ancestry-only), then `main` with exact-main acceptance.
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — FSI fixture fatal traced to runner disk exhaustion; workflow reclaim step
+
+- FSI `39571786317` (on `1a5f20b4`) died in native-and-browser when `tests/fixture_db.php` exited 255 immediately after `HTTP admin login owner@example.invalid`, inside the pipeline `ci_leads` insert. Pulling the full run log showed `fwrite errno=28 No space left on device` in `site/app/backups/archive.php` ~48 min before the fatal, plus a burst of `PDOException code=42S02` (base table not found) during the native step — the same runner disk-exhaustion signature as preflight `39550310872`, not a code defect. `tests/pipeline_cases.py` is byte-identical between FSI and preflight; preserved environmental evidence.
+- Third errno=28 event of this acceptance wave, so the durable fix landed on FSI `694f1b63`: a `Reclaim unused hosted toolchain disk` step at the head of all four jobs removes the hosted toolcache, dotnet, GHC, boost, Android SDKs and prunes docker images (~14GB headroom) before any installs. Assertions untouched; `base_workflow_sha256` provenance updated; verifier green (238). Redispatched as `39579935728`. The six leaf/integration runs in flight keep their checkout SHAs, so their evidence stays valid; the same reclaim step applies to any lane that repeats the disk failure and rides into `main` via the FSI merge.
+
+Runs in flight: `39579935728` (FSI `694f1b63`), `39571873524` (preflight `e449911a`), `39571879023` (lf-4d `947bb9f0`), `39571886035` (lf-02 `3685ad92`), `39571892696` (lf-pc `2801bb71`), `39571898641` (lf-ff `5319d511`), `39571904314` (lf-03 `59c10ee0`). Next: merge green leaf tips into preflight (lf-b0/lf-8f ancestry-only), re-verify the combined artifact chain, merge preflight into FSI (lf-95 ancestry-only), then `main` with exact-main acceptance.
+
+No production provider request, charge, mail, SSH or deployment occurred.
