@@ -5621,3 +5621,20 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39651573652` (preflight), `39651567053` (FSI), `39660574125` (lf-02 diag), `39649921774` (lf-03), `39652977566` (lf-4d), `39660893502` (lf-pc), `39646362318` (lf-ff diag).
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+## 2026-10-21 — leaf failure diagnosis wave 2
+
+- lf-4d run 39652977566 (75609104): Locator.click timed out at 'Approve and request
+  subdomain' despite the earlier 90s navigation timeout — click's internal
+  'waiting for scheduled navigations' uses the action timeout
+  (set_default_timeout), not the navigation timeout. Switched to
+  op.set_default_timeout(120000) matching the line-213 convention; delta rep9,
+  both source pins and repin-6 refreshed; 610 artifact checks green. New tip
+  fcaffc27, run 39688201970.
+- lf-pc run 39660893502 (51a7df9c): 'Private CLI phase failed: inventory output='
+  at ui_browser.py:247 — the inventory handler existed but the fixture's argv
+  whitelist (line 6) still rejected the phase (exit 2, empty stdout). Added
+  'inventory'; single source pin refreshed; 390 checks green. New tip cdcff642,
+  run 39687914779.
+- C: temp drive hit 100% capacity; cleared Devin overflow/scratch zips (~2.8G).
+  Artifact downloads resumed.
