@@ -5578,3 +5578,13 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39651573652` (preflight), `39651567053` (FSI), `39626517223` (lf-02 `fd6fb95e`), `39649921774` (lf-03 `c75fa209`), `39652977566` (lf-4d `75609104`), `39623620268` (lf-pc `6b288593`), `39646362318` (lf-ff `69d88ea6` diag).
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — lf-02 nameserver browser crash: diagnostics armed
+
+- lf-02 `fd6fb95e` run `39626517223`: all nameserver native checks passed; the browser suite crashed with `AssertionError('One exact nameserver owner form required')` in `fill_form` after the overlapping-set rejection checks (3205 checks complete). Evidence: `fields()` successfully extracted a hex-valid `request_id` from `page.content()` at the same page state 4 seconds earlier — the form was present in the serialized DOM but Playwright's `to_have_count(1)` could not resolve it within 30s. The view has a single render site, so duplicate markup is ruled out; a renderer stall/crash under runner load is the leading hypothesis (a missing form would have raised 'Expected nameserver change form missing' at `fields()`).
+- Diagnostic added on `7860972d`: the `fill_form` failure path now reports `page.is_closed()`/`page.url` so a rerun distinguishes a crashed/closed page from a navigated-away or genuinely malformed DOM. Contract pins for `tests/registered_nameserver_changes_cases.py` updated (2 source_sha256 occurrences; lf-02's acceptance workflow does not consume the contract — repin is for consistency). Run `39657214032` dispatched on `7860972d`.
+- If the rerun passes it confirms runner-load flakiness; if it fails with `closed`/`url=` evidence the real state is captured for a targeted fix.
+
+Runs in flight: `39651573652` (preflight `3b118fc3`), `39651567053` (FSI `d05eb3be`), `39657214032` (lf-02 `7860972d` diag), `39649921774` (lf-03 `c75fa209`), `39652977566` (lf-4d `75609104`), `39623620268` (lf-pc `6b288593`), `39646362318` (lf-ff `69d88ea6` diag).
+
+No production provider request, charge, mail, SSH or deployment occurred.
