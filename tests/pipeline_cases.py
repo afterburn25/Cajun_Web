@@ -19,7 +19,7 @@ def run_browser(env,browser):
             if 'another account change is in progress' not in r.text.lower() or time.time()>=deadline:return r
             time.sleep(1)
     def gate_marker(r):
-        return {'status':r.status_code,'session_expired':'session expired' in r.text.lower(),'busy':'another account change is in progress' in r.text.lower(),'confirm':'confirm you want stage history' in r.text.lower(),'enabled':'stage history is enabled' in r.text.lower()}
+        return {'status':r.status_code,'url':r.url,'session_expired':'session expired' in r.text.lower(),'busy':'another account change is in progress' in r.text.lower(),'confirm':'confirm you want stage history' in r.text.lower(),'enabled':'stage history is enabled' in r.text.lower(),'current_password':'current password' in r.text.lower(),'notices':[n.get_text(' ',strip=True)[:160] for n in soup(r.text).select('[class*=notice],[class*=error],[role=alert]')][:5]}
     r=post_setup('wrong');(QA/'pipeline-setup-wrong-password-diagnostics.json').write_text(json.dumps(gate_marker(r),indent=2),encoding='utf-8');check('Pipeline history setup requires owner password','current password' in r.text.lower())
     r=post_setup(OWNER);check('Owner enables pipeline stage history','Pipeline stage history is enabled' in r.text)
     def card_form():
