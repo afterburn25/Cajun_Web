@@ -216,7 +216,7 @@ def run_browser(env, browser):
                     const e=document.querySelector(selector);
                     if (!e) return 'card absent';
                     const r=e.getBoundingClientRect();
-                    const nodes=[e.querySelector('h3'), ...e.querySelectorAll('button')].filter(n=>n&&n.getClientRects().length);
+                    const nodes=[e.querySelector('h3'), ...e.querySelectorAll('button')].filter(n=>n&&n.getClientRects().length&&!n.closest('details:not([open])')&&n.getBoundingClientRect().width>0&&n.getBoundingClientRect().height>0);
                     if (getComputedStyle(e).opacity!=='1' || r.left<0 || r.right>innerWidth || r.top<0 || r.bottom>innerHeight)
                         return 'card not settled opacity='+getComputedStyle(e).opacity+' rect='+(r.left|0)+','+(r.top|0)+','+(r.right|0)+','+(r.bottom|0)+' view='+innerWidth+'x'+innerHeight;
                     const blocked=nodes.map(n=>{const b=n.getBoundingClientRect(), h=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return (h&&(h===n||n.contains(h)))?null:(n.tagName+'.'+n.className+'<-'+(h?h.tagName+'.'+(typeof h.className==='string'?h.className:''):'none'));}).filter(x=>x);
@@ -230,6 +230,7 @@ def run_browser(env, browser):
             page.wait_for_function("""(selector) => {
                 const e=document.querySelector(selector), r=e.getBoundingClientRect();
                 const nodes=[e.querySelector('h3'), ...e.querySelectorAll('button')].filter(n=>n&&n.getClientRects().length);
+                nodes.splice(0,nodes.length,...nodes.filter(n=>!n.closest('details:not([open])')&&n.getBoundingClientRect().width>0&&n.getBoundingClientRect().height>0));
                 return getComputedStyle(e).opacity==='1' && r.left>=0 && r.right<=innerWidth && r.top>=0 && r.bottom<=innerHeight &&
                     nodes.every(n=>{const b=n.getBoundingClientRect(), h=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return h&&(h===n||n.contains(h));});
             }""", arg=selector)
