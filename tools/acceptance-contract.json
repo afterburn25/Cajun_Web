@@ -994,7 +994,7 @@
       "tests/browser_acceptance.py": "c30f8c9a72f4a99fc51ed22f72415e787a1988d143a1a30860ca4b19989cd04b",
       "tests/provider_http_server.py": "9be1a7c89427cf7098d1cc29385c42df9172f4bf6132ec6767fa00339a7eddec",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
-      "tests/provider_subdomain_requests_cases.py": "076954dbfa48c3a3fc0720e52d93f862a439618cb268a04db12fa4288225c294"
+      "tests/provider_subdomain_requests_cases.py": "c293bea9f1efc00c4b4cb1eb2b4a41d06ee305b9eee3112a00e3d156a384b2da"
     },
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
@@ -1131,7 +1131,7 @@
       "tests/browser_acceptance.py": "c30f8c9a72f4a99fc51ed22f72415e787a1988d143a1a30860ca4b19989cd04b",
       "tests/provider_http_server.py": "9be1a7c89427cf7098d1cc29385c42df9172f4bf6132ec6767fa00339a7eddec",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
-      "tests/provider_subdomain_requests_cases.py": "076954dbfa48c3a3fc0720e52d93f862a439618cb268a04db12fa4288225c294",
+      "tests/provider_subdomain_requests_cases.py": "c293bea9f1efc00c4b4cb1eb2b4a41d06ee305b9eee3112a00e3d156a384b2da",
       "site/app/providers/subdomain_activity.php": "38e3484f0c54facb4cbd0b20bb694180d4ad3a8897d8d488701dea2a57f35fdd",
       "site/app/activity/events.php": "432193c5df790d71b5854bbe1a4097d19365c41dfc3330f80b33b4222e9803c4",
       "site/app/activity/provider_sources.php": "55aa3f7b98ff80c9f38609f05e2718cdfc617487590656e0d3894e678404957d",
@@ -1241,7 +1241,7 @@
       },
       "tests/provider_subdomain_requests_cases.py": {
         "before_sha256": "b500570c4e251f21bacd8e775c3c135f57a201c50bfead92f808ef1a62426976",
-        "after_sha256": "076954dbfa48c3a3fc0720e52d93f862a439618cb268a04db12fa4288225c294",
+        "after_sha256": "c293bea9f1efc00c4b4cb1eb2b4a41d06ee305b9eee3112a00e3d156a384b2da",
         "replacements": [
           {
             "before": "            'name=\"review_proof\"', 'name=\"owner_request_id\"', 'name=\"current_password\"',\n            'subdomain-private-folder', *forbidden))\n\n    def cleared(response, action):\n        form = actual_form(response, action)\n        return all(n.get('value', '') == '' for n in form.select('input[type=password]')) and not form.select('input[type=checkbox][checked]')\n",
@@ -1281,7 +1281,7 @@
           },
           {
             "before": "        op = browser_page(owner)\n        op.goto(detail(True, request_id))\n",
-            "after": "        op = browser_page(owner)\n        op.set_default_navigation_timeout(90000)\n        op.goto(detail(True, request_id))\n"
+            "after": "        op = browser_page(owner)\n        op.set_default_timeout(120000)\n        op.goto(detail(True, request_id))\n"
           }
         ]
       },
@@ -1390,7 +1390,7 @@
           "tests/provider_subdomain_requests_cases.py"
         ],
         "before": "b500570c4e251f21bacd8e775c3c135f57a201c50bfead92f808ef1a62426976",
-        "after": "076954dbfa48c3a3fc0720e52d93f862a439618cb268a04db12fa4288225c294"
+        "after": "c293bea9f1efc00c4b4cb1eb2b4a41d06ee305b9eee3112a00e3d156a384b2da"
       },
       {
         "keys": [

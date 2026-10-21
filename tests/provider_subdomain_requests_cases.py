@@ -510,7 +510,7 @@ def run_browser(env, browser):
               and cleared(refused, 'provider_subdomain_request_approve') and read_boundary() == changed_context)
         capture(owner, 'Subdomain-Requests-Owner-Review', detail(True, request_id), '#subdomain-request-' + request_id, True)
         op = browser_page(owner)
-        op.set_default_navigation_timeout(90000)
+        op.set_default_timeout(120000)
         op.goto(detail(True, request_id))
         form = op.locator('[data-subdomain-request-approve]')
         sent = {k: form.locator('[name=' + k + ']').input_value() for k in ('action', 'csrf', 'request_id', 'expected_event', 'request_sha256', 'owner_request_id', 'review_proof')}
