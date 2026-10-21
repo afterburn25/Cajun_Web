@@ -5568,3 +5568,13 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39651573652` (preflight `3b118fc3`), `39651567053` (FSI `d05eb3be`), `39626517223` (lf-02 `fd6fb95e`), `39649921774` (lf-03 `c75fa209`), `39623620268` (lf-pc `6b288593`), `39626328675` (lf-4d `e5a6f8bf`), `39646362318` (lf-ff `69d88ea6`).
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — lf-4d navigation timeout + lf-03 cooldown reorder dispatched
+
+- lf-4d `e5a6f8bf` failed on a Playwright `Locator.click` 30s navigation timeout after the "Approve and request subdomain" POST — the real synthetic-TLS provider exchange exceeded the default nav budget on a loaded runner (element visible/clicked; wait for scheduled navigations expired). Fix: `op.set_default_navigation_timeout(90000)` inserted after `browser_page(owner)` — era-legal pure insert; pins, delta replacement, repin updated (610 green). Committed `75609104`, run `39652977566`.
+- lf-03 wordpress cooldown reorder verified from diagnostics: repeat POST landed 45s after refresh, escaped the 30s cooldown and hit the authority gate (`Refresh registered domains...`). Run `39649921774` on `c75fa209`.
+- Preflight `3b118fc3` / FSI `d05eb3be` carry pipeline dispatch+flash fixes, mail schema seed '2', LF inventory hash. Runs `39651573652`/`39651567053`.
+
+Runs in flight: `39651573652` (preflight), `39651567053` (FSI), `39626517223` (lf-02 `fd6fb95e`), `39649921774` (lf-03 `c75fa209`), `39652977566` (lf-4d `75609104`), `39623620268` (lf-pc `6b288593`), `39646362318` (lf-ff `69d88ea6` diag).
+
+No production provider request, charge, mail, SSH or deployment occurred.
