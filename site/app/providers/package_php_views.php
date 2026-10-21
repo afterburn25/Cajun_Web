@@ -15,6 +15,7 @@ function provider_php_admin_render():void {
         if(!provider_php_ready()){echo '<form method="post">';admin_action('provider_inventory_php_prepare');admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Enable PHP observations</button></form></section>';return;}
         $page=max(1,min(10000,(int)($_GET['php_page']??1)));$links=all('SELECT l.id,l.package_id,c.name AS client_name FROM '.table('provider_package_links').' l JOIN '.table('studio_clients').' c ON c.id=l.client_id ORDER BY l.id LIMIT 20 OFFSET '.(($page-1)*20));if(!$links)echo '<p>Assign a hosting package to a client first.</p>';
         foreach($links as $link){echo '<article class="workspace-card" data-php-owner-package><h3>'.esc($link['client_name']).' · Package '.esc((string)$link['package_id']).'</h3>';
+            echo '<p><a class="btn outline" href="'.esc(admin_url('provider-php-controls',['service_link'=>$link['id']])).'">Manage PHP settings</a></p>';
             try{
                 $view=staff_locked(fn()=>staff_transaction(fn()=>provider_php_project($link['id'],false)));provider_php_render($view);$permission=$view['permission'];$binding=null;
                 try{$binding=staff_locked(fn()=>staff_transaction(fn()=>provider_php_binding($link['id'])));}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<p class="hint">'.esc($e->getMessage()).'</p>';}

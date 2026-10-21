@@ -256,6 +256,8 @@ function provider_inventory_refresh_attempt(string $id,int $revision,#[\Sensitiv
         if($operation===InventoryRead::CLOUD_SERVERS_LIST){require_once CWP_CODE_ROOT.'/app/providers/cloud_assignment.php';provider_cloud_assignment_before_read();}
         if(one('SELECT id FROM '.table('provider_refreshes').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between refreshes of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Inventory refresh limit reached. Try again later.');
+        require_once CWP_CODE_ROOT.'/app/providers/php_controls_read_limits.php';
+        provider_php_controls_old_read_limit('refresh',$id,(int)$actor['id'],$now);
         if($operation===InventoryRead::DOMAINS_LIST&&!provider_registrar_ready())throw new RuntimeException('Registered-domain storage is unavailable.');
         if($operation===InventoryRead::PACKAGE_TYPES&&!provider_package_types_ready())throw new RuntimeException('Package type storage is unavailable.');
         if($operation===InventoryRead::CLOUD_PROVIDERS_LIST&&!provider_cloud_providers_ready())throw new RuntimeException('Cloud provider storage is unavailable.');

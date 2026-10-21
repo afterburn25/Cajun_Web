@@ -62,6 +62,8 @@ function provider_checks_check(string $id,int $revision,#[\SensitiveParameter] s
         [$actor]=provider_checks_authority($id,$revision,$password);$now=time();
         if(one('SELECT id FROM '.table('provider_checks').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between checks of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_checks').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Connection-check limit reached. Try again later.');
+        require_once CWP_CODE_ROOT.'/app/providers/php_controls_read_limits.php';
+        provider_php_controls_old_read_limit('check',$id,(int)$actor['id'],$now);
         $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now];
         query('INSERT INTO '.table('provider_checks').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
         provider_settings_audit((int)$actor['id'],'check_started','Check '.$started['id'].' profile '.$id.' revision '.$revision);return $started;
