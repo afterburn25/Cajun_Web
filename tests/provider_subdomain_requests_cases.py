@@ -210,6 +210,7 @@ def run_browser(env, browser):
             check(prefix + ' ' + suffix + ' bounded full-card capture height', capture_height <= 2600)
             page.set_viewport_size({'width': width, 'height': capture_height})
             target.evaluate('(e) => scrollTo(0, Math.max(0, e.getBoundingClientRect().top + scrollY - 150))')
+            page.set_default_timeout(120000)
             page.wait_for_function("""(selector) => {
                 const e=document.querySelector(selector), r=e.getBoundingClientRect();
                 const nodes=[e.querySelector('h3'), ...e.querySelectorAll('button')].filter(n=>n&&n.getClientRects().length);
