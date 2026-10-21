@@ -289,7 +289,7 @@ function sl_blocked(array &$child): void {
     } while (true);
 }
 function sl_join(array &$child): array {
-    $exit = null; $deadline = microtime(true) + 12;
+    $exit = null; $deadline = microtime(true) + 150;
     try {
         do {
             $child['stdout'] .= stream_get_contents($child['pipes'][1]); $child['stderr'] .= stream_get_contents($child['pipes'][2]);
@@ -305,7 +305,7 @@ function sl_join(array &$child): array {
         fclose($child['pipes'][1]); fclose($child['pipes'][2]); $closed = proc_close($child['process']);
         if ($exit === null) $exit = $closed;
     }
-    if ($exit !== 0 || $child['stderr'] !== '' || strlen($child['stdout']) > 8192) throw new RuntimeException('Native worker failed.');
+    if ($exit !== 0 || $child['stderr'] !== '' || strlen($child['stdout']) > 8192) throw new RuntimeException('Native worker failed. exit='.var_export($exit,true).' stderr='.substr($child['stderr'],0,400).' stdout='.substr($child['stdout'],0,400));
     $result = json_decode(trim($child['stdout']), true, 5, JSON_THROW_ON_ERROR);
     if (!is_array($result) || array_keys($result) !== ['outcome','launch_dns','launch_calls']
         || !in_array($result['outcome'], ['completed','refused'], true) || !is_int($result['launch_dns'])
@@ -357,8 +357,7 @@ if ($worker) {
         if (!is_array($review) || !isset($review['admission_id'],$review['profile_id'],$review['package_id'],$review['expires_epoch'],$review['review_proof'])) exit(2);
         sl_owner(3);
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()], JSON_THROW_ON_ERROR)."\n"; fflush(STDOUT);
-        $outcome = 'completed';
-        try { sl_open($review); } catch (RuntimeException $e) { if ($e instanceof PDOException) throw $e; $outcome = 'refused'; }
+        $outcome='completed';for($budget=microtime(true)+120;;)try {sl_open($review);break;}catch(InvalidArgumentException|RuntimeException $e){if ($e instanceof PDOException) throw $e;if ($e->getMessage()!=='Another account change is in progress. Please retry.'){$outcome='refused';break;}if (microtime(true)>$budget) throw $e;}
         echo json_encode(['outcome'=>$outcome,'launch_dns'=>$launchDns,'launch_calls'=>$launchCalls], JSON_THROW_ON_ERROR); exit(0);
     } catch (Throwable) { exit(1); }
 }

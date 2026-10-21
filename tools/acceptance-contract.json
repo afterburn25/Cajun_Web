@@ -697,7 +697,7 @@
       "tests/stackcp_launch_browser.py": "ba44206c8b293a84ece25501d3294e5e2f92bb61c1c8f6285e2ee71a29b9c6a5",
       "tests/stackcp_launch_transport.php": "f4bc4c6dcaa0dcddd8b6325f6787f26b7a5fee9df4428697760c262a8449a95b",
       "tests/stackcp_launch_views.php": "52ae3959b0177444b443d2e738fbf62064fbc450006e2b976fd71c40ca439826",
-      "tests/stackcp_launch_native.php": "7c4961f9eadfe8ee3a62233aac8e0698c241aa36478c12e8bab70c204232146a",
+      "tests/stackcp_launch_native.php": "b3fe835a05d1362c510875c883a7dbe929861e4589a1793c733230e8327609b4",
       "site/admin/controllers/providers.php": "46d500acee44af7ddeade701583650fc007b71fa3e89b9504cf00145624f07f0",
       "site/admin/views/providers.php": "6d990abf9d8c18fc5a0cab6b72e4554aac4cd60ecd146f054a61a672a3e6c354",
       "site/app/providers/stackcp_access_views.php": "6fb91eaaf1c5aeba76b18e0bad8706ae98329212b8a621c78adf84f1f069821a",
@@ -835,6 +835,15 @@
         ],
         "before": "7641ed615c82ab62c8d39204cf47faa0354d7d44f8e51aed6fcef2293f6cf642",
         "after": "90c218181af349383409df7c5bbad6e6cc6d131c175065ea89b6ba3604621550"
+      },
+      {
+        "keys": [
+          "stackcp_launch",
+          "source_sha256",
+          "tests/stackcp_launch_native.php"
+        ],
+        "before": "7c4961f9eadfe8ee3a62233aac8e0698c241aa36478c12e8bab70c204232146a",
+        "after": "b3fe835a05d1362c510875c883a7dbe929861e4589a1793c733230e8327609b4"
       }
     ],
     "source_deltas": {
@@ -1083,6 +1092,30 @@
             "after": "_run_before_client_stackcp = run\n\n\ndef client_stackcp_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Client StackCP current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Client StackCP inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Client StackCP predecessor changed')\n    return result\n\n\ndef client_stackcp_current():\n    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['client_stackcp']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Client StackCP source changed: '+path)\n    registry = a.load(ROOT/'tools/acceptance-reports.json')\n    prior = copy.deepcopy(current); del prior['client_stackcp']\n    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Client StackCP native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]: cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']: raise ValueError('Client StackCP current pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Client StackCP predecessor contract changed')\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client StackCP report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Client StackCP predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = client_stackcp_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef client_stackcp_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    check('Client StackCP preserves all157 native recipes and adds eleven', len(current['native_commands']) == 168 and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])\n    check('Client StackCP reports are twelve unique producers', len(section['reports']) == len(set(section['reports'])) == 12)\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    check('Client StackCP workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)\n    check('Client StackCP browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php \"$PHP_BINARY\"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Client StackCP native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_CLIENT_STACKCP=1 \"$PHP_BINARY\" tests/client_stackcp_native.php' and valid_port_context(workflow))\n    check('Client StackCP adds no unreviewed capture expectations', section['screenshots'] == [])\n    for path, digest in section['source_sha256'].items():\n        check('Client StackCP binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Client StackCP retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Client StackCP modified current source refuses '+path, lambda path=path, delta=delta: client_stackcp_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    for phase, expected in [('browser',182),('final',226)]:\n        check('Client StackCP preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'client-stackcp-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)\n    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job\n        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA: named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Client StackCP aggregate requires all226 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()\n        check('Client StackCP missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path,False); reseal(); result = combine()\n        check('Client StackCP failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Client StackCP report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    named(jobs['native-browser']/'qa/client-stackcp-unexpected-results.json'); reseal(); result = combine()\n    check('Client StackCP unexpected report refuses', result['complete'] is False and 'Unexpected reports: client-stackcp-unexpected-results.json' in result['errors'])\n    check('Client StackCP private fixture files remain excluded', not a.evidence_allowed('test-runtime/client-stackcp-private/session.json','native-browser') and not a.evidence_allowed('qa/client-stackcp-private/session.json','native-browser'))\n\n\ndef run(tmp):\n    current, registry, section, historical = client_stackcp_current()\n    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path,*args,**kwargs):\n        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)\n    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):\n        _run_before_client_stackcp(tmp)\n    client_stackcp_checks(tmp,current,registry,section,historical)\n\n\n"
           }
         ]
+      },
+      "tests/stackcp_launch_native.php": {
+        "after_sha256": "b3fe835a05d1362c510875c883a7dbe929861e4589a1793c733230e8327609b4",
+        "before_sha256": "7c4961f9eadfe8ee3a62233aac8e0698c241aa36478c12e8bab70c204232146a",
+        "changes": [
+          {
+            "after_start": 291,
+            "after_end": 292,
+            "before": "    $exit = null; $deadline = microtime(true) + 12;\n",
+            "after": "    $exit = null; $deadline = microtime(true) + 150;\n"
+          },
+          {
+            "after_start": 307,
+            "after_end": 308,
+            "before": "    if ($exit !== 0 || $child['stderr'] !== '' || strlen($child['stdout']) > 8192) throw new RuntimeException('Native worker failed.');\n",
+            "after": "    if ($exit !== 0 || $child['stderr'] !== '' || strlen($child['stdout']) > 8192) throw new RuntimeException('Native worker failed. exit='.var_export($exit,true).' stderr='.substr($child['stderr'],0,400).' stdout='.substr($child['stdout'],0,400));\n"
+          },
+          {
+            "after_start": 359,
+            "after_end": 360,
+            "before": "        $outcome = 'completed';\n        try { sl_open($review); } catch (RuntimeException $e) { if ($e instanceof PDOException) throw $e; $outcome = 'refused'; }\n",
+            "after": "        $outcome='completed';for($budget=microtime(true)+120;;)try {sl_open($review);break;}catch(InvalidArgumentException|RuntimeException $e){if ($e instanceof PDOException) throw $e;if ($e->getMessage()!=='Another account change is in progress. Please retry.'){$outcome='refused';break;}if (microtime(true)>$budget) throw $e;}\n"
+          }
+        ]
       }
     },
     "source_sha256": {
@@ -1118,7 +1151,7 @@
       "tests/client_stackcp_documents.php": "28107c6143e79cfca857ae89ca328c48f2dff3e05a993fa68a9d7c1aa3863ec7",
       "tests/client_stackcp_http_fixture.php": "0cd32be96f4c506c70f452f7f44d29ec4b3b29c103e10b38d1012bebeed97441",
       "tests/client_stackcp_launch.php": "520ac576a6ba8572c671227ad34f249010eff54ed9fd6201de92f6245e319836",
-      "tests/client_stackcp_native.php": "cf212079712a07557e42fc36f526ed1cb6088e8063bed7e797c92ac76eb451a0",
+      "tests/client_stackcp_native.php": "2bf4d4c83d61f87849016cf00a86597e1c404dd670740a461602d52e7a3b056c",
       "tests/client_stackcp_permissions.php": "9cc53547c55582272555164a4f9f87a6d7272fd0d4560df9e0d806388fe23666",
       "tests/client_stackcp_views.php": "13e55776c73b021c4839a0e91cb0603c26d789eed0d5b069583fcda594fa052a"
     },
@@ -1126,7 +1159,7 @@
   },
   "support_stackcp": {
     "parent_commit": "51938fc80110931e80ebfd097066f2e4e1377df2",
-    "predecessor_contract_sha256": "8b24fac2d949abfeebea08b0fd84da5366ea10f6f83d1a5ec40379420d983a5d",
+    "predecessor_contract_sha256": "20d55591ddf791c224ec19f2079e978c9177388802c349a14975e84b64d84a89",
     "predecessor_reports_sha256": "29a7fc68769b0ea2a981a8f79bb224b49db92a8dbab8bccbbb6e23396fdd4962",
     "native_after": "CWP_TEST_CLIENT_STACKCP=1 \"$PHP_BINARY\" tests/client_stackcp_native.php",
     "native_additions": [
@@ -1494,7 +1527,7 @@
       "tests/support_stackcp_executor.php": "a824613b338947542d32e772348e33ad809a98cd24b6e2d2d33a666192010848",
       "tests/support_stackcp_http.py": "509acc94ac230d141a2b038dd6cb3c8d528511db37d640a782079ea441e50bb4",
       "tests/support_stackcp_http_fixture.php": "4c902310e251c12972c5bb62da28c81812e9fda7abf39a1a21d274fd8ce884fd",
-      "tests/support_stackcp_native.php": "9c20287dd147471ca60a31918e2c370e31931179e899a548b44a564e4005f1fd",
+      "tests/support_stackcp_native.php": "24ac243f76292f80f0a7069a1a4afd2592963bf6e4caba2540c9e279fb26fc7b",
       "tests/support_stackcp_permissions.php": "63cced5e543e277d3f5d419820b4bfc2cffaf7f03f3cbeff3b90b899acecd5b6",
       "tests/support_stackcp_views.php": "c62ff25a54e9680e65c416533a90bee03eccd8b9f7b3829327850983ab7a6ecb"
     },
