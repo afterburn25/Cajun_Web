@@ -51,6 +51,7 @@ def run_browser(env,browser):
     feed=db("SELECT * FROM ci_notification_feed WHERE audience='staff' AND recipient_id=? AND ref='job:1' AND title LIKE 'Client file%'",[staff_row['id']])
     check('Client upload notifies clients.manage staff',len(feed)>=1 and 'notify-client.png' in feed[0]['body'])
     check('Client workspace links notifications','?notifications=1' in alice.get(portal).text)
+    feed=db("SELECT * FROM ci_notification_feed WHERE audience='client' AND recipient_id=? AND ref='job:1' ORDER BY id DESC",[client_row['id']])
     r=submit(alice,portal+'?notifications=1','notification_client_mark',{'id':feed[0]['id'],'read':'1'});check('Client mark-read persists',db('SELECT read_at FROM ci_notification_feed WHERE id=?',[feed[0]['id']])[0]['read_at'] is not None)
     bob=requests.Session();submit(bob,portal,'login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
     r=bob.post(portal,data={'action':'notification_client_mark','id':feed[0]['id'],'read':'0','csrf':token(bob.get(portal))});check('Another client cannot alter foreign read state',db('SELECT read_at FROM ci_notification_feed WHERE id=?',[feed[0]['id']])[0]['read_at'] is not None)
