@@ -48,7 +48,6 @@ if(in_array($view,['studio-clients','studio-job'],true) && (support_current() ||
 if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accounts_admin_render($view,$error);
 if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))service_plans_admin_render($view,$error);
 if($view==='backups')backups_admin_render($user,$error);
-if($view==='notifications')notifications_admin_render($user,$error);
 if(in_array($view,['proposals','proposal'],true))proposals_admin_render($view,$user,$error);
 if($view==='recurring-billing')recurring_billing_admin_render($error);
 if(in_array($view,['tickets','ticket','ticket-new'],true))support_tickets_admin_render($view,$error);

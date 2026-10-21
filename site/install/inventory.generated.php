@@ -49,7 +49,7 @@ function setup_expected_files(): array { return [
     'admin/controllers/providers.php'=>'3264d7458cb2c1ed3577f33280b12d98dee919fa7b5b9b17d0bbdd9034ce7cef',
     'admin/controllers/recurring_billing.php'=>'69ea3ed7cb40a0e058eb2bc22341fb6dca4c0204fb96c1de080d2e8cf15780cf',
     'admin/controllers/reviews.php'=>'f034ab69a0da4543eba72cd2935ff6d802d0293259e88ca699bbe1f4c1316c31',
-    'admin/controllers/router.php'=>'5259fe0d952c13e22da1c8fba7848685ac9a84240ee2071314130774e2a71a68',
+    'admin/controllers/router.php'=>'1583734c81e79b649c0621792450eaad67112742be94aaff1aac7950d9292ac6',
     'admin/controllers/service_observations.php'=>'2a03e0decb130743ccaa49c5e9d958313462baadcff4b3c4e5d5536bf7f34432',
     'admin/controllers/services.php'=>'b66f7b96ecc50cb5abfa19fd90e8534945cddd8e050cf98de3f1c34d2087c1a8',
     'admin/controllers/settings.php'=>'a47319d99588ac9273c764ec4b8f64059343783b26fb4f809b0e8fb3cb1aa2a9',
