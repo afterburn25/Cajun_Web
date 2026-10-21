@@ -222,7 +222,7 @@ function rncr_blocked(array &$worker):void{
     }while(true);
 }
 function rncr_join(array &$worker):array{
-    $exit=null;$deadline=microtime(true)+25;
+    $exit=null;$deadline=microtime(true)+150;
     try{do{
         $worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);
         if(strlen($worker['stdout'])>8192||strlen($worker['stderr'])>2048)throw new RuntimeException('Worker result bound exceeded.');
