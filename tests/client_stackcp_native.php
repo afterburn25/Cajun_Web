@@ -470,7 +470,7 @@ try {
     foreach ([CSLN_GENERAL,CSLN_AUTH,CSLN_TOKEN,CSLN_SESSION,base64_encode(CSLN_GENERAL),base64_encode(CSLN_AUTH),base64_encode(CSLN_TOKEN),'PHPSESSID=','/login/sso?'] as $secret) $safe=$safe&&!str_contains($retained,$secret);
     csn_ok('Retained client rows audits and summaries contain no transient secrets or URL',$safe);
     csn_ok('No generic provider operation or grant ledger is used',!csn_exists('provider_operations')&&!csn_exists('provider_operation_grants'));
-    csn_ok('Owner observations use genuine cooldowns without timestamp edits',$readCalls===10&&$readDns===10&&$readCredentials===10);
+    csn_ok('Owner observations use genuine cooldowns without timestamp edits',$readCalls===13&&$readDns===13&&$readCredentials===13);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected native failure during '.$stage,'passed'=>false,'error_class'=>get_class($e),'line'=>$e->getLine()];}
 $passed=$checks!==[]&&!array_filter($checks,fn($c)=>$c['passed']!==true);
 $out=['passed'=>$passed,'scope'=>'Actual disposable Linux SQL, real owner permission/client sessions, immutable phase journals, current DB authority and blocked mutex worker; synthetic fixed reads/token/session and callback only. No provider account or real StackCP login.','checks'=>$checks];
