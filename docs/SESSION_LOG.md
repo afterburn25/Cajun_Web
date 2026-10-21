@@ -5558,3 +5558,13 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39648784813` (preflight `6308e00a`), `39648676103` (FSI `2281bd2c`), `39626517223` (lf-02 `fd6fb95e`), `39625298284` (lf-03 `ca9c7aa4`), `39623620268` (lf-pc `6b288593`), `39626328675` (lf-4d `e5a6f8bf`), `39646362318` (lf-ff `69d88ea6`). Next: merge green leaf tips into preflight/FSI, combined acceptance, then `main` with exact-main acceptance.
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — CRLF inventory hash + wordpress cooldown ordering
+
+- Build jobs on `6308e00a`/`2281bd2c` failed fast at `Installer dependency hashes are stale`: the local `--refresh` hashed `deploy.php`'s CRLF working-copy bytes while git stores the blob LF — CI recomputes the LF hash, mismatch. Normalized deploy.php to LF, refreshed (deploy.php hash `1ad8f519`->`241f4857`), committed preflight `3b118fc3` and FSI `d05eb3be`; runs `39651573652`/`39651567053` dispatched. Lesson for this workspace: always normalize shipping files to LF before `tools/build.py --refresh` on Windows.
+- lf-03 `ca9c7aa4` failed `WordPress installation immediate repeat obeys common cooldown`: diagnostics showed the repeat POST landed 45s after the refresh (evidence+soup+checks between the two POSTs), escaping the 30s cooldown window and hitting the authority gate instead. Reordered the repeat POST directly after the refresh on `c75fa209` — identical assertions, ~0s gap (matches sibling suites' proximity). Run `39649921774`.
+- lf-ff `39624845442` attempt-2 rerun failed at same-attempt input verification (artifact/checkpoint identity mismatch — expected). Diagnostics-armed run `39646362318` on `69d88ea6` still in flight.
+
+Runs in flight: `39651573652` (preflight `3b118fc3`), `39651567053` (FSI `d05eb3be`), `39626517223` (lf-02 `fd6fb95e`), `39649921774` (lf-03 `c75fa209`), `39623620268` (lf-pc `6b288593`), `39626328675` (lf-4d `e5a6f8bf`), `39646362318` (lf-ff `69d88ea6`).
+
+No production provider request, charge, mail, SSH or deployment occurred.
