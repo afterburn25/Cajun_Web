@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY==='Windows'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1'||count($argv)!==2)exit(2);
 $phase=$argv[1];
-if(!in_array($phase,['seed','status','cool','options','contact-add','contact-clear','fault-arm','fault-clear'],true))exit(2);
+if(!in_array($phase,['seed','status','cool','options','contact-add','contact-clear','fault-arm','fault-clear','inventory'],true))exit(2);
 $portText=getenv('CWP_TEST_PORT')?:'33306';if(!ctype_digit($portText)||(int)$portText<1||(int)$portText>65535)exit(2);
 $raw=stream_get_contents(STDIN,4097);if(strlen($raw)>4096)exit(2);
 try{$decoded=json_decode($raw,false,8,JSON_THROW_ON_ERROR);}catch(JsonException){exit(2);}
