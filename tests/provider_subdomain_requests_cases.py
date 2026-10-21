@@ -211,6 +211,22 @@ def run_browser(env, browser):
             page.set_viewport_size({'width': width, 'height': capture_height})
             target.evaluate('(e) => scrollTo(0, Math.max(0, e.getBoundingClientRect().top + scrollY - 150))')
             page.set_default_timeout(120000)
+            for readiness_tick in range(60):
+                readiness_state = page.evaluate("""(selector) => {
+                    const e=document.querySelector(selector);
+                    if (!e) return 'card absent';
+                    const r=e.getBoundingClientRect();
+                    const nodes=[e.querySelector('h3'), ...e.querySelectorAll('button')].filter(n=>n&&n.getClientRects().length);
+                    if (getComputedStyle(e).opacity!=='1' || r.left<0 || r.right>innerWidth || r.top<0 || r.bottom>innerHeight)
+                        return 'card not settled opacity='+getComputedStyle(e).opacity+' rect='+(r.left|0)+','+(r.top|0)+','+(r.right|0)+','+(r.bottom|0)+' view='+innerWidth+'x'+innerHeight;
+                    const blocked=nodes.map(n=>{const b=n.getBoundingClientRect(), h=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return (h&&(h===n||n.contains(h)))?null:(n.tagName+'.'+n.className+'<-'+(h?h.tagName+'.'+(typeof h.className==='string'?h.className:''):'none'));}).filter(x=>x);
+                    return blocked.length?'obscured '+JSON.stringify(blocked):'ready';
+                }""", arg=selector)
+                if readiness_state == 'ready':
+                    break
+                time.sleep(2)
+            if readiness_state != 'ready':
+                raise AssertionError(prefix + ' ' + suffix + ' card capture readiness: ' + readiness_state)
             page.wait_for_function("""(selector) => {
                 const e=document.querySelector(selector), r=e.getBoundingClientRect();
                 const nodes=[e.querySelector('h3'), ...e.querySelectorAll('button')].filter(n=>n&&n.getClientRects().length);

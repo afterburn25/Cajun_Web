@@ -994,7 +994,7 @@
       "tests/browser_acceptance.py": "c30f8c9a72f4a99fc51ed22f72415e787a1988d143a1a30860ca4b19989cd04b",
       "tests/provider_http_server.py": "9be1a7c89427cf7098d1cc29385c42df9172f4bf6132ec6767fa00339a7eddec",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
-      "tests/provider_subdomain_requests_cases.py": "fd93bee992bbd2ce4814b1aa233b795a3c444b889c90af51523298d4a2d45772"
+      "tests/provider_subdomain_requests_cases.py": "d27370229f77529a1dd4a11197ffc62fe673f29273537d05a15e0ec3527156a1"
     },
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
@@ -1131,7 +1131,7 @@
       "tests/browser_acceptance.py": "c30f8c9a72f4a99fc51ed22f72415e787a1988d143a1a30860ca4b19989cd04b",
       "tests/provider_http_server.py": "9be1a7c89427cf7098d1cc29385c42df9172f4bf6132ec6767fa00339a7eddec",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
-      "tests/provider_subdomain_requests_cases.py": "fd93bee992bbd2ce4814b1aa233b795a3c444b889c90af51523298d4a2d45772",
+      "tests/provider_subdomain_requests_cases.py": "d27370229f77529a1dd4a11197ffc62fe673f29273537d05a15e0ec3527156a1",
       "site/app/providers/subdomain_activity.php": "38e3484f0c54facb4cbd0b20bb694180d4ad3a8897d8d488701dea2a57f35fdd",
       "site/app/activity/events.php": "432193c5df790d71b5854bbe1a4097d19365c41dfc3330f80b33b4222e9803c4",
       "site/app/activity/provider_sources.php": "55aa3f7b98ff80c9f38609f05e2718cdfc617487590656e0d3894e678404957d",
@@ -1229,7 +1229,7 @@
       },
       "tests/provider_subdomain_requests_cases.py": {
         "before_sha256": "584a085859d179356123a021f6a88ce1820abc4d2c17ccc14bba16eb82710aff",
-        "after_sha256": "fd93bee992bbd2ce4814b1aa233b795a3c444b889c90af51523298d4a2d45772",
+        "after_sha256": "d27370229f77529a1dd4a11197ffc62fe673f29273537d05a15e0ec3527156a1",
         "replacements": [
           {
             "before": "            'name=\"review_proof\"', 'name=\"owner_request_id\"', 'name=\"current_password\"',\n            'subdomain-private-folder', *forbidden))\n\n    def cleared(response, action):\n        form = actual_form(response, action)\n        return all(n.get('value', '') == '' for n in form.select('input[type=password]')) and not form.select('input[type=checkbox][checked]')\n",
@@ -1262,6 +1262,10 @@
           {
             "before": "",
             "after": "            page.set_default_timeout(120000)\n"
+          },
+          {
+               "before": "            page.wait_for_function(\"\"\"(selector) => {",
+               "after": "            for readiness_tick in range(60):\n                readiness_state = page.evaluate(\"\"\"(selector) => {\n                    const e=document.querySelector(selector);\n                    if (!e) return 'card absent';\n                    const r=e.getBoundingClientRect();\n                    const nodes=[e.querySelector('h3'), ...e.querySelectorAll('button')].filter(n=>n&&n.getClientRects().length);\n                    if (getComputedStyle(e).opacity!=='1' || r.left<0 || r.right>innerWidth || r.top<0 || r.bottom>innerHeight)\n                        return 'card not settled opacity='+getComputedStyle(e).opacity+' rect='+(r.left|0)+','+(r.top|0)+','+(r.right|0)+','+(r.bottom|0)+' view='+innerWidth+'x'+innerHeight;\n                    const blocked=nodes.map(n=>{const b=n.getBoundingClientRect(), h=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return (h&&(h===n||n.contains(h)))?null:(n.tagName+'.'+n.className+'<-'+(h?h.tagName+'.'+(typeof h.className==='string'?h.className:''):'none'));}).filter(x=>x);\n                    return blocked.length?'obscured '+JSON.stringify(blocked):'ready';\n                }\"\"\", arg=selector)\n                if readiness_state == 'ready':\n                    break\n                time.sleep(2)\n            if readiness_state != 'ready':\n                raise AssertionError(prefix + ' ' + suffix + ' card capture readiness: ' + readiness_state)\n            page.wait_for_function(\"\"\"(selector) => {"
           }
         ]
       },
@@ -1370,7 +1374,7 @@
           "tests/provider_subdomain_requests_cases.py"
         ],
         "before": "584a085859d179356123a021f6a88ce1820abc4d2c17ccc14bba16eb82710aff",
-        "after": "fd93bee992bbd2ce4814b1aa233b795a3c444b889c90af51523298d4a2d45772"
+        "after": "d27370229f77529a1dd4a11197ffc62fe673f29273537d05a15e0ec3527156a1"
       },
       {
         "keys": [
