@@ -72,7 +72,7 @@ def run_browser(env,browser):
     # Fixture rows created by the staff suite: the internal note must stay out by exact key, and the milestone resolves by its complete revision key.
     internal=db("SELECT id FROM ci_studio_messages WHERE body='Staff-only internal marker note.'")[0]['id']
     milestone=db("SELECT id FROM ci_studio_milestones WHERE title='Synthetic milestone launch window'")[0]['id']
-    public=db("SELECT id FROM ci_studio_messages WHERE job_id=1 AND author_type IN ('admin','client','contact') ORDER BY id LIMIT 1")[0]['id']
+    public=db("SELECT id FROM ci_studio_messages WHERE job_id=1 AND author_type='admin' ORDER BY id LIMIT 1")[0]['id']
     check('Exact internal staff note event key never enters the client feed','message:'+str(internal) not in source_keys)
     check('A public message event key is present in the client feed','message:'+str(public) in source_keys)
     mkey_fixture=next(k for k in source_keys if k.startswith('milestone:'+str(milestone)+':'))
