@@ -109,16 +109,14 @@ def run_browser(env, browser):
         post(refresh, link_id=link['id'], **fields)
         check('Directory listing refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_directory_indexing_reads'))
     cool(); provider.directory_indexing = True; response = post(refresh, link_id=link['id'])
+    repeated = owner.post(url, data=post.last)
     evidence('Complete Directory listing observation', response)
     section = soup(response).select_one('#directory-listing')
     check('Directory listing owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2001/web/directoryIndexing' and section is not None and 'Reported enabled' in section.text and 'Latest saved directory listing setting' in section.text)
     saved = db('SELECT * FROM ci_provider_directory_indexing_observations')[0]
     check('Directory listing true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('Directory listing owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved directory listing setting' in section.text and 'Reported enabled' not in client.get(target).text)
-    for _ in range(3):
-        repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
-        if any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']):
-            break
+    evidence('Shared cooldown refusal', repeated)
     check('Directory listing immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_directory_indexing_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)
