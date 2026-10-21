@@ -8,7 +8,7 @@ def run_browser(env,browser):
     db('DELETE FROM ci_rate_limits')
     root=BASE+'/existing/admin/index.php';board=root+'?view=studio-pipeline'
     owner=login('owner@example.invalid',OWNER)
-    db("INSERT INTO ci_leads (reference,request_key,name,email,company,phone,service,budget,timeline,message,consent,ip_hash,status,notes,notification_status,created_at) VALUES ('PIPE-HTTP',?,?,?,?,?,?,?,?,?,1,?,?,?,?)",
+    db("INSERT INTO ci_leads (reference,request_key,name,email,company,phone,service,budget,timeline,message,consent,ip_hash,status,notes,notification_status,created_at) VALUES ('PIPE-HTTP',?,?,?,?,?,?,?,?,?,1,?,?,?,?,?)",
        [hashlib.sha256(b'pipeline-http').hexdigest(),'Pipeline HTTP lead','pipeline-http@example.invalid','','','Design','Flexible','Discuss','Synthetic pipeline HTTP inquiry',hashlib.sha256(b'pipeline-http-ip').hexdigest(),'new','','not_configured','2026-10-16 12:00:00'])
     lead=db("SELECT id FROM ci_leads WHERE reference='PIPE-HTTP'")[0]['id'];card=board;lead_page=root+'?view=lead&id='+str(lead)
     r=submit(owner,board,'pipeline_setup',{'csrf':'wrong'});check('Pipeline history setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='pipeline_schema_version'"))
