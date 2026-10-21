@@ -150,10 +150,38 @@ perpetually `queued`, zero produced logs or reports).
 2026-10-21 update — merge-first sequence in execution: green leaf →
 `devin/preflight-commercial` → `devin/full-site-integration` → `main`.
 
-Current authoritative heads and runs (updated later 2026-10-21):
+Current authoritative heads and runs (updated third pass 2026-10-21):
 
-1. `devin/preflight-commercial` tip `fac28bae` — run `39563435001`
-   dispatched. Adds to `f665c7c3`: the staff-health check accepts the
+0. Recovery-context freshness repair (all lanes): the browser suite on
+   `e52f1999` died at the `Force-SSL-Control-Recovery-Owner` capture —
+   the HTTP recovery GET rendered the form, but ~3 min later the browser
+   GET correctly withheld it with "no eligible finished attempt for
+   recovery by this owner in the current context". Root cause:
+   `provider_force_ssl_controls_summary()` computes recovery eligibility
+   only while `provider_force_ssl_controls_context()` validates the
+   retained binding, and `provider_force_ssl_binding()` requires the
+   latest hosting-inventory observation inside the freshness window; the
+   suite's last `provider_inventory_refresh` aged past it on a slow
+   runner. Fix (no application change, no weakened gate): each control
+   suite now performs a genuine `provider_inventory_refresh` before the
+   recovery stage, before the `calls`/`terminals`/`recovery_audits`/
+   `recovery_count` baselines, and the exact own-read tail assertion is
+   updated to `['packages.list'] * 3` ('eight own reads'). Committed on
+   all eleven branches: preflight `1423c73b`, FSI `b863abb1`, lf-ff
+   `5c5ebd3d`, lf-4d `850ffca2`, lf-02 `8d0cd793`, lf-pc `e732c131`,
+   nsfix `45120df5`, lf-95 `69865671`, lf-b0 `f617754f`, lf-8f
+   `eb9cb268`, lf-03 `3e602cc8`. New runs: preflight `39569359471`, FSI
+   `39569253777` (push-triggered), lf-4d `39569365480`, lf-02
+   `39569375337`, lf-pc `39569379686`, lf-ff `39569386760`, lf-03
+   `39569392077`; stale runs cancelled. Note: the artifact test's
+   `--report` argument is an OUTPUT path — never point it at
+   `tools/acceptance-contract.json` (one sweep overwrote working-tree
+   contract files with result JSON; all restored via `git restore`,
+   verifications were computed before the overwrite and stayed valid).
+1. `devin/preflight-commercial` tip `1423c73b` — run `39569359471`
+   dispatched on the recovery-freshness fix (item 0); earlier tip
+   `fac28bae` run `39563435001` cancelled as stale. `fac28bae` adds to
+   `f665c7c3`: the staff-health check accepts the
    `require_admin` login redirect (301/302/303/307/308/403 with no health
    content, no redirect followed), the nameserver owner form fill waits
    for exactly one matching form (bounded, still fails honestly), and the
@@ -168,19 +196,21 @@ Current authoritative heads and runs (updated later 2026-10-21):
    (`fwrite errno=28` — 42/43 nameserver native assertions passed; the
    43rd is the worker-stderr guard catching the polluted child) —
    preserved failed evidence, not a code defect.
-2. `devin/full-site-integration` tip `bd9c7bdc` — push-triggered run
-   `39563161324` in progress. Adds the same staff-health redirect
-   correction on top of `aa620ac7` (run `39550434947` failed at the old
-   `==403` assertion — preserved).
+2. `devin/full-site-integration` tip `b863abb1` — push-triggered run
+   `39569253777` in progress on the recovery-freshness fix; `bd9c7bdc`
+   run `39563161324` cancelled as stale. `bd9c7bdc` adds the same
+   staff-health redirect correction on top of `aa620ac7` (run
+   `39550434947` failed at the old `==403` assertion — preserved).
 3. Leaf-tip runs in flight awaiting green before merging into preflight:
-   StackCP `1ee17f70` (`39556162670`, client-session restored before the
-   race review), nameserver getattr `4a2e137e` (`39563456924`, bounded
-   form-count wait + contract re-anchor, 473 local checks), docroots
-   worker-retry `e52f1999` (`39550307729`, direct repost inside the
-   cooldown window), php-controls `d2e8788c` (`39563438292`, fresh
+   StackCP `5c5ebd3d` (`39569386760`; `1ee17f70`/`39556162670` failed —
+   client-session restored before the race review, residual failure under
+   helper investigation), nameserver getattr `8d0cd793` (`39569375337`,
+   bounded form-count wait + contract re-anchor, 473 local checks),
+   docroots worker-retry `3e602cc8` (`39569392077`, direct repost inside
+   the cooldown window), php-controls `e732c131` (`39569379686`, fresh
    current/options observations + new review minted immediately before
    the owner confirm so the 900-second freshness window always holds,
-   390 local checks), force-SSL `fd7bcf91` (`39563482028`, insert-only
+   390 local checks), force-SSL `850ffca2` (`39569365480`, insert-only
    capture-readiness diagnostics preserving the original wait predicate
    byte-for-byte, 610 local checks).
 4. On green, merge accepted leaves into `devin/preflight-commercial`,
