@@ -24,7 +24,8 @@ def run_browser(env,browser):
     r=admin.get(url);check('Staff feed renders the notification','New project inquiry' in r.text and 'Open related item' in r.text)
     check('Portal delivery recorded as sent',db("SELECT state FROM ci_notification_deliveries WHERE notification_id=? AND channel='portal'",[n[0]['id']])[0]['state']=='sent')
     r=submit(admin,url,'notification_mark',{'id':n[0]['id'],'read':'1'});check('Staff mark-read persists',db('SELECT read_at FROM ci_notification_feed WHERE id=?',[n[0]['id']])[0]['read_at'] is not None)
-    r=submit(admin,url,'notification_prefs',{'email_service-event':'','email_billing':'1','email_project-update':'1','email_approval-request':'1','email_download-ready':'1','email_support-reply':'1'})
+    prefs_response=admin.get(url);prefs_form=form_for(prefs_response,'notification_prefs');prefs_data=form_data(prefs_form);prefs_data.pop('email_service-event',None)
+    r=admin.post(url,data=prefs_data)
     check('Per-kind email opt-out persists',db("SELECT email FROM ci_notification_prefs WHERE recipient_id=? AND kind='service-event'",[staff_row['id']])[0]['email']==0)
     alice=requests.Session();submit(alice,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     job=root+'?view=studio-job&id=1'
