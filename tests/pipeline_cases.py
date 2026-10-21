@@ -1,5 +1,5 @@
 """Pipeline transition rules and append-only stage history over real HTTP."""
-import hashlib,requests
+import hashlib,json,time,requests
 from release_cases import db
 from staff_cases import OWNER,STAFF
 
@@ -12,8 +12,16 @@ def run_browser(env,browser):
        [hashlib.sha256(b'pipeline-http').hexdigest(),'Pipeline HTTP lead','pipeline-http@example.invalid','','','Design','Flexible','Discuss','Synthetic pipeline HTTP inquiry',hashlib.sha256(b'pipeline-http-ip').hexdigest(),'new','','not_configured','2026-10-16 12:00:00'])
     lead=db("SELECT id FROM ci_leads WHERE reference='PIPE-HTTP'")[0]['id'];card=board;lead_page=root+'?view=lead&id='+str(lead)
     r=submit(owner,board,'pipeline_setup',{'csrf':'wrong'});check('Pipeline history setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='pipeline_schema_version'"))
-    r=submit(owner,board,'pipeline_setup',{'owner_password':'wrong','confirm':'1'});check('Pipeline history setup requires owner password','current password' in r.text.lower())
-    r=submit(owner,board,'pipeline_setup',{'owner_password':OWNER,'confirm':'1'});check('Owner enables pipeline stage history','Pipeline stage history is enabled' in r.text)
+    def post_setup(password):
+        deadline=time.time()+40
+        while True:
+            r=submit(owner,board,'pipeline_setup',{'owner_password':password,'confirm':'1'})
+            if 'another account change is in progress' not in r.text.lower() or time.time()>=deadline:return r
+            time.sleep(1)
+    def gate_marker(r):
+        return {'status':r.status_code,'session_expired':'session expired' in r.text.lower(),'busy':'another account change is in progress' in r.text.lower(),'confirm':'confirm you want stage history' in r.text.lower(),'enabled':'stage history is enabled' in r.text.lower()}
+    r=post_setup('wrong');(QA/'pipeline-setup-wrong-password-diagnostics.json').write_text(json.dumps(gate_marker(r),indent=2),encoding='utf-8');check('Pipeline history setup requires owner password','current password' in r.text.lower())
+    r=post_setup(OWNER);check('Owner enables pipeline stage history','Pipeline stage history is enabled' in r.text)
     def card_form():
         for f in soup(owner.get(card)).select('form'):
             if f.select_one('[name=action][value=studio_pipeline]') and f.select_one('[name=id]') and f.select_one('[name=id]').get('value')==str(lead):return f
