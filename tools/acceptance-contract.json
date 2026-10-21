@@ -5802,13 +5802,13 @@
       "tests/force_ssl_requests_contract.php": "92a3a4eb5bccc0915a27fde018b42997c9d3b64bc64d776773ce0bc501a97a56",
       "tests/force_ssl_requests_document.php": "2d0512f7bd6b783fe3b81de71bab15bd5651f6a816efff333002b576c817ac7d",
       "tests/force_ssl_requests_storage.php": "d1417c61a5077bb24200508058de24192dcd4cc7030b13570ed2266d334574c1",
-      "tests/provider_force_ssl_requests_native.php": "3fc8525ce0f3fc4fd73d9cb5fa4f76130988b6644732f7c1c93264f25d95055a"
+      "tests/provider_force_ssl_requests_native.php": "a086c860fbfb673d2ae00d2c3f054f7bb401d3045b9368d9b87f75e0f7883f99"
     },
     "scope": "Primary-client HTTPS request, owner review and existing Force SSL dispatch/readback. Portable and modeled HTTP/browser evidence is separate from guarded native SQL and installed acceptance; no live provider operation."
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "78413b25f7d7f4ad0fdbab871849105384d2920849a3ef19d7fcb2a186296dc2",
+    "predecessor_contract_sha256": "216bf971650695e986d5fb4ebc2826b5ea3695ee78f1ed0690264d540dd08976",
     "predecessor_reports_sha256": "9bace2c26fa5a8090bd3dac21afe2790940a22ef16be37547eeb0ff1df6e3c4b",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [
@@ -6274,8 +6274,8 @@
       "tests/directory_listing_requests_document.php": "de45b7f81950bffa5625c2df2c6db9e602a1d8d0638344f8eb4f5aa820f68b07",
       "tests/directory_listing_requests_storage.php": "fe99d96acd03a4a2a3b3d85cafb82b4c1065c788895bc89728881a1bc0d34f76",
       "tests/provider_directory_listing_controls_native.php": "4cfc7f4eaf62a1aa7fcafc9b9fe7c1eb011543e84d8d8cdbd75c28a61bac37a5",
-      "tests/provider_directory_listing_requests_native.php": "838ecd7f189c27ed3d7c8141e6f936de2109964372c575e39a2a343721cdfc8b",
-      "tests/provider_force_ssl_requests_native.php": "3fc8525ce0f3fc4fd73d9cb5fa4f76130988b6644732f7c1c93264f25d95055a",
+      "tests/provider_directory_listing_requests_native.php": "d305ccf13f1d0ea97a5097a1e5a4d57b7a5f8f6d6e9c19cded1b1a050d3d692e",
+      "tests/provider_force_ssl_requests_native.php": "a086c860fbfb673d2ae00d2c3f054f7bb401d3045b9368d9b87f75e0f7883f99",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     },
     "scope": "Primary-client directory listing request, owner review and existing DirectoryIndexingChange dispatch/readback. Portable/model HTTP evidence is separate from guarded native SQL and installed acceptance. No live provider or actual file visibility claim."
@@ -6324,7 +6324,7 @@
     "source_sha256": {
       "tests/twentyi-cloud-site-requests/documents.php": "0a227898eeb5b4cec6cf3f7f4800580b1e02421edbcd675484aae741df91790b",
       "tests/cloud_site_requests_ui_contract.php": "a1f6afd5e0ae5c0a154da7c1821092fcfff5afd8ee6e70eaab9c640bb20e9486",
-      "tests/provider_cloud_site_requests_native.php": "2e295420a3cd0d3d978267bfb39daacd51bb8d0d51e8a4e1d27ae0e52120b75d",
+      "tests/provider_cloud_site_requests_native.php": "fbc38bcef9beaaffad97648100b79ec531eb5ba26ddab5fc769412f88b78f7cb",
       "tests/provider_cloud_site_requests_cases.py": "82573ab01bd25e3a90f2918b21dee2bcb91be4c7bd41f705c8a2c2ea2b359f30",
       "tests/cloud_site_requests_wiring.py": "a9b77582ac9324b8c6a568771e907aa14d645152fa6149c2febb057ea5916dda",
       "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
@@ -6399,7 +6399,7 @@
       "site/app/providers/cloud_site_requests.php": "aaafdf5210e00e92a946b19186e5e72f2c0025f0277da38c368d844b5f49e84d",
       "site/app/providers/cloud_site_requests_views.php": "22dfe27c1a6d0ca2a8f7290c50ecfa307444e05d581ef2c884b3c9f69558ff23",
       "tests/cloud_site_requests_ui_contract.php": "a1f6afd5e0ae5c0a154da7c1821092fcfff5afd8ee6e70eaab9c640bb20e9486",
-      "tests/provider_cloud_site_requests_native.php": "2e295420a3cd0d3d978267bfb39daacd51bb8d0d51e8a4e1d27ae0e52120b75d",
+      "tests/provider_cloud_site_requests_native.php": "fbc38bcef9beaaffad97648100b79ec531eb5ba26ddab5fc769412f88b78f7cb",
       "tests/provider_cloud_site_requests_cases.py": "82573ab01bd25e3a90f2918b21dee2bcb91be4c7bd41f705c8a2c2ea2b359f30",
       "tests/cloud_site_requests_wiring.py": "a9b77582ac9324b8c6a568771e907aa14d645152fa6149c2febb057ea5916dda",
       "tests/cloud_site_intake_contract.php": "0afa7765917c2f26937884c9baea5559c62aa90e17fea152f735b9ea4eb6e03b",

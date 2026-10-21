@@ -234,7 +234,7 @@ try{
     $existing=all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,?)=BINARY ?',[strlen(CWRI_PREFIX),CWRI_PREFIX]);
     cwri_ok('Exact disposable database and unused namespace are required',query('SELECT DATABASE()')->fetchColumn()==='cwp_test'&&$existing===[]);
     foreach(schema_statements(CWRI_PREFIX) as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
-    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');
+    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','4');
     foreach([1,2,3] as $i)query('INSERT INTO '.table('users').' (id,name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?,?)',[$i,'Cloud request staff '.$i,'cloud-request-owner'.$i.'@example.invalid',password_hash(CWRI_PASSWORD,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (2,?,1,?)',['owner','[]']);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (3,?,1,?)',['administrator',json_encode(array_keys(staff_permissions()))]);
     foreach([1,2,3,4] as $i)query('INSERT INTO '.table('studio_clients').' (id,name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?,?)',[$i,'Cloud request client '.$i,'cloud-request-client'.$i.'@example.invalid',password_hash('Synthetic cloud request client passphrase',PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
