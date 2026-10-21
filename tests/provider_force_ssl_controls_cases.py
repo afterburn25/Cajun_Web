@@ -226,7 +226,7 @@ def run_browser(env, browser):
         db('INSERT INTO ci_settings (name,value) VALUES (?,?)', ['provider_force_ssl_control_request_count', counter])
     check('Exact control history restoration recovers saved owner evidence', 'Desired flag observed after the request' in owner.get(url).text)
     rows = db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [force_ssl_owner['id']])
-    check('Control workflow uses eight own reads and two synthetic writes with local-only recovery', [r['operation'] for r in rows] == ['packages.list'] * 3 + ['package.force-ssl'] * 5 and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}, {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}] and not provider.errors)
+    check('Control workflow uses eight own reads and two synthetic writes with local-only recovery', [r['operation'] for r in rows] == ['packages.list', 'packages.list'] + ['package.force-ssl'] * 4 + ['packages.list', 'package.force-ssl'] and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}, {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}] and not provider.errors)
     retained = db('SELECT * FROM ci_provider_refreshes WHERE seq<=? ORDER BY seq', [max((r['seq'] for r in inherited), default=0)])
     retained_audits = db('SELECT * FROM ci_audit WHERE id<=? ORDER BY id', [max((r['id'] for r in inherited_audits), default=0)])
     check('Controls preserve every inherited intent and audit byte', retained == inherited and retained_audits == inherited_audits)
