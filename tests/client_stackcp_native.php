@@ -453,7 +453,7 @@ try {
     $before=csn_digest();db()->exec('RENAME TABLE '.table('provider_client_stackcp_events').' TO '.table('client_stackcp_retained'));
     try {csn_owner();csn_deny('Missing journal is not silently recreated',fn()=>provider_client_stackcp_prepare(CSLN_PASSWORD));}finally{db()->exec('RENAME TABLE '.table('client_stackcp_retained').' TO '.table('provider_client_stackcp_events'));csn_client();}
     csn_ok('Exact retained journal restores without repair',csn_ready()&&csn_digest()===$before);
-    $stage='real revocation and race';$r=csn_review($permissionId);$counts=csn_calls();
+    $stage='real revocation and race';csn_packages($profile);csn_access($profile);csn_access($profile,B::GRANTS);$r=csn_review($permissionId);$counts=csn_calls();
     $child=staff_locked(function()use($r,$profile):array {$child=csn_spawn($r);csn_blocked($child);csn_ok('Actual client process is observed waiting on owning mutex',true);csn_enable($profile,false);return $child;});
     $workerResult=csn_join($child);csn_client();csn_ok('Owner revocation while client is blocked prevents all effects',$workerResult['outcome']==='refused'&&$workerResult['launch_dns']===0&&array_sum($workerResult['launch_calls'])===0&&csn_calls()===$counts);
     csn_ok('Revoked permission cannot authorize replay',!provider_client_stackcp_review($permissionId,1)['available']);csn_deny('Original replay requires still-current delegation',fn()=>csn_open($review));
