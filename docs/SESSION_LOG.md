@@ -5588,3 +5588,13 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39651573652` (preflight `3b118fc3`), `39651567053` (FSI `d05eb3be`), `39657214032` (lf-02 `7860972d` diag), `39649921774` (lf-03 `c75fa209`), `39652977566` (lf-4d `75609104`), `39623620268` (lf-pc `6b288593`), `39646362318` (lf-ff `69d88ea6` diag).
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — lf-02/lf-pc defects corrected and redispatched
+
+- lf-02 `7860972d` failed in the BUILD job at `Client nameserver acceptance retains the complete original contract`: the `registered_nameserver_requests` section's `predecessor_contract_sha256`/`CONTRACT_SHA256` literal embeds the prior contract, which includes `registered_nameserver_changes_installed.source_sha256[cases.py]` — the earlier single-file repin changed that embedded pin. Recomputed the predecessor hash over the serialized prior (module canonical = sort_keys compact, no trailing newline), updated the field + literal + the verify file's own source pin; local contract verifier 473 checks green on `1f529efd`. Run `39660574125` — the armed page-state diagnostic for the form-count crash is still pending a browser-stage result.
+- lf-pc `6b288593` failed in the browser stage: `php-controls-packaged-ui-results.json` reported `AssertionError: Unknown private fixture phase` at `provider_php_controls_ui_browser.py:235`. The `6b288593` fixture-inventory work added `fixture("inventory")` calls but not the phase to the browser whitelist tuple; the PHP fixture already handles it (line 160). Added `'inventory'` to the whitelist + repinned (390 checks green) on `51a7df9c`. Run `39660893502`.
+- Merge prep for php-controls->preflight committed on `devin/mergeprep-php-controls` `7b06df28` (keyed to `6b288593`; will be regenerated against `51a7df9c` when green — only the browser.py bytes + its pin changed).
+
+Runs in flight: `39651573652` (preflight), `39651567053` (FSI), `39660574125` (lf-02 diag), `39649921774` (lf-03), `39652977566` (lf-4d), `39660893502` (lf-pc), `39646362318` (lf-ff diag).
+
+No production provider request, charge, mail, SSH or deployment occurred.
