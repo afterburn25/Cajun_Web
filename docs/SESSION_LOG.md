@@ -5638,3 +5638,23 @@ No production provider request, charge, mail, SSH or deployment occurred.
   run 39687914779.
 - C: temp drive hit 100% capacity; cleared Devin overflow/scratch zips (~2.8G).
   Artifact downloads resumed.
+
+## 2026-10-21 — FSI flag failure root-caused to fixture socket layer
+
+- FSI run 39681276870 (beca67d4): flag diagnostics revealed result_code=
+  'connection' at 4ms, zero CWF commands — the FlagSession TCP/TLS connect to the
+  synthetic inbox failed before protocol; reads through the same connector work.
+  The fixture swallows OSError/EOFError at accept and per-connection, hiding the
+  cause. Instrumented serve(): accept-loop failures, per-connection exception
+  classes, fatal exits, plus listener liveness in the mark diagnostics
+  (f3188ef3 / preflight ae3e91b4). Runs 39691200805 / 39691242679.
+- lf-02 run 39660574125 (1f529efd): form-count check showed url=provider-settings
+  (page correct, open) while fields() had already parsed the form — count is
+  ambiguous between 0 and 2+. Added instant locator count + failing-DOM dump to
+  qa/nameserver-change-form-failure.html; re-anchored the requests-era
+  predecessor hash with the module canonical serialization. 2378880d -> run
+  39690273230.
+- Artifact caveat: stale extraction dirs in local temp can masquerade as current
+  evidence; verify partition.json identity.run_id before trusting contents.
+- Cancelled: duplicate FSI dispatch 39691209406; superseded preflight run
+  39681298604 (pre-instrumentation tip).
