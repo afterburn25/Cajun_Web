@@ -1,5 +1,24 @@
 
 # Session handoff - Devin sole-owner continuation
+# Session handoff - Devin sole-owner continuation
+## 2026-10-21 — worker post-release budget wave; seven lanes redispatched; merge queue staged
+
+**State:** integration owner; published 1.25.0 immutable (`b79c6711`); 1.26.0 candidate assembling on `codex/twentyi-direct-hosting-catalog`; no live deployment authorized.
+
+**Merged so far:** lf-b0 directory-listing + lf-8f cloud into preflight (ancestry, content-identical); lf-95 reset-email into FSI (ancestry). Leaf merges into preflight/FSI wait for green leaf acceptance.
+
+**This cycle's repairs (all contract-verified):**
+- Worker race budget class: parent holds the staff mutex through the winning exchange (~35-40s loaded); workers need busy-retry budgets >= hold and join deadlines >= their own post-release op. Applied 120s retry / 150s join: preflight `74c0a906` (nameserver requests join; directory-listing + force-ssl workers 40s->120s + join), lf-02 `fd6fb95e`, lf-03 `ca9c7aa4`, nsfix `20fb347b` (pushed to `devin/diag-docroots-worker`), lf-4d `e5a6f8bf` (pure-insert form for the notifications era delta), lf-ff `645e8a1d` (three StackCP natives had NO busy retry; 5s timeouts were mapped to refused).
+- php-controls packaged UI: `provider_php_binding` requires fresh `packages.list`; fixture gained an `inventory` phase invoked at binding-safe points (never between admission and verify) — lf-pc `6b288593`.
+- pipeline wrong-password gate fails HTTP 200 with none of the known gate phrases; `gate_marker` now captures notices+URL — preflight `46fec3dd`, FSI `23dfae40`.
+- Frozen-by-anchor: `registered_nameserver_changes_native.php` on lf-02 sits in CONTRACT_SHA256-anchored prior; its 40s/25s worker budget is a tracked residual risk (preflight's copy already has 12x retry + 90s join).
+
+**Runs in flight:** preflight `39627818306` (`46fec3dd`), FSI `39627809676` (`23dfae40`), lf-02 `39626517223`, lf-03 `39625298284`, lf-pc `39623620268`, lf-ff `39624845442`, lf-4d `39626328675`. Six superseded runs cancelled; failed evidence preserved.
+
+**Next:** on green — merge leaf tips into preflight (nameserver/docroot/subdomain/php-controls/stackcp; expected conflicts in tools/acceptance-contract.json, acceptance-reports.json, tools/build.py, tests/twentyi-operations/run.php), combined acceptance, then preflight+FSI -> main with exact-main acceptance.
+
+No production provider request, charge, mail, SSH or deployment occurred.
+
 ## 2026-10-20 — CLI-safe admin denial; recurring anchors; epoch-int outbox reads; folder field; latent-lane triage
 
 ## 2026-10-19 — client directory listing requests
