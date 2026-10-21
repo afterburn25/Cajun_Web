@@ -38,7 +38,7 @@ function mail_message_admin_action(string $action): array {
         if(session_status()===PHP_SESSION_ACTIVE)session_write_close();echo $part['bytes'];exit;
     }
     if($action==='mail_message_flag') {
-        $mark=posted('mark',6);
+        $mark=posted('mark',32);
         if(!in_array($mark,['read','unread'],true))throw new InvalidArgumentException('Choose whether to mark the message read or unread.');
         $flag=mail_message_mark($route['account_id'],(int)$route['revision'],$route['folder'],$route['uidvalidity'],$route['uid'],$mark==='read');
         flash(mail_flag_outcome($flag['code']));redirect(admin_url('mail-message',$route));

@@ -26,7 +26,7 @@ function setup_expected_files(): array { return [
     'admin/controllers/mail_accounts.php'=>'b0be0f65928c0457fbbbec2ed6dad449569200a05b87447589dc7539258d09a3',
     'admin/controllers/mail_drafts.php'=>'0cc8769d79fd922ff19c231903c5b74d4b6f1e1f8620d8b5e332b35fa2c4a53e',
     'admin/controllers/mail_inbox.php'=>'44e485a8bd45af51e0c12be668cfce42b90aebd176faba688bf930cfaeb8c444',
-    'admin/controllers/mail_message.php'=>'8758b1e3c7def3431be30d3770b5d387411392f28906aad74cd74746dc7b2842',
+    'admin/controllers/mail_message.php'=>'505d8c795535154f6e2d1ff4020a052590b7c49e2c45d7cb9b69e14ef52d27d2',
     'admin/controllers/mail_notices.php'=>'44dd92070968af41b14f435aa5260b85fae031f797c92591879710cfd2a1af29',
     'admin/controllers/mail_submissions.php'=>'3c182a4e798849384fc5eb9c3b5cb9af5e53dc07c976f4ffe4ff8f9cebc0fee3',
     'admin/controllers/mail_templates.php'=>'b854062964e94ca4da76974e8f03223426d6930f4dcce4dfda37d13203ac65fe',
