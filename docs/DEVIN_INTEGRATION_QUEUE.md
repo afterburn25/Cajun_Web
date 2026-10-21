@@ -60,10 +60,10 @@ Independent foundations merged only where a runtime needs them; pure contract-on
 | Catalog + captures | #216 `f67b1631`, #220 `b7c97953` | PENDING — original catalog f67 gates + capture run 39137551561 were queued at takeover; verify actual results before merge |
 | Commercial stack | #223→#228→#229→#231→#235→#245→#247→#248 (`d2903bfb` tip) | MERGED `1c7234da` — cumulative acceptance pending on latest tip |
 | First invoice | #219 `1db32352` (base codex/twentyi-hosting-full-acceptance) | CONTAINED — inside `d2903bfb` ancestry (verified via merge-base) |
-| Nameservers | #221 `fbe00172`→#222→#230 `024b50dc` | MERGED `84fa341e` + fixture fix `126577e5` + getattr backport `d4d82c60` on `devin/fix-nameserver-fixture-getattr` — run `39516829276` in flight (2026-10-20) |
-| Runtime/folders | #224 `ff467d7f`, #225 `f545cf93`+#249 `0397a0e4`, #244 `1a8ae850`+#246 `b0fe332f` | SPLIT — directory-listing `ace1f69b` on `devin/fix-directory-listing-ops-whitelist` GREEN → merged into `devin/preflight-commercial` `78583631` (2026-10-20); docroots worker-retry `762113dc` on `devin/fix-docroots-worker-retry` — run `39522547861` in flight; php-controls minimal `22219a99` on `devin/fix-php-controls-minimal` — run `39503342415` in flight |
-| Subdomain/cloud websites | #226 `e2c88d9d`+#227, #234 `b8c316b6`→#236→#237→#242 `4dc05d8c` | SPLIT — cloud intake `d39fae8c` on `devin/fix-cloud-intake-ctype` GREEN → merged into `devin/preflight-commercial` `4af3b316`, combined-head run `39524836300` in flight (2026-10-20); force-SSL `02e7b0d4` on `devin/fix-force-ssl-ops-whitelist` — retry `39516778086` in flight (first attempt hit a browser wait-for-function flake in an inherited wordpress case) |
-| StackCP | #233 `3d449d79`→#243→#255 `ffee2e3a` | IN PROGRESS — ops-whitelist + revocation fix `b7fff845` on `devin/fix-stackcp-ops-whitelist` — run `39516827234` in flight |
+| Nameservers | #221 `fbe00172`→#222→#230 `024b50dc` | MERGED `84fa341e` + fixture fix `126577e5` + getattr backport `d4d82c60` + form wait `4a2e137e` on `devin/fix-nameserver-fixture-getattr` — run `39563456924` in flight (2026-10-21) |
+| Runtime/folders | #224 `ff467d7f`, #225 `f545cf93`+#249 `0397a0e4`, #244 `1a8ae850`+#246 `b0fe332f` | SPLIT — directory-listing `ace1f69b` on `devin/fix-directory-listing-ops-whitelist` GREEN → merged into `devin/preflight-commercial` `78583631` (2026-10-20); docroots worker-retry `e52f1999` on `devin/fix-docroots-worker-retry` — run `39550307729` in flight; php-controls minimal `d2e8788c` on `devin/fix-php-controls-minimal` — run `39563438292` in flight |
+| Subdomain/cloud websites | #226 `e2c88d9d`+#227, #234 `b8c316b6`→#236→#237→#242 `4dc05d8c` | SPLIT — cloud intake `d39fae8c` on `devin/fix-cloud-intake-ctype` GREEN → merged into `devin/preflight-commercial` `4af3b316`; force-SSL `fd7bcf91` on `devin/fix-force-ssl-ops-whitelist` — run `39563482028` in flight |
+| StackCP | #233 `3d449d79`→#243→#255 `ffee2e3a` | IN PROGRESS — ops-whitelist + revocation + client-session fix `1ee17f70` on `devin/fix-stackcp-ops-whitelist` — run `39556162670` in flight |
 | Renewal invoicing | #252 `632362f6` | MERGED `b3dbbd15` — cumulative acceptance pending on latest tip |
 | Reset email template | #254 `95ce538e` | FIXED `467ec1bd` GREEN → merged into `devin/full-site-integration` `02183814` (2026-10-20) |
 | Old codex draft stacks #102–#125 (tickets/progress/planning/payments/recurring) | heads on codex/* bases | CLOSED SUPERSEDED — port parity verified (no missing files; codex support-tickets.yml redundant with the pinned native recipe); all closed 2026-10-19 |
@@ -150,44 +150,39 @@ perpetually `queued`, zero produced logs or reports).
 2026-10-21 update — merge-first sequence in execution: green leaf →
 `devin/preflight-commercial` → `devin/full-site-integration` → `main`.
 
-Current authoritative heads and runs:
+Current authoritative heads and runs (updated later 2026-10-21):
 
-1. `devin/preflight-commercial` tip `f665c7c3` — run `39550310872`
-   dispatched. Carries the directory-listing, cloud-intake and operations
-   merges plus test-side corrections: closed-`details` nameserver refusal
-   assertions now open the card before `inner_text`, the request-upgrade
-   seed runs the additive operations migration, merged request natives seed
-   the current studio schema marker, contract mojibake was repaired with
-   the rnr/outer predecessor hashes recomputed to a fixpoint (1468 local
-   artifact checks), the preferences POST omits an unchecked checkbox key,
-   the admin upload notification emit was restored (`fb2e96b1`), the client
-   mark-read check now marks a client-audience row for the acting client,
-   and the directory immediate-repeat check reposts the just-submitted form
-   data directly (no page GET) so the repeat always lands inside the shared
-   30-second provider cooldown. Superseded runs `39545050635`,
-   `39539008557`, `39538820477`, `39535902803` were cancelled;
-   `4f9d0063`/`39516824773` (runner disk exhaustion) and
-   `3ef9f6ab`/`39528882559` remain preserved failed evidence.
-2. `devin/full-site-integration` tip `aa620ac7` — push-triggered run
-   `39550434947` dispatched. Carries the notification-feed router restore
-   (`aac8476e`), client-visible message selector (`9cdd3710`), workspace
-   schema-stamp exemption (`428707a0`), the preferences POST correction
-   (`63e91bc3`), the admin upload notification emit restore (`550a5249`),
-   the client mark-read client-audience selection (`642df05d`) and the
-   directory repost-in-cooldown correction. Superseded `39550006969`
-   cancelled; `39544772338` (client mark-read staff-row selection) remains
-   preserved failed evidence.
+1. `devin/preflight-commercial` tip `fac28bae` — run `39563435001`
+   dispatched. Adds to `f665c7c3`: the staff-health check accepts the
+   `require_admin` login redirect (301/302/303/307/308/403 with no health
+   content, no redirect followed), the nameserver owner form fill waits
+   for exactly one matching form (bounded, still fails honestly), and the
+   `registered_nameserver_requests` contract chain is re-anchored —
+   `CONTRACT_SHA256`, the requests `predecessor_contract_sha256`, the two
+   `registered_nameserver_changes_cases.py` source pins, the
+   `registered_nameserver_requests_acceptance.py` pin and the five outer
+   predecessor hashes (retail variants → billing selector → billing
+   options → HTTPS requests → directory requests) recomputed deepest-
+   first; the full artifact verifier passes 1468 checks locally.
+   `f665c7c3`/`39550310872` failed on runner disk exhaustion
+   (`fwrite errno=28` — 42/43 nameserver native assertions passed; the
+   43rd is the worker-stderr guard catching the polluted child) —
+   preserved failed evidence, not a code defect.
+2. `devin/full-site-integration` tip `bd9c7bdc` — push-triggered run
+   `39563161324` in progress. Adds the same staff-health redirect
+   correction on top of `aa620ac7` (run `39550434947` failed at the old
+   `==403` assertion — preserved).
 3. Leaf-tip runs in flight awaiting green before merging into preflight:
-   StackCP `8ad6eb60` (`39545803550` running on prior `acae33a3`, fresh
-   inventory/access observations before the race), nameserver getattr
-   `8ea487b5` (`39535900660` running on prior `4c44c15f`, open details
-   before refusal `inner_text`), docroots worker-retry `e52f1999`
-   (`39550307729`, direct repost inside the cooldown window), php-controls
-   `a01e3a41` (`39538823329` running on prior `816f5c93`, transport
-   param-name fix plus fresh inventory observations), force-SSL `7bbb7c50`
-   (`39533729420` running on prior `dcc1d133`, readiness-wait bound).
-   In-flight runs still carry the single-attempt cooldown repeat; the
-   pushed tips already fix it, so a failure there redispatches the tip.
+   StackCP `1ee17f70` (`39556162670`, client-session restored before the
+   race review), nameserver getattr `4a2e137e` (`39563456924`, bounded
+   form-count wait + contract re-anchor, 473 local checks), docroots
+   worker-retry `e52f1999` (`39550307729`, direct repost inside the
+   cooldown window), php-controls `d2e8788c` (`39563438292`, fresh
+   current/options observations + new review minted immediately before
+   the owner confirm so the 900-second freshness window always holds,
+   390 local checks), force-SSL `fd7bcf91` (`39563482028`, insert-only
+   capture-readiness diagnostics preserving the original wait predicate
+   byte-for-byte, 610 local checks).
 4. On green, merge accepted leaves into `devin/preflight-commercial`,
    re-verify the combined artifact chain, merge preflight into FSI, then
    merge FSI to `main` and run exact-main acceptance.
@@ -195,6 +190,7 @@ Current authoritative heads and runs:
 6. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
 
 Every worktree carrying `provider_directory_listing_cases.py` now uses the
-direct repost inside the shared cooldown: lf-02 `8ea487b5`, lf-03
-`e52f1999`, lf-4d `7bbb7c50`, lf-ff `8ad6eb60`, lf-pc `a01e3a41`, nsfix
-`9dfc2a1a`, preflight `f665c7c3`, FSI `aa620ac7`.
+direct repost inside the shared cooldown: lf-02 `8ea487b5`+`4a2e137e`,
+lf-03 `e52f1999`, lf-4d `7bbb7c50`+`fd7bcf91`, lf-ff `8ad6eb60`,
+lf-pc `a01e3a41`, nsfix `9dfc2a1a`, preflight `f665c7c3`+`fac28bae`,
+FSI `aa620ac7`+`bd9c7bdc`.

@@ -5463,3 +5463,16 @@ Retained failures: `39536330923` (docroots GET-bound retry exhaustion), `3954477
 Runs in flight: `39550434947` (FSI `aa620ac7`), `39550310872` (preflight `f665c7c3`), `39550307729` (lf-03 `e52f1999`), `39545803550` (lf-ff, on prior `acae33a3`), `39535900660` (lf-02, on prior `4c44c15f`), `39538823329` (lf-pc, on prior `816f5c93`), `39533729420` (lf-4d, on prior `dcc1d133`). The four stale-SHA runs still carry the fragile cooldown repeat; their fixed tips are pushed and dispatch on any failure there. Next: merge green leaf tips into preflight, re-verify the combined artifact chain, merge preflight into FSI, then `main` with exact-main acceptance.
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — nameserver-request contract re-anchor; four more lane corrections dispatched
+
+- The `registered_nameserver_requests` contract chain was fully re-anchored after the nameserver-cases source repin: `CONTRACT_SHA256` in the acceptance module, the requests `predecessor_contract_sha256`, and the five enclosing predecessor hashes (retail variants → billing selector → billing options → HTTPS requests → directory requests) recomputed deepest-first against the exact era-stripped serving contracts. Full artifact verifier: 1468 checks green on preflight (`fac28bae`), 473 on lf-02 (`4a2e137e`). Diagnosis note: the last residual failure was stale `__pycache__` bytecode — a same-length hash swap left size and second-resolution mtime identical, so the old `CONTRACT_SHA256` stayed cached; clearing the `.pyc` restored truth.
+- Client session on `?view=health` reaches `require_admin`'s login redirect, not a bare 403; both FSI (`bd9c7bdc`) and preflight (`fac28bae`) now assert redirect-or-forbidden without following, and require health content absent.
+- The nameserver owner form fill sampled a still-stabilizing DOM once; it now waits up to 30s for exactly one matching form and still fails honestly (preflight `fac28bae`, lf-02 `4a2e137e`).
+- lf-pc `Owner form performs one exact setter` never ran green — the confirm re-validates bound current/options reads within the 900s request window; captures plus six tampered POSTs can age them out on a congested runner. Fresh observations + a new review are minted immediately before the valid submit (`d2e8788c`, 390 local checks).
+- lf-pc `39538823329` (run on `816f5c93`) failure isolated to that single setter check; FSI `39550434947` (on `aa620ac7`) failed at the old `==403` health assertion; lf-02 `39535900660` (on `4c44c15f`) failed at the one-shot form count — all preserved failed evidence.
+- Preflight `39550310872` (on `f665c7c3`) died at the nameserver approval-race worker guard — 42/43 assertions passed; the run log shows `fwrite errno=28 No space left on device`, so worker stderr pollution is runner disk exhaustion, preserved environmental evidence.
+
+Runs in flight: `39563435001` (preflight `fac28bae`), `39563161324` (FSI `bd9c7bdc`), `39556162670` (lf-ff `1ee17f70`), `39563456924` (lf-02 `4a2e137e`), `39550307729` (lf-03 `e52f1999`), `39563438292` (lf-pc `d2e8788c`), `39563482028` (lf-4d `fd7bcf91`). Next: merge green leaf tips into preflight, re-verify the combined artifact chain, merge preflight into FSI, then `main` with exact-main acceptance.
+
+No production provider request, charge, mail, SSH or deployment occurred.
