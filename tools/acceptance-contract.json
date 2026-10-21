@@ -2820,7 +2820,7 @@
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "977dbf118b4b3f9fc5fd6da3c266e1c180ec03751a6aba15aea8029b0714a373",
+    "predecessor_contract_sha256": "7d678d6b474405bcafee8f93628e95126848e1bcb7356be279780586540df993",
     "predecessor_reports_sha256": "9d6c7ab8e87a08435cd11dc4ccd720b21db5310757c3f641f5c15abff1c615d9",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
@@ -3271,7 +3271,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "446d63c4eab9413aa0dceecdf9a2e5cf1c2b728164842c8ce3fc541449272efa",
+    "predecessor_contract_sha256": "9800f62bfea8f8dca872333abcf6ae6fff34e415b994d54e425e2b23f3199f2d",
     "predecessor_reports_sha256": "8672eee23aea1fef5ec362cf6f7e02ead15f501cf3f4f0ea3ff8b63e3c5ad98c",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3863,7 +3863,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "b56a10afcfcdbcf5757c83bc9a0a00e880cafb7cfc84a67180e9fd8d32a21b0c",
+    "predecessor_contract_sha256": "485fa4ed35c9262d333ac230c7c4bf43e5bc5a8d3cadb175b8cfb31bce38ccf1",
     "predecessor_reports_sha256": "90bde2f7f2b422b45d5438788f713d5c9605c47cc9fed0113ee650844bdb93e3",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -5308,7 +5308,7 @@
       "tests/registered_nameserver_requests_acceptance.py": "a8b27c03ca673dfc51e051bf988fb3eb720f0a892e3bed6709c2144af986322c",
       "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
-      "tests/registered_nameserver_requests_native.php": "8c5666da7ec0e2f0f85e9e2ecc329ee28599b86af0927edae95f0e0e9684a6cd",
+      "tests/registered_nameserver_requests_native.php": "df4aef98c107bb09d1c22317de19195903224c1c12f51c0bfbd669be17d19741",
       "tests/registered_nameserver_requests_storage.php": "fe9fd6e4fe1969ec93af0990c3180513d544e79877a60d079bb32121eebb9954",
       "tests/registered_nameserver_requests_upgrade.py": "ae52fa568f08114e0b56d03ddd8138539141e453e6d42afa493e1ceb96e566c7",
       "tests/registered_nameserver_requests_upgrade_fixture.php": "f12f6dc26b810870578dcd7543e4bf62f5172d7e9158818a32040c3c875c537c",
@@ -5496,7 +5496,7 @@
   },
   "client_https_requests": {
     "predecessor_commit": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
-    "predecessor_contract_sha256": "05c21169f9c21735a13887de90a229ecae31b51ff2d7a257d4f8031fabb83bcf",
+    "predecessor_contract_sha256": "474193084defaedf41300e83eda139bc72303f802637e06d8a673f043d19e023",
     "predecessor_reports_sha256": "639a9bb2b7252e49882de7b5a5a176f531402d57235c35f7544e201002ceec3e",
     "native_after": "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
     "native_additions": [
@@ -5802,13 +5802,13 @@
       "tests/force_ssl_requests_contract.php": "92a3a4eb5bccc0915a27fde018b42997c9d3b64bc64d776773ce0bc501a97a56",
       "tests/force_ssl_requests_document.php": "2d0512f7bd6b783fe3b81de71bab15bd5651f6a816efff333002b576c817ac7d",
       "tests/force_ssl_requests_storage.php": "d1417c61a5077bb24200508058de24192dcd4cc7030b13570ed2266d334574c1",
-      "tests/provider_force_ssl_requests_native.php": "a086c860fbfb673d2ae00d2c3f054f7bb401d3045b9368d9b87f75e0f7883f99"
+      "tests/provider_force_ssl_requests_native.php": "e01b56e23368ae963c99fee7f573f25cbe8b3e66c6a0641f46d93a3beca30260"
     },
     "scope": "Primary-client HTTPS request, owner review and existing Force SSL dispatch/readback. Portable and modeled HTTP/browser evidence is separate from guarded native SQL and installed acceptance; no live provider operation."
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "9027c3d0d787126b425afdb6b28e0d2c5cd29f5e31aa292654448899ed7c8402",
+    "predecessor_contract_sha256": "b8a80e7488150bb8f4c6aed2d9fd1e1ebd0fa5aa2a23de03b05c1d1d50e9037d",
     "predecessor_reports_sha256": "9bace2c26fa5a8090bd3dac21afe2790940a22ef16be37547eeb0ff1df6e3c4b",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [
@@ -6310,8 +6310,8 @@
       "tests/directory_listing_requests_document.php": "de45b7f81950bffa5625c2df2c6db9e602a1d8d0638344f8eb4f5aa820f68b07",
       "tests/directory_listing_requests_storage.php": "fe99d96acd03a4a2a3b3d85cafb82b4c1065c788895bc89728881a1bc0d34f76",
       "tests/provider_directory_listing_controls_native.php": "4cfc7f4eaf62a1aa7fcafc9b9fe7c1eb011543e84d8d8cdbd75c28a61bac37a5",
-      "tests/provider_directory_listing_requests_native.php": "d305ccf13f1d0ea97a5097a1e5a4d57b7a5f8f6d6e9c19cded1b1a050d3d692e",
-      "tests/provider_force_ssl_requests_native.php": "a086c860fbfb673d2ae00d2c3f054f7bb401d3045b9368d9b87f75e0f7883f99",
+      "tests/provider_directory_listing_requests_native.php": "81cc7161f5a1e3fc9fbe8f8b0830fe044123aa5f925c228c1d9f0b5ca9c57340",
+      "tests/provider_force_ssl_requests_native.php": "e01b56e23368ae963c99fee7f573f25cbe8b3e66c6a0641f46d93a3beca30260",
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     },
     "scope": "Primary-client directory listing request, owner review and existing DirectoryIndexingChange dispatch/readback. Portable/model HTTP evidence is separate from guarded native SQL and installed acceptance. No live provider or actual file visibility claim."

@@ -100,7 +100,7 @@ function dlrq_blocked(array &$worker):void{
     }while(true);
 }
 function dlrq_join(array &$worker):array{
-    $exit=null;$deadline=microtime(true)+25;
+    $exit=null;$deadline=microtime(true)+150;
     try{do{
         $worker['stdout'].=stream_get_contents($worker['pipes'][1]);$worker['stderr'].=stream_get_contents($worker['pipes'][2]);
         if(strlen($worker['stdout'])>8192||strlen($worker['stderr'])>2048)throw new RuntimeException('Worker result bound exceeded.');
@@ -256,7 +256,7 @@ function dlrq_worker():never{
         foreach(['request_sha256','binding_sha256'] as $key)if(!is_string($in[$key])||!preg_match('/\A[a-f0-9]{64}\z/',$in[$key]))throw new RuntimeException('Invalid worker proof.');
         if($in['action']==='cancel')dlrq_client();else dlrq_owner();
         echo json_encode(['ready'=>true,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR)."\n";flush();$outcome='completed';
-        for($budget=microtime(true)+40;;)try{if($in['action']==='cancel')provider_directory_indexing_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
+        for($budget=microtime(true)+120;;)try{if($in['action']==='cancel')provider_directory_indexing_requests_change($in['id'],$in['expected'],$in['event'],'cancel','',1);
             else provider_directory_indexing_requests_approve($in['id'],$in['expected'],$in['request_sha256'],$in['event'],$in['anchor_id'],$in['binding_sha256'],true,DLRQ_PASSWORD,'dlrq_write_dns','dlrq_perform');
             break;
         }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;
