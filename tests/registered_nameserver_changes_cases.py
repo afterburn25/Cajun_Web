@@ -120,7 +120,8 @@ def run_browser(env, browser):
         try:
             expect(item).to_have_count(1, timeout=30000)
         except Exception as error:
-            raise AssertionError('One exact nameserver owner form required') from error
+            state = 'closed' if page.is_closed() else ('url=' + page.url)
+            raise AssertionError('One exact nameserver owner form required [' + state + ']') from error
         open_details(item)
         for key, value in values.items():
             control = item.locator('[name="' + key + '"]')
