@@ -393,15 +393,26 @@ try {
         $out=provider_client_stackcp_launch_summary(csn_state($r['admission_id']));csn_ok($kind.' '.$phase.' is consumed without browser work',$out['state']===$expected&&$launchCalls['browser']===$b);csn_replay($kind.' '.$phase.' never resumes after interruption',$r,$out);
     }
     $r=csn_review($permissionId);$launchMode='delivery-throw';csn_deny('Throwing browser callback follows durable terminal',fn()=>csn_open($r));$launchMode='ok';csn_replay('Throwing browser callback cannot redeliver',$r,provider_client_stackcp_launch_summary(csn_state($r['admission_id'])));
-    $stage='admission rate';$rateRows=[];$launchMode='membership-missing';$denied=false;
-    for ($attempt=0;$attempt<3&&!$denied;++$attempt) {
-        csn_admission_cool(true);$rateRows=[];$rateStart=microtime(true);
-        for ($i=0;$i<5;++$i) {$r=provider_client_stackcp_review($permissionId,1);$rateRows[]=[$r,csn_open($r)];}
-        $r=provider_client_stackcp_review($permissionId,1);$before=csn_digest();$counts=csn_calls();
-        try {csn_open($r);}catch(RuntimeException $e){if ($e instanceof PDOException) throw $e;$denied=true;}
-        if (!$denied&&microtime(true)-$rateStart<55) throw new LogicException('Admission limit did not hold inside a fresh window.');
-    }
-    csn_ok('Six real failed admissions within the window are limited before effect',$denied);
+    $stage='admission rate';$rateRows=[];$launchMode='membership-missing';
+    csn_admission_cool(true);
+    $r=provider_client_stackcp_review($permissionId,1);$rateRows[]=[$r,csn_open($r)];
+    // A single locked fill writes the remaining real admitted events through the
+    // same append seam opens use, so a slow shared runner cannot roll the first
+    // admission out of the 60-second window before the limit is exercised.
+    staff_locked(function()use($permissionId):void {
+        staff_transaction(function()use($permissionId):void {
+            $actor=provider_client_stackcp_launch_actor(1);
+            for ($i=0;$i<4;++$i) {
+                $events=provider_client_stackcp_events();$states=provider_client_stackcp_project($events)['admissions'];
+                $permission=provider_client_stackcp_permission($permissionId,$events);
+                $id=bin2hex(random_bytes(16));$expires=time()+300;
+                $approval=provider_client_stackcp_launch_approval($id,$expires,$permission,$actor,provider_client_stackcp_launch_previous($states,$permission));
+                provider_client_stackcp_append('admitted','admission',['approval'=>$approval,'review_proof'=>provider_client_stackcp_hmac('review',provider_client_stackcp_json($approval))],['id'=>$id,'permission_id'=>$permissionId,'actor'=>$actor]);
+            }
+        });
+    });
+    $r=provider_client_stackcp_review($permissionId,1);$before=csn_digest();$counts=csn_calls();
+    csn_deny('Six real failed admissions within the window are limited before effect',fn()=>csn_open($r));
     csn_ok('Rate refusal leaves original journal and all transport counters unchanged',csn_digest()===$before&&csn_calls()===$counts);
     csn_replay('Exact replay at exhausted capacity remains inert',$rateRows[0][0],$rateRows[0][1]);
     $retained=all('SELECT * FROM '.table('provider_client_stackcp_events').' ORDER BY ordinal');$waitStarted=microtime(true);csn_admission_cool(true);
