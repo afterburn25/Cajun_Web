@@ -5658,3 +5658,15 @@ No production provider request, charge, mail, SSH or deployment occurred.
   evidence; verify partition.json identity.run_id before trusting contents.
 - Cancelled: duplicate FSI dispatch 39691209406; superseded preflight run
   39681298604 (pre-instrumentation tip).
+
+## 2026-10-21 — lf-03 WordPress double-provider-call diagnosed
+
+- lf-03 run 39673191439 (0e579bc1): 'WordPress installation owner form sends
+  one exact assigned-package GET' — diagnostics showed provider_calls 120->122
+  across the refresh + repeat. The repeated post() performed a full
+  settings-page GET for a fresh CSRF token inside the 30s cooldown window;
+  under runner load the repeat escaped the window and executed a real refresh
+  (results rows grew 2->4, state 'complete'). Fixed by reusing post.last for
+  a direct repeat POST, matching the directory-listing/document-roots/
+  force-SSL sibling convention; CSRF is session-stable. Unpinned file. New tip
+  d35a1103, run 39692451698.
