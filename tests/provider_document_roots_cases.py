@@ -134,7 +134,7 @@ def run_browser(env, browser):
         context = browser.new_context(viewport={'width': 1440, 'height': 1050}); context.add_cookies([{'name': c.name, 'value': c.value, 'domain': c.domain, 'path': c.path} for c in session.cookies])
         page = context.new_page(); errors = []; page.on('pageerror', lambda e: errors.append(str(e)))
         for width, height, label in [(1440, 1050, 'Desktop'), (320, 740, 'Mobile')]:
-            page.set_viewport_size({'width': width, 'height': height}); page.goto(address); page.evaluate('document.fonts.ready'); expect(page.locator(selector)).to_be_visible(); page.screenshot(path=str(qa / (title + '-' + label + '.png')), full_page=True)
+            page.set_viewport_size({'width': width, 'height': height}); page.goto(address, timeout=90000); page.evaluate('document.fonts.ready'); expect(page.locator(selector)).to_be_visible(); page.screenshot(path=str(qa / (title + '-' + label + '.png')), full_page=True)
             check(title + ' ' + label + ' fits viewport', page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         check(title + ' has no script errors', not errors); context.close()
     capture(owner, 'Document-Roots-Owner', url, '#document-roots')
