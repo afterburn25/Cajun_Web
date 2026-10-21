@@ -120,7 +120,17 @@ def run_browser(env, browser):
         try:
             expect(item).to_have_count(1, timeout=30000)
         except Exception as error:
-            state = 'closed' if page.is_closed() else ('url=' + page.url)
+            try:
+                count = page.locator(selector).count()
+            except Exception:
+                count = 'err'
+            try:
+                html = page.content()
+                (qa / 'nameserver-change-form-failure.html').write_text(html)
+                size = str(len(html))
+            except Exception as dump_error:
+                size = 'dump:' + type(dump_error).__name__
+            state = 'closed' if page.is_closed() else ('url=' + page.url + ' count=' + str(count) + ' bytes=' + size)
             raise AssertionError('One exact nameserver owner form required [' + state + ']') from error
         open_details(item)
         for key, value in values.items():
