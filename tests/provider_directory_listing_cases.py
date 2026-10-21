@@ -115,15 +115,11 @@ def run_browser(env, browser):
     saved = db('SELECT * FROM ci_provider_directory_indexing_observations')[0]
     check('Directory listing true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('Directory listing owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved directory listing setting' in section.text and 'Reported enabled' not in client.get(target).text)
-    extra = 0
     for _ in range(3):
-        repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
+        repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
         if any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']):
             break
-        extra += 1
-        cool(); response = post(refresh, link_id=link['id']); evidence('Complete Directory listing observation before repeat', response)
-    saved = db('SELECT * FROM ci_provider_directory_indexing_observations ORDER BY id')
-    check('Directory listing immediate repeat obeys common cooldown', provider.calls == calls + 1 + extra * 2 and len(saved) == 1 + extra * 2 and all(r['value_json'] == 'true' for r in saved) and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
+    check('Directory listing immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_directory_indexing_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)
     check('Directory listing explicit owner sharing exposes only scalar and date', 'Reported enabled' in response.text and 'UTC' in response.text and 'Refresh directory listing setting' not in response.text and 'no-store' in response.headers.get('Cache-Control', ''))
@@ -142,8 +138,8 @@ def run_browser(env, browser):
     saved_values = db('SELECT * FROM ci_provider_directory_indexing_observations ORDER BY id')
     false_page = client.get(target)
     check('Directory listing false is a complete dated boolean rather than unavailable',
-          provider.calls == calls + 2 + extra * 2 and diagnostics[-1]['results'][-1]['state'] == 'complete'
-          and len(saved_values) == 2 + extra * 2 and sorted(r['value_json'] for r in saved_values) == ['false'] + ['true'] * (1 + extra * 2)
+          provider.calls == calls + 2 and diagnostics[-1]['results'][-1]['state'] == 'complete'
+          and len(saved_values) == 2 and sorted(r['value_json'] for r in saved_values) == ['false', 'true']
           and 'Reported disabled' in false_page.text and 'Reported enabled' not in false_page.text
           and 'Latest saved observation' in false_page.text
           and 'does not check whether visitors can currently see files' in false_page.text)
@@ -151,16 +147,16 @@ def run_browser(env, browser):
     capture(client, 'Directory-Listing-False-Client', target, '[data-client-directory-listing]')
     cool(); provider.directory_indexing_mode = 'null'; response = post(refresh, link_id=link['id'])
     evidence('Unavailable Directory listing observation', response)
-    check('Directory listing five reads consume only the dedicated owner budget', len(diagnostics[-1]['actor_reads']) == 5 + extra * 2 and all(r['actor_id'] == directory_indexing_owner['id'] for r in diagnostics[-1]['actor_reads']) and [r['operation'] for r in diagnostics[-1]['actor_reads']] == ['packages.list', 'packages.list'] + ['package.directory-indexing'] * (3 + extra * 2) and [r['state'] for r in diagnostics[-1]['results']] == ['complete'] * (4 + extra * 2) + ['unavailable'])
+    check('Directory listing five reads consume only the dedicated owner budget', len(diagnostics[-1]['actor_reads']) == 5 and all(r['actor_id'] == directory_indexing_owner['id'] for r in diagnostics[-1]['actor_reads']) and [r['operation'] for r in diagnostics[-1]['actor_reads']] == ['packages.list', 'packages.list', 'package.directory-indexing', 'package.directory-indexing', 'package.directory-indexing'] and [r['state'] for r in diagnostics[-1]['results']] == ['complete', 'complete', 'complete', 'complete', 'unavailable'])
     response = client.get(target)
-    check('Directory listing null preserves prior false only as historical', provider.calls == calls + 3 + extra * 2 and 'Reported disabled' in response.text and 'Historical observation' in response.text and 'Latest refresh did not provide a directory listing setting' in response.text and diagnostics[-1]['results'][-1]['reason'] == 'value_null' and db('SELECT * FROM ci_provider_directory_indexing_observations ORDER BY id') == saved_values)
+    check('Directory listing null preserves prior false only as historical', provider.calls == calls + 3 and 'Reported disabled' in response.text and 'Historical observation' in response.text and 'Latest refresh did not provide a directory listing setting' in response.text and diagnostics[-1]['results'][-1]['reason'] == 'value_null' and db('SELECT * FROM ci_provider_directory_indexing_observations ORDER BY id') == saved_values)
     capture(client, 'Directory-Listing-Historical', target, '[data-client-directory-listing]')
     post(share, link_id=link['id'], sharing='disable')
     check('Directory listing owner revocation immediately hides saved scalar', 'Reported disabled' not in client.get(target).text and 'sharing is off' in client.get(target).text)
     counter = db('SELECT value FROM ci_settings WHERE name=?', ['provider_directory_indexing_started_count'])[0]['value']; db('DELETE FROM ci_settings WHERE name=?', ['provider_directory_indexing_started_count'])
     try:
         response = owner.get(url)
-        check('Directory listing missing history refuses forms without read-path repair', 'Directory listing observation counts need recovery' in response.text and not soup(response).select_one('#directory-listing [name=action]') and provider.calls == calls + 3 + extra * 2)
+        check('Directory listing missing history refuses forms without read-path repair', 'Directory listing observation counts need recovery' in response.text and not soup(response).select_one('#directory-listing [name=action]') and provider.calls == calls + 3)
     finally:
         db('INSERT INTO ci_settings (name,value) VALUES (?,?)', ['provider_directory_indexing_started_count', counter])
     check('Directory listing exact history restoration keeps scalar historical', 'Historical observation' in soup(owner.get(url)).select_one('#directory-listing').text)
