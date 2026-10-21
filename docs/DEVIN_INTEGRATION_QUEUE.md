@@ -60,12 +60,12 @@ Independent foundations merged only where a runtime needs them; pure contract-on
 | Catalog + captures | #216 `f67b1631`, #220 `b7c97953` | PENDING — original catalog f67 gates + capture run 39137551561 were queued at takeover; verify actual results before merge |
 | Commercial stack | #223→#228→#229→#231→#235→#245→#247→#248 (`d2903bfb` tip) | MERGED `1c7234da` — cumulative acceptance pending on latest tip |
 | First invoice | #219 `1db32352` (base codex/twentyi-hosting-full-acceptance) | CONTAINED — inside `d2903bfb` ancestry (verified via merge-base) |
-| Nameservers | #221 `fbe00172`→#222→#230 `024b50dc` | MERGED `84fa341e` + fixture fix `126577e5`; leaf still needs getattr backport for its own run |
-| Runtime/folders | #224 `ff467d7f`, #225 `f545cf93`+#249 `0397a0e4`, #244 `1a8ae850`+#246 `b0fe332f` | IN PROGRESS — `0397a0e4` worker-retry fix on `devin/diag-docroots-worker` `6309dcb3` (run `39355242274`); `b0fe332f` ops-whitelist fix on `devin/fix-directory-listing-ops-whitelist` (run `39356480999`); `ff467d7f` native/apache failures undiagnosed |
-| Subdomain/cloud websites | #226 `e2c88d9d`+#227, #234 `b8c316b6`→#236→#237→#242 `4dc05d8c` | IN PROGRESS — `4dc05d8c` build-seal fix on `devin/fix-force-ssl-ops-whitelist` `7041bdb2` (run `39356550310`); `8fe2787a` (cloud intake, contains `e2c88d9d`) native/apache failures undiagnosed |
-| StackCP | #233 `3d449d79`→#243→#255 `ffee2e3a` | IN PROGRESS — build-seal fix on `devin/fix-stackcp-ops-whitelist` `962b2445` (run `39356556923`) |
+| Nameservers | #221 `fbe00172`→#222→#230 `024b50dc` | MERGED `84fa341e` + fixture fix `126577e5` + getattr backport `d4d82c60` on `devin/fix-nameserver-fixture-getattr` — run `39516829276` in flight (2026-10-20) |
+| Runtime/folders | #224 `ff467d7f`, #225 `f545cf93`+#249 `0397a0e4`, #244 `1a8ae850`+#246 `b0fe332f` | SPLIT — directory-listing `ace1f69b` on `devin/fix-directory-listing-ops-whitelist` GREEN → merged into `devin/preflight-commercial` `78583631` (2026-10-20); docroots worker-retry `762113dc` on `devin/fix-docroots-worker-retry` — run `39522547861` in flight; php-controls minimal `22219a99` on `devin/fix-php-controls-minimal` — run `39503342415` in flight |
+| Subdomain/cloud websites | #226 `e2c88d9d`+#227, #234 `b8c316b6`→#236→#237→#242 `4dc05d8c` | SPLIT — cloud intake `d39fae8c` on `devin/fix-cloud-intake-ctype` GREEN → merged into `devin/preflight-commercial` `4af3b316`, combined-head run `39524836300` in flight (2026-10-20); force-SSL `02e7b0d4` on `devin/fix-force-ssl-ops-whitelist` — retry `39516778086` in flight (first attempt hit a browser wait-for-function flake in an inherited wordpress case) |
+| StackCP | #233 `3d449d79`→#243→#255 `ffee2e3a` | IN PROGRESS — ops-whitelist + revocation fix `b7fff845` on `devin/fix-stackcp-ops-whitelist` — run `39516827234` in flight |
 | Renewal invoicing | #252 `632362f6` | MERGED `b3dbbd15` — cumulative acceptance pending on latest tip |
-| Reset email template | #254 `95ce538e` | IN PROGRESS — build-seal fix on `devin/fix-reset-email-ops-whitelist` `5c8af321` (run `39356563976`) |
+| Reset email template | #254 `95ce538e` | FIXED `467ec1bd` GREEN → merged into `devin/full-site-integration` `02183814` (2026-10-20) |
 | Old codex draft stacks #102–#125 (tickets/progress/planning/payments/recurring) | heads on codex/* bases | CLOSED SUPERSEDED — port parity verified (no missing files; codex support-tickets.yml redundant with the pinned native recipe); all closed 2026-10-19 |
 
 Merge preflight vs the integration tip (`git merge-tree` conflict-hunk counts, 2026-10-19):
@@ -147,11 +147,23 @@ perpetually `queued`, zero produced logs or reports).
 
 ## Concrete blockers and next actions
 
-1. Observe run `39299409880` (combined acceptance on `ceb06c05`) to completion;
-   on pass, `devin/full-site-integration` is eligible to merge to `main`.
-2. Observe dispatched application acceptance on the nine Group B leaf tips;
-   merge in dependency order (`d2903bfb` first — carries the catalog stack base).
-   All nine conflict against the integration tip (8–22 hunks, known stale-base
-   family; catalog resolution pre-staged on `devin/preflight-catalog` `93e24ba0`).
-3. Merge port PRs #257–#260 only after their dedicated component runs report.
-4. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
+2026-10-20 update — merge-first sequence in execution: green leaf →
+`devin/preflight-commercial` → `devin/full-site-integration` → `main`.
+
+1. Observe combined-head run `39524836300` on `devin/preflight-commercial`
+   `4af3b316` (directory-listing + cloud-intake merged, 1468 local artifact
+   checks). The earlier `4f9d0063` run `39516824773` failed on runner disk
+   exhaustion (`No space left on device`) — infrastructure, not a regression;
+   preserved as failed evidence.
+2. Observe leaf-tip runs in flight: StackCP `b7fff845` (`39516827234`),
+   nameserver getattr `d4d82c60` (`39516829276`), docroots worker-retry
+   `762113dc` (`39522547861`), php-controls `22219a99` (`39503342415`),
+   force-SSL retry `02e7b0d4` (`39516778086`). On green, merge each into
+   `devin/preflight-commercial` with the same re-anchored acceptance contract.
+3. Observe `devin/full-site-integration` `9cdd3710` runs (`39525117627` push /
+   `39525117760` dispatch) after the client-visibility selector correction;
+   earlier `428707a0` failure (`39516279371`) is preserved evidence.
+4. On green, merge preflight into FSI, re-verify the combined artifact chain,
+   then merge FSI to `main` and run exact-main acceptance.
+5. Merge port PRs #257–#260 only after their dedicated component runs report.
+6. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
