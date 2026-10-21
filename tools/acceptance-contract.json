@@ -3207,7 +3207,7 @@
       "site/admin/controllers/auth.php": "21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb",
       "site/admin/controllers/catalog.php": "a6b9306124fc1c5c685f9ea4fd424c2abab72ae14021d37ff3b9c7494edf2a57",
       "site/admin/controllers/catalog_variants.php": "a6d4995a5aff5c8e461593968d6113ec2f7f2dcdb1333cfc687ef11a17ead283",
-      "site/admin/controllers/studio.php": "fb599b567899691d6fc18ac436a2d54745165ef5b6182cb9f718e0b14d54e87b",
+      "site/admin/controllers/studio.php": "c30779c976b9cbe4498766402fc662039f38bcc07b69415169e74ebb3d198dc5",
       "site/admin/views/catalog_variants.php": "352e36772c00fa324902aa67a19ddc8a06ef48705ac5731072535da075c40596",
       "site/app/billing/catalog.php": "676701ac6d5cccf93b4937390ed4363bcedacd836f3df9bbc8e3f6b92dd9cda9",
       "site/app/hosting/catalog_checkout.php": "b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2",
@@ -3271,7 +3271,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "9800f62bfea8f8dca872333abcf6ae6fff34e415b994d54e425e2b23f3199f2d",
+    "predecessor_contract_sha256": "102975da86eec6f7df188c162fcb715e9883a37aff90f61b485b1170d8241ed0",
     "predecessor_reports_sha256": "8672eee23aea1fef5ec362cf6f7e02ead15f501cf3f4f0ea3ff8b63e3c5ad98c",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3863,7 +3863,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "485fa4ed35c9262d333ac230c7c4bf43e5bc5a8d3cadb175b8cfb31bce38ccf1",
+    "predecessor_contract_sha256": "af1dc2eef0fe4667b93861003c3bccf54e1c044a09ecb1146f6570dc16bd0a7b",
     "predecessor_reports_sha256": "90bde2f7f2b422b45d5438788f713d5c9605c47cc9fed0113ee650844bdb93e3",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -5496,7 +5496,7 @@
   },
   "client_https_requests": {
     "predecessor_commit": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
-    "predecessor_contract_sha256": "474193084defaedf41300e83eda139bc72303f802637e06d8a673f043d19e023",
+    "predecessor_contract_sha256": "fa6cae2ed862ba81f39be7606f78bd9fcba3f8690f9071d382a005828ae4b43e",
     "predecessor_reports_sha256": "639a9bb2b7252e49882de7b5a5a176f531402d57235c35f7544e201002ceec3e",
     "native_after": "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
     "native_additions": [
@@ -5808,7 +5808,7 @@
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "b8a80e7488150bb8f4c6aed2d9fd1e1ebd0fa5aa2a23de03b05c1d1d50e9037d",
+    "predecessor_contract_sha256": "12d4a37295fe9be3ca193a5f3a3aa7eaf0a3675e7ead9ed85c648265ca26468e",
     "predecessor_reports_sha256": "9bace2c26fa5a8090bd3dac21afe2790940a22ef16be37547eeb0ff1df6e3c4b",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [

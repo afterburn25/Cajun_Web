@@ -67,7 +67,7 @@ function studio_admin_action(string $action,array $user): never {
         log_event($action,'Project '.$id);flash('Project updated.');redirect(admin_url('studio-job',['id'=>$id]));
     }elseif($action==='studio_pipeline'){
         $id=gint($_POST,'id',1,2147483647);pipeline_transition($id,posted('status',20),posted('notes',10000),posted('follow_up',10),$user);flash('Inquiry updated.');$target='studio-pipeline';
-    }elseif($action==='pipeline_setup'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm you want stage history enabled.');pipeline_migrate(posted('owner_password',1000));flash('Pipeline stage history is enabled.');$target='studio-pipeline';
+    }elseif($action==='pipeline_setup'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm you want stage history enabled.');pipeline_migrate(posted('owner_password',1000));flash('Pipeline stage history is enabled.');redirect(admin_url('studio-pipeline'));
     }elseif($action==='studio_prices'){
         $r=['enabled'=>isset($_POST['enabled'])];foreach(growth_types()+['page'=>'Additional page','product'=>'Product']+growth_options() as $key=>$unused)$r[$key]=grange([gcents(posted($key.'_min',20)),gcents(posted($key.'_max',20))]);
         studio_revision_save('growth_prices',json_encode($r,JSON_THROW_ON_ERROR),posted('expected',64));$target='studio-prices';
