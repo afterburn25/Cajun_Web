@@ -5547,3 +5547,14 @@ No production provider request, charge, mail, SSH or deployment occurred.
 Runs in flight: `39637972526` (preflight `163f654a`), `39637962844` (FSI `6ee4781e`), `39626517223` (lf-02 `fd6fb95e`), `39625298284` (lf-03 `ca9c7aa4`), `39623620268` (lf-pc `6b288593`), `39626328675` (lf-4d `e5a6f8bf`), `39624845442` rerun (lf-ff `645e8a1d`). Next: merge green leaf tips into preflight/FSI, combined acceptance, then `main` with exact-main acceptance.
 
 No production provider request, charge, mail, SSH or deployment occurred.
+
+### 2026-10-21 — mail read schema seed defect + lf-ff diagnostics deployed
+
+- Pipeline gate verified GREEN on FSI `6ee4781e` run `39637962844`: all nine pipeline checks passed including `Pipeline history setup requires owner password` and `Owner enables pipeline stage history` — dispatch + flash fixes confirmed end-to-end.
+- New defect surfaced immediately after: `Fresh setup creates empty inbox request storage` failed — `mail_inbox_cases.py` asserts `fresh_settings.mail_inbox_schema_version='2'` but `site/install/actions/deploy.php` seeded `'1'`. The folder-scoped read work (`8b91dfe1`, `306b0f70`) raised the current mail_inbox/mail_messages/mail_notices schema versions to 2 and updated the fresh-install assertions, but the deploy seed stayed at the legacy value — fresh installs created v2-shaped tables marked v1, forcing an unnecessary owner migration. Leaf lanes are unaffected (their assertions and seed both remain `'1'`); only FSI/preflight carried the mismatch.
+- Fix: three seeds set to `'2'` on FSI `2281bd2c` and preflight `6308e00a`, installer inventories regenerated (`deploy.php` is a shipping file, unpinned). Doomed preflight run `39637972526` cancelled; redispatched `39648784813` (preflight) and `39648676103` (FSI).
+- lf-ff `39624845442` `--failed` rerun died at same-attempt input verification (attempt-2 artifacts vs attempt-1 checkpoint — expected, not a test result). Deployed `ssn_fault` stderr diagnostics on `69d88ea6` capturing exception class/code/message, trigger hits, rows_seen and call-completion on false returns; run `39646362318` will identify whether the `accepted session` check fails on a swallowed exception, wrong PDO code, or the launch never reaching the audit insert.
+
+Runs in flight: `39648784813` (preflight `6308e00a`), `39648676103` (FSI `2281bd2c`), `39626517223` (lf-02 `fd6fb95e`), `39625298284` (lf-03 `ca9c7aa4`), `39623620268` (lf-pc `6b288593`), `39626328675` (lf-4d `e5a6f8bf`), `39646362318` (lf-ff `69d88ea6`). Next: merge green leaf tips into preflight/FSI, combined acceptance, then `main` with exact-main acceptance.
+
+No production provider request, charge, mail, SSH or deployment occurred.
