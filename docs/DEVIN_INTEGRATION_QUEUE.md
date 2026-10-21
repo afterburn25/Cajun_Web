@@ -152,37 +152,49 @@ perpetually `queued`, zero produced logs or reports).
 
 Current authoritative heads and runs:
 
-1. `devin/preflight-commercial` tip `0cbafed8` — run `39538820477`
+1. `devin/preflight-commercial` tip `f665c7c3` — run `39550310872`
    dispatched. Carries the directory-listing, cloud-intake and operations
    merges plus test-side corrections: closed-`details` nameserver refusal
-   assertions now open the card before `inner_text`, the directory
-   immediate-repeat check retries boundedly inside the shared 30-second
-   provider cooldown, the request-upgrade seed runs the additive operations
-   migration, merged request natives seed the current studio schema marker,
-   and contract mojibake was repaired with the rnr/outer predecessor hashes
-   recomputed to a fixpoint (1468 local artifact checks). The superseded
-   `3d865c63` run `39535902803` was cancelled; `4f9d0063`/`39516824773`
-   (runner disk exhaustion) and `3ef9f6ab`/`39528882559` remain preserved
-   failed evidence.
-2. `devin/full-site-integration` tip `63e91bc3` — push-triggered run
-   `39538793434` in progress. Carries the notification-feed router restore
+   assertions now open the card before `inner_text`, the request-upgrade
+   seed runs the additive operations migration, merged request natives seed
+   the current studio schema marker, contract mojibake was repaired with
+   the rnr/outer predecessor hashes recomputed to a fixpoint (1468 local
+   artifact checks), the preferences POST omits an unchecked checkbox key,
+   the admin upload notification emit was restored (`fb2e96b1`), the client
+   mark-read check now marks a client-audience row for the acting client,
+   and the directory immediate-repeat check reposts the just-submitted form
+   data directly (no page GET) so the repeat always lands inside the shared
+   30-second provider cooldown. Superseded runs `39545050635`,
+   `39539008557`, `39538820477`, `39535902803` were cancelled;
+   `4f9d0063`/`39516824773` (runner disk exhaustion) and
+   `3ef9f6ab`/`39528882559` remain preserved failed evidence.
+2. `devin/full-site-integration` tip `aa620ac7` — push-triggered run
+   `39550434947` dispatched. Carries the notification-feed router restore
    (`aac8476e`), client-visible message selector (`9cdd3710`), workspace
-   schema-stamp exemption (`428707a0`) and the preferences POST correction
-   (omitting an unchecked checkbox key instead of posting an empty value).
+   schema-stamp exemption (`428707a0`), the preferences POST correction
+   (`63e91bc3`), the admin upload notification emit restore (`550a5249`),
+   the client mark-read client-audience selection (`642df05d`) and the
+   directory repost-in-cooldown correction. Superseded `39550006969`
+   cancelled; `39544772338` (client mark-read staff-row selection) remains
+   preserved failed evidence.
 3. Leaf-tip runs in flight awaiting green before merging into preflight:
-   StackCP `3050d46c` (`39536888825`, append-seam admission window fill),
-   nameserver getattr `4c44c15f` (`39535900660`, open details before
-   refusal `inner_text`), docroots worker-retry `a7f2570a`
-   (`39536330923`, bounded cooldown-repeat retry plus lf-b0's GET ordering),
-   php-controls `816f5c93` (`39538823329`, transport param-name fix plus
-   fresh inventory observations before late binding stages), force-SSL
-   `dcc1d133` (`39533729420`, readiness-wait bound).
+   StackCP `8ad6eb60` (`39545803550` running on prior `acae33a3`, fresh
+   inventory/access observations before the race), nameserver getattr
+   `8ea487b5` (`39535900660` running on prior `4c44c15f`, open details
+   before refusal `inner_text`), docroots worker-retry `e52f1999`
+   (`39550307729`, direct repost inside the cooldown window), php-controls
+   `a01e3a41` (`39538823329` running on prior `816f5c93`, transport
+   param-name fix plus fresh inventory observations), force-SSL `7bbb7c50`
+   (`39533729420` running on prior `dcc1d133`, readiness-wait bound).
+   In-flight runs still carry the single-attempt cooldown repeat; the
+   pushed tips already fix it, so a failure there redispatches the tip.
 4. On green, merge accepted leaves into `devin/preflight-commercial`,
    re-verify the combined artifact chain, merge preflight into FSI, then
    merge FSI to `main` and run exact-main acceptance.
 5. Merge port PRs #257–#260 only after their dedicated component runs report.
 6. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
 
-Known latent flake (same class, not yet failed): `lf-4d`/`lf-ff`/`nsfix`
-worktrees still carry the single-attempt directory-listing cooldown check;
-apply the bounded retry only if a run actually fails there.
+Every worktree carrying `provider_directory_listing_cases.py` now uses the
+direct repost inside the shared cooldown: lf-02 `8ea487b5`, lf-03
+`e52f1999`, lf-4d `7bbb7c50`, lf-ff `8ad6eb60`, lf-pc `a01e3a41`, nsfix
+`9dfc2a1a`, preflight `f665c7c3`, FSI `aa620ac7`.
