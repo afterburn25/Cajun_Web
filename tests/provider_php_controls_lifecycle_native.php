@@ -269,7 +269,7 @@ try {
     pcl_deny('Reused request cannot change desired payload',fn()=>pcl_change($id,$link,$current,$options,$review,'php82'));
     pcl_deny('Fresh nonce cannot bypass unresolved package fence',fn()=>pcl_change(bin2hex(random_bytes(16)),$link,$current,$options,$review));pcl_ok('Rejected replays make no outbound work',pcl_activity()===$before);
     $contender['expect_block']=false;$r=pcl_child($contender);pcl_ok('After mutex release separate client worker replays without a send',$r['passed']===true&&!$r['blocked']&&$r['replayed_id']===$id);
-    $stage='separate readback';$currentValue='php82';pcl_cool();$different=provider_php_controls_verify_client(1,$id,PCL_CLIENT_PASSWORD,'pcl_dns','pcl_transport');
+    $stage='separate readback';pcl_inventory($profile);$currentValue='php82';pcl_cool();$different=provider_php_controls_verify_client(1,$id,PCL_CLIENT_PASSWORD,'pcl_dns','pcl_transport');
     pcl_ok('Later different scalar retains unresolved request',$different['readback']==='different'&&$different['observed_value']==='php82'&&pcl_scope(fn()=>provider_php_controls_lifecycle_pending($profile,701))!==null&&$writes===1);
     $currentValue='php84';pcl_cool();$observed=provider_php_controls_verify_client(1,$id,PCL_CLIENT_PASSWORD,'pcl_dns','pcl_transport');
     pcl_ok('Later matching scalar records observed without rewriting original ledger',$observed['readback']==='observed'&&$observed['observed_value']==='php84'&&pcl_scope(fn()=>provider_php_controls_lifecycle_pending($profile,701))===null&&one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',['phpversion:'.$id])===$ledger&&$writes===1);
@@ -277,7 +277,7 @@ try {
     pcl_ok('Resolving change does not revive an older shared scalar',$history['rows'][0]['current']===false&&$history['rows'][0]['value']==='php82');
     pcl_ok('Same-second legacy observation remains conservatively historical',pcl_scope(fn()=>provider_php_controls_observation_current($link,$terminal['document']['recorded_epoch']))===false);
 
-    $stage='post-send audit failure';$currentValue='php82';$current2=pcl_read($link,'current');$options2=pcl_read($link,'available');$review2=pcl_review($link,$current2,$options2);$id2=bin2hex(random_bytes(16));$writeMode='timeout';$beforeWrites=$writes;$terminalCount=pcl_count('provider_php_dispatch_ends');
+    $stage='post-send audit failure';pcl_inventory($profile);$currentValue='php82';$current2=pcl_read($link,'current');$options2=pcl_read($link,'available');$review2=pcl_review($link,$current2,$options2);$id2=bin2hex(random_bytes(16));$writeMode='timeout';$beforeWrites=$writes;$terminalCount=pcl_count('provider_php_dispatch_ends');
     pcl_ok('Actual terminal audit failure occurs after one timeout send',pcl_fault('terminal',fn()=>pcl_change($id2,$link,$current2,$options2,$review2),'provider_php_dispatch_ends')&&$writes===$beforeWrites+1);
     $ledger2=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',['phpversion:'.$id2]);
     pcl_ok('Post-send failure retains request and ledger without false terminal',pcl_get('request',$id2)['document']['id']===$id2&&!one('SELECT request_id FROM '.table('provider_php_dispatch_ends').' WHERE request_id=?',[$id2])&&pcl_count('provider_php_dispatch_ends')===$terminalCount&&(int)$ledger2['attempts']===1&&pcl_ready());
@@ -301,7 +301,7 @@ try {
     pcl_damage('Lost terminal audit refuses existing record',fn()=>query('DELETE FROM '.table('audit').' WHERE action=? AND detail LIKE ?',['provider.php_control_lifecycle_terminal','PHP lifecycle terminal '.$id.' %']));
     pcl_damage('Lost check history refuses its independent count',fn()=>query('DELETE FROM '.table('provider_php_change_checks').' WHERE request_id=?',[$id]));
     pcl_damage('Unknown nonempty preparing state refuses',fn()=>save_setting('provider_php_control_lifecycle_schema_version','preparing-1'));
-    $stage='missing original ledger';pcl_client();$currentValue='php82';$current3=pcl_read($link,'current');$options3=pcl_read($link,'available');$review3=pcl_review($link,$current3,$options3);$id3=bin2hex(random_bytes(16));$beforeWrites=$writes;
+    $stage='missing original ledger';pcl_inventory($profile);pcl_client();$currentValue='php82';$current3=pcl_read($link,'current');$options3=pcl_read($link,'available');$review3=pcl_review($link,$current3,$options3);$id3=bin2hex(random_bytes(16));$beforeWrites=$writes;
     $missing=provider_php_controls_change_client(1,$id3,$link,$current3['id'],$options3['id'],'php84',$review3['review_sha256'],true,PCL_CLIENT_PASSWORD,'pcl_dns',static function():never{throw new RuntimeException('Synthetic adapter-entry interruption before claim.');});
     pcl_ok('Adapter-entry interruption cannot invent a finished original ledger',$missing['phase']==='attempted'&&$missing['readback']==='pending'&&$writes===$beforeWrites&&!one('SELECT id FROM '.table('provider_operations').' WHERE idempotency_key=?',['phpversion:'.$id3])&&pcl_scope(fn()=>provider_php_controls_lifecycle_pending($profile,701))!==null);
     $before=pcl_activity();pcl_change($id3,$link,$current3,$options3,$review3);
@@ -311,7 +311,7 @@ try {
     pcl_deny('Owner cannot manufacture a missing ledger terminal',fn()=>provider_php_controls_recover_owner($id3,str_repeat('0',64),PCL_PASSWORD));
     pcl_ok('Missing-ledger replay and recovery perform no additional work',pcl_activity()===$before);
     $history=pcl_scope(fn()=>provider_php_project($link,true));pcl_ok('Unresolved later request hides prior current observation',$history['rows'][0]['current']===false);
-    $stage='current authority';pcl_owner();pcl_delegate($link,false);pcl_client();$before=pcl_activity();
+    $stage='current authority';pcl_inventory($profile);pcl_owner();pcl_delegate($link,false);pcl_client();$before=pcl_activity();
     pcl_deny('Revoked client cannot replay original request',fn()=>pcl_change($id,$link,$current,$options,$review));pcl_deny('Revoked client cannot verify its old request',fn()=>provider_php_controls_verify_client(1,$id2,PCL_CLIENT_PASSWORD,'pcl_dns','pcl_transport'));pcl_ok('Revoked client performs no outbound work',pcl_activity()===$before);
     pcl_owner();provider_settings_save($profile,1,'Changed synthetic PHP lifecycle',true,'SYNTHETIC_REPLACEMENT_LIFECYCLE_KEY',PCL_PASSWORD);$before=pcl_activity();
     pcl_deny('Changed credential cannot verify an original request',fn()=>provider_php_controls_verify_owner($id2,PCL_PASSWORD,'pcl_dns','pcl_transport'));pcl_ok('Changed credential denial preserves recorded sends',pcl_activity()===$before);
