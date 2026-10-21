@@ -22,7 +22,7 @@ class InboxServer:
         while not self.stopped.is_set():
             try:s,_=self.listener.accept()
             except socket.timeout:continue
-            except OSError:return
+            except OSError as accept_error:self.errors.append('accept:'+type(accept_error).__name__+':'+str(accept_error)[:120]);return
             self.connections+=1;mode=self.mode
             try:
                 s.settimeout(4);s=self.context.wrap_socket(s,server_side=True)
@@ -137,8 +137,9 @@ class InboxServer:
                         send(')')
                     send('CWR004 OK fetched')
                 expect('CWR004 LOGOUT' if mode=='empty' else 'CWR005 LOGOUT')
-            except (OSError,EOFError):pass
+            except (OSError,EOFError) as e:self.errors.append(type(e).__name__+':'+str(e)[:160])
             except AssertionError as e:self.errors.append(str(e))
+            except BaseException as e:self.errors.append('fatal:'+type(e).__name__+':'+str(e)[:200]);raise
             finally:s.close()
     def close(self):
         self.stopped.set();self.listener.close();self.thread.join(5)
