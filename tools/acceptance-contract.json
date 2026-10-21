@@ -603,7 +603,7 @@
     },
     "source_sha256": {
       "tests/provider_document_root_controls_native.php": "668654ca2bce3da5e5b18a32f00b1d0cbdf8fca64c4bc0f482aed753fdeb0932",
-      "tests/provider_document_root_controls_cases.py": "8f04d4f6022ae5b35d171fc6eee1ea0b96fb4a1ad82754cb30fee61de6100f2e",
+      "tests/provider_document_root_controls_cases.py": "87b9f8cad863fdf859e5080ea00945fc09292625487990e3fdc75bd8e926bd84",
       "tests/provider_document_root_controls_http_contract.py": "78f09487832f92fccca942b1bc30a14eaa09dce25ae6c61266fee1419063ac78",
       "tests/document_root_controls_acceptance_contract.py": "cb8ca9496a8d6c3f8baadd815f0eda0a6ca219a0c153514b786e5f634233f1f8",
       ".github/workflows/provider-document-root-controls.yml": "aba2f9c99e8bd4ab521152829d86fa72f5217e2020094e66db8446dfb6e43d15"
@@ -717,7 +717,7 @@
       "apache-document-root-requests-upgrade-guard-results.json",
       "apache-document-root-requests-upgrade-results.json"
     ],
-    "predecessor_contract_sha256": "5beae55ce1424447f3cf6ab8dc1a079a3741e5635a6c7f80be34f3724a3cd912",
+    "predecessor_contract_sha256": "85dab96e14ac769e404b1567697a7d891cc8657596b8b409824519c9e5075387",
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
         "before_sha256": "cb51a74c10a0a46e7f2216c7e101b086f9fa668a625be84ed74c5915af86659a",
@@ -839,7 +839,7 @@
       "tests/document_root_requests_document.php": "d46c4de8e1adadb53f11835e81a35e28b5006f69a052f51002ec657e1b66333b",
       "tests/document_root_requests_storage.php": "5f8eda3db3f49170727dbe748b9bb5516e5928237a88f3b48bea58a492826e4e",
       "tests/document_root_requests_views.php": "b880a282fe8a6f6049065d4b6b140b092644228307bd3652f9980eac20839964",
-      "tests/provider_document_root_requests_cases.py": "fecbf63feab650305367978ad160a59298ab6b0aa68953c25859ee041466e2a5",
+      "tests/provider_document_root_requests_cases.py": "2f366dcab33965140dd9390dbc4f5f5e6ff1d79b08c44bd1698242e0d38dbf26",
       "tests/provider_document_root_requests_native.php": "a089800c1b8dee65c9de9b99e1bb3a3b74c1586231a5a237f00b6df256f282a8",
       "tests/provider_document_root_requests_upgrade.py": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
       "tests/provider_document_root_requests_upgrade_fixture.php": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
