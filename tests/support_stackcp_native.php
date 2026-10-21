@@ -29,7 +29,7 @@ require $root.'/site/app/providers/stackcp_access.php';
 require_once $root.'/site/app/clients/accounts.php';
 require $root.'/site/app/providers/support_stackcp_launch.php';
 require $root.'/site/app/providers/client_stackcp_launch.php';
-require $root.'/site/app/support/sessions.php';
+require_once $root.'/site/app/support/sessions.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport, ProviderCredential, TransportRequest, TransportResponse, TransportException};
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead, InventorySnapshot};
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
