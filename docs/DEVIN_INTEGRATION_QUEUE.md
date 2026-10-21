@@ -178,6 +178,29 @@ Current authoritative heads and runs (updated third pass 2026-10-21):
    `tools/acceptance-contract.json` (one sweep overwrote working-tree
    contract files with result JSON; all restored via `git restore`,
    verifications were computed before the overwrite and stayed valid).
+
+   Second-pass corrections (helper-reviewed): the recovery refresh lands
+   AFTER the four package-control verifies and before the last one, so
+   the tail assertion must be the interleaved sequence
+   `['packages.list','packages.list'] + ['package.*']*4 + ['packages.list','package.*']`,
+   not `['packages.list']*3 + ['package.*']*5` — corrected on all lanes
+   (preflight `e449911a`, FSI `1a5f20b4`, lf-ff `5319d511`, lf-4d
+   `947bb9f0`, lf-02 `3685ad92`, lf-pc `2801bb71`, lf-95 `32fe0ae1`,
+   lf-b0 `5ca751b1`, lf-8f `ce90f394`, nsfix `df5e8f38`, lf-03
+   `59c10ee0`). Same freshness class found in the docroot lanes: folder
+   controls and client folder requests mint their last `packages.list`
+   long before binding-gated captures/approvals/verifies — genuine
+   refreshes inserted before `capture('Ready')`/`capture('Requested')`
+   (controls) and before the owner-review docroot refresh/first verify
+   (requests), tails now 'eight dedicated/real reads'; pins and the
+   `client_document_root_requests` predecessor hash recomputed
+   (lf-03 `59c10ee0`, nsfix `df5e8f38`, both 360 green). lf-ff also
+   counts the three genuine race-review prerequisite reads: `===10` →
+   `===13` plus `client_stackcp` pin + `support_stackcp` predecessor
+   (`3349f963`, 547 green). Current runs: preflight `39571873524`, FSI
+   `39571786317`, lf-4d `39571879023`, lf-02 `39571886035`, lf-pc
+   `39571892696`, lf-ff `39571898641`, lf-03 `39571904314`; superseded
+   runs cancelled.
 1. `devin/preflight-commercial` tip `1423c73b` — run `39569359471`
    dispatched on the recovery-freshness fix (item 0); earlier tip
    `fac28bae` run `39563435001` cancelled as stale. `fac28bae` adds to
