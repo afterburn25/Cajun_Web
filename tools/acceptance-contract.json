@@ -5777,7 +5777,7 @@
     },
     "source_sha256": {
       ".github/workflows/application-tests.yml": "b9289693b7c1dce48641c53d0a3e31880d717a48a027a347c0e2d9a4b0ad4581",
-      "site/admin/controllers/actions.php": "471f305609cde976066a9655614daf1872a3b3d90f047d98c2d5f16abaea8cd1",
+      "site/admin/controllers/actions.php": "d1ec6a1520dbdbde3121aa13b79bbfe243c32a4aab7b458c643b6d328f5c260f",
       "site/admin/controllers/force_ssl_requests.php": "eccbe0633e96e9597803bb41e45001f5f8cf8929c103b8b967d9a1fea2ada2a6",
       "site/admin/controllers/router.php": "debbc928ec201f41dcbaa8c1a6978c4940fba7aa40973677e7e1363a2917ecd9",
       "site/admin/views/providers.php": "f44fd19c9df432907ce93b6b0baf24a89d94cba7dd948b8d79abfb687194735c",
@@ -5856,7 +5856,7 @@
           "site/admin/controllers/actions.php"
         ],
         "before": "a71187cc86682ebce687615d1672e30dc898cc8cbc957ba50e3ab10b09d0739c",
-        "after": "471f305609cde976066a9655614daf1872a3b3d90f047d98c2d5f16abaea8cd1"
+        "after": "d1ec6a1520dbdbde3121aa13b79bbfe243c32a4aab7b458c643b6d328f5c260f"
       },
       {
         "keys": [
@@ -5997,13 +5997,19 @@
       },
       "site/admin/controllers/actions.php": {
         "before_sha256": "a71187cc86682ebce687615d1672e30dc898cc8cbc957ba50e3ab10b09d0739c",
-        "after_sha256": "471f305609cde976066a9655614daf1872a3b3d90f047d98c2d5f16abaea8cd1",
+        "after_sha256": "d1ec6a1520dbdbde3121aa13b79bbfe243c32a4aab7b458c643b6d328f5c260f",
         "changes": [
           {
             "after_start": 21,
             "after_end": 22,
             "before": "",
             "after": "    if(str_starts_with($action,'provider_directory_request_'))provider_directory_indexing_requests_admin_action($action);\n"
+          },
+          {
+            "after_start": 51,
+            "after_end": 52,
+            "before": "    if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}\n",
+            "after": "    if(str_starts_with($action,'studio_')||$action==='pipeline_setup'){studio_admin_action($action,$user);}\n"
           }
         ]
       },
@@ -6271,7 +6277,7 @@
       "foundation/provider/ProviderGateway.php": "c6885ca2170ca0ea9d854a237fc160a2f0ca950633dd49a1051b82e0f2eaf753",
       "foundation/twentyi-directory-listing/DirectoryListingReader.php": "4f90f078f65153c631728d72a35f779a224acf1bbdc77a700bb38251524f1910",
       "foundation/twentyi-operations/DirectoryIndexingChange.php": "6b2f1b9ada82c1055f834a7e3115e8a7860ef566dc0ba42d035475751e9fb98c",
-      "site/admin/controllers/actions.php": "471f305609cde976066a9655614daf1872a3b3d90f047d98c2d5f16abaea8cd1",
+      "site/admin/controllers/actions.php": "d1ec6a1520dbdbde3121aa13b79bbfe243c32a4aab7b458c643b6d328f5c260f",
       "site/admin/controllers/auth.php": "21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb",
       "site/admin/controllers/directory_listing_requests.php": "c7317fd6cea68859fecda2868f39f083b57e60805f8f5d479238726d9882028e",
       "site/admin/controllers/router.php": "debbc928ec201f41dcbaa8c1a6978c4940fba7aa40973677e7e1363a2917ecd9",

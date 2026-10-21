@@ -49,7 +49,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if($action==='project_progress_setup'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current database backup.');project_progress_migrate(posted('password',1000));flash('Project history is enabled. Existing details were preserved.');redirect(admin_url('studio-upgrade'));}
     if(str_starts_with($action,'notification'))notification_feed_admin_action($action);
     if(str_starts_with($action,'proposal_'))proposals_admin_action($action);
-    if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}
+    if(str_starts_with($action,'studio_')||$action==='pipeline_setup'){studio_admin_action($action,$user);}
     if($action==='logout'){support_end_browser('admin-logout');log_event('auth.logout');$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'', ['expires'=>time()-42000,'path'=>$p['path'],'secure'=>$p['secure'],'httponly'=>true,'samesite'=>'Lax']);}session_destroy();redirect(admin_url('login'));}
     require CWP_CODE_ROOT.'/admin/controllers/portfolio.php';
     require CWP_CODE_ROOT.'/admin/controllers/services.php';
