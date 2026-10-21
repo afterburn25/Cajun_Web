@@ -147,23 +147,42 @@ perpetually `queued`, zero produced logs or reports).
 
 ## Concrete blockers and next actions
 
-2026-10-20 update — merge-first sequence in execution: green leaf →
+2026-10-21 update — merge-first sequence in execution: green leaf →
 `devin/preflight-commercial` → `devin/full-site-integration` → `main`.
 
-1. Observe combined-head run `39524836300` on `devin/preflight-commercial`
-   `4af3b316` (directory-listing + cloud-intake merged, 1468 local artifact
-   checks). The earlier `4f9d0063` run `39516824773` failed on runner disk
-   exhaustion (`No space left on device`) — infrastructure, not a regression;
-   preserved as failed evidence.
-2. Observe leaf-tip runs in flight: StackCP `b7fff845` (`39516827234`),
-   nameserver getattr `d4d82c60` (`39516829276`), docroots worker-retry
-   `762113dc` (`39522547861`), php-controls `22219a99` (`39503342415`),
-   force-SSL retry `02e7b0d4` (`39516778086`). On green, merge each into
-   `devin/preflight-commercial` with the same re-anchored acceptance contract.
-3. Observe `devin/full-site-integration` `9cdd3710` runs (`39525117627` push /
-   `39525117760` dispatch) after the client-visibility selector correction;
-   earlier `428707a0` failure (`39516279371`) is preserved evidence.
-4. On green, merge preflight into FSI, re-verify the combined artifact chain,
-   then merge FSI to `main` and run exact-main acceptance.
+Current authoritative heads and runs:
+
+1. `devin/preflight-commercial` tip `0cbafed8` — run `39538820477`
+   dispatched. Carries the directory-listing, cloud-intake and operations
+   merges plus test-side corrections: closed-`details` nameserver refusal
+   assertions now open the card before `inner_text`, the directory
+   immediate-repeat check retries boundedly inside the shared 30-second
+   provider cooldown, the request-upgrade seed runs the additive operations
+   migration, merged request natives seed the current studio schema marker,
+   and contract mojibake was repaired with the rnr/outer predecessor hashes
+   recomputed to a fixpoint (1468 local artifact checks). The superseded
+   `3d865c63` run `39535902803` was cancelled; `4f9d0063`/`39516824773`
+   (runner disk exhaustion) and `3ef9f6ab`/`39528882559` remain preserved
+   failed evidence.
+2. `devin/full-site-integration` tip `63e91bc3` — push-triggered run
+   `39538793434` in progress. Carries the notification-feed router restore
+   (`aac8476e`), client-visible message selector (`9cdd3710`), workspace
+   schema-stamp exemption (`428707a0`) and the preferences POST correction
+   (omitting an unchecked checkbox key instead of posting an empty value).
+3. Leaf-tip runs in flight awaiting green before merging into preflight:
+   StackCP `3050d46c` (`39536888825`, append-seam admission window fill),
+   nameserver getattr `4c44c15f` (`39535900660`, open details before
+   refusal `inner_text`), docroots worker-retry `a7f2570a`
+   (`39536330923`, bounded cooldown-repeat retry plus lf-b0's GET ordering),
+   php-controls `816f5c93` (`39538823329`, transport param-name fix plus
+   fresh inventory observations before late binding stages), force-SSL
+   `dcc1d133` (`39533729420`, readiness-wait bound).
+4. On green, merge accepted leaves into `devin/preflight-commercial`,
+   re-verify the combined artifact chain, merge preflight into FSI, then
+   merge FSI to `main` and run exact-main acceptance.
 5. Merge port PRs #257–#260 only after their dedicated component runs report.
 6. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
+
+Known latent flake (same class, not yet failed): `lf-4d`/`lf-ff`/`nsfix`
+worktrees still carry the single-attempt directory-listing cooldown check;
+apply the bounded retry only if a run actually fails there.
