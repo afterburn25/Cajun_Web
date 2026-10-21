@@ -393,10 +393,15 @@ try {
         $out=provider_client_stackcp_launch_summary(csn_state($r['admission_id']));csn_ok($kind.' '.$phase.' is consumed without browser work',$out['state']===$expected&&$launchCalls['browser']===$b);csn_replay($kind.' '.$phase.' never resumes after interruption',$r,$out);
     }
     $r=csn_review($permissionId);$launchMode='delivery-throw';csn_deny('Throwing browser callback follows durable terminal',fn()=>csn_open($r));$launchMode='ok';csn_replay('Throwing browser callback cannot redeliver',$r,provider_client_stackcp_launch_summary(csn_state($r['admission_id'])));
-    $stage='admission rate';csn_admission_cool(true);$rateRows=[];$launchMode='membership-missing';
-    for ($i=0;$i<5;++$i) {$r=provider_client_stackcp_review($permissionId,1);$rateRows[]=[$r,csn_open($r)];}
-    $r=provider_client_stackcp_review($permissionId,1);$before=csn_digest();$counts=csn_calls();
-    csn_deny('Six real failed admissions within the window are limited before effect',fn()=>csn_open($r));
+    $stage='admission rate';$rateRows=[];$launchMode='membership-missing';$denied=false;
+    for ($attempt=0;$attempt<3&&!$denied;++$attempt) {
+        csn_admission_cool(true);$rateRows=[];$rateStart=microtime(true);
+        for ($i=0;$i<5;++$i) {$r=provider_client_stackcp_review($permissionId,1);$rateRows[]=[$r,csn_open($r)];}
+        $r=provider_client_stackcp_review($permissionId,1);$before=csn_digest();$counts=csn_calls();
+        try {csn_open($r);}catch(RuntimeException $e){if ($e instanceof PDOException) throw $e;$denied=true;}
+        if (!$denied&&microtime(true)-$rateStart<55) throw new LogicException('Admission limit did not hold inside a fresh window.');
+    }
+    csn_ok('Six real failed admissions within the window are limited before effect',$denied);
     csn_ok('Rate refusal leaves original journal and all transport counters unchanged',csn_digest()===$before&&csn_calls()===$counts);
     csn_replay('Exact replay at exhausted capacity remains inert',$rateRows[0][0],$rateRows[0][1]);
     $retained=all('SELECT * FROM '.table('provider_client_stackcp_events').' ORDER BY ordinal');$waitStarted=microtime(true);csn_admission_cool(true);
