@@ -310,6 +310,9 @@ def run_browser(env, browser):
             if label in ("password", "confirmation"):
                 retained = fields(form_for(response, "form[data-php-confirm]"))
                 check("Safe retry preserves original " + label + " review", all(retained[k] == confirmation[k] for k in ("request_id", "current_read_id", "options_read_id", "desired", "review_sha256")))
+        read(owner, owner_url, "current", True)
+        options(owner, "owner")
+        confirmation = review(owner, owner_url, "php84")
         owner_request = confirmation["request_id"]; request_ids.append(owner_request)
         owner_change = dict(confirmation, current_password=OWNER_PASSWORD, confirmed="1")
         calls, posts = provider.calls, len(provider.posts)
