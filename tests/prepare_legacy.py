@@ -366,7 +366,7 @@ with zipfile.ZipFile(organized_baseline) as z:
     z.extractall(root/'test-runtime/released-1.24.0')
 print('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')
 
-# Retain the actual published 1.25 source for 1.26 upgrade/recovery acceptance.
+# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.
 organized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'
 with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
     organized_bytes=response.read(15843209)

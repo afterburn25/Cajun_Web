@@ -1,6 +1,6 @@
 {
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
-  "base_workflow_sha256": "7f60df976c676bd68b887dedb618c51a440f4ae7f6f273739585ea56cd1e9bb6",
+  "base_workflow_sha256": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
   "unchanged_test_sha256": {
     "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
@@ -101,6 +101,13 @@
     "\"$PHP_BINARY\" tests/provider_inventory_native.php",
     "\"$PHP_BINARY\" tests/provider_cloud_sites_native.php",
     "\"$PHP_BINARY\" tests/provider_cloud_confirmation_native.php",
+    "\"$PHP_BINARY\" tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-default.json",
+    "\"$PHP_BINARY\" -n tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-minimal.json",
+    "\"$PHP_BINARY\" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json",
+    "\"$PHP_BINARY\" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json",
+    "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php",
+    "\"$PHP_BINARY\" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json",
+    "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
     "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
@@ -687,8 +694,8 @@
   "release126_baseline_driver_delta": {
     "tests/prepare_legacy.py": {
       "predecessor_sha256": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
-      "current_sha256": "a681bd4dde6a6bc5e11a5875fc2a7005c73070c51287bd7786ee8bbfb1a9ab23",
-      "append": "\n# Retain the actual published 1.25 source for 1.26 upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n",
+      "current_sha256": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
+      "append": "\n# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n",
       "replacements": []
     },
     "tests/apache_acceptance.py": {
@@ -1353,7 +1360,7 @@
       "b7c97953f323004e1fdd527bdef0b2da63f01c71",
       "1db3235286f915935e4ab621e2be5a2f14288997"
     ],
-    "predecessor_contract_sha256": "5d7f62682737dc8cc2459acfe1a4924b693eb4589bcde172d3d6c3190dc559fd",
+    "predecessor_contract_sha256": "aa24b48a3c0e3efa18b9fa34864c72d6a45ede5c54a22f82a69c64de47b887bf",
     "source_sha256": {
       "site/app/providers/checks.php": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
       "site/admin/views/providers.php": "2427f9c82d73e51301039a7465fdacafbe957627cac2ad230b6eeeb4e986df9a",
@@ -1399,7 +1406,7 @@
   },
   "catalog_storefront_http": {
     "source_predecessor": "9b450c4b8daafd79f4242c39ddd65e2bdb56b624",
-    "predecessor_contract_sha256": "be9b03c42e1d7d1fe174b3927379bb045517b7c13196c66cfc6baf735556a952",
+    "predecessor_contract_sha256": "30357aabb0e192e2d3adf0c2a86b71097d77c8dae640179a5e2c504af9efba09",
     "updated_pins": {
       "tests/provider_package_types_cases.py": "provider_package_types",
       "tests/hosting_checkout_http_browser.py": "hosting_checkout"
@@ -1488,7 +1495,7 @@
       "Hosting-Plan-Setup-Preview-Mobile.png"
     ],
     "http_report": "hosting-checkout-http-results.json",
-    "predecessor_contract_sha256": "f851f6b428b7a3d92cd6d24335babf758a2bb5064981e5e0b1bc3ec093afbcc5",
+    "predecessor_contract_sha256": "eed09e199a9cafca18398ca7f49aba70bdd004b371f78a95ff15c7b4a4703a5b",
     "predecessor_reports_sha256": "6e71b7ec59a9a62b39f78d7255f67586338d8b1ba22623d18a4e231e6b7d76eb",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "2fc9fbea14085caec0d442404816d43172a9039072ef097804a11eed5bc863a5",
@@ -1923,7 +1930,7 @@
       "hosting-checkout-purchases-native-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "e61625797b4248c7cb97a83d97043ad2debda4b7d52dfb0fbdecd2b974269955",
+    "predecessor_contract_sha256": "d480e183eb136684852d7c5462dc28996972ed674398e5f90b441ffc9723e348",
     "predecessor_reports_sha256": "8b67286290d784619e51b15415ca7ed94aa4da9f570b99bf53b67ad70bd583c4",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "2fc9fbea14085caec0d442404816d43172a9039072ef097804a11eed5bc863a5",
@@ -2337,7 +2344,7 @@
       "Hosting-Purchase-Inbox-Client-Mobile.png"
     ],
     "result_check": "Installed purchase inbox follows exact original records without new business writes",
-    "predecessor_contract_sha256": "901efedb4fcff1d7b3a84b6ff1119ecf915a6c98bdc279423a43c2e18a29c2e0",
+    "predecessor_contract_sha256": "df3a6bd2f6083ebe8c13b5ead9a9c4c3b80dba70a7697d262b23f37f078975eb",
     "predecessor_reports_sha256": "f09c8696f2e3e80053c1027f1c7fa540dee1c3afb0a682ef8c1ceaca3050688d",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "2fc9fbea14085caec0d442404816d43172a9039072ef097804a11eed5bc863a5",
@@ -2606,7 +2613,7 @@
     "added_commands": [],
     "added_reports": [],
     "added_captures": [],
-    "predecessor_contract_sha256": "6aebb8be050c086f647ffb6e921c901220a7057b5f10fa7b8bd806fc7e0ae4e6",
+    "predecessor_contract_sha256": "3eb3a84f7cfcf8c2ce7dff0d8e32ebc78b2e46697d49909863e6515c61bf39e3",
     "predecessor_reports_sha256": "f09c8696f2e3e80053c1027f1c7fa540dee1c3afb0a682ef8c1ceaca3050688d",
     "source_sha256": {
       "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
@@ -2813,7 +2820,7 @@
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "d793948f91254b725dd3c15f39d7569a3712906a71da4ff56ee3e67a3f8a1209",
+    "predecessor_contract_sha256": "a83d0d9c910a5e92acedfbf3565948bfdac42c0977e87fe59b0ffa029f47adac",
     "predecessor_reports_sha256": "9d6c7ab8e87a08435cd11dc4ccd720b21db5310757c3f641f5c15abff1c615d9",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
@@ -3264,7 +3271,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "f216a960edc59be081296a0474efed14473a8760c02228a6d127d0b8b93da3cb",
+    "predecessor_contract_sha256": "6dc57bbfae47c787ea73fd55205bd0f00c54f07988c0aab9808673b92705416f",
     "predecessor_reports_sha256": "8672eee23aea1fef5ec362cf6f7e02ead15f501cf3f4f0ea3ff8b63e3c5ad98c",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3856,7 +3863,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "05f734307bc869a0509eeb51dece539c66d8073627b3c973b1d74954e6ba289b",
+    "predecessor_contract_sha256": "b6e85ec61576d1743f0654e2ac19f40e1a7e3c3619184dc059d83bb80cae17dc",
     "predecessor_reports_sha256": "90bde2f7f2b422b45d5438788f713d5c9605c47cc9fed0113ee650844bdb93e3",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -5036,7 +5043,7 @@
       }
     },
     "merged_stage_reports_sha256": "9890b7bbebba295c6dffad169440a15d8989bd22283feb34f6c7c3a465991a11",
-    "merged_stage_contract_sha256": "f37824073393371ea516f8f0b435b7d5d3ef93c156de2eaff3ff62ed93fe16ef"
+    "merged_stage_contract_sha256": "8d5930ba622b5a26ef7d3c4f3ffbf11fcdae417fd3dec5862a8da2dbbd9bf75d"
   },
   "registered_nameserver_changes": {
     "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
@@ -5078,7 +5085,7 @@
   },
   "registered_nameserver_changes_installed": {
     "source_predecessor": "5654649dc62095298ce703b39b54d12d56c49f09",
-    "predecessor_contract_sha256": "fcde8ceeedf728ce0100d60d71b48ebc284b745f268d4702063fdb81b3f786f1",
+    "predecessor_contract_sha256": "fc2c1fb97a010ddf5f0713e1852e438bd26e75539cd8054e2e295a7afa6ff544",
     "predecessor_reports_sha256": "5cad12e4bdab7d63ab25bc229ec12e44a6182d52d059f5dd5d62d02a77d700c5",
     "reports": {
       "browser": [
@@ -5197,7 +5204,7 @@
   },
   "registered_nameserver_requests": {
     "source_predecessor": "af78abd81ce39839cd100e1c882a59b04258a25b",
-    "predecessor_contract_sha256": "3f91f93f82684a33208bb5462dbe8973a89a12e4d613864bc8488e98f4495d58",
+    "predecessor_contract_sha256": "705c37e5f23f9f135009735d0b3b63ce97be3a827668254afd18d05954b1bc05",
     "predecessor_reports_sha256": "e6161a58263d6666f0aeda828d34843b986353efbcc49afc08d0c5c7bed4ceb1",
     "native_additions": [
       "\"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json",
@@ -5298,7 +5305,7 @@
       "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
-      "tests/registered_nameserver_requests_acceptance.py": "ca6f1337e9d4223b96866e214facda26ee6db5388f6fdd9128b157c030abf6f1",
+      "tests/registered_nameserver_requests_acceptance.py": "f308712ce3703de9afe936677fbef055a15e88e4573eba42dc5a3264676c7ce8",
       "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
       "tests/registered_nameserver_requests_native.php": "481767c5f8c4ca237608f8465ebeb324368c09d073a6fa6813eea93519eaea0a",
@@ -5489,7 +5496,7 @@
   },
   "client_https_requests": {
     "predecessor_commit": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
-    "predecessor_contract_sha256": "d6a77051ebd1b0e174fc6334cf626c74d20d2b9459629ec90689fbaf2f93b4a6",
+    "predecessor_contract_sha256": "432cc029d0cff2a9cfe37859bbb70b28b02a6269ae68c33e86819961c581a9c5",
     "predecessor_reports_sha256": "639a9bb2b7252e49882de7b5a5a176f531402d57235c35f7544e201002ceec3e",
     "native_after": "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
     "native_additions": [
@@ -5769,11 +5776,11 @@
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "7f60df976c676bd68b887dedb618c51a440f4ae7f6f273739585ea56cd1e9bb6",
+      ".github/workflows/application-tests.yml": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
       "site/admin/controllers/actions.php": "471f305609cde976066a9655614daf1872a3b3d90f047d98c2d5f16abaea8cd1",
       "site/admin/controllers/force_ssl_requests.php": "eccbe0633e96e9597803bb41e45001f5f8cf8929c103b8b967d9a1fea2ada2a6",
       "site/admin/controllers/router.php": "debbc928ec201f41dcbaa8c1a6978c4940fba7aa40973677e7e1363a2917ecd9",
-      "site/admin/views/providers.php": "07beea120bf92e6378b3fc6f6072cd36e4d83bf967f078d686e8c0e8375b5c5b",
+      "site/admin/views/providers.php": "f44fd19c9df432907ce93b6b0baf24a89d94cba7dd948b8d79abfb687194735c",
       "site/app/providers/force_ssl_controls.php": "4e559c47dcf9f0b58f9266149f1ca78c29f1ef686190b64f1386ef908b005855",
       "site/app/providers/force_ssl_requests.php": "949592f86625e899c576671ecf21a650bdeff74d9a4d36eb4cbf5b926538df69",
       "site/app/providers/force_ssl_requests_document.php": "fa5fb237384a32ec8b4f497a1cc4f374412631c2c810aa2e51c851008a85b85a",
@@ -5784,12 +5791,12 @@
       "site/database/migrations/provider_force_ssl_requests_migrate.php": "57b044d94bdab9bb0290f0f6cff3bb876ec1cc9c0bb0a48511b7ae179552fde6",
       "site/database/schema/provider_force_ssl_requests_schema.php": "3a03a910591e0fa1ef9cd19bc6021df46c3ce454ae41a934284ba386dc7d94cc",
       "site/includes/layout/admin.php": "782e3ef303dce3ccc96b747bb6826bc80288f076d9b9e9685030ba79403dfb10",
-      "site/includes/layout/provider_services.php": "b562ccb63c107ccea397f7244723e22650aa940e7a7e734ac7a1f4692a0ad910",
-      "site/portal/controllers/actions.php": "8318f3f556e9d817e6cd7ccdffbba9511dc251d7bd16d274db05b3b6abc9645c",
+      "site/includes/layout/provider_services.php": "f0d33243affee57fbff995fe9bea4dbb6965fe1871f2e99ebdce00abdc577c50",
+      "site/portal/controllers/actions.php": "96774f8661e2ce7e9823d93f0aeadd42379e96d261ab6a3dba6cc36527829b3c",
       "site/portal/controllers/force_ssl_requests.php": "d64df55616f1798ababe29d5596d2ec0d4f2e8f7dd23fd267cd49106beafa873",
-      "site/portal/controllers/router.php": "6ba995d38a5de18a79844b37b8eddf305137977b51da3ffdf426d8574bec412e",
+      "site/portal/controllers/router.php": "e9ba4f0d0486caf05c8abc38a40f5b60d5ca3fc73fa13a4fbb638ca44256802e",
       "site/portal/views/package_force_ssl.php": "191ae5b940671cf4c0688c9b7036cec780f64eb6dfe9357b72c9e7a7e2d8d9f1",
-      "tests/acceptance_artifacts_test.py": "76b42186c09eea1f4ca08eb77c51950e07988cfc0a8b08ec4228b8f17e7fc204",
+      "tests/acceptance_artifacts_test.py": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc",
       "tests/client_force_ssl_requests_browser.py": "8ede278d7fb4d39580b6027ea270287af11d5db18a7d48802282ebef8484d8a8",
       "tests/client_force_ssl_requests_http_fixture.php": "4d3c3c5f641474b7819ba43366d63aaa43784246213c3d784b48d228e9b4131a",
       "tests/force_ssl_requests_contract.php": "92a3a4eb5bccc0915a27fde018b42997c9d3b64bc64d776773ce0bc501a97a56",
@@ -5801,7 +5808,7 @@
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "3b6caa4f48133d73ec1c32f32eba6dae06a97bbd909b752f3c384d64228ce533",
+    "predecessor_contract_sha256": "78413b25f7d7f4ad0fdbab871849105384d2920849a3ef19d7fcb2a186296dc2",
     "predecessor_reports_sha256": "9bace2c26fa5a8090bd3dac21afe2790940a22ef16be37547eeb0ff1df6e3c4b",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [
@@ -5830,7 +5837,7 @@
         "keys": [
           "base_workflow_sha256"
         ],
-        "after": "7f60df976c676bd68b887dedb618c51a440f4ae7f6f273739585ea56cd1e9bb6",
+        "after": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
         "before": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5"
       },
       {
@@ -5840,7 +5847,7 @@
           ".github/workflows/application-tests.yml"
         ],
         "before": "2c4581815df4a6a63739a9ec633ba3d870cf721ea10ce14d565f9e67b651d68d",
-        "after": "7f60df976c676bd68b887dedb618c51a440f4ae7f6f273739585ea56cd1e9bb6"
+        "after": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08"
       },
       {
         "keys": [
@@ -5867,7 +5874,7 @@
           "site/admin/views/providers.php"
         ],
         "before": "2d6b8649bea5d48f2f73e7106a67b4933849bae8b42571fec7c668c56de55f3a",
-        "after": "07beea120bf92e6378b3fc6f6072cd36e4d83bf967f078d686e8c0e8375b5c5b"
+        "after": "f44fd19c9df432907ce93b6b0baf24a89d94cba7dd948b8d79abfb687194735c"
       },
       {
         "keys": [
@@ -5903,7 +5910,7 @@
           "site/includes/layout/provider_services.php"
         ],
         "before": "dfddc556aa5716414b067679c6de92ef7d4cb0aa6ac6eee73eac10713501d911",
-        "after": "b562ccb63c107ccea397f7244723e22650aa940e7a7e734ac7a1f4692a0ad910"
+        "after": "f0d33243affee57fbff995fe9bea4dbb6965fe1871f2e99ebdce00abdc577c50"
       },
       {
         "keys": [
@@ -5912,7 +5919,7 @@
           "site/portal/controllers/actions.php"
         ],
         "before": "ac3a43a6986d52f332bd9fce7d5296e4385b3d1c9d61e1667399c9550bb14779",
-        "after": "8318f3f556e9d817e6cd7ccdffbba9511dc251d7bd16d274db05b3b6abc9645c"
+        "after": "96774f8661e2ce7e9823d93f0aeadd42379e96d261ab6a3dba6cc36527829b3c"
       },
       {
         "keys": [
@@ -5921,7 +5928,7 @@
           "site/portal/controllers/router.php"
         ],
         "before": "64d2a4d230c92dbf6697461a44b2e5e5eef3555ac2d69869aef404c9a630acd3",
-        "after": "6ba995d38a5de18a79844b37b8eddf305137977b51da3ffdf426d8574bec412e"
+        "after": "e9ba4f0d0486caf05c8abc38a40f5b60d5ca3fc73fa13a4fbb638ca44256802e"
       },
       {
         "keys": [
@@ -5930,25 +5937,37 @@
           "tests/acceptance_artifacts_test.py"
         ],
         "before": "6e6e99384365374987f7f66d096947a1020cd0d68cd801bba13d00b34e4835ab",
-        "after": "76b42186c09eea1f4ca08eb77c51950e07988cfc0a8b08ec4228b8f17e7fc204"
+        "after": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc"
       }
     ],
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
         "before_sha256": "2c4581815df4a6a63739a9ec633ba3d870cf721ea10ce14d565f9e67b651d68d",
-        "after_sha256": "7f60df976c676bd68b887dedb618c51a440f4ae7f6f273739585ea56cd1e9bb6",
+        "after_sha256": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
         "changes": [
           {
-            "after_start": 466,
-            "after_end": 473,
+            "after_start": 371,
+            "after_end": 378,
+            "before": "",
+            "after": "          \"$PHP_BINARY\" tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-default.json\n          \"$PHP_BINARY\" -n tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-minimal.json\n          \"$PHP_BINARY\" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json\n          \"$PHP_BINARY\" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json\n          CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php\n          \"$PHP_BINARY\" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json\n"
+          },
+          {
+            "after_start": 473,
+            "after_end": 480,
             "before": "",
             "after": "          \"$PHP_BINARY\" tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-default.json\n          \"$PHP_BINARY\" -n tests/directory_listing_requests_document.php > qa/directory-listing-requests-document-minimal.json\n          \"$PHP_BINARY\" tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-default.json\n          \"$PHP_BINARY\" -n tests/directory_listing_requests_storage.php > qa/directory-listing-requests-storage-minimal.json\n          \"$PHP_BINARY\" tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-default.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/directory_listing_requests_contract.php > qa/directory-listing-requests-contract-minimal.json\n          CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php\n"
           },
           {
-            "after_start": 519,
-            "after_end": 520,
+            "after_start": 526,
+            "after_end": 527,
             "before": "",
             "after": "          .ci-venv/bin/python tests/client_directory_listing_requests_browser.py --php \"$PHP_BINARY\" --report qa/client-directory-listing-requests-browser-results.json\n"
+          },
+          {
+            "after_start": 827,
+            "after_end": 829,
+            "before": "",
+            "after": "          .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade_test.py --report qa/apache-cloud-site-requests-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade.py\n"
           }
         ]
       },
@@ -5990,13 +6009,25 @@
       },
       "site/admin/views/providers.php": {
         "before_sha256": "2d6b8649bea5d48f2f73e7106a67b4933849bae8b42571fec7c668c56de55f3a",
-        "after_sha256": "07beea120bf92e6378b3fc6f6072cd36e4d83bf967f078d686e8c0e8375b5c5b",
+        "after_sha256": "f44fd19c9df432907ce93b6b0baf24a89d94cba7dd948b8d79abfb687194735c",
         "changes": [
           {
-            "after_start": 167,
-            "after_end": 168,
+            "after_start": 5,
+            "after_end": 6,
+            "before": "",
+            "after": "provider_cloud_site_request_confirmation_render();\n"
+          },
+          {
+            "after_start": 168,
+            "after_end": 169,
             "before": "",
             "after": "<p><a class=\"btn outline\" href=\"<?=esc(admin_url('directory-requests'))?>\">Review client directory listing requests</a></p>\n"
+          },
+          {
+            "after_start": 171,
+            "after_end": 172,
+            "before": "",
+            "after": "<?php provider_cloud_site_requests_admin_render(); ?>\n"
           }
         ]
       },
@@ -6116,11 +6147,17 @@
       },
       "site/includes/layout/provider_services.php": {
         "before_sha256": "dfddc556aa5716414b067679c6de92ef7d4cb0aa6ac6eee73eac10713501d911",
-        "after_sha256": "b562ccb63c107ccea397f7244723e22650aa940e7a7e734ac7a1f4692a0ad910",
+        "after_sha256": "f0d33243affee57fbff995fe9bea4dbb6965fe1871f2e99ebdce00abdc577c50",
         "changes": [
           {
-            "after_start": 28,
-            "after_end": 29,
+            "after_start": 24,
+            "after_end": 25,
+            "before": "",
+            "after": "    if(!support_current()&&!array_key_exists('support',$_GET)&&!array_key_exists('contact_id',$_SESSION)&&!array_key_exists('contact_auth',$_SESSION))echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['cloud_websites'=>1])).'\">Cloud website requests</a>';\n"
+          },
+          {
+            "after_start": 29,
+            "after_end": 30,
             "before": "",
             "after": "    if(function_exists('provider_directory_indexing_requests_session_blocked')&&!provider_directory_indexing_requests_session_blocked())echo '<a class=\"btn outline\" href=\"'.esc(studio_url(['directory_requests'=>1])).'\">Directory listing requests</a>';\n"
           }
@@ -6128,19 +6165,19 @@
       },
       "site/portal/controllers/actions.php": {
         "before_sha256": "ac3a43a6986d52f332bd9fce7d5296e4385b3d1c9d61e1667399c9550bb14779",
-        "after_sha256": "8318f3f556e9d817e6cd7ccdffbba9511dc251d7bd16d274db05b3b6abc9645c",
+        "after_sha256": "96774f8661e2ce7e9823d93f0aeadd42379e96d261ab6a3dba6cc36527829b3c",
         "changes": [
           {
             "after_start": 17,
-            "after_end": 18,
+            "after_end": 19,
             "before": "",
-            "after": " elseif(str_starts_with($action,'directory_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_directory_indexing_requests_client_action($action,$client);}\n"
+            "after": " elseif(str_starts_with($action,'directory_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_directory_indexing_requests_client_action($action,$client);}\n elseif(str_starts_with($action,'cloud_website_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_cloud_site_requests_client_action($action,$client);}\n"
           }
         ]
       },
       "site/portal/controllers/router.php": {
         "before_sha256": "64d2a4d230c92dbf6697461a44b2e5e5eef3555ac2d69869aef404c9a630acd3",
-        "after_sha256": "6ba995d38a5de18a79844b37b8eddf305137977b51da3ffdf426d8574bec412e",
+        "after_sha256": "e9ba4f0d0486caf05c8abc38a40f5b60d5ca3fc73fa13a4fbb638ca44256802e",
         "changes": [
           {
             "after_start": 25,
@@ -6149,10 +6186,22 @@
             "after": "require_once CWP_CODE_ROOT.'/portal/controllers/directory_listing_requests.php';\n$directoryRequestRoute=array_key_exists('directory_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'directory_request_'));\nif($directoryRequestRoute){\n    header('Cache-Control: no-store, private');\n    if(provider_directory_indexing_requests_session_blocked())fail_page('Sign in directly to your primary client account to manage directory-listing requests.',403);\n}\n"
           },
           {
-            "after_start": 83,
-            "after_end": 84,
+            "after_start": 39,
+            "after_end": 41,
+            "before": "",
+            "after": "require_once CWP_CODE_ROOT.'/portal/controllers/cloud_site_requests.php';\nif(array_key_exists('cloud_websites',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'cloud_website_request_')))header('Cache-Control: no-store, private');\n"
+          },
+          {
+            "after_start": 85,
+            "after_end": 86,
             "before": "",
             "after": "if($directoryRequestRoute)provider_directory_indexing_requests_client_render($client,$error);\n"
+          },
+          {
+            "after_start": 100,
+            "after_end": 101,
+            "before": "",
+            "after": "if(array_key_exists('cloud_websites',$_GET))provider_cloud_site_requests_client_render($client,$error);\n"
           }
         ]
       },
@@ -6170,19 +6219,19 @@
       },
       "tests/acceptance_artifacts_test.py": {
         "before_sha256": "6e6e99384365374987f7f66d096947a1020cd0d68cd801bba13d00b34e4835ab",
-        "after_sha256": "76b42186c09eea1f4ca08eb77c51950e07988cfc0a8b08ec4228b8f17e7fc204",
+        "after_sha256": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc",
         "changes": [
           {
             "after_start": 1706,
-            "after_end": 1825,
+            "after_end": 1852,
             "before": "",
-            "after": "_run_before_client_directory_requests = run\n\n\ndef client_directory_requests_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Client directory listing requests current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Client directory listing requests inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Client directory listing requests predecessor changed')\n    return result\n\n\ndef client_directory_requests_current():\n    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['client_directory_requests']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Client directory listing requests source changed: '+path)\n    registry = a.load(ROOT/'tools/acceptance-reports.json')\n    prior = copy.deepcopy(current); del prior['client_directory_requests']\n    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Client directory listing requests native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]: cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']: raise ValueError('Client directory listing requests current pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Client directory listing requests predecessor contract changed')\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client directory listing requests report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Client directory listing requests predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef client_directory_requests_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    check('Client directory listing requests preserves all226 native recipes and adds seven', len(current['native_commands']) == 233 and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])\n    check('Client directory listing requests reports are eight unique producers', len(section['reports']) == len(set(section['reports'])) == 8)\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)\n    check('Client directory listing requests browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php \"$PHP_BINARY\"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Client directory listing requests native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php' and valid_port_context(workflow))\n    check('Client directory listing requests adds no unreviewed capture expectations', section['screenshots'] == [])\n    for path, digest in section['source_sha256'].items():\n        check('Client directory listing requests binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Client directory listing requests retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Client directory listing requests modified current source refuses '+path, lambda path=path, delta=delta: client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    for phase, expected in [('browser',257),('final',314)]:\n        check('Client directory listing requests preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'client-directory-requests-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)\n    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job\n        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA: named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Client directory listing requests aggregate requires all314 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()\n        check('Client directory listing requests missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path,False); reseal(); result = combine()\n        check('Client directory listing requests failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Client directory listing requests report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    named(jobs['native-browser']/'qa/client-directory-requests-unexpected-results.json'); reseal(); result = combine()\n    check('Client directory listing requests unexpected report refuses', result['complete'] is False and 'Unexpected reports: client-directory-requests-unexpected-results.json' in result['errors'])\n    check('Client directory listing requests private fixture files remain excluded', not a.evidence_allowed('test-runtime/directory-listing-requests-private/session.json','native-browser') and not a.evidence_allowed('qa/directory-listing-requests-private/session.json','native-browser'))\n\n\ndef run(tmp):\n    current, registry, section, historical = client_directory_requests_current()\n    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path,*args,**kwargs):\n        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)\n    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):\n        _run_before_client_directory_requests(tmp)\n    client_directory_requests_checks(tmp,current,registry,section,historical)\n\n\n"
+            "after": "_run_before_client_directory_requests = run\n\n\ndef client_directory_requests_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Client directory listing requests current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Client directory listing requests inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Client directory listing requests predecessor changed')\n    return result\n\n\ndef client_directory_requests_current():\n    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['client_directory_requests']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Client directory listing requests source changed: '+path)\n    registry = a.load(ROOT/'tools/acceptance-reports.json')\n    prior = copy.deepcopy(current); del prior['client_directory_requests']\n    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Client directory listing requests native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    # The cloud-request family is the newest era: the served pre-merge contract\n    # drops both cloud sections and their seven anchored native commands.\n    cloud_intake_additions = prior['cloud_site_intake']['additions']\n    cloud_intake_position = prior['native_commands'].index(prior['cloud_site_intake']['additions_after'])+1\n    if prior['native_commands'][cloud_intake_position:cloud_intake_position+len(cloud_intake_additions)] != cloud_intake_additions:\n        raise ValueError('Client directory listing requests cloud intake recipe changed')\n    del prior['native_commands'][cloud_intake_position:cloud_intake_position+len(cloud_intake_additions)]\n    cloud_request_additions = prior['cloud_site_requests']['additions']\n    cloud_position = prior['native_commands'].index(prior['cloud_site_requests']['additions_after'])+1\n    if prior['native_commands'][cloud_position:cloud_position+len(cloud_request_additions)] != cloud_request_additions:\n        raise ValueError('Client directory listing requests cloud request recipe changed')\n    del prior['native_commands'][cloud_position:cloud_position+len(cloud_request_additions)]\n    del prior['cloud_site_intake']; del prior['cloud_site_requests']\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]: cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']: raise ValueError('Client directory listing requests current pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Client directory listing requests predecessor contract changed')\n    cloud_report_names = set(current['cloud_site_requests']['reports'])|set(current['cloud_site_requests']['upgrade']['reports'])|set(current['cloud_site_intake']['reports'])\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client directory listing requests report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports'] and name not in cloud_report_names]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Client directory listing requests predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef client_directory_requests_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    cloud_additions = current['cloud_site_requests']['additions'] + current['cloud_site_intake']['additions']\n    check('Client directory listing requests preserves all226 native recipes and adds seven', len(current['native_commands']) == 240 and [c for c in current['native_commands'] if c not in section['native_additions'] and c not in cloud_additions] == prior['native_commands'])\n    check('Client directory listing requests reports are eight unique producers', len(section['reports']) == len(set(section['reports'])) == 8)\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    cloud_native = ''.join('          '+command+'\\n' for command in cloud_additions)\n    cloud_apache = ''.join('          '+command+'\\n' for command in current['cloud_site_requests']['upgrade']['commands'])\n    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1).replace(cloud_native, '', 1).replace(cloud_apache, '', 1) == previous)\n    check('Client directory listing requests browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php \"$PHP_BINARY\"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Client directory listing requests native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php' and valid_port_context(workflow))\n    check('Client directory listing requests adds no unreviewed capture expectations', section['screenshots'] == [])\n    for path, digest in section['source_sha256'].items():\n        check('Client directory listing requests binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Client directory listing requests retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Client directory listing requests modified current source refuses '+path, lambda path=path, delta=delta: client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    cloud_report_names = set(current['cloud_site_requests']['reports'])|set(current['cloud_site_requests']['upgrade']['reports'])|set(current['cloud_site_intake']['reports'])\n    for phase, expected in [('browser',264),('final',323)]:\n        check('Client directory listing requests preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports'] and n not in cloud_report_names] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'client-directory-requests-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)\n    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job\n        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA: named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Client directory listing requests aggregate requires all314 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()\n        check('Client directory listing requests missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path,False); reseal(); result = combine()\n        check('Client directory listing requests failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Client directory listing requests report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    named(jobs['native-browser']/'qa/client-directory-requests-unexpected-results.json'); reseal(); result = combine()\n    check('Client directory listing requests unexpected report refuses', result['complete'] is False and 'Unexpected reports: client-directory-requests-unexpected-results.json' in result['errors'])\n    check('Client directory listing requests private fixture files remain excluded', not a.evidence_allowed('test-runtime/directory-listing-requests-private/session.json','native-browser') and not a.evidence_allowed('qa/directory-listing-requests-private/session.json','native-browser'))\n\n\ndef run(tmp):\n    cloud_workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()\n    cloud_native=cloud_workflow.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    cloud_commands=[line.strip() for line in cloud_native.splitlines()]\n    cloud_contract=a.load(ROOT/'tools/acceptance-contract.json')\n    from cloud_site_intake_wiring import verify as cloud_intake_wiring\n    cloud_commands,cloud_request_reports=cloud_intake_wiring(ROOT,cloud_contract,cloud_workflow,cloud_commands,check)\n    cloud_contract={**cloud_contract,'native_commands':cloud_commands}\n    from cloud_site_requests_wiring import verify as cloud_request_wiring\n    cloud_commands=cloud_request_wiring(ROOT,cloud_contract,cloud_workflow,cloud_commands,check,cloud_request_reports)\n    current, registry, section, historical = client_directory_requests_current()\n    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path,*args,**kwargs):\n        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)\n    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):\n        _run_before_client_directory_requests(tmp)\n    client_directory_requests_checks(tmp,current,registry,section,historical)\n\n\n"
           }
         ]
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "7f60df976c676bd68b887dedb618c51a440f4ae7f6f273739585ea56cd1e9bb6",
+      ".github/workflows/application-tests.yml": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
       "foundation/provider/ProviderGateway.php": "c6885ca2170ca0ea9d854a237fc160a2f0ca950633dd49a1051b82e0f2eaf753",
       "foundation/twentyi-directory-listing/DirectoryListingReader.php": "4f90f078f65153c631728d72a35f779a224acf1bbdc77a700bb38251524f1910",
       "foundation/twentyi-operations/DirectoryIndexingChange.php": "6b2f1b9ada82c1055f834a7e3115e8a7860ef566dc0ba42d035475751e9fb98c",
@@ -6190,7 +6239,7 @@
       "site/admin/controllers/auth.php": "21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb",
       "site/admin/controllers/directory_listing_requests.php": "c7317fd6cea68859fecda2868f39f083b57e60805f8f5d479238726d9882028e",
       "site/admin/controllers/router.php": "debbc928ec201f41dcbaa8c1a6978c4940fba7aa40973677e7e1363a2917ecd9",
-      "site/admin/views/providers.php": "07beea120bf92e6378b3fc6f6072cd36e4d83bf967f078d686e8c0e8375b5c5b",
+      "site/admin/views/providers.php": "f44fd19c9df432907ce93b6b0baf24a89d94cba7dd948b8d79abfb687194735c",
       "site/app/clients/accounts.php": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
       "site/app/providers/directory_listing.php": "f96904b7826b37f487d9ed60a8a3aad46c13e97f20096e667269bbfbc9dccc1c",
       "site/app/providers/directory_listing_controls.php": "e01a92bd1e852c1dabd527d012dc54369347cd8543d035c951f0ed7bd247b98c",
@@ -6210,15 +6259,15 @@
       "site/database/migrations/provider_directory_listing_requests_migrate.php": "4ac3d6e1553d042619deb4ed9b484e6142e9de9f552ff9504a13354e26ed9722",
       "site/database/schema/provider_directory_listing_requests_schema.php": "27a747d60efe6de1c8158d5392aee2fe9163521b64dea265eb7813b9a5294fe0",
       "site/includes/layout/admin.php": "782e3ef303dce3ccc96b747bb6826bc80288f076d9b9e9685030ba79403dfb10",
-      "site/includes/layout/provider_services.php": "b562ccb63c107ccea397f7244723e22650aa940e7a7e734ac7a1f4692a0ad910",
+      "site/includes/layout/provider_services.php": "f0d33243affee57fbff995fe9bea4dbb6965fe1871f2e99ebdce00abdc577c50",
       "site/includes/security/csrf.php": "cf24bbccd978bd9ac94d289f822deea683624b8093e86b362a4b8e818f9a99de",
       "site/includes/security/http.php": "65e9465645af6f0611f99e00fc77473a329b2fe3724c4de4cd9a2db16bbadc7d",
       "site/includes/security/input.php": "8932eb334c6b4362ac1fdccf294caed3eea0fa9325224fdb35a66664eeaad54b",
-      "site/portal/controllers/actions.php": "8318f3f556e9d817e6cd7ccdffbba9511dc251d7bd16d274db05b3b6abc9645c",
+      "site/portal/controllers/actions.php": "96774f8661e2ce7e9823d93f0aeadd42379e96d261ab6a3dba6cc36527829b3c",
       "site/portal/controllers/directory_listing_requests.php": "b8f4c368ffee07c47a72c0e8aa3bc0dd191166a8502b907fb49c61a081b3f628",
-      "site/portal/controllers/router.php": "6ba995d38a5de18a79844b37b8eddf305137977b51da3ffdf426d8574bec412e",
+      "site/portal/controllers/router.php": "e9ba4f0d0486caf05c8abc38a40f5b60d5ca3fc73fa13a4fbb638ca44256802e",
       "site/portal/views/directory_listing.php": "4efad35eeefb0b466d909d9e451cb40a0f12a61fd38a9f0d06e50e745dbe7236",
-      "tests/acceptance_artifacts_test.py": "76b42186c09eea1f4ca08eb77c51950e07988cfc0a8b08ec4228b8f17e7fc204",
+      "tests/acceptance_artifacts_test.py": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc",
       "tests/client_directory_listing_requests_browser.py": "c55749c88b84aa397f7fdac90d86b8c1896d015a3019b3a6ec07cd67e5461614",
       "tests/client_directory_listing_requests_http_fixture.php": "47bc14c607aff1c36cc06b2ced90013b9c9cf552b4bca5bbf9950d650a58d749",
       "tests/directory_listing_requests_contract.php": "6941d3e02317aaaec37e4df6f74beeb06a3184036417550c1d5fc226b7be9a9e",
@@ -6230,5 +6279,132 @@
       "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
     },
     "scope": "Primary-client directory listing request, owner review and existing DirectoryIndexingChange dispatch/readback. Portable/model HTTP evidence is separate from guarded native SQL and installed acceptance. No live provider or actual file visibility claim."
+  },
+  "cloud_site_requests": {
+    "source_base": "e397d9a6e293850e8dff61a593e3ba39ee178400",
+    "predecessor_native_count": 233,
+    "predecessor_native_sha256": "4412cf2a679fcd452f0eed70ad0b49cf569a4c271b448bb424cb5246f73e71e5",
+    "additions_after": "\"$PHP_BINARY\" tests/provider_cloud_confirmation_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-default.json",
+      "\"$PHP_BINARY\" -n tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-minimal.json",
+      "\"$PHP_BINARY\" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json",
+      "\"$PHP_BINARY\" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json",
+      "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php"
+    ],
+    "reports": [
+      "cloud-site-requests-document-default.json",
+      "cloud-site-requests-document-minimal.json",
+      "cloud-site-requests-ui-default.json",
+      "cloud-site-requests-ui-minimal.json",
+      "provider-cloud-site-requests-native-results.json"
+    ],
+    "predecessor_reports": {
+      "browser": {
+        "count": 257,
+        "sha256": "1b7da48c57829b48b2a1c319fab5737e61cda0e35201815bdcb2816f0db4f2f8"
+      },
+      "final": {
+        "count": 314,
+        "sha256": "043e8fb1aa69c82ba487d7af999e09c83392feca97f1b9e8844dab96aa6f6636"
+      }
+    },
+    "browser_hook": "    from provider_cloud_site_requests_cases import run_browser as client_cloud_sites_browser\n    client_cloud_sites_browser(env,browser,owner,client,other,profile)\n",
+    "browser_predecessor_sha256": "01e8d06d31927d904c3e09416a6529fd874846cc67c2f3f5bc2c888b652b5eae",
+    "screenshots": [
+      "Cloud-Client-Website-Request-Desktop.png",
+      "Cloud-Client-Website-Request-Mobile.png",
+      "Cloud-Client-Website-Review-Desktop.png",
+      "Cloud-Client-Website-Review-Mobile.png",
+      "Cloud-Client-Website-Accepted-Desktop.png",
+      "Cloud-Client-Website-Accepted-Mobile.png",
+      "Cloud-Client-Website-Confirmed-Desktop.png",
+      "Cloud-Client-Website-Confirmed-Mobile.png"
+    ],
+    "source_sha256": {
+      "tests/twentyi-cloud-site-requests/documents.php": "0a227898eeb5b4cec6cf3f7f4800580b1e02421edbcd675484aae741df91790b",
+      "tests/cloud_site_requests_ui_contract.php": "a1f6afd5e0ae5c0a154da7c1821092fcfff5afd8ee6e70eaab9c640bb20e9486",
+      "tests/provider_cloud_site_requests_native.php": "2e295420a3cd0d3d978267bfb39daacd51bb8d0d51e8a4e1d27ae0e52120b75d",
+      "tests/provider_cloud_site_requests_cases.py": "82573ab01bd25e3a90f2918b21dee2bcb91be4c7bd41f705c8a2c2ea2b359f30",
+      "tests/cloud_site_requests_wiring.py": "a9b77582ac9324b8c6a568771e907aa14d645152fa6149c2febb057ea5916dda",
+      "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
+      "tests/provider_cloud_site_requests_upgrade_fixture.php": "0a886de3c53dce09adb30964b0b76f284710bd954fe4de85f4377353bde4c1a2",
+      "tests/provider_cloud_site_requests_upgrade_test.py": "07c0c53741dd51652751a78744411c1c0717ad3a503dc011410d7b4723b945b3",
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
+    },
+    "scope": "Client request, owner one-send dispatch, exact grant confirmation navigation, real supported SQL and packaged synthetic HTTPS/browser. No live provider execution or installed upgrade claim.",
+    "published_baseline": {
+      "source": "f545cf939bfc11534978346171f3f4471784dbac",
+      "base": "e397d9a6e293850e8dff61a593e3ba39ee178400",
+      "preparation_appendix": "\n# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n",
+      "source_sha256": {
+        "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+        "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6"
+      },
+      "unchanged_historical_versions": 27,
+      "new_members": 2895,
+      "input_guard_correction": {
+        "path": "tests/release_125_upgrade_input_guards.py",
+        "before": "test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+        "after": "test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip",
+        "predecessor_sha256": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
+      }
+    },
+    "upgrade": {
+      "commands": [
+        ".ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade_test.py --report qa/apache-cloud-site-requests-upgrade-guards-results.json",
+        ".ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade.py"
+      ],
+      "reports": [
+        "apache-cloud-site-requests-upgrade-guards-results.json",
+        "apache-cloud-site-requests-upgrade-results.json"
+      ],
+      "diagnostic": "apache-cloud-site-requests-upgrade-retention.json",
+      "predecessor_apache_sha256": "b0f4f48164143142698f74a394f4c0a04b96da733642cc7a21f6452eb23ecdfa",
+      "scope": "Actual published 1.25 subfolder installation followed by exact candidate UPDATE, complete-journal file rollback, reapply and missing request-head refusal. No interrupted-application or live provider claim."
+    }
+  },
+  "cloud_site_intake": {
+    "source_base": "e2c88d9d1adec7fa725d88fabdaac8f748ae7567",
+    "predecessor_native_count": 238,
+    "predecessor_native_sha256": "abb55cafdfd8e9805f59bad7b114bdec5ade38251bcc1f92b9e158a5b99ca40d",
+    "additions_after": "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json",
+      "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json"
+    ],
+    "reports": [
+      "cloud-site-intake-default.json",
+      "cloud-site-intake-minimal.json"
+    ],
+    "predecessor_reports": {
+      "browser": {
+        "count": 262,
+        "sha256": "00d7dcf5af5c4723dd8bc6c8ef89698aa44dd600ebb6df84dabbf9e7736f0801"
+      },
+      "final": {
+        "count": 321,
+        "sha256": "29ed2b9e9b0c9ae89dcce77e1b3ad7dcdf6a3eae68e904d520e1dc2b350195cf"
+      }
+    },
+    "predecessor_source_sha256": {
+      "site/app/providers/cloud_site_requests.php": "ac5c3c666c916b26081b6f9a5dbef8d588ca942dae9b10164213509014d54af0",
+      "site/app/providers/cloud_site_requests_views.php": "5b7db5c3493f07ffb9826afee3328cb22813e37d1b7b38acbe8f839d4edc0c30",
+      "tests/cloud_site_requests_ui_contract.php": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
+      "tests/provider_cloud_site_requests_native.php": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
+      "tests/provider_cloud_site_requests_cases.py": "ad0fee381500af08a915e7175133224ba0488159d254ca1cefb2151e502dab29",
+      "tests/cloud_site_requests_wiring.py": "8d15a183af8600aa9ea19dad0a48405ba1aab0aaac20852c6c9c730bb3b59a6d"
+    },
+    "source_sha256": {
+      "site/app/providers/cloud_site_requests.php": "aaafdf5210e00e92a946b19186e5e72f2c0025f0277da38c368d844b5f49e84d",
+      "site/app/providers/cloud_site_requests_views.php": "22dfe27c1a6d0ca2a8f7290c50ecfa307444e05d581ef2c884b3c9f69558ff23",
+      "tests/cloud_site_requests_ui_contract.php": "a1f6afd5e0ae5c0a154da7c1821092fcfff5afd8ee6e70eaab9c640bb20e9486",
+      "tests/provider_cloud_site_requests_native.php": "2e295420a3cd0d3d978267bfb39daacd51bb8d0d51e8a4e1d27ae0e52120b75d",
+      "tests/provider_cloud_site_requests_cases.py": "82573ab01bd25e3a90f2918b21dee2bcb91be4c7bd41f705c8a2c2ea2b359f30",
+      "tests/cloud_site_requests_wiring.py": "a9b77582ac9324b8c6a568771e907aa14d645152fa6149c2febb057ea5916dda",
+      "tests/cloud_site_intake_contract.php": "0afa7765917c2f26937884c9baea5559c62aa90e17fea152f735b9ea4eb6e03b",
+      "tests/cloud_site_intake_wiring.py": "91f901e063499b2414ba937f5d87c0db13d956356b0e6c3cbfd540d4c6d9671b"
+    },
+    "scope": "Current local assignment and original anchor permit client intake. Latest fresh observation remains mandatory for owner dispatch. Native elapsed-age evidence is opt-in and not established by portable tests."
   }
 }

@@ -1733,6 +1733,19 @@ def client_directory_requests_current():
     if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):
         raise ValueError('Client directory listing requests native recipe changed')
     del prior['native_commands'][position:position+len(additions)]
+    # The cloud-request family is the newest era: the served pre-merge contract
+    # drops both cloud sections and their seven anchored native commands.
+    cloud_intake_additions = prior['cloud_site_intake']['additions']
+    cloud_intake_position = prior['native_commands'].index(prior['cloud_site_intake']['additions_after'])+1
+    if prior['native_commands'][cloud_intake_position:cloud_intake_position+len(cloud_intake_additions)] != cloud_intake_additions:
+        raise ValueError('Client directory listing requests cloud intake recipe changed')
+    del prior['native_commands'][cloud_intake_position:cloud_intake_position+len(cloud_intake_additions)]
+    cloud_request_additions = prior['cloud_site_requests']['additions']
+    cloud_position = prior['native_commands'].index(prior['cloud_site_requests']['additions_after'])+1
+    if prior['native_commands'][cloud_position:cloud_position+len(cloud_request_additions)] != cloud_request_additions:
+        raise ValueError('Client directory listing requests cloud request recipe changed')
+    del prior['native_commands'][cloud_position:cloud_position+len(cloud_request_additions)]
+    del prior['cloud_site_intake']; del prior['cloud_site_requests']
     for pin in section['repins']:
         cursor = prior
         for key in pin['keys'][:-1]: cursor = cursor[key]
@@ -1742,10 +1755,11 @@ def client_directory_requests_current():
     dump = lambda value: json.dumps(value, indent=2).encode()+b'\n'
     if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:
         raise ValueError('Client directory listing requests predecessor contract changed')
+    cloud_report_names = set(current['cloud_site_requests']['reports'])|set(current['cloud_site_requests']['upgrade']['reports'])|set(current['cloud_site_intake']['reports'])
     old_reports = copy.deepcopy(registry)
     for phase in ('browser', 'final'):
         if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client directory listing requests report missing or duplicated')
-        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports']]
+        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports'] and name not in cloud_report_names]
     if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:
         raise ValueError('Client directory listing requests predecessor reports changed')
     historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}
@@ -1756,13 +1770,16 @@ def client_directory_requests_current():
 
 def client_directory_requests_checks(tmp, current, registry, section, historical):
     prior = json.loads(historical['tools/acceptance-contract.json'])
-    check('Client directory listing requests preserves all226 native recipes and adds seven', len(current['native_commands']) == 233 and [c for c in current['native_commands'] if c not in section['native_additions']] == prior['native_commands'])
+    cloud_additions = current['cloud_site_requests']['additions'] + current['cloud_site_intake']['additions']
+    check('Client directory listing requests preserves all226 native recipes and adds seven', len(current['native_commands']) == 240 and [c for c in current['native_commands'] if c not in section['native_additions'] and c not in cloud_additions] == prior['native_commands'])
     check('Client directory listing requests reports are eight unique producers', len(section['reports']) == len(set(section['reports'])) == 8)
     workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()
     previous = historical['.github/workflows/application-tests.yml'].decode()
     inserted = ''.join('          '+command+'\n' for command in section['native_additions'])
     browser = '          '+section['browser_command']+'\n'
-    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1) == previous)
+    cloud_native = ''.join('          '+command+'\n' for command in cloud_additions)
+    cloud_apache = ''.join('          '+command+'\n' for command in current['cloud_site_requests']['upgrade']['commands'])
+    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1).replace(cloud_native, '', 1).replace(cloud_apache, '', 1) == previous)
     check('Client directory listing requests browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php "$PHP_BINARY"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))
     check('Client directory listing requests native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_DIRECTORY_REQUESTS=1 "$PHP_BINARY" tests/provider_directory_listing_requests_native.php' and valid_port_context(workflow))
     check('Client directory listing requests adds no unreviewed capture expectations', section['screenshots'] == [])
@@ -1771,8 +1788,9 @@ def client_directory_requests_checks(tmp, current, registry, section, historical
     for path, delta in section['source_deltas'].items():
         check('Client directory listing requests retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])
         deny('Client directory listing requests modified current source refuses '+path, lambda path=path, delta=delta: client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\r\n', b'\n')+b'\n', delta))
-    for phase, expected in [('browser',257),('final',314)]:
-        check('Client directory listing requests preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports']] == json.loads(historical['tools/acceptance-reports.json'])[phase])
+    cloud_report_names = set(current['cloud_site_requests']['reports'])|set(current['cloud_site_requests']['upgrade']['reports'])|set(current['cloud_site_intake']['reports'])
+    for phase, expected in [('browser',264),('final',323)]:
+        check('Client directory listing requests preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports'] and n not in cloud_report_names] == json.loads(historical['tools/acceptance-reports.json'])[phase])
     root = tmp/'client-directory-requests-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)
     incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64
     for index, lane in enumerate(a.LANES):
@@ -1811,6 +1829,15 @@ def client_directory_requests_checks(tmp, current, registry, section, historical
 
 
 def run(tmp):
+    cloud_workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    cloud_native=cloud_workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
+    cloud_commands=[line.strip() for line in cloud_native.splitlines()]
+    cloud_contract=a.load(ROOT/'tools/acceptance-contract.json')
+    from cloud_site_intake_wiring import verify as cloud_intake_wiring
+    cloud_commands,cloud_request_reports=cloud_intake_wiring(ROOT,cloud_contract,cloud_workflow,cloud_commands,check)
+    cloud_contract={**cloud_contract,'native_commands':cloud_commands}
+    from cloud_site_requests_wiring import verify as cloud_request_wiring
+    cloud_commands=cloud_request_wiring(ROOT,cloud_contract,cloud_workflow,cloud_commands,check,cloud_request_reports)
     current, registry, section, historical = client_directory_requests_current()
     originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}
     read_bytes, read_text = Path.read_bytes, Path.read_text

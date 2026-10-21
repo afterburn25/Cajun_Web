@@ -50,4 +50,6 @@ def run_browser(env,browser):
     check('Cloud website provider fixture contains no invalid requests',not provider_server.errors)
     from provider_cloud_confirmation_cases import run_browser as confirmation_browser
     confirmation_browser(env,browser,owner,client,other,profile)
+    from provider_cloud_site_requests_cases import run_browser as client_cloud_sites_browser
+    client_cloud_sites_browser(env,browser,owner,client,other,profile)
     provider_server.cloud_servers=before_fixture;provider_server.packages=before_packages
