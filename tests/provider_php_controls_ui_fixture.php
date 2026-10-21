@@ -94,9 +94,9 @@ function phui_cool(string $profile):int {
     $next=phui_next_read($profile);$start=microtime(true);$deadline=$start+32;
     while(time()<$next){if(microtime(true)>$deadline)throw new RuntimeException('Fixture cooldown exceeded its bound.');usleep(100000);}return (int)ceil((microtime(true)-$start)*1000);
 }
-function phui_legacy_transport(array $profile,string $secret,string $address,callable $authorize,string $operation,?PackagePhpVersionBinding $binding=null):PackagePhpVersionObservation {
-    $authorize();if(db()->inTransaction()||$secret!==PHUI_SECRET||$address!=='8.8.8.8'||$operation!==PackagePhpVersion::OPERATION||$binding===null||$binding->data['profile_id']!==$profile['id']||$binding->data['package_id']!==701)throw new LogicException('Wrong synthetic legacy read.');
-    return PackagePhpVersion::project(new TransportResponse(200,[],'"php82"'),$binding,time());
+function phui_legacy_transport(array $profile,string $secret,string $address,callable $authorize,string $operation,?PackagePhpVersionBinding $packageContext=null):PackagePhpVersionObservation {
+    $authorize();if(db()->inTransaction()||$secret!==PHUI_SECRET||$address!=='8.8.8.8'||$operation!==PackagePhpVersion::OPERATION||$packageContext===null||$packageContext->data['profile_id']!==$profile['id']||$packageContext->data['package_id']!==701)throw new LogicException('Wrong synthetic legacy read.');
+    return PackagePhpVersion::project(new TransportResponse(200,[],'"php82"'),$packageContext,time());
 }
 function phui_session(string $id):void {
     global $sessions;
