@@ -83,6 +83,7 @@ def run_browser(env, browser):
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
+        post.last = data
         return owner.post(url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
