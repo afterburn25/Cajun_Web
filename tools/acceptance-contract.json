@@ -1,6 +1,6 @@
 {
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
-  "base_workflow_sha256": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
+  "base_workflow_sha256": "b9289693b7c1dce48641c53d0a3e31880d717a48a027a347c0e2d9a4b0ad4581",
   "unchanged_test_sha256": {
     "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
@@ -5776,7 +5776,7 @@
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
+      ".github/workflows/application-tests.yml": "b9289693b7c1dce48641c53d0a3e31880d717a48a027a347c0e2d9a4b0ad4581",
       "site/admin/controllers/actions.php": "471f305609cde976066a9655614daf1872a3b3d90f047d98c2d5f16abaea8cd1",
       "site/admin/controllers/force_ssl_requests.php": "eccbe0633e96e9597803bb41e45001f5f8cf8929c103b8b967d9a1fea2ada2a6",
       "site/admin/controllers/router.php": "debbc928ec201f41dcbaa8c1a6978c4940fba7aa40973677e7e1363a2917ecd9",
@@ -5796,7 +5796,7 @@
       "site/portal/controllers/force_ssl_requests.php": "d64df55616f1798ababe29d5596d2ec0d4f2e8f7dd23fd267cd49106beafa873",
       "site/portal/controllers/router.php": "e9ba4f0d0486caf05c8abc38a40f5b60d5ca3fc73fa13a4fbb638ca44256802e",
       "site/portal/views/package_force_ssl.php": "191ae5b940671cf4c0688c9b7036cec780f64eb6dfe9357b72c9e7a7e2d8d9f1",
-      "tests/acceptance_artifacts_test.py": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc",
+      "tests/acceptance_artifacts_test.py": "75769cac17add25ca739578615cc77757fcaa85a74866aa1d83cf44270227fce",
       "tests/client_force_ssl_requests_browser.py": "8ede278d7fb4d39580b6027ea270287af11d5db18a7d48802282ebef8484d8a8",
       "tests/client_force_ssl_requests_http_fixture.php": "4d3c3c5f641474b7819ba43366d63aaa43784246213c3d784b48d228e9b4131a",
       "tests/force_ssl_requests_contract.php": "92a3a4eb5bccc0915a27fde018b42997c9d3b64bc64d776773ce0bc501a97a56",
@@ -5837,7 +5837,7 @@
         "keys": [
           "base_workflow_sha256"
         ],
-        "after": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
+        "after": "b9289693b7c1dce48641c53d0a3e31880d717a48a027a347c0e2d9a4b0ad4581",
         "before": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5"
       },
       {
@@ -5847,7 +5847,7 @@
           ".github/workflows/application-tests.yml"
         ],
         "before": "2c4581815df4a6a63739a9ec633ba3d870cf721ea10ce14d565f9e67b651d68d",
-        "after": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08"
+        "after": "b9289693b7c1dce48641c53d0a3e31880d717a48a027a347c0e2d9a4b0ad4581"
       },
       {
         "keys": [
@@ -5937,13 +5937,13 @@
           "tests/acceptance_artifacts_test.py"
         ],
         "before": "6e6e99384365374987f7f66d096947a1020cd0d68cd801bba13d00b34e4835ab",
-        "after": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc"
+        "after": "75769cac17add25ca739578615cc77757fcaa85a74866aa1d83cf44270227fce"
       }
     ],
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
         "before_sha256": "2c4581815df4a6a63739a9ec633ba3d870cf721ea10ce14d565f9e67b651d68d",
-        "after_sha256": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
+        "after_sha256": "b9289693b7c1dce48641c53d0a3e31880d717a48a027a347c0e2d9a4b0ad4581",
         "changes": [
           {
             "after_start": 371,
@@ -5968,6 +5968,30 @@
             "after_end": 829,
             "before": "",
             "after": "          .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade_test.py --report qa/apache-cloud-site-requests-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade.py\n"
+          },
+          {
+            "after_start": 48,
+            "after_end": 55,
+            "before": "",
+            "after": "      - name: Reclaim unused hosted toolchain disk\n        run: |\n          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's\n          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.\n          sudo rm -rf \"$AGENT_TOOLSDIRECTORY\" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true\n          sudo docker image prune --all --force || true\n          df -h /\n"
+          },
+          {
+            "after_start": 204,
+            "after_end": 211,
+            "before": "",
+            "after": "      - name: Reclaim unused hosted toolchain disk\n        run: |\n          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's\n          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.\n          sudo rm -rf \"$AGENT_TOOLSDIRECTORY\" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true\n          sudo docker image prune --all --force || true\n          df -h /\n"
+          },
+          {
+            "after_start": 611,
+            "after_end": 618,
+            "before": "",
+            "after": "      - name: Reclaim unused hosted toolchain disk\n        run: |\n          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's\n          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.\n          sudo rm -rf \"$AGENT_TOOLSDIRECTORY\" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true\n          sudo docker image prune --all --force || true\n          df -h /\n"
+          },
+          {
+            "after_start": 750,
+            "after_end": 757,
+            "before": "",
+            "after": "      - name: Reclaim unused hosted toolchain disk\n        run: |\n          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's\n          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.\n          sudo rm -rf \"$AGENT_TOOLSDIRECTORY\" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true\n          sudo docker image prune --all --force || true\n          df -h /\n"
           }
         ]
       },
@@ -6219,19 +6243,31 @@
       },
       "tests/acceptance_artifacts_test.py": {
         "before_sha256": "6e6e99384365374987f7f66d096947a1020cd0d68cd801bba13d00b34e4835ab",
-        "after_sha256": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc",
+        "after_sha256": "75769cac17add25ca739578615cc77757fcaa85a74866aa1d83cf44270227fce",
         "changes": [
           {
             "after_start": 1706,
             "after_end": 1852,
             "before": "",
             "after": "_run_before_client_directory_requests = run\n\n\ndef client_directory_requests_inverse(data, delta):\n    if hashlib.sha256(data).hexdigest() != delta['after_sha256']:\n        raise ValueError('Client directory listing requests current source changed')\n    lines = data.decode().splitlines(keepends=True)\n    for change in reversed(delta['changes']):\n        start, end = change['after_start'], change['after_end']\n        if ''.join(lines[start:end]) != change['after']:\n            raise ValueError('Client directory listing requests inverse range changed')\n        lines[start:end] = change['before'].splitlines(keepends=True)\n    result = ''.join(lines).encode()\n    if hashlib.sha256(result).hexdigest() != delta['before_sha256']:\n        raise ValueError('Client directory listing requests predecessor changed')\n    return result\n\n\ndef client_directory_requests_current():\n    current = a.load(ROOT/'tools/acceptance-contract.json'); section = current['client_directory_requests']\n    for path, digest in section['source_sha256'].items():\n        if hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() != digest:\n            raise ValueError('Client directory listing requests source changed: '+path)\n    registry = a.load(ROOT/'tools/acceptance-reports.json')\n    prior = copy.deepcopy(current); del prior['client_directory_requests']\n    additions = section['native_additions']; position = prior['native_commands'].index(section['native_after'])+1\n    if prior['native_commands'][position:position+len(additions)] != additions or any(prior['native_commands'].count(c) != 1 for c in additions):\n        raise ValueError('Client directory listing requests native recipe changed')\n    del prior['native_commands'][position:position+len(additions)]\n    # The cloud-request family is the newest era: the served pre-merge contract\n    # drops both cloud sections and their seven anchored native commands.\n    cloud_intake_additions = prior['cloud_site_intake']['additions']\n    cloud_intake_position = prior['native_commands'].index(prior['cloud_site_intake']['additions_after'])+1\n    if prior['native_commands'][cloud_intake_position:cloud_intake_position+len(cloud_intake_additions)] != cloud_intake_additions:\n        raise ValueError('Client directory listing requests cloud intake recipe changed')\n    del prior['native_commands'][cloud_intake_position:cloud_intake_position+len(cloud_intake_additions)]\n    cloud_request_additions = prior['cloud_site_requests']['additions']\n    cloud_position = prior['native_commands'].index(prior['cloud_site_requests']['additions_after'])+1\n    if prior['native_commands'][cloud_position:cloud_position+len(cloud_request_additions)] != cloud_request_additions:\n        raise ValueError('Client directory listing requests cloud request recipe changed')\n    del prior['native_commands'][cloud_position:cloud_position+len(cloud_request_additions)]\n    del prior['cloud_site_intake']; del prior['cloud_site_requests']\n    for pin in section['repins']:\n        cursor = prior\n        for key in pin['keys'][:-1]: cursor = cursor[key]\n        key = pin['keys'][-1]\n        if cursor[key] != pin['after']: raise ValueError('Client directory listing requests current pin changed')\n        cursor[key] = pin['before']\n    dump = lambda value: json.dumps(value, indent=2).encode()+b'\\n'\n    if hashlib.sha256(dump(prior)).hexdigest() != section['predecessor_contract_sha256']:\n        raise ValueError('Client directory listing requests predecessor contract changed')\n    cloud_report_names = set(current['cloud_site_requests']['reports'])|set(current['cloud_site_requests']['upgrade']['reports'])|set(current['cloud_site_intake']['reports'])\n    old_reports = copy.deepcopy(registry)\n    for phase in ('browser', 'final'):\n        if any(old_reports[phase].count(name) != 1 for name in section['reports']): raise ValueError('Client directory listing requests report missing or duplicated')\n        old_reports[phase] = [name for name in old_reports[phase] if name not in section['reports'] and name not in cloud_report_names]\n    if hashlib.sha256(dump(old_reports)).hexdigest() != section['predecessor_reports_sha256']:\n        raise ValueError('Client directory listing requests predecessor reports changed')\n    historical = {'tools/acceptance-contract.json': dump(prior), 'tools/acceptance-reports.json': dump(old_reports)}\n    for path, delta in section['source_deltas'].items():\n        historical[path] = client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n'), delta)\n    return current, registry, section, historical\n\n\ndef client_directory_requests_checks(tmp, current, registry, section, historical):\n    prior = json.loads(historical['tools/acceptance-contract.json'])\n    cloud_additions = current['cloud_site_requests']['additions'] + current['cloud_site_intake']['additions']\n    check('Client directory listing requests preserves all226 native recipes and adds seven', len(current['native_commands']) == 240 and [c for c in current['native_commands'] if c not in section['native_additions'] and c not in cloud_additions] == prior['native_commands'])\n    check('Client directory listing requests reports are eight unique producers', len(section['reports']) == len(set(section['reports'])) == 8)\n    workflow = (ROOT/'.github/workflows/application-tests.yml').read_text()\n    previous = historical['.github/workflows/application-tests.yml'].decode()\n    inserted = ''.join('          '+command+'\\n' for command in section['native_additions'])\n    browser = '          '+section['browser_command']+'\\n'\n    cloud_native = ''.join('          '+command+'\\n' for command in cloud_additions)\n    cloud_apache = ''.join('          '+command+'\\n' for command in current['cloud_site_requests']['upgrade']['commands'])\n    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1).replace(cloud_native, '', 1).replace(cloud_apache, '', 1) == previous)\n    check('Client directory listing requests browser uses selected PHP after Python environment setup', section['browser_command'].startswith('.ci-venv/bin/python ') and '--php \"$PHP_BINARY\"' in section['browser_command'] and workflow.index('.ci-venv/bin/pip install') < workflow.index(section['browser_command']))\n    check('Client directory listing requests native requires explicit isolated test opt in', section['native_additions'][-1] == 'CWP_TEST_DIRECTORY_REQUESTS=1 \"$PHP_BINARY\" tests/provider_directory_listing_requests_native.php' and valid_port_context(workflow))\n    check('Client directory listing requests adds no unreviewed capture expectations', section['screenshots'] == [])\n    for path, digest in section['source_sha256'].items():\n        check('Client directory listing requests binds exact source '+path, hashlib.sha256((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    for path, delta in section['source_deltas'].items():\n        check('Client directory listing requests retains exact predecessor '+path, hashlib.sha256(historical[path]).hexdigest() == delta['before_sha256'])\n        deny('Client directory listing requests modified current source refuses '+path, lambda path=path, delta=delta: client_directory_requests_inverse((ROOT/path).read_bytes().replace(b'\\r\\n', b'\\n')+b'\\n', delta))\n    cloud_report_names = set(current['cloud_site_requests']['reports'])|set(current['cloud_site_requests']['upgrade']['reports'])|set(current['cloud_site_intake']['reports'])\n    for phase, expected in [('browser',264),('final',323)]:\n        check('Client directory listing requests preserves all original '+phase+' reports', len(registry[phase]) == len(set(registry[phase])) == expected and [n for n in registry[phase] if n not in section['reports'] and n not in cloud_report_names] == json.loads(historical['tools/acceptance-reports.json'])[phase])\n    root = tmp/'client-directory-requests-artifacts'; source = root/'source'; ctx = context(); fixtures(source, ctx)\n    incoming = root/'partitions'; bindings = {}; jobs = {}; input_sha = '7'*64\n    for index, lane in enumerate(a.LANES):\n        job = root/('job-'+lane); job.mkdir(parents=True); jobs[lane] = job\n        if lane == 'build': shutil.copytree(source/'dist', job/'dist'); shutil.copytree(source/'qa', job/'qa')\n        elif lane == 'native-browser':\n            for name in registry['browser']:\n                if name not in a.BUILD_QA: named(job/'qa'/name)\n        else:\n            for name in registry['final']:\n                if name not in registry['browser'] and a.evidence_allowed('qa/'+name,lane): named(job/'qa'/name)\n        digest = a.seal(job, ctx, incoming/lane, lane, outcomes(lane), input_sha)\n        bindings[lane] = {'result':'success','artifact_id':str(index+81),'sha256':digest,**({'input_sha256':input_sha} if lane == 'build' else {}),**({'checkpoint_id':'89','checkpoint_digest':'8'*64} if lane == 'native-browser' else {})}\n    seq = 0\n    def combine():\n        nonlocal seq\n        seq += 1; return a.aggregate(root/('combined-'+str(seq)), ctx, incoming, bindings, registry)\n    def reseal():\n        job = jobs['native-browser']\n        for path in (job/'.acceptance/checkpoint', incoming/'native-browser'):\n            if path.exists():\n                assert path.resolve().is_relative_to(root.resolve()); shutil.rmtree(path)\n        bindings['native-browser']['sha256'] = a.seal(job, ctx, incoming/'native-browser', 'native-browser', outcomes('native-browser'), input_sha)\n    result = combine()\n    check('Client directory listing requests aggregate requires all314 reports', result['complete'] is True and set(result['reports']) == set(registry['final']))\n    for name in section['reports']:\n        path = jobs['native-browser']/'qa'/name; path.unlink(); reseal(); result = combine()\n        check('Client directory listing requests missing report refuses '+name, result['complete'] is False and 'Missing reports: '+name in result['errors'])\n        named(path,False); reseal(); result = combine()\n        check('Client directory listing requests failed report refuses '+name, result['complete'] is False and result['reports'][name]['passed'] is False)\n        named(path)\n        check('Client directory listing requests report only belongs to native-browser '+name, a.evidence_allowed('qa/'+name,'native-browser') and not any(a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))\n    named(jobs['native-browser']/'qa/client-directory-requests-unexpected-results.json'); reseal(); result = combine()\n    check('Client directory listing requests unexpected report refuses', result['complete'] is False and 'Unexpected reports: client-directory-requests-unexpected-results.json' in result['errors'])\n    check('Client directory listing requests private fixture files remain excluded', not a.evidence_allowed('test-runtime/directory-listing-requests-private/session.json','native-browser') and not a.evidence_allowed('qa/directory-listing-requests-private/session.json','native-browser'))\n\n\ndef run(tmp):\n    cloud_workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()\n    cloud_native=cloud_workflow.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    cloud_commands=[line.strip() for line in cloud_native.splitlines()]\n    cloud_contract=a.load(ROOT/'tools/acceptance-contract.json')\n    from cloud_site_intake_wiring import verify as cloud_intake_wiring\n    cloud_commands,cloud_request_reports=cloud_intake_wiring(ROOT,cloud_contract,cloud_workflow,cloud_commands,check)\n    cloud_contract={**cloud_contract,'native_commands':cloud_commands}\n    from cloud_site_requests_wiring import verify as cloud_request_wiring\n    cloud_commands=cloud_request_wiring(ROOT,cloud_contract,cloud_workflow,cloud_commands,check,cloud_request_reports)\n    current, registry, section, historical = client_directory_requests_current()\n    originals = {str((ROOT/path).resolve()):data for path,data in historical.items()}\n    read_bytes, read_text = Path.read_bytes, Path.read_text\n    def previous_bytes(path):\n        key = str(path.resolve()); return originals[key] if key in originals else read_bytes(path)\n    def previous_text(path,*args,**kwargs):\n        key = str(path.resolve()); return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)\n    with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):\n        _run_before_client_directory_requests(tmp)\n    client_directory_requests_checks(tmp,current,registry,section,historical)\n\n\n"
+          },
+          {
+            "after_start": 1781,
+            "after_end": 1782,
+            "before": "",
+            "after": "    reclaim_step = '      - name: Reclaim unused hosted toolchain disk\\n        run: |\\n          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite\\'s\\n          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.\\n          sudo rm -rf \"$AGENT_TOOLSDIRECTORY\" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true\\n          sudo docker image prune --all --force || true\\n          df -h /\\n'\n"
+          },
+          {
+            "after_start": 1782,
+            "after_end": 1783,
+            "before": "    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.replace(inserted, '', 1).replace(browser, '', 1).replace(cloud_native, '', 1).replace(cloud_apache, '', 1) == previous)\n",
+            "after": "    check('Client directory listing requests workflow adds only exact native and browser commands', workflow.count(inserted) == 1 and workflow.count(browser) == 1 and workflow.count(reclaim_step) == 4 and workflow.replace(inserted, '', 1).replace(browser, '', 1).replace(cloud_native, '', 1).replace(cloud_apache, '', 1).replace(reclaim_step, '') == previous)\n"
           }
         ]
       }
     },
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "d262cb6592a88caa4b89fc9670fd1a30000b4483b5e665563616685bc1af7b08",
+      ".github/workflows/application-tests.yml": "b9289693b7c1dce48641c53d0a3e31880d717a48a027a347c0e2d9a4b0ad4581",
       "foundation/provider/ProviderGateway.php": "c6885ca2170ca0ea9d854a237fc160a2f0ca950633dd49a1051b82e0f2eaf753",
       "foundation/twentyi-directory-listing/DirectoryListingReader.php": "4f90f078f65153c631728d72a35f779a224acf1bbdc77a700bb38251524f1910",
       "foundation/twentyi-operations/DirectoryIndexingChange.php": "6b2f1b9ada82c1055f834a7e3115e8a7860ef566dc0ba42d035475751e9fb98c",
@@ -6267,7 +6303,7 @@
       "site/portal/controllers/directory_listing_requests.php": "b8f4c368ffee07c47a72c0e8aa3bc0dd191166a8502b907fb49c61a081b3f628",
       "site/portal/controllers/router.php": "e9ba4f0d0486caf05c8abc38a40f5b60d5ca3fc73fa13a4fbb638ca44256802e",
       "site/portal/views/directory_listing.php": "4efad35eeefb0b466d909d9e451cb40a0f12a61fd38a9f0d06e50e745dbe7236",
-      "tests/acceptance_artifacts_test.py": "9fc3721cf79ce6d214ab377122caf165bdcd71e94cda3e2140e1f2aad9bccdcc",
+      "tests/acceptance_artifacts_test.py": "75769cac17add25ca739578615cc77757fcaa85a74866aa1d83cf44270227fce",
       "tests/client_directory_listing_requests_browser.py": "c55749c88b84aa397f7fdac90d86b8c1896d015a3019b3a6ec07cd67e5461614",
       "tests/client_directory_listing_requests_http_fixture.php": "47bc14c607aff1c36cc06b2ced90013b9c9cf552b4bca5bbf9950d650a58d749",
       "tests/directory_listing_requests_contract.php": "6941d3e02317aaaec37e4df6f74beeb06a3184036417550c1d5fc226b7be9a9e",

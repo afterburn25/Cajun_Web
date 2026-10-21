@@ -46,6 +46,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Reclaim unused hosted toolchain disk
+        run: |
+          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's
+          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true
+          sudo docker image prune --all --force || true
+          df -h /
       - name: Prepare isolated runtime and evidence directory
         id: setup
         run: |
@@ -195,6 +202,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Reclaim unused hosted toolchain disk
+        run: |
+          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's
+          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true
+          sudo docker image prune --all --force || true
+          df -h /
       - name: Prepare isolated runtime and evidence directory
         id: setup
         env:
@@ -595,6 +609,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Reclaim unused hosted toolchain disk
+        run: |
+          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's
+          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true
+          sudo docker image prune --all --force || true
+          df -h /
       - name: Prepare isolated runtime and evidence directory
         id: setup
         run: |
@@ -727,6 +748,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Reclaim unused hosted toolchain disk
+        run: |
+          # Hosted runners preinstall ~14GB of unrelated toolchains; the suite's
+          # MariaDB plus release fixtures filled the disk (errno=28) on past runs.
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/android || true
+          sudo docker image prune --all --force || true
+          df -h /
       - name: Prepare isolated runtime and evidence directory
         id: setup
         env:
