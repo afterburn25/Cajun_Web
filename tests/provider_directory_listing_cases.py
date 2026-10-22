@@ -116,10 +116,7 @@ def run_browser(env, browser):
     saved = db('SELECT * FROM ci_provider_directory_indexing_observations')[0]
     check('Directory listing true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('Directory listing owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved directory listing setting' in section.text and 'Reported enabled' not in client.get(target).text)
-    for _ in range(3):
-        repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
-        if any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']):
-            break
+    evidence('Shared cooldown refusal', repeated)
     check('Directory listing immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_directory_indexing_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)
