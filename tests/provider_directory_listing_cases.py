@@ -115,6 +115,10 @@ def run_browser(env, browser):
     saved = db('SELECT * FROM ci_provider_directory_indexing_observations')[0]
     repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#directory-listing')
+    (qa / 'directory-listing-owner-refresh-diagnostics.json').write_text(json.dumps({
+        'status': response.status_code, 'calls_delta': provider.calls - calls,
+        'get_paths_tail': provider.get_paths[-3:], 'section_present': section is not None,
+        'excerpt': (section.text if section is not None else response.text)[:1500]}, indent=2))
     check('Directory listing owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2001/web/directoryIndexing' and section is not None and 'Reported enabled' in section.text and 'Latest saved directory listing setting' in section.text)
     check('Directory listing true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('Directory listing owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved directory listing setting' in section.text and 'Reported enabled' not in client.get(target).text)
