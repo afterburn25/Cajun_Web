@@ -3596,3 +3596,18 @@ have masked those refusals. `14ff4c43` removes journal memoization entirely
 (keeps the single batched audit fetch) and limits history validation reuse to
 read-only calls outside the caller transaction; every in-transaction path still
 revalidates fully.
+
+### Continuation — navigation bound and systemic render-cost finding
+
+`df873c66`/`60000ms` continuation: provider-settings render latency is not
+candidate-specific. The docroots diagnostic run 39821734667 (main-era code)
+died on a 30-second `page.goto` to provider-settings; its HTTP log shows
+last-third renders at median 15s/p90 27s as audit history accumulates — the
+unindexed `BINARY action`/`detail` audit scans replayed per journal event per
+render are the dominant cost. The php-controls run showed the same growth
+(max 17s). This warrants a separate main-era fix (action index plus
+ci-prefiltered lookups); the candidate carries the batched journal fetch and
+transaction-scoped history reuse from ebebd533/14ff4c43, plus a 60-second
+wait bound matching the 5a262898 congestion precedent. Fresh acceptance runs
+39856701399 (dispatch) and 39856210276 (push) cover df873c66; earlier
+ebebd533 run 39855317065 was cancelled as superseded.
