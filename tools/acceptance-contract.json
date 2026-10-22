@@ -1527,7 +1527,7 @@
       "tests/support_stackcp_executor.php": "a824613b338947542d32e772348e33ad809a98cd24b6e2d2d33a666192010848",
       "tests/support_stackcp_http.py": "509acc94ac230d141a2b038dd6cb3c8d528511db37d640a782079ea441e50bb4",
       "tests/support_stackcp_http_fixture.php": "4c902310e251c12972c5bb62da28c81812e9fda7abf39a1a21d274fd8ce884fd",
-      "tests/support_stackcp_native.php": "df43c87d00834be42262977d2d28747cbc376954356aa65a62947f16bd793041",
+      "tests/support_stackcp_native.php": "62bff50b941d10ff5ae9f5fe76e8ed0f95533f4c5aff30a9e082417f5415dcc5",
       "tests/support_stackcp_permissions.php": "63cced5e543e277d3f5d419820b4bfc2cffaf7f03f3cbeff3b90b899acecd5b6",
       "tests/support_stackcp_views.php": "c62ff25a54e9680e65c416533a90bee03eccd8b9f7b3829327850983ab7a6ecb"
     },
