@@ -1,6 +1,7 @@
 """Exact packaged Directory listing forms and saved client observation; loopback TLS only."""
 import hashlib
 import json
+import threading
 import time
 import requests
 from urllib.parse import parse_qs, urlparse
@@ -75,16 +76,18 @@ def run_browser(env, browser):
     profile = db('SELECT id,revision FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]
     client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']
     prepare = 'provider_inventory_directory_indexing_prepare'; refresh = 'provider_inventory_directory_indexing_refresh'; share = 'provider_inventory_directory_indexing_share'
-    def post(action, **fields):
-        page = owner.get(url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'current_password': OWNER, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
+    def build(session, action, **fields):
+        page = session.get(url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'current_password': OWNER, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
         for form in forms:
             if form.select_one('input[name=action][value="' + action + '"]'):
                 link = form.select_one('input[name=link_id]')
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
-        post.last = data
-        return owner.post(url, data=data)
+        return data
+    def post(action, **fields):
+        post.last = build(owner, action, **fields)
+        return owner.post(url, data=post.last)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
         time.sleep(max(0, int(last or 0) + 31 - time.time()))
@@ -108,8 +111,31 @@ def run_browser(env, browser):
     for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'}), ('binding', {'binding_sha256': 'a' * 64})]:
         post(refresh, link_id=link['id'], **fields)
         check('Directory listing refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_directory_indexing_reads'))
-    cool(); provider.directory_indexing = True; response = post(refresh, link_id=link['id'])
-    repeated = owner.post(url, data=post.last)
+    cool(); provider.directory_indexing = True
+    # The repeat must reach the application inside the shared 30-second cooldown.
+    # Posting it only after the first response returns lets a congested runner
+    # expire the window first, so dispatch the primary refresh on a thread and,
+    # once the ledger records its admission, repost from a second owner session.
+    # Reusing the same PHP session would serialize on its lock until the window
+    # lapses; a second login keeps the authority and cooldown checks identical.
+    data = build(owner, refresh, link_id=link['id']); post.last = data
+    twin = requests.Session(); submit(twin, admin + '?view=login', 'login', {'email': directory_indexing_email, 'password': OWNER})
+    held = {}
+    def run_primary():
+        try:
+            held['response'] = owner.post(url, data=data)
+        except Exception as failure:
+            held['error'] = failure
+    primary = threading.Thread(target=run_primary); primary.start()
+    admitted = db('SELECT COUNT(*) AS n FROM ci_provider_refreshes WHERE actor_id=?', [directory_indexing_owner['id']])[0]['n']
+    deadline = time.time() + 240
+    while db('SELECT COUNT(*) AS n FROM ci_provider_refreshes WHERE actor_id=?', [directory_indexing_owner['id']])[0]['n'] == admitted and time.time() < deadline:
+        time.sleep(0.25)
+    repeated = twin.post(url, data=build(twin, refresh, link_id=link['id']))
+    primary.join()
+    if 'error' in held:
+        raise held['error']
+    response = held['response']; twin.close()
     evidence('Complete Directory listing observation', response)
     section = soup(response).select_one('#directory-listing')
     check('Directory listing owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2001/web/directoryIndexing' and section is not None and 'Reported enabled' in section.text and 'Latest saved directory listing setting' in section.text)
