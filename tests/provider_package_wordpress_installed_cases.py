@@ -109,8 +109,8 @@ def run_browser(env, browser):
         post(refresh, link_id=link['id'], **fields)
         check('WordPress installation refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_wp_installed_reads'))
     cool(); provider.wp_installed = True; response = post(refresh, link_id=link['id'])
-    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     evidence('Complete WordPress installation observation', response)
+    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#package-wordpress-installed')
     check('WordPress installation owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2201/web/wordpressIsInstalled' and section is not None and 'WordPress reported installed' in section.text and 'Latest saved WordPress installation indication' in section.text)
     saved = db('SELECT * FROM ci_provider_wp_installed_observations')[0]
