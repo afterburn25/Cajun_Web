@@ -122,3 +122,11 @@
 [data-directory-requests] .directory-request-decline{border-top:1px solid #ffffff26;margin-top:24px;padding-top:16px}
 [data-directory-requests] summary{cursor:pointer;font-weight:700;padding:8px 0}
 [data-directory-requests] .directory-request-decline form{margin-top:16px}
+
+/* Client subdomain review forms share readable controls in both workspaces. */
+.subdomain-requests .workspace-card,.subdomain-requests form,.subdomain-requests label{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.subdomain-requests label,.admin-body .subdomain-requests label,.subdomain-requests .btn,.subdomain-requests summary{font-size:14px}
+.subdomain-requests .hint{font-size:13px;line-height:1.6}
+.subdomain-requests .btn{white-space:normal;text-align:center;max-width:100%;overflow-wrap:anywhere}
+.subdomain-requests button:disabled{opacity:.55;cursor:not-allowed}
+.subdomain-requests :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}

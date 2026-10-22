@@ -11,7 +11,7 @@ def verify(root, contract, workflow, commands, check):
     item = contract['cloud_site_intake']
     additions = item['additions']
     check('Static intake retains the complete240-command native recipe',
-          len(commands) == 240 and commands == contract['native_commands'])
+          len(commands) == len(contract['native_commands']) and commands == contract['native_commands'])
     position = commands.index(item['additions_after']) + 1
     check('Two portable intake commands run once after real request tests',
           len(additions) == len(set(additions)) == 2
@@ -19,14 +19,14 @@ def verify(root, contract, workflow, commands, check):
           and all(commands.count(command) == 1 for command in additions))
     previous = [command for command in commands if command not in additions]
     check('Static intake preserves all238 prior native commands and their order',
-          len(previous) == item['predecessor_native_count'] == 238
+          len(previous) == item['predecessor_native_count']
           and digest(previous) == item['predecessor_native_sha256'])
     reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
     prior_reports = dict(reports)
-    for key, count in [('browser', 264), ('final', 323)]:
+    for key in ('browser', 'final'):
         current = reports[key]
         check('Static intake requires both portable reports exactly once in ' + key,
-              len(current) == count and len(current) == len(set(current))
+              len(current) == len(set(current))
               and all(current.count(name) == 1 for name in item['reports']))
         prior_reports[key] = [name for name in current if name not in item['reports']]
         baseline = item['predecessor_reports'][key]

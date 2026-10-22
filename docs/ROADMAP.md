@@ -178,6 +178,21 @@ Recorded 327 acknowledged cancellation requests for superseded, unexecuted compo
 ## 2026-10-18 — original catalog runtime review
 
 The four supported-runtime producer sets for the original1.26 catalog candidate now pass. [Saved-artifact review](RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md) completes all four unchanged local aggregates, package/source comparisons and 16 populated upgrade scopes while retaining the queued hosted final jobs and later capture-correction gate. This is verification progress, not publication or completion of full20i. No new roadmap capability or live operation is claimed.
+## 2026-10-19 — subdomain monitoring notices
+
+The [subdomain notification candidate](TWENTYI_SUBDOMAIN_NOTIFICATIONS.md) connects retained owner/client request progress to the existing activity center and bell. Local function checks and source review are available; native SQL, installed workflow/capture acceptance, integration and publication remain pending. This advances portal monitoring without claiming complete20i, DNS readiness or website uptime monitoring.
+
+## 2026-10-18 — subdomain installed acceptance continuation
+
+[Installed workflow coverage](TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md) follows PR236 on a separate candidate. Real owner/client HTTP handlers, loopback TLS provider responses, independent readback and six required desktop/mobile captures target the remaining verification gap. Prepared tests are not completed runtime acceptance. Full 20i and the existing integration/release gates remain unfinished.
+
+## 2026-10-18 — client subdomain request workflow
+
+[Client requests](TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) extend the owner operation from `b8c316b6` on a separate branch. The increment covers assigned parent selection, pending withdrawal, owner decline/approval, an exact provider-attempt link and safe client progress. Database, installed application and combined release acceptance remain required. Full 20i, provider catalog/image coverage and the remaining roadmap are not marked complete.
+
+## 2026-10-18 — hosting subdomain workflow candidate
+
+Owner subdomain addition now has a typed request, native approval/history, admin forms and independent name readback on `codex/twentyi-subdomain-add`. [Scope and validation](TWENTYI_SUBDOMAIN_ADDITIONS.md). Native/full application acceptance and release remain pending. This advances Hosting DNS; client-request forms, removal, broader DNS management and complete 20i remain unfinished.
 
 ## 2026-10-18 — verification throughput follow-through
 

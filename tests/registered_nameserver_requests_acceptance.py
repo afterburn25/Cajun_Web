@@ -88,8 +88,8 @@ UNCHANGED_PATHS = {
     'tests/registered_nameservers_upgrade_test.py',
     'tools/acceptance_artifacts.py',
 }
-CONTRACT_SHA256 = '88b0bcc8167dfee1f4c2c0b90b36870382bf28c94b117051898adbf2b5199f35'
-REPORTS_SHA256 = 'e6161a58263d6666f0aeda828d34843b986353efbcc49afc08d0c5c7bed4ceb1'
+CONTRACT_SHA256 = '4b7b9dc936ba2f9ad4195fbe627a9246c6deb1b36d2ac6551f5795c9e7686969'
+REPORTS_SHA256 = '56c100febbcdaf947d7cf6f3426fb45af3d09939c6bf4fe17443127ceaf4e37e'
 # END FIXED SOURCE INVENTORY
 OLD_MINIMAL = '"$PHP_BINARY" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json'
 FIXED_MINIMAL = '"$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json'
@@ -134,12 +134,12 @@ def require(condition, message):
 
 
 def commands_predecessor(commands):
-    require(len(commands) == len(set(commands)) == 210, 'Exact client-request command inventory required')
+    require(len(commands) == len(set(commands)) == 217, 'Exact client-request command inventory required')
     position = commands.index('"$PHP_BINARY" tests/registered_nameserver_changes_native.php') + 1
     require(commands[position:position + len(NATIVE)] == NATIVE, 'Exact client-request command insertion required')
     require(commands.count(FIXED_MINIMAL) == 1 and OLD_MINIMAL not in commands, 'Explicit distro minimal dependency correction required')
     prior = [OLD_MINIMAL if command == FIXED_MINIMAL else command for command in commands if command not in NATIVE]
-    require(len(prior) == 201, 'All original native commands required')
+    require(len(prior) == 208, 'All original native commands required')
     return prior
 
 
@@ -152,7 +152,7 @@ def reports_predecessor(reports, extension):
     for lane, names in additions.items():
         require(len(reports[lane]) == len(set(reports[lane])) and all(reports[lane].count(n) == 1 for n in names), 'Missing or duplicate client-request report')
         prior[lane] = [name for name in reports[lane] if name not in names]
-    require(len(prior['browser']) == 219 and len(prior['final']) == 274
+    require(len(prior['browser']) == 226 and len(prior['final']) == 281
             and sha(canonical(prior)) == extension['predecessor_reports_sha256'], 'Original complete report sequence changed')
     return prior
 
@@ -191,8 +191,8 @@ def verify(a, root, tmp, check, deny, contract):
               for path, expected in extension['unchanged_source_sha256'].items()))
     reports = a.load(root / 'tools/acceptance-reports.json')
     preceding_reports = reports_predecessor(reports, extension)
-    check('Client nameserver actual report inventory is227 browser and284 final',
-          len(reports['browser']) == 228 and len(reports['final']) == 285
+    check('Client nameserver actual report inventory is234 browser and291 final',
+          len(reports['browser']) == 235 and len(reports['final']) == 292
           and sha(canonical(preceding_reports)) == REPORTS_SHA256)
     for label in ('missing', 'duplicate', 'changed predecessor'):
         wrong = copy.deepcopy(reports)

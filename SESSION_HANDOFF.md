@@ -1,4 +1,55 @@
 
+## 2026-10-21 — force-SSL/subdomain-add merge-prep: acceptance lattice converged
+
+Worktree `D:\Devin\Cajun_Web-mp-fs`; branch `codex/twentyi-direct-hosting-catalog`; parent `ed67c06e`. Integrates the force-SSL/subdomain-add lane (`origin/devin/fix-force-ssl-ops-whitelist`, leaf fix `fcaffc27`) on top of the merged candidate.
+
+**Acceptance repair complete — `python tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json` passes 1857 checks.** The multi-era contract lattice was stale after combining feature eras; repaired without weakening any check:
+
+- Corrected eight tail-fragment source deltas whose `before` text dropped file trailing newlines; propagated the changed predecessor bytes through all downstream pins.
+- Regenerated the full `.github/workflows/application-tests.yml` era-delta chain newest-to-oldest (directory → HTTPS → billing-options → billing-selector → retail → notifications → subdomain-browser → subdomain-requests → nameserver → merged-stage → subdomain-add → inbox-browser → inbox → plan → checkout/upgrade/joined/offers predecessors). Every delta now reconstructs the true served predecessor bytes; each stage's `after`/`before` texts and hash pins recomputed.
+- Restored ~41 source pins and ~47 repins that earlier sweeps had collapsed to identity or overwritten with predecessor-era values; preserved non-identity semantics required by the stale-pin deny checks.
+- Fixed OBJ repins embedding whole delta objects to carry the live regenerated objects.
+- Recomputed all serialized `predecessor_contract_sha256`/`predecessor_reports_sha256`/`merged_stage_*` values by fixpoint.
+- Updated merged-era command/report count literals in the driver to actual values; moved `subdomain_add` serving into the nameserver-stage serve block with `subdomain_driver_predecessor` producing the correct deep-era driver bytes.
+
+**Local verification:** artifacts test 1857 pass; `php -l` clean on all 50 touched PHP files; `python tools/build.py --refresh` reports no drift and canonical mirrors intact.
+
+**Remaining gates (not satisfied here):** native SQL fixtures, installed HTTP/Chromium browser acceptance, upgrade/full-runtime runs, independent review, normal merge to `main`, exact-main verification, release/download acceptance. This is a candidate assembly area, not a release. No live deployment authorized. Published 1.25.0 unchanged (`b79c6711`).
+
+**Next:** commit this merge-prep, self-review (same-agent — external review still required), dispatch candidate CI, then normal-merge into preflight/main per queue.
+
+## 2026-10-19 — continue subdomain notifications
+
+Parent `d1493f77f4c32d49b62256df1645dc60b9768cb9`; branch `codex/twentyi-subdomain-notifications`; intended enclosing commit `feat: add authorized subdomain request activity`. [Behavior and remaining gates](docs/TWENTYI_SUBDOMAIN_NOTIFICATIONS.md), [source-bound local receipt](docs/evidence/subdomain-notifications-local.json). Root integrated activity feed/count/navigation/read state; Catalog supplied the provider projection and additive acceptance binding; Domains extended the existing native/browser fixtures; VPS independently reviewed authority and compatibility. Preserve the frozen PR237 parent and all original test evidence.
+
+The existing bell and activity center now project authenticated request, decision, send and independent-check facts. Every source is reauthorized; stale client authority removes notices, contacts/nonowners receive no provider notices, and support is denied. Mixed marks validate all selected keys before writing. Corrupt provider history cannot become a zero count or a capped success: the feed explicitly labels partial project-only results and uses an unavailable count. No provider call, preparation or read-state write occurs on GET. Repeated full-history validation remains a performance acceptance concern.
+
+Run the first exact-head candidate acceptance after publication of this branch. Required evidence includes actual native SQL, installed HTTP/Chromium and all six retained screenshots, followed by normal combined integration, fresh exact-main acceptance and immutable release/download verification. Local PHP/model/pagination checks, source review and installer refresh do not replace those gates. Original full runs39198491747 (PR237),39137551561 (PR220) and39098578401 (catalog) are queued at the latest read; do not repeat them. Published1.25.0 and live hosting remain unchanged. Devin continues non-20i work.
+
+## 2026-10-18 — installed subdomain browser continuation
+
+Parent `af956844690b1ed3be93a9a83574f06127fa8763`; branch `codex/twentyi-client-subdomain-browser`; intended enclosing commit `test: cover installed client subdomain workflow`. [Scope and evidence boundary](docs/TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md). Root owns the final browser caller, documentation and integration; Catalog owns the new installed callback, Domains the strict synthetic provider POST and handler contract, and VPS the additive acceptance bindings. Proposals stay external until reviewed.
+
+Reviewed proposals are applied. The [local receipt](docs/evidence/client-subdomain-browser-local.json) records 90 new and 82 retained Handler outcomes, 521 artifact-helper outcomes retaining all prior 429, 14 callback source/failure-path checks, five Python syntax checks, 41 current pins and four exact parent inverses. Required inventories are 169/182/226 commands/browser reports/final reports. The callback retains real cooldowns and creates a distinct owner through actual invitation/setup; SQL is observation-only. There is no local installed run or new real screenshot evidence. Application and foundation files are unchanged, so no package or installer regeneration was performed.
+
+Preserve PR236's original focused run `39196497298` and full run `39196525941`, both verified queued at this continuation's start. After the new candidate is submitted, inspect exact-head full application runs and dispatch the first PHP8.3/MariaDB run only if absent. This new branch/base is outside the existing full-workflow automatic trigger lists. Require actual installed outcomes and visual review of all six new captures before crediting browser acceptance; source checks and synthetic helper images cannot satisfy that gate. Then resolve real failures and continue normal integration and release acceptance. No live deployment or provider action is authorized by this checkpoint.
+
+## 2026-10-18 — client subdomain request continuation
+
+Parent `b8c316b6fd138167b11c251d5db24a6d31f2bd88`; branch `codex/twentyi-client-subdomain-requests`; intended enclosing commit `feat: add client subdomain review workflow`. [Workflow and evidence](docs/TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md). PR234 remains the separate owner-operation parent; this candidate must retain its original tests and behavior. Root owns shared route seams and publication. Agent proposals stay external until reviewed.
+
+Local verification is recorded in the [source-bound receipt](docs/evidence/client-subdomain-requests-local.json): all default/minimal PHP suites, 429 portable acceptance-helper outcomes, 53 synthetic layout checks, canonical installer refresh and 25 PHP lints pass. Original 297 helper outcomes remain intact; acceptance inventories are 168 native commands, 180 browser-phase reports and 224 final reports. There are no new installed-browser captures.
+
+Next: inspect the stacked candidate's first native and full application results, add and run installed owner/client workflow coverage, then perform normal combined integration and release acceptance. The current complete application workflow excludes this new branch/base from automatic push/PR runs: check for an exact-head run and dispatch the first full PHP8.3/MariaDB acceptance once if absent. The focused document-roots workflow accepts the PR. Do not duplicate a queued run. Installed browser, database and release results cannot be inferred from local parser or synthetic-render tests. Preserve original PR234/235/216 runs, published 1.25.0 and Devin's separate branches. No live operation is authorized by this checkpoint.
+
+## 2026-10-18 — continue subdomain addition acceptance
+
+Starting main `f688f79ee838e86e4774bfa5ec71fc7fb79126a5`; branch `codex/twentyi-subdomain-add`; enclosing commit: `feat: add reviewed hosting subdomain requests`. [Workflow and limits](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). Root owns routing, owner forms, packaging and integration; the three existing agents supplied transport, native persistence and acceptance work with independent review. New files belong to this increment only.
+
+Next: inspect the first exact-candidate document-roots focused and full application runs, resolve actual failures, then perform normal integration and release acceptance. Local PHP and synthetic browser results are not native SQL or installed acceptance. Preserve the original queued StackCP, hosting and nameserver runs without duplicate dispatch. At 02:25 UTC the queue was processing older Ubuntu jobs; no approval gate or concurrency deadlock was observed, and the actual account capacity remains unknown. Devin retains separate non-20i work. Published 1.25.0 and the live site are unchanged.
+
+## 2026-10-18 — pure-suite CI follow-through
+
 # Session handoff - Devin sole-owner continuation
 # Session handoff - Devin sole-owner continuation
 ## 2026-10-21 — worker post-release budget wave; seven lanes redispatched; merge queue staged

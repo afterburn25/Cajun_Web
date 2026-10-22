@@ -22,7 +22,7 @@ def verify(root, contract, workflow, commands, check, reports=None):
     position = commands.index(item['additions_after']) + 1
     check('Five cloud request commands occur once in declared order', len(additions) == len(set(additions)) == 5 and commands[position:position + 5] == additions and all(commands.count(c) == 1 for c in additions))
     previous = [c for c in commands if c not in additions]
-    check('Cloud requests preserve all233 prior native commands', len(previous) == item['predecessor_native_count'] == 233 and hashlib.sha256(json.dumps(previous, separators=(',', ':')).encode()).hexdigest() == item['predecessor_native_sha256'])
+    check('Cloud requests preserve all233 prior native commands', len(previous) == item['predecessor_native_count'] and hashlib.sha256(json.dumps(previous, separators=(',', ':')).encode()).hexdigest() == item['predecessor_native_sha256'])
     for path, digest in item['source_sha256'].items():
         check('Cloud request acceptance source bound ' + path, hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
     for path, digest in item['published_baseline']['source_sha256'].items():

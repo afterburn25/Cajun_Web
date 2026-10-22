@@ -89,9 +89,9 @@ def verify(a, root, tmp, check, deny, contract, source_predecessors=None, report
           and all(sha(root.joinpath(p).read_bytes().replace(b'\r\n', b'\n')) == h for p, h in extension['unchanged_source_sha256'].items()))
     reports = a.load(root / 'tools/acceptance-reports.json') if reports_predecessor is None else reports_predecessor
     preceding_reports = report_predecessor(reports, extension)
-    check('Nameserver installed reports retain all217 browser and270 final predecessors',
-          len(preceding_reports['browser']) == 218 and len(preceding_reports['final']) == 271
-          and len(reports['browser']) == 219 and len(reports['final']) == 274)
+    check('Nameserver installed reports retain all225 browser and278 final predecessors',
+          len(preceding_reports['browser']) == 225 and len(preceding_reports['final']) == 278
+          and len(reports['browser']) == 226 and len(reports['final']) == 281)
     for label in ('missing', 'duplicate', 'changed original'):
         wrong = copy.deepcopy(reports)
         if label == 'missing': wrong['final'].remove(REPORTS['final'][-1])

@@ -8,5 +8,6 @@ if($_SERVER['REQUEST_METHOD']!=='GET'){header('Allow: GET');http_response_code(4
 try{
     $audience=is_string($_GET['audience']??null)?$_GET['audience']:'';$summary=workspace_activity_summary($audience);
     header('Content-Type: application/json; charset=UTF-8');echo json_encode($summary,JSON_THROW_ON_ERROR);
-}catch(PDOException $e){report_error($e);http_response_code(503);header('Content-Type: application/json; charset=UTF-8');echo '{"unavailable":true}';}
+}catch(ActivityProviderUnavailable){http_response_code(503);header('Content-Type: application/json; charset=UTF-8');echo '{"unavailable":true}';}
+catch(PDOException $e){report_error($e);http_response_code(503);header('Content-Type: application/json; charset=UTF-8');echo '{"unavailable":true}';}
 catch(InvalidArgumentException|RuntimeException){http_response_code(204);}

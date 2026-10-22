@@ -99,7 +99,54 @@ class ProviderServer:
         self.package_types=[];self.package_types_mode='success'
         self.renewal_mode='success';self.renewal_posts=[]
         self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}
+        self.subdomain_add_mode='disabled';self.subdomain_add_package_id=None;self.subdomain_add_posts=[]
         class Handler(BaseHTTPRequestHandler):
+            def subdomain_add_reply(self, path, headers, raw):
+                """Opt-in fixed synthetic scope; a POST never supplies its own GET observation."""
+                mode = getattr(fixture, 'subdomain_add_mode', 'disabled')
+                if mode == 'disabled' or '/web/subdomains' not in path:
+                    return None
+                replies = {
+                    'success': (200, b'true'),
+                    'uncertain': (202, b'{"status":"accepted"}'),
+                    'failure': (400, b'{"error":"synthetic refusal"}'),
+                    'authentication': (401, b'private synthetic subdomain response'),
+                    'malformed': (200, b'not JSON'),
+                }
+                valid = (type(fixture.subdomain_add_package_id) is int and fixture.subdomain_add_package_id == 3101
+                         and path == '/package/3101/web/subdomains' and mode in replies
+                         and headers.get('Authorization') == 'Bearer ' + base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode()
+                         and headers.get('Accept') == 'application/json' and headers.get('Content-Type') == 'application/json'
+                         and isinstance(raw, bytes) and 0 < len(raw) <= 8192
+                         and headers.get('Content-Length') == str(len(raw)))
+                payload = None
+                if valid:
+                    try:
+                        payload = json.loads(raw)
+                    except (ValueError, UnicodeError):
+                        valid = False
+                if valid:
+                    valid = (isinstance(payload, dict) and list(payload) == ['add', 'rem']
+                             and isinstance(payload['add'], list) and len(payload['add']) == 1
+                             and payload['rem'] == [] and isinstance(payload['add'][0], str))
+                if valid:
+                    import ipaddress
+                    name = payload['add'][0]
+                    valid = (len(name) <= 253 and name.count('.') >= 2
+                             and all(re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', label) for label in name.split('.')))
+                    try:
+                        ipaddress.ip_address(name)
+                        valid = False
+                    except ValueError:
+                        pass
+                    valid = valid and raw == json.dumps(payload, separators=(',', ':')).encode('ascii')
+                if not valid:
+                    fixture.errors.append('Unexpected subdomain add request')
+                    return 400, b'{"error":"synthetic subdomain scope refused"}'
+                fixture.subdomain_add_posts.append({'path': path, 'body': payload, 'raw': raw.decode('utf-8')})
+                fixture.posts.append({'path': path, 'body': payload})
+                return replies[mode]
+
             def do_GET(self):
                 fixture.calls+=1
                 fixture.get_paths.append(self.path)
@@ -171,6 +218,11 @@ class ProviderServer:
                     return
                 length=int(self.headers.get('Content-Length') or '0')
                 raw=self.rfile.read(length) if 0<length<=8192 else b''
+                subdomain_reply = self.subdomain_add_reply(self.path, self.headers, raw)
+                if subdomain_reply is not None:
+                    status, body = subdomain_reply
+                    self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)
+                    return
                 import re
                 mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')
                 force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')

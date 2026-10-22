@@ -219,6 +219,21 @@ Record327 acknowledged superseded component cancellation requests,224 independen
 ## Unreleased documentation — original catalog runtime evidence
 
 Record four original 1.26 runtime producer sets and successful unchanged local aggregations, authenticated artifacts, identical source-matched packages, 16 populated upgrade scopes and known capture limits. Hosted final acceptance and the corrected capture candidate remain pending. [Evidence and next gates](docs/RELEASE_1.26_ORIGINAL_RUNTIME_REVIEW.md). No application, package or release bytes change.
+## Unreleased — subdomain request activity
+
+Show owner request/withdrawal notices and primary-client review, send and later-check updates in the existing workspace activity center and bell. Add exact-request navigation, independent read state and explicit unavailability when provider history cannot be verified. [Scope and pending acceptance](docs/TWENTYI_SUBDOMAIN_NOTIFICATIONS.md). No released version or live-site change.
+
+## Unreleased — installed subdomain workflow acceptance
+
+Add packaged client/owner HTTP and browser coverage for subdomain requests, with a strict loopback provider fixture, separate approval/readback checks and required desktop/mobile evidence. [Scope and execution status](docs/TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md). This test increment does not claim an installed pass or a release.
+
+## Unreleased — client subdomain requests
+
+Add a dedicated Subdomain requests section for primary clients and the owner, with assigned website choices, pending withdrawal, owner review and saved provider progress. Connect approval to the existing once-only subdomain operation and keep separate readback distinct from website availability. [Scope and acceptance](docs/TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md). This candidate remains unreleased.
+
+## Unreleased — owner hosting subdomain additions
+
+Add one subdomain beneath an explicitly attached parent website, with current owner approval, once-only dispatch and separate provider readback. Retain uncertain outcomes and request history without treating a missing name as permission to resend. Preserve entered names after form errors, and keep long names/actions readable on mobile. [Scope and acceptance](docs/TWENTYI_SUBDOMAIN_ADDITIONS.md). This candidate is not a release or live deployment.
 
 ## Unreleased — isolated pure-suite pull-request filters
 

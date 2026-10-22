@@ -55,9 +55,10 @@ final class FixedHttpTransport implements HttpTransport
             $registrarNameservers = $this->isRegistrarNameservers($request->url);
             $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
             $directoryIndexing = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/directoryIndexing\z~', $path) === 1;
-            $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing;
+            $subdomainAdd = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/subdomains\z~', $path) === 1;
+            $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing && !$subdomainAdd;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing && !$registrarNameservers)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing && !$registrarNameservers && !$subdomainAdd)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
@@ -73,6 +74,10 @@ final class FixedHttpTransport implements HttpTransport
                 require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
                 require_once __DIR__.'/../twentyi-operations/DomainRenewal.php';
                 \CajunWebPro\Foundation\TwentyI\Operations\DomainRenewal::wire($request);
+            }
+            if ($subdomainAdd) {
+                require_once __DIR__.'/../twentyi-operations/SubdomainAdd.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\SubdomainAdd::wire($request);
             }
             if ($directoryIndexing) {
                 require_once __DIR__.'/../twentyi-operations/DirectoryIndexingChange.php';

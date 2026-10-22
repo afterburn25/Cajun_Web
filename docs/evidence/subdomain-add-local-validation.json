@@ -1,0 +1,299 @@
+{
+  "parent": "f688f79ee838e86e4774bfa5ec71fc7fb79126a5",
+  "branch": "codex/twentyi-subdomain-add",
+  "enclosing_commit_subject": "feat: add reviewed hosting subdomain requests",
+  "tests": [
+    {
+      "source": "tests/twentyi-operations/subdomains.php",
+      "source_sha256": "b4d891a3d5922e0a027e8af708d34ce22e1444a4c558f96c124968be9ce4b80e",
+      "mode": "default",
+      "report": "transport-default.json",
+      "report_sha256": "ec5152f699f2ce0146996aa903cfe43f02835590bd5ca8fff21ef2cd322c014e",
+      "passed": true,
+      "checks": 127,
+      "scope": "Actual typed builder, fixed transport validation and shared file-ledger gateway with synthetic responses. No SQL, DNS, provider request, current account authority or installed UI acceptance."
+    },
+    {
+      "source": "tests/twentyi-operations/subdomains.php",
+      "source_sha256": "b4d891a3d5922e0a027e8af708d34ce22e1444a4c558f96c124968be9ce4b80e",
+      "mode": "minimal",
+      "report": "transport-minimal.json",
+      "report_sha256": "ec5152f699f2ce0146996aa903cfe43f02835590bd5ca8fff21ef2cd322c014e",
+      "passed": true,
+      "checks": 127,
+      "scope": "Actual typed builder, fixed transport validation and shared file-ledger gateway with synthetic responses. No SQL, DNS, provider request, current account authority or installed UI acceptance."
+    },
+    {
+      "source": "tests/twentyi-operations/run.php",
+      "source_sha256": "d66d229c7e2392b8642bdc5a235ab6def8432f88eb27fe5611ba6c36e85149b4",
+      "mode": "default",
+      "report": "operations-default.json",
+      "report_sha256": "4baa7accc3b0d86a8a8314172100c07ae4ec0ee9c4649417cde05c0c93af8904",
+      "passed": true,
+      "checks": 230,
+      "scope": "Synthetic write-boundary only; descriptors, request construction and classification. No HTTP transport, credential, database or provider call"
+    },
+    {
+      "source": "tests/twentyi-operations/run.php",
+      "source_sha256": "d66d229c7e2392b8642bdc5a235ab6def8432f88eb27fe5611ba6c36e85149b4",
+      "mode": "minimal",
+      "report": "operations-minimal.json",
+      "report_sha256": "4baa7accc3b0d86a8a8314172100c07ae4ec0ee9c4649417cde05c0c93af8904",
+      "passed": true,
+      "checks": 230,
+      "scope": "Synthetic write-boundary only; descriptors, request construction and classification. No HTTP transport, credential, database or provider call"
+    },
+    {
+      "source": "tests/subdomain_add_contract.php",
+      "source_sha256": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
+      "mode": "default",
+      "report": "service-default.json",
+      "report_sha256": "2ed8135baf0093d7204f93f318679e96e8e091cb70ca8475a0e30da1bb57a470",
+      "passed": true,
+      "checks": 65,
+      "scope": "Actual production parser and closed-history seams; modeled rows only, no SQL/provider/native acceptance."
+    },
+    {
+      "source": "tests/subdomain_add_contract.php",
+      "source_sha256": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
+      "mode": "minimal",
+      "report": "service-minimal.json",
+      "report_sha256": "2ed8135baf0093d7204f93f318679e96e8e091cb70ca8475a0e30da1bb57a470",
+      "passed": true,
+      "checks": 65,
+      "scope": "Actual production parser and closed-history seams; modeled rows only, no SQL/provider/native acceptance."
+    },
+    {
+      "source": "tests/subdomain_add_views.php",
+      "source_sha256": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
+      "mode": "default",
+      "report": "views-default.json",
+      "report_sha256": "0c762a6b4833a229454c8a45a1833b63f6534a2628953fd61fb9ee2d58b5f4c8",
+      "passed": true,
+      "checks": 39,
+      "scope": "Actual PHP form/history renderers with synthetic projections; no SQL, authenticated application, provider or browser execution."
+    },
+    {
+      "source": "tests/subdomain_add_views.php",
+      "source_sha256": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
+      "mode": "minimal",
+      "report": "views-minimal.json",
+      "report_sha256": "0c762a6b4833a229454c8a45a1833b63f6534a2628953fd61fb9ee2d58b5f4c8",
+      "passed": true,
+      "checks": 39,
+      "scope": "Actual PHP form/history renderers with synthetic projections; no SQL, authenticated application, provider or browser execution."
+    },
+    {
+      "report": "browser.json",
+      "report_sha256": "dd04dcf7d518f3a20dc48f825cf20a9b1c6464a123a2052d2490382cf231c677",
+      "passed": true,
+      "checks": 14,
+      "scope": "Actual PHP renderers with synthetic projections and shipping CSS in local Chromium. No installed login, SQL or provider request."
+    },
+    {
+      "report": "acceptance-helper.json",
+      "report_sha256": "6ba4bd2696d8099b03b0f1df2adcf2d1b8222a20c8726a1df84f6243243b5e92",
+      "passed": true,
+      "checks": 297,
+      "scope": "Offline synthetic temporary files and exact transfer helpers; no application, provider, database or CI execution."
+    }
+  ],
+  "touched_php_lints": [
+    {
+      "path": "foundation/twentyi-operations/SubdomainAdd.php",
+      "sha256": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
+      "passed": true
+    },
+    {
+      "path": "foundation/twentyi-operations/TwentyIOperationRegister.php",
+      "sha256": "bd6222b411f70c2420558a7f52ecfb67bf37203f12a205c80917907ad83b67a5",
+      "passed": true
+    },
+    {
+      "path": "foundation/twentyi-operations/TwentyIRequestBuilder.php",
+      "sha256": "02edca3fd9427adee3855d27f12ff2389bc97ccdfe19090cb6943d707cb0a832",
+      "passed": true
+    },
+    {
+      "path": "foundation/twentyi/FixedHttpTransport.php",
+      "sha256": "35f866136fa59882322cece25326df47981f122a8c4e45744e36865d2f93eed6",
+      "passed": true
+    },
+    {
+      "path": "site/admin/controllers/provider_subdomain_add.php",
+      "sha256": "181769b865dfb956dc786a337a716c21dc9699c7a469b143a00c50d1db2f5864",
+      "passed": true
+    },
+    {
+      "path": "site/admin/controllers/providers.php",
+      "sha256": "ef72b9bd806f41e0c05d070c96f358608606fe80ad87c1885f36ec2a99989c34",
+      "passed": true
+    },
+    {
+      "path": "site/admin/views/providers.php",
+      "sha256": "9be3f2b1e2758dc4dbad80ad8287a85952449800940acd30fdc533a32d3f6d9f",
+      "passed": true
+    },
+    {
+      "path": "site/app/providers/subdomain_add.php",
+      "sha256": "a185b699478072323511df9361614719cd55323b893a008a0a7ce134925760a4",
+      "passed": true
+    },
+    {
+      "path": "site/app/providers/subdomain_add_storage.php",
+      "sha256": "71eddcc2b33e92c95e307f402a29288b52e7fef9158c52b51065fcdfa5971e3a",
+      "passed": true
+    },
+    {
+      "path": "site/app/providers/subdomain_add_views.php",
+      "sha256": "423ca5409f66b0b1b1c4fb153483469280ac1b3df0a1a274801e6e9fde5a9759",
+      "passed": true
+    },
+    {
+      "path": "site/database/schema/provider_subdomain_add_schema.php",
+      "sha256": "5da46c0d3f798fd9e2f5a533f930db1bad17f19f8bd40c5c6cd54a1af0486fd1",
+      "passed": true
+    },
+    {
+      "path": "site/includes/foundation/twentyi-operations/SubdomainAdd.php",
+      "sha256": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
+      "passed": true
+    },
+    {
+      "path": "site/includes/foundation/twentyi-operations/TwentyIOperationRegister.php",
+      "sha256": "bd6222b411f70c2420558a7f52ecfb67bf37203f12a205c80917907ad83b67a5",
+      "passed": true
+    },
+    {
+      "path": "site/includes/foundation/twentyi-operations/TwentyIRequestBuilder.php",
+      "sha256": "02edca3fd9427adee3855d27f12ff2389bc97ccdfe19090cb6943d707cb0a832",
+      "passed": true
+    },
+    {
+      "path": "site/includes/foundation/twentyi/FixedHttpTransport.php",
+      "sha256": "35f866136fa59882322cece25326df47981f122a8c4e45744e36865d2f93eed6",
+      "passed": true
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "sha256": "8ca52cfac338564287791903d82cfaf724c8961674dcfbd2033f0f9780417c2b",
+      "passed": true
+    },
+    {
+      "path": "tests/provider_subdomain_add_native.php",
+      "sha256": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
+      "passed": true
+    },
+    {
+      "path": "tests/subdomain_add_contract.php",
+      "sha256": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
+      "passed": true
+    },
+    {
+      "path": "tests/subdomain_add_views.php",
+      "sha256": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
+      "passed": true
+    },
+    {
+      "path": "tests/twentyi-operations/run.php",
+      "sha256": "d66d229c7e2392b8642bdc5a235ab6def8432f88eb27fe5611ba6c36e85149b4",
+      "passed": true
+    },
+    {
+      "path": "tests/twentyi-operations/subdomains.php",
+      "sha256": "b4d891a3d5922e0a027e8af708d34ce22e1444a4c558f96c124968be9ce4b80e",
+      "passed": true
+    }
+  ],
+  "canonical_installer_refresh": {
+    "passed": true,
+    "log_sha256": "ba976e209a189bbdaaf73c8e25419f0d43d46d1b27d94aa65a0763b66b96a3af",
+    "scope": "Shipping PHP lint, JavaScript syntax and regenerated installer inventory; no release archive."
+  },
+  "reviews": [
+    {
+      "receipt": "subdomain-add-transport-proposal/source-review.json",
+      "sha256": "930a5f985cb725f0efaa413013185588c9279bea14063f81a2284596203d61f6",
+      "scope": "Source/offline review only; no native SQL or installed acceptance."
+    },
+    {
+      "receipt": "subdomain-add-native-proposal/source-review.json",
+      "sha256": "28f74a68b7a4aaaf3f140d2a8aaf077f3e29c7ead65600694b5e85514498b4cb",
+      "scope": "Source/offline review only; no native SQL or installed acceptance."
+    },
+    {
+      "receipt": "subdomain-add-runtime-review/review.json",
+      "sha256": "3a188104c412b29dcc01606ff518a9e2033dfdcc0c5a7faee8b2519477ea43cb",
+      "scope": "Source/offline review only; no native SQL or installed acceptance."
+    },
+    {
+      "receipt": "subdomain-add-acceptance-proposal/source-review.json",
+      "sha256": "2c6182f9f695ecd1e4d9abb89caf13c9a98479927c7c27bdd1da8a4e42991b4e",
+      "scope": "Source/offline review only; no native SQL or installed acceptance."
+    },
+    {
+      "receipt": "subdomain-add-acceptance-domain-review/review.json",
+      "sha256": "94e53bae3e59f7088eb3d9a8347b7dffd8b345d5fb037d0fa4105931f12c6ce3",
+      "scope": "Source/offline review only; no native SQL or installed acceptance."
+    }
+  ],
+  "browser_screenshots": [
+    {
+      "name": "desktop.png",
+      "sha256": "48ef0232c9db9e2e79844c4cb76951178690ad38323257a3232f9e4ef7d32af9",
+      "visually_reviewed": true
+    },
+    {
+      "name": "mobile.png",
+      "sha256": "3f8c2667a30f41f3cc8999848fa89da7effc141259a68ea05ac7e4a7bd31117d",
+      "visually_reviewed": true
+    }
+  ],
+  "native_preflight": {
+    "passed": true,
+    "scope": "Syntax and unchanged Windows entry refusal only; no bootstrap, SQL or native acceptance.",
+    "checks": [
+      {
+        "name": "default syntax",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "passed": true
+      },
+      {
+        "name": "default Windows pre-bootstrap refusal",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "passed": true
+      },
+      {
+        "name": "minimal syntax",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "passed": true
+      },
+      {
+        "name": "minimal Windows pre-bootstrap refusal",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "passed": true
+      }
+    ]
+  },
+  "not_run": [
+    "Linux native SQL fixture",
+    "Installed owner HTTP/browser flow",
+    "Live 20i subdomain creation",
+    "Exact-main integration and release acceptance"
+  ],
+  "retained_failure": "External portable-test setup incorrectly restored a PHP global object; corrected test setup passes. Both failed probes are retained in subdomain-add-native-proposal/retained-test-restore-failure. Runtime did not change for this correction.",
+  "browser_source_sha256": {
+    "site/app/providers/subdomain_add_views.php": "423ca5409f66b0b1b1c4fb153483469280ac1b3df0a1a274801e6e9fde5a9759",
+    "site/includes/layout/admin.php": "799cf93e847b97ed868c40ef829016bae5861752247df2dc176e345474ef1d86",
+    "site/assets/css/site.css": "689e37932d2b51b8c71007964d50ca617d999607f6f7ac0860adb0a70b180861",
+    "site/assets/css/admin.css": "cab3bd03c33db76c99352ff3f288956018ae950028b5e4525ffceef63a7363a1",
+    "site/assets/css/mail-notices.css": "374939d3501c173f69c2b85d01d3b8e68cc21c00e811b6f3e9e2563c06e45d50",
+    "site/assets/css/growth.css": "ae77e9bca33094ef3b1d7036e6cc10be65b42cc2ad20328314b63ed8e9632d91"
+  },
+  "browser_harness_sha256": "d80a1ff0b75b42a5b86d329b6b0b61e2e167d4da9956ec4730d1b7cb6fc6422b",
+  "browser_capture_note": "Initial captures omitted the admin growth/mail styles. Retained initial files remain external; final 14 checks and both reviewed captures use the complete shipping stylesheet order. No shipping change was required."
+}

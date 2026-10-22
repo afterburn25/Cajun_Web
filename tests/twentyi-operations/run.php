@@ -18,8 +18,8 @@ $register=new TwentyIOperationRegister();
 $builder=new TwentyIRequestBuilder($register);
 
 // ---- catalog shape ----
-check($register->names()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','registrar.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the fourteen documented operations');
-check($register->buildableNames()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.nameservers','registrar.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
+check($register->names()===['packages.subdomainadd','packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','registrar.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the fourteen documented operations');
+check($register->buildableNames()===['packages.subdomainadd','packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.nameservers','registrar.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
 check($register->get('packages.create')->mayTriggerEmail&&$register->get('packages.create')->mayChargeBilling,'create flags email and billing risk');
 check($register->get('packages.update')->destructive&&$register->get('packages.update')->mayChargeBilling,'update flags mixed delete and billing');
 check($register->get('domains.renew')->mayChargeBilling&&!$register->get('domains.renew')->destructive,'domain renew flags billing only');
