@@ -157,7 +157,10 @@ def run_browser(env, browser):
     def activity_mark_form(client, keys, state='read', is_owner=False, csrf=None):
         address = activity_address(is_owner)
         page = get(client, address)
-        return post_exact(client, address, {'action': 'activity_mark', 'csrf': token(page) if csrf is None else csrf,
+        if csrf is None:
+            node = soup(page).select_one('input[name=csrf]') or soup(page).select_one('meta[name=csrf-token]')
+            csrf = node.get('value', node.get('content')) if node else token(get(client, admin if is_owner else portal))
+        return post_exact(client, address, {'action': 'activity_mark', 'csrf': csrf,
                                           'keys': json.dumps(keys), 'state': state})
 
     def activity_reads():
