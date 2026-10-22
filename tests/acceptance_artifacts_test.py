@@ -281,6 +281,8 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    from reset_template_acceptance_contract import predecessor_contract
+    contract,native_commands=predecessor_contract(ROOT,contract,native_commands,check)
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
     import_position=native_commands.index(import_contract['additions_after'])+1

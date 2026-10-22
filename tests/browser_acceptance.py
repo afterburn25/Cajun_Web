@@ -266,6 +266,8 @@ try:
         registration_drafts_browser(globals(),browser)
         from stackcp_access_cases import run_browser as stackcp_access_browser
         stackcp_access_browser(globals(),browser)
+        from provider_password_reset_template_cases import run_browser as reset_template_browser
+        reset_template_browser(globals(),browser)
         from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser
         cloud_assignment_browser(globals(),browser)
         from license_release_cases import run_browser as license_release_browser

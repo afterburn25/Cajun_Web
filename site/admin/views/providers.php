@@ -164,4 +164,5 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>
 
 <?php provider_stackcp_admin_render(); ?>
+<?php provider_password_reset_template_admin_render(); ?>
 <?php provider_stackcp_access_admin_render(); ?>
