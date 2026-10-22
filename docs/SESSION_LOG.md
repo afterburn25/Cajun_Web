@@ -3553,3 +3553,10 @@ Feature parent `3bd43ca891c9faefc6c07a293e4d2d59e00d4a62`; enclosing commit **Ad
   wait changed.
 - Next: fresh run 39857268953 on b3b60005; if the stackcp capture and later
   sections pass, the systemic audit-index lane remains tracked separately.
+
+## 2026-10-22 (cont.) — source-delta re-anchor for the 60s navigation bound
+
+- Evidence: run 39857268953 build failed `ValueError: Client folder requests current source changed` — `tests/browser_acceptance.py` is a `client_document_root_requests` source_deltas file, and `b3b60005` edited it without re-anchoring.
+- Fix: reconstructed the predecessor bytes by inverting the old delta against `b3b60005~1` (verified its sha256 matched `after_sha256`), regenerated the delta as two insertions (the nav bound + the original document-root browser hook), round-trip verified back to `before_sha256` `2cbd4f2c…`, committed `31150ff2`. Only the `client_document_root_requests` section exists in this contract — no cross-section predecessor invalidation.
+- Dispatch: run 39862486466 on `31150ff2`.
+- Next: classify the redispatched run; the 60s bound + instrumented directory-controls check remain under test.
