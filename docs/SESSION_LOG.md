@@ -1,5 +1,15 @@
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
+## 2026-10-22 — merge-first cycle: PR261 landed; cloud website requests candidate
+
+PR261 merged to `main` via `aeb713c6` (accepted source `467ec1bd` through candidate `e334678e`, green run 39761594725); the held merge-first docs lane landed via PR262, resulting main `bc5777f5`.
+
+Second increment: PR226 cloud website requests, fixed head `7b11f9f3` (ctype_digit removed for the extension-free minimal PHP lane), merged onto `bc5777f5` as candidate `d36d2b8d` on `devin/cloud-websites-main` (draft PR263). Nine files conflicted; resolution preserved both sides — contract union keeps `password_reset_template` and `cloud_site_requests`, harness runs cloud wiring on the merged 160-command recipe before the reset-template strip, `tools/build.py` retains the broader allowlist including `ops`, docs keep main's current status with the feature's dated entries inserted chronologically, and the installer inventory was regenerated. Contract re-anchors: predecessor counts 152->155 native, report registry 167/211, self-pin of `cloud_site_requests_wiring.py`, and reset-template predecessor report digests.
+
+Local verification: artifact verifier 280 checks green; cloud document 141 and UI 98 checks green in default and `php -n` modes; installed upgrade guards 35 green; `php -l` clean on all touched PHP. Hosted acceptance run 39803144531 dispatched; independent review pending.
+
+Same-session background work: FSI flag-write fix `ba10faee` proved correct (`Explicit mark-read issues exactly one bounded flag write` passed on run 39792613490) but surfaced the next defect — the mark control disappeared after the flag POST redirect because contents are deliberately never persisted and the plain GET has no loaded result. `d0960e15` renders the control from the latest confirmed recorded flag outcome (`mail_flag_state`) when no message is loaded; run 39804203199 dispatched. Preflight fix `1b582fa3` run 39801023070 queued; leaf lanes StackCP 39793814737, docroots 39794557286, nameserver 39779736188, php-controls 39775103325 and PR226-branch native 39795658599 remain in flight. Published 1.25.0 immutable; no deployment.
+
 ## 2026-10-22 — merge-first cycle: reset email template candidate to main
 
 Owner redirected delivery to small verified increments into `main`, starting with the reset-email-template feature. Local `main` was stale at `79d9e8e9`; fast-forwarded to `1067757d`. Accepted feature source `467ec1bd` (original green run [39422487199](https://github.com/afterburn25/Cajun_Web/actions/runs/39422487199), all five jobs) was merged into current main as candidate `e334678e` on `devin/reset-email-template-main`; the only conflicts were three prepend-style documentation files, resolved to keep the takeover rewrite and the feature's dated entries. Later feature-branch commits `69865671`/`32fe0ae1` touch only unrelated directory-listing and force-SSL test lanes and were intentionally excluded.
