@@ -8,6 +8,20 @@ This supersedes historical instructions reserving 20i/provider/SSH/shared seams/
 
 The authoritative application integration branch is main. At handoff its source was `a86f6f4fa592e6f715a9420aec8de4622258642e`, and the latest published release was v1.25.0 at `b79c67110829126916e3a65e616191542448bccc`. Refresh those facts at session start. Preserve previous tags/assets. Development code and published downloads are different states.
 
+## Standing owner directive - merge-first (2026-10-20, reaffirmed)
+
+**Merging completed, tested work into `main` is a standing top priority; keep `main` caught up with completed development.** This applies to all existing Codex/Devin work and every future feature. Do not let finished work accumulate on feature or integration branches.
+
+- Clear the integration backlog first: reconcile every candidate against current `main` (integrated / ready / blocked-with-specific-blocker / incomplete) in `docs/DEVIN_INTEGRATION_QUEUE.md`. Preserve and reuse existing work; never rebuild because a PR is closed or a branch name is confusing.
+- Normal cycle: implement a coherent feature, test it, complete required review, merge to `main`, verify `main`, then start the next feature. A completed branch is still pending delivery until its accepted implementation reaches `main`. Prefer small independent increments over one large integration batch; keep each candidate stable while its acceptance runs.
+- Before opening another implementation branch, land ready work first and fix specific mature blockers. A blocked candidate needs a recorded exact blocker and next action; keep landing independent ready work meanwhile.
+- Validate the merge result against current `main`, including combined changes and conflict resolutions — a green run on an older branch state does not validate the current merge result. Keep all required tests, reviews and protections intact; never weaken assertions, skip required checks or bypass review for a merge.
+- Recheck the `main` head immediately before merging; if the destination advanced, reconcile and complete required validation for the resulting combination. After merging, verify the resulting `main` commit and required checks; repair regressions before unrelated feature work. Start subsequent work from the latest verified `main`.
+- Continue the incremental release process after accepted groups land; merging, publishing a release and live deployment remain distinct actions.
+- Status reports must distinguish: implemented-on-branch, awaiting-test-or-review, ready-to-merge, merged-into-main, verified-on-main, included-in-a-published-release. For landed work cite PR, resulting `main` commit and verification; for blocked work cite the exact blocker and next action.
+
+This directive persists across sessions and qualifies under the existing owner authorization without waiting for another continue instruction. It does not relax any required check, review, protection, or operation-specific approval.
+
 ## Begin every session
 
 Read the current status, handoff, project direction, complete roadmap, relevant feature guides, coordination and release workflow. Inspect current main, PR ancestry, exact heads, review discussions and actual test results before choosing work. Preserve local uncommitted edits and other workers' frozen heads. Create a Devin-owned integration/feature branch; do not force-push or reset another checkout.
