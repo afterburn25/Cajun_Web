@@ -29,10 +29,6 @@ function provider_cloud_site_requests_validate_schema():void {
 }
 /** NULL means never prepared; established missing rows, audits, marker or pointer never become empty history. */
 function provider_cloud_site_requests_events():?array {
-    // Replayed journal validation is retained per request once for the same head pointer.
-    static $memo=null,$memoKey=null;
-    $pointerRow=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_head']);
-    if($memo!==null&&$pointerRow!==null&&$memoKey===$pointerRow['value'])return $memo;
     foreach(['settings','audit'] as $name){$e=one('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]);if(strtolower($e['ENGINE']??'')!=='innodb')throw new RuntimeException('Cloud website request history requires transactional audit storage.');}
     provider_cloud_site_requests_namespace();
     $marker=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_schema_version']);$exists=provider_cloud_site_requests_table();
@@ -61,7 +57,7 @@ function provider_cloud_site_requests_events():?array {
     $pointer=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_head'])['value']??'';
     if($pointer!==$ordinal.':'.$head||array_sum(array_map('count',$auditEvents))!==$ordinal||count($prepared)!==1)throw new RuntimeException('Cloud website request history is incomplete. Restore the original database.');
     if((int)$prepared[0]['user_id']<1||$prepared[0]['detail']!=='Cloud website request history ready')throw new RuntimeException('Cloud website request preparation witness needs recovery.');
-    provider_cloud_site_requests_project($events);$memo=$events;$memoKey=$pointer;return $events;
+    provider_cloud_site_requests_project($events);return $events;
 }
 function provider_cloud_site_requests_ready():bool {return provider_cloud_site_requests_events()!==null;}
 function provider_cloud_site_requests_prepare(#[SensitiveParameter] string $password):void {
