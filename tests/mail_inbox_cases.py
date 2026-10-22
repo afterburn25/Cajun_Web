@@ -63,4 +63,6 @@ def run_browser(env,browser):
     check('Inbox browser flow has no script errors',not errors);context.close()
     for path in ['app/mail/inbox.php','admin/controllers/mail_inbox.php','admin/views/mail_inbox.php','database/schema/mail_inbox_schema.php','database/migrations/mail_inbox_migrate.php','includes/foundation/mail-receiving/InboxReader.php','includes/foundation/mail-receiving/bootstrap.php']:
         check('Inbox direct internal PHP entry denied '+path,requests.get(BASE+'/existing/'+path).status_code==404)
-    check('Synthetic receiving server kept every non-flag session read-only',not inbox_server.errors and all(c.startswith('CWF') for c in inbox_server.commands if any(' '+verb in c for verb in ['SELECT','STORE','APPEND','EXPUNGE','SEARCH'])))
+    readonly=not inbox_server.errors and all(c.startswith('CWF') for c in inbox_server.commands if any(' '+verb in c for verb in ['SELECT','STORE','APPEND','EXPUNGE','SEARCH']))
+    if not readonly:(QA/'inbox-readonly-failure.json').write_text(json.dumps({'commands':inbox_server.commands,'errors':inbox_server.errors},indent=2),encoding='utf-8')
+    check('Synthetic receiving server kept every non-flag session read-only',readonly)
