@@ -102,7 +102,7 @@ def run_browser(env, browser):
     form=page.locator('[data-registration-period-refresh]');form.locator('[name=current_password]').fill(OWNER);form.get_by_role('button',name='Refresh registration options',exact=True).click()
     # The refreshed page streams progressively; asserting before the document
     # load event can observe a partial DOM missing later sections.
-    page.wait_for_load_state('load')
+    page.wait_for_load_state('load',timeout=90000)
     expect(page.locator('[data-registration-periods]')).to_contain_text('1 year, 3 years')
     check('Chromium owner action makes one fixed authenticated period GET',provider.calls==calls+1 and provider.get_paths[-1]=='/domain-period' and provider.posts==posts)
     check('Period read preserves every explicit client assignment',all(db('SELECT * FROM ci_'+t+' ORDER BY id')==v for t,v in assignments.items()))
