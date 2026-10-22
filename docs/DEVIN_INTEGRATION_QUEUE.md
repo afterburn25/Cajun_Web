@@ -11,8 +11,8 @@ Merge-first rule (AGENTS.md, standing): prefer the smallest independently-verifi
 | Order | Candidate | Head | Base | Scope | Disposition |
 |---|---|---|---|---|---|
 | 1 | PR261 `devin/reset-email-template-main` | merge `e334678e` of accepted `467ec1bd` into main `1067757d` | main | 20i reset email template: read/review/save-once/readback for StackCP password-reset template; encrypted history; no mail sent | IN-ACCEPTANCE — original source green at [run 39422487199](https://github.com/afterburn25/Cajun_Web/actions/runs/39422487199); merged-candidate acceptance running; independent review pending |
-| 2 | Cloud website intake (PR234 `b8c316b6` chain -> `4dc05d8c`) | FSI-integrated | — | Cloud site requests + intake | EVALUATE NEXT — confirm actual deps vs main, do not assume earlier runs certify a standalone candidate |
-| 3 | Directory-listing controls | leaf `devin/fix-*` family | — | Directory listing change controls | EVALUATE — same caveat |
+| 2 | Cloud website requests — PR226 `codex/twentyi-client-cloud-websites` `e2c88d9d` (targeting main, CONFLICTING) | `e2c88d9d` | main | Client cloud site requests with owner review/package confirmation; +5833 lines, mostly new files; merge-tree vs main conflicts only in 5 prepend docs | BLOCKED on fresh acceptance — its only full run at `e2c88d9d` (39303433534) was cancelled; code merges clean vs main. Next action: build small candidate off post-PR261 main, dispatch full acceptance, review. PR227 intake (`8fe2787a`) stacks on PR226 |
+| 3 | Directory-listing controls — PR246 `codex/twentyi-client-directory-listing` `b0fe332f` | `b0fe332f` | `codex/twentyi-client-force-ssl` | Client directory listing requests | BLOCKED — depends on force-SSL client lane landing first; force-ssl leaf run 39746898847 in flight |
 
 ## Staging lanes (not main)
 
