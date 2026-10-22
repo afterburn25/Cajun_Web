@@ -15,11 +15,13 @@ def run(source):
     def check(name, passed):
         checks.append({'name': name, 'passed': bool(passed)})
 
-    nodes = [n for n in ast.walk(ast.parse(source.read_text(encoding='utf-8'))) if isinstance(n, ast.ClassDef) and n.name == 'Handler']
+    tree = ast.parse(source.read_text(encoding='utf-8'))
+    nodes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == 'Handler']
     assert len(nodes) == 1
     fixture = SimpleNamespace(calls=0, get_paths=[], posts=[], errors=[], mode='success', registrar_mode='success', cloud_mode='success', packages=[{'id': 2501}], registrar_domains=[], cloud_servers=[], stackcp_membership=[], stackcp_grants=[], wp_installed=True, wp_installed_mode='success')
     namespace = {'BaseHTTPRequestHandler': OfflineResponse, 'fixture': fixture, 'base64': base64, 'json': json, 're': re}
-    exec(compile(ast.Module(body=nodes, type_ignores=[]), str(source), 'exec'), namespace)
+    helpers = [n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    exec(compile(ast.Module(body=helpers + nodes, type_ignores=[]), str(source), 'exec'), namespace)
     Handler = namespace['Handler']
     routes = ['/package/2501/stackUserList', '/reseller/*/stackUser/25001/grants']
     for route, attribute, samples in [(routes[0], 'stackcp_membership', [[{'identity': 'stack-user:25001'}], [], None, {'unexpected': True}]), (routes[1], 'stackcp_grants', [['package:2501'], [], None, {'unexpected': True}])]:
