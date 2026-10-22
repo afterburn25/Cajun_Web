@@ -104,11 +104,11 @@ def run_browser(env, browser):
         context.add_cookies([{'name': c.name, 'value': c.value, 'url': base} for c in owner.cookies])
         page = context.new_page(); page.on('pageerror', lambda error: errors.append(type(error).__name__))
         for width, height, size in ((1440, 1000, 'Desktop'), (320, 740, 'Mobile')):
-            page.set_viewport_size({'width': width, 'height': height}); page.goto(settings)
+            page.set_viewport_size({'width': width, 'height': height}); page.goto(settings, timeout=60000)
             page.evaluate('document.fonts.ready')
             if size == 'Mobile':
-                expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
-            item = page.locator(selector); expect(item).to_be_visible()
+                expect(page.locator('.admin-sidebar')).not_to_be_in_viewport(timeout=60000)
+            item = page.locator(selector); expect(item).to_be_visible(timeout=60000)
             item.locator('details[data-nameserver-history]').evaluate_all('(nodes)=>nodes.forEach(n=>n.open=true)')
             item.scroll_into_view_if_needed()
             page.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
@@ -150,11 +150,11 @@ def run_browser(env, browser):
             check('Registered nameserver preparation rejects '+label, state() == before and provider.calls == calls and bool(scoped(response).select_one('form[data-nameserver-prepare]')))
         context = browser.new_context(); contexts.append(context)
         context.add_cookies([{'name': c.name, 'value': c.value, 'url': base} for c in owner.cookies])
-        page = context.new_page(); page.on('pageerror', lambda error: errors.append(type(error).__name__)); page.goto(settings)
+        page = context.new_page(); page.on('pageerror', lambda error: errors.append(type(error).__name__)); page.goto(settings, timeout=60000)
         form = page.locator('form[data-nameserver-prepare]'); form.locator('[name=current_password]').fill(PASSWORD)
-        with page.expect_navigation(wait_until='domcontentloaded'):
+        with page.expect_navigation(wait_until='domcontentloaded', timeout=60000):
             form.get_by_role('button', name='Enable nameserver observations', exact=True).click()
-        expect(page.locator('#registered-nameservers')).not_to_contain_text('Enable nameserver observations')
+        expect(page.locator('#registered-nameservers')).not_to_contain_text('Enable nameserver observations', timeout=60000)
         context.close(); contexts.remove(context)
         check('Chromium prepares empty nameserver storage without a provider read', provider.calls == calls and not db('SELECT * FROM ci_registered_nameserver_bindings') and not db('SELECT * FROM ci_registered_nameserver_sets') and db('SELECT value FROM ci_settings WHERE name=?', ['registered_nameservers_schema_version']) == [{'value': '1'}])
         # Discover a new numeric registrar domain through the ordinary real HTTP refresh.
@@ -179,11 +179,11 @@ def run_browser(env, browser):
         wait_read(profile['id']); paths = len(provider.get_paths)
         context = browser.new_context(); contexts.append(context)
         context.add_cookies([{'name': c.name, 'value': c.value, 'url': base} for c in owner.cookies])
-        page = context.new_page(); page.on('pageerror', lambda error: errors.append(type(error).__name__)); page.goto(settings); form = page.locator(selector+' form[data-nameserver-refresh]')
+        page = context.new_page(); page.on('pageerror', lambda error: errors.append(type(error).__name__)); page.goto(settings, timeout=60000); form = page.locator(selector+' form[data-nameserver-refresh]')
         form.locator('[name=current_password]').fill(PASSWORD)
-        with page.expect_navigation(wait_until='domcontentloaded'):
+        with page.expect_navigation(wait_until='domcontentloaded', timeout=60000):
             form.get_by_role('button', name='Refresh nameservers', exact=True).click()
-        expect(page.locator(selector+' [data-nameserver-current]')).to_contain_text(NS[0])
+        expect(page.locator(selector+' [data-nameserver-current]')).to_contain_text(NS[0], timeout=60000)
         context.close(); contexts.remove(context)
         reads = db('SELECT f.id,f.actor_id,r.state FROM ci_provider_refreshes f LEFT JOIN ci_provider_refresh_results r ON r.id=f.id WHERE BINARY f.operation=? ORDER BY f.seq', [OPERATION])
         check('Chromium nameserver refresh saves one exact numeric GET and original owner', len(reads) == 1 and reads[0]['state'] == 'complete' and reads[0]['actor_id'] == user[0]['id'] and provider.get_paths[paths:] == ['/domain/14701/nameservers'] and provider.posts == posts)

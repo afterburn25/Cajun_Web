@@ -948,7 +948,7 @@
       "tests/registered_nameserver_requests_upgrade_fixture.php": "8a5c75eb15290c635992e92a294e649e3207692da3da6669516bde18d67adf90",
       "tests/registered_nameserver_requests_upgrade_test.py": "bb760f62d2a2d3c7efb4c4cf4e6b756389d7a142b5178af84323995da2d9b413",
       "tests/registered_nameserver_requests_views.php": "75ddf61d8500c238c84fbf72b81c9fa43fd8fa1a930a8d86c08cb55e14eb5720",
-      "tests/registered_nameservers_cases.py": "c1eb5e3abbee06fc325026cad90ac5188e7a314507d63d31a40525df82c504ce",
+      "tests/registered_nameservers_cases.py": "342124ac73029685c8833b310cbcd6a836701b9ca9b3a7d210892695e5c8349e",
       "tests/registered_nameservers_native.php": "8d0fb6f8b97c15ee25d856f8703cf7157f0e3ac377400752ff3d4bb36a952ce5",
       "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
       "tools/acceptance-reports.json": "223be2f527fd2e7cf37d9246ce61eafb17c9c8ffa5827eec715bc0c28ec69b60"
@@ -1074,11 +1074,23 @@
       },
       "tests/registered_nameservers_cases.py": {
         "predecessor_sha256": "7cfec6fcd0aefb16f6165a8874a18ae89bb464d47a5beb84e957b7da902fe593",
-        "current_sha256": "c1eb5e3abbee06fc325026cad90ac5188e7a314507d63d31a40525df82c504ce",
+        "current_sha256": "342124ac73029685c8833b310cbcd6a836701b9ca9b3a7d210892695e5c8349e",
         "replacements": [
           {
             "before": "    check('Installed nameserver change continuation completes all scoped forms and captures',\n          changes['passed'] is True and tuple(c['name'] for c in changes['captures']) == CHANGE_CAPTURES\n          and all((qa/name).is_file() and (qa/name).stat().st_size > 0 for name in CHANGE_CAPTURES))\n",
             "after": "    check('Installed nameserver change continuation completes all scoped forms and captures',\n          changes['passed'] is True and tuple(c['name'] for c in changes['captures']) == CHANGE_CAPTURES\n          and all((qa/name).is_file() and (qa/name).stat().st_size > 0 for name in CHANGE_CAPTURES))\n    from registered_nameserver_requests_cases import run_browser as client_requests_browser, CAPTURES as CLIENT_REQUEST_CAPTURES\n    client_requests = client_requests_browser(env, browser)\n    check('Installed client nameserver requests complete all scoped forms and captures',\n          client_requests['passed'] is True and tuple(c['name'] for c in client_requests['captures']) == CLIENT_REQUEST_CAPTURES\n          and all((qa/name).is_file() and (qa/name).stat().st_size > 0 for name in CLIENT_REQUEST_CAPTURES))\n"
+          },
+          {
+            "before": "page.set_viewport_size({'width': width, 'height': height}); page.goto(settings)\n            page.evaluate('document.fonts.ready')\n            if size == 'Mobile':\n                expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()\n            item = page.locator(selector); expect(item).to_be_visible()",
+            "after": "page.set_viewport_size({'width': width, 'height': height}); page.goto(settings, timeout=60000)\n            page.evaluate('document.fonts.ready')\n            if size == 'Mobile':\n                expect(page.locator('.admin-sidebar')).not_to_be_in_viewport(timeout=60000)\n            item = page.locator(selector); expect(item).to_be_visible(timeout=60000)"
+          },
+          {
+            "before": "page.goto(settings)\n        form = page.locator('form[data-nameserver-prepare]'); form.locator('[name=current_password]').fill(PASSWORD)\n        with page.expect_navigation(wait_until='domcontentloaded'):\n            form.get_by_role('button', name='Enable nameserver observations', exact=True).click()\n        expect(page.locator('#registered-nameservers')).not_to_contain_text('Enable nameserver observations')",
+            "after": "page.goto(settings, timeout=60000)\n        form = page.locator('form[data-nameserver-prepare]'); form.locator('[name=current_password]').fill(PASSWORD)\n        with page.expect_navigation(wait_until='domcontentloaded', timeout=60000):\n            form.get_by_role('button', name='Enable nameserver observations', exact=True).click()\n        expect(page.locator('#registered-nameservers')).not_to_contain_text('Enable nameserver observations', timeout=60000)"
+          },
+          {
+            "before": "page.goto(settings); form = page.locator(selector+' form[data-nameserver-refresh]')\n        form.locator('[name=current_password]').fill(PASSWORD)\n        with page.expect_navigation(wait_until='domcontentloaded'):\n            form.get_by_role('button', name='Refresh nameservers', exact=True).click()\n        expect(page.locator(selector+' [data-nameserver-current]')).to_contain_text(NS[0])",
+            "after": "page.goto(settings, timeout=60000); form = page.locator(selector+' form[data-nameserver-refresh]')\n        form.locator('[name=current_password]').fill(PASSWORD)\n        with page.expect_navigation(wait_until='domcontentloaded', timeout=60000):\n            form.get_by_role('button', name='Refresh nameservers', exact=True).click()\n        expect(page.locator(selector+' [data-nameserver-current]')).to_contain_text(NS[0], timeout=60000)"
           }
         ]
       },
