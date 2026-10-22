@@ -15,6 +15,8 @@ namespace CajunWebPro\Foundation\MailReceiving {
         if($remote!=='tcp://8.8.8.8:993'||$timeout!==5.0||$flags!==STREAM_CLIENT_CONNECT||$ssl['verify_peer']!==true||$ssl['verify_peer_name']!==true||$ssl['allow_self_signed']!==false||$ssl['peer_name']!=='inbox-fixture.example.net'||$ssl['SNI_enabled']!==true||isset($ssl['cafile'])||$ssl['crypto_method']!==(STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT|STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT))throw new \RuntimeException('Invalid production TLS policy');
         $fixture=\json_decode(\file_get_contents(__DIR__.'/../test-runtime/mail-inbox-http/config.json'),true,flags:JSON_THROW_ON_ERROR);
         \stream_context_set_option($context,'ssl','cafile',$fixture['ca']);
-        return \stream_socket_client('tcp://127.0.0.1:'.$fixture['port'],$errno,$errstr,$timeout,$flags,$context);
+        $socket=\stream_socket_client('tcp://127.0.0.1:'.$fixture['port'],$errno,$errstr,$timeout,$flags,$context);
+        if(!\is_resource($socket))@\file_put_contents(__DIR__.'/../qa/imap-connect-failures.jsonl',\json_encode(['remote'=>'tcp://127.0.0.1:'.$fixture['port'],'errno'=>$errno,'errstr'=>$errstr,'time'=>\microtime(true)])."\n",FILE_APPEND);
+        return $socket;
     }
 }
