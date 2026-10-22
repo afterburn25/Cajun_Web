@@ -5694,3 +5694,14 @@ No production provider request, charge, mail, SSH or deployment occurred.
   39820095116, php-controls 39821538684, docroots 39821734667, StackCP
   39826704936, cloud-websites candidate 39831278201) in flight.
 - Next: classify run results; merge PR263 cloud-websites candidate on green.
+
+## 2026-10-22 (cont.) — preflight run 39829965477 classified; two test-side defects fixed at 803a7a11
+
+- Request: continue preflight-commercial lane after instrumented run 39829965477.
+- Starting commit: `26ae6438` (settled contract head).
+- Evidence: run 39829965477 — build/recovery green; native-and-browser and apache failed.
+  - Native: `FAIL: 1 renewal invoicing native checks`; artifact `qa/domain-renewal-invoicing-native-results.json` recorded a single `Unexpected: Prepare payments and receipt history before hosting orders.` during fixture setup. Cause: test seeded `payments_schema_version='1'` but this lane's `payments_ready()` requires `'2'` (schema 2 shareable request links); `service_orders_owner` therefore refused. Sibling `domain_renewal_dispatch_native.php` calls `payments_migrate($password)` after seeding — invoicing test omitted it. Fixed by adding `payments_migrate($password)` at the same position (seeds v1 then runs the real 1→2 migration).
+  - Apache: `r126_ron_ No-schema anonymous Hosting GET is honest and does not prepare storage`. Artifact `apache-release126-r126_ron-anonymous-get.json`: status 200, honest_message false, fingerprint_leak false, business_unchanged true. Cause: `826eb5dd` (billing-period browsing) replaced `hosting_catalog_public_cards` with `hosting_catalog_comparison` on the public page; the honest empty state is now "We cannot show hosting plans right now." — the check's string was stale. Product behavior is honest; assertion updated + `published125_hosting_extension.source_sha256` re-anchored for the file.
+- Tests: `php -l` on the PHP test file; `py_compile` on the Python check; contract JSON valid with single-pin re-anchor.
+- Dispatch: run 39864127932 on `803a7a11`.
+- Remaining: classify redispatch; other lanes continue independently.
