@@ -314,7 +314,7 @@ function setup_expected_files(): array { return [
     'app/providers/support_stackcp_documents.php'=>'7a63756bedf810669d478e6571d9973f8a1082acea9d330eae1b34a6163367ba',
     'app/providers/support_stackcp_launch.php'=>'d807afd44b5b0b52f1f142cc74518f171bbaa14e2434f17865bb58c63bfb593d',
     'app/providers/support_stackcp_permissions.php'=>'472cd086a25b7270c8edfd46f845101dadcd1a940275e658e6761df2c33fa9f7',
-    'app/providers/support_stackcp_storage.php'=>'231698163a520fd60e1c2713a277d5f1a421808be4c8ac6be1b834ddab262268',
+    'app/providers/support_stackcp_storage.php'=>'0f01df673016005f176a9c3a7ad4f23fa884db89602e9d29ce1b3353584f5973',
     'app/providers/support_stackcp_views.php'=>'75ed7b8b485cea6485df0eb7ba6d5fa0db27135a967087725385d7d026103c1a',
     'app/settings/revisions.php'=>'edcf7ba63bea26eeb964e0b44379d78ae93dd00535754d2375e07bfd5fcdc1bb',
     'app/settings/store.php'=>'f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564',

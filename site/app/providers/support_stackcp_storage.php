@@ -89,14 +89,14 @@ function provider_support_stackcp_events():?array {
     $c=provider_support_stackcp_checkpoint($settings);$table=table('provider_support_stackcp_events');
     if ((int)query("SELECT COUNT(*) FROM $table")->fetchColumn()!==$c['count']||(int)query("SELECT COUNT(*) FROM $audit WHERE BINARY action='provider.support_stackcp_event'")->fetchColumn()!==$c['count']) throw new RuntimeException('Support StackCP history counts disagree.');
     $events=[];$seen=0;$lastAudit=(int)query("SELECT id FROM $audit WHERE BINARY action='provider.support_stackcp_prepared'")->fetchColumn();$permissions=0;$admissions=0;
+    $audits=[];foreach (all("SELECT id,user_id,created_at,detail FROM $audit WHERE BINARY action='provider.support_stackcp_event' ORDER BY id") as $r) $audits[$r['detail']][]=$r;
     while ($seen<$c['count']) {
-        $detail="CONCAT(BINARY 'Support StackCP event ',r.id,' ',r.document_sha256,' ',r.proof)";
-        $rows=all("SELECT r.*,(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action='provider.support_stackcp_event' AND BINARY a.detail=BINARY $detail) AS audit_count,(SELECT MIN(a.id) FROM $audit a WHERE BINARY a.action='provider.support_stackcp_event' AND BINARY a.detail=BINARY $detail) AS audit_id FROM $table r WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$seen]);
+        $rows=all("SELECT r.* FROM $table r WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$seen]);
         if (!$rows) throw new RuntimeException('Support StackCP history is incomplete.');
         foreach ($rows as $row) {
-            $d=provider_support_stackcp_row($row);$a=one("SELECT user_id,created_at FROM $audit WHERE id=?",[$row['audit_id']]);$actorId=$d['actor']['id'];
-            if ($d['ordinal']!==++$seen||$d['recorded_epoch']<$p['recorded_epoch']||(int)$row['audit_count']!==1||!$a||(int)$a['user_id']!==$actorId||$a['created_at']!==gmdate('Y-m-d H:i:s',$d['recorded_epoch'])||(int)$row['audit_id']<=$lastAudit) throw new RuntimeException('Support StackCP audit needs recovery.');
-            $lastAudit=(int)$row['audit_id'];$events[]=$d;
+            $d=provider_support_stackcp_row($row);$found=$audits[provider_support_stackcp_detail($row)]??[];$a=$found[0]??null;$actorId=$d['actor']['id'];
+            if ($d['ordinal']!==++$seen||$d['recorded_epoch']<$p['recorded_epoch']||count($found)!==1||!$a||(int)$a['user_id']!==$actorId||$a['created_at']!==gmdate('Y-m-d H:i:s',$d['recorded_epoch'])||(int)$a['id']<=$lastAudit) throw new RuntimeException('Support StackCP audit needs recovery.');
+            $lastAudit=(int)$a['id'];$events[]=$d;
             if ($d['kind']==='permission') ++$permissions;if ($d['kind']==='admitted') ++$admissions;provider_support_stackcp_sources($d);
         }
     }
