@@ -47,9 +47,14 @@ Each needs its own hosted green at exact head before any merge; contract re-anch
 
 ## Blockers on record
 
-1. PR261 (`e334678e`): awaiting hosted acceptance (run 39761594725 family) + independent review — next action: merge on green, then verify main.
+1. PR261 (`e334678e`): independent review complete (no blockers; 2 should-fix + 4 nits below). Awaiting hosted acceptance (run 39761594725) — next action: merge on green, then verify main.
 2. FSI browser lane: prior failure was test-side `NameError` in flag diagnostics (fixed `9ec4e2b1`); earlier `imap` mark-read connection refusal did not recur in that run but its evidence was masked by the crash — next run must produce `qa/imap-connect-failures.jsonl`/`flag-mark-read-diagnostics.json` verdicts.
 3. StackCP `ssn_fault` diagnostic (run 39746902785): capture admission state/phase/terminal payload; interpret terminal reason on completion.
 4. Preflight Apache lane: nameserver upgrade `seed` helper failed on missing `studio_migrate` owner step (fixed `b7a84122`, re-anchored contract, local verifier 1468 checks) — rerun must pass the seed/apply/recover sequence.
+
+## Tracked follow-ups (non-blocking)
+
+- PR261 should-fix #1: `provider_password_reset_template_pending` can permanently fence a profile after a routine settings `revision` bump — verification/recovery re-binds to stored context, so an interrupted change + label edit can never be resolved by the owner. Evaluate a bounded dismissal path or owner-visible explanation.
+- PR261 should-fix #2: `provider_operation_revoke` lacks a `consumed_key IS NULL` guard — a crafted owner POST could revoke a consumed template grant. Consider refusing revocation of consumed grants.
 
 Group A slice detail (25 merged slices A1–A25) remains recorded in the FSI copy of this file at branch `devin/full-site-integration`.
