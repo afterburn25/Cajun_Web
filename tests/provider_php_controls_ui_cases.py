@@ -319,6 +319,12 @@ def run_browser(env, browser):
         calls, posts = provider.calls, len(provider.posts)
         response = owner.post(owner_url, data=owner_change, timeout=120)
         row = request_row(owner_request)
+        import json as _json
+        (qa / "php-controls-owner-change-diagnostics.json").write_text(_json.dumps({
+            "status": response.status_code, "calls_delta": provider.calls - calls,
+            "posts_delta": len(provider.posts) - posts,
+            "last_post": provider.posts[-1] if provider.posts else None,
+            "row": row, "notice_excerpt": response.text[:1200]}, indent=2), encoding="utf-8")
         check("Owner form performs one exact setter and genuine ledger attempt", provider.calls == calls + 1 and len(provider.posts) == posts + 1
               and provider.posts[-1] == {"path": "/package/701/web/phpVersion", "body": '{"value":"php84"}'}
               and row["actor_kind"] == row["terminal_actor_kind"] == "staff" and row["actor_id"] == row["terminal_actor_id"] == 1
