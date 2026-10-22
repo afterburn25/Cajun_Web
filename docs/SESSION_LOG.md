@@ -3559,3 +3559,30 @@ The first exact staged-inventory check rejected CRLF storage bytes against the n
   dispatched on c7e351b7 and in flight at record time.
 - Remaining: hosted acceptance pending; then normal merge to main, exact-main
   verification, and the queued force-SSL/PR246 evaluations.
+
+## 2026-10-22 — Cloud candidate registration-period browser failure (run 39831267271 follow-up)
+
+- Request: continue integration; classify hosted failure on candidate head c7e351b7.
+- Failure preserved: native-and-browser lane raised at
+  tests/provider_registration_periods_cases.py:103 — locator
+  `[data-registration-periods]` absent after a successful owner refresh POST;
+  build/apache/recovery lanes passed (baseline-seed ordering fix verified).
+- Diagnosis: the post-redirect GET never logged a response before the 5s
+  expectation elapsed; the captured DOM legitimately ended mid-render inside
+  the cloud-websites card. Server log shows provider-settings render cost
+  degrading 0-1s early to a uniform ~10s late — the new request-journal
+  validation replays every event through an unindexed `BINARY` audit lookup,
+  invoked once by `provider_cloud_sites_history`, again per linked server via
+  `provider_cloud_sites_context`, and per signed grant via document origin.
+- Fixes: `ebebd533` batches the journal's audit lookups into a single fetch
+  with byte-exact PHP matching (identical refusal semantics), retains one
+  validated journal per request keyed by the `provider_cloud_site_request_head`
+  pointer, retains one history validation per unchanged journal+grant count,
+  and waits for the document `load` event before the late-page content
+  assertion (matching existing `wait_for_load_state` convention elsewhere).
+- Tests: php -l on both touched PHP files; cloud wiring verifier passes.
+- Result: pushed on devin/cloud-websites-main; push-triggered run 39855295240
+  queued and full acceptance run 39855317065 dispatched on ebebd533.
+- Remaining: hosted acceptance pending; independent review already recorded on
+  PR263; then normal merge to main, exact-main verification, and the queued
+  force-SSL/PR246 evaluations.
