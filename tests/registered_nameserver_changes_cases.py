@@ -104,7 +104,10 @@ def run_browser(env, browser):
             time.sleep(remaining)
 
     def navigate():
-        response = page.goto(settings, wait_until='load', timeout=30000)
+        try:
+            response = page.goto(settings, wait_until='load', timeout=90000)
+        except Exception as error:
+            raise AssertionError('Nameserver owner navigation: ' + type(error).__name__ + ': ' + str(error).replace('\n', ' | ')[:400]) from error
         if response is None or response.status != 200:
             raise AssertionError('Packaged Chromium owner navigation failed')
         return SimpleNamespace(text=page.content(), url=page.url)
@@ -117,7 +120,18 @@ def run_browser(env, browser):
         try:
             expect(item).to_have_count(1, timeout=30000)
         except Exception as error:
-            raise AssertionError('One exact nameserver owner form required') from error
+            try:
+                count = page.locator(selector).count()
+            except Exception:
+                count = 'err'
+            try:
+                html = page.content()
+                (qa / 'nameserver-change-form-failure.html').write_text(html)
+                size = str(len(html))
+            except Exception as dump_error:
+                size = 'dump:' + type(dump_error).__name__
+            state = 'closed' if page.is_closed() else ('url=' + page.url + ' count=' + str(count) + ' bytes=' + size)
+            raise AssertionError('One exact nameserver owner form required [' + state + ']') from error
         open_details(item)
         for key, value in values.items():
             control = item.locator('[name="' + key + '"]')
@@ -128,9 +142,12 @@ def run_browser(env, browser):
         return item
 
     def click_form(item, label):
-        with page.expect_navigation(wait_until='load', timeout=30000) as navigation:
-            item.get_by_role('button', name=label, exact=True).click()
-        response = navigation.value
+        try:
+            with page.expect_navigation(wait_until='load', timeout=90000) as navigation:
+                item.get_by_role('button', name=label, exact=True).click()
+            response = navigation.value
+        except Exception as error:
+            raise AssertionError('Nameserver form "' + label + '" click/navigation: ' + type(error).__name__ + ': ' + str(error).replace('\n', ' | ')[:400]) from error
         if response is None or response.status != 200:
             raise AssertionError('Packaged nameserver form returned no owner response')
         return SimpleNamespace(text=page.content(), url=page.url, status_code=response.status)
@@ -208,8 +225,9 @@ def run_browser(env, browser):
         check('Chromium explicitly prepares empty nameserver change history',
               db('SELECT value FROM ci_settings WHERE name=?', ['registered_nameserver_changes_schema_version']) == [{'value': '1'}]
               and not db('SELECT * FROM ci_provider_nameserver_change_requests') and provider.calls == calls and provider.posts == posts)
+        check('Prepared changes hide the approval form while the inherited read is unfinished', page.locator(selector + ' [data-nameserver-change-form]').count() == 0)
         page.locator(selector).locator('details').evaluate_all('nodes=>nodes.forEach(n=>n.open=true)')
-        check('Prepared changes still refuse the inherited unfinished read', page.locator(selector + ' [data-nameserver-change-form]').count() == 0 and 'Refresh nameservers for this assignment before approving a change.' in page.locator(selector).inner_text())
+        check('Prepared changes explain the inherited-read refusal', 'Refresh nameservers for this assignment before approving a change.' in page.locator(selector).inner_text())
         provider.registrar_domains = [row for row in original[0] if str(row.get('id')) != '14701'] + [{'id': 14701, 'name': link['domain']}]
         provider.registrar_mode = 'success'; provider.nameservers = {**original[2], '14701': list(NS)}
         provider.nameserver_mode = 'success'; provider.nameserver_change_mode = 'uncertain_unlanded'

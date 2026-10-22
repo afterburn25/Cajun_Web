@@ -40,7 +40,8 @@ def run(source):
     check('Actual synthetic handler has unique methods and one GET and POST', len(methods) == len(set(methods)) and methods.count('do_GET') == methods.count('do_POST') == 1)
     fixture = SimpleNamespace(calls=0, get_paths=[], posts=[], errors=[], mode='success', write_mode='success', registrar_mode='success', cloud_mode='success', packages=[{'id': 2301}], registrar_domains=[], cloud_servers=[], cloud_providers=[], cloud_providers_mode='success', contract_dates={}, contract_mode='success', expiry_dates={}, expiry_mode='success', domain_mode='success', period_mode='success', period_map={'.invalid': [1]}, php_version='php82', php_version_mode='success', document_roots={}, document_roots_mode='success', force_ssl=True, force_ssl_mode='success', directory_indexing=False, directory_indexing_mode='success', wp_installed=True, wp_installed_mode='success')
     namespace = {'BaseHTTPRequestHandler': OfflineResponse, 'fixture': fixture, 'base64': base64, 'json': json, 're': re}
-    exec(compile(ast.Module(body=[node], type_ignores=[]), str(source), 'exec'), namespace)
+    helpers = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in ('registered_nameserver_reply', 'registered_nameserver_change_reply')]
+    exec(compile(ast.Module(body=helpers + [node], type_ignores=[]), str(source), 'exec'), namespace)
     Handler = namespace['Handler']
     route = '/package/2301/web/directoryIndexing'
     for desired in [True, False]:

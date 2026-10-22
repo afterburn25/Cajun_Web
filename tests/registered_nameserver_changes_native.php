@@ -198,11 +198,9 @@ if($worker){
         foreach(['request','link','anchor'] as $field)if(!is_string($input[$field])||!preg_match('/\A[a-f0-9]{32}\z/',$input[$field]))throw new RuntimeException('Invalid worker identity.');
         if(!is_string($input['binding'])||!preg_match('/\A[a-f0-9]{64}\z/',$input['binding'])||$input['desired']!==RNC_NEW)throw new RuntimeException('Invalid worker reviewed set.');
         rnc_owner();
-        $out=null;$retry=0;
-        while(true){
-            try{$out=registered_nameserver_changes_change($input['request'],$input['link'],$input['anchor'],$input['binding'],$input['desired'],true,RNC_PASSWORD,'rnc_write_dns','rnc_perform');break;}
-            catch(RuntimeException $e){if($e instanceof PDOException||!str_contains($e->getMessage(),'Another account change is in progress')||++$retry>12)throw $e;usleep(250000);}
-        }
+        for($budget=microtime(true)+40;;)try{
+            $out=registered_nameserver_changes_change($input['request'],$input['link'],$input['anchor'],$input['binding'],$input['desired'],true,RNC_PASSWORD,'rnc_write_dns','rnc_perform');break;
+        }catch(RuntimeException $e){if($e instanceof PDOException||$e->getMessage()!=='Another account change is in progress. Please retry.'||microtime(true)>=$budget)throw $e;}
         echo json_encode(['status'=>$out['status'],'posts'=>$posts,'connection'=>(int)query('SELECT CONNECTION_ID()')->fetchColumn()],JSON_THROW_ON_ERROR);exit;
     }catch(Throwable $e){echo json_encode(['failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),
         'sqlstate'=>$e instanceof PDOException?(string)$e->getCode():null]],JSON_THROW_ON_ERROR);exit(1);}

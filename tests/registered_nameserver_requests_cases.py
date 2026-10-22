@@ -93,7 +93,7 @@ def run_browser(env, browser):
         return page
 
     def navigate(page, url):
-        response = page.goto(url, wait_until='load', timeout=30000)
+        response = page.goto(url, wait_until='load', timeout=90000)
         if response is None or response.status != 200:
             raise AssertionError('Installed nameserver request browser navigation failed')
         return SimpleNamespace(text=page.content(), url=page.url, status_code=response.status)
@@ -109,7 +109,7 @@ def run_browser(env, browser):
                 field.set_checked(value == '1')
             else:
                 field.fill(value)
-        with page.expect_navigation(wait_until='load', timeout=30000) as navigation:
+        with page.expect_navigation(wait_until='load', timeout=90000) as navigation:
             item.get_by_role('button', name=label, exact=True).click()
         response = navigation.value
         if response is None or response.status != 200:

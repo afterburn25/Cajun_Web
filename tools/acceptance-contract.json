@@ -2820,7 +2820,7 @@
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "7d678d6b474405bcafee8f93628e95126848e1bcb7356be279780586540df993",
+    "predecessor_contract_sha256": "728ba9515f4b31a7db4abb2ce01de72b89e756b510c193a9643273bf077d6ecd",
     "predecessor_reports_sha256": "9d6c7ab8e87a08435cd11dc4ccd720b21db5310757c3f641f5c15abff1c615d9",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
@@ -3271,7 +3271,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "102975da86eec6f7df188c162fcb715e9883a37aff90f61b485b1170d8241ed0",
+    "predecessor_contract_sha256": "8788e3f8dacdbc98dbd94ecd2fdce9be82c7530c4b3569e18db379ed6900fb97",
     "predecessor_reports_sha256": "8672eee23aea1fef5ec362cf6f7e02ead15f501cf3f4f0ea3ff8b63e3c5ad98c",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3863,7 +3863,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "af1dc2eef0fe4667b93861003c3bccf54e1c044a09ecb1146f6570dc16bd0a7b",
+    "predecessor_contract_sha256": "6e37b1d4661d111a159c52e63df6773152f9763e573ac82eadbc161f7defcb7d",
     "predecessor_reports_sha256": "90bde2f7f2b422b45d5438788f713d5c9605c47cc9fed0113ee650844bdb93e3",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -4171,7 +4171,7 @@
           "tests/registered_nameserver_changes_native.php"
         ],
         "before": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
-        "after": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d"
+        "after": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71"
       },
       {
         "keys": [
@@ -4180,7 +4180,7 @@
           "tests/registered_nameserver_changes_native.php"
         ],
         "before": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
-        "after": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d"
+        "after": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71"
       },
       {
         "keys": [
@@ -4189,7 +4189,7 @@
           "tests/registered_nameserver_changes_native.php"
         ],
         "before": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
-        "after": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d"
+        "after": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71"
       },
       {
         "keys": [
@@ -4198,7 +4198,7 @@
           "tests/registered_nameserver_changes_native.php"
         ],
         "before": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
-        "after": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d"
+        "after": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71"
       },
       {
         "keys": [
@@ -4413,12 +4413,12 @@
           },
           {
             "after_start": 200,
-            "after_end": 205,
-            "after": "        $out=null;$retry=0;\n        while(true){\n            try{$out=registered_nameserver_changes_change($input['request'],$input['link'],$input['anchor'],$input['binding'],$input['desired'],true,RNC_PASSWORD,'rnc_write_dns','rnc_perform');break;}\n            catch(RuntimeException $e){if($e instanceof PDOException||!str_contains($e->getMessage(),'Another account change is in progress')||++$retry>12)throw $e;usleep(250000);}\n        }\n",
+            "after_end": 203,
+            "after": "        for($budget=microtime(true)+40;;)try{\n            $out=registered_nameserver_changes_change($input['request'],$input['link'],$input['anchor'],$input['binding'],$input['desired'],true,RNC_PASSWORD,'rnc_write_dns','rnc_perform');break;\n        }catch(RuntimeException $e){if($e instanceof PDOException||$e->getMessage()!=='Another account change is in progress. Please retry.'||microtime(true)>=$budget)throw $e;}\n",
             "before": "        $out=registered_nameserver_changes_change($input['request'],$input['link'],$input['anchor'],$input['binding'],$input['desired'],true,RNC_PASSWORD,'rnc_write_dns','rnc_perform');\n"
           }
         ],
-        "after_sha256": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d",
+        "after_sha256": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71",
         "before_sha256": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904"
       },
       "tests/registered_nameserver_changes_upgrade.py": {
@@ -5072,7 +5072,7 @@
       "tests/registered_nameserver_changes_storage.php": "3341e864ee25d721640a6c6b6193429a77b6eb84d8a254514f3e61e8355b9bd7",
       "tests/registered_nameserver_changes.php": "7035fa6cec58c317eebc0a2813af4e6fbc5efa87dc390bef0fd33e5e4b1cd189",
       "tests/registered_nameserver_changes_views.php": "fd7a5570bddd64b800fd102b42275e70f0fc208788050d21add7c64d1e98f56c",
-      "tests/registered_nameserver_changes_native.php": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d",
+      "tests/registered_nameserver_changes_native.php": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71",
       "tests/registered_nameservers_views.php": "b260dfa38d32ea4fcb9f2fc2c6d3775ca656c716818b6859ddc5550b650af965"
     },
     "predecessor_source_delta": {
@@ -5103,7 +5103,7 @@
       "tests/acceptance_artifacts_test.py": "76928cb0303e9af257ec153ba59584a3d03d9b975b540a97f72f3e00c08e28d7",
       "tests/provider_http_server.py": "d15b2c0e73481f2c690980cc84c0794f7a117cef93bbdf0b9a0bd7580a6f47a7",
       "tests/registered_nameservers_cases.py": "7cfec6fcd0aefb16f6165a8874a18ae89bb464d47a5beb84e957b7da902fe593",
-      "tests/registered_nameserver_changes_cases.py": "cf329788a54c681f1a1affc98afb00e28e02bdba22c6d26bc497f86caa36d7af",
+      "tests/registered_nameserver_changes_cases.py": "f4fecf04ead0eda1089249fe274936b5b2042fb2ad604dffc47b718baf4b4bc8",
       "tests/registered_nameserver_changes_http_fixture_test.py": "1ffcf7a47fc3fccba50e7bacd3f4c6e2f1a69a48285bb0201cdc0fb4d0b9b000",
       "tests/registered_nameserver_changes_upgrade.py": "31bafc72074376503ede3f7e7f3aa20785d7bb09b2a539554df82c8322840545",
       "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
@@ -5189,7 +5189,7 @@
       "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
       "tests/registered_nameservers_upgrade_fixture.php": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789",
       "tests/registered_nameservers_upgrade_test.py": "c9b650c4fcf32894d24e23488df730a13ebc34b52b5e93ab5f2c326eac748e07",
-      "tests/registered_nameserver_changes_native.php": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d"
+      "tests/registered_nameserver_changes_native.php": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71"
     },
     "screenshots": [
       "Nameserver-Change-Ready-Desktop.png",
@@ -5204,7 +5204,7 @@
   },
   "registered_nameserver_requests": {
     "source_predecessor": "af78abd81ce39839cd100e1c882a59b04258a25b",
-    "predecessor_contract_sha256": "88b0bcc8167dfee1f4c2c0b90b36870382bf28c94b117051898adbf2b5199f35",
+    "predecessor_contract_sha256": "a372ac43770ccc9d25ee1ecd288be6f306a00d59f467aa2ac2757d6bd45a3dad",
     "predecessor_reports_sha256": "e6161a58263d6666f0aeda828d34843b986353efbcc49afc08d0c5c7bed4ceb1",
     "native_additions": [
       "\"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json",
@@ -5298,15 +5298,15 @@
       "tests/provider_http_server.py": "1a92670de82a16247218aa359781be4d9dec843d87bb6cb30256da3420dcc013",
       "tests/registered_nameserver_changes.php": "1bab3fcb29761a22157544d514b5454a22f958c92bcc8d2ebe9d33c015866357",
       "tests/registered_nameserver_changes_acceptance.py": "37fe4485305e8a6faabf2c1f9e9b5b0eb5658b732f58a0f2991d3f29da27893a",
-      "tests/registered_nameserver_changes_cases.py": "cf329788a54c681f1a1affc98afb00e28e02bdba22c6d26bc497f86caa36d7af",
+      "tests/registered_nameserver_changes_cases.py": "f4fecf04ead0eda1089249fe274936b5b2042fb2ad604dffc47b718baf4b4bc8",
       "tests/registered_nameserver_changes_http_fixture_test.py": "fae28a5389f0d705c373a67b8a250492b3c5350a07b97d849c2de7d9d56d292b",
-      "tests/registered_nameserver_changes_native.php": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d",
+      "tests/registered_nameserver_changes_native.php": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71",
       "tests/registered_nameserver_changes_upgrade.py": "31bafc72074376503ede3f7e7f3aa20785d7bb09b2a539554df82c8322840545",
       "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
-      "tests/registered_nameserver_requests_acceptance.py": "a8b27c03ca673dfc51e051bf988fb3eb720f0a892e3bed6709c2144af986322c",
-      "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
+      "tests/registered_nameserver_requests_acceptance.py": "8d8c3d085f9fd52229fcb4bd26b188298e04cc623dcac2306668a36e74f4f829",
+      "tests/registered_nameserver_requests_cases.py": "ecf9cfaaadf9f5ce69de961cd1b0468b5d7341200fc6088e321b94c37affc738",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
       "tests/registered_nameserver_requests_native.php": "df4aef98c107bb09d1c22317de19195903224c1c12f51c0bfbd669be17d19741",
       "tests/registered_nameserver_requests_storage.php": "fe9fd6e4fe1969ec93af0990c3180513d544e79877a60d079bb32121eebb9954",
@@ -5484,7 +5484,7 @@
     },
     "unchanged_source_sha256": {
       "tests/browser_acceptance.py": "9799341f59a8a117124c44ff601996c205df76e26fbcd0c699392029ae61bc3e",
-      "tests/registered_nameserver_changes_native.php": "f5e6590f284f2a7f2e45ed5d19818ebcf4f3e6491f25ea635ce612757cd0822d",
+      "tests/registered_nameserver_changes_native.php": "dd2115847cbd72a1eabb1e83c3c0a72bf521c97715f1f04ad626409c5a445b71",
       "tests/registered_nameserver_changes_upgrade.py": "31bafc72074376503ede3f7e7f3aa20785d7bb09b2a539554df82c8322840545",
       "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
@@ -5496,7 +5496,7 @@
   },
   "client_https_requests": {
     "predecessor_commit": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
-    "predecessor_contract_sha256": "fa6cae2ed862ba81f39be7606f78bd9fcba3f8690f9071d382a005828ae4b43e",
+    "predecessor_contract_sha256": "aed2b3d819afb0e996f8e194b30f1654bf02f090e2f549ba52a2c63d6d0fd3f3",
     "predecessor_reports_sha256": "639a9bb2b7252e49882de7b5a5a176f531402d57235c35f7544e201002ceec3e",
     "native_after": "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
     "native_additions": [
@@ -5808,7 +5808,7 @@
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "12d4a37295fe9be3ca193a5f3a3aa7eaf0a3675e7ead9ed85c648265ca26468e",
+    "predecessor_contract_sha256": "dc041e892222a889c4f14d7413651f038a8925cebbfbca11290554a28edc62bd",
     "predecessor_reports_sha256": "9bace2c26fa5a8090bd3dac21afe2790940a22ef16be37547eeb0ff1df6e3c4b",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [

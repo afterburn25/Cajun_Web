@@ -43,7 +43,8 @@ def run(source):
     check('Actual Handler retains one GET and POST method', len(methods) == len(set(methods)) and methods.count('do_GET') == methods.count('do_POST') == 1)
     fixture = SimpleNamespace(calls=0, posts=[], errors=[], packages=[], write_mode='success', renewal_mode='success', renewal_posts=[])
     namespace = {'BaseHTTPRequestHandler': OfflineResponse, 'fixture': fixture, 'base64': base64, 'json': json, 're': re}
-    exec(compile(ast.Module(body=[node], type_ignores=[]), str(source), 'exec'), namespace)
+    helpers = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in ('registered_nameserver_reply', 'registered_nameserver_change_reply')]
+    exec(compile(ast.Module(body=helpers + [node], type_ignores=[]), str(source), 'exec'), namespace)
     Handler = namespace['Handler']
 
     def post(path, payload):
