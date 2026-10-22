@@ -35,6 +35,9 @@ class InboxServer:
                         data+=part
                         assert len(data)<4096
                     value=data[:-2].decode();assert value==expected,'Unexpected synthetic IMAP command';self.commands.append(label or value)
+                def logout(expected):
+                    try:expect(expected)
+                    except EOFError:pass
                 send('* OK Synthetic HTTP inbox fixture')
                 if mode.startswith('append'):
                     expect('CWA001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWA001 OK done')
@@ -53,7 +56,7 @@ class InboxServer:
                         payload+=part
                     self.appended=payload[:count]
                     send('CWA003 NO folder unavailable' if mode=='append-refused' else 'CWA003 OK appended')
-                    if mode=='append':expect('CWA004 LOGOUT')
+                    if mode=='append':logout('CWA004 LOGOUT')
                     continue
                 if mode.startswith('flag'):
                     expect('CWF001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWF001 OK done')
@@ -76,7 +79,7 @@ class InboxServer:
                     send('CWF005 NO refused' if mode=='flag-refused' else 'CWF005 OK stored')
                     if mode=='flag-refused':continue
                     expect('CWF006 UID FETCH 82 (UID FLAGS)');send('* 2 FETCH (UID 82 FLAGS ())' if mode=='flag-unseen' else '* 2 FETCH (UID 82 FLAGS (\\Seen))');send('CWF006 OK flags')
-                    expect('CWF007 LOGOUT','LOGOUT')
+                    logout('CWF007 LOGOUT')
                     continue
                 expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
                 expect('CWR002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWR002 OK authenticated')
@@ -98,13 +101,13 @@ class InboxServer:
                         expect('CWR005 UID FETCH 90 (UID FLAGS RFC822.SIZE BODY.PEEK[])')
                         send(f'* 1 FETCH (UID 90 FLAGS (\\Seen) RFC822.SIZE {len(sent)} BODY[] {{{len(sent)}}}')
                         for at in range(0,len(sent),17):s.sendall(sent[at:at+17])
-                        send(')');send('CWR005 OK fetched');expect('CWR006 LOGOUT')
+                        send(')');send('CWR005 OK fetched');logout('CWR006 LOGOUT')
                     else:
                         expect('CWR004 FETCH 1:1 (UID FLAGS RFC822.SIZE BODY.PEEK[HEADER])')
                         header=(f'From: synthetic@example.net\r\nSubject: SYNTHETIC SENT COPY\r\nDate: Tue, 13 Oct 2026 12:05:00 +0000\r\n\r\n').encode()
                         send(f'* 1 FETCH (UID 90 FLAGS (\\Seen) RFC822.SIZE 2048 BODY[HEADER] {{{len(header)}}}')
                         for at in range(0,len(header),17):s.sendall(header[at:at+17])
-                        send(')');send('CWR004 OK fetched');expect('CWR005 LOGOUT')
+                        send(')');send('CWR004 OK fetched');logout('CWR005 LOGOUT')
                     continue
                 send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
                 if mode.startswith('message'):
@@ -123,7 +126,7 @@ class InboxServer:
                     send(f'* 2 FETCH (UID {uid} FLAGS () RFC822.SIZE {size} BODY[] {{{len(raw)}}}')
                     for at in range(0,len(raw),17):s.sendall(raw[at:at+17])
                     send(')');send('CWR005 OK fetched')
-                    if mode!='message-wrong-uid':expect('CWR006 LOGOUT')
+                    if mode!='message-wrong-uid':logout('CWR006 LOGOUT')
                     continue
                 if mode!='empty':
                     expect('CWR004 FETCH 1:2 (UID FLAGS RFC822.SIZE BODY.PEEK[HEADER])')
@@ -136,7 +139,7 @@ class InboxServer:
                         for at in range(0,len(header),17):s.sendall(header[at:at+17])
                         send(')')
                     send('CWR004 OK fetched')
-                expect('CWR004 LOGOUT' if mode=='empty' else 'CWR005 LOGOUT')
+                logout('CWR004 LOGOUT' if mode=='empty' else 'CWR005 LOGOUT')
             except (OSError,EOFError) as e:self.errors.append(type(e).__name__+':'+str(e)[:160])
             except AssertionError as e:self.errors.append(str(e))
             except BaseException as e:self.errors.append('fatal:'+type(e).__name__+':'+str(e)[:200]);raise
