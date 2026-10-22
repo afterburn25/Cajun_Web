@@ -628,7 +628,7 @@
       "tests/twentyi-cloud-site-requests/documents.php": "0a227898eeb5b4cec6cf3f7f4800580b1e02421edbcd675484aae741df91790b",
       "tests/cloud_site_requests_ui_contract.php": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
       "tests/provider_cloud_site_requests_native.php": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
-      "tests/provider_cloud_site_requests_cases.py": "ad0fee381500af08a915e7175133224ba0488159d254ca1cefb2151e502dab29",
+      "tests/provider_cloud_site_requests_cases.py": "4862727e170bcfaff792e70f557698a0109dd27202b3207f9a9bddca24861fc8",
       "tests/cloud_site_requests_wiring.py": "df71ec091795b411d8e67b14769c1591fe9bfa1b5963a15abc07e2ac2cda6624",
       "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
       "tests/provider_cloud_site_requests_upgrade_fixture.php": "b95a5562df22b2c5e242219ca2c911f160699a64f9ca3b15d0fbc0aeaa403da5",
