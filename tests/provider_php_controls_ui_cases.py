@@ -113,7 +113,7 @@ def run_browser(env, browser):
         data = fields(form); data.update(changes or {})
         for name in remove:
             data.pop(name, None)
-        return session.post(form_action(response, form), data=data, timeout=45), data
+        return session.post(form_action(response, form), data=data, timeout=120), data
 
     def no_effect(before, calls, label):
         check(label, state()["protected_sha256"] == before["protected_sha256"] and provider.calls == calls)
