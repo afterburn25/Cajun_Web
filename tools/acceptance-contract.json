@@ -1508,7 +1508,7 @@
       "site/app/providers/support_stackcp_documents.php": "7a63756bedf810669d478e6571d9973f8a1082acea9d330eae1b34a6163367ba",
       "site/app/providers/support_stackcp_launch.php": "d807afd44b5b0b52f1f142cc74518f171bbaa14e2434f17865bb58c63bfb593d",
       "site/app/providers/support_stackcp_permissions.php": "472cd086a25b7270c8edfd46f845101dadcd1a940275e658e6761df2c33fa9f7",
-      "site/app/providers/support_stackcp_storage.php": "231698163a520fd60e1c2713a277d5f1a421808be4c8ac6be1b834ddab262268",
+      "site/app/providers/support_stackcp_storage.php": "0f01df673016005f176a9c3a7ad4f23fa884db89602e9d29ce1b3353584f5973",
       "site/app/providers/support_stackcp_views.php": "75ed7b8b485cea6485df0eb7ba6d5fa0db27135a967087725385d7d026103c1a",
       "site/app/staff/accounts.php": "ec29bc72543d8e2eb38676f385cbe33d1c6a3874327992d20e327a2e2f878d79",
       "site/database/schema/provider_support_stackcp_schema.php": "444ca98001744e982406b29ead55c877cdc629e38fd0b36a408e1a661debb098",
