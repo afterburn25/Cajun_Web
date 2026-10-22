@@ -3507,3 +3507,29 @@ PR261 (`e334678e`) run 39761594725: build, recovery and Apache lanes green; `nat
 ## 2026-10-19 — reset template controls after payment-link correction
 
 Owner request: continue the roadmap. Completed payment-link companion PR253 at b1948eeb; its first full run39247478772 remains pending. Started the separate template lane at current maina86f6f4f. Added typed provider handling, encrypted one-use history, owner review/readback UI and additive acceptance. See [scope and source-bound verification](TWENTYI_PASSWORD_RESET_TEMPLATE.md). Offline foundation and retained operation regressions pass; native SQL, installed browser and publication remain pending. No live provider request, mail send or deployment occurred. Independent source review is complete with no remaining concrete findings; 68 root source checks, 230 acceptance-helper checks, installer refresh and all shipping PHP/JavaScript checks pass. Generated mirrors/inventory and source-bound receipts are included. The initial Windows no-INI OpenSSL path failure remains recorded as a harness limitation, followed by successful explicitly configured modeled tests. Next: exact-source hosted gates and sequential integration. Full20i and the standing roadmap goal remain incomplete.
+
+### 2026-10-22 — audit action index lane started (devin/audit-render-index)
+
+- Request context: continue without stopping; hosted lanes kept dying on
+  late-suite provider-settings renders.
+- Evidence: docroots run 39821734667 died on a 30s `page.goto` to
+  provider-settings; its HTTP log shows provider-settings renders degrade
+  from <1s to median 15s/p90 27s/max 30s as audit history accumulates.
+  php-controls run 39821538684 shows the same growth (max 17s). Root cause:
+  every domain journal replays per-event `WHERE BINARY action=? AND BINARY
+  detail=?` audit lookups against an unindexed column — O(events x audit
+  rows) per render.
+- Change (`d819f044`): `audit.action` becomes `COLLATE utf8mb4_bin` and gains
+  `INDEX audit_action(action)`; `studio_migrate` applies both additively to
+  existing installs. Every action value is a code-written lowercase
+  identifier and every comparison is BINARY-exact or constant-equal, so
+  results are byte-identical while all action equality/IN/prefix-LIKE reads
+  become index serves. No query text changed; audit bytes untouched.
+- Verification: php -l on both files; build --refresh PASS (40 packages,
+  2188 dependency files, installer inventory regenerated); neither file is
+  contract-pinned. Acceptance dispatched as run 39858223574 — its own
+  browser suite is the benchmark.
+- Known limits: secondary unindexed scans remain (e.g.
+  provider_refreshes.operation); audit is the dominant per-event table and
+  is fixed first. Update installs apply the index on the next owner-run
+  studio_migrate.
