@@ -1,3 +1,9 @@
+## Unreleased — 20i password-reset email template
+
+- Added owner-only reading, replacement review, password-confirmed save and separate readback for the documented StackCP reset email template.
+- Preserved exact reviewed text, encrypted local history and one-use requests; uncertain writes cannot automatically resend.
+- Added offline contracts and installed SQL/browser regressions. Full acceptance and publication remain pending.
+
 ## Unreleased documentation — verified remainder and candidate handoff
 
 Record completion of the 139-run obsolete CI remainder, exact PR249 package verification and the separate PR250 contacts-fixture correction. Preserve every original acceptance gate, historical failure and published 1.25 asset. This commit changes documentation only; hosted feature acceptance remains pending.

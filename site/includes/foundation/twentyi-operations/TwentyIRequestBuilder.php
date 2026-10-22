@@ -16,6 +16,7 @@ require_once __DIR__.'/ForceSslChange.php';
 require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
 require_once __DIR__.'/DomainRenewal.php';
 require_once __DIR__.'/DirectoryIndexingChange.php';
+require_once __DIR__.'/PasswordResetTemplateChange.php';
 
 /**
  * Translates a validated ProviderOperation into one bounded provider
@@ -45,10 +46,12 @@ final class TwentyIRequestBuilder
     private const MAX_NODES = 256;
 
     private ?\Closure $mailboxPassword;
+    private ?\Closure $templateContent;
 
-    public function __construct(private TwentyIOperationRegister $register, ?callable $mailboxPassword = null)
+    public function __construct(private TwentyIOperationRegister $register, ?callable $mailboxPassword = null, ?callable $templateContent = null)
     {
         $this->mailboxPassword = $mailboxPassword === null ? null : \Closure::fromCallable($mailboxPassword);
+        $this->templateContent = $templateContent === null ? null : \Closure::fromCallable($templateContent);
     }
 
     public function build(ProviderOperation $operation): TransportRequest
@@ -62,6 +65,7 @@ final class TwentyIRequestBuilder
         }
 
         if ($operation->name === DomainRenewal::OPERATION) return DomainRenewal::request($operation);
+        if ($operation->name === PasswordResetTemplateChange::OPERATION) return PasswordResetTemplateChange::request($operation, $this->templateContent);
         if ($operation->name === DirectoryIndexingChange::OPERATION) return DirectoryIndexingChange::request($operation);
         if ($operation->name === ForceSslChange::OPERATION) return ForceSslChange::request($operation);
         if ($operation->name === CloudWebsiteCreate::OPERATION) return CloudWebsiteCreate::request($operation);

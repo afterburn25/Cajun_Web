@@ -12,7 +12,7 @@ use CajunWebPro\Foundation\Provider\{HttpTransport,TransportException,TransportR
 final class FixedHttpTransport implements HttpTransport
 {
     private const HEADER_LIMIT = 16384;
-    /** Canonical write bodies are bounded to 8KiB by the request builder. */
+    /** Ordinary write bodies are bounded to 8KiB; the typed template path has its own limit. */
     private const REQUEST_BODY_LIMIT = 8192;
     private const URL_BASE = 'https://api.20i.com/';
     private string $address;
@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url) && !$this->isPackageForceSsl($request->url) && !$this->isDirectoryIndexing($request->url) && !$this->isWordpressInstalled($request->url) && !$this->isStackCpAccess($request->url)) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders', 'https://api.20i.com/reseller/*/passwordResetEmail'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url) && !$this->isPackageForceSsl($request->url) && !$this->isDirectoryIndexing($request->url) && !$this->isWordpressInstalled($request->url) && !$this->isStackCpAccess($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -52,18 +52,25 @@ final class FixedHttpTransport implements HttpTransport
             // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
             $domainRenewal = $path === 'reseller/*/renewDomain';
+            $resetTemplate = $path === 'reseller/*/passwordResetEmail';
+            $bodyLimit = self::REQUEST_BODY_LIMIT;
+            if ($resetTemplate) {
+                require_once __DIR__.'/../twentyi-operations/PasswordResetTemplateChange.php';
+                $bodyLimit = \CajunWebPro\Foundation\TwentyI\Operations\PasswordResetTemplateChange::MAX_BODY_BYTES;
+            }
             $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
             $directoryIndexing = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/directoryIndexing\z~', $path) === 1;
             $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing && !$resetTemplate)
                 || !is_string($request->body) || $request->body === ''
-                || strlen($request->body) > self::REQUEST_BODY_LIMIT
+                || strlen($request->body) > $bodyLimit
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
                 || $request->headers['Accept'] !== 'application/json'
                 || $request->headers['Content-Type'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider write request.');
             }
+            if ($resetTemplate) \CajunWebPro\Foundation\TwentyI\Operations\PasswordResetTemplateChange::wire($request);
             if ($domainRenewal) {
                 require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
                 require_once __DIR__.'/../twentyi-operations/DomainRenewal.php';
