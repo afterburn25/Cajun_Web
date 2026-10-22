@@ -26,9 +26,9 @@ Each needs its own hosted green at exact head before any merge; contract re-anch
 | Lane | Branch tip at record | Pending run | Note |
 |---|---|---|---|
 | Force-SSL ops whitelist + bob empty-feed CSRF fix | `devin/fix-force-ssl-ops-whitelist` `7757c64c` | 39746898847 | In flight |
-| StackCP ops whitelist + SSNFAULT diagnostic | `devin/fix-stackcp-ops-whitelist` `94a3fca5` | 39746902785 | In flight; interpret terminal reason, non-PDO exit is not a pass |
+| StackCP ops whitelist + SSNFAULT diagnostic | `devin/fix-stackcp-ops-whitelist` `fad2c1f1` | 39769387589 | Prior run failed on rate-window timing (journal too large late in fixture); block moved earlier at `fad2c1f1`; rerun must still reach SSNFAULT interpretation |
 | PHP controls minimal timeout fix | `devin/fix-php-controls-minimal` `7641316f` | 39747028009 | In flight |
-| Docroots worker retry (WP cooldown evidence order) | `devin/fix-docroots-worker-retry` `70102197` | 39744957397 | In flight |
+| Docroots worker retry (WP cooldown evidence order) | `devin/fix-docroots-worker-retry` `5deeb932` | 39769970280 | Prior run failed on directory-listing cooldown repeat admitted at +30s under congestion; concurrent-dispatch fix at `5deeb932` |
 | Nameserver fixture getattr (browser TimeoutError redispatch) | `devin/fix-nameserver-fixture-getattr` `2378880d` | 39745221647 | In flight |
 | Reviewed merge-prep leaf tips | docroots `fe314730`, phpctl `e95bdf2e`, nameserver `18f0cf08`, forcessl `eb8dcd50` | — | Hold for small-PR evaluation or staging merge after leaf runs report |
 
@@ -49,7 +49,8 @@ Each needs its own hosted green at exact head before any merge; contract re-anch
 
 1. PR261 (`e334678e`): independent review complete (no blockers; 2 should-fix + 4 nits below). Awaiting hosted acceptance (run 39761594725) — next action: merge on green, then verify main.
 2. FSI browser lane: prior failure was test-side `NameError` in flag diagnostics (fixed `9ec4e2b1`); earlier `imap` mark-read connection refusal did not recur in that run but its evidence was masked by the crash — next run must produce `qa/imap-connect-failures.jsonl`/`flag-mark-read-diagnostics.json` verdicts.
-3. StackCP `ssn_fault` diagnostic (run 39746902785): capture admission state/phase/terminal payload; interpret terminal reason on completion.
+3. StackCP run 39746902785 completed-failure, classified: not SSNFAULT — the late-fixture rate-window block admitted five staff sessions over >60s while replaying the grown event journal, so the sixth was never refused (90/92 passed). Fixed by moving the unchanged six-admission sequence earlier at `fad2c1f1` with fresh review approvals reissued; run 39769387589 pending. SSNFAULT terminal-reason interpretation still owed when a run reaches it.
+4a. Docroots run 39744957397 completed-failure, classified: directory-listing `Shared cooldown` repeat was dispatched only after the first response returned; under congestion the repeat was admitted at +30s, executed a real second read, and failed 'one exact assigned-package GET' (105 vs 104 calls). Fixed at `5deeb932`: primary refresh dispatched on a thread, repeat posted from a second owner session as soon as the ledger records admission; assertions unchanged. Run 39769970280 pending.
 4. Preflight Apache lane: nameserver upgrade `seed` helper failed on missing `studio_migrate` owner step (fixed `b7a84122`, re-anchored contract, local verifier 1468 checks) — rerun must pass the seed/apply/recover sequence.
 
 ## Tracked follow-ups (non-blocking)
