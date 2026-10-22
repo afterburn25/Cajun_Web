@@ -7,7 +7,7 @@ from release_cases import db
 from staff_cases import OWNER,STAFF
 
 def run_browser(env,browser):
-    globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','submit','inbox_server']})
+    globals().update({k:env[k] for k in ['BASE','QA','ROOT','check','soup','token','submit','inbox_server']})
     db('DELETE FROM ci_rate_limits');root=BASE+'/existing/admin/index.php';library=root+'?view=mail-accounts'
     check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_message_reads'))
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
