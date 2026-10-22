@@ -64,8 +64,16 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <p><?=esc(mail_message_outcome($entry['result_code']??''))?></p></article>
 <?php endforeach; ?>
 <nav aria-label="Message request history pages"><?php if($historyPage>1): ?><a class="btn outline" href="<?=esc(admin_url('mail-message',$route+['p'=>$historyPage-1]))?>">Newer requests</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('mail-message',$route+['p'=>$historyPage+1]))?>">Older requests</a><?php endif; ?></nav>
-<?php if(mail_flags_ready()): $flagHistory=mail_flags_history($accountId); ?>
+<?php if(mail_flags_ready()): $flagHistory=mail_flags_history($accountId);$flagState=($result!==null&&$result['code']==='ok')?null:mail_flag_state($accountId,(int)$route['revision'],$route['folder'],$route['uidvalidity'],$route['uid']); ?>
 <h3>Your recent flag requests</h3><p class="hint">History keeps outcomes and message identifiers. Message contents are never saved.</p>
+<?php if($flagState!==null): ?>
+<p>The last confirmed server read state for this message is <?=$flagState?'read':'unread'?>.</p>
+<form method="post" data-message-flag><?php admin_action('mail_message_flag'); ?>
+<?php foreach($route as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?>
+<input type="hidden" name="mark" value="<?=$flagState?'unread':'read'?>">
+<button class="btn outline"><?=$flagState?'Mark unread on server':'Mark read on server'?></button></form>
+<p class="hint">Marking contacts the server once and is recorded. Allow 5 seconds between flag requests for this account.</p>
+<?php endif; ?>
 <?php if(!$flagHistory): ?><p>No flag requests recorded.</p><?php endif; ?>
 <?php foreach(array_slice($flagHistory,0,20) as $entry): ?>
 <article class="workspace-card"><h4><?=esc($entry['outcome']==='success'?'Flag '.((int)$entry['mark_seen']===1?'read':'unread').((int)($entry['applied']??0)===0&&$entry['result_code']==='unchanged'?' already set':' changed'):($entry['outcome']==='uncertain'?'Flag change unconfirmed':($entry['outcome']==='failed'?'Flag request failed':'Result not recorded')))?></h4>

@@ -124,3 +124,9 @@ function mail_flags_history(string $id,int $page=1): array {
     $page=max(1,min($page,100000));
     return all('SELECT r.started_at,r.account_revision,r.folder,r.uidvalidity,r.uid,r.mark_seen,o.outcome,o.result_code,o.applied FROM '.table('mail_flag_requests').' r LEFT JOIN '.table('mail_flag_results').' o ON o.id=r.id WHERE r.account_id=? AND r.actor_id=? ORDER BY r.started_epoch DESC LIMIT 21 OFFSET '.(($page-1)*20),[$id,$actor['id']]);
 }
+/** Latest confirmed server read state for one exact message, or null when no confirmed outcome exists. */
+function mail_flag_state(string $id,int $revision,string $folder,string $validity,string $uid): ?bool {
+    [$actor]=mail_flag_authority($id,null,false);if(!mail_flags_ready())return null;
+    $row=one('SELECT r.mark_seen FROM '.table('mail_flag_requests').' r JOIN '.table('mail_flag_results').' o ON o.id=r.id WHERE r.account_id=? AND r.account_revision=? AND r.actor_id=? AND r.folder=? AND r.uidvalidity=? AND r.uid=? AND o.result_code IN (\'ok\',\'unchanged\') ORDER BY r.started_epoch DESC,r.id DESC LIMIT 1',[$id,$revision,$actor['id'],$folder,$validity,$uid]);
+    return $row===null?null:(bool)$row['mark_seen'];
+}
