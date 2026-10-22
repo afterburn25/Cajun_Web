@@ -61,3 +61,18 @@ Each needs its own hosted green at exact head before any merge; contract re-anch
 - PR261 should-fix #2: `provider_operation_revoke` lacks a `consumed_key IS NULL` guard — a crafted owner POST could revoke a consumed template grant. Consider refusing revocation of consumed grants.
 
 Group A slice detail (25 merged slices A1–A25) remains recorded in the FSI copy of this file at branch `devin/full-site-integration`.
+
+## 2026-10-22 update — current lane heads and runs
+
+| Lane | Current head | Pending run | State |
+|---|---|---|---|
+| Preflight commercial | `26ae6438` | 39829965477 | Contract cascade re-settled (32 stored values, iterative spy settle); verifier 1468/1468 locally. In flight. |
+| Full-site integration flags | `91fb81ba` | 39828846504 | Adds bounded diagnostics for "Matching server state records unchanged" after `ba10faee` FlagWriter bootstrap fix. In flight. |
+| Cloud websites PR226 merge candidate | `8e4ed52a` (`devin/cloud-websites-main`) | 39857344532 / 39856701399 | Journal audit lookups batched; history readiness memo is transaction-scoped (tamper-safe); registration-periods test waits for document load (60s). Two earlier failures fixed: baseline-seed ordering `d61abe0f`, foreign-CSRF page `c7e351b7`. Queued. |
+| StackCP ops whitelist | `f7b51f02` | 39846615525 | Fixture mock updated for the batched audit query shape (`SELECT r.* FROM`, `id,user_id,created_at,detail`); local 549 checks green. In flight. |
+| Nameserver getattr | `5a262898` | 39857272145 | Prior run's native job was cancelled; fresh dispatch. Queued. |
+| PHP controls minimal | `799526e3` | 39856635999 | Run 39821538684 failed at "Later different scalar remains fenced" — verify-fence diagnostics added (row/status/provider calls/notice/form state), pin re-anchored, local 390 checks green. Queued. |
+| Docroots worker retry | `b3b60005` | 39857268953 | Run 39821734667's failure classified as a 30s `page.goto` timeout on provider-settings — NOT the listing check (which passed with calls_delta=1). Shared browser contexts now get a 60s navigation bound (5a262898 precedent). Queued. |
+| Audit action index (new) | `6807cb2e` (`devin/audit-render-index`) | 39858223574 | NEW systemic fix: provider-settings renders degrade to 15-30s late-suite because journal replays scan the unindexed `audit.action`. `action` becomes utf8mb4_bin + `INDEX audit_action(action)`; `studio_migrate` applies both additively to existing installs. Zero query/semantic changes. Queued. |
+
+Cancel/queued runs are not green; earlier superseded runs were cancelled to free the queue without losing head-specific evidence.
