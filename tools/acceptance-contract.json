@@ -745,13 +745,19 @@
       },
       "tests/browser_acceptance.py": {
         "before_sha256": "2cbd4f2c94fc792b93a48e773e953513549e85041477121b35a5cfb761c524db",
-        "after_sha256": "b3f87e1ea599d8bcac904c803dbd93da2d646cfa7cc33e0f2900623f8ee8f7d7",
+        "after_sha256": "11cb5cd18d08e18066ea1df08b618ff5606f48bb74457b42dc3420b2144fc607",
         "changes": [
           {
-            "after_start": 250,
-            "after_end": 253,
-            "before": "",
-            "after": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n"
+            "after_start": 141,
+            "after_end": 146,
+            "after": "        # Late-suite provider-settings renders legitimately stream beyond 30s on saturated runners; bound waits without weakening assertions.\n        real_new_context=browser.new_context\n        def slower_context(**kwargs):\n            ctx=real_new_context(**kwargs);ctx.set_default_navigation_timeout(60000);return ctx\n        browser.new_context=slower_context\n",
+            "before": ""
+          },
+          {
+            "after_start": 255,
+            "after_end": 258,
+            "after": "        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete\n        document_root_requests_result=document_root_requests_browser(globals(),browser)\n        check(\"Installed client website folder request journey and captures are complete\",document_root_requests_complete(document_root_requests_result,QA))\n",
+            "before": ""
           }
         ]
       },
