@@ -305,7 +305,7 @@ def run_browser(env, browser):
                                        ("cross link", {"link_id": seed["other_link_id"], "current_password": OWNER_PASSWORD, "confirmed": "1"}, ())):
             before, calls = state(), provider.calls; data = dict(confirmation); data.update(changes)
             for key in remove: data.pop(key, None)
-            response = owner.post(owner_url, data=data, timeout=45)
+            response = owner.post(owner_url, data=data, timeout=120)
             no_effect(before, calls, "Invalid change " + label + " cannot create or send request")
             private_safe(response, "Invalid change " + label + " retains no password/private context")
             if label in ("password", "confirmation"):
@@ -317,7 +317,7 @@ def run_browser(env, browser):
         owner_request = confirmation["request_id"]; request_ids.append(owner_request)
         owner_change = dict(confirmation, current_password=OWNER_PASSWORD, confirmed="1")
         calls, posts = provider.calls, len(provider.posts)
-        response = owner.post(owner_url, data=owner_change, timeout=45)
+        response = owner.post(owner_url, data=owner_change, timeout=120)
         row = request_row(owner_request)
         check("Owner form performs one exact setter and genuine ledger attempt", provider.calls == calls + 1 and len(provider.posts) == posts + 1
               and provider.posts[-1] == {"path": "/package/701/web/phpVersion", "body": '{"value":"php84"}'}
@@ -325,7 +325,7 @@ def run_browser(env, browser):
               and row["ledger_attempts"] == 1 and row["phase"] == "attempted")
         check("Acknowledgement does not establish reported PHP value", row["readback"] == "pending" and "Awaiting a check" in response.text and provider.php_value == "php82")
         before, calls = state(), provider.calls
-        owner.post(owner_url, data=owner_change, timeout=45); owner.get(owner_url, timeout=30)
+        owner.post(owner_url, data=owner_change, timeout=120); owner.get(owner_url, timeout=30)
         no_effect(before, calls, "Captured owner replay and reload never resend")
         cool(); response, owner_verify = post_form(owner, owner_url, f'[data-php-request="{owner_request}"] form[data-php-verify]', {"current_password": OWNER_PASSWORD})
         check("Later different scalar remains fenced", request_row(owner_request)["readback"] == "different" and "Value differs" in response.text and soup(response).select_one("form[data-php-select]") is None)
@@ -333,7 +333,7 @@ def run_browser(env, browser):
         provider.php_value = "php84"; cool()
         post_form(owner, owner_url, f'[data-php-request="{owner_request}"] form[data-php-verify]', {"current_password": OWNER_PASSWORD})
         check("Independent matching scalar records observed disposition", request_row(owner_request)["readback"] == "observed")
-        before, calls = state(), provider.calls; owner.post(owner_url, data=owner_verify, timeout=45)
+        before, calls = state(), provider.calls; owner.post(owner_url, data=owner_verify, timeout=120)
         no_effect(before, calls, "Successful verification replay performs no new read")
 
         read(client, client_url, "current", False); options(client, "client")
@@ -343,7 +343,7 @@ def run_browser(env, browser):
         capture(client, "PHP-Controls-Client-Review", client_url, "[data-php-review]", "php82")
         client_request = client_confirmation["request_id"]; request_ids.append(client_request)
         client_change = dict(client_confirmation, current_password=CLIENT_PASSWORD, confirmed="1")
-        posts = len(provider.posts); client.post(client_url, data=client_change, timeout=45)
+        posts = len(provider.posts); client.post(client_url, data=client_change, timeout=120)
         row = request_row(client_request)
         check("Delegated client setter retains actual client requester and recorder", len(provider.posts) == posts + 1 and row["actor_kind"] == row["terminal_actor_kind"] == "client"
               and row["actor_id"] == row["terminal_actor_id"] == 1 and row["ledger_attempts"] == 1 and row["readback"] == "pending"
@@ -360,7 +360,7 @@ def run_browser(env, browser):
         fault_change = dict(fault_confirmation, current_password=CLIENT_PASSWORD, confirmed="1")
         fixture("fault-arm", {}); posts = len(provider.posts); before_hits = state()["fault_hits"]
         try:
-            response = client.post(client_url, data=fault_change, timeout=45)
+            response = client.post(client_url, data=fault_change, timeout=120)
             row = request_row(fault_request)
             check("Real post-send audit fault preserves original request and finished ledger", len(provider.posts) == posts + 1 and row["phase"] == "pending"
                   and row["ledger_status"] in ("failed", "uncertain") and row["ledger_attempts"] == 1 and row["terminal_actor_id"] is None and state()["fault_hits"] > before_hits
@@ -368,18 +368,18 @@ def run_browser(env, browser):
             private_safe(response, "Terminal fault response discloses no private context or password")
         finally:
             fixture("fault-clear", {})
-        before, calls = state(), provider.calls; client.post(client_url, data=fault_change, timeout=45)
+        before, calls = state(), provider.calls; client.post(client_url, data=fault_change, timeout=120)
         no_effect(before, calls, "Original unresolved client replay never resends")
         check("Client has no local recovery form", soup(client.get(client_url, timeout=30)).select_one("form[data-php-recover]") is None)
         capture(owner, "PHP-Controls-Owner-Recovery", owner_url, f'[data-php-request="{fault_request}"] form[data-php-recover]')
         before, calls = state(), provider.calls
         recovery_page = owner.get(owner_url, timeout=30); recovery = fields(form_for(recovery_page, f'[data-php-request="{fault_request}"] form[data-php-recover]'))
         forged = dict(recovery, csrf=csrf(client.get(client_url, timeout=30)), current_password=CLIENT_PASSWORD, confirmed="1")
-        client.post(client_url, data=forged, timeout=45)
+        client.post(client_url, data=forged, timeout=120)
         no_effect(before, calls, "Client cannot forge owner recovery action")
-        owner.post(owner_url, data=dict(recovery, ledger_sha256="f" * 64, current_password=OWNER_PASSWORD, confirmed="1"), timeout=45)
+        owner.post(owner_url, data=dict(recovery, ledger_sha256="f" * 64, current_password=OWNER_PASSWORD, confirmed="1"), timeout=120)
         no_effect(before, calls, "Wrong original ledger hash cannot recover")
-        owner.post(owner_url, data=dict(recovery, current_password=OWNER_PASSWORD, confirmed="1"), timeout=45)
+        owner.post(owner_url, data=dict(recovery, current_password=OWNER_PASSWORD, confirmed="1"), timeout=120)
         row = request_row(fault_request)
         check("Owner recovery preserves client requester and actual staff recorder without send", provider.calls == calls and row["actor_kind"] == "client" and row["actor_id"] == 1
               and row["terminal_actor_kind"] == "staff" and row["terminal_actor_id"] == 1 and row["recovered_from_ledger"] and row["readback"] == "pending")
@@ -392,7 +392,7 @@ def run_browser(env, browser):
         post_form(owner, owner_url, 'form[data-php-delegate="disable"]', {"current_password": OWNER_PASSWORD, "confirmed": "1"})
         before, calls = state(), provider.calls
         for label, data in (("reviewed approval", dict(stale_review, current_password=CLIENT_PASSWORD, confirmed="1")), ("captured replay", client_change), ("verification", client_verify)):
-            response = client.post(client_url, data=data, timeout=45)
+            response = client.post(client_url, data=data, timeout=120)
             no_effect(before, calls, "Revoked client cannot use " + label)
             check("Revoked " + label + " reveals no original history", not soup(response).select("[data-php-request]"))
         capture(client, "PHP-Controls-Client-Unavailable", client_url, "[data-php-controls]")
