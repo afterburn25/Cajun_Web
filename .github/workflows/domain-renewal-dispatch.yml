@@ -83,7 +83,7 @@ jobs:
               php -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
               php tests/domain_renewal_dispatch_native.php
               php tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-default.json
-              php -n tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json
+              php -n -d extension=pdo tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json
               CWP_TEST_RENEWAL_INVOICING=1 php tests/domain_renewal_invoice_create_native.php
               php tests/twentyi-operations/run.php qa/renewal-existing-operations.json
               php tests/twentyi-operations/mailboxes.php qa/renewal-existing-mailboxes.json
