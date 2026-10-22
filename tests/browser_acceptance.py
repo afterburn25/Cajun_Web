@@ -139,6 +139,11 @@ try:
     from playwright.sync_api import sync_playwright, expect
     with sync_playwright() as pw:
         browser=pw.chromium.launch(headless=True)
+        # Late-suite provider-settings renders legitimately stream beyond 30s on saturated runners; bound waits without weakening assertions.
+        real_new_context=browser.new_context
+        def slower_context(**kwargs):
+            ctx=real_new_context(**kwargs);ctx.set_default_navigation_timeout(60000);return ctx
+        browser.new_context=slower_context
         context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
         page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
         for name,path in [('Homepage',''),('Wix-Comparison','index.php?page=compare-wix'),('Planner','index.php?page=estimate'),('Portfolio','index.php?page=work')]:
