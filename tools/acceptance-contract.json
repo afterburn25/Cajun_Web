@@ -1528,7 +1528,7 @@
       "tests/support_stackcp_http.py": "509acc94ac230d141a2b038dd6cb3c8d528511db37d640a782079ea441e50bb4",
       "tests/support_stackcp_http_fixture.php": "4c902310e251c12972c5bb62da28c81812e9fda7abf39a1a21d274fd8ce884fd",
       "tests/support_stackcp_native.php": "abf0eadbf4012b6f80bca4bdf21d77fcc0266107d6660c14e6f4d8a191f5fbfa",
-      "tests/support_stackcp_permissions.php": "63cced5e543e277d3f5d419820b4bfc2cffaf7f03f3cbeff3b90b899acecd5b6",
+      "tests/support_stackcp_permissions.php": "ca73595c0ce215a0f6e0a84d9b7d19446950707bb475e0955fda93c56f5b9849",
       "tests/support_stackcp_views.php": "c62ff25a54e9680e65c416533a90bee03eccd8b9f7b3829327850983ab7a6ecb"
     },
     "scope": "Staff-specific owner delegation and one-use StackCP support launch. Source, portable and modeled HTTP checks are separate from native SQL and installed full acceptance; no real provider login is exercised."

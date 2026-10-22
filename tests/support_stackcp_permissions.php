@@ -95,7 +95,11 @@ function ssp_storage_all(string $sql,array $args):array {
     if(str_starts_with($sql,'SELECT name,value FROM settings')){ $out=[];foreach($s['settings']as$key=>$value)$out[]=['name'=>'provider_support_stackcp_'.$key,'value'=>$value];return $out; }
     if(str_starts_with($sql,'SELECT TABLE_NAME FROM information_schema.tables'))return $s['tables'];
     if(str_starts_with($sql,'SELECT DISTINCT action FROM audit'))return $s['actions'];
-    if(str_starts_with($sql,'SELECT r.*,'))return array_values(array_filter($s['rows'],fn($r)=>(int)$r['ordinal']>$args[0]));
+    if(str_starts_with($sql,'SELECT r.*,')||str_starts_with($sql,'SELECT r.* FROM'))return array_values(array_filter($s['rows'],fn($r)=>(int)$r['ordinal']>$args[0]));
+    if(str_starts_with($sql,"SELECT id,user_id,created_at,detail FROM audit WHERE BINARY action='provider.support_stackcp_event'")){
+        $out=[];foreach($s['rows']as$r)for($i=0;$i<(int)$r['audit_count'];$i++)$out[]=['id'=>$r['audit_id'],'user_id'=>$s['event_audit']['user_id'],'created_at'=>$s['event_audit']['created_at'],'detail'=>provider_support_stackcp_detail($r)];
+        usort($out,fn($a,$b)=>$a['id']<=>$b['id']);return $out;
+    }
     throw new LogicException('Unexpected journal all: '.$sql);
 }
 function ssp_storage_one(string $sql,array $args):?array {
@@ -114,7 +118,7 @@ function ssp_storage_scalar(string $sql,array $args):int {
 }
 try {
     ssp_load(CWP_CODE_ROOT.'/app/providers/support_stackcp_permissions.php',['provider_support_stackcp_owner','provider_support_stackcp_actor','provider_support_stackcp_target','provider_support_stackcp_client_allowed','provider_support_stackcp_current','provider_support_stackcp_permission_candidate','provider_support_stackcp_permission_review','provider_support_stackcp_permission_change','provider_support_stackcp_owner_snapshot','provider_support_stackcp_staff_snapshot']);
-    ssp_load(CWP_CODE_ROOT.'/app/providers/support_stackcp_storage.php',['provider_support_stackcp_resource','provider_support_stackcp_permission','provider_support_stackcp_row','provider_support_stackcp_checkpoint','provider_support_stackcp_setting_names','provider_support_stackcp_events']);
+    ssp_load(CWP_CODE_ROOT.'/app/providers/support_stackcp_storage.php',['provider_support_stackcp_resource','provider_support_stackcp_permission','provider_support_stackcp_row','provider_support_stackcp_checkpoint','provider_support_stackcp_setting_names','provider_support_stackcp_detail','provider_support_stackcp_events']);
     ssp_load(CWP_CODE_ROOT.'/app/support/sessions.php',['support_binding','support_check']);
     ssp_load(CWP_CODE_ROOT.'/app/staff/accounts.php',['staff_can']);
     ssp_reset();$permission=ssd_permission();
