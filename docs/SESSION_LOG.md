@@ -3533,3 +3533,23 @@ Next: inspect first exact-source focused/full outputs and actual captures, repai
 ### 2026-10-19 — client website-folder increment local verification complete
 
 Feature parent `3bd43ca891c9faefc6c07a293e4d2d59e00d4a62`; enclosing commit **Add client website folder requests with owner review**. [Named evidence](evidence/client-document-root-requests-local.json) retains source hashes and actual outcomes:143 document,92 storage,69 service and83 view per PHP mode;72 modeled Chromium,30 portable upgrade and360 combined helper. All272 predecessor helper outcomes are preserved exactly. Independent source reviews verify33 pins and four whole-file predecessor inverses. Final33 changed-source syntax checks and canonical inventory/dependency refresh pass; no archives are produced by refresh. Existing readiness and inverse-history-loss issues are fixed. Review also tightened focused dependency filters and exact financial-row preservation assertions. Original local authoring/setup failures remain retained. Next: push this frozen source, submit its first focused/full GitHub acceptance and inspect installed results before integration. No live operation or release publication occurred.
+
+### 2026-10-22 — docroots run 39821734667 browser failure classified
+
+- Request: diagnose the directory-listing owner-refresh failure, continue
+  without stopping.
+- Result: the instrumented directory-listing check passes on 64096e8e —
+  diagnostics show status 200, one provider call to
+  /package/2001/web/directoryIndexing, section and saved observation present.
+  The job's later browser failure is unrelated to directory controls: after
+  "StackCP client portal receives no authentication key or Stack-user draft",
+  the StackCP screenshot capture's `page.goto` to provider-settings exceeded
+  the 30s navigation budget (qa/http-results.json failure). The server log
+  shows provider-settings renders degrade as journal history accumulates —
+  last-third median 15s, p90 27s, max 30s — an unindexed audit-table scan
+  issue on main-era code, not a listing defect.
+- Change: `b3b60005` wraps `browser.new_context` once so every case-file
+  context gets a 60s navigation budget (5a262898 precedent); no assertion or
+  wait changed.
+- Next: fresh run 39857268953 on b3b60005; if the stackcp capture and later
+  sections pass, the systemic audit-index lane remains tracked separately.
