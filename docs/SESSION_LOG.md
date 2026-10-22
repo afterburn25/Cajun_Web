@@ -3476,3 +3476,24 @@ Review corrected a nested request-reference error in the new corruption probe, k
 The first draft pull request supplies one focused and one complete application run. Only the current PHP feature branch is removed from the focused push trigger to avoid duplicate push/PR work; main, the older read branch, pull-request/manual triggers and all focused jobs remain. No feature push trigger or duplicate manual full dispatch is added. Original `7af25ed5` focused run [39132700033](https://github.com/afterburn25/Cajun_Web/actions/runs/39132700033) was still queued at 18:06 UTC; original cancelled metadata/native runs remain preserved without replacement.
 
 Next: inspect the first exact-successor runtime results, review all 16 actual images and original-history retention, finish the verified provider options mapping, then sequential integration and release acceptance. Separate nameserver PR222, catalog PR223 and Devin non-20i work remain preserved. Full 20i and the whole-project roadmap are unfinished; no live provider mutation or deployment occurred. The enclosing commit is described as `test: connect PHP controls to full acceptance`.
+
+### 2026-10-22 — php-controls run 39821538684 classification
+
+- The packaged UI acceptance reached "Later different scalar remains fenced"
+  (provider_php_controls_ui_cases.py:337) and failed; the earlier
+  owner-change diagnostics (php-controls-owner-change-diagnostics.json)
+  confirm status 200, one setter POST /package/701/web/phpVersion
+  {"value":"php84"}, row phase attempted/readback pending/ledger uncertain —
+  the first-change path is healthy; the failure is in the later verify
+  disposition.
+- The shared browser suite itself passed 3118 checks; the failure is inside
+  the isolated php-controls UI fixture. The seal step then refused the
+  partition ("Evidence crosses partition/private boundary") because the
+  qa/php-controls-ui/ report directory is not on the native-browser lane
+  allowlist; the browser-checkpoint artifact still carries the results.
+- Change: `799526e3` records status, provider reads, request row, notice
+  presence and select-form state around the verify POST
+  (php-controls-owner-verify-diagnostics.json), contract pin re-anchored
+  (390 local checks green).
+- Next: run 39856635999 on 799526e3 will show which fence conjunct fails —
+  readback value, "Value differs" notice, or lingering select form.
