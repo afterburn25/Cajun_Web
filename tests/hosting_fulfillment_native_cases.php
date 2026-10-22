@@ -57,7 +57,11 @@ function hf_audit_failure(string $action,callable $fn):bool {
 if(($argv[1]??'')==='fulfillment-worker'){
     rb_staff();$p=json_decode(base64_decode($argv[2],true),true,16,JSON_THROW_ON_ERROR);HfTransport::$body='{"result":866242}';
     echo "ready\n";fflush(STDOUT);if(trim((string)fgets(STDIN))!=='go')exit(2);
-    $result=hosting_fulfillment_execute($p['order_id'],1,$p['revision'],$p['order_hash'],$p['link_hash'],$p['request'],$p['review'],$password,static fn()=>'8.8.8.8','hf_perform');
+    $result=null;for($attempt=0;$attempt<40;$attempt++){
+        try{$result=hosting_fulfillment_execute($p['order_id'],1,$p['revision'],$p['order_hash'],$p['link_hash'],$p['request'],$p['review'],$password,static fn()=>'8.8.8.8','hf_perform');break;}
+        catch(RuntimeException $e){if($e->getMessage()!=='Another account change is in progress. Please retry.')throw $e;usleep(250000);}
+    }
+    if($result===null)throw new RuntimeException('Fulfillment worker never obtained the change lock.');
     echo json_encode(['state'=>$result['state'],'transport_calls'=>HfTransport::$calls],JSON_THROW_ON_ERROR);exit;
 }
 (static function()use(&$checks,$password):void {
