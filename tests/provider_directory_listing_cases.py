@@ -1,7 +1,6 @@
 """Exact packaged Directory listing forms and saved client observation; loopback TLS only."""
 import hashlib
 import json
-import threading
 import time
 import requests
 from urllib.parse import parse_qs, urlparse
@@ -112,37 +111,13 @@ def run_browser(env, browser):
         post(refresh, link_id=link['id'], **fields)
         check('Directory listing refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_directory_indexing_reads'))
     cool(); provider.directory_indexing = True
-    # The repeat must reach the application inside the shared 30-second cooldown.
-    # Posting it only after the first response returns lets a congested runner
-    # expire the window first, so dispatch the primary refresh on a thread and,
-    # once the ledger records its admission, repost from a second owner session.
-    # Reusing the same PHP session would serialize on its lock until the window
-    # lapses; a second login keeps the authority and cooldown checks identical.
-    data = build(owner, refresh, link_id=link['id']); post.last = data
-    twin = requests.Session(); submit(twin, admin + '?view=login', 'login', {'email': directory_indexing_email, 'password': OWNER})
-    held = {}
-    def run_primary():
-        try:
-            held['response'] = owner.post(url, data=data)
-        except Exception as failure:
-            held['error'] = failure
-    primary = threading.Thread(target=run_primary); primary.start()
-    admitted = db('SELECT COUNT(*) AS n FROM ci_provider_refreshes WHERE actor_id=?', [directory_indexing_owner['id']])[0]['n']
-    deadline = time.time() + 240
-    while db('SELECT COUNT(*) AS n FROM ci_provider_refreshes WHERE actor_id=?', [directory_indexing_owner['id']])[0]['n'] == admitted and time.time() < deadline:
-        time.sleep(0.25)
-    repeated = twin.post(url, data=build(twin, refresh, link_id=link['id']))
-    primary.join()
-    if 'error' in held:
-        raise held['error']
-    response = held['response']; twin.close()
-    evidence('Complete Directory listing observation', response)
+    response = post(refresh, link_id=link['id']); evidence('Complete Directory listing observation', response)
+    saved = db('SELECT * FROM ci_provider_directory_indexing_observations')[0]
+    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#directory-listing')
     check('Directory listing owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2001/web/directoryIndexing' and section is not None and 'Reported enabled' in section.text and 'Latest saved directory listing setting' in section.text)
-    saved = db('SELECT * FROM ci_provider_directory_indexing_observations')[0]
     check('Directory listing true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('Directory listing owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved directory listing setting' in section.text and 'Reported enabled' not in client.get(target).text)
-    evidence('Shared cooldown refusal', repeated)
     check('Directory listing immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_directory_indexing_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)
