@@ -3611,3 +3611,10 @@ transaction-scoped history reuse from ebebd533/14ff4c43, plus a 60-second
 wait bound matching the 5a262898 congestion precedent. Fresh acceptance runs
 39856701399 (dispatch) and 39856210276 (push) cover df873c66; earlier
 ebebd533 run 39855317065 was cancelled as superseded.
+
+## 2026-10-22 (cont.) — stale installer inventory broke build lane; refreshed at 67ecaa10
+
+- Evidence: acceptance runs 39856701399 (`df873c66`) and 39857344532 (`8e4ed52a`) both failed the build job at "Exact source, installer inventory and one package build" with `RuntimeError: Installer dependency hashes are stale`. The batching (`ebebd533`/`14ff4c43`) touched `site/app/providers/cloud_site_requests_storage.php` and `cloud_sites.php` without regenerating `site/install/inventory.generated.php`; no test lane ran on those heads.
+- Fix: `python tools/build.py --refresh` regenerated two inventory hashes; committed as `67ecaa10`. Refresh output: 40 locked packages / 2188 dependency files no drift; 2201 receiving + 15 submission runtime files byte-identical; PHPMailer pins intact.
+- Also classified: push run 39834880367 (`3f6965a9`) native failed on the same `[data-registration-periods]` 5s expect race already fixed by `df873c66`'s wait-for-load bound — consistent classification, superseded head.
+- Next: full acceptance on `67ecaa10` (run 39862535705 dispatched; push run 39862407802 queued).
