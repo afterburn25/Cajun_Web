@@ -3586,3 +3586,13 @@ The first exact staged-inventory check rejected CRLF storage bytes against the n
 - Remaining: hosted acceptance pending; independent review already recorded on
   PR263; then normal merge to main, exact-main verification, and the queued
   force-SSL/PR246 evaluations.
+
+### Correction within the same session
+
+The initial `ebebd533` retained the validated journal across calls keyed only
+by the head pointer. The native suite tampers history inside a transaction and
+re-reads in the same process, where the pointer is unchanged — retention would
+have masked those refusals. `14ff4c43` removes journal memoization entirely
+(keeps the single batched audit fetch) and limits history validation reuse to
+read-only calls outside the caller transaction; every in-transaction path still
+revalidates fully.
