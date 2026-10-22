@@ -100,6 +100,9 @@ def run_browser(env, browser):
     context=browser.new_context(viewport={'width':1440,'height':1050});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in owner.cookies]);page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(url+'#registration-periods')
     assignments={t:db('SELECT * FROM ci_'+t+' ORDER BY id') for t in ['provider_package_links','provider_domain_links','provider_cloud_links']}
     form=page.locator('[data-registration-period-refresh]');form.locator('[name=current_password]').fill(OWNER);form.get_by_role('button',name='Refresh registration options',exact=True).click()
+    # The refreshed page streams progressively; asserting before the document
+    # load event can observe a partial DOM missing later sections.
+    page.wait_for_load_state('load')
     expect(page.locator('[data-registration-periods]')).to_contain_text('1 year, 3 years')
     check('Chromium owner action makes one fixed authenticated period GET',provider.calls==calls+1 and provider.get_paths[-1]=='/domain-period' and provider.posts==posts)
     check('Period read preserves every explicit client assignment',all(db('SELECT * FROM ci_'+t+' ORDER BY id')==v for t,v in assignments.items()))

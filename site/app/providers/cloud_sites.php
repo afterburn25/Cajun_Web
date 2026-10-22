@@ -21,7 +21,13 @@ function provider_cloud_sites_approval_history_ready(): void {
     if($orphan||$auditOrphan)throw new RuntimeException('Cloud website execution history has lost its original approval. Restore the original records before submitting another request.');
 }
 function provider_cloud_sites_history_ready(): void {
+    // One full validation per request for an unchanged journal and grant count;
+    // every request-history append or creation approval updates the key.
+    static $validated=null;
+    $marker=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_head'])['value']??'').'|'.(int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants').' WHERE operation=?',[CloudWebsiteCreate::OPERATION])->fetchColumn();
+    if($marker===$validated)return;
     provider_cloud_assignment_inspect(static fn()=>provider_cloud_site_requests_state(false));
+    $validated=$marker;
 }
 
 /** Current owner, exact assignment, latest complete fresh attempt and original account. */

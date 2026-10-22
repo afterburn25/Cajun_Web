@@ -29,6 +29,10 @@ function provider_cloud_site_requests_validate_schema():void {
 }
 /** NULL means never prepared; established missing rows, audits, marker or pointer never become empty history. */
 function provider_cloud_site_requests_events():?array {
+    // Replayed journal validation is retained per request once for the same head pointer.
+    static $memo=null,$memoKey=null;
+    $pointerRow=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_head']);
+    if($memo!==null&&$pointerRow!==null&&$memoKey===$pointerRow['value'])return $memo;
     foreach(['settings','audit'] as $name){$e=one('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]);if(strtolower($e['ENGINE']??'')!=='innodb')throw new RuntimeException('Cloud website request history requires transactional audit storage.');}
     provider_cloud_site_requests_namespace();
     $marker=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_schema_version']);$exists=provider_cloud_site_requests_table();
@@ -37,6 +41,12 @@ function provider_cloud_site_requests_events():?array {
     if($exists)provider_cloud_site_requests_validate_schema();
     if($marker===null&&!provider_cloud_site_requests_witness()&&(!$exists||(int)query('SELECT COUNT(*) FROM '.table('provider_cloud_site_request_events'))->fetchColumn()===0))return null;
     if(($marker['value']??null)!=='1'||!$exists)throw new RuntimeException('Restore the original cloud website request history.');
+    // One audit pass; byte-exact action/detail matching happens in PHP below.
+    $auditEvents=[];$prepared=[];
+    foreach(all('SELECT action,user_id,detail FROM '.table('audit').' WHERE action IN (?,?)',['provider.cloud_site_request_event','provider.cloud_site_request_prepared']) as $a){
+        if($a['action']==='provider.cloud_site_request_event')$auditEvents[$a['detail']][]=$a;
+        if($a['action']==='provider.cloud_site_request_prepared')$prepared[]=$a;
+    }
     $events=[];$head=str_repeat('0',64);$ordinal=0;$epoch=0;
     foreach(all('SELECT * FROM '.table('provider_cloud_site_request_events').' ORDER BY ordinal') as $row){
         if(strlen($row['document'])>16384)throw new RuntimeException('Cloud website request evidence exceeds its bound.');
@@ -44,15 +54,14 @@ function provider_cloud_site_requests_events():?array {
         if(!is_array($d)||provider_cloud_site_requests_json($d)!==$row['document']||!hash_equals($row['fingerprint'],provider_operations_scope('cloud-site-request.event',$d)))throw new RuntimeException('Cloud website request evidence needs recovery.');
         provider_cloud_site_requests_event_document($d);
         if($d['id']!==$row['id']||$d['subject_id']!==$row['subject_id']||$d['kind']!==$row['kind']||$d['client_id']!==(int)$row['client_id']||$d['ordinal']!==++$ordinal||$ordinal!==(int)$row['ordinal']||$d['previous']!==$head||$d['recorded_epoch']<$epoch)throw new RuntimeException('Cloud website request history sequence is inconsistent.');
-        $audit=all('SELECT user_id FROM '.table('audit').' WHERE BINARY action=? AND BINARY detail=? LIMIT 2',['provider.cloud_site_request_event','Cloud website request event '.$d['id'].' '.$row['fingerprint']]);
+        $audit=$auditEvents['Cloud website request event '.$d['id'].' '.$row['fingerprint']]??[];
         if(count($audit)!==1||(int)$audit[0]['user_id']!==($d['actor']['kind']==='owner'?$d['actor']['id']:0))throw new RuntimeException('Cloud website request history audit is missing or ambiguous.');
         $head=$row['fingerprint'];$epoch=$d['recorded_epoch'];$events[]=$d;
     }
     $pointer=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_head'])['value']??'';
-    if($pointer!==$ordinal.':'.$head||(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE BINARY action=?',['provider.cloud_site_request_event'])->fetchColumn()!==$ordinal||(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE BINARY action=?',['provider.cloud_site_request_prepared'])->fetchColumn()!==1)throw new RuntimeException('Cloud website request history is incomplete. Restore the original database.');
-    $prepared=one('SELECT user_id,detail FROM '.table('audit').' WHERE BINARY action=?',['provider.cloud_site_request_prepared']);
-    if(!$prepared||(int)$prepared['user_id']<1||$prepared['detail']!=='Cloud website request history ready')throw new RuntimeException('Cloud website request preparation witness needs recovery.');
-    provider_cloud_site_requests_project($events);return $events;
+    if($pointer!==$ordinal.':'.$head||array_sum(array_map('count',$auditEvents))!==$ordinal||count($prepared)!==1)throw new RuntimeException('Cloud website request history is incomplete. Restore the original database.');
+    if((int)$prepared[0]['user_id']<1||$prepared[0]['detail']!=='Cloud website request history ready')throw new RuntimeException('Cloud website request preparation witness needs recovery.');
+    provider_cloud_site_requests_project($events);$memo=$events;$memoKey=$pointer;return $events;
 }
 function provider_cloud_site_requests_ready():bool {return provider_cloud_site_requests_events()!==null;}
 function provider_cloud_site_requests_prepare(#[SensitiveParameter] string $password):void {
