@@ -1050,7 +1050,7 @@
     "source_sha256": {
       "tests/release_126_hosting_fixture.php": "de12763cb75da029cbe2c6f5573ab197ce6487d11ea34325a4012cb64dd9adf4",
       "tests/release_126_hosting_guards.py": "2ef9f6d0126340a7555ec1c8aad3e3d1d1706b92a2c9ccdf4aa6b1984442a49a",
-      "tests/release_126_hosting_records.py": "667dfa86d5cd8bdba4b51491985af4b0c69d736b1b9e5f923266e2961b22b59c",
+      "tests/release_126_hosting_records.py": "6109c3ac76af644080fc13376dee504439517758a2090f34e1b05e1e9501a7bb",
       "tests/release_126_provider_fixture.php": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
       "tests/release_126_upgrade_acceptance.py": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
       "tests/release_126_upgrade_cases.py": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c"
