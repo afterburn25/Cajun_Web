@@ -5670,3 +5670,27 @@ No production provider request, charge, mail, SSH or deployment occurred.
   a direct repeat POST, matching the directory-listing/document-roots/
   force-SSL sibling convention; CSRF is session-stable. Unpinned file. New tip
   d35a1103, run 39692451698.
+
+
+## 2026-10-22 — Preflight contract cascade settled; hosting-GET instrumented
+
+- Request: continue integration lanes; repair preflight acceptance contract after
+  hosting/preflight source changes invalidated deep predecessor hashes.
+- Start: devin/preflight-commercial @ 1b582fa3; verifier failed with stale
+  predecessor hashes across the newest era and deeper eras.
+- Change: tests/release_126_hosting_records.py — added bounded failure-detail
+  capture (deltas, section, get_paths tail) for the no-schema hosting-GET check;
+  tests/registered_nameserver_requests_acceptance.py — re-anchored the module
+  CONTRACT_SHA256 to the reconstructed nameserver-era prior;
+  tools/acceptance-contract.json — settled 32 stored hashes (predecessor
+  contract/native/workflow digests, merged-stage hash, source pins) via an
+  iterative spy-on-verifier settle loop (1215 passes to fixed point). The settle
+  driver remains an uncommitted investigative artifact; reconstruct the recipe
+  deterministically if retained.
+- Tests: python tests/acceptance_artifacts_test.py --report — 1468/1468 checks
+  pass on 26ae6438 (clean process, real verifier).
+- Result: contract settled; hosted run 39829965477 dispatched on 26ae6438.
+- Remaining: hosted acceptance pending; other lanes (FSI 39828846504, nameserver
+  39820095116, php-controls 39821538684, docroots 39821734667, StackCP
+  39826704936, cloud-websites candidate 39831278201) in flight.
+- Next: classify run results; merge PR263 cloud-websites candidate on green.
