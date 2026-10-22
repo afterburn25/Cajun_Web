@@ -333,8 +333,16 @@ def run_browser(env, browser):
         before, calls = state(), provider.calls
         owner.post(owner_url, data=owner_change, timeout=120); owner.get(owner_url, timeout=30)
         no_effect(before, calls, "Captured owner replay and reload never resend")
+        calls = provider.calls
         cool(); response, owner_verify = post_form(owner, owner_url, f'[data-php-request="{owner_request}"] form[data-php-verify]', {"current_password": OWNER_PASSWORD})
-        check("Later different scalar remains fenced", request_row(owner_request)["readback"] == "different" and "Value differs" in response.text and soup(response).select_one("form[data-php-select]") is None)
+        row = request_row(owner_request)
+        (qa / "php-controls-owner-verify-diagnostics.json").write_text(_json.dumps({
+            "status": response.status_code, "calls_delta": provider.calls - calls,
+            "last_get": provider.get_paths[-1] if provider.get_paths else None,
+            "row": row, "value_differs": "Value differs" in response.text,
+            "select_form": soup(response).select_one("form[data-php-select]") is not None,
+            "notice_excerpt": response.text[:1200]}, indent=2), encoding="utf-8")
+        check("Later different scalar remains fenced", row["readback"] == "different" and "Value differs" in response.text and soup(response).select_one("form[data-php-select]") is None)
         capture(owner, "PHP-Controls-Owner-History", owner_url, f'[data-php-request="{owner_request}"]')
         provider.php_value = "php84"; cool()
         post_form(owner, owner_url, f'[data-php-request="{owner_request}"] form[data-php-verify]', {"current_password": OWNER_PASSWORD})
