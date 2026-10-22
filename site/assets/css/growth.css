@@ -122,3 +122,17 @@
 [data-directory-requests] .directory-request-decline{border-top:1px solid #ffffff26;margin-top:24px;padding-top:16px}
 [data-directory-requests] summary{cursor:pointer;font-weight:700;padding:8px 0}
 [data-directory-requests] .directory-request-decline form{margin-top:16px}
+
+/* Website folder requests: readable controls and bounded disclosure. */
+[data-folder-requests]{font-size:16px;line-height:1.6;overflow-wrap:anywhere}
+[data-folder-requests] label,[data-folder-requests] .hint,[data-folder-requests] .btn{font-size:14px;line-height:1.5}
+[data-folder-requests] form input:not([type="checkbox"]),[data-folder-requests] form select,[data-folder-requests] form textarea{font-size:16px;max-width:100%;min-width:0;box-sizing:border-box}
+[data-folder-requests] label.check{font-size:14px;line-height:1.5;align-items:flex-start;gap:10px}
+[data-folder-requests] .check input{flex:none;margin-top:4px;width:18px;height:18px}
+[data-folder-requests] .btn{white-space:normal;max-width:100%;min-height:44px;text-align:center}
+[data-folder-requests] button:disabled{opacity:.55;cursor:not-allowed}
+[data-folder-requests] :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}
+[data-folder-requests] .folder-request-decline{border-top:1px solid #ffffff26;margin-top:24px;padding-top:16px}
+[data-folder-requests] summary{cursor:pointer;font-weight:700;padding:8px 0}
+[data-folder-requests] .folder-request-decline form{margin-top:16px}
+[data-folder-requests] .folder-request-path{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%;font-size:14px}

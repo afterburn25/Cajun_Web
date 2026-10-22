@@ -456,6 +456,17 @@ jobs:
           "$PHP_BINARY" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
           "$PHP_BINARY" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
           "$PHP_BINARY" tests/provider_document_roots_native.php
+          CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 "$PHP_BINARY" tests/provider_document_root_controls_native.php
+          "$PHP_BINARY" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json
+          "$PHP_BINARY" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json
+          "$PHP_BINARY" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json
+          "$PHP_BINARY" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json
+          "$PHP_BINARY" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json
+          "$PHP_BINARY" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json
+          "$PHP_BINARY" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json
+          CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 "$PHP_BINARY" tests/provider_document_root_requests_native.php
+          python3 -B tests/provider_document_root_controls_http_contract.py > qa/provider-document-root-controls-handler-results.json
           "$PHP_BINARY" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
           "$PHP_BINARY" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
           "$PHP_BINARY" tests/provider_package_force_ssl_native.php
@@ -546,6 +557,8 @@ jobs:
           .ci-venv/bin/python -B tests/hosting_checkout_http_browser.py --full-suite
           .ci-venv/bin/python -B tests/hosting_catalog_variants_browser.py --php "$PHP_BINARY" --report qa/hosting-catalog-variants-browser-results.json
           .ci-venv/bin/python -B tests/hosting_catalog_billing_browser.py --php "$PHP_BINARY" --report qa/hosting-catalog-billing-browser-results.json
+      - name: Website folder request layout models
+        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php "$PHP_BINARY" --report qa/document-root-requests-modeled-browser-results.json
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
@@ -843,6 +856,10 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade_test.py --report qa/apache-document-root-controls-upgrade-guard-results.json
+          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py
+          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json
+          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py
           .ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json
           .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py
           .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json

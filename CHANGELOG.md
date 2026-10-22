@@ -204,6 +204,28 @@ Added client directory listing requests with owner review, withdrawal, dated his
 [Scope and local evidence](docs/TWENTYI_CLIENT_HTTPS_REQUESTS.md). Local verification passes: document 105, storage 92 and service 53 named checks in both default and minimal PHP; existing owner controls 76, transport 37 and recovery 57 in both modes; 92 actual-controller/render HTTP/Chromium checks with modeled identities/business storage; 309 acceptance-helper checks. PHP/JavaScript syntax, canonical installer refresh, and documentation checks pass. The guarded native fixture has syntax/Windows-refusal evidence only: Linux SQL execution and full installed application acceptance remain pending. Named results and exact scopes are retained in the evidence receipt. No release version or published package changes.
 
 
+
+## Unreleased — client website folder requests
+
+Add primary-client website-folder requests and withdrawal, owner review/decline/one-send approval, reciprocal retained history and dated client outcomes. Preserve direct owner changes and exact request replay. Recheck current client, sharing and assignment authority through send/readback/recovery; refuse reconstruction when either original journal is missing. Add dedicated admin/portal navigation and preserve exact failed form values with cleared password/consent. Add local document/storage/service/controller models plus separate native, packaged browser and installed-upgrade acceptance. Linux runtime/release gates remain pending. [Details](docs/TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
+
+## Unreleased — include retained diagnostic sources in FULL-PROJECT
+
+Reuse the existing reviewed ops source-area correction after the exact package build refused already-tracked diagnostic scripts. Sensitive-file checks and deployment package contents remain unchanged. The original failed build is retained; corrected packaging and installed runtime checks remain required.
+
+## Unreleased — installed upgrade coverage for website folder history
+
+Add an actual published1.25-to-current installed upgrade scenario covering retained folder requests, exact update retry, complete-journal rollback/reapply, local terminal recovery and refusal to reconstruct lost database evidence. Add the immutable1.25 archive to existing sealed test inputs while retaining the1.24 baseline and all earlier acceptance. Local comparison/input checks pass; installed execution and release remain pending. Application behavior and version are unchanged. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
+## Unreleased — owner website folder changes
+
+Adds the owner website-folder form, explicit preparation, exact latest-map hostname/current-path review, current account/assignment authority, password confirmation and one-send retained history. The owner confirms that the plan supports the change and the destination directory already exists; this is manual attestation, not an API platform or filesystem check. Matching independent readback records an observation without claiming that the request caused it or that website routing works. Missing/claimed execution history cannot be cleared by a later matching map; local recovery requires the exact finished one-attempt ledger and never resends. Client write controls are not added; an unresolved request makes the separately shared saved map historical.
+
+Add authenticated storage, shared owner dispatch, narrow local recovery and additive native/browser/handler acceptance with eight required captures. Keep complete private requests while committing their hashes in the existing grant field. Local source, modeled UI and offline checks pass; native/browser/installed-upgrade acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
+## Unreleased — single-website folder request contract
+
+Add a typed one-host request for the documented 20i document-root setter, canonical body/route validation and a narrow relative-path input policy. Keep generic approval closed and unverified replies uncertain. Add synthetic contract, cold-loader, transport and generic-denial checks to the existing focused/full operation suite; retain the saved observation behavior. Dedicated owner/client controls, native acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
 ## Unreleased — final component PR filters and verified cleanup
 
 Limit service-plan and staff-invitation PR checks to their actual dependencies while preserving all execution settings. Confirm the remaining103 cleanup outcomes:327 total terminal cancellations,1,297 unexecuted jobs,31 preserved candidates and139 untouched. Keep the partial evidence and original failures. No application, installer, version or released package changes.

@@ -109,6 +109,7 @@ def run_browser(env, browser):
         post(refresh, link_id=link['id'], **fields)
         check('Directory listing refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_directory_indexing_reads'))
     cool(); provider.directory_indexing = True; response = post(refresh, link_id=link['id'])
+    repeated = owner.post(url, data=post.last)
     evidence('Complete Directory listing observation', response)
     section = soup(response).select_one('#directory-listing')
     check('Directory listing owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2001/web/directoryIndexing' and section is not None and 'Reported enabled' in section.text and 'Latest saved directory listing setting' in section.text)

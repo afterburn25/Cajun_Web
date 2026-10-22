@@ -91,6 +91,7 @@ def run_browser(env, browser):
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
+        post.last = data
         return owner.post(url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
@@ -118,12 +119,12 @@ def run_browser(env, browser):
         check('Document roots refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_document_roots_reads'))
     cool(); provider.document_roots = {'roots-observation.synthetic.invalid': '../private/<folder> é', 'empty.synthetic.invalid': ''}; response = post(refresh, link_id=link['id'])
     evidence('Complete Document roots observation', response)
+    saved = db('SELECT * FROM ci_provider_document_roots_observations')[0]
+    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#document-roots')
     check('Document roots owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/1801/web/documentRoots' and section is not None and '../private/<folder> é' in section.text and 'Latest saved website folders' in section.text)
     check('Document roots displays exact escaped text without filesystem links', section.select_one('pre').text == '../private/<folder> é' and '<folder>' not in response.text and '&lt;folder&gt;' in response.text and not any('../private' in n.get('href', '') for n in section.select('a[href]')) and 'Empty text value' in section.text)
-    saved = db('SELECT * FROM ci_provider_document_roots_observations')[0]
     check('Document roots owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved folders' in section.text and '../private/<folder> é' not in soup(client.get(target)).text)
-    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
     check('Document roots immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_document_roots_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)
@@ -133,7 +134,7 @@ def run_browser(env, browser):
         context = browser.new_context(viewport={'width': 1440, 'height': 1050}); context.add_cookies([{'name': c.name, 'value': c.value, 'domain': c.domain, 'path': c.path} for c in session.cookies])
         page = context.new_page(); errors = []; page.on('pageerror', lambda e: errors.append(str(e)))
         for width, height, label in [(1440, 1050, 'Desktop'), (320, 740, 'Mobile')]:
-            page.set_viewport_size({'width': width, 'height': height}); page.goto(address); page.evaluate('document.fonts.ready'); expect(page.locator(selector)).to_be_visible(); page.screenshot(path=str(qa / (title + '-' + label + '.png')), full_page=True)
+            page.set_viewport_size({'width': width, 'height': height}); page.goto(address, timeout=90000); page.evaluate('document.fonts.ready'); expect(page.locator(selector)).to_be_visible(); page.screenshot(path=str(qa / (title + '-' + label + '.png')), full_page=True)
             check(title + ' ' + label + ' fits viewport', page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         check(title + ' has no script errors', not errors); context.close()
     capture(owner, 'Document-Roots-Owner', url, '#document-roots')

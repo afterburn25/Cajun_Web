@@ -83,6 +83,7 @@ def run_browser(env, browser):
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
+        post.last = data
         return owner.post(url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
@@ -108,13 +109,13 @@ def run_browser(env, browser):
         post(refresh, link_id=link['id'], **fields)
         check('WordPress installation refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_wp_installed_reads'))
     cool(); provider.wp_installed = True; response = post(refresh, link_id=link['id'])
+    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     evidence('Complete WordPress installation observation', response)
     section = soup(response).select_one('#package-wordpress-installed')
     check('WordPress installation owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/2201/web/wordpressIsInstalled' and section is not None and 'WordPress reported installed' in section.text and 'Latest saved WordPress installation indication' in section.text)
     saved = db('SELECT * FROM ci_provider_wp_installed_observations')[0]
     check('WordPress installation true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('WordPress installation owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved WordPress installation indication' in section.text and 'WordPress reported installed' not in client.get(target).text)
-    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
     check('WordPress installation immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_wp_installed_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)

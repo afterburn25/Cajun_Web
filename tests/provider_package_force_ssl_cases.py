@@ -83,6 +83,7 @@ def run_browser(env, browser):
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
+        post.last = data
         return owner.post(url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
@@ -114,7 +115,7 @@ def run_browser(env, browser):
     saved = db('SELECT * FROM ci_provider_force_ssl_observations')[0]
     check('Force SSL true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('Force SSL owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved Force SSL flag' in section.text and 'Flag reported set' not in client.get(target).text)
-    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
+    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     check('Force SSL immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_force_ssl_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)

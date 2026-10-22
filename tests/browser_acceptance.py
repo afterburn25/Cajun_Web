@@ -288,6 +288,11 @@ try:
         domain_expiry_browser(globals(),browser)
         from provider_document_roots_cases import run_browser as document_roots_browser
         document_roots_browser(globals(),browser)
+        from provider_document_root_controls_cases import run_browser as document_root_controls_browser
+        document_root_controls_browser(globals(),browser)
+        from provider_document_root_requests_cases import run_browser as document_root_requests_browser, capture_complete as document_root_requests_complete
+        document_root_requests_result=document_root_requests_browser(globals(),browser)
+        check("Installed client website folder request journey and captures are complete",document_root_requests_complete(document_root_requests_result,QA))
         from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser
         package_force_ssl_browser(globals(),browser)
         from provider_directory_listing_cases import run_browser as directory_listing_browser

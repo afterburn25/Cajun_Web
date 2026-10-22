@@ -167,6 +167,30 @@ The separately frozen catalog billing options source `e7deced05e0b625994ee2facf6
 [Implementation and named evidence](TWENTYI_CLIENT_HTTPS_REQUESTS.md). Local portable/model/browser/helper checks pass; native SQL, installed application, combined integration and release gates remain. Automatic provider images/cloud catalog, distinct VPS/SSH contracts and the other complete20i items remain separate. Published 1.25.0 is unchanged.
 
 
+
+## 2026-10-19 — client website-folder request lane
+
+Implemented on separate `codex/twentyi-client-document-roots`: explicitly shared hostname selection, immutable destination request, client withdrawal, owner decline or fresh-map approval, one provider attempt and separate outcome readback. Existing direct owner controls remain available. Current authority and reciprocal history survive across the two workflows; client history never reports provider acknowledgement as confirmed effect. Local verification and prepared native/installed/upgrade checks are separate from full acceptance and release. [Scope](TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
+
+This is one remaining client hosting capability. Complete20i, hosting database management, remaining CMS/security controls, domain purchase/transfer, full VPS/SSH and the broader site roadmap remain open under [the requirements checklist](TWENTYI_REQUIREMENTS_EVIDENCE.md).
+
+## 2026-10-18 — retained diagnostic source packaging correction
+
+The exact local build of `d345eb5a29cc490341fb0c659d721b3d8369cbda` reached shipping syntax checks, then refused the existing tracked `ops/twentyi-catalog-schema/diagnostic.py` because FULL-PROJECT did not admit the ops directory. Its original failed build/logs are retained under `work/document-root-controls-upgrade-validation/`. Parent `d345eb5a29cc490341fb0c659d721b3d8369cbda`; enclosing correction **Reuse source-package correction for retained diagnostics** reuses only the one-line `tools/build.py` change from reviewed catalog commit `9f0b83fd1f18b9075f7d141f9a1d00b2646f4ebe`. It adds ops to FULL-PROJECT's source-area list; existing sensitive-file/symlink exclusions and COMPLETE/UPDATE payload selection remain unchanged. The four tracked ops files are diagnostic/test source, not credentials or generated results. No diagnostic is executed by packaging.
+
+Next repeat the exact-commit package check and run the new producer's actual archive-input validators, then publish this source correction with the installed-acceptance increment. The first failed build remains a failure; Linux installed/native/browser and release acceptance remain pending. Application/version/published1.25/production are unchanged.
+
+## 2026-10-18 — folder-history upgrade gate defined, runtime pending
+
+The [folder-control lane](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now has a source-reviewed installed upgrade producer for the actual published1.25 archive, current UPDATE, populated histories, complete-journal rollback/reapply and narrow local recovery. Portable/input checks pass; real Linux Apache/SQL execution, the existing native/browser gates and release integration remain. This advances acceptance implementation and does not mark the feature, full20i or the whole project complete.
+
+## 2026-10-18 — website folder owner workflow awaiting runtime acceptance
+
+The [folder-control increment](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now implements owner review, exact map membership/current binding, manual plan/directory attestation, one-send history, independent map readback and finished-ledger-only local recovery. Full/native acceptance wiring is additive and source-checked. Installed database/browser/UPDATE/recovery results remain required before release; these are not passing gates merely because test code exists. This does not complete hosting controls, full20i or the whole project. The preceding pure request boundary is preserved in parent642/PR225.
+
+## 2026-10-18 — document-root changes: request boundary implemented
+
+The [single-host folder request](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now has typed input, exact transport admission and synthetic generic-denial coverage on a separate e397-based branch. It is not a complete hosting control. Durable owner review, latest-map/assignment authority, platform/directory eligibility handling, one-send history, independent readback, interrupted-write recovery and native/browser/upgrade acceptance remain. Full20i and the broader platform are unfinished; no completion percentage follows from endpoint or assertion counts.
 ## 2026-10-19 — remaining isolated pure-suite PR filters
 
 Access-policy, provider-contract and scheduling workflows now select PR changes only in their own foundation/test directories or workflow file. All jobs, PHP matrices, commands, push/manual triggers and concurrency remain unchanged. This avoids six unrelated jobs per documentation-only PR once the change is integrated; it does not cancel existing runs. [Evidence](evidence/ci-remaining-pure-pr-filters.json). This scheduling correction completes no product feature. PR239's cleanup checkpoint is merged, with103 terminal verifications still pending; continue original20i acceptance after the current CI-only integration.

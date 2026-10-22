@@ -28,6 +28,7 @@ function provider_services_portal_render(): never {
     $services=provider_inventory_client_services((int)$client['id']);
     if(function_exists('provider_force_ssl_requests_session_blocked')&&!provider_force_ssl_requests_session_blocked())echo '<a class="btn outline" href="'.esc(studio_url(['https_requests'=>1])).'">HTTPS redirect requests</a>';
     if(function_exists('provider_directory_indexing_requests_session_blocked')&&!provider_directory_indexing_requests_session_blocked())echo '<a class="btn outline" href="'.esc(studio_url(['directory_requests'=>1])).'">Directory listing requests</a>';
+    if(function_exists('provider_document_root_requests_session_blocked')&&!provider_document_root_requests_session_blocked())echo '<a class="btn outline" href="'.esc(studio_url(['folder_requests'=>1])).'">Website folder requests</a>';
     $domains=provider_inventory_client_domains((int)$client['id']);
     $cloudUnavailable=false;try{$cloudServices=provider_cloud_client_services((int)$client['id']);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$cloudServices=[];$cloudUnavailable=true;}
     if($cloudUnavailable)echo '<p data-client-cloud-unavailable>The studio needs to review the saved cloud assignment records. Cloud details are temporarily unavailable. Contact the studio for an update.</p>';

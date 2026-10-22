@@ -15,6 +15,12 @@ if(array_key_exists('domain_dates',$_GET))header('Cache-Control: no-store, priva
 require_once CWP_CODE_ROOT.'/portal/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_php.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/document_roots.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/document_root_requests.php';
+$folderRequestRoute=array_key_exists('folder_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'folder_request_'));
+if($folderRequestRoute){
+    header('Cache-Control: no-store, private');
+    if(provider_document_root_requests_session_blocked())fail_page('Sign in directly to your primary client account to manage website folder requests.',403);
+}
 require_once CWP_CODE_ROOT.'/portal/controllers/package_force_ssl.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/force_ssl_requests.php';
 $httpsRequestRoute=array_key_exists('https_requests',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'https_request_'));
@@ -84,6 +90,7 @@ if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($
 if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
 if($httpsRequestRoute)provider_force_ssl_requests_client_render($client,$error);
 if($directoryRequestRoute)provider_directory_indexing_requests_client_render($client,$error);
+if($folderRequestRoute)provider_document_root_requests_client_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);

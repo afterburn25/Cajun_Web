@@ -80,6 +80,7 @@ def synthetic_baseline_126():
     return stream.getvalue()
 
 
+
 def additional_baseline_checks(tmp, ctx, source, transfer, input_sha):
     obj = a.verify_bundle(transfer, 'inputs', ctx, input_sha)
     a.validate_published_baseline(source, obj['files'])
@@ -135,6 +136,7 @@ def additional_baseline_checks(tmp, ctx, source, transfer, input_sha):
     a.write(folder / 'inputs.json', envelope)
     deny('Coherent outer input cannot replace an original1.25 member',
          lambda: a.receive_inputs(folder, tmp / 'baseline-coherent-child', ctx, a.digest(folder / 'inputs.json'), 'apache'))
+
 
 
 def fixtures(root, ctx):
@@ -1849,6 +1851,53 @@ def run(tmp):
     with patch.object(Path,'read_bytes',previous_bytes), patch.object(Path,'read_text',previous_text):
         _run_before_client_directory_requests(tmp)
     client_directory_requests_checks(tmp,current,registry,section,historical)
+_run_before_document_root_controls = run
+
+def run(tmp):
+    # The folder-control family is the newest verified era inside the folder
+    # requests serving: verify it against the requests-free served world, then
+    # serve the exact pre-controls bytes inward so every earlier era keeps its
+    # original recipe, report and source expectations.
+    from document_root_controls_acceptance_contract import predecessor as folder_predecessor, run as folder_control_checks
+    folder_contract=a.load(ROOT/'tools/acceptance-contract.json')
+    folder_workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    folder_native=folder_workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
+    folder_commands=[line.strip() for line in folder_native.splitlines()]
+    folder_control_checks(check,folder_contract,folder_workflow,folder_commands)
+    folder_section=folder_contract['document_root_controls']
+    folder_upgrade=folder_contract['document_root_controls_upgrade']
+    served_contract=copy.deepcopy(folder_contract)
+    del served_contract['document_root_controls'];del served_contract['document_root_controls_upgrade']
+    served_reports=a.load(ROOT/'tools/acceptance-reports.json')
+    for lane in ('browser','final'):
+        lane_removal=set(folder_section['reports'])|(set(folder_upgrade['reports']) if lane=='final' else set())
+        served_reports[lane]=[name for name in served_reports[lane] if name not in lane_removal]
+    for entry in folder_section['provenance_additions']+folder_upgrade['provenance_additions']:
+        check('Folder-control provenance addition occurs once',served_reports['provenance']['additions'].count(entry)==1)
+        served_reports['provenance']['additions'].remove(entry)
+    served_workflow=folder_workflow
+    for command in folder_section['native_additions']:
+        check('Folder-control workflow native addition occurs once '+command,served_workflow.count('          '+command+'\n')==1)
+        served_workflow=served_workflow.replace('          '+command+'\n','',1)
+    served_workflow=served_workflow.replace(folder_upgrade['apache_additions'],'',1)
+    historical={'tools/acceptance-contract.json':(json.dumps(served_contract,indent=2)+'\n').encode(),
+                'tools/acceptance-reports.json':(json.dumps(served_reports,indent=2)+'\n').encode(),
+                '.github/workflows/application-tests.yml':served_workflow.encode()}
+    for path in folder_section['source_extensions']:
+        historical[path]=folder_predecessor(path,folder_contract).encode('utf-8')
+    originals={str((ROOT/path).resolve()):data for path,data in historical.items()}
+    read_bytes,read_text=Path.read_bytes,Path.read_text
+    def previous_bytes(path):
+        key=str(path.resolve());return originals[key] if key in originals else read_bytes(path)
+    def previous_text(path,*args,**kwargs):
+        key=str(path.resolve());return originals[key].decode(kwargs.get('encoding') or (args[0] if args else 'utf-8')) if key in originals else read_text(path,*args,**kwargs)
+    with patch.object(Path,'read_bytes',previous_bytes),patch.object(Path,'read_text',previous_text):
+        _run_before_document_root_controls(tmp)
+_run_before_client_document_root_requests = run
+
+def run(tmp):
+    from document_root_requests_acceptance import run as client_folder_acceptance
+    client_folder_acceptance(globals(), tmp, _run_before_client_document_root_requests)
 
 
 def main():

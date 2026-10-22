@@ -135,6 +135,7 @@ function staff_view_permission(string $view): ?string {
     if(in_array($view,['tickets','ticket','ticket-new'],true))return 'support.tickets';
     if($view==='https-requests')return 'staff.manage';
     if($view==='directory-requests')return 'staff.manage';
+    if($view==='folder-requests')return 'staff.manage';
     if($view==='registration-drafts')return 'staff.manage';
     if($view==='nameserver-requests')return 'staff.manage';
     if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
@@ -165,6 +166,7 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'tickets_'))return 'support.tickets';
     if(str_starts_with($action,'provider_https_'))return 'staff.manage';
     if(str_starts_with($action,'provider_directory_request_'))return 'staff.manage';
+    if(str_starts_with($action,'provider_folder_request_'))return 'staff.manage';
     if(str_starts_with($action,'registration_drafts_'))return 'staff.manage';
     if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
     if(str_starts_with($action,'recurring_'))return 'payments.manage';
@@ -189,6 +191,7 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'provider_renewal_dispatch_'))return 'staff.manage';
     if(str_starts_with($action,'provider_nameserver_change_'))return 'staff.manage';
     if(str_starts_with($action,'provider_nameserver_request_'))return 'staff.manage';
+    if(str_starts_with($action,'provider_document_root_control_'))return 'staff.manage';
     if(str_starts_with($action,'provider_settings_'))return 'staff.manage';
     if(str_starts_with($action,'provider_inventory_'))return 'staff.manage';
     if(str_starts_with($action,'mail_accounts_'))return 'staff.manage';

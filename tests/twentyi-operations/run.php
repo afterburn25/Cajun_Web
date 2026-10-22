@@ -18,8 +18,8 @@ $register=new TwentyIOperationRegister();
 $builder=new TwentyIRequestBuilder($register);
 
 // ---- catalog shape ----
-check($register->names()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','registrar.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the fourteen documented operations');
-check($register->buildableNames()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.nameservers','registrar.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
+check($register->names()===['packages.documentroot','packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','registrar.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the fifteen documented operations');
+check($register->buildableNames()===['packages.documentroot','packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.nameservers','registrar.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
 check($register->get('packages.create')->mayTriggerEmail&&$register->get('packages.create')->mayChargeBilling,'create flags email and billing risk');
 check($register->get('packages.update')->destructive&&$register->get('packages.update')->mayChargeBilling,'update flags mixed delete and billing');
 check($register->get('domains.renew')->mayChargeBilling&&!$register->get('domains.renew')->destructive,'domain renew flags billing only');
@@ -180,6 +180,7 @@ $adapter=__DIR__.'/../../foundation/twentyi/TwentyIAdapter.php';
 check(str_contains(file_get_contents($adapter),'public function supports(string $operation): bool { return false; }'),'adapter still refuses every operation; register is not execution authority');
 
 require __DIR__.'/nameservers.php';
+require __DIR__.'/document-roots.php';
 
 if(isset($argv[1])) {
     $json=json_encode(['passed'=>true,'scope'=>'Synthetic write-boundary only; descriptors, request construction and classification. No HTTP transport, credential, database or provider call','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";
