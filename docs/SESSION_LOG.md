@@ -3536,3 +3536,26 @@ Actual local results:271 final helper checks,35 portable update guards,19 origin
 The canonical installer refresh and shipping PHP/JavaScript syntax pass. Documentation validation passes12 required documents,272 Markdown files and1,858 local links (32 headings). Independent final wiring review `59fddfa3` clears72 finite source/evidence checks and retains all221 original helper outcomes in final271. These do not substitute for the pending supported runtime matrix, actual browser images, installed Apache flow or release acceptance.
 
 The first exact staged-inventory check rejected CRLF storage bytes against the normalized Git blob. Root corrected only line endings in that storage file and the three upgrade fixtures, proving equality to their already-staged bytes; source-contract hashes already use LF. The original mismatch and four before/after hashes are retained. Installer hashes were refreshed for canonical checkout bytes; no business behavior or fixture assertion changed.
+
+
+## 2026-10-22 — Cloud candidate acceptance repairs (run 39803144531 follow-up)
+
+- Request: continue integration of the client-cloud-websites merge candidate
+  (PR263, head d36d2b8d). Hosted run 39803144531 failed two lanes.
+- Failures preserved: apache lane `baseline-seed` exited with RuntimeException
+  at credentials.php:16 (`Provider master key unavailable`); native/browser lane
+  raised `No CSRF in /existing/portal/index.php?cloud_websites=1`.
+- Fixes: d61abe0f reorders the published-baseline seed so `provider_settings_save`
+  seals the profile (creating the provider master key via vault_key(create=true))
+  before `provider_cloud_assignment_prepare`/`provider_cloud_confirmation_prepare`
+  write HMAC-sealed heads requiring the existing key; key-preservation refusal is
+  unchanged. c7e351b7 pulls the foreign client's CSRF from its workspace page,
+  which always renders a form, instead of the intake page that correctly renders
+  none for an unassigned client; the contract source pin for
+  tests/provider_cloud_site_requests_cases.py was re-anchored.
+- Tests: php -l on the fixture; local artifact verifier 280/280 checks pass on
+  c7e351b7.
+- Result: fixes pushed on devin/cloud-websites-main; hosted run 39831278201
+  dispatched on c7e351b7 and in flight at record time.
+- Remaining: hosted acceptance pending; then normal merge to main, exact-main
+  verification, and the queued force-SSL/PR246 evaluations.
