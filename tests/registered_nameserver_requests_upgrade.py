@@ -152,6 +152,18 @@ def changes_target_inputs(repo):
     return archive, version, source, files
 
 
+def seed_transition_cells(before, after):
+    # The explicit owner studio_migrate step legitimately advances the original
+    # workspace marker 2->4 inside the seeded candidate; name that one hashed
+    # cell so every other original row, column and private byte must still match.
+    h = lambda value: hashlib.sha256(json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
+    rows = before['tables']['settings']['rows']
+    keys = [key for key, row in rows.items() if row.get('name') == h('studio_schema_version')]
+    assert len(keys) == 1 and rows[keys[0]]['value'] == h('2')
+    assert after['tables']['settings']['rows'][keys[0]]['value'] == h('4')
+    return [('settings', keys[0], 'value')]
+
+
 def updater_retained(before, after, actions, version):
     """Only the exact real updater audit append is permitted; all original cells survive."""
     from release_125_retention import retained
@@ -330,7 +342,7 @@ def main():
         command('seed')
         phases['healthy'] = command('snapshot')['snapshot']
         check('Candidate preparation retains every original published record and private key',
-              retained(phases['baseline'], phases['healthy']))
+              retained(phases['baseline'], phases['healthy'], changed_cells=seed_transition_cells(phases['baseline'], phases['healthy'])))
         action('apply')
         check('Exact UPDATE retry retains populated request outcomes and original fences', exact_business(phases['healthy'], command('snapshot')['snapshot']))
         action('recover')
@@ -358,6 +370,9 @@ def main():
         check('Exactly seven original owner actions completed in the agreed order', tuple(completed_actions) == ACTIONS)
     except BaseException as error:
         failure = {'type': type(error).__name__}  # No raw exception/config/provider values.
+        detail = str(error)
+        if re.fullmatch(r"[A-Za-z0-9 .:_,+'()\[\]/=-]{1,240}", detail or ''):
+            failure['message'] = detail
     finally:
         if proc is not None:
             proc.terminate()
