@@ -58,7 +58,7 @@ function setup_expected_files(): array { return [
     'admin/controllers/registered_nameserver_requests.php'=>'c767c909ece7755f5e569bff85ffa9435b920f03f20d34fc09eb8a5af557dc9f',
     'admin/controllers/registered_nameservers.php'=>'adf7416bcaed2557ce2a8f9c493f2add44d77c1da4b82477f932887ca43ab260',
     'admin/controllers/reviews.php'=>'f034ab69a0da4543eba72cd2935ff6d802d0293259e88ca699bbe1f4c1316c31',
-    'admin/controllers/router.php'=>'debbc928ec201f41dcbaa8c1a6978c4940fba7aa40973677e7e1363a2917ecd9',
+    'admin/controllers/router.php'=>'14de9f94f93f8640f1d111946b41339e327f11ac49d73fbf2cb03a7403d14d0b',
     'admin/controllers/service_observations.php'=>'2a03e0decb130743ccaa49c5e9d958313462baadcff4b3c4e5d5536bf7f34432',
     'admin/controllers/services.php'=>'b66f7b96ecc50cb5abfa19fd90e8534945cddd8e050cf98de3f1c34d2087c1a8',
     'admin/controllers/settings.php'=>'a47319d99588ac9273c764ec4b8f64059343783b26fb4f809b0e8fb3cb1aa2a9',

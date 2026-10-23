@@ -62,7 +62,6 @@ if(in_array($view,['service-plans','service-plan','service-agreements','service-
 if($view==='hosting-offers')hosting_catalog_admin_render($error);
 if($view==='hosting-purchases')hosting_purchases_admin_render();
 if($view==='backups')backups_admin_render($user,$error);
-if($view==='notifications')notifications_admin_render($user,$error);
 if(in_array($view,['proposals','proposal'],true))proposals_admin_render($view,$user,$error);
 if($view==='recurring-billing')recurring_billing_admin_render($error);
 if(in_array($view,['tickets','ticket','ticket-new'],true))support_tickets_admin_render($view,$error);
