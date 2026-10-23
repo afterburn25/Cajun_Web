@@ -47,9 +47,21 @@ def fields(form):
     return values
 
 
+_QA_DIR = None
+
+
 def form_for(response, selector):
     forms = soup(response).select(selector)
     if len(forms) != 1 or forms[0].name != "form" or forms[0].get("method", "get").lower() != "post":
+        import json as _diag_json, hashlib as _diag_hash
+        stem = "form-missing-" + _diag_hash.sha256(selector.encode()).hexdigest()[:12]
+        try:
+            (_QA_DIR / (stem + ".html")).write_text(response.text, encoding="utf-8")
+            (_QA_DIR / (stem + ".json")).write_text(_diag_json.dumps({
+                "selector": selector, "status": response.status_code, "url": response.url,
+                "forms": len(forms), "bytes": len(response.text)}, indent=2), encoding="utf-8")
+        except Exception:
+            pass
         raise AssertionError("Expected one real POST form: " + selector)
     return forms[0]
 
@@ -81,7 +93,9 @@ def session_id(session, actual_url):
 
 
 def run_browser(env, browser):
+    global _QA_DIR
     base, qa, check, fixture, provider, seed = (env[k] for k in ("BASE", "QA", "check", "fixture", "provider", "seed"))
+    _QA_DIR = qa
     if base != "http://127.0.0.1:8095":
         raise AssertionError("Wrong isolated HTTP origin")
     for key in ("link_id", "other_link_id"):
