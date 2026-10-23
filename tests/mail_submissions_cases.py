@@ -288,7 +288,15 @@ def run_browser(env, browser):
     wire = submission_server.attempts[-1]
     parts = BytesParser(policy=policy.default).parsebytes(wire['data'])
     decoded = [p.get_payload(decode=True) for p in parts.walk() if p.get_content_disposition() == 'attachment']
-    check('HTTP sends attachment-bearing MIME byte-exactly', wire['data'] == db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [attach_sid])[0]['mime_bytes'].encode('ascii') and decoded == [attach_bytes] and submission_server.connections == count + 1)
+    attach_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [attach_sid])[0]['mime_bytes'].encode('ascii')
+    diverge = next((i for i, (a, b) in enumerate(zip(wire['data'], attach_mime)) if a != b), min(len(wire['data']), len(attach_mime)))
+    wire_diag = {'wire_len': len(wire['data']), 'mime_len': len(attach_mime), 'first_divergence': diverge,
+                 'wire_tail': wire['data'][-40:].decode('ascii', 'backslashreplace'), 'mime_tail': attach_mime[-40:].decode('ascii', 'backslashreplace'),
+                 'decoded_ok': decoded == [attach_bytes], 'decoded_lengths': [len(d or b'') for d in decoded], 'attach_len': len(attach_bytes),
+                 'connections': submission_server.connections, 'expected_connections': count + 1,
+                 'terminator': wire['terminator'], 'server_errors': submission_server.errors[-4:]}
+    (QA / 'attachment-mime-diagnostics.json').write_text(json.dumps(wire_diag, indent=2), encoding='utf-8')
+    check('HTTP sends attachment-bearing MIME byte-exactly', wire['data'] == attach_mime and decoded == [attach_bytes] and submission_server.connections == count + 1)
     check('Submission record shows the saved attachment', 'report.pdf' in member.get(root + '?view=mail-submission&submission_id=' + attach_sid).text)
     r = member.post(root + '?view=mail-submission&submission_id=' + attach_sid, data={'csrf': token(member.get(copy_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': attach_sid})
     copy_connections += 1
