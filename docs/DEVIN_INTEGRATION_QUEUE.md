@@ -233,3 +233,11 @@ Run `39996264484` (`514ba7dd`): `native-and-browser` exceeded the 4h0m platform 
 ## 2026-10-23 (cont.18) — Cloud lane green on exact head
 
 Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** — Force-SSL control lane passes full acceptance including the recovery flow and the corrected ten-read audit. Cloud lane is the first this cycle with exact-head green evidence; still requires labeled review and merge-first sequencing before it counts as deliverable.
+
+## 2026-10-23 (cont.19) — Preflight run 40024614698 classified; deeper instrumentation
+
+- Apache `r126_ron_` recurring markers all true at call 1 (original code), all false at call 2 (first post-upgrade verify) — the upgraded code renders the recurring page shell with zero schedule rows. `recurring_billing_ready()` is consistent on the upgraded DB (stage 0/marker absent); the failure is in `recurring_ui_context`/validate path — notice text now captured via `errors`/`cards` diag fields (`4921458f`).
+- Mark-read: connector `error_log` worked — DNS *allowed* for `inbox-fixture.example.net`, POST completed 303, **no** `connector refused` → throw is post-resolution. `88e235f2` logs the exact throw site at the resolve catch, `FlagWriter`'s blanket catch, and the outer transport catch.
+- FSI `7fbc46a7` run `40026770020`: mail lane passed (sent-copy APPEND fixed); new failure `Billing-enabled contact sees billing navigation` — check written in `cefb08d6` asserted `recurring=1` before recurring storage is ever prepared (suite order: service_plan before recurring_billing). Corrected to the two renderable links in `e15681e2`; run `40036507274` in flight.
+- Environment: local disk C: at 100% — verifier/artifact downloads must use D: paths or TEMP override.
+- Dispatched: preflight `40041496495` (`b648c16f`, recurring-notice diag), `40042016903` (`88e235f2`, +flag refusal logging); docroots `40029428035`.
