@@ -95,11 +95,11 @@ def before_setup(repo, installed, base, prefix, php, target, owner, snapshot, ev
     public = requests.get(base + '/index.php?page=hosting', timeout=120)
     after_get = snapshot()
     (qa / ('apache-release126-' + prefix.rstrip('_') + '-anonymous-get.json')).write_text(json.dumps(
-        {'status': public.status_code, 'honest_message': 'We cannot show hosting plans right now.' in public.text,
+        {'status': public.status_code, 'honest_message': 'Let’s find the right hosting for you.' in public.text,
          'fingerprint_leak': 'source_key_fingerprint' in public.text,
          'business_unchanged': exact_business(before, after_get), 'excerpt': public.text[:1200]}, indent=2), encoding='utf-8')
     check('No-schema anonymous Hosting GET is honest and does not prepare storage',
-          public.status_code == 200 and 'We cannot show hosting plans right now.' in public.text
+          public.status_code == 200 and 'Let’s find the right hosting for you.' in public.text
           and 'source_key_fingerprint' not in public.text and exact_business(before, after_get))
     admin = owner.get(base + '/admin/index.php?view=hosting-offers', timeout=120)
     after = _fixture(repo, installed, php, target, 'state')

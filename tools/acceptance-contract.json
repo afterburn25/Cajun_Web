@@ -1050,7 +1050,7 @@
     "source_sha256": {
       "tests/release_126_hosting_fixture.php": "de12763cb75da029cbe2c6f5573ab197ce6487d11ea34325a4012cb64dd9adf4",
       "tests/release_126_hosting_guards.py": "2ef9f6d0126340a7555ec1c8aad3e3d1d1706b92a2c9ccdf4aa6b1984442a49a",
-      "tests/release_126_hosting_records.py": "6109c3ac76af644080fc13376dee504439517758a2090f34e1b05e1e9501a7bb",
+      "tests/release_126_hosting_records.py": "5f910f33e52e77a264a994345ceb6d0d17c09d1976e65ae2484bdc55f4b20f5e",
       "tests/release_126_provider_fixture.php": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
       "tests/release_126_upgrade_acceptance.py": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
       "tests/release_126_upgrade_cases.py": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c"
@@ -1360,7 +1360,7 @@
       "b7c97953f323004e1fdd527bdef0b2da63f01c71",
       "1db3235286f915935e4ab621e2be5a2f14288997"
     ],
-    "predecessor_contract_sha256": "3638c92f676a6f4ef3bb3dcdc6633f50f6b56c2beef5ba3360e15b28ab1753ee",
+    "predecessor_contract_sha256": "a3d11004718ec090da5607a79d5782e643f0409707fa4a6826160e5c5e28ff2a",
     "source_sha256": {
       "site/app/providers/checks.php": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
       "site/admin/views/providers.php": "2427f9c82d73e51301039a7465fdacafbe957627cac2ad230b6eeeb4e986df9a",
@@ -1406,7 +1406,7 @@
   },
   "catalog_storefront_http": {
     "source_predecessor": "9b450c4b8daafd79f4242c39ddd65e2bdb56b624",
-    "predecessor_contract_sha256": "0b3d383ba433d06bc965429bd8a2d4cce5f9f2ae830ff1bf239329904cac68fb",
+    "predecessor_contract_sha256": "4f5cbcc3a8f0f9459fd2da10e10ea87cc8c66c5cb7156bb31aa4e3ef30d07637",
     "updated_pins": {
       "tests/provider_package_types_cases.py": "provider_package_types",
       "tests/hosting_checkout_http_browser.py": "hosting_checkout"
@@ -1495,7 +1495,7 @@
       "Hosting-Plan-Setup-Preview-Mobile.png"
     ],
     "http_report": "hosting-checkout-http-results.json",
-    "predecessor_contract_sha256": "a5555bd42f5dbf8fa6efae1c1474159c9ff6b6196bd389cd0515c649339ec6c3",
+    "predecessor_contract_sha256": "76b9e1db3d3bee7ec242c68ef053fc886583d012d826e0123fcefe9f3dad90d7",
     "predecessor_reports_sha256": "6e71b7ec59a9a62b39f78d7255f67586338d8b1ba22623d18a4e231e6b7d76eb",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "4df1574c9e16c2d32f4d49a769ebbf40791a0a26b1055f0fec7bcbbabcd69c35",
@@ -1930,7 +1930,7 @@
       "hosting-checkout-purchases-native-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "0b886ab5ebd202179ef07a81911d8bcc7294974bdbc001cc67469cef2182cbff",
+    "predecessor_contract_sha256": "8288c78542fccf3e5610660677a550cd557852c6df15ed4816b5cce8ecbfa39f",
     "predecessor_reports_sha256": "8b67286290d784619e51b15415ca7ed94aa4da9f570b99bf53b67ad70bd583c4",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "4df1574c9e16c2d32f4d49a769ebbf40791a0a26b1055f0fec7bcbbabcd69c35",
@@ -2344,7 +2344,7 @@
       "Hosting-Purchase-Inbox-Client-Mobile.png"
     ],
     "result_check": "Installed purchase inbox follows exact original records without new business writes",
-    "predecessor_contract_sha256": "623e763e8c2261bc2ac0cce8187667f4ffffd18a651c207ae052c574eda95e68",
+    "predecessor_contract_sha256": "8520fd70fb5e2cc6e45ccd74b568f3183e6a20539812bbba15330c3a02fd6aed",
     "predecessor_reports_sha256": "f09c8696f2e3e80053c1027f1c7fa540dee1c3afb0a682ef8c1ceaca3050688d",
     "source_sha256": {
       ".github/workflows/application-tests.yml": "4df1574c9e16c2d32f4d49a769ebbf40791a0a26b1055f0fec7bcbbabcd69c35",
@@ -2613,7 +2613,7 @@
     "added_commands": [],
     "added_reports": [],
     "added_captures": [],
-    "predecessor_contract_sha256": "a9bbb098efa4b4c66a598f885402ad7994c7f37062e76cc9a909736950cc9d27",
+    "predecessor_contract_sha256": "03ab6e806f404bccdbc5f9fbf7275da5b82e6415c7b253ba333204d6aab068c8",
     "predecessor_reports_sha256": "f09c8696f2e3e80053c1027f1c7fa540dee1c3afb0a682ef8c1ceaca3050688d",
     "source_sha256": {
       "site/includes/layout/hosting_fulfillment.php": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
@@ -2820,7 +2820,7 @@
   },
   "catalog_retail_variants": {
     "predecessor_commit": "3b96f48f69e1a32370509dc123fee03d5e338cad",
-    "predecessor_contract_sha256": "7398744802fd8f1109e1cd31680d2d97e36b60aad381956ee882e2e2ccbf97ef",
+    "predecessor_contract_sha256": "620278aa6919bcf3d0cf42692494067a2ed49744a20011a0b56109f0de251616",
     "predecessor_reports_sha256": "9d6c7ab8e87a08435cd11dc4ccd720b21db5310757c3f641f5c15abff1c615d9",
     "native_after": "CWP_TEST_HOSTING_PLAN_SETUP=1 \"$PHP_BINARY\" tests/hosting_catalog_plan_setup_native.php",
     "native_additions": [
@@ -3271,7 +3271,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "9058267ecf8c470f657a26fa1068db9f597afc60a2ee0b8bc573e89142900a85",
+    "predecessor_contract_sha256": "b1eeb0bd2018d3507f82204e54376b6e74f6fff6bc62254c0ef4aeef0ae442a8",
     "predecessor_reports_sha256": "8672eee23aea1fef5ec362cf6f7e02ead15f501cf3f4f0ea3ff8b63e3c5ad98c",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3863,7 +3863,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "7fccb032376bd0f29589623f4272a7ef15910237ba27d4f429ab154ad7a57b63",
+    "predecessor_contract_sha256": "06e1499fc6ac8cb3f88f7bd98883bdf1c93ca59621db8d5a6be0af8bd7609d94",
     "predecessor_reports_sha256": "90bde2f7f2b422b45d5438788f713d5c9605c47cc9fed0113ee650844bdb93e3",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -5043,7 +5043,7 @@
       }
     },
     "merged_stage_reports_sha256": "9890b7bbebba295c6dffad169440a15d8989bd22283feb34f6c7c3a465991a11",
-    "merged_stage_contract_sha256": "3db26cbd382de826d2958cccf2a6ffc1c99b164e6512e5733ecc1f451f1e1c48"
+    "merged_stage_contract_sha256": "8e44c300cdfed6a9e766e636d2a700cc729c75a7e7ac58d50cccf539cdb150af"
   },
   "registered_nameserver_changes": {
     "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
@@ -5085,7 +5085,7 @@
   },
   "registered_nameserver_changes_installed": {
     "source_predecessor": "5654649dc62095298ce703b39b54d12d56c49f09",
-    "predecessor_contract_sha256": "25c6938d802f81d484b130298718134aa171ae517f97cec37ae99be67570122f",
+    "predecessor_contract_sha256": "26d12e6724ca0712640bac343b7cdd46601690941084a67e8032fe82053816be",
     "predecessor_reports_sha256": "5cad12e4bdab7d63ab25bc229ec12e44a6182d52d059f5dd5d62d02a77d700c5",
     "reports": {
       "browser": [
@@ -5204,7 +5204,7 @@
   },
   "registered_nameserver_requests": {
     "source_predecessor": "af78abd81ce39839cd100e1c882a59b04258a25b",
-    "predecessor_contract_sha256": "0e29eaf82df874894da54171dd428f95eb3aed4681fa0520f715b31d0d130e88",
+    "predecessor_contract_sha256": "8dd7b0681d1cba1d09a5774b0298d0180c0c0d532ee4a4ae3454043fc80e1ca6",
     "predecessor_reports_sha256": "e6161a58263d6666f0aeda828d34843b986353efbcc49afc08d0c5c7bed4ceb1",
     "native_additions": [
       "\"$PHP_BINARY\" tests/registered_nameserver_requests_document.php > qa/registered-nameserver-requests-document-results.json",
@@ -5305,7 +5305,7 @@
       "tests/registered_nameserver_changes_upgrade_fixture.php": "4642e92d37de5b4c571e03135a993af918e00ebf43a51668cbbd5e01ee1305c7",
       "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
       "tests/registered_nameserver_requests.php": "9f608672ecac3b49a2238ce92ba5faa902b9790702fb85c8809ff97b1ea6e503",
-      "tests/registered_nameserver_requests_acceptance.py": "088508e88763b89e276f7dcef32c3d57c606b8685c342c81bd21f1b0b3debeaa",
+      "tests/registered_nameserver_requests_acceptance.py": "908ba2dcb04bde3b5e37e2891b87396463c67e67b30bad0db16630244cb7ad78",
       "tests/registered_nameserver_requests_cases.py": "8e75b3225674c7a8a93729b51b6132db550845efb578b854f36d4020e3bce0e5",
       "tests/registered_nameserver_requests_document.php": "35c849d07a630b079c113b964310ff51142772b168388350c76c8b52f3848cce",
       "tests/registered_nameserver_requests_native.php": "df4aef98c107bb09d1c22317de19195903224c1c12f51c0bfbd669be17d19741",
@@ -5496,7 +5496,7 @@
   },
   "client_https_requests": {
     "predecessor_commit": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
-    "predecessor_contract_sha256": "d40ae6d91288183589acd997a17fe1a09af41736d78ac685d0b3b387792e9783",
+    "predecessor_contract_sha256": "7d26cacdea464a160b5486fe1b3561b049d63939cce3119939b68d168ee734e1",
     "predecessor_reports_sha256": "639a9bb2b7252e49882de7b5a5a176f531402d57235c35f7544e201002ceec3e",
     "native_after": "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
     "native_additions": [
@@ -5808,7 +5808,7 @@
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "3086425458b76923fce71ad7d84d7d953a45c0a7bf9961c3b4878319571511ba",
+    "predecessor_contract_sha256": "58d2bde5d725818e14979f1da02b1dbe0b4ae56bcfc350b61194d61a28f843f7",
     "predecessor_reports_sha256": "9bace2c26fa5a8090bd3dac21afe2790940a22ef16be37547eeb0ff1df6e3c4b",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [
