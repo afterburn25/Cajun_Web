@@ -106,8 +106,9 @@ def run_browser(env, browser):
 
     provider.stackcp_membership = [{'identity': 'stack-user:99999', 'email': 'discarded-stackcp@example.invalid'}, {'identity': identity}]
     provider.stackcp_grants = ['package:' + str(package)]
+    cool(); response = post('provider_inventory_refresh'); evidence('hosting source re-read before access observations', response)
     cool(); response = post(prefix + 'membership', confirmed='1'); evidence('saved selected membership', response)
-    check('StackCP access membership uses exact package GET and discards metadata', provider.calls == start_calls + 3 and provider.get_paths[-1] == '/package/2501/stackUserList' and 'discarded-stackcp@example.invalid' not in json.dumps(db('SELECT * FROM ci_provider_stackcp_observations')))
+    check('StackCP access membership uses exact package GET and discards metadata', provider.calls == start_calls + 4 and provider.get_paths[-1] == '/package/2501/stackUserList' and 'discarded-stackcp@example.invalid' not in json.dumps(db('SELECT * FROM ci_provider_stackcp_observations')))
     cool(); response = post(prefix + 'grants', confirmed='1'); evidence('saved whole-user grants', response)
     current = owner.get(url); section = soup(current).select_one(own)
     check('StackCP access match is saved observation without login', current.status_code == 200 and 'Assignment matched two saved observations.' in section.text and provider.get_paths[-1] == '/reseller/*/stackUser/25001/grants' and not section.select('a') and provider.posts == start_posts)
@@ -115,6 +116,7 @@ def run_browser(env, browser):
     provider.stackcp_grants = None; cool(); response = post(prefix + 'grants', confirmed='1'); evidence('unavailable latest grants', response)
     section = soup(owner.get(url)).select_one(own); check('StackCP access failed latest grants hides prior match', 'The latest read is unavailable' in section.text and 'Assignment matched two saved observations.' not in section.text)
     capture('StackCP-Access-Unavailable')
+    cool(); response = post('provider_inventory_refresh'); evidence('hosting source re-read before empty access state', response)
     provider.stackcp_membership = []; cool(); response = post(prefix + 'membership', confirmed='1'); evidence('explicit empty membership', response)
     section = soup(owner.get(url)).select_one(own); check('StackCP access empty is saved without implied permission or grant form', 'An empty response was saved; access is not verified' in section.text and not section.select('input[name=action][value="' + prefix + 'grants"]'))
     capture('StackCP-Access-Empty'); calls = provider.calls
@@ -132,7 +134,7 @@ def run_browser(env, browser):
             current_rows = {r['id']: r for r in db('SELECT * FROM ci_' + name)} if exists else {}; retained[name] = all(current_rows.get(r['id']) == r for r in rows)
     reads = db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [actor])
     outcomes = db('SELECT z.state FROM ci_provider_refreshes f JOIN ci_provider_refresh_results z ON z.id=f.id WHERE f.actor_id=? ORDER BY f.seq', [actor])
-    check('StackCP access uses six own reads with exact terminal sequence and no writes', reads == [{'operation': v} for v in ['packages.list', 'packages.list', 'stackcp.membership', 'stackcp.grants', 'stackcp.grants', 'stackcp.membership']] and outcomes == [{'state': v} for v in ['complete', 'complete', 'complete', 'complete', 'unavailable', 'complete']] and provider.calls == start_calls + 6 and provider.posts == start_posts and not provider.errors)
+    check('StackCP access uses eight own reads with exact terminal sequence and no writes', reads == [{'operation': v} for v in ['packages.list', 'packages.list', 'packages.list', 'stackcp.membership', 'stackcp.grants', 'stackcp.grants', 'packages.list', 'stackcp.membership']] and outcomes == [{'state': v} for v in ['complete', 'complete', 'complete', 'complete', 'complete', 'unavailable', 'complete', 'complete']] and provider.calls == start_calls + 8 and provider.posts == start_posts and not provider.errors)
     check('StackCP access preserves inherited rows original actor and profile', all(retained.values()) and db('SELECT * FROM ci_provider_profiles WHERE id=?', [profile['id']]) == [profile] and db('SELECT * FROM ci_users WHERE id=?', [original['id']]) == [baseline] and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original['id']]) == [staff])
     (qa / 'stackcp-access-history-preservation.json').write_text(json.dumps({'actor_id': actor, 'retained': retained, 'inherited_sha256': {k: hashlib.sha256(json.dumps(v, sort_keys=True, separators=(',', ':')).encode()).hexdigest() for k, v in inherited.items()}, 'reads': reads, 'outcomes': outcomes}, indent=2))
     owner.close(); member.close(); client.close()
