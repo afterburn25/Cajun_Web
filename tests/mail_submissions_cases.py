@@ -259,7 +259,9 @@ def run_browser(env, browser):
     check('Owner prepares additive attachment storage', 'attachments are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_files_schema_version'") == [{'value': '1'}])
     attach_did, attach_url = create(sent_aid)
     attach_page = draft_url + '&draft_id=' + attach_did
-    attach_bytes = b'SYNTHETIC_ATTACHMENT_BYTES\x00\xff' + bytes(range(256)) * 400
+    # The stored mime is server-sniffed (finfo), not client-declared, so the
+    # payload must be real PDF bytes for the stored mime to be application/pdf.
+    attach_bytes = b'%PDF-1.4\n% SYNTHETIC_ATTACHMENT_BYTES\x00\xff' + bytes(range(256)) * 400 + b'\n%%EOF'
     def file_post(action, revision, **extra):
         data = {'csrf': token(member.get(attach_page)), 'action': action, 'draft_id': attach_did, 'revision': str(revision), **extra}
         files = {'file': ('report.pdf', attach_bytes, 'application/pdf')} if action == 'mail_drafts_attach' else None
