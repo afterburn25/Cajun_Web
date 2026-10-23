@@ -4967,3 +4967,11 @@ Owner request: continue the roadmap. Completed payment-link companion PR253 at b
 - Artifact inspection: `message-fixture-observation.json` belongs to the message suite, not this check; no per-check diagnostics existed for the notice-open POST, whose three conjuncts are `SYNTHETIC PRIVATE BODY` in body, exactly one new fixture connection, `uid=82` in the final URL. Total fixture invokes this run: 29, last four in a ~3.8s burst.
 - Change: `tests/mail_notices_cases.py` now writes `notice-open-diagnostics.json` + `notice-open-response.html` on failure (status, URL, redirect history, body marker, connections before/after, commands tail, fixture errors). File is not contract-pinned.
 - Committed `d616feb2`, pushed; run 39879709719 dispatched. Next: classify its result; if the same check fails again the artifact now carries the data needed to fix it.
+
+## 2026-10-23 — notice-open failure diagnosed and fixed: folder route binding
+
+- Request: continue FSI lane; instrumented run 39879709719 classified.
+- Failure: `Notice opens the exact message over actual synthetic TLS` — `notice-open-diagnostics.json` showed status 200, `uid=82` in URL, but `body_marker` false and connections 29→29 (no TLS contact). The response body carried "This message form no longer matches the selected inbox message."
+- Root cause (product defect, not flake): `site/admin/views/mail_notices.php` `$route` omitted `folder`, while `mail_message_admin_action` binds every route key including the default `INBOX` folder — `posted('folder')` returned null so every notice open was refused. The inbox open form and the notice-dismiss form both already carry `folder`.
+- Fix: `19eea50c` — add `'folder'=>$item['folder']` to the notice-open route; installer inventory refreshed; `php -l` clean; not contract-pinned.
+- Dispatch: `39894561533` (workflow) + `39894562590` (push).
