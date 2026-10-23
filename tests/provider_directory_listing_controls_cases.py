@@ -147,6 +147,12 @@ def run_browser(env, browser):
     check('Separately shared client sees reported flag without setter or health claim', 'Reported enabled' in response.text and 'Latest saved observation' in response.text and 'does not check whether visitors can currently see files' in response.text and all(text not in response.text for text in ['Enable directory listing', 'Disable directory listing', 'Check current setting', 'Restore saved request history']) and request['id'] not in response.text)
     capture(owner, 'Directory-Listing-Control-Observed-Owner', url, '#directory-listing-changes')
     capture(client, 'Directory-Listing-Control-Observed-Client', target, '[data-client-directory-listing]')
+    # The recover form and its verify are only rendered while the binding source
+    # observation is inside the 900-second freshness window. The replay/refusal
+    # and browser sections above can cross it, so re-read hosting and the flag
+    # once more: the interrupted request then pins the fresh source it verifies.
+    cool(); response = post('provider_inventory_refresh'); evidence('Control hosting re-read before recovery window', response)
+    cool(); response = post(refresh, link_id=link['id']); evidence('Control flag re-read before recovery window', response)
     # Reproduce the precise recoverable window with a real terminal audit rollback
     # after the synchronous synthetic POST has saved its durable ledger result.
     db("CREATE TRIGGER ci_directory_indexing_recovery_fault BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action='provider.directory_indexing_control_terminal' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic terminal rollback'; END IF; END")
