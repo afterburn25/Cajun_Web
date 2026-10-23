@@ -227,6 +227,7 @@ def run_browser(env, browser):
     check('HTTP cannot append a recorded Sent copy twice', 'already has a recorded Sent copy' in r.text and inbox_server.connections == inbox_connections + copy_connections)
     r = owner.post(copy_page, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_submissions_copy_sent', 'submission_id': sent_sid})
     check('Another author cannot drive a Sent copy', 'copy was saved' not in r.text and inbox_server.connections == inbox_connections + copy_connections)
+    age_dispatches()
     inbox_server.mode = 'append-refused'
     refused_did, refused_url = create(sent_aid)
     refused_target, refused_data = review(refused_url)
