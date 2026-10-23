@@ -3560,3 +3560,11 @@ Feature parent `3bd43ca891c9faefc6c07a293e4d2d59e00d4a62`; enclosing commit **Ad
 - Fix: reconstructed the predecessor bytes by inverting the old delta against `b3b60005~1` (verified its sha256 matched `after_sha256`), regenerated the delta as two insertions (the nav bound + the original document-root browser hook), round-trip verified back to `before_sha256` `2cbd4f2c…`, committed `31150ff2`. Only the `client_document_root_requests` section exists in this contract — no cross-section predecessor invalidation.
 - Dispatch: run 39862486466 on `31150ff2`.
 - Next: classify the redispatched run; the 60s bound + instrumented directory-controls check remain under test.
+
+## 2026-10-23 — docroots run 39892375277 classified; WordPress cooldown repeat made concurrent at 6a45884f
+
+- Request: continue monitoring; classify the completed docroots run.
+- Run 39892375277 (`d310f8b7`): build/recovery/apache green; native-and-browser red on `WordPress installation owner form sends one exact assigned-package GET` — suite stopped before the instrumented document-roots conjunct dump ran (missing `document-root-requests-modeled-browser-results.json`).
+- Evidence (`package-wordpress-installed-response-diagnostics.json`): the second `package.wordpress-installed` read landed at `started_epoch` 1792735205 — exactly +30s after the first at 1792735175. `inventory.php:241` refuses only `started_epoch > now-30`, so the repost's admission crossed the boundary and executed a real read (`provider.calls` 121→122, results 3→4, no `Wait 30 seconds` notice). This is the same check that escaped at `a9ef499c` via the re-GET gap; `d35a1103`'s direct repost removed that gap but the refresh POST's own ~30s server-side time still pushed submission past the boundary.
+- Fix `6a45884f`: a second owner session posts the identical `post.last` body the moment the refresh's admission row is visible in `ci_provider_refreshes` — the repost's admission serializes on the staff mutex, which the refresh holds only for admission+record (not the ~30s render path), so refusal lands inside the window. Sequential `owner.post` repost remains as fallback if the admission row never appears. All check assertions unchanged; file unpinned.
+- Dispatch: run 39911349541 on `6a45884f`.
