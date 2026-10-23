@@ -90,3 +90,7 @@ Cancel/queued runs are not green; earlier superseded runs were cancelled to free
 | `devin/fix-stackcp-ops-whitelist` | 233, 243, 255 |
 
 Open PRs not in any devin lane: 256 (vps-uncertainty-repair); devin-owned port PRs 257–260 carry their own branches. A green leaf-lane run validates its full stack, but each codex PR still needs its own review record before merge; the preflight lane green would validate the combined umbrella.
+
+## 2026-10-23 — systemic note: sequential cooldown repost remains on unfixed lanes
+
+The +30s admission-boundary escape fixed at `795211c4` (`devin/fix-docroots-worker-retry`) exists in the same six suites (`provider_{directory_listing,document_roots,package_force_ssl,package_php,package_wordpress_installed,registration_periods}_cases.py`) on every other lane — `-int`, `-fsi`, `-lf-02`, `-lf-pc`, `-audit`, `-cw` all carry the sequential single-shot repost (the `-cw` WordPress variant uses a direct repost + 3× retry loop that went green on `39886854693` but still escapes if the first repost lands past +30s). Preemptive porting was deferred: every lane has a run in flight on its current head, and a new head would need its own green run before acceptance — fixing now cannot change in-flight evidence. Policy: port `795211c4` reactively to any lane whose run fails on a cooldown-repost check, or fold it into that lane's next required push.
