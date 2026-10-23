@@ -4,6 +4,12 @@ name: Diagnostic acceptance (multi-failure collection)
 # authoritative gate. This workflow is dispatch-only so it never duplicates
 # the acceptance path automatically.
 on:
+  # Branch-scoped push gives this feature branch hosted first-run evidence
+  # without enabling the workflow on main pushes (the branches list does not
+  # include main). Remove or extend deliberately when the mode is accepted.
+  push:
+    branches: ['devin/diagnostic-acceptance']
+    paths: ['tests/diagnostic_*', '.github/workflows/diagnostic-tests.yml', 'docs/DIAGNOSTIC_ACCEPTANCE.md']
   workflow_dispatch:
     inputs:
       groups:
