@@ -147,11 +147,14 @@ def run_browser(env, browser):
     capture(owner, 'Force-SSL-Control-Observed-Owner', url, '#force-ssl-changes')
     capture(client, 'Force-SSL-Control-Observed-Client', target, '[data-client-force-ssl]')
     # The interrupted request pins the binding source it later verifies, and the
-    # recover form renders only inside the same 900-second window, so re-read
-    # hosting once more before the recovery fixture.
+    # recover form renders only inside the same 900-second window. The hosting
+    # refresh also changes the binding source, so the flag must be re-read too:
+    # the change precondition requires the anchor observation under the current
+    # binding (provider_force_ssl_controls_precondition).
     # Reproduce the precise recoverable window with a real terminal audit rollback
     # after the synchronous synthetic POST has saved its durable ledger result.
     cool(); response = post('provider_inventory_refresh'); evidence('Recovery hosting context', response)
+    cool(); provider.force_ssl_mode = 'success'; provider.force_ssl = True; response = post(refresh, link_id=link['id']); evidence('Recovery flag re-read', response)
     db("CREATE TRIGGER ci_force_ssl_recovery_fault BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action='provider.force_ssl_control_terminal' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic terminal rollback'; END IF; END")
     before_write_calls = provider.calls
     try:
