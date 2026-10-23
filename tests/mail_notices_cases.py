@@ -65,8 +65,11 @@ def run_browser(env,browser):
     check('Exact notice GET never contacts the mailbox',owner.get(url).status_code==200 and inbox_server.connections==observed)
     r=owner.post(url,data={**fields,'notice':items[1]['handle']});check('Open notice POST must match its independent query handle','no longer matches' in r.text and inbox_server.connections==observed)
     r=owner.post(url,data={**fields,'csrf':'bad'});check('Open notice requires CSRF','session expired' in r.text.lower() and inbox_server.connections==observed)
-    age();inbox_server.mode='message';r=owner.post(url,data=fields)
-    check('Notice opens the exact message over actual synthetic TLS','SYNTHETIC PRIVATE BODY' in r.text and inbox_server.connections==observed+1 and 'uid=82' in r.url)
+    age();inbox_server.mode='message';pre_open=inbox_server.connections;r=owner.post(url,data=fields)
+    if 'SYNTHETIC PRIVATE BODY' not in r.text or inbox_server.connections!=pre_open+1 or 'uid=82' not in r.url:
+        (QA/'notice-open-diagnostics.json').write_text(json.dumps({'status':r.status_code,'url':r.url,'history':[h.status_code for h in r.history],'body_marker':'SYNTHETIC PRIVATE BODY' in r.text,'connections_before':pre_open,'connections_after':inbox_server.connections,'commands_tail':inbox_server.commands[-12:],'errors':inbox_server.errors},indent=2),encoding='utf-8')
+        (QA/'notice-open-response.html').write_text(r.text,encoding='utf-8')
+    check('Notice opens the exact message over actual synthetic TLS','SYNTHETIC PRIVATE BODY' in r.text and inbox_server.connections==pre_open+1 and 'uid=82' in r.url)
     check('Successful notice open records only local opened state',owner.get(endpoint).json()['count']==0 and db('SELECT server_seen FROM ci_mail_notice_items WHERE handle=?',[items[0]['handle']])[0]['server_seen']==0 and db('SELECT opened_at FROM ci_mail_notice_states WHERE handle=? AND actor_id=1',[items[0]['handle']])[0]['opened_at'] is not None)
     # A real account revision change makes the previously captured full tuple stale.
     db('UPDATE ci_mail_accounts SET revision=revision+1 WHERE id=?',[aid]);observed=inbox_server.connections
