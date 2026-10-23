@@ -10,6 +10,14 @@ Next candidates after PR261: cloud website intake and directory-listing controls
 
 Staging lanes `devin/preflight-commercial` and `devin/full-site-integration` remain in flight for the wider backlog and are not the delivery path for small increments. FSI browser-lane failure at `67d70e4a` was a test-side `NameError` (`ROOT` missing from `mail_message_cases.run_browser` env pull); fixed at `9ec4e2b1`.
 
+## Lane state — 2026-10-23 (late)
+
+- PR261 (`aeb713c6`) and merge-first docs (PR262 `bc5777f5`) are merged on main and verified. Cloud candidate `devin/cloud-websites-main` dispatch `39886854693` on `4fbce9db` was all-green; PR-triggered `39886951265` on docs head `e0511354` failed `Directory-Listing-Control-Recovery-Owner` — the recover form needs the packages-list observation inside the 900s `service_observations_fresh` window; `f1c53d61` re-arms hosting+flag reads before the interrupted request pins its binding source. Runs `39912832426`/`39912825915` in flight.
+- FSI lane: mail-submission send cooldown fixed at `b61bcd22` (`age_dispatches` before the refused-send fixture); runs `39912018481`/`39912016536` in flight.
+- Preflight lane `devin/preflight-commercial`: `830b2e99` (owner-GET conjunct diagnostic + full 14-era contract re-settle, verifier 1468/1468) then `9ee6a14d` (caller-frame instrumentation for the invoicing `actor_id` mismatch — `database.php:13` was only the `query()` wrapper). Runs `39906752652`/`39916738437` in flight.
+- Nameserver `4310ee17` (conditional registrar-freshness re-arm, local 473/473) run `39901898005`; PHP-controls `4f1f93ac` (inventory freshness re-arm + binding_probe diagnostics) run `39900556800`; docroots `6a45884f` (concurrent repost inside staff-mutex window for the WP cooldown check) run `39911349541` — all in flight.
+- No merges since PR262; PR226 integration still gated on exact-head green + review. Published 1.25.0 immutable; nothing live-deployed.
+
 ---
 
 ## 2026-10-19 — reset email template implementation
