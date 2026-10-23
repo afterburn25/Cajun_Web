@@ -4983,3 +4983,13 @@ Owner request: continue the roadmap. Completed payment-link companion PR253 at b
 - Root cause: the refused submission's `confirm_send` was refused by the **30s per-account dispatch cooldown** (`site/app/mail/submissions.php` — `d.started_epoch > now-30` → `ProbeFailure('limit')` → `not_submitted`). The copy POST then refused at the `accepted` gate ("Only a submission the server accepted..."), so no copy attempt/result row was ever written — explaining the empty `copy_rows` and absent folder message. The intervening ~13 requests after the `sent_sid` send completed inside 30s on this run.
 - Fix `b61bcd22`: `age_dispatches()` before the refused submission's send — the suite's own convention before sends at lines 164/183/277. Assertions unchanged; conjunct diagnostic retained.
 - Dispatch: run 39912018481 on `b61bcd22`; queued dispatch on `44d839f2` (39902215559) still records evidence.
+
+## 2026-10-23 — FSI run 39912016536 (`b61bcd22`): copy-gate second failure on same check; fix e7840260
+
+- Run 39912016536 (push-triggered on `b61bcd22`): build/recovery/apache green; native-and-browser red on the same `Server folder refusal records a bounded failure without copy claims`; acceptance red downstream.
+- Conjunct diagnostic (`qa/copy-refusal-diagnostics.json`, artifact 12486538512) discriminated a **different** failure shape than `44d839f2`'s run: `submission_status=[{"status":"accepted"}]` (the `b61bcd22` send-side fix held), `status_code=200`, `wait_gate=true`, `not_accepted=false`, `message=false`, `copy_rows=[]`, appended_len==mime_len (493).
+- Root cause: the refused copy POST arrived inside the **2-second per-account copy gate** (`site/app/mail/copies.php` — refused with 'Wait 2 seconds' before the folder mode was consulted). The successful copy at the earlier `copy_post()` (accepted MIME appended, connection recorded) completed <2s before the refused copy's POST — so no attempt/result row was ever written and the expected folder-refusal message never appeared.
+- Fix `e7840260`: `db('UPDATE ci_mail_copy_attempts SET started_epoch=0')` immediately before the refused copy POST — the suite's own aging convention already used for the next section. Assertions and diagnostics unchanged.
+- Cancelled `39912018481` (same `b61bcd22` head — full evidence already collected via `39912016536`).
+- Dispatched `39922239566` on `e7840260`; push-triggered `39922213870` in progress on the same head.
+- Note: two distinct real product gates (30s send dispatch cooldown, 2s copy gate) both gate the same named check — each required independent aging. Diagnostic coverage proved its value twice on this check.
