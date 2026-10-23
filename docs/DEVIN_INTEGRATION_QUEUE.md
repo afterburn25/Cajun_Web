@@ -76,3 +76,17 @@ Group A slice detail (25 merged slices A1–A25) remains recorded in the FSI cop
 | Audit action index (new) | `6807cb2e` (`devin/audit-render-index`) | 39858223574 | NEW systemic fix: provider-settings renders degrade to 15-30s late-suite because journal replays scan the unindexed `audit.action`. `action` becomes utf8mb4_bin + `INDEX audit_action(action)`; `studio_migrate` applies both additively to existing installs. Zero query/semantic changes. In flight. |
 
 Cancel/queued runs are not green; earlier superseded runs were cancelled to free the queue without losing head-specific evidence.
+
+## 2026-10-22 (cont.) — verified PR→lane ancestry map (git merge-base)
+
+| Devin lane | Open PRs it contains |
+|---|---|
+| `devin/preflight-commercial` | 227, 228, 229, 230, 231, 235, 244, 245, 246, 247, 248, 250, 252, 253 |
+| `devin/cloud-websites-main` | 226 |
+| `devin/full-site-integration` | 250, 253 (+ main-era content) |
+| `devin/fix-docroots-worker-retry` | 225, 249 |
+| `devin/fix-force-ssl-ops-whitelist` | 234, 236, 237, 242 |
+| `devin/fix-nameserver-fixture-getattr` | 230 |
+| `devin/fix-stackcp-ops-whitelist` | 233, 243, 255 |
+
+Open PRs not in any devin lane: 256 (vps-uncertainty-repair); devin-owned port PRs 257–260 carry their own branches. A green leaf-lane run validates its full stack, but each codex PR still needs its own review record before merge; the preflight lane green would validate the combined umbrella.
