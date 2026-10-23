@@ -112,6 +112,9 @@ jobs:
       - name: Diagnostic runner and registry contract
         id: contract
         run: python3 tests/diagnostic_acceptance_test.py
+      - name: Offline transfer, provenance and failure regressions
+        id: helpers
+        run: python3 tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json
       - name: Exact source, installer inventory and one package build
         id: build
         run: |
