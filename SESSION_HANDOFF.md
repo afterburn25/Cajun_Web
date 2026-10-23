@@ -1,18 +1,19 @@
 
 # Session handoff - Devin sole-owner continuation
 # Session handoff - Devin sole-owner continuation
-## 2026-10-23 — no-schema hosting expectation fixed; contract chain re-anchored; invoicing actor_id under instrumentation
+## 2026-10-23 — owner-GET conjunct diagnostic added; contract chain re-settled; php-controls + nameserver freshness fixes landed
 
 **State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate work continues on lanes; no live deployment authorized.
 
 **This cycle:**
-- Preflight `r126_ron_` apache check: expectation corrected to the neutral schema-less empty state ("Let’s find the right hosting for you.") — `HostingCatalogRead::publicPage` returns `unavailable=false` when the catalog schema is absent. All other guarantees (200, no fingerprint leak, unchanged business state, no storage prep) preserved — `10931f5e`.
-- Acceptance-contract cascade fully settled: the pin change invalidated all 13 era `predecessor_contract_sha256` + `merged_stage_contract_sha256` + nsreq mirror constant. Solved via spy-capture of era priors (sha256 auto-equal for contract-shaped JSON only; source-byte compares real), deny-tamper records excluded (real prior = first record at each check site; selector prior replicated byte-exactly), oldest→newest settle. `registered_nameserver_requests_acceptance.py` CONTRACT_SHA256 = `8dd7b068...`, file re-pinned `908ba2dc`. Verifier 1468/1468 clean — `10931f5e`, docs `3a83a3b1`.
-- FSI lane: run 39879709719 exposed a real product defect — `site/admin/views/mail_notices.php` `$route` omitted `folder`, so `posted('folder')` returned null and every notice open was refused at the route binding. Fixed `19eea50c`; inventory refreshed.
-- Docroots: run 39862486466 red at `Recovery HTTP fixture retains one finished attempt` conjunct check — six-part assertion, transient-looking (structurally identical force-SSL sibling passed same run); instrumented `d310f8b7` to dump each conjunct.
-- Invoicing: `39875802785` showed a new failure after the payments-migrate fix — `Unknown column 'actor_id' in 'INSERT INTO'` post-DR-orphan refusals. `Unexpected:` record now reports `basename:line` — `cf243319`.
+- Preflight `r126_ron_` apache lane: anonymous-GET expectation fix held (`10931f5e`); run `39892127894` then failed the *owner* GET variant whose assertion short-circuits (status/marker/state/`exact_business` raise). Added `qa/apache-release126-<prefix>-owner-get.json` diagnostic recording each conjunct separately — `830b2e99`.
+- Acceptance-contract cascade re-settled *twice*: the pin change invalidated all 14 era predecessor hashes; spy-capture selects real priors by call-site + embedded-era signature (NOT first record — tamper records share signatures), oldest→newest byte-patch settle; `registered_nameserver_requests_acceptance.py` `CONTRACT_SHA256` re-mirrored (`e1a5c432…`) + file re-pinned (`e610f68d…`) + five embedding priors re-settled **incrementally** (deferred updates embed stale values — the `90b6ac37`/`ecf1b35c` mismatch). Verifier 1468/1468 clean — `830b2e99`.
+- PHP-controls `39883955725`: classified as 900s inventory-freshness TTL expiry (`service_observations_fresh` on `PACKAGES_LIST`), not a product defect — added mid-flight `fixture("inventory")` re-arms + `binding_probe` diagnostic — `4f1f93ac`, run `39900556800`.
+- Nameserver `39882705846`: same TTL class — registrar domains-list observation expired mid-suite; conditional `refresh_domains()` re-arms via bootstrap-owner session (20-refresh/actor/hour quota) — `4310ee17`, run `39901898005`.
+- FSI `39894561533`: new red at "Server folder refusal…" — suspected 2s per-account copy cooldown (`copies.php:75`); conjunct diagnostics added — `44d839f2`, runs `39902215470`/`39902215559`.
+- Docroots `39892375277` still running on `d310f8b7` instrumentation.
 
-**Runs in flight:** preflight `39892127894` (apache-fix head) + `39895419341` (adds invoicing instrumentation), FSI `39894561533`/`39894562590`, nameserver `39882705846`, cloud `39886854693`, php-controls `39883955725`, docroots `39892375277`.
+**Runs in flight:** preflight `39906752652` (new head `830b2e99`), `39892127894` + `39895419341` (superseded heads, still evidence), FSI `39902215470`/`39902215559`, nameserver `39901898005`, cloud `39886854693`, php-controls `39900556800`, docroots `39892375277`.
 
 **Next:** classify completions; on all-green lanes, merge leaf tips into preflight per the queue order, combined acceptance, then preflight+FSI → main with exact-main acceptance.
 
