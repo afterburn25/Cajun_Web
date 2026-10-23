@@ -4975,3 +4975,11 @@ Owner request: continue the roadmap. Completed payment-link companion PR253 at b
 - Root cause (product defect, not flake): `site/admin/views/mail_notices.php` `$route` omitted `folder`, while `mail_message_admin_action` binds every route key including the default `INBOX` folder — `posted('folder')` returned null so every notice open was refused. The inbox open form and the notice-dismiss form both already carry `folder`.
 - Fix: `19eea50c` — add `'folder'=>$item['folder']` to the notice-open route; installer inventory refreshed; `php -l` clean; not contract-pinned.
 - Dispatch: `39894561533` (workflow) + `39894562590` (push).
+
+## 2026-10-23 — FSI run 39902215470 classified; dispatch cooldown aged before refused-copy send at b61bcd22
+
+- Request: continue FSI lane; instrumented run 39902215470 (`44d839f2`) completed.
+- Run: native-and-browser red at `Server folder refusal records a bounded failure without copy claims` — the `44d839f2` conjunct diagnostic (`qa/copy-refusal-diagnostics.json`) discriminated the failure: `not_accepted=true`, `wait_gate=false`, `message=false`, `copy_rows=[]`, `submission_status=[{"status":"not_submitted"}]`, appended_len==mime_len (493). The `APPEND Sent` in commands_tail was the earlier successful copy (identical MIME bytes), not this request.
+- Root cause: the refused submission's `confirm_send` was refused by the **30s per-account dispatch cooldown** (`site/app/mail/submissions.php` — `d.started_epoch > now-30` → `ProbeFailure('limit')` → `not_submitted`). The copy POST then refused at the `accepted` gate ("Only a submission the server accepted..."), so no copy attempt/result row was ever written — explaining the empty `copy_rows` and absent folder message. The intervening ~13 requests after the `sent_sid` send completed inside 30s on this run.
+- Fix `b61bcd22`: `age_dispatches()` before the refused submission's send — the suite's own convention before sends at lines 164/183/277. Assertions unchanged; conjunct diagnostic retained.
+- Dispatch: run 39912018481 on `b61bcd22`; queued dispatch on `44d839f2` (39902215559) still records evidence.
