@@ -4959,3 +4959,11 @@ Owner request: continue the roadmap. Completed payment-link companion PR253 at b
 - Tests: `python -m py_compile` clean; file not contract-pinned; local artifact verifier invocation unchanged (report-based, run in CI).
 - Known failures remaining: none new; hosted run `39861062231` dispatched on the fixed head `4768f3d9` (push-triggered `39861061284` also queued).
 - Next: classify the redispatched run; on green, the lane proceeds to integration review.
+
+## 2026-10-23 — run 39861062231 classified; notice-open check instrumented
+
+- Request: continue monitoring; classify the new FSI failure on `4768f3d9`.
+- Run 39861062231: build/recovery/apache green; native-and-browser red on **one** check — `Notice opens the exact message over actual synthetic TLS`. All flag checks passed including the previously-failing `finished_at` tie path — the `4768f3d9` epoch-ordering fix held.
+- Artifact inspection: `message-fixture-observation.json` belongs to the message suite, not this check; no per-check diagnostics existed for the notice-open POST, whose three conjuncts are `SYNTHETIC PRIVATE BODY` in body, exactly one new fixture connection, `uid=82` in the final URL. Total fixture invokes this run: 29, last four in a ~3.8s burst.
+- Change: `tests/mail_notices_cases.py` now writes `notice-open-diagnostics.json` + `notice-open-response.html` on failure (status, URL, redirect history, body marker, connections before/after, commands tail, fixture errors). File is not contract-pinned.
+- Committed `d616feb2`, pushed; run 39879709719 dispatched. Next: classify its result; if the same check fails again the artifact now carries the data needed to fix it.
