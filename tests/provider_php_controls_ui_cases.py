@@ -350,7 +350,7 @@ def run_browser(env, browser):
         except Exception as probe_error:
             gate_diag["gates_error"] = type(probe_error).__name__ + ": " + str(probe_error)[:200]
         diag_state = state()
-        (qa / "php-controls-owner-change-diagnostics.json").write_text(_json.dumps({
+        (qa.parent / "php-controls-owner-change-diagnostics.json").write_text(_json.dumps({
             "status": response.status_code, "calls_delta": provider.calls - calls,
             "posts_delta": len(provider.posts) - posts,
             "last_post": provider.posts[-1] if provider.posts else None,
@@ -371,7 +371,7 @@ def run_browser(env, browser):
         calls = provider.calls
         cool(); response, owner_verify = post_form(owner, owner_url, f'[data-php-request="{owner_request}"] form[data-php-verify]', {"current_password": OWNER_PASSWORD})
         row = request_row(owner_request)
-        (qa / "php-controls-owner-verify-diagnostics.json").write_text(_json.dumps({
+        (qa.parent / "php-controls-owner-verify-diagnostics.json").write_text(_json.dumps({
             "status": response.status_code, "calls_delta": provider.calls - calls,
             "last_get": provider.get_paths[-1] if provider.get_paths else None,
             "row": row, "value_differs": "Value differs" in response.text,
