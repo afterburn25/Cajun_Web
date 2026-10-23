@@ -121,6 +121,8 @@ def prepare(repo, installed, base, php, owner, client, other, client_id, job_id,
                           'title': BeautifulSoup(own.text, 'html.parser').find('title').get_text() if BeautifulSoup(own.text, 'html.parser').find('title') else None},
             'recurring': {'status': recurring.status_code, 'markers': {m: (m in recurring.text) for m in
                           [anchor, 'Retained release recurring care', 'Billing history', 'unavailable', 'Sign in']},
+                          'errors': [n.get_text(' ', strip=True) for n in BeautifulSoup(recurring.text, 'html.parser').select('.notice.error')][:4],
+                          'cards': len(BeautifulSoup(recurring.text, 'html.parser').select('.workspace-card')),
                           'title': BeautifulSoup(recurring.text, 'html.parser').find('title').get_text() if BeautifulSoup(recurring.text, 'html.parser').find('title') else None},
         }
         (Path(repo) / 'qa' / ('apache-r126-consent-' + hashlib.sha256(str(installed).encode()).hexdigest()[:8] + '-' + str(verify_calls[0]) + '.json')).write_text(json.dumps(diag, indent=2) + '\n', encoding='utf-8')
