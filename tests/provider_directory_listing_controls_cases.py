@@ -169,12 +169,23 @@ def run_browser(env, browser):
     interrupted = db('SELECT * FROM ci_provider_directory_changes WHERE link_id=? ORDER BY grant_seq DESC LIMIT 1', [link['id']])[0]
     interrupted_grant = db('SELECT * FROM ci_provider_operation_grants WHERE id=?', [interrupted['id']])[0]
     interrupted_ledger = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['directoryindexing:' + interrupted['id']])[0]
+    dispatch_ends = db('SELECT id FROM ci_provider_directory_dispatch_ends WHERE id=?', [interrupted['id']])
+    recovery_state = {'distinct_row': interrupted['id'] != request['id'],
+                      'calls_delta': provider.calls - before_write_calls,
+                      'last_post': provider.posts[-1] if provider.posts else None,
+                      'ledger_status': interrupted_ledger['status'],
+                      'ledger_attempts': interrupted_ledger['attempts'],
+                      'resolved_epoch': interrupted_ledger['resolved_epoch'],
+                      'dispatch_ends': dispatch_ends,
+                      'response_status': response.status_code,
+                      'response_excerpt': response.text[:600]}
+    (qa / 'directory-listing-recovery-diagnostics.json').write_text(json.dumps(recovery_state, indent=2, default=str))
     check('Recovery HTTP fixture retains one finished attempt and genuinely absent terminal after rollback',
-          interrupted['id'] != request['id'] and provider.calls == before_write_calls + 1
-          and provider.posts[-1] == {'path': '/package/2301/web/directoryIndexing', 'body': {'value': False}}
-          and interrupted_ledger['status'] == 'uncertain' and interrupted_ledger['attempts'] == 1
-          and interrupted_ledger['resolved_epoch'] is not None
-          and not db('SELECT id FROM ci_provider_directory_dispatch_ends WHERE id=?', [interrupted['id']]))
+          recovery_state['distinct_row'] and recovery_state['calls_delta'] == 1
+          and recovery_state['last_post'] == {'path': '/package/2301/web/directoryIndexing', 'body': {'value': False}}
+          and recovery_state['ledger_status'] == 'uncertain' and recovery_state['ledger_attempts'] == 1
+          and recovery_state['resolved_epoch'] is not None
+          and not dispatch_ends)
     recovery_action = 'provider_directory_indexing_control_recover'
     calls = provider.calls
     terminals = db('SELECT * FROM ci_provider_directory_dispatch_ends ORDER BY id')
