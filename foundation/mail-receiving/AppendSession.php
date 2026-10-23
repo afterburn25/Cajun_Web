@@ -123,7 +123,7 @@ final class AppendSession
             if($go instanceof TaggedResponse && ($go->tokens()[0]->value??null)===$tag && in_array(self::word($go->tokens()[1]??null),['NO','BAD'],true)) throw new ReceivingFailure('folder');
             if(!$go instanceof ContinuationResponse || count($go->tokens())!==1) throw new ReceivingFailure('protocol');
             $this->authorize();
-            $this->stream->fwriteLiteral($message);
+            $this->stream->fwriteLiteral($message, $this->maxBytes);
             $this->stream->fwrite("\r\n");
             $this->replies($tag,'folder'); $this->authorize();
             if((hrtime(true)-$started)/1e9>20) throw new ReceivingFailure('timeout');
