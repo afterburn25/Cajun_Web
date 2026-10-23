@@ -1,0 +1,331 @@
+name: Diagnostic acceptance (multi-failure collection)
+# Diagnostic mode discovers independent failures; it is NOT release
+# acceptance. The strict Application acceptance workflow remains the
+# authoritative gate. This workflow is dispatch-only so it never duplicates
+# the acceptance path automatically.
+on:
+  workflow_dispatch:
+    inputs:
+      groups:
+        description: 'Diagnostic groups, comma-separated, or "all"'
+        type: string
+        default: 'all'
+      php_version:
+        description: 'Diagnostic PHP runtime; 8.3 retains the distro baseline'
+        type: choice
+        options: ['8.3', '8.2', '8.4']
+        default: '8.3'
+      database:
+        description: 'Diagnostic database server'
+        type: choice
+        options: ['mariadb-10.11', 'mysql-8.4']
+        default: 'mariadb-10.11'
+permissions:
+  contents: read
+concurrency:
+  group: diagnostic-${{ github.ref }}-${{ github.sha }}-${{ inputs.groups || 'all' }}-${{ inputs.php_version || '8.3' }}-${{ inputs.database || 'mariadb-10.11' }}
+  cancel-in-progress: false
+env:
+  CWP_PHP_VERSION: ${{ inputs.php_version || '8.3' }}
+  CWP_DATABASE: ${{ inputs.database || 'mariadb-10.11' }}
+  CWP_SOURCE_SHA: ${{ github.sha }}
+jobs:
+  build:
+    # Identical to the Application acceptance build job: the diagnostic groups
+    # consume the same immutable inputs (dist package, legacy fixtures,
+    # published baseline) so results are comparable.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      inputs_id: ${{ steps.input_upload.outputs.artifact-id }}
+      input_sha256: ${{ steps.inputs.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        run: |
+          mkdir -p qa
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+              if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+                  raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
+          fi
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          python3 tests/acceptance_environment.py --lane build
+      - name: Diagnostic runner and registry contract
+        id: contract
+        run: python3 tests/diagnostic_acceptance_test.py
+      - name: Exact source, installer inventory and one package build
+        id: build
+        run: |
+          set -o pipefail
+          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+          python3 tests/build_guards.py
+      - name: Prepare only pristine public historical fixtures
+        id: fixtures
+        run: |
+          set -o pipefail
+          python3 tests/prepare_legacy.py | tee qa/legacy-preparation.txt
+      - name: Seal exact build and public inputs
+        id: inputs
+        run: python3 tools/acceptance_artifacts.py pack-inputs
+      - name: Upload immutable build inputs
+        id: input_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-inputs-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/inputs/inputs.zip
+            .acceptance/inputs/inputs.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+      - name: Verify shipping source after this job, including failure
+        if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Record diagnostic build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: qa/
+          retention-days: 14
+  plan:
+    runs-on: ubuntu-24.04
+    needs: build
+    outputs:
+      groups: ${{ steps.plan.outputs.groups }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Resolve requested groups against the registry
+        id: plan
+        run: |
+          python3 - <<'CWP_PLAN'
+          import json, sys
+          sys.path.insert(0, 'tests')
+          from diagnostic_registry import GROUPS
+          raw = '${{ inputs.groups || 'all' }}'
+          requested = {g.strip() for g in raw.split(',') if g.strip()}
+          unknown = requested - set(GROUPS) - {'all'}
+          if unknown:
+              raise SystemExit('Unknown diagnostic group(s): ' + ', '.join(sorted(unknown)))
+          selected = sorted(GROUPS) if 'all' in requested or not requested else sorted(requested)
+          with open(__import__('os').environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write('groups=' + json.dumps(selected) + '\n')
+          print('Diagnostic groups: ' + ', '.join(selected))
+          CWP_PLAN
+  diagnose:
+    # Each group runs in its own job with its own isolated database service,
+    # its own extracted test-runtime tree and its own fixture servers. Groups
+    # never share a mutable database or browser session.
+    needs: [build, plan]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        group: ${{ fromJSON(needs.plan.outputs.groups) }}
+    services:
+      mariadb:
+        image: ${{ inputs.database == 'mysql-8.4' && 'mysql:8.4' || 'mariadb:10.11' }}
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: isolated-ci-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+        ports: ['3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.mariadb.ports[3306] }}
+        run: |
+          mkdir -p qa
+          printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+              if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+                  raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
+          fi
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
+            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+          fi
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+          python3 tests/acceptance_environment.py --lane native
+      - name: Download this attempt's immutable build input
+        id: download
+        uses: actions/download-artifact@v4
+        with:
+          name: diagnostic-inputs-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: .acceptance/download
+      - name: Verify and materialize exact same-attempt inputs
+        id: input
+        run: python3 tools/acceptance_artifacts.py receive --lane native-browser
+      - name: Seed the isolated acceptance fixture database
+        id: native
+        run: $PHP_BINARY tests/native.php
+      - name: Collect diagnostic results for ${{ matrix.group }}
+        id: diagnose
+        run: .ci-venv/bin/python tests/diagnostic_acceptance.py --group "${{ matrix.group }}" --tag "${{ matrix.group }}"
+      - name: Upload group diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diag-group-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: warn
+  combine:
+    # Always runs: merges every group's machine-readable results into one
+    # combined JSON + Markdown report and fails the workflow when any unit
+    # failed or was dependency-blocked.
+    needs: [plan, diagnose]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download all group diagnostic results
+        id: collect
+        uses: actions/download-artifact@v4
+        with:
+          pattern: diag-group-*-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          merge-multiple: true
+          path: .diagnostic-results
+      - name: Build combined report
+        id: report
+        env:
+          CWP_EXPECTED_GROUPS: ${{ join(fromJSON(needs.plan.outputs.groups), ',') }}
+        run: python3 tests/diagnostic_report.py "--expect=$CWP_EXPECTED_GROUPS" .diagnostic-results qa/diagnostic-combined
+      - name: Upload combined diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-combined-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/diagnostic-combined.json
+            qa/diagnostic-combined.md
+          retention-days: 30
+          if-no-files-found: warn

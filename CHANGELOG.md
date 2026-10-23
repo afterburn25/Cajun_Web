@@ -1,3 +1,9 @@
+## Unreleased — diagnostic multi-failure acceptance mode
+
+- Added `tests/diagnostic_acceptance.py`: a standalone runner that executes the strict suite's bootstrap stages and all 54 feature modules with a per-unit exception boundary, recording passed/failed/blocked/skipped/absent and continuing independent modules after a failure.
+- Added `tests/diagnostic_registry.py` (grouped module registry mirroring strict order), `tests/diagnostic_report.py` (combined JSON + Markdown report that fails on any failure or missing group) and dispatch-only `.github/workflows/diagnostic-tests.yml` (one isolated database job per group).
+- The strict `tests/browser_acceptance.py` remains byte-identical and authoritative for release acceptance; diagnostic results are triage evidence only.
+
 ## Unreleased — 20i password-reset email template
 
 - Added owner-only reading, replacement review, password-confirmed save and separate readback for the documented StackCP reset email template.
