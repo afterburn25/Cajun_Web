@@ -229,3 +229,7 @@ Two distinct defects diagnosed:
 Run `40006128366` (`ad5f6e38`): Force-SSL recovery now executes — the only failure was the terminal audit check `Control workflow uses nine own reads...`, stale after the fix added one `package.force-ssl` read. `89647b28` updates it to ten reads (expected ops list: the re-read lands right after the recovery `packages.list`). `calls`/`posts` baselines re-snapshot after the insert, so no other assertion needed a change. Not contract-pinned.
 
 Run `39996264484` (`514ba7dd`): `native-and-browser` exceeded the 4h0m platform job limit — canceled by GitHub, not a code failure. Fresh dispatch `40029428035` (a first `gh workflow run` with the filename form also fired silently; duplicate `40029435131` cancelled to conserve runners).
+
+## 2026-10-23 (cont.18) — Cloud lane green on exact head
+
+Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** — Force-SSL control lane passes full acceptance including the recovery flow and the corrected ten-read audit. Cloud lane is the first this cycle with exact-head green evidence; still requires labeled review and merge-first sequencing before it counts as deliverable.
