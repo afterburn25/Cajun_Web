@@ -331,6 +331,10 @@ def run_browser(env, browser):
             if label in ("password", "confirmation"):
                 retained = fields(form_for(response, "form[data-php-confirm]"))
                 check("Safe retry preserves original " + label + " review", all(retained[k] == confirmation[k] for k in ("request_id", "current_read_id", "options_read_id", "desired", "review_sha256")))
+        # The captures and six-refusal loop above can cross the 900-second
+        # hosting-inventory freshness window; re-arm the assignment observation
+        # before re-reading so the review below binds to a fresh source.
+        fixture("inventory", {})
         read(owner, owner_url, "current", True)
         options(owner, "owner")
         confirmation = review(owner, owner_url, "php84")
