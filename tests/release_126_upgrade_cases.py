@@ -308,6 +308,10 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     ok('Interrupted update denies application under actual Apache', owner.get(admin, timeout=120).status_code == 403)
     update('apply')
     ok('First update retains every original table row column and private file', retained(initial, snapshot()))
+    # The released1.25 baseline carries studio_schema_version 2; the owner-run
+    # workspace migration to 4 must precede owner-gated hosting views.
+    response = submit(owner, admin + '?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
+    ok('Workspace schema update precedes upgraded hosting checks', response.status_code == 200 and 'Database update completed' in response.text)
     from release_126_hosting_records import before_setup, continue_after_retention
     before_setup(repo, installed, base, prefix, php, candidate_version, owner, snapshot, hosting_evidence, qa)
     before_get = snapshot(); response = owner.get(settings, timeout=120)
