@@ -4993,3 +4993,10 @@ Owner request: continue the roadmap. Completed payment-link companion PR253 at b
 - Cancelled `39912018481` (same `b61bcd22` head — full evidence already collected via `39912016536`).
 - Dispatched `39922239566` on `e7840260`; push-triggered `39922213870` in progress on the same head.
 - Note: two distinct real product gates (30s send dispatch cooldown, 2s copy gate) both gate the same named check — each required independent aging. Diagnostic coverage proved its value twice on this check.
+
+## 2026-10-23 — run 39922213870 classified; attachment MIME fixture fix
+
+- `39922213870` (`e7840260`): build/recovery/apache green; `native-and-browser` failed deep in `mail_submissions_cases` at `Multipart upload attaches exact bytes to the saved draft`. Both cooldown fixes held — the run passed the entire send/dispatch/copy sequence and reached attachment checks for the first time.
+- Root cause: `mail_drafts_form_upload` stores the **server-sniffed** MIME (`finfo(FILEINFO_MIME_TYPE)`), not the client-declared type. The synthetic `attach_bytes` payload named `report.pdf` detected as `application/octet-stream`, so the stored-`mime='application/pdf'` assertion could never hold — deterministic defect in the test fixture, not timing.
+- Fix `de7246ec`: `attach_bytes` is now a real padded PDF (`%PDF-1.4` header, same ~102 KiB size path, `%%EOF` trailer). Local `php`+fileinfo verification: detects `application/pdf`, 102445 bytes < 256 KiB `DraftAttachment::MAX_BYTES`. Exact-byte download/send assertions unchanged.
+- Push-triggered run `39934174695` in progress on `de7246ec`; redundant manual dispatch `39934182410` cancelled (same SHA, push had already queued).
