@@ -130,6 +130,11 @@ def run_browser(env, browser):
         check(title + ' has no script errors', not errors); context.close()
     capture(owner, 'Force-SSL-Control-Uncertain-Owner', url, '#force-ssl-changes')
     capture(client, 'Force-SSL-Control-Historical-Client', target, '[data-client-force-ssl]')
+    # The verify form and each follow-up verify require the latest packages.list
+    # observation inside the 900-second freshness window. The replay/refusal and
+    # browser capture sections above can cross it, so re-read hosting once here;
+    # the recovery section re-reads again at its own boundary below.
+    cool(); response = post('provider_inventory_refresh'); evidence('Control hosting re-read before follow-up verifies', response)
     verify = 'provider_force_ssl_control_verify'
     cool(); response = post(verify, request_id=request['id']); evidence('Fresh reported false differs from requested true', response)
     check('Different reported flag does not permit resend', db('SELECT disposition FROM ci_provider_force_ssl_change_checks WHERE request_id=?', [request['id']]) == [{'disposition': 'different'}] and 'Change requested — effect is uncertain' in response.text and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}])
@@ -226,7 +231,7 @@ def run_browser(env, browser):
         db('INSERT INTO ci_settings (name,value) VALUES (?,?)', ['provider_force_ssl_control_request_count', counter])
     check('Exact control history restoration recovers saved owner evidence', 'Desired flag observed after the request' in owner.get(url).text)
     rows = db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [force_ssl_owner['id']])
-    check('Control workflow uses eight own reads and two synthetic writes with local-only recovery', [r['operation'] for r in rows] == ['packages.list', 'packages.list'] + ['package.force-ssl'] * 4 + ['packages.list', 'package.force-ssl'] and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}, {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}] and not provider.errors)
+    check('Control workflow uses nine own reads and two synthetic writes with local-only recovery', [r['operation'] for r in rows] == ['packages.list', 'packages.list', 'package.force-ssl', 'packages.list'] + ['package.force-ssl'] * 3 + ['packages.list', 'package.force-ssl'] and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}, {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}] and not provider.errors)
     retained = db('SELECT * FROM ci_provider_refreshes WHERE seq<=? ORDER BY seq', [max((r['seq'] for r in inherited), default=0)])
     retained_audits = db('SELECT * FROM ci_audit WHERE id<=? ORDER BY id', [max((r['id'] for r in inherited_audits), default=0)])
     check('Controls preserve every inherited intent and audit byte', retained == inherited and retained_audits == inherited_audits)
