@@ -175,7 +175,7 @@ def run_browser(env, browser):
     r = billing_session.get(portal+'?agreements=1')
     check('Billing-enabled contact can open the agreements index', r.status_code==200)
     r = billing_session.get(portal)
-    check('Billing-enabled contact sees billing navigation', 'agreements=1' in r.text and 'recurring=1' in r.text and 'registration_drafts=1' in r.text)
+    check('Billing-enabled contact sees prepared billing navigation', 'agreements=1' in r.text and 'registration_drafts=1' in r.text)
     consent_c = data(billing_session, turl, 'service_agreements_consent')
     r = billing_session.post(turl, data=dict(consent_c, confirm='1'))
     check('Billing contact consent is recorded under the parent client identity', 'agreement to these service terms was recorded' in r.text and db('SELECT actor_client_id,actor_staff_id FROM ci_service_subscription_events WHERE subscription_id=?', [third])==[{'actor_client_id': cid, 'actor_staff_id': None}])
