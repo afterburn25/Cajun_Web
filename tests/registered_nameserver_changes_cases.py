@@ -103,6 +103,18 @@ def run_browser(env, browser):
         if remaining:
             time.sleep(remaining)
 
+    def registrar_fresh():
+        latest = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=? AND BINARY operation=?',
+                    [profile['id'], 'domains.list'])[0]['epoch']
+        return latest is not None and int(latest) >= int(time.time()) - 600
+
+    def refresh_domains():
+        """Real registrar refresh when the inherited observation approaches its 900-second TTL."""
+        if registrar_fresh():
+            return
+        wait_read()
+        submit(registrar, settings, 'provider_inventory_registrar_refresh', {'current_password': OWNER})
+
     def navigate():
         try:
             response = page.goto(settings, wait_until='load', timeout=90000)
@@ -165,7 +177,7 @@ def run_browser(env, browser):
         return SimpleNamespace(text=page.content(), url=page.url, status_code=response.status)
 
     def read_form(selector, label):
-        wait_read(); before = len(provider.get_paths)
+        refresh_domains(); wait_read(); before = len(provider.get_paths)
         navigate()
         response = click_form(fill_form(selector, {'current_password': PASSWORD}), label)
         if provider.get_paths[before:] != ['/domain/14701/nameservers']:
@@ -216,6 +228,7 @@ def run_browser(env, browser):
         check('Nameserver change callback starts with no new change history',
               not any(exists(name) for name in ('provider_nameserver_change_requests', 'provider_nameserver_change_terminals', 'provider_nameserver_change_checks')))
         owner = session(); submit(owner, admin + '?view=login', 'login', {'email': EMAIL, 'password': PASSWORD})
+        registrar = session(); submit(registrar, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
         users = db('SELECT id FROM ci_users WHERE email=?', [EMAIL])
         links = db('SELECT * FROM ci_provider_registrar_links WHERE domain_id=?', [14701])
         check('Nameserver change continues the actual owner and original domain assignment', len(users) == len(links) == 1 and links[0]['domain'] == 'nameservers-client.invalid')
@@ -284,6 +297,7 @@ def run_browser(env, browser):
         submit(owner, portal + '?support=' + support_id, 'support_end')
         chosen_form(owner, admin + '?view=support', 'support_policy', 'client_id', link['client_id'], {'allowed': None, 'owner_password': PASSWORD})
 
+        refresh_domains()
         navigate(); first = fields(SimpleNamespace(text=page.content()), selector + ' form[data-nameserver-change-form]')
         first_id = first['request_id']
         if re.fullmatch('[a-f0-9]{32}', first_id) is None:
@@ -320,6 +334,7 @@ def run_browser(env, browser):
         check('Nameserver fence negative uses an unused request identifier', not db('SELECT id FROM ci_provider_nameserver_change_requests WHERE id=?', [candidate]))
         owner.post(settings, data={**submitted, 'request_id': candidate}, timeout=30)
         no_effect('Another approval remains fenced while original terminal is interrupted', before, calls, posts)
+        refresh_domains()
         recovery = fields(current(), '#nameserver-request-' + first_id + ' form[data-nameserver-change-recover]')
         for changed, label in (({'csrf': 'bad'}, 'CSRF'), ({'current_password': 'wrong'}, 'password'), ({'reviewed': ''}, 'confirmation'), ({'ledger_sha256': '0' * 64}, 'ledger digest')):
             owner.post(settings, data={**recovery, 'current_password': PASSWORD, 'reviewed': '1', **changed}, timeout=30)
@@ -333,6 +348,7 @@ def run_browser(env, browser):
         before, calls, posts = state(), provider.calls, list(provider.posts)
         owner.post(settings, data=submitted, timeout=30)
         no_effect('Exact recovered approval replay retains one immutable send', before, calls, posts)
+        refresh_domains()
         check_fields = fields(current(), '#nameserver-request-' + first_id + ' form[data-nameserver-change-verify]')
         for changed, label in (({'csrf': 'bad'}, 'CSRF'), ({'current_password': 'wrong'}, 'password')):
             owner.post(settings, data={**check_fields, 'current_password': PASSWORD, **changed}, timeout=30)
@@ -361,6 +377,7 @@ def run_browser(env, browser):
 
         # A second independent approval is necessary: changed assignments cannot
         # be artificially restored to resolve the first request's old context.
+        refresh_domains()
         navigate(); second = fields(SimpleNamespace(text=page.content()), selector + ' form[data-nameserver-change-form]')
         second_id = second['request_id']
         click_form(fill_form(selector + ' form[data-nameserver-change-form]', {'desired_nameservers': '\n'.join(FINAL), 'reviewed': '1', 'current_password': PASSWORD}), 'Request nameserver change')
@@ -380,6 +397,7 @@ def run_browser(env, browser):
               and 'The assignment or provider connection has changed.' in orphan.get_text() and not orphan.select('form')
               and all(db('SELECT * FROM ci_' + table + ' ORDER BY id') == rows for table, rows in saved_rows.items()) and provider.calls == calls and provider.posts == posts)
         other = db('SELECT id FROM ci_studio_clients WHERE email=?', ['registrar-client2@example.invalid'])[0]['id']
+        refresh_domains()
         chosen_form(owner, settings, 'provider_inventory_registrar_link', 'domain_id', 14701, {'client_id': other, 'current_password': PASSWORD})
         reassigned = db('SELECT * FROM ci_provider_registrar_links WHERE profile_id=? AND domain_id=?', [profile['id'], 14701])
         check('Real reassignment creates a distinct client context without clearing history', len(reassigned) == 1 and reassigned[0]['id'] != link['id'] and reassigned[0]['client_id'] == other
