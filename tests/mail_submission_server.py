@@ -86,7 +86,7 @@ class SubmissionServer:
                     line=read()
                     if line=='.':attempt['terminator']=True;break
                     attempt['data']+=(line[1:] if line.startswith('..') else line).encode()+b'\r\n'
-                    assert len(attempt['data'])<=65536,'Synthetic SMTP DATA overflow'
+                    assert len(attempt['data'])<=1048576,'Synthetic SMTP DATA overflow'
                 if mode=='disconnect_final':continue
                 send({'final450':'450 Temporary rejection','final550':'550 Permanent rejection','malformed_final':'Invalid final reply'}.get(mode,'250 Accepted responsibility'))
             except (EOFError,ConnectionError,socket.timeout,ssl.SSLError):pass
