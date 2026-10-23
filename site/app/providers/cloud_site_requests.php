@@ -76,16 +76,27 @@ function provider_cloud_site_requests_original_client(array $r):void {
     $request=$r['request'];$client=one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=? AND active=1',[$request['client_id']]);
     if(!$client||!hash_equals($request['actor']['auth_sha256'],hash('sha256',$client['auth_version'])))throw new RuntimeException('The original client account changed. Decline this request and ask the client to submit a new one.');
 }
-/** Visibility and replay use authenticated current assignment, without requiring a new observation. */
+/** Local intake uses the exact original assignment anchor, never a claim of current provider availability. */
+function provider_cloud_site_requests_intake_binding(string $linkId):array {
+    provider_cloud_assignment_guard();provider_cloud_site_requests_id($linkId);
+    if(!provider_cloud_assignment_ready())throw new RuntimeException('Cloud assignment history needs review.');
+    $link=one('SELECT * FROM '.table('provider_cloud_links').' WHERE id=?',[$linkId]);
+    if(!$link)throw new RuntimeException('This cloud server assignment changed.');
+    $assignment=provider_cloud_assignment_assignment($link);$w=$assignment['witness'];$d=$w['document'];
+    if($d['legacy'])throw new RuntimeException('Ask the studio to review this saved cloud server assignment.');
+    if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$link['client_id']]))throw new RuntimeException('The assigned client account is inactive.');
+    $profile=provider_settings_load($link['profile_id']);
+    if((int)$profile['enabled']!==1||$profile['credentials']===''||$profile['id']!==$link['profile_id']||(int)$profile['revision']!==(int)$link['profile_revision']||$d['extra']['credentials']!==provider_cloud_assignment_profile_context($profile)||!hash_equals($d['extra']['owner_auth'],provider_cloud_assignment_owner_auth($d['actor_id'])))throw new RuntimeException('This request belongs to an earlier cloud account approval.');
+    $anchor=$d['extra']['anchor'];provider_cloud_assignment_anchor($anchor);
+    if($anchor['profile_id']!==$link['profile_id']||$anchor['profile_revision']!==(int)$link['profile_revision']||$anchor['server_id']!==(int)$link['server_id']||$anchor['source_id']!==$link['refresh_id']||!hash_equals($link['key_fingerprint'],$anchor['key_fingerprint'])||!hash_equals(hash('sha256',$profile['credentials']),$anchor['credential_sha256']))throw new RuntimeException('This cloud server assignment changed.');
+    return provider_cloud_site_requests_binding(['profile_id'=>$link['profile_id'],'profile_revision'=>(int)$link['profile_revision'],'credential_sha256'=>$anchor['credential_sha256'],'key_fingerprint'=>$link['key_fingerprint'],'server_id'=>(int)$link['server_id'],'client_id'=>(int)$link['client_id'],'link_id'=>$link['id'],'link_revision'=>(int)$link['revision'],'link_sha256'=>hash('sha256',provider_cloud_assignment_json(provider_cloud_assignment_link_fields($link))),'event_id'=>(int)$assignment['event']['id'],'event_proof'=>$w['row']['proof'],'source_id'=>$anchor['source_id'],'source_seq'=>$anchor['source_seq'],'start_proof'=>$anchor['start_proof'],'finish_proof'=>$anchor['finish_proof'],'server_sha256'=>$anchor['server_sha256']]);
+}
+/** Visibility and replay check current authority while preserving the request's stored observation. */
 function provider_cloud_site_requests_static_current(array $r):void {
     provider_cloud_assignment_guard();provider_cloud_site_requests_original_client($r);
-    if(!provider_cloud_assignment_ready())throw new RuntimeException('Cloud assignment history needs review.');
-    $b=provider_cloud_site_requests_binding($r['request']['payload']['binding']);$link=one('SELECT * FROM '.table('provider_cloud_links').' WHERE id=?',[$b['link_id']]);
-    if(!$link)throw new RuntimeException('This cloud server assignment changed.');
-    $assignment=provider_cloud_assignment_assignment($link);$w=$assignment['witness'];$d=$w['document'];$profile=provider_settings_load($link['profile_id']);
-    if($d['legacy']||(int)$profile['enabled']!==1||$profile['credentials']===''||$profile['id']!==$b['profile_id']||(int)$profile['revision']!==$b['profile_revision']||!hash_equals(hash('sha256',$profile['credentials']),$b['credential_sha256'])||$d['extra']['credentials']!==provider_cloud_assignment_profile_context($profile)||!hash_equals($d['extra']['owner_auth'],provider_cloud_assignment_owner_auth($d['actor_id'])))throw new RuntimeException('This request belongs to an earlier cloud account approval.');
-    foreach(['client_id','server_id'] as $key)if((int)$link[$key]!==$b[$key])throw new RuntimeException('This cloud server assignment changed.');
-    if((int)$link['revision']!==$b['link_revision']||(int)$link['profile_revision']!==$b['profile_revision']||$link['key_fingerprint']!==$b['key_fingerprint']||!hash_equals($b['link_sha256'],hash('sha256',provider_cloud_assignment_json(provider_cloud_assignment_link_fields($link))))||(int)$assignment['event']['id']!==$b['event_id']||!hash_equals($w['row']['proof'],$b['event_proof']))throw new RuntimeException('This cloud server assignment changed.');
+    $stored=provider_cloud_site_requests_binding($r['request']['payload']['binding']);
+    $current=provider_cloud_site_requests_intake_binding($stored['link_id']);
+    if(!provider_cloud_site_requests_same_assignment($stored,$current))throw new RuntimeException('This cloud server assignment changed.');
 }
 function provider_cloud_site_requests_context(array $binding,array $actor,?array $r=null):string {
     return provider_operations_scope($r===null?'cloud-site-request.intake':'cloud-site-request.dispatch',['binding'=>provider_cloud_site_requests_binding($binding),'actor'=>$actor,'request_id'=>$r['request']['id']??null,'expected_event'=>$r['request']['id']??null]);
@@ -105,9 +116,9 @@ function provider_cloud_site_requests_fresh(array $r):array {
 function provider_cloud_site_requests_options(?int $clientId=null):array {
     return provider_cloud_assignment_inspect(function()use($clientId):array {
         $actor=provider_cloud_site_requests_actor($clientId);if(!provider_cloud_site_requests_ready())return [];
-        provider_cloud_site_requests_state();$out=[];
+        provider_cloud_site_requests_state();if(!provider_cloud_assignment_ready())return [];$out=[];
         foreach(all('SELECT id FROM '.table('provider_cloud_links').($clientId!==null?' WHERE client_id=?':'').' ORDER BY profile_id,server_id',$clientId!==null?[$clientId]:[]) as $link){
-            try{$b=provider_cloud_assignment_binding($link['id'])->data;}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;continue;}
+            try{$b=provider_cloud_site_requests_intake_binding($link['id']);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;continue;}
             $out[]=['binding'=>$b,'context'=>provider_cloud_site_requests_context($b,$actor),'label'=>'Cloud server #'.$b['server_id']];
         }
         return $out;
@@ -123,7 +134,7 @@ function provider_cloud_site_requests_create(string $id,int $clientId,string $li
             if($existing['request']['client_id']!==$clientId||provider_cloud_site_requests_json($existing['request']['actor'])!==provider_cloud_site_requests_json($actor)||$p['binding']['link_id']!==$linkId||$p['domain']!==$domain||$p['aliases']!==$aliases||!hash_equals(provider_cloud_site_requests_context($p['binding'],$actor),$context))throw new RuntimeException('This request identity was already used for different details.');
             return $existing;
         }
-        $b=provider_cloud_assignment_binding($linkId)->data;
+        $b=provider_cloud_site_requests_intake_binding($linkId);
         if($b['client_id']!==$clientId||!hash_equals(provider_cloud_site_requests_context($b,$actor),$context))throw new RuntimeException('Your server assignment or observation changed. Reload this form.');
         provider_cloud_site_requests_size($b,$domain,$aliases);$recent=0;
         foreach($state['requests'] as $r){

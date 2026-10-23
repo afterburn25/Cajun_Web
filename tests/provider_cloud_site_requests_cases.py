@@ -94,7 +94,23 @@ def run_browser(env, browser, owner, client, other, profile):
             'posts': copy.deepcopy(provider.posts),
         }
 
-    def refresh(action, operation, label):
+    def local_intake_only(before, request_id, label):
+        after = state()
+        tail = after['events'][-1]
+        document = json.loads(tail['document'])
+        before_head = {row['name']: row['value'] for row in before['head']}
+        after_head = {row['name']: row['value'] for row in after['head']}
+        check(label,
+              after['events'][:-1] == before['events'] and len(after['events']) == len(before['events']) + 1
+              and tail['id'] == tail['subject_id'] == request_id and tail['kind'] == 'request'
+              and tail['client_id'] == cid and document['actor']['kind'] == 'client' and document['actor']['id'] == cid
+              and after['audit'][:-1] == before['audit'] and len(after['audit']) == len(before['audit']) + 1
+              and after['audit'][-1]['user_id'] == 0
+              and after['audit'][-1]['detail'] == 'Cloud website request event ' + request_id + ' ' + tail['fingerprint']
+              and after_head == {**before_head, 'provider_cloud_site_request_head': str(tail['ordinal']) + ':' + tail['fingerprint']}
+              and all(after[key] == before[key] for key in before if key not in ('events', 'head', 'audit')))
+
+    def refresh(action, operation, label, expected_state='complete'):
         # Admission uses this actual profile's latest immutable refresh start.
         # Wait at most 32 seconds; never change an authenticated timestamp.
         latest = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?',
@@ -114,7 +130,7 @@ def run_browser(env, browser, owner, client, other, profile):
                            [profile['id'], operation])
         check(label + ' uses one real refresh and retains every earlier intent',
               response.status_code == 200 and after[:-1] == original and len(after) == len(original) + 1
-              and after[-1]['operation'] == operation and latest_result == [{'state': 'complete'}]
+              and after[-1]['operation'] == operation and latest_result == [{'state': expected_state}]
               and provider.calls == calls + 1)
 
     def capture(session, target_url, selector, title, follow_services=False):
@@ -223,6 +239,25 @@ def run_browser(env, browser, owner, client, other, profile):
               len(rows()) == 1 and rows()[0]['client_id'] == cid and rows()[0]['kind'] == 'request'
               and provider.calls == original_state['calls'] and provider.posts == original_state['posts']
               and 'Pending studio review' in history(client, cancel_id).text)
+        # Preserve a genuine previously usable owner form, then retain a real
+        # newer failed observation. Intake remains local; sending must not fall back.
+        prior_dispatch = form(owner, settings, 'provider_inventory_cloud_request_dispatch', cancel_id)
+        provider.cloud_mode = 'authentication'
+        refresh('provider_inventory_cloud_refresh', 'cloudservers.list', 'Latest failed cloud observation', 'unavailable')
+        failed_state = state()
+        later_intake = form(client, intake, 'cloud_website_request_create')
+        check('failed latest read leaves exact signed assignment intake context usable without GET I/O',
+              later_intake['link_id'] == fields['link_id'] and later_intake['context'] == fields['context']
+              and state() == failed_state)
+        blocked = history(owner, cancel_id)
+        check('failed latest read withholds owner dispatch and asks for current information',
+              blocked.select_one('[data-cloud-website-form="provider_inventory_cloud_request_dispatch"]') is None
+              and 'refresh cloud inventory' in blocked.text and state() == failed_state)
+        refused_dispatch = post(owner, settings, prior_dispatch, reviewed='1', current_password=OWNER)
+        check('previously valid owner approval cannot send through a newer failed read',
+              refused_dispatch.status_code == 200
+              and 'Refresh the cloud server list and review the latest complete observation' in refused_dispatch.text
+              and state() == failed_state)
         cancel = form(client, intake, 'cloud_website_request_cancel', cancel_id)
         before = state()
         post(other, intake, cancel, csrf=token(get(other, intake)), confirm='1')
@@ -236,8 +271,10 @@ def run_browser(env, browser, owner, client, other, profile):
 
         decline = form(client, intake, 'cloud_website_request_create')
         decline.update(domain='client-request-decline.example', aliases='', request_confirm='1')
+        before_intake = state()
         post(client, intake, decline)
         decline_id = decline['request_id']
+        local_intake_only(before_intake, decline_id, 'client queues decline-case request after failed read with only event head and audit changes')
         decline_fields = form(owner, settings, 'provider_inventory_cloud_request_decline', decline_id)
         before = state()
         post(owner, settings, decline_fields, note='Choose another domain.', confirm='1', current_password='wrong')
@@ -271,13 +308,25 @@ def run_browser(env, browser, owner, client, other, profile):
         ended = post(owner, support_url, {'action': 'support_end', 'csrf': support_token})
         check('actual support context ends before owner review', ended.status_code == 200 and 'view=support' in ended.url)
         support_id = None
+        before_intake = state()
         post(client, intake, accepted)
         request_id = accepted['request_id']
+        local_intake_only(before_intake, request_id, 'client queues accepted-case request after failed read with zero provider I/O or grant')
         before = state(); post(client, intake, accepted)
         check('exact intake replay retains one pending request', state() == before)
         check('foreign client history omits all three submitted domains',
               all(name not in get(other, intake).text for name in
                   ('client-request-cancel.example', 'client-request-decline.example', 'client-request-accepted.example')))
+        before_fresh = state()
+        provider.cloud_mode = 'success'
+        refresh('provider_inventory_cloud_refresh', 'cloudservers.list', 'Owner fresh dispatch observation')
+        fresh_intake = form(client, intake, 'cloud_website_request_create')
+        after_fresh = state()
+        check('fresh complete read restores owner dispatch without rewriting requests or changing intake context',
+              fresh_intake['context'] == accepted['context'] and fresh_intake['link_id'] == accepted['link_id']
+              and history(owner, request_id).select_one('[data-cloud-website-form="provider_inventory_cloud_request_dispatch"]') is not None
+              and all(after_fresh[key] == before_fresh[key] for key in before_fresh if key != 'calls')
+              and after_fresh['calls'] == before_fresh['calls'] + 1)
         capture(owner, settings, '[data-cloud-website-request="' + request_id + '"]', 'Review')
         dispatch = form(owner, settings, 'provider_inventory_cloud_request_dispatch', request_id)
         before = state()

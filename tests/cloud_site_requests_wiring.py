@@ -15,7 +15,7 @@ def predecessor_bytes(root, path, contract):
     return value
 
 
-def verify(root, contract, workflow, commands, check):
+def verify(root, contract, workflow, commands, check, reports=None):
     item = contract['cloud_site_requests']
     additions = item['additions']
     check('Client cloud requests retain the exact expanded native recipe', commands == contract['native_commands'])
@@ -30,7 +30,8 @@ def verify(root, contract, workflow, commands, check):
     guard = item['published_baseline']['input_guard_correction']
     original_guard = (root / guard['path']).read_text()
     check('Published archive negative test changes only unapproved future version', original_guard.count(guard['after']) == 1 and hashlib.sha256(original_guard.replace(guard['after'], guard['before'], 1).encode()).hexdigest() == guard['predecessor_sha256'])
-    reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
+    if reports is None:
+        reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
     for key, facts in item['predecessor_reports'].items():
         current = reports[key]
         additions = item['reports'] + (item['upgrade']['reports'] if key == 'final' else [])

@@ -357,8 +357,11 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    from cloud_site_intake_wiring import verify as cloud_intake_wiring
+    native_commands,cloud_request_reports=cloud_intake_wiring(ROOT,contract,workflow,native_commands,check)
+    contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
-    native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
+    native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check,cloud_request_reports)
     contract={**contract,'native_commands':native_commands}
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])

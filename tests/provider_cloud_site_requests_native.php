@@ -31,6 +31,7 @@ $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME
 $_SERVER['DOCUMENT_ROOT']=$root.'/site';start_session();
 $checks=[];$stage='preflight';$dns=0;$gets=0;$posts=0;$boundaryErrors=[];$readStatus=200;$readBody='';$writeMode='accepted';$allocated=8801;
 $duringDns=null;$duringCredential=null;$process=null;$pipes=[];
+$expiryProbe=['requested'=>getenv('CWP_TEST_CLOUD_INTAKE_EXPIRED')==='1','executed'=>false];
 
 function cwri_id(int $n):string{return sprintf('%032x',$n);}
 function cwri_ok(string $name,bool $passed):void{
@@ -142,6 +143,81 @@ function cwri_fault(string $label,array $args,string $action):void{
     $failed=false;try{cwri_dispatch($args);}catch(PDOException $e){$failed=($e->errorInfo[0]??'')==='45000';}finally{db()->exec('DROP TRIGGER cwri_fail');unset($GLOBALS['cwp_settings']);}
     $w=one('SELECT @cwri_hit AS hit,@cwri_event_seen AS event_seen,@cwri_grant_seen AS grant_seen');
     cwri_ok($label,$failed&&(int)$w['hit']===1&&(int)$w['event_seen']===1&&($action!=='provider.cloudsite_started'||(int)$w['grant_seen']===1)&&cwri_effects()===$before);
+}
+
+/** Exact row comparison permits only the real request, its audit, and the existing head value. */
+function cwri_rows():array {
+    $rows=[];foreach(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,?)=BINARY ? ORDER BY TABLE_NAME',[strlen(CWRI_PREFIX),CWRI_PREFIX]) as $t){
+        $name=$t['TABLE_NAME'];if(!preg_match('/\Acwri_[a-z0-9_]+\z/D',$name))throw new LogicException('Unexpected fixture table.');
+        $data=all('SELECT * FROM `'.$name.'`');usort($data,static fn($a,$b)=>strcmp(json_encode($a),json_encode($b)));$rows[$name]=$data;
+    }return $rows;
+}
+function cwri_only_intake(callable $create):array {
+    global $dns,$gets,$posts;$before=cwri_rows();$wire=[$dns,$gets,$posts,count(cwri_wire())];$r=$create();$after=cwri_rows();$id=$r['request']['id'];$event=cwri_event($id);
+    $events=CWRI_PREFIX.'provider_cloud_site_request_events';$audits=CWRI_PREFIX.'audit';$settings=CWRI_PREFIX.'settings';
+    $newEvents=array_values(array_filter($after[$events],static fn($v)=>$v['id']===$id));
+    $detail='Cloud website request event '.$id.' '.$event['fingerprint'];
+    $newAudits=array_values(array_filter($after[$audits],static fn($v)=>$v['action']==='provider.cloud_site_request_event'&&$v['detail']===$detail));
+    $oldHead=array_values(array_filter($before[$settings],static fn($v)=>$v['name']==='provider_cloud_site_request_head'));
+    $newHead=array_values(array_filter($after[$settings],static fn($v)=>$v['name']==='provider_cloud_site_request_head'));
+    $exact=count($newEvents)===1&&count($newAudits)===1&&(int)$newAudits[0]['user_id']===0&&count($oldHead)===1&&count($newHead)===1
+        &&$newHead[0]['value']===$event['ordinal'].':'.$event['fingerprint']
+        &&(int)$event['ordinal']===(int)explode(':',$oldHead[0]['value'],2)[0]+1;
+    $after[$events]=array_values(array_filter($after[$events],static fn($v)=>$v['id']!==$id));
+    $after[$audits]=array_values(array_filter($after[$audits],static fn($v)=>!($v['action']==='provider.cloud_site_request_event'&&$v['detail']===$detail)));
+    if(count($oldHead)===1)foreach($after[$settings] as &$row)if($row['name']==='provider_cloud_site_request_head')$row['value']=$oldHead[0]['value'];unset($row);
+    foreach($after as &$rows)usort($rows,static fn($a,$b)=>strcmp(json_encode($a),json_encode($b)));unset($rows);
+    return [$r,$exact&&$after===$before&&[$dns,$gets,$posts,count(cwri_wire())]===$wire];
+}
+/** A valid retained request is not a fresh owner review; call the real dispatcher to prove refusal. */
+function cwri_static_case(string $label,int $id,array $link,string $domain):array {
+    cwri_client(2);$before=cwri_effects();$o=cwri_option(2,$link['id']);
+    cwri_ok($label.' retains local intake with no provider or database effect',cwri_effects()===$before&&$o['binding']['source_id']===$link['refresh_id']);
+    [$r,$only]=cwri_only_intake(fn()=>provider_cloud_site_requests_create(cwri_id($id),2,$link['id'],$o['context'],$domain,[],true));
+    cwri_ok($label.' adds only one pending event audit and head change',$r['stage']==='pending'&&$only);
+    $q=['id'=>cwri_id($id),'client'=>2,'link'=>$link['id'],'context'=>$o['context'],'domain'=>$domain,'aliases'=>[]];
+    cwri_owner();$before=cwri_effects();$h=cwri_history($q['id']);
+    cwri_ok($label.' blocks owner dispatch with a refresh-required reason',!$h['can_dispatch']&&$h['dispatch_context']===''&&$h['reason']!=='');
+    $context=cwri_locked(fn()=>provider_cloud_site_requests_context($r['request']['payload']['binding'],provider_cloud_site_requests_actor(null),$r));
+    cwri_deny($label.' refuses real owner dispatcher before sending',fn()=>cwri_dispatch([$q['id'],$q['id'],cwri_id($id+1),cwri_id($id+2),$context]));
+    cwri_ok($label.' dispatch refusal preserves every row grant ledger and provider counter',cwri_effects()===$before);
+    return $q;
+}
+/** Opt-in actual elapsed time, outside transaction/mutex; never alter an authenticated timestamp. */
+function cwri_expire(int $sourceEpoch,int $anchorEpoch):array {
+    if(db()->inTransaction()||cwri_mutex()||$sourceEpoch>time()||$anchorEpoch>$sourceEpoch)throw new LogicException('Invalid expiry probe context.');
+    $wall=time();$begin=hrtime(true);
+    while(hrtime(true)-$begin<901000000000){if(time()<$wall||time()-$wall>930)throw new RuntimeException('Expiry probe wall clock left its bound.');usleep(100000);}
+    $elapsed=hrtime(true)-$begin;$end=time();
+    if($elapsed<901000000000||$elapsed>930000000000||$end-$wall<900||$end-$wall>930||$end-$sourceEpoch<=900||$end-$anchorEpoch<=900)throw new RuntimeException('Expiry probe did not establish genuine observation expiry.');
+    return ['requested'=>true,'executed'=>true,'source_started_epoch'=>$sourceEpoch,'anchor_started_epoch'=>$anchorEpoch,'wait_started_epoch'=>$wall,'wait_finished_epoch'=>$end,'elapsed_ms'=>(int)($elapsed/1000000),'source_age_seconds'=>$end-$sourceEpoch,'anchor_age_seconds'=>$end-$anchorEpoch];
+}
+
+/** Exact e2c88d9d create body; only function name changed. Prior-function compatibility, not installed-upgrade evidence.
+ * Original function SHA256 6b1ebbe9b644aa4da7ae4d72991756bcb6010a15c1b07400082956718c148a53; production storage/authentication remain actual.
+ */
+function cwri_e2_create(string $id,int $clientId,string $linkId,string $context,string $domain,array $aliases,bool $confirmed):array {
+    return provider_cloud_assignment_inspect(function()use($id,$clientId,$linkId,$context,$domain,$aliases,$confirmed):array {
+        $actor=provider_cloud_site_requests_actor($clientId);provider_cloud_site_requests_id($id);provider_cloud_site_requests_id($linkId);$state=provider_cloud_site_requests_state();
+        if(!$confirmed)throw new InvalidArgumentException('Confirm this website request for studio review.');
+        $existing=$state['requests'][$id]??null;
+        if($existing){
+            $p=$existing['request']['payload'];provider_cloud_site_requests_static_current($existing);
+            if($existing['request']['client_id']!==$clientId||provider_cloud_site_requests_json($existing['request']['actor'])!==provider_cloud_site_requests_json($actor)||$p['binding']['link_id']!==$linkId||$p['domain']!==$domain||$p['aliases']!==$aliases||!hash_equals(provider_cloud_site_requests_context($p['binding'],$actor),$context))throw new RuntimeException('This request identity was already used for different details.');
+            return $existing;
+        }
+        $b=provider_cloud_assignment_binding($linkId)->data;
+        if($b['client_id']!==$clientId||!hash_equals(provider_cloud_site_requests_context($b,$actor),$context))throw new RuntimeException('Your server assignment or observation changed. Reload this form.');
+        provider_cloud_site_requests_size($b,$domain,$aliases);$recent=0;
+        foreach($state['requests'] as $r){
+            if($r['request']['client_id']===$clientId&&$r['request']['recorded_epoch']>=time()-86400)++$recent;
+            $p=$r['request']['payload'];if($p['binding']['profile_id']!==$b['profile_id']||!array_intersect([$domain,...$aliases],[$p['domain'],...$p['aliases']]))continue;
+            if($r['stage']==='pending')throw new RuntimeException('A request for one of these domains is already awaiting review.');
+            if($r['dispatch']!==null){$grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$r['dispatch']['payload']['grant_id']]);$result=provider_cloud_sites_result($grant);if(($result['status']??null)!=='failed')throw new RuntimeException('A creation attempt for one of these domains needs review before another request.');}
+        }
+        if($recent>=10)throw new RuntimeException('You have reached the daily website request limit. Please contact the studio.');
+        provider_cloud_site_requests_append($id,$id,$clientId,'request',$actor,['binding'=>$b,'domain'=>$domain,'aliases'=>$aliases,'confirmed'=>true]);return provider_cloud_site_requests_state()['requests'][$id];
+    });
 }
 
 if($worker){
@@ -260,14 +336,47 @@ try{
     $before=cwri_effects();cwri_deny('Repeated confirmation cannot duplicate or restore assignments',fn()=>provider_cloud_confirmation_confirm($args[3],$hosting['id'],$review['review'],true,CWRI_PASSWORD));cwri_ok('Rejected confirmation replay makes no extra provider or stored effect',cwri_effects()===$before);
     $stage='newest-observation';$pending=cwri_create(70,$links[1],'after-read.client-cloud.example');$pendingArgs=cwri_dispatch_args($pending,71,72);
     $failedRead=cwri_refresh($profile,InventoryRead::CLOUD_SERVERS_LIST,'[]',503);cwri_ok('A real newest failed cloud refresh is retained',$failedRead['state']!=='complete');
-    cwri_client();cwri_ok('New intake options require refreshed complete cloud data',provider_cloud_site_requests_options(1)===[]);$before=cwri_effects();
-    cwri_deny('Saved intake form cannot bypass a newer failed cloud observation',fn()=>provider_cloud_site_requests_create(cwri_id(73),1,$first['link'],$first['context'],'stale-form.example',[],true));cwri_ok('Refresh-required intake refusal has no event or provider effects',cwri_effects()===$before);
+    cwri_client();$before=cwri_effects();$o=cwri_option(1,$first['link']);cwri_ok('New intake options retain exact local assignment after latest cloud failure',$o['context']===$first['context']&&cwri_effects()===$before);
+    [$local,$only]=cwri_only_intake(fn()=>provider_cloud_site_requests_create(cwri_id(73),1,$first['link'],$first['context'],'stale-form.example',[],true));cwri_ok('Saved static intake form queues a pending request after newer failed observation',$local['stage']==='pending'&&$local['request']['id']===cwri_id(73));cwri_ok('Local failed-read intake adds exactly one event head audit and no grant ledger DNS or send',$only);
     cwri_owner();$h=cwri_history($pending['id']);cwri_ok('Owner pending request retains visible refresh-required reason',!$h['can_dispatch']&&$h['reason']!=='');
     cwri_deny('Old owner review cannot dispatch after latest cloud read failure',fn()=>cwri_dispatch($pendingArgs));
     $before=cwri_effects();$r=cwri_dispatch($args);cwri_ok('Original completed dispatch replays despite a later failed observation',$r->status==='accepted_pending'&&$r->externalId==='8801'&&cwri_effects()===$before);
-    $newCloud=cwri_refresh($profile,InventoryRead::CLOUD_SERVERS_LIST,cwri_cloud_body());cwri_ok('Real refreshed cloud source restores eligible intake options',$newCloud['state']==='complete'&&count(provider_cloud_site_requests_options())===4);
+    $newCloud=cwri_refresh($profile,InventoryRead::CLOUD_SERVERS_LIST,cwri_cloud_body());cwri_ok('Real refreshed cloud source restores owner dispatch eligibility',$newCloud['state']==='complete'&&cwri_history($pending['id'])['can_dispatch']);
     $before=cwri_effects();$r=cwri_dispatch($args);cwri_ok('Original owner context pair replays after a newer complete read',$r->status==='accepted_pending'&&cwri_effects()===$before);
     cwri_deny('Superseded owner review requires a newly reviewed observation',fn()=>cwri_dispatch($pendingArgs));$pendingArgs=cwri_dispatch_args($pending,71,72);$allocated=8804;$r=cwri_dispatch($pendingArgs);cwri_ok('Pending request may use fresh observation with unchanged original assignment',$r->status==='accepted_pending'&&$r->externalId==='8804');
+    $stage='static-intake-compatibility';cwri_client(2);
+    $legacyBinding=cwri_locked(fn()=>provider_cloud_assignment_binding($links[2]['id'])->data);
+    $legacyContext=cwri_locked(fn()=>provider_cloud_site_requests_context($legacyBinding,provider_cloud_site_requests_actor(2)));
+    $legacy=['id'=>cwri_id(120),'client'=>2,'link'=>$links[2]['id'],'context'=>$legacyContext,'domain'=>'prior-function.client-cloud.example','aliases'=>[]];
+    [$oldRequest,$only]=cwri_only_intake(fn()=>cwri_e2_create($legacy['id'],2,$legacy['link'],$legacyContext,$legacy['domain'],[],true));
+    $static=cwri_option(2,$legacy['link']);
+    cwri_ok('Exact prior e2 create body stores real post-assignment full binding with only local intake effects',$only&&provider_cloud_site_requests_binding($oldRequest['request']['payload']['binding'])===$legacyBinding&&$legacyBinding['source_id']===$newCloud['id']&&$legacyBinding['source_id']!==$static['binding']['source_id']&&$legacyContext!==$static['context']);
+    $before=cwri_effects();$oldReplay=cwri_replay_create($legacy);
+    cwri_ok('Successor exact replay preserves the real prior-function full-binding request and context',$oldReplay===$oldRequest&&cwri_effects()===$before);
+    $stage='unfinished-intake';cwri_owner();cwri_wait($profile);$beforeReads=cwri_count('provider_refreshes');$beforeGets=$gets;$interruptedRead=null;
+    try{provider_inventory_refresh_attempt($profile,(int)provider_settings_load($profile)['revision'],CWRI_PASSWORD,static function()use($profile,&$interruptedRead):string{
+        global $dns;if(db()->inTransaction()||cwri_mutex())throw new LogicException('Refresh resolver must follow committed intent outside mutation guards.');$dns++;
+        $interruptedRead=one('SELECT * FROM '.table('provider_refreshes').' WHERE profile_id=? AND operation=? ORDER BY seq DESC LIMIT 1',[$profile,InventoryRead::CLOUD_SERVERS_LIST]);
+        if(!$interruptedRead||one('SELECT id FROM '.table('provider_refresh_results').' WHERE id=?',[$interruptedRead['id']]))throw new LogicException('Expected genuinely unfinished refresh intent.');
+        throw new PDOException('Synthetic interruption after real read admission.');
+    },'cwri_read',InventoryRead::CLOUD_SERVERS_LIST);}catch(PDOException $e){if($e->getMessage()!=='Synthetic interruption after real read admission.')throw $e;}
+    cwri_ok('Real interrupted refresh retains authenticated start intent without result or GET',$interruptedRead!==null&&cwri_count('provider_refreshes')===$beforeReads+1&&!one('SELECT id FROM '.table('provider_refresh_results').' WHERE id=?',[$interruptedRead['id']])&&$gets===$beforeGets&&cwri_locked(fn()=>provider_cloud_assignment_ready()));
+    cwri_static_case('Newest unfinished read',130,$links[2],'unfinished.client-cloud.example');
+    $stage='omitted-server-intake';$omitted=cwri_refresh($profile,InventoryRead::CLOUD_SERVERS_LIST,json_encode(array_values(array_filter(json_decode(cwri_cloud_body(),true,8,JSON_THROW_ON_ERROR),static fn($v)=>$v['id']!==1602)),JSON_THROW_ON_ERROR));
+    cwri_ok('Real latest complete cloud read omits the still-assigned second server',$omitted['state']==='complete'&&!one('SELECT id FROM '.table('provider_observation_cloud').' WHERE refresh_id=? AND server_id=?',[$omitted['id'],1602])&&one('SELECT id FROM '.table('provider_cloud_links').' WHERE id=?',[$links[2]['id']])!==null);
+    cwri_static_case('Newest complete omission',140,$links[2],'omitted.client-cloud.example');
+    $before=cwri_effects();$oldReplay=cwri_replay_create($legacy);
+    cwri_ok('Prior-function request still replays exactly after unfinished and server-omitting reads',$oldReplay===$oldRequest&&cwri_effects()===$before);
+    $restored=cwri_refresh($profile,InventoryRead::CLOUD_SERVERS_LIST,cwri_cloud_body());
+    cwri_ok('Actual full refresh restores fresh dispatch after local-only intake scenarios',$restored['state']==='complete'&&cwri_history(cwri_id(130))['can_dispatch']&&cwri_history(cwri_id(140))['can_dispatch']);
+    if($expiryProbe['requested']){
+        $stage='genuine-expired-intake';$latest=provider_cloud_assignment_source($restored['id']);$anchor=provider_cloud_assignment_source($links[2]['refresh_id']);$before=cwri_effects();
+        $expiryProbe=cwri_expire((int)$latest['started_epoch'],(int)$anchor['started_epoch']);
+        cwri_ok('Opt-in expiry waits over 900 real monotonic seconds and expires original and latest anchors',$expiryProbe['elapsed_ms']>=901000&&$expiryProbe['source_age_seconds']>900&&$expiryProbe['anchor_age_seconds']>900&&cwri_effects()===$before);
+        cwri_static_case('Genuinely expired complete read',150,$links[2],'expired.client-cloud.example');
+        $restored=cwri_refresh($profile,InventoryRead::CLOUD_SERVERS_LIST,cwri_cloud_body());
+        cwri_ok('Opt-in expiry ends with genuine fresh observation before original authority tests',$restored['state']==='complete'&&cwri_history(cwri_id(150))['can_dispatch']);
+    }
     $stage='history-integrity';cwri_owner();
     cwri_corrupt('Missing request marker refuses established history',fn()=>query('DELETE FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_schema_version']),fn()=>provider_cloud_site_requests_history());
     cwri_corrupt('Missing request head refuses established history',fn()=>query('DELETE FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_head']),fn()=>provider_cloud_site_requests_history());
@@ -311,5 +420,5 @@ try{
     cwri_ok('Actual final local event history remains authenticated',provider_cloud_site_requests_ready());
 }catch(Throwable $e){$failure=['stage'=>$stage,'class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine()];}
 finally{if(is_resource($process)){proc_terminate($process);foreach($pipes as $pipe)if(is_resource($pipe))fclose($pipe);proc_close($process);}}
-$result=['passed'=>!isset($failure),'scope'=>'Native disposable SQL with synthetic provider; no live provider, HTTP, payment or health claim','checks'=>$checks];if(isset($failure))$result['failure']=$failure;
+$result=['passed'=>!isset($failure),'scope'=>'Native disposable SQL with synthetic provider; no live provider, HTTP, payment or health claim','checks'=>$checks,'expiry_probe'=>$expiryProbe];if(isset($failure))$result['failure']=$failure;
 $encoded=json_encode($result,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";$handle=fopen($report,'xb');if(!$handle)exit(2);if(fwrite($handle,$encoded)!==strlen($encoded)){fclose($handle);exit(2);}fclose($handle);echo $encoded;exit(isset($failure)?1:0);
