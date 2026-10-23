@@ -66,6 +66,7 @@ def main():
                                failed_assertions=sum(len(u['failed_checks']) for u in units)),
                 'units': units, 'not_reached': sorted(set(not_reached)),
                 'scope': 'Diagnostic collection only — strict browser acceptance remains the release gate.'}
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.with_suffix('.json').write_text(json.dumps(combined, indent=2) + '\n', encoding='utf-8')
 
     lines = ['# Combined diagnostic report', '',
