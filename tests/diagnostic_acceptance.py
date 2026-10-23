@@ -110,6 +110,10 @@ def run_unit(key, kind, group, fn, role='home'):
     except Exception as exc:
         status = 'failed'
         error = {'class': type(exc).__name__, 'message': str(exc)[:2000], 'site': last_site(exc)}
+        if isinstance(exc, subprocess.CalledProcessError):
+            detail = ((exc.stderr or '') + '\n' + (exc.stdout or '')).strip()
+            if detail:
+                error['message'] += ' | captured output: ' + detail[-1200:]
     elapsed = round(time.time() - started, 2)
     mine = checks[before:]
     failed_names = [c['name'] for c in mine if not c['passed']]

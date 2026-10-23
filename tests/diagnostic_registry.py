@@ -83,7 +83,7 @@ MODULES = [
     ('mail-submissions', 'mail_submissions_cases', 'run_browser', 'mail', ['mail-accounts', 'mail-drafts']),
     ('client-authority', 'client_authority_cases', 'run_browser', 'security', ['payments']),
     ('service-plan', 'service_plan_cases', 'run_browser', 'twentyi-inventory', ['payments', 'support']),
-    ('recurring-billing', 'recurring_billing_cases', 'run_browser', 'billing', ['payments', 'service-plan', 'ledger']),
+    ('recurring-billing', 'recurring_billing_cases', 'run_browser', 'billing', ['payments', 'service-plan', 'ledger', 'provider-operations']),
     ('domain-contracts', 'domain_contracts_cases', 'run_browser', 'twentyi-domains', ['provider-settings']),
     ('cloud-providers', 'provider_cloud_providers_cases', 'run_browser', 'twentyi-inventory', ['provider-settings']),
     ('registration-periods', 'provider_registration_periods_cases', 'run_browser', 'twentyi-domains', ['provider-settings']),
