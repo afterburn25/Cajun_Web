@@ -3551,3 +3551,9 @@ Run `39959402863` (`e699263b`) completed with **all ten group jobs green** — i
 One remaining defect surfaced, in the diagnostic harness itself (not product, not fixtures): the `combine` job crashed with `FileNotFoundError: qa/diagnostic-combined.json` — `diagnostic_report.py` wrote the combined report into `qa/` which does not exist in the combine job's fresh checkout. Bounded fix `76bf7c47` creates the output parent before writing; verified locally by writing to a nested non-existent path. Contract suite 152/152; strict runner sha256 `71dc6699f2e92b23` unchanged.
 
 Dispatch on `76bf7c47` produced diagnostic run `39971362640`, the first run positioned to produce a green combine end-to-end. Strict application run `39959484953` on `3ecf4907` (identical code to `e699263b` — docs-only delta) remains in flight as the lane's strict evidence. PR264 is open; merge still awaits final-head hosted evidence and independent review completion.
+
+## 2026-10-23 — diagnostic run 39971362640: 9/10 groups green; staff flake in twentyi-inventory
+
+Run `39971362640` (`76bf7c47`, first combine-fix head) drained its group stage: nine groups green — installer, mail, portal, security, stackcp, website, billing, twentyi-domains, twentyi-packages. `twentyi-inventory` failed only at the root `staff` unit on `Long private link fits narrow mobile` (`tests/staff_cases.py:88`); every dependent inventory unit was blocked/skipped as intended dependency propagation.
+
+Classification is provisional flake, not defect: `staff` passed inside `mail`'s closure in this same run on identical code, and the page carries `.admin-body [data-staff-invite]{overflow-wrap:anywhere;word-break:break-word}`. The three in-flight strict application runs on the same app code (`39959484953` `3ecf4907`, `39971372304` `76bf7c47`, `39971398769` `f08abd36`) will confirm or promote this to a product issue. The `combine` job is queued; it is the first hosted exercise of the `76bf7c47` mkdir fix.
