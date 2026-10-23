@@ -3497,3 +3497,12 @@ Next: inspect the first exact-successor runtime results, review all 16 actual im
   (390 local checks green).
 - Next: run 39856635999 on 799526e3 will show which fence conjunct fails —
   readback value, "Value differs" notice, or lingering select form.
+
+## 2026-10-23 — run 39856635999 classified; PHP-controls verify-form absence instrumented
+
+- Request: continue monitoring; classify the completed php-controls run.
+- Run 39856635999: build/recovery/apache green; native-and-browser red at `provider_php_controls_ui_cases.py:53` — `Expected one real POST form: [data-php-request="94bb3ffe…"] form[data-php-verify]` at the first owner verify step (line 337).
+- Existing `php-controls-owner-change-diagnostics.json` shows the request was created correctly — `phase: attempted`, `readback: pending`, `ledger_status: uncertain` — so `can_verify` should compute true; the article was absent from the render entirely, meaning the request was skipped by the `$access===null` denial path (`provider_php_controls_change_access` re-fetches the current binding and throws a denial if the assignment changed) or the GET itself returned a non-form page under congestion.
+- Change: `form_for` now writes `form-missing-<sha>.html` + `.json` (selector, status, URL, form count, bytes) into the packaged qa dir on failure — the next run will show whether the page was an error render, a denial-filtered history, or a mid-render truncation.
+- File was `source_sha256`-pinned in `php_controls_acceptance` (self-excluded prior — no cascade): pin re-anchored `c88ab836→a181adbc`, local verifier 390/390 green.
+- Committed `1da304c6`, pushed; run 39883955725 dispatched.
