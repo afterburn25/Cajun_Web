@@ -71,7 +71,7 @@ final class SubmissionChannel implements ProbeChannel
     public function write(#[\SensitiveParameter] string $data):void
     {
         $length=strlen($data);$this->sent+=$length;
-        if(++$this->writes>1100 || $length>2048 || $this->sent>73728)throw new ProbeFailure('limit');
+        if(++$this->writes>1100 || $length>2048 || $this->sent>1048576)throw new ProbeFailure('limit');
         if(!str_ends_with($data,"\r\n") || preg_match('/[\x00\r\n]/',substr($data,0,-2)))throw new ProbeFailure('protocol');
         $at=0;
         while($at<$length) {

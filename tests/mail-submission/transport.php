@@ -178,7 +178,7 @@ try {
                     public function close():void{}
                 };
                 $s=new SmtpSession($sink,static function(){});
-                if($limit==='total_bytes')for($i=0;$i<40;$i++)$s->client_send(str_repeat('x',2046)."\r\n");
+                if($limit==='total_bytes')for($i=0;$i<520;$i++)$s->client_send(str_repeat('x',2046)."\r\n");
                 elseif($limit==='write_count')for($i=0;$i<1101;$i++)$s->client_send("x\r\n");
                 else for($i=0;$i<161;$i++)$s->begin();
             }
