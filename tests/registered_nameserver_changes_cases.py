@@ -130,6 +130,18 @@ def run_browser(env, browser):
                 size = str(len(html))
             except Exception as dump_error:
                 size = 'dump:' + type(dump_error).__name__
+            try:
+                state_dump = {'selector': selector, 'count': count, 'url': page.url,
+                              'links': db('SELECT * FROM ci_provider_registrar_links WHERE domain_id=?', [14701]),
+                              'refreshes': db('SELECT id,seq,operation,state,started_epoch,finished_epoch FROM ci_provider_refreshes ORDER BY id DESC LIMIT 8')}
+                try:
+                    state_dump['bindings'] = db('SELECT * FROM ci_registered_nameserver_bindings WHERE link_id=?', [link['id']])
+                    state_dump['link_id'] = link['id']
+                except Exception:
+                    pass
+                (qa / 'nameserver-change-form-state.json').write_text(json.dumps(state_dump, indent=2, default=str), encoding='utf-8')
+            except Exception:
+                pass
             state = 'closed' if page.is_closed() else ('url=' + page.url + ' count=' + str(count) + ' bytes=' + size)
             raise AssertionError('One exact nameserver owner form required [' + state + ']') from error
         open_details(item)
