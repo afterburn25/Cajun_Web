@@ -3501,3 +3501,8 @@ The enclosing **fix: include retained diagnostic sources in development package*
 - Fix: `registered_nameserver_changes_cases.py` gains `refresh_domains()` — a real `provider_inventory_registrar_refresh` (always-rendered form) whenever the latest observation is older than 600s, called inside `read_form` (covers all refresh/verify reads, before the `get_paths` capture) and before each remaining gated form site (change-form fields ×2, recover, verify, relink). Re-arms run on the bootstrap owner session (`owner@example.invalid`) so the fixture owner's 20/hour refresh budget is preserved; `sameContext`/`changes_context` ignore `source_*` fields so a newer registrar observation keeps pending requests valid.
 - Contract re-settled: file pin `7f00d92f` in both `registered_nameserver_changes_installed` and `registered_nameserver_requests`; requests `predecessor_contract_sha256` + mirrored `CONTRACT_SHA256` → `f104d41c`; acceptance file re-pinned `0ee91e16`. Local verifier **473/473** green.
 - Committed `4310ee17`, pushed; run **39901898005** dispatched. Next: confirm the lane completes; the inherited-timestamps check still pins all pre-existing refresh rows, so no fixture bytes were rewritten.
+
+## 2026-10-23 (cont.) — nameserver run 39901898005 cancelled externally; redispatched
+
+- Run 39901898005 (`4310ee17`) completed **cancelled** at ~08:53Z — the workflow's concurrency is `cancel-in-progress: false`, so the cancellation was external (not capacity, not a superseding push). A cancelled run is neither green nor classified evidence; the `4310ee17` registrar-freshness fix still needs its acceptance signal.
+- Redispatched `39928784590` on branch tip `b2d4c714` (docs-only delta over `4310ee17`; code under test identical).
