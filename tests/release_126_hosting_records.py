@@ -103,9 +103,23 @@ def before_setup(repo, installed, base, prefix, php, target, owner, snapshot, ev
           and 'source_key_fingerprint' not in public.text and exact_business(before, after_get))
     admin = owner.get(base + '/admin/index.php?view=hosting-offers', timeout=120)
     after = _fixture(repo, installed, php, target, 'state')
+    after_business = snapshot()
+    drift = {key: {'state': repr(state.get(key))[:400], 'after': repr(after.get(key))[:400]}
+             for key in set(state) | set(after) if state.get(key) != after.get(key)}
+    owner_state = {'status': admin.status_code, 'setup_form': 'hosting_catalog_setup' in admin.text,
+                   'state_unchanged': state == after, 'drift': drift, 'excerpt': admin.text[:1200]}
+    business_ok = True
+    try:
+        exact_business(before, after_business)
+    except AssertionError as error:
+        business_ok = False
+        owner_state['business_error'] = str(error)
+    owner_state['business_unchanged'] = business_ok
+    (qa / ('apache-release126-' + prefix.rstrip('_') + '-owner-get.json')).write_text(
+        json.dumps(owner_state, indent=2), encoding='utf-8')
     check('No-schema owner Hosting GET leaves every original row and file unchanged',
           admin.status_code == 200 and 'hosting_catalog_setup' in admin.text and state == after
-          and exact_business(before, snapshot()))
+          and business_ok)
     evidence['stages'][prefix] = {'no_schema': before}
 
 
