@@ -340,11 +340,22 @@ def run_browser(env, browser):
         response = owner.post(owner_url, data=owner_change, timeout=120)
         row = request_row(owner_request)
         import json as _json
+        gate_diag = {}
+        try:
+            gate_diag["gates"] = fixture("gate", {"request_id": owner_request}).get("gates")
+        except Exception as probe_error:
+            gate_diag["gates_error"] = type(probe_error).__name__ + ": " + str(probe_error)[:200]
+        diag_state = state()
         (qa / "php-controls-owner-change-diagnostics.json").write_text(_json.dumps({
             "status": response.status_code, "calls_delta": provider.calls - calls,
             "posts_delta": len(provider.posts) - posts,
             "last_post": provider.posts[-1] if provider.posts else None,
-            "row": row, "notice_excerpt": response.text[:1200]}, indent=2), encoding="utf-8")
+            "row": row, "notice_excerpt": response.text[:1200],
+            "binding_probe": diag_state.get("binding_probe"),
+            "inventory_age": diag_state.get("inventory_age"),
+            "next_read_epoch": diag_state.get("next_read_epoch"),
+            "latest": diag_state.get("latest"),
+            "counts": diag_state.get("counts")} | gate_diag, indent=2), encoding="utf-8")
         check("Owner form performs one exact setter and genuine ledger attempt", provider.calls == calls + 1 and len(provider.posts) == posts + 1
               and provider.posts[-1] == {"path": "/package/701/web/phpVersion", "body": '{"value":"php84"}'}
               and row["actor_kind"] == row["terminal_actor_kind"] == "staff" and row["actor_id"] == row["terminal_actor_id"] == 1

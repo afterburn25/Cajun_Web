@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY==='Windows'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1'||count($argv)!==2)exit(2);
 $phase=$argv[1];
-if(!in_array($phase,['seed','status','cool','options','contact-add','contact-clear','fault-arm','fault-clear','inventory'],true))exit(2);
+if(!in_array($phase,['seed','status','cool','options','contact-add','contact-clear','fault-arm','fault-clear','inventory','gate'],true))exit(2);
 $portText=getenv('CWP_TEST_PORT')?:'33306';if(!ctype_digit($portText)||(int)$portText<1||(int)$portText>65535)exit(2);
 $raw=stream_get_contents(STDIN,4097);if(strlen($raw)>4096)exit(2);
 try{$decoded=json_decode($raw,false,8,JSON_THROW_ON_ERROR);}catch(JsonException){exit(2);}
@@ -57,11 +57,18 @@ try {
     if(query('SELECT DATABASE()')->fetchColumn()!=='cwp_test')throw new RuntimeException('Wrong disposable database.');
 } catch(Throwable $e) {echo json_encode(['passed'=>false,'phase'=>$phase,'failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine()]],JSON_THROW_ON_ERROR)."\n";exit(1);}
 
-use CajunWebPro\Foundation\Provider\TransportResponse;
+use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
+use CajunWebPro\Foundation\Provider\{TransportResponse,ProviderOperation};
+use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
+use CajunWebPro\Foundation\TwentyI\Operations\PhpVersionChange;
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventoryProjector};
 use CajunWebPro\Foundation\TwentyIPackagePhp\{PackagePhpVersion,PackagePhpVersionObservation,PackagePhpVersionBinding,PackagePhpOptionSet};
 
 function phui_scope(callable $fn):mixed{return staff_locked(fn()=>staff_transaction($fn));}
+function phui_probe(string $name,callable $fn,array &$gates):void {
+    try{$gates[$name]=['ok'=>$fn()];}
+    catch(Throwable $e){$gates[$name]=['ok'=>false,'error'=>get_class($e),'message'=>substr($e->getMessage(),0,160)];}
+}
 function phui_exists(string $name):bool{return one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[PHUI_PREFIX.$name])!==null;}
 function phui_owner():void {
     $u=one('SELECT * FROM '.table('users').' WHERE id=1');
@@ -158,6 +165,48 @@ try {
     } else {
         $state=phui_state();
         if($phase==='status'){phui_keys(['request_ids']);$output=phui_status($state,$input['request_ids']);}
+        elseif($phase==='gate'){
+            // Post-failure probe: replays each pre-dispatch predicate of the send span in
+            // php_controls_changes.php against current state. Endpoint replay uses the exact
+            // synthetic DNS answer the packaged-server connector returns under cli-server;
+            // its own SAPI guard is reported separately via 'sapi'.
+            phui_keys(['request_id']);if(!is_string($input['request_id']))throw new InvalidArgumentException('Invalid request selector.');provider_php_controls_lifecycle_id($input['request_id']);phui_owner();
+            $gates=['now'=>time(),'sapi'=>PHP_SAPI];
+            $record=phui_scope(fn()=>provider_php_controls_lifecycle_get('request',$input['request_id']));
+            $expected=$record['document']??null;$gates['request_present']=$expected!==null;
+            if($expected!==null){
+                $gates['expires_epoch']=$expected['expires_epoch'];$gates['expired']=$expected['expires_epoch']<=time();
+                phui_probe('terminal_exists',fn()=>phui_scope(fn()=>provider_php_controls_lifecycle_get('terminal',$expected['id'])!==null),$gates);
+                $reauthorize=function()use($expected){
+                    $d=$expected['review']['context'];
+                    return provider_php_controls_reauthorize(['document'=>$d,'sha256'=>provider_php_controls_lifecycle_sha($d),'binding'=>new PackagePhpVersionBinding($d['binding'])]);
+                };
+                phui_probe('reauthorize',function()use($reauthorize){phui_scope($reauthorize);return true;},$gates);
+                phui_probe('review_match',function()use($expected,$reauthorize){
+                    $context=phui_scope($reauthorize);
+                    $r=phui_scope(fn()=>provider_php_controls_change_review($context,$expected['review']['current_read_id'],$expected['review']['options_read_id'],$expected['review']['selected']['value']));
+                    return $r['review']===$expected['review']?'equal':'differs';
+                },$gates);
+                phui_probe('pending',function()use($expected,$reauthorize){
+                    $b=phui_scope($reauthorize)['binding']->data;
+                    $p=phui_scope(fn()=>provider_php_controls_lifecycle_pending($b['profile_id'],$b['package_id']));
+                    return $p===null?'none':(($p['request']['document']['id']??null)===$expected['id']?'ours':'other');
+                },$gates);
+                $connect=function()use($expected){
+                    $d=$expected['review']['context'];
+                    return staff_locked(fn()=>provider_php_controls_connection(['document'=>$d,'sha256'=>provider_php_controls_lifecycle_sha($d),'binding'=>new PackagePhpVersionBinding($d['binding'])]));
+                };
+                phui_probe('connection',function()use($connect){$connect();return true;},$gates);
+                phui_probe('fingerprint',function()use($expected,$connect){
+                    $profile=$connect();
+                    $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));
+                    return hash_equals(provider_inventory_fingerprint($secret),$expected['review']['context']['binding']['key_fingerprint']);
+                },$gates);
+                phui_probe('endpoint',fn()=>EndpointPolicy::addresses([FixedHttpTransport::resolve(static fn(string $name)=>[['type'=>'A','ip'=>'8.8.8.8']])])!==[],$gates);
+                phui_probe('operation',function()use($expected){new ProviderOperation(PhpVersionChange::OPERATION,$expected['idempotency_key'],$expected['review']['params']);return true;},$gates);
+            }
+            $output=['passed'=>true,'phase'=>'gate','gates'=>$gates];
+        }
         elseif($phase==='cool'){phui_keys([]);$output=['passed'=>true,'phase'=>'cool','waited_ms'=>phui_cool($state['profile_id'])];}
         elseif($phase==='inventory'){phui_keys([]);phui_inventory($state['profile_id']);$output=['passed'=>true,'phase'=>'inventory'];}
         elseif($phase==='options'){
