@@ -89,7 +89,7 @@ function mail_message_mark(string $id,int $revision,string $folder,string $valid
     try {$addresses=EndpointPolicy::addresses(($resolver??[EndpointResolver::class,'resolve'])($row['imap_host']));}
     catch(InvalidArgumentException) {$code='destination';}
     catch(ProbeFailure $e) {$code=$e->getMessage();}
-    catch(Throwable) {$code='connection';}
+    catch(Throwable $e) {error_log('flag resolve refused: '.$e->getMessage().' @ '.basename((string)$e->getFile()).':'.$e->getLine());$code='connection';}
     return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$seen):array {
         $authorize=static function()use($started):array {
             try {[$actor,$row]=mail_flag_authority($started['account_id'],$started['account_revision']);
@@ -111,7 +111,7 @@ function mail_message_mark(string $id,int $revision,string $folder,string $valid
                     if(!$applied)$code='unchanged';
                     elseif(!$result['confirmed'])$code='unconfirmed';
                 }catch(ReceivingFailure $e) {$code=$e->getMessage();$applied=null;}
-                catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$applied=null;}
+                catch(Throwable $e) {if($e instanceof PDOException)throw $e;error_log('flag transport refused outer: '.$e->getMessage().' @ '.basename((string)$e->getFile()).':'.$e->getLine());$code='connection';$applied=null;}
                 finally {unset($secrets,$response);}
             }
         }

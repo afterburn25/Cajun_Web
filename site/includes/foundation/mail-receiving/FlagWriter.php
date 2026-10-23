@@ -18,7 +18,7 @@ final class FlagWriter
             $stream->open($encryption,$host,$port,20);
             return (new FlagSession($stream,$authorize))->mark($encryption,$user,$password,$folder,$validity,$uid,$seen);
         } catch(ReceivingFailure $e) {throw $e;}
-        catch(\Throwable) {throw new ReceivingFailure('connection');}
+        catch(\Throwable $e) {\error_log('flag transport refused: '.$e->getMessage().' @ '.basename((string)$e->getFile()).':'.$e->getLine());throw new ReceivingFailure('connection');}
         finally {$stream?->close();}
     }
 }
