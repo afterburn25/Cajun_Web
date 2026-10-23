@@ -5728,3 +5728,9 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - Result: `tools/acceptance-contract.json` 14 stored hashes + 2 pins settled; verifier 1468/1468 clean. Committed `10931f5e`.
 - Dispatch: run 39892127894 on `10931f5e`. Prior run 39875802785 still in flight — its apache r126 check carries the stale expectation by construction; remaining jobs still provide evidence.
 - Remaining: classify 39892127894 + fleet (FSI 39879709719, nameserver 39882705846, php-controls 39883955725, cloud 39886854693/39862535705, docroots 39862486466).
+
+## 2026-10-23 (cont.) — superseded run 39875802785 classified; invoicing instrumented
+
+- Run 39875802785 (`2a66a092`, pre-correction head): build/recovery green; apache failed at the known stale `r126_ron_` expectation (fixed in `10931f5e`); native-and-browser failed `36 renewal invoicing native checks` — single catch-record `Unexpected: SQLSTATE[42S22] Unknown column 'actor_id' in 'INSERT INTO'` after the DR-orphan refusal checks. The `803a7a11` payments-migrate seed fix held; this is a distinct schema mismatch (insert names `actor_id` into a table the fixture lacks — every current DDL carries the column, so the culprit is a stale/old-shape table creation path, not yet pinpointed).
+- Change: `tests/domain_renewal_invoice_create_native.php` — `Unexpected:` record now reports `basename(file):line` of the throw site (`cf243319`). Verifier 1468/1468; `php -l` clean.
+- Dispatch: run `39895419341` on `cf243319` (carries hosting correction + invoicing instrumentation). Run `39892127894` on `10931f5e` continues — will verify apache fix but still carries the uninstrumented invoicing failure.
