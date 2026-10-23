@@ -3533,3 +3533,10 @@ Owner request: continue the roadmap. Completed payment-link companion PR253 at b
   provider_refreshes.operation); audit is the dominant per-event table and
   is fixed first. Update installs apply the index on the next owner-run
   studio_migrate.
+
+## 2026-10-23 — audit-index lane GREEN on hosted acceptance
+
+- Request: continue monitoring; classify run 39858223574 on `d819f044`.
+- Result: **all five jobs green** — build, recovery, apache, native-and-browser, acceptance. The `audit.action` `utf8mb4_bin` collation + `INDEX audit_action` + additive `studio_migrate` ALTER verified end-to-end on the hosted runner.
+- Benchmark evidence (checkpoint `12472430130` `http-server.log`): 851 provider-settings renders — median ~0s, p90 ~0s, max 34s. Compare the docroots-era failure baseline: late-suite median ~15s, p90 ~27s, max ~30s. The dominant unindexed `BINARY action` scan cost is gone; a residual tail up to ~34s remains — consistent with the still-unindexed `provider_refreshes.operation` column, which stays a separate follow-up lane.
+- State: green candidate, not reviewed, not merged. Next: independent review of the diff (base schema + workspace.php migration), then normal merge to current `main` in queue order.
