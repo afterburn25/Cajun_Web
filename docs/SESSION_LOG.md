@@ -3618,3 +3618,11 @@ ebebd533 run 39855317065 was cancelled as superseded.
 - Fix: `python tools/build.py --refresh` regenerated two inventory hashes; committed as `67ecaa10`. Refresh output: 40 locked packages / 2188 dependency files no drift; 2201 receiving + 15 submission runtime files byte-identical; PHPMailer pins intact.
 - Also classified: push run 39834880367 (`3f6965a9`) native failed on the same `[data-registration-periods]` 5s expect race already fixed by `df873c66`'s wait-for-load bound — consistent classification, superseded head.
 - Next: full acceptance on `67ecaa10` (run 39862535705 dispatched; push run 39862407802 queued).
+
+## 2026-10-23 — run 39862535705 classified; WordPress cooldown repeat hardened
+
+- Request: continue monitoring; classify the completed cloud-candidate run.
+- Run 39862535705 on `67ecaa10`: build/recovery/apache green; native-and-browser red on one check — `WordPress installation immediate repeat obeys common cooldown`.
+- Evidence (`package-wordpress-installed-response-diagnostics.json`): `actor_reads` shows the two `package.wordpress-installed` reads at `started_epoch` 1792720133 and 1792720173 — **40s apart**. The repeat POST legitimately escaped the 30s shared cooldown because the `post()` helper re-GETs the page before posting (a ~10-30s render under congestion, plus the intermediate client GET). Product behaved correctly; the check's immediacy assumption broke.
+- Fix (owner precedent `7bbb7c50` on the directory-listing lane): `post()` now stores `post.last`, and the repeat reposts identical data directly — `owner.post(url, data=post.last)` bounded at 3 attempts until the `Wait 30 seconds` refusal appears. Semantics unchanged: an executed call still adds a provider call + observation row and the check still fails honestly.
+- File not contract-pinned on this branch. Committed `4fbce9db`, pushed; run 39886854693 dispatched.
