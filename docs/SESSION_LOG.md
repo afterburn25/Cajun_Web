@@ -5751,3 +5751,10 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - Dispatch: run `39916738437` on `9ee6a14d`; run `39906752652` (`830b2e99`) continues and will reproduce the same caller question if the failure recurs — its record still maps to `database.php:13`.
 - Also classified on this lane: cloud dispatch `39886854693` (`4fbce9db`) all five jobs green; PR-triggered `39886951265` (`e0511354`) red on the directory-listing recovery freshness window — fixed on the cloud branch as `f1c53d61`, runs `39912832426`/`39912825915` dispatched there.
 - Remaining: classify `39916738437`, `39906752652`, FSI `39912018481`/`39912016536`/`39902215559`, nameserver `39901898005`, php-controls `39900556800`, docroots `39911349541`, cloud `39912832426`/`39912825915`/`39912956591`.
+
+## 2026-10-23 (cont.) — invoicing `actor_id` root cause found; raw-row restore fix at 80d0a16c
+
+- Root cause (before the caller-frame run even needed to land): `domain_contracts_audit_row()` returns the *normalized* witness shape `{id, actor_id, action, detail}` — `actor_id` is synthesized from `user_id` and `created_at` is dropped. Line 77's `finally` passed it to `rni_restore_row('audit', …)`, generating `INSERT INTO rnin_audit (id,actor_id,action,detail)` — `audit` has no `actor_id`, producing the exact 42S22 error. Consistent with the crash ordering: check 34 recorded, no line-78 checks.
+- Fix (`80d0a16c`): capture the raw audit row (`SELECT *`) alongside the normalized witness and restore the raw row; the normalized row still supplies `id` for the DELETE. `php -l` clean; not contract-pinned.
+- Dispatch: run `39917250169` on `80d0a16c`. The `9ee6a14d` caller-frame instrumentation stays in the file (useful for future diagnosis); its queued run `39916738437` was cancelled as superseded — the failure is now understood and fixed.
+- In flight elsewhere: `39906752652` (`830b2e99` owner-GET diagnostic), cloud `39912832426`/`39912825915`/`39912956591` (`f1c53d61`/`d2a3cc9c`), FSI `39912018481`/`39912016536` (`b61bcd22`) + `39902215559` (`44d839f2`), nameserver `39901898005` (`4310ee17`), php-controls `39900556800` (`4f1f93ac`), docroots `39911349541` (`6a45884f`).
