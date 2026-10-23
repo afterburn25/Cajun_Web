@@ -1,0 +1,50 @@
+name: VPS contract checks
+
+on:
+  pull_request:
+    paths: ['foundation/vps/**', 'tests/vps/**', '.github/workflows/vps.yml']
+  push:
+    branches: [main, devin/vps-foundation, devin/vps-uncertainty-port]
+    paths: ['foundation/vps/**', 'tests/vps/**', '.github/workflows/vps.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vps-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  vps:
+    name: VPS PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and VPS lifecycle checks using the official PHP image
+        run: |
+          mkdir -p "$RUNNER_TEMP/vps-results"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/vps-results:/results" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/vps/*.php tests/vps/*.php; do php -l "$source"; done
+            php tests/vps/run.php /results/default.json
+            php -n tests/vps/run.php /results/no-ini.json
+          '
+      - name: Retain named lifecycle results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vps-lifecycle-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/vps-results/
+          if-no-files-found: error
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'VPS lifecycle unit checks only (synthetic specs/prices, no provider calls). Catalog UI, persistence, provider adapter and real provisioning/teardown remain untested by this job.' >> "$GITHUB_STEP_SUMMARY"
