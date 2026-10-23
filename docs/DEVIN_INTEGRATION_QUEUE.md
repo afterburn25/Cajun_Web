@@ -102,3 +102,7 @@ Reviewed `d2a3cc9c` vs main `bc5777f5` (47 files, 19 commits: codex `e2c88d9d`+`
 ## 2026-10-23 — systemic note: sequential cooldown repost remains on unfixed lanes
 
 The +30s admission-boundary escape fixed at `795211c4` (`devin/fix-docroots-worker-retry`) exists in the same six suites (`provider_{directory_listing,document_roots,package_force_ssl,package_php,package_wordpress_installed,registration_periods}_cases.py`) on every other lane — `-int`, `-fsi`, `-lf-02`, `-lf-pc`, `-audit`, `-cw` all carry the sequential single-shot repost (the `-cw` WordPress variant uses a direct repost + 3× retry loop that went green on `39886854693` but still escapes if the first repost lands past +30s). Preemptive porting was deferred: every lane has a run in flight on its current head, and a new head would need its own green run before acceptance — fixing now cannot change in-flight evidence. Policy: port `795211c4` reactively to any lane whose run fails on a cooldown-repost check, or fold it into that lane's next required push.
+
+## 2026-10-23 — StackCP lane merge-readiness note
+
+`devin/fix-stackcp-ops-whitelist` `f7b51f02` is green (`39846615525`, all 5 jobs) but its merge-base is `f688f79e` — **29 commits behind current main `bc5777f5`**. Before merge it needs a normal integration of current main (or PR263's resulting head) onto the branch and re-verification, since 43 lane commits / ~22k lines predate the delivered PR261/PR262 main. Labeled self-review deferred until the integrated head exists — reviewing the stale base now would not cover the merge result.
