@@ -236,6 +236,14 @@ def run_browser(env, browser):
     r = member.post(refused_page, data={'csrf': token(member.get(refused_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': refused_sid})
     copy_connections += 1
     refused_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [refused_sid])[0]['mime_bytes'].encode('ascii')
+    copy_rows = db('SELECT a.id,a.folder,a.started_epoch,r.outcome,r.result_code FROM ci_mail_copy_attempts a LEFT JOIN ci_mail_copy_results r ON r.id=a.id WHERE a.submission_id=?', [refused_sid])
+    refusal_diag = {'status_code': r.status_code, 'message': 'did not accept the configured Sent folder' in r.text,
+                    'wait_gate': 'Wait 2 seconds' in r.text, 'not_accepted': 'Only a submission' in r.text,
+                    'submission_status': db('SELECT status FROM ci_mail_submission_results WHERE submission_id=?', [refused_sid]),
+                    'copy_rows': copy_rows,
+                    'appended_len': None if inbox_server.appended is None else len(inbox_server.appended),
+                    'mime_len': len(refused_mime), 'commands_tail': inbox_server.commands[-4:], 'server_errors': inbox_server.errors[-4:]}
+    (QA / 'copy-refusal-diagnostics.json').write_text(json.dumps(refusal_diag, indent=2), encoding='utf-8')
     check('Server folder refusal records a bounded failure without copy claims', 'did not accept the configured Sent folder' in r.text and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [refused_sid]) == [{'result_code': 'folder'}] and inbox_server.appended == refused_mime)
     inbox_server.mode = 'ok'
     db('UPDATE ci_mail_copy_attempts SET started_epoch=0')
