@@ -5705,3 +5705,15 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - Tests: `php -l` on the PHP test file; `py_compile` on the Python check; contract JSON valid with single-pin re-anchor.
 - Dispatch: run 39864127932 on `803a7a11`.
 - Remaining: classify redispatch; other lanes continue independently.
+
+## 2026-10-22 (cont.) — contract cascade re-anchored via era-prior capture; preflight redispatched
+
+- Request: continue preflight lane; run 39864127932 failed at build before product jobs.
+- Starting commit: `137dedfc` (docs on `803a7a11`).
+- Failure: `ValueError: Client directory listing requests predecessor contract changed` — the `release_126_hosting_records.py` pin change at `803a7a11` invalidated every era's stored `predecessor_contract_sha256` (priors embed peer sections wholesale).
+- Diagnosis: `26ae6438` precedent shows the sanctioned repair is a full predecessor re-anchor, not repins. A working-tree repin attempt (`client_directory_requests.repins[12]`) was verified wrong empirically: repins revert the pin inside that section's prior, which then serves as the live contract for deeper eras — `published125_hosting_extension`'s own `hosting_source_bytes` check then expected the old pin while `historical_bytes` correctly returns current file bytes. Repin reverted.
+- Method: spy-run of `tests/acceptance_artifacts_test.py` with sha256 auto-equal only for JSON contract preimages (source-byte compares kept real so inverse/deny machinery works), capturing the actual `dump(prior)` bytes per era; deny-tamper records identified and excluded by `native_commands[0]` ' changed'/' altered'/' changed...' suffixes and popped-command count. Solved the 14-field triangular dependency (storefront→…→directory) by substituting embedded stored values oldest-first; also re-anchored `registered_nameserver_requests_acceptance.py` CONTRACT_SHA256 and its `source_sha256` pin inside the nsreq section, then recomputed the five embedding priors.
+- Change: `tools/acceptance-contract.json` — 13 `predecessor_contract_sha256` + 1 `merged_stage_contract_sha256` + 2 file pins; `tests/registered_nameserver_requests_acceptance.py` — CONTRACT_SHA256 constant only.
+- Tests: `python tests/acceptance_artifacts_test.py --report` — 1468/1468 pass (clean unpatched run).
+- Dispatch: run 39875802785 on `2a66a092`.
+- Remaining: classify all in-flight lanes (FSI 39861062231, cloud 39862535705/39862407802 + merge-candidate checks, StackCP 39846615525, nameserver 39857272145, php-controls 39856635999, docroots 39862486466, audit-index 39858223574).
