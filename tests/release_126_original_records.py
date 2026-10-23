@@ -1,8 +1,10 @@
 """Create existing agreement/recurring/license records on actual published1.25 BEFORE update."""
 import datetime
+import hashlib
 import json
 import os
 import subprocess
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from bs4 import BeautifulSoup
@@ -104,11 +106,24 @@ def prepare(repo, installed, base, php, owner, client, other, client_id, job_id,
     response = submit(owner, licenses, 'studio_domain_add', {'domain': domain}, {'license_id': license_id})
     ok('Original1.25 normal license records exact client domain locally', response.status_code == 200 and domain in response.text)
 
+    verify_calls = [0]
+
     def verify():
         stable = snapshot()
         own = client.get(client_agreement, timeout=120)
         recurring = client.get(recurring_client, timeout=120)
         statement = client.get(client_period, timeout=120)
+        verify_calls[0] += 1
+        diag = {
+            'install': str(installed), 'call': verify_calls[0],
+            'agreement': {'status': own.status_code, 'markers': {m: (m in own.text) for m in
+                          ['Active agreement', 'Agreement history', 'Sign in', 'unavailable', 'terms']},
+                          'title': BeautifulSoup(own.text, 'html.parser').find('title').get_text() if BeautifulSoup(own.text, 'html.parser').find('title') else None},
+            'recurring': {'status': recurring.status_code, 'markers': {m: (m in recurring.text) for m in
+                          [anchor, 'Retained release recurring care', 'Billing history', 'unavailable', 'Sign in']},
+                          'title': BeautifulSoup(recurring.text, 'html.parser').find('title').get_text() if BeautifulSoup(recurring.text, 'html.parser').find('title') else None},
+        }
+        (Path(repo) / 'qa' / ('r126-consent-' + hashlib.sha256(str(installed).encode()).hexdigest()[:8] + '-' + str(verify_calls[0]) + '.json')).write_text(json.dumps(diag, indent=2) + '\n', encoding='utf-8')
         ok('Retained original1.25 keeps actual client consent and active terms', own.status_code == 200 and 'Active agreement' in own.text
            and recurring.status_code == 200 and anchor in recurring.text and 'Retained release recurring care' in recurring.text)
         ok('Retained original1.25 retains exact recurring invoice balance', statement.status_code == 200 and 'Invoice balance: $20.00 USD' in statement.text)
