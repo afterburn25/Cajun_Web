@@ -48,6 +48,7 @@ def fields(form):
 
 
 _QA_DIR = None
+_STATE_FN = None
 
 
 def form_for(response, selector):
@@ -56,10 +57,15 @@ def form_for(response, selector):
         import json as _diag_json, hashlib as _diag_hash
         stem = "form-missing-" + _diag_hash.sha256(selector.encode()).hexdigest()[:12]
         try:
+            diag = {"selector": selector, "status": response.status_code, "url": response.url,
+                    "forms": len(forms), "bytes": len(response.text)}
+            if _STATE_FN is not None:
+                try:
+                    diag["state"] = _STATE_FN()
+                except Exception as probe_error:
+                    diag["state_error"] = type(probe_error).__name__ + ": " + str(probe_error)[:200]
             (_QA_DIR / (stem + ".html")).write_text(response.text, encoding="utf-8")
-            (_QA_DIR / (stem + ".json")).write_text(_diag_json.dumps({
-                "selector": selector, "status": response.status_code, "url": response.url,
-                "forms": len(forms), "bytes": len(response.text)}, indent=2), encoding="utf-8")
+            (_QA_DIR / (stem + ".json")).write_text(_diag_json.dumps(diag, indent=2), encoding="utf-8")
         except Exception:
             pass
         raise AssertionError("Expected one real POST form: " + selector)
@@ -358,7 +364,7 @@ def run_browser(env, browser):
             "notice_excerpt": response.text[:1200]}, indent=2), encoding="utf-8")
         check("Later different scalar remains fenced", row["readback"] == "different" and "Value differs" in response.text and soup(response).select_one("form[data-php-select]") is None)
         capture(owner, "PHP-Controls-Owner-History", owner_url, f'[data-php-request="{owner_request}"]')
-        provider.php_value = "php84"; cool()
+        provider.php_value = "php84"; fixture("inventory", {}); cool()
         post_form(owner, owner_url, f'[data-php-request="{owner_request}"] form[data-php-verify]', {"current_password": OWNER_PASSWORD})
         check("Independent matching scalar records observed disposition", request_row(owner_request)["readback"] == "observed")
         before, calls = state(), provider.calls; owner.post(owner_url, data=owner_verify, timeout=120)
@@ -398,6 +404,7 @@ def run_browser(env, browser):
             fixture("fault-clear", {})
         before, calls = state(), provider.calls; client.post(client_url, data=fault_change, timeout=120)
         no_effect(before, calls, "Original unresolved client replay never resends")
+        fixture("inventory", {})
         check("Client has no local recovery form", soup(client.get(client_url, timeout=30)).select_one("form[data-php-recover]") is None)
         capture(owner, "PHP-Controls-Owner-Recovery", owner_url, f'[data-php-request="{fault_request}"] form[data-php-recover]')
         before, calls = state(), provider.calls
