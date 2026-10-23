@@ -55,7 +55,7 @@ MODULES = [
     ('support', 'support_cases', 'run_browser', 'security', ['staff']),
     ('catalog', 'catalog_cases', 'run_browser', 'billing', ['staff']),
     ('catalog-import', 'provider_catalog_import_cases', 'run_browser', 'twentyi-inventory', []),
-    ('payments', 'payments_cases', 'run_browser', 'billing', ['staff']),
+    ('payments', 'payments_cases', 'run_browser', 'billing', ['catalog']),
     ('attempts', 'attempts_cases', 'run_browser', 'billing', ['payments']),
     ('notifications', 'notifications_cases', 'run_browser', 'mail', ['attempts']),
     ('ledger', 'ledger_cases', 'run_browser', 'billing', ['payments']),
