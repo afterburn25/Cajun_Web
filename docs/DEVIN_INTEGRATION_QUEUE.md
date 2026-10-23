@@ -205,3 +205,11 @@ Run `40001791189` (`5132de7f`, byte-cap raised to 1 MiB) still failed byte-exact
 Run `39991711546` (`f6af4bb1`) — the export-gate fix worked (report written normally, `count: 86`), but the packaged UI suite still failed: every recorded check passed, then a `requests` `ReadTimeout` (120s, port 8095) inside `run_browser`. The check list ends at "Review 2" items — the recovery/replay tail never recorded, so a `timeout=120` POST hung on the single-worker `php -S` server. Second consecutive hang-class failure in this suite (prior run: `networkidle` goto timeout on the client php-controls page) — a real hang pattern, not noise.
 
 `c401f9ea` adds `site_file`/`site_line` to the runner's failure dict (innermost `provider_php_controls_ui_*` frame) so the next run names the hung call site; pin re-anchored (`source_sha256` only — no deltas touch the file); local verifier 390/390. Dispatched `40023145297` on `c401f9ea`.
+
+## 2026-10-23 (cont.15) — Preflight: router fix verified; two remaining classified
+
+Run `40001903568` (`a4e4639a`): **notification check no longer fails** — router fix confirmed. Two failures remain:
+- apache `r126_ron_ Retained original1.25 keeps actual client consent and active terms` — same check as before = real lane regression. The `56cfe02e` instrumentation wrote `qa/r126-consent-*.json`, which the apache seal refuses (evidence lane admits `apache-*`/`organized-*` only) — diagnostics never uploaded.
+- native-browser `Explicit mark-read issues exactly one bounded flag write` — newly revealed (first run past the notification check). Diagnostics: flag result `connection` in 2ms, **zero fixture commands**, listener alive — a pre-wire refusal, not a wire failure.
+
+`1e9cfea3`: renamed diagnostics to `apache-r126-consent-*` (admitted) and added `error_log` to the mail connector's DNS/stream refusal paths (connector unpinned; lands in exported `qa/http-server.log`). Contract re-anchored through the full predecessor fixpoint incl. `published125_hosting_extension.predecessor_upgrade_contract_sha256` + nameserver mirrored constant; verifier 1468/1468. Dispatched `40024614698`.
