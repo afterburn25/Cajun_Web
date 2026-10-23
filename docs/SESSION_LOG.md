@@ -5717,3 +5717,14 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - Tests: `python tests/acceptance_artifacts_test.py --report` — 1468/1468 pass (clean unpatched run).
 - Dispatch: run 39875802785 on `2a66a092`.
 - Remaining: classify all in-flight lanes (FSI 39861062231, cloud 39862535705/39862407802 + merge-candidate checks, StackCP 39846615525, nameserver 39857272145, php-controls 39856635999, docroots 39862486466, audit-index 39858223574).
+
+## 2026-10-23 — no-schema hosting expectation corrected; full contract chain re-anchored; preflight redispatched
+
+- Request: continue preflight lane; run 39875802785 apache job failed the same check again.
+- Starting commit: `2a66a092`.
+- Failure: `r126_ron_ No-schema anonymous Hosting GET` — `803a7a11` had picked the wrong empty-state variant. `HostingCatalogRead::publicPage` returns `unavailable=false` on a schema-less install, so `hosting_catalog_comparison` renders the neutral state "Let’s find the right hosting for you." — not the unavailable string. Honest, no fingerprint leak, business unchanged (artifact verified).
+- Change: `tests/release_126_hosting_records.py` — assertion updated to the neutral phrase; all other guarantees preserved.
+- Contract: the pin change invalidated the whole predecessor chain again. Spy-capture + oldest-first settle repeated with corrected prior selection (deny-tamper records in `spy3` had been misclassified for sfhttp/imported/retail/selector — real priors are the first record at each check site; byte-exact replica of the verifier's selector prior confirmed the model). `registered_nameserver_requests_acceptance.py` CONTRACT_SHA256 re-mirrored twice through the pin cascade (final `8dd7b068...`), file re-pinned `908ba2dc`.
+- Result: `tools/acceptance-contract.json` 14 stored hashes + 2 pins settled; verifier 1468/1468 clean. Committed `10931f5e`.
+- Dispatch: run 39892127894 on `10931f5e`. Prior run 39875802785 still in flight — its apache r126 check carries the stale expectation by construction; remaining jobs still provide evidence.
+- Remaining: classify 39892127894 + fleet (FSI 39879709719, nameserver 39882705846, php-controls 39883955725, cloud 39886854693/39862535705, docroots 39862486466).
