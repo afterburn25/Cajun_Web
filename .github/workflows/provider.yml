@@ -4,10 +4,12 @@ on:
   pull_request:
     paths:
       - foundation/provider/**
+      - foundation/twentyi/TwentyICatalog.php
       - tests/provider/**
+      - tests/twentyi-catalog/**
       - .github/workflows/provider.yml
   push:
-    branches: [main, devin/provider-foundation]
+    branches: [main, devin/provider-catalog-port]
   workflow_dispatch:
 
 permissions:
@@ -34,8 +36,9 @@ jobs:
       - name: Syntax and provider contract checks using the official PHP image
         run: |
           docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
-            for source in foundation/provider/*.php tests/provider/*.php; do php -l "$source"; done
+            for source in foundation/provider/*.php foundation/twentyi/TwentyICatalog.php tests/provider/*.php tests/twentyi-catalog/*.php; do php -l "$source"; done
             php tests/provider/run.php
+            php tests/twentyi-catalog/run.php
           '
       - name: Record verification scope
         if: always()
