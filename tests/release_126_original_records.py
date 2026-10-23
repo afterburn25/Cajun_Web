@@ -123,7 +123,7 @@ def prepare(repo, installed, base, php, owner, client, other, client_id, job_id,
                           [anchor, 'Retained release recurring care', 'Billing history', 'unavailable', 'Sign in']},
                           'title': BeautifulSoup(recurring.text, 'html.parser').find('title').get_text() if BeautifulSoup(recurring.text, 'html.parser').find('title') else None},
         }
-        (Path(repo) / 'qa' / ('r126-consent-' + hashlib.sha256(str(installed).encode()).hexdigest()[:8] + '-' + str(verify_calls[0]) + '.json')).write_text(json.dumps(diag, indent=2) + '\n', encoding='utf-8')
+        (Path(repo) / 'qa' / ('apache-r126-consent-' + hashlib.sha256(str(installed).encode()).hexdigest()[:8] + '-' + str(verify_calls[0]) + '.json')).write_text(json.dumps(diag, indent=2) + '\n', encoding='utf-8')
         ok('Retained original1.25 keeps actual client consent and active terms', own.status_code == 200 and 'Active agreement' in own.text
            and recurring.status_code == 200 and anchor in recurring.text and 'Retained release recurring care' in recurring.text)
         ok('Retained original1.25 retains exact recurring invoice balance', statement.status_code == 200 and 'Invoice balance: $20.00 USD' in statement.text)
