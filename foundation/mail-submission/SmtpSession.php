@@ -63,7 +63,7 @@ final class SmtpSession extends SMTP
             if($command!=='DATA' || $data==="DATA\r\n")($this->authorize)();
         }
         $length=strlen($data);
-        if(++$this->writes>1100 || $length>2048 || ($this->sentBytes+=$length)>1048576)throw new ProbeFailure('limit');
+        if(++$this->writes>32768 || $length>2048 || ($this->sentBytes+=$length)>1048576)throw new ProbeFailure('limit');
         if(!str_ends_with($data,"\r\n") || preg_match('/[\x00\r\n]/',substr($data,0,-2)))throw new ProbeFailure('protocol');
         $this->replyCode=null;
         // Mark before the write: even a thrown partial-write failure may have
