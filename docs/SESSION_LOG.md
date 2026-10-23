@@ -3487,3 +3487,9 @@ The enclosing **fix: include retained diagnostic sources in development package*
 - `2378880d`'s page dump landed: the browser render shows `nameservers-client.invalid` (domain 14701) as **unlinked** — `provider_inventory_registrar_link` assign form, no `data-nameserver-change-setup`/`refresh`/`form` nodes, 28 `notice error` entries across other assignments. The `requests` GET moments earlier rendered the setup form fine and all `no_effect` state snapshots (which include `ci_provider_registrar_links`) passed — so the link row existed in DB while the browser render showed it absent.
 - Change: `fill_form` failure path now also writes `nameserver-change-form-state.json` — the failing selector/count, `ci_provider_registrar_links` row for domain 14701, `ci_registered_nameserver_bindings` for the link, and the 8 newest `ci_provider_refreshes` — to determine whether the row vanished or the render filtered it.
 - Committed `32b8d7f8`, pushed; run 39881959087 dispatched. Next: on repeat failure, the state dump distinguishes product defect from transient state.
+
+## 2026-10-23 (cont.) — run 39881959087 build failure: pin re-anchored
+
+- The `32b8d7f8` state-dump instrumentation touched `registered_nameserver_changes_cases.py`, which is `source_sha256`-pinned in TWO surviving sections — `registered_nameserver_requests` AND `registered_nameserver_changes_installed`. Build failed at "Client nameserver current source pin".
+- Re-anchored per the `26ae6438` precedent: both pin sites → `76298297`; requests' `predecessor_contract_sha256` + mirrored `CONTRACT_SHA256` in `registered_nameserver_requests_acceptance.py` → `05c9d9fb` (prior recomputed over the updated installed section — requests is newest so installed's own prior is unaffected); re-pinned the acceptance file (`51f099b2`). Local verifier 473/473 green.
+- Committed `4d673a8e`, pushed; run 39882705846 dispatched.
