@@ -158,6 +158,13 @@ def run_browser(env, browser):
     interrupted = db('SELECT * FROM ci_provider_directory_changes WHERE link_id=? ORDER BY grant_seq DESC LIMIT 1', [link['id']])[0]
     interrupted_grant = db('SELECT * FROM ci_provider_operation_grants WHERE id=?', [interrupted['id']])[0]
     interrupted_ledger = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['directoryindexing:' + interrupted['id']])[0]
+    recovery_diagnostics = {
+        'new_row': interrupted['id'] != request['id'], 'interrupted_id': interrupted['id'], 'request_id': request['id'],
+        'calls_delta': provider.calls - before_write_calls, 'last_post': provider.posts[-1] if provider.posts else None,
+        'ledger': {key: interrupted_ledger[key] for key in interrupted_ledger if key not in ('idempotency_key',)},
+        'terminal_rows': db('SELECT id FROM ci_provider_directory_dispatch_ends WHERE id=?', [interrupted['id']]),
+    }
+    (qa / 'directory-listing-recovery-failure.json').write_text(json.dumps(recovery_diagnostics, indent=2, default=str))
     check('Recovery HTTP fixture retains one finished attempt and genuinely absent terminal after rollback',
           interrupted['id'] != request['id'] and provider.calls == before_write_calls + 1
           and provider.posts[-1] == {'path': '/package/2301/web/directoryIndexing', 'body': {'value': False}}
