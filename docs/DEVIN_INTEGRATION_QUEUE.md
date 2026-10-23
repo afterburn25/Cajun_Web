@@ -223,3 +223,9 @@ Two distinct defects diagnosed:
 2. **Product bound**: `ReceivingStream::fwriteLiteral` hard-capped literals at 65,536 while `SentCopy`/`AppendSession` accept up to `PreparedMime::MAX_BYTES` (786,432) — the same stale-bound class as the SMTP caps, and it would have failed next anyway.
 
 `7fbc46a7`: `fwriteLiteral($data, int $max=65536)` with a 1MiB hard ceiling; `AppendSession` passes `$this->maxBytes` so the bounds cannot diverge again. Test sets `mode='append'` around the big-copy POST and restores `ok`. append_test stub mirrors the bound contract + raised-bound/over-ceiling cases (34/34). Mirrors + inventory refreshed (build PASS). Run `40026770020` in flight.
+
+## 2026-10-23 (cont.17) — Cloud: audit-count check needed the new read; docroots: platform 4h timeout
+
+Run `40006128366` (`ad5f6e38`): Force-SSL recovery now executes — the only failure was the terminal audit check `Control workflow uses nine own reads...`, stale after the fix added one `package.force-ssl` read. `89647b28` updates it to ten reads (expected ops list: the re-read lands right after the recovery `packages.list`). `calls`/`posts` baselines re-snapshot after the insert, so no other assertion needed a change. Not contract-pinned.
+
+Run `39996264484` (`514ba7dd`): `native-and-browser` exceeded the 4h0m platform job limit — canceled by GitHub, not a code failure. Fresh dispatch `40029428035` (a first `gh workflow run` with the filename form also fired silently; duplicate `40029435131` cancelled to conserve runners).
