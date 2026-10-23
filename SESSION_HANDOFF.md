@@ -1,6 +1,21 @@
 
 # Session handoff - Devin sole-owner continuation
 # Session handoff - Devin sole-owner continuation
+## 2026-10-23 — no-schema hosting expectation fixed; contract chain re-anchored; invoicing actor_id under instrumentation
+
+**State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate work continues on lanes; no live deployment authorized.
+
+**This cycle:**
+- Preflight `r126_ron_` apache check: expectation corrected to the neutral schema-less empty state ("Let’s find the right hosting for you.") — `HostingCatalogRead::publicPage` returns `unavailable=false` when the catalog schema is absent. All other guarantees (200, no fingerprint leak, unchanged business state, no storage prep) preserved — `10931f5e`.
+- Acceptance-contract cascade fully settled: the pin change invalidated all 13 era `predecessor_contract_sha256` + `merged_stage_contract_sha256` + nsreq mirror constant. Solved via spy-capture of era priors (sha256 auto-equal for contract-shaped JSON only; source-byte compares real), deny-tamper records excluded (real prior = first record at each check site; selector prior replicated byte-exactly), oldest→newest settle. `registered_nameserver_requests_acceptance.py` CONTRACT_SHA256 = `8dd7b068...`, file re-pinned `908ba2dc`. Verifier 1468/1468 clean — `10931f5e`, docs `3a83a3b1`.
+- FSI lane: run 39879709719 exposed a real product defect — `site/admin/views/mail_notices.php` `$route` omitted `folder`, so `posted('folder')` returned null and every notice open was refused at the route binding. Fixed `19eea50c`; inventory refreshed.
+- Docroots: run 39862486466 red at `Recovery HTTP fixture retains one finished attempt` conjunct check — six-part assertion, transient-looking (structurally identical force-SSL sibling passed same run); instrumented `d310f8b7` to dump each conjunct.
+- Invoicing: `39875802785` showed a new failure after the payments-migrate fix — `Unknown column 'actor_id' in 'INSERT INTO'` post-DR-orphan refusals. `Unexpected:` record now reports `basename:line` — `cf243319`.
+
+**Runs in flight:** preflight `39892127894` (apache-fix head) + `39895419341` (adds invoicing instrumentation), FSI `39894561533`/`39894562590`, nameserver `39882705846`, cloud `39886854693`, php-controls `39883955725`, docroots `39892375277`.
+
+**Next:** classify completions; on all-green lanes, merge leaf tips into preflight per the queue order, combined acceptance, then preflight+FSI → main with exact-main acceptance.
+
 ## 2026-10-21 — worker post-release budget wave; seven lanes redispatched; merge queue staged
 
 **State:** integration owner; published 1.25.0 immutable (`b79c6711`); 1.26.0 candidate assembling on `codex/twentyi-direct-hosting-catalog`; no live deployment authorized.
