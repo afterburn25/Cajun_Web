@@ -199,3 +199,9 @@ Fix `ad5f6e38`: added `post(refresh, link_id=...)` (provider_inventory_force_ssl
 ## 2026-10-23 (cont.13) — FSI attachment-MIME: second bound found (write-count cap)
 
 Run `40001791189` (`5132de7f`, byte-cap raised to 1 MiB) still failed byte-exact: wire stalled at **84,291** — past the old 73,728 byte cap but a clean prefix. PHPMailer `SMTP::data()` emits one `client_send` per logical line; the `writes>1100` session bound fires at ~1100 base64 lines (~85 KB), long before the byte cap. `6dfe8c2b` raises `writes>1100` → `writes>32768` in `SmtpSession` + `SubmissionChannel` (both layers/mirrors; a 1 MiB session at ≥32 B average line stays bounded) and scales the native `write_count` probe to `$i<32769`. `php -l` clean, `build.py --refresh` regenerated inventory, no contract pins on this branch. Run `40014891159` in flight.
+
+## 2026-10-23 (cont.14) — PHP-controls packaged suite: second hang-class failure
+
+Run `39991711546` (`f6af4bb1`) — the export-gate fix worked (report written normally, `count: 86`), but the packaged UI suite still failed: every recorded check passed, then a `requests` `ReadTimeout` (120s, port 8095) inside `run_browser`. The check list ends at "Review 2" items — the recovery/replay tail never recorded, so a `timeout=120` POST hung on the single-worker `php -S` server. Second consecutive hang-class failure in this suite (prior run: `networkidle` goto timeout on the client php-controls page) — a real hang pattern, not noise.
+
+`c401f9ea` adds `site_file`/`site_line` to the runner's failure dict (innermost `provider_php_controls_ui_*` frame) so the next run names the hung call site; pin re-anchored (`source_sha256` only — no deltas touch the file); local verifier 390/390. Dispatched `40023145297` on `c401f9ea`.
