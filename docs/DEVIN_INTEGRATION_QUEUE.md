@@ -213,3 +213,13 @@ Run `40001903568` (`a4e4639a`): **notification check no longer fails** — route
 - native-browser `Explicit mark-read issues exactly one bounded flag write` — newly revealed (first run past the notification check). Diagnostics: flag result `connection` in 2ms, **zero fixture commands**, listener alive — a pre-wire refusal, not a wire failure.
 
 `1e9cfea3`: renamed diagnostics to `apache-r126-consent-*` (admitted) and added `error_log` to the mail connector's DNS/stream refusal paths (connector unpinned; lands in exported `qa/http-server.log`). Contract re-anchored through the full predecessor fixpoint incl. `published125_hosting_extension.predecessor_upgrade_contract_sha256` + nameserver mirrored constant; verifier 1468/1468. Dispatched `40024614698`.
+
+## 2026-10-23 (cont.16) — FSI: third bound found in sent-copy APPEND literal + fixture-mode test bug
+
+Run `40014891159` (`6dfe8c2b`): SMTP now completes exactly (wire 141,078 == MIME, terminator sent, attachment decodes). Failure moved to `Sent copy carries the larger attachment MIME byte-exactly`.
+
+Two distinct defects diagnosed:
+1. **Test fixture mode**: `inbox_server.mode = 'ok'` at mail_submissions_cases.py:252 (restored after the refusal case) — but the large-attachment copy POST at :301 ran under `ok` (generic-read branch expects `CWR*` commands; the app sends `CWA*`), so the append never completed. `copy-refusal-diagnostics.json` captured the *refusal* attempt only — its `result_code: 'folder'` was the intentional refusal, not the big-copy failure.
+2. **Product bound**: `ReceivingStream::fwriteLiteral` hard-capped literals at 65,536 while `SentCopy`/`AppendSession` accept up to `PreparedMime::MAX_BYTES` (786,432) — the same stale-bound class as the SMTP caps, and it would have failed next anyway.
+
+`7fbc46a7`: `fwriteLiteral($data, int $max=65536)` with a 1MiB hard ceiling; `AppendSession` passes `$this->maxBytes` so the bounds cannot diverge again. Test sets `mode='append'` around the big-copy POST and restores `ok`. append_test stub mirrors the bound contract + raised-bound/over-ceiling cases (34/34). Mirrors + inventory refreshed (build PASS). Run `40026770020` in flight.
