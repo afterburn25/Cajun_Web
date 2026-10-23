@@ -34,11 +34,20 @@ def main():
         shas.add(payload.get('source_sha') or 'unknown')
     seen = {}
     for u in units:
-        # A unit may appear in more than one group file only if groups overlap;
-        # keep the worst status so duplicates cannot soften the result.
+        # Prerequisite modules are replayed as 'preparation' units inside
+        # dependent groups, so one unit legitimately appears in several files.
+        # Keep the worst status so a duplicate can never soften a result, and
+        # retain every reporting file as provenance.
         worst = {'passed': 0, 'skipped': 1, 'absent': 1, 'blocked': 2, 'failed': 3}
-        if u['key'] in seen and worst.get(seen[u['key']]['status'], 0) >= worst.get(u['status'], 0):
-            continue
+        if u['key'] in seen:
+            kept = seen[u['key']]
+            kept['reported_in'].append(u['result_file'])
+            kept['other_statuses'].append(u['status'])
+            if worst.get(kept['status'], 0) >= worst.get(u['status'], 0):
+                continue
+            u['reported_in'] = kept['reported_in']; u['other_statuses'] = kept['other_statuses']
+        else:
+            u['reported_in'] = [u['result_file']]; u['other_statuses'] = []
         seen[u['key']] = u
     units = list(seen.values())
     counts = {s: 0 for s in STATUS}

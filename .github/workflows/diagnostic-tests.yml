@@ -289,7 +289,13 @@ jobs:
         run: python3 tools/acceptance_artifacts.py receive --lane native-browser
       - name: Seed the isolated acceptance fixture database
         id: native
-        run: $PHP_BINARY tests/native.php
+        # native.php seeds the whole ci_ schema (including studio_migrate);
+        # provider_catalog_import_native.php produces the qa artifact the
+        # catalog-import module consumes. Other *_native suites run on their
+        # own isolated prefixes and leave no ci_ state the modules need.
+        run: |
+          "$PHP_BINARY" tests/native.php
+          "$PHP_BINARY" tests/provider_catalog_import_native.php
       - name: Collect diagnostic results for ${{ matrix.group }}
         id: diagnose
         run: .ci-venv/bin/python tests/diagnostic_acceptance.py --group "${{ matrix.group }}" --tag "${{ matrix.group }}"

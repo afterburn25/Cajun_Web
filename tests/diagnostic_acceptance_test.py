@@ -103,6 +103,62 @@ def main():
     # Module selection: --modules semantics and dependency expansion.
     ok('Selection covers all groups by default', len({m[3] for m in reg.MODULES}) == len(reg.GROUPS))
 
+    # Prerequisite closure: verified readiness edges make group runs
+    # self-sufficient on a fresh ci_ schema.
+    ok('catalog closure is staff only', diag.closure({'catalog'}) == {'staff'})
+    ok('billing module payments pulls staff', 'staff' in diag.closure({'payments'}))
+    ok('Domain module pulls provider-settings chain',
+       {'provider-settings', 'payments', 'staff'} <= diag.closure({'domain-search'}))
+    ok('StackCP access pulls the whole provider chain',
+       {'stackcp-prerequisites', 'provider-settings', 'payments', 'staff'} <= diag.closure({'stackcp-access'}))
+    ok('Closure excludes the selected key itself', 'catalog' not in diag.closure({'catalog'}))
+    # No requirement cycles (topological check over module edges).
+    req = {m[0]: list(m[4]) for m in reg.MODULES}
+    state = {}
+    def acyclic(k):
+        if state.get(k) == 1:
+            return False
+        if state.get(k) == 2:
+            return True
+        state[k] = 1
+        ok_flag = all(acyclic(d) for d in req.get(k, []))
+        state[k] = 2
+        return ok_flag
+    ok('Module prerequisites are acyclic', all(acyclic(k) for k in req))
+
+    # Preparation placeholder marks cross-group replayed units.
+    diag.HOME_KEYS = {'catalog'}
+    rec = diag.placeholder(('staff', 'staff_cases', 'run_browser', 'portal', []), 'blocked', 'PrerequisiteBlocked', 'Requires: x')
+    ok('Placeholder marks non-home unit as preparation', rec['role'] == 'preparation')
+    ok('Placeholder marks home unit as home',
+       diag.placeholder(('catalog', 'catalog_cases', 'run_browser', 'billing', []), 'blocked', 'x', 'y')['role'] == 'home')
+    diag.HOME_KEYS = set()
+
+    # Combined report keeps the worst status when a prerequisite is replayed
+    # in several group reports, and retains provenance.
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        base = {'kind': 'diagnostic-results', 'source_sha': 'b' * 40, 'totals': {}, 'not_reached': []}
+        unit = {'key': 'staff', 'kind': 'module', 'group': 'portal', 'checks': 5,
+                'failed_checks': [], 'error': None, 'elapsed_s': 1,
+                'after_failures': [], 'captures': [], 'assignment': 'studio/portal lane'}
+        a = dict(base, selection={'groups': ['portal'], 'modules': ['staff']},
+                 units=[dict(unit, status='passed', role='home')])
+        b = dict(base, selection={'groups': ['billing'], 'modules': ['catalog'], 'preparation': ['staff']},
+                 units=[dict(unit, status='failed', role='preparation',
+                             error={'class': 'AssertionError', 'message': 'm', 'site': None})])
+        (tmp / 'diagnostic-portal-results.json').write_text(json.dumps(a))
+        (tmp / 'diagnostic-billing-results.json').write_text(json.dumps(b))
+        code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
+                               '--expect=portal,billing', str(tmp), str(tmp / 'dup')],
+                              capture_output=True, text=True)
+        merged = json.loads((tmp / 'dup.json').read_text())
+        kept = [u for u in merged['units'] if u['key'] == 'staff']
+        ok('Replayed prerequisite keeps worst status', len(kept) == 1 and kept[0]['status'] == 'failed')
+        ok('Provenance records both group reports',
+           sorted(kept[0]['reported_in']) == ['diagnostic-billing-results.json', 'diagnostic-portal-results.json'])
+        ok('Duplicate-status run still exits non-zero', code.returncode == 1)
+
     print(json.dumps({'checks': len(results), 'passed': sum(1 for _, p in results if p)}))
     return 0
 

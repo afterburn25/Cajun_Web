@@ -93,9 +93,10 @@ def last_site(exc):
 
 results = []
 status_of = {}
+HOME_KEYS = set()
 
 
-def run_unit(key, kind, group, fn):
+def run_unit(key, kind, group, fn, role='home'):
     """One exception boundary. Records outcome; never raises."""
     global current_unit
     current_unit = key
@@ -116,10 +117,32 @@ def run_unit(key, kind, group, fn):
     results.append({'key': key, 'kind': kind, 'group': group, 'status': status, 'checks': len(mine),
                     'failed_checks': failed_names, 'error': error, 'elapsed_s': elapsed,
                     'after_failures': [r['key'] for r in results if r['status'] in ('failed', 'blocked')],
-                    'captures': captures, 'assignment': ASSIGNMENTS.get(group, 'unassigned lane')})
+                    'captures': captures, 'assignment': ASSIGNMENTS.get(group, 'unassigned lane'),
+                    'role': role})
     status_of[key] = status
     current_unit = 'teardown'
     return status
+
+
+def closure(keys):
+    """Transitive module prerequisites of keys, as a set of module keys."""
+    required = {m[0]: list(m[4]) for m in MODULES}
+    out = set()
+    stack = [k for k in keys]
+    while stack:
+        for dep in required.get(stack.pop(), []):
+            if dep not in out and dep not in keys:
+                out.add(dep)
+                stack.append(dep)
+    return out
+
+
+def placeholder(m, status, error_class, message):
+    return {'key': m[0], 'kind': 'module', 'group': m[3], 'status': status, 'checks': 0,
+            'failed_checks': [], 'error': {'class': error_class, 'message': message, 'site': None},
+            'elapsed_s': 0, 'after_failures': [r['key'] for r in results if r['status'] in ('failed', 'blocked')],
+            'captures': [], 'assignment': ASSIGNMENTS.get(m[3], 'unassigned lane'),
+            'role': 'home' if m[0] in HOME_KEYS else 'preparation'}
 
 
 def unit_state():
@@ -278,7 +301,9 @@ def write_reports(tag, selected_modules):
     not_reached = sorted(selected_keys - {r['key'] for r in results})
     payload = {'kind': 'diagnostic-results', 'transport': 'real loopback HTTP; PHP built-in server; native database; actual browser fetch',
                'source_sha': os.environ.get('GITHUB_SHA') or subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True, cwd=ROOT).stdout.strip(),
-               'selection': {'groups': sorted({m[3] for m in selected_modules}), 'modules': sorted(selected_keys)},
+               'selection': {'groups': sorted({m[3] for m in MODULES if m[0] in HOME_KEYS}),
+                             'modules': sorted(HOME_KEYS),
+                             'preparation': sorted(selected_keys - HOME_KEYS)},
                'totals': dict(counts, units=len(results), checks=len(checks), checks_failed=sum(1 for c in checks if not c['passed'])),
                'units': results, 'not_reached': not_reached,
                'scope': 'Diagnostic collection only — not release acceptance; any failure or blocked unit fails this run.'}
@@ -299,7 +324,8 @@ def main():
     ap = argparse.ArgumentParser(description='Bounded multi-failure diagnostic run of the installed browser suite.')
     ap.add_argument('--group', action='append', help='Diagnostic group(s), comma-separated or repeated. Default: all.')
     ap.add_argument('--modules', default='', help='Comma-separated module keys to run instead of whole groups (stages still run).')
-    ap.add_argument('--include-deps', action='store_true', help='With --modules, also run prerequisite module keys.')
+    ap.add_argument('--no-deps', action='store_true',
+                    help='Run only the explicitly selected modules; do not replay cross-group prerequisites.')
     ap.add_argument('--tag', default='', help='Report file tag (default: group name or all).')
     ap.add_argument('--list', action='store_true', help='Print the registry and exit without running.')
     args = ap.parse_args()
@@ -310,18 +336,20 @@ def main():
     module_keys = {m.strip() for m in args.modules.split(',') if m.strip()}
     known = {m[0] for m in MODULES}
     if module_keys - known: raise SystemExit('Unknown module key(s): ' + ', '.join(sorted(module_keys - known)))
-    if args.include_deps:
-        extra = set(); extra_req = {m[0]: m[4] for m in MODULES}
-        frontier = list(module_keys)
-        while frontier:
-            for dep in extra_req.get(frontier.pop(), []):
-                if dep in known and dep not in module_keys and dep not in extra: extra.add(dep); frontier.append(dep)
-        module_keys |= extra
 
     if module_keys:
-        selected = [m for m in MODULES if m[0] in module_keys]
+        home = set(module_keys)
     else:
-        selected = [m for m in MODULES if m[3] in groups or 'all' in groups]
+        home = {m[0] for m in MODULES if m[3] in groups or 'all' in groups}
+    # Modules in other groups that the selection's prerequisites require are
+    # replayed as 'preparation' units so every run is self-sufficient on a
+    # freshly seeded ci_ schema. Their results are real assertion results;
+    # a failed preparation marks dependents blocked through the same
+    # prerequisite machinery.
+    global HOME_KEYS
+    HOME_KEYS = home
+    selected_keys = home if args.no_deps else home | closure(home)
+    selected = [m for m in MODULES if m[0] in selected_keys]
     if args.list:
         print(json.dumps({'groups': GROUPS, 'stages': [s[:2] for s in STAGES], 'modules': [
             {'key': m[0], 'file': 'tests/' + m[1] + '.py', 'group': m[3], 'requires': m[4]} for m in MODULES]}, indent=2))
@@ -359,9 +387,7 @@ def main():
             except requests.RequestException: time.sleep(.2)
         if not healthy:
             for m in selected:
-                results.append({'key': m[0], 'kind': 'module', 'group': m[3], 'status': 'blocked', 'checks': 0,
-                                'failed_checks': [], 'error': {'class': 'ServerUnreachable', 'message': 'Application server did not respond', 'site': None},
-                                'elapsed_s': 0, 'after_failures': [], 'captures': [], 'assignment': ASSIGNMENTS.get(m[3], 'unassigned lane')})
+                results.append(placeholder(m, 'blocked', 'ServerUnreachable', 'Application server did not respond'))
             counts = write_reports(tag, selected)
             print(json.dumps(counts)); return 1
 
@@ -380,17 +406,13 @@ def main():
             requires = list(MODULE_STAGE_REQUIRES) + list(extra_requires)
             missing = [r for r in requires if status_of.get(r) != 'passed']
             if missing:
-                results.append({'key': key, 'kind': 'module', 'group': group, 'status': 'blocked', 'checks': 0, 'failed_checks': [],
-                                'error': {'class': 'PrerequisiteBlocked', 'message': 'Requires: ' + ', '.join(missing), 'site': None},
-                                'elapsed_s': 0, 'after_failures': [r['key'] for r in results if r['status'] in ('failed', 'blocked')],
-                                'captures': [], 'assignment': ASSIGNMENTS.get(group, 'unassigned lane')})
+                results.append(placeholder((key, stem, attr, group, extra_requires), 'blocked', 'PrerequisiteBlocked',
+                                           'Requires: ' + ', '.join(missing)))
                 status_of[key] = 'blocked'; continue
             path = ROOT / 'tests' / (stem + '.py')
             if not path.is_file():
-                results.append({'key': key, 'kind': 'module', 'group': group, 'status': 'absent', 'checks': 0, 'failed_checks': [],
-                                'error': {'class': 'ModuleAbsent', 'message': path.name + ' not present in this source tree', 'site': None},
-                                'elapsed_s': 0, 'after_failures': [r['key'] for r in results if r['status'] in ('failed', 'blocked')],
-                                'captures': [], 'assignment': ASSIGNMENTS.get(group, 'unassigned lane')})
+                results.append(placeholder((key, stem, attr, group, extra_requires), 'absent', 'ModuleAbsent',
+                                           path.name + ' not present in this source tree'))
                 status_of[key] = 'absent'; continue
 
             def invoke(stem=stem, attr=attr, key=key):
@@ -400,13 +422,14 @@ def main():
                     fn(env(), browser, release_fixture)
                 else:
                     fn(env(), browser)
-            run_unit(key, 'module', group, invoke)
+            run_unit(key, 'module', group, invoke, role='home' if key in HOME_KEYS else 'preparation')
 
         for m in MODULES:
             if m not in selected:
                 results.append({'key': m[0], 'kind': 'module', 'group': m[3], 'status': 'skipped', 'checks': 0,
                                 'failed_checks': [], 'error': None, 'elapsed_s': 0,
-                                'after_failures': [], 'captures': [], 'assignment': ASSIGNMENTS.get(m[3], 'unassigned lane')})
+                                'after_failures': [], 'captures': [], 'assignment': ASSIGNMENTS.get(m[3], 'unassigned lane'),
+                                'role': 'skipped'})
 
         run_unit('server-log', 'stage', 'security', stage_log_check)
     finally:
