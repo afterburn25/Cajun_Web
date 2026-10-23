@@ -1,6 +1,7 @@
 """Exact packaged PHP-version forms and saved client observation; loopback TLS only."""
 import hashlib
 import json
+import threading
 import time
 import requests
 from urllib.parse import parse_qs, urlparse
@@ -83,6 +84,7 @@ def run_browser(env, browser):
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
         data.update({'current_password': OWNER, **fields})
+        post.last = data
         return owner.post(url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
@@ -107,13 +109,32 @@ def run_browser(env, browser):
     for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'}), ('binding', {'binding_sha256': 'a' * 64})]:
         post(refresh, link_id=link['id'], **fields)
         check('PHP refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_php_reads'))
-    cool(); provider.php_version = 'php82'; response = post(refresh, link_id=link['id'])
+    cool(); provider.php_version = 'php82'
+    repeater = requests.Session()
+    for cookie in owner.cookies:
+        repeater.cookies.set(cookie.name, cookie.value)
+    reposted = {}
+    def repeat_once_admitted():
+        base_seq = db("SELECT COALESCE(MAX(seq),0) AS s FROM ci_provider_refreshes WHERE profile_id=? AND BINARY operation='package.php-version'", [profile['id']])[0]['s']
+        marker = getattr(post, 'last', None)
+        deadline = time.time() + 240
+        while getattr(post, 'last', None) is marker and time.time() < deadline:
+            time.sleep(0.1)
+        while time.time() < deadline:
+            if db("SELECT id FROM ci_provider_refreshes WHERE profile_id=? AND BINARY operation='package.php-version' AND seq>?", [profile['id'], base_seq]):
+                reposted['r'] = repeater.post(url, data=post.last)
+                return
+            time.sleep(0.2)
+    repeat_thread = threading.Thread(target=repeat_once_admitted, daemon=True)
+    repeat_thread.start()
+    response = post(refresh, link_id=link['id'])
+    repeat_thread.join()
     evidence('Complete PHP observation', response)
     section = soup(response).select_one('#package-php-version')
     check('PHP owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/1701/web/phpVersion' and section is not None and 'php82' in section.text and 'Latest saved PHP version' in section.text)
     saved = db('SELECT * FROM ci_provider_php_observations')[0]
     check('PHP owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved PHP version' in section.text and 'php82' not in client.get(target).text)
-    repeated = post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
+    repeated = reposted['r'] if 'r' in reposted else post(refresh, link_id=link['id']); evidence('Shared cooldown refusal', repeated)
     check('PHP immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_php_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)

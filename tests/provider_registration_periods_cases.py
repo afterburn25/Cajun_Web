@@ -1,6 +1,7 @@
 """Real installed owner/client forms and fixed TLS fixture read; no live provider."""
 import hashlib
 import json
+import threading
 import time
 import requests
 from urllib.parse import parse_qs, urlparse
@@ -99,12 +100,26 @@ def run_browser(env, browser):
     cooldown()
     context=browser.new_context(viewport={'width':1440,'height':1050});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in owner.cookies]);page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(url+'#registration-periods')
     assignments={t:db('SELECT * FROM ci_'+t+' ORDER BY id') for t in ['provider_package_links','provider_domain_links','provider_cloud_links']}
+    repeater=requests.Session()
+    for cookie in owner.cookies:
+        repeater.cookies.set(cookie.name,cookie.value)
+    reposted={}
+    def repeat_once_admitted():
+        base_seq=db("SELECT COALESCE(MAX(seq),0) AS s FROM ci_provider_refreshes WHERE BINARY operation='domain.registration.periods'",[])[0]['s']
+        deadline=time.time()+240
+        while time.time()<deadline:
+            if db("SELECT id FROM ci_provider_refreshes WHERE BINARY operation='domain.registration.periods' AND seq>?",[base_seq]):
+                reposted['r']=submit(repeater,url,'provider_inventory_period_refresh',{'current_password':OWNER})
+                return
+            time.sleep(0.2)
+    repeat_thread=threading.Thread(target=repeat_once_admitted,daemon=True);repeat_thread.start()
     form=page.locator('[data-registration-period-refresh]');form.locator('[name=current_password]').fill(OWNER);form.get_by_role('button',name='Refresh registration options',exact=True).click()
     expect(page.locator('[data-registration-periods]')).to_contain_text('1 year, 3 years')
+    repeat_thread.join()
     check('Chromium owner action makes one fixed authenticated period GET',provider.calls==calls+1 and provider.get_paths[-1]=='/domain-period' and provider.posts==posts)
     check('Period read preserves every explicit client assignment',all(db('SELECT * FROM ci_'+t+' ORDER BY id')==v for t,v in assignments.items()))
     rows=db('SELECT * FROM ci_provider_observation_registration_periods');check('Period observation persists bounded typed years without secrets',len(rows)==1 and json.loads(rows[0]['document_json'])['state']=='complete' and 'SYNTHETIC_RAW_GENERAL_KEY' not in json.dumps(rows))
-    repeated=submit(owner,url,'provider_inventory_period_refresh',{'current_password':OWNER});evidence('Shared cooldown refusal',repeated)
+    repeated=reposted['r'] if 'r' in reposted else submit(owner,url,'provider_inventory_period_refresh',{'current_password':OWNER});evidence('Shared cooldown refusal',repeated)
     check('Repeated period action respects shared cooldown',provider.calls==calls+1 and len(db('SELECT * FROM ci_provider_registration_period_reads'))==1 and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     client_response=client.get(client_url);part=soup(client_response).select_one('[data-client-registration-periods]')
     check('Client sees only currently offered saved options and time',part is not None and '.invalid' in part.text and '.co.uk' in part.text and '.com' not in part.text and '1 year, 3 years' in part.text and 'Recorded ' in part.text and fields['period_profile'] not in client_response.text)

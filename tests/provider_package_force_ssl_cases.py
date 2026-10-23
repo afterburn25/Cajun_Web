@@ -1,6 +1,7 @@
 """Exact packaged Force SSL forms and saved client observation; loopback TLS only."""
 import hashlib
 import json
+import threading
 import time
 import requests
 from urllib.parse import parse_qs, urlparse
@@ -108,14 +109,33 @@ def run_browser(env, browser):
     for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'}), ('binding', {'binding_sha256': 'a' * 64})]:
         post(refresh, link_id=link['id'], **fields)
         check('Force SSL refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_force_ssl_reads'))
-    cool(); provider.force_ssl = True; response = post(refresh, link_id=link['id'])
+    cool(); provider.force_ssl = True
+    repeater = requests.Session()
+    for cookie in owner.cookies:
+        repeater.cookies.set(cookie.name, cookie.value)
+    reposted = {}
+    def repeat_once_admitted():
+        base_seq = db("SELECT COALESCE(MAX(seq),0) AS s FROM ci_provider_refreshes WHERE profile_id=? AND BINARY operation='package.force-ssl'", [profile['id']])[0]['s']
+        marker = getattr(post, 'last', None)
+        deadline = time.time() + 240
+        while getattr(post, 'last', None) is marker and time.time() < deadline:
+            time.sleep(0.1)
+        while time.time() < deadline:
+            if db("SELECT id FROM ci_provider_refreshes WHERE profile_id=? AND BINARY operation='package.force-ssl' AND seq>?", [profile['id'], base_seq]):
+                reposted['r'] = repeater.post(url, data=post.last)
+                return
+            time.sleep(0.2)
+    repeat_thread = threading.Thread(target=repeat_once_admitted, daemon=True)
+    repeat_thread.start()
+    response = post(refresh, link_id=link['id'])
+    repeat_thread.join()
     evidence('Complete Force SSL observation', response)
     section = soup(response).select_one('#package-force-ssl')
     check('Force SSL owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/1901/web/forceSSL' and section is not None and 'Flag reported set' in section.text and 'Latest saved Force SSL flag' in section.text)
     saved = db('SELECT * FROM ci_provider_force_ssl_observations')[0]
     check('Force SSL true is retained as an exact boolean document', saved['value_json'] == 'true')
     check('Force SSL owner observation has date and separate sharing', 'UTC' in section.text and 'Share saved Force SSL flag' in section.text and 'Flag reported set' not in client.get(target).text)
-    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
+    repeated = reposted['r'] if 'r' in reposted else owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     check('Force SSL immediate repeat obeys common cooldown', provider.calls == calls + 1 and db('SELECT * FROM ci_provider_force_ssl_observations') == [saved] and any('Wait 30 seconds' in n for n in diagnostics[-1]['inline_errors']))
     post(share, link_id=link['id'], sharing='enable')
     response = client.get(target)

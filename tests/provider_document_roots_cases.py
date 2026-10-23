@@ -1,6 +1,7 @@
 """Exact packaged document-roots forms and saved client observation; loopback TLS only."""
 import hashlib
 import json
+import threading
 import time
 import requests
 from urllib.parse import parse_qs, urlparse
@@ -117,10 +118,29 @@ def run_browser(env, browser):
     for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'}), ('binding', {'binding_sha256': 'a' * 64})]:
         post(refresh, link_id=link['id'], **fields)
         check('Document roots refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_document_roots_reads'))
-    cool(); provider.document_roots = {'roots-observation.synthetic.invalid': '../private/<folder> é', 'empty.synthetic.invalid': ''}; response = post(refresh, link_id=link['id'])
+    cool(); provider.document_roots = {'roots-observation.synthetic.invalid': '../private/<folder> é', 'empty.synthetic.invalid': ''}
+    repeater = requests.Session()
+    for cookie in owner.cookies:
+        repeater.cookies.set(cookie.name, cookie.value)
+    reposted = {}
+    def repeat_once_admitted():
+        base_seq = db("SELECT COALESCE(MAX(seq),0) AS s FROM ci_provider_refreshes WHERE profile_id=? AND BINARY operation='package.document-roots'", [profile['id']])[0]['s']
+        marker = getattr(post, 'last', None)
+        deadline = time.time() + 240
+        while getattr(post, 'last', None) is marker and time.time() < deadline:
+            time.sleep(0.1)
+        while time.time() < deadline:
+            if db("SELECT id FROM ci_provider_refreshes WHERE profile_id=? AND BINARY operation='package.document-roots' AND seq>?", [profile['id'], base_seq]):
+                reposted['r'] = repeater.post(url, data=post.last)
+                return
+            time.sleep(0.2)
+    repeat_thread = threading.Thread(target=repeat_once_admitted, daemon=True)
+    repeat_thread.start()
+    response = post(refresh, link_id=link['id'])
+    repeat_thread.join()
     evidence('Complete Document roots observation', response)
     saved = db('SELECT * FROM ci_provider_document_roots_observations')[0]
-    repeated = owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
+    repeated = reposted['r'] if 'r' in reposted else owner.post(url, data=post.last); evidence('Shared cooldown refusal', repeated)
     section = soup(response).select_one('#document-roots')
     check('Document roots owner form sends one exact assigned-package GET', provider.calls == calls + 1 and provider.get_paths[-1] == '/package/1801/web/documentRoots' and section is not None and '../private/<folder> é' in section.text and 'Latest saved website folders' in section.text)
     check('Document roots displays exact escaped text without filesystem links', section.select_one('pre').text == '../private/<folder> é' and '<folder>' not in response.text and '&lt;folder&gt;' in response.text and not any('../private' in n.get('href', '') for n in section.select('a[href]')) and 'Empty text value' in section.text)
