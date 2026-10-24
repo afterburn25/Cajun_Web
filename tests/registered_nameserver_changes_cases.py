@@ -120,6 +120,9 @@ def run_browser(env, browser):
         registrar.post(urljoin(settings, form.get('action') or settings), data=data, timeout=150)
 
     def navigate():
+        # The browser shares the owner session; privileged flows such as a
+        # support session regenerate its id, so the context tracks owner.cookies.
+        context.add_cookies([{'name': c.name, 'value': c.value, 'url': base} for c in owner.cookies])
         try:
             response = page.goto(settings, wait_until='load', timeout=90000)
         except Exception as error:
