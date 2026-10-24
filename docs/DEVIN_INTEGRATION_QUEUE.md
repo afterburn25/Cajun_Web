@@ -241,3 +241,10 @@ Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** —
 - FSI `7fbc46a7` run `40026770020`: mail lane passed (sent-copy APPEND fixed); new failure `Billing-enabled contact sees billing navigation` — check written in `cefb08d6` asserted `recurring=1` before recurring storage is ever prepared (suite order: service_plan before recurring_billing). Corrected to the two renderable links in `e15681e2`; run `40036507274` in flight.
 - Environment: local disk C: at 100% — verifier/artifact downloads must use D: paths or TEMP override.
 - Dispatched: preflight `40041496495` (`b648c16f`, recurring-notice diag), `40042016903` (`88e235f2`, +flag refusal logging); docroots `40029428035`.
+
+## 2026-10-23 (cont.20) — Nameserver 40018564092 classified: render-degradation timeout
+
+- `submit()` (browser_acceptance.py:34-36) uses GET timeout=15 / POST timeout=25. The failing request was `refresh_domains()` → `submit(registrar, provider_inventory_registrar_refresh)` — the settings GET rendered in >15s.
+- http-server.log shows provider-settings renders growing 5s→20s→46s over the run: `domain_contracts_audit_row` (domain_contracts.php:10-11) queries `ci_audit` on `user_id+action+detail` with only PRIMARY(id)/INDEX(created_at) — a full scan per verified row, called per history row by many provider-settings sub-views → quadratic degradation as the suite accumulates audit rows. Product perf debt noted; not lane-scope.
+- `2c088c6e` on `devin/fix-nameserver-fixture-getattr`: local 90s/150s submit in `refresh_domains`; contract re-anchored (changes-installed pred unchanged since it excludes both extensions; requests pred recomputed; requests_acceptance CONTRACT_SHA256 + self-pin updated). acceptance_artifacts_test 473/473 green. Run `40043663733` in flight.
+- Preflight `88e235f2` (`40042016903`) adds flag-path refusal logging (resolve catch, FlagWriter blanket catch, outer transport catch) for the mark-read 'connection' failure.
