@@ -19,13 +19,13 @@ def run_browser(env,browser):
     pid=db('SELECT id FROM ci_proposals')[0]['id']
     detail=root+'?view=proposal&id='+pid
     r=admin.get(detail)
-    if not('VERSION 1' in r.text and '$2495.88' in r.text and 'Draft' in r.text):
-        json.dump({'pid':pid,'url':r.url,'status':r.status_code,'missing':[s for s in ['VERSION 1','$2495.88','Draft'] if s not in r.text],'excerpt':r.text[:600]},open(QA+'/proposal-detail-diagnostics.json','w'))
-    check('Draft detail shows milestone pricing','VERSION 1' in r.text and '$2495.88' in r.text and 'Draft' in r.text)
+    if not('VERSION 1' in r.text and '$2,495.88' in r.text and 'Draft' in r.text):
+        json.dump({'pid':pid,'url':r.url,'status':r.status_code,'missing':[s for s in ['VERSION 1','$2,495.88','Draft'] if s not in r.text],'excerpt':r.text[:600]},open(QA+'/proposal-detail-diagnostics.json','w'))
+    check('Draft detail shows milestone pricing','VERSION 1' in r.text and '$2,495.88' in r.text and 'Draft' in r.text)
     r=submit(admin,detail,'proposal_send',{});check('Proposal sent','sent to the client' in r.text.lower())
     alice=requests.Session();submit(alice,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     r=alice.get(portal);check('Client workspace lists the sent proposal','Studio proposals' in r.text and 'Synthetic storefront proposal' in r.text)
-    r=alice.get(portal+'?proposal='+pid);check('Client sees exact sent version content','$2495.88' in r.text and 'Approve this version' in r.text)
+    r=alice.get(portal+'?proposal='+pid);check('Client sees exact sent version content','$2,495.88' in r.text and 'Approve this version' in r.text)
     r=submit(alice,portal+'?proposal='+pid,'proposal_decide',{'choice':'changes','note':'   ','confirm':'1'});check('Change request requires a real note','describing what must change' in r.text or 'need' in r.text.lower())
     r=submit(alice,portal+'?proposal='+pid,'proposal_decide',{'choice':'changes','note':'Swap the milestone order','confirm':'1'});check('Client change request recorded','decision was recorded' in r.text)
     check('Client decision moved proposal to changes-requested',db("SELECT status FROM ci_proposals WHERE id=?",[pid])[0]['status']=='changes-requested')
