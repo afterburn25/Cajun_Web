@@ -308,3 +308,8 @@ After exact candidate gates and independent review, normal-merge to main, rerun 
 Devin's separate assignment and posted repairs158/159/161 remain visible in [start here](DEVIN_START_HERE.md); preserve dependent PRs through178. Release integration does not silently accept those PRs. Main remains documentation checkpointd7153b07; candidate parent85f0b489 preserves it normally. [Acceptance report](docs/TEST_REPORT_1.25.0.md) and [owner update instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) are now tracked. The approved portal concept image is unavailable and its dedicated shell is not implemented; preserve existing layout and do not claim a visual match. Published1.24 remains stable; complete20i remains unfinished.
 
 The final licensing recovery correction also checks surviving audit history when both tables and setup markers are missing. It refuses silent replacement and preserves exact interrupted fresh setup. Independent source review and 33 portable migration cases in each PHP mode pass; native SQL and full release acceptance remain pending.
+
+### 2026-10-24 (cont.) — audit index port; rerun dispatched
+
+- Audit fix ported: `64a481f8` (binary collations + detail index) + `96851fc2` (link_events); `cb8d2b91` subsumed. Also re-anchored the `inventory.generated.php` contract pin (`50c1a3f0`) — this branch's contract pins it in source_sha256. Contract 360/360, canonical refresh clean.
+- Rerun dispatched: `40137290812` on `50c1a3f0` (earlier `40137144539` cancelled — it would have failed the stale pin).
