@@ -329,3 +329,11 @@ Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** —
 - `d2a99737`: client POST wrapped with the same bounded diagnostics as :362 — on timeout record posts_delta/calls_delta/ledger row, then probe an anonymous GET (wedged worker?) vs client-session GET (session flock?). Contract re-pinned (`68dbd1d1`), verifier 390/390.
 - Dispatched: `40091033834` (Native assigned-package PHP checks — narrow, same cases in Docker) + `40091116828` (Application acceptance — the lane gate; the packaged suite runs in-process via `provider_php_controls_ui_acceptance.py` → `ui_browser.py`).
 - If probes show `fresh_get` also timing out → worker occupied → next move is `PHP_CLI_SERVER_WORKERS` or handler-level profiling, not another timeout bump.
+
+## 2026-10-24 (cont.6) — Audit 40077411063 classified: detail-column audit probes are the residual quadratic
+
+- `link_events` indexes held (run passed the prior depth) but provider-settings GETs still ~32s → same `Page.goto` 30s timeout on `provider-settings&stackcp_access_page=1`.
+- Root cause located: `stackcp_read_projection.php::accessFamilyReady` walks the full StackCP chain EVERY render with six correlated `detail=CONCAT(...)` audit subqueries per row (:162-169); `stackcp_access_sources.php:21` joins audit by computed detail; `stackcp_access.php:14-16` + `domain_contracts_audit_row` + cloud-assignment witnesses all do exact `detail=` probes — each scans the whole `action` bucket → O(rows × bucket).
+- `cb8d2b91`: `INDEX audit_detail(detail(191))` added to `base.php` CREATE + guarded `studio_migrate` ALTER (same pattern as audit_action). 191 chars × utf8mb4 = 764B — under the 767B conservative index limit for older row formats. Inventory refreshed; php -l clean; verifier 280/280.
+- LIKE-prefix probes (`detail LIKE 'Refresh %'`) remain bucket scans but are once-per-render, not per-row.
+- PR-triggered full acceptance `40094584278` queued on `cb8d2b91` (PR265 sync); duplicate manual dispatch `40094583167` cancelled.
