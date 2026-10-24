@@ -456,3 +456,9 @@ The final licensing recovery correction also checks surviving audit history when
 - Run `40099274221` (`fc56a32b`) — the cooldown-repost fix held; suite reached 3775 checks then failed `Primary feed attributes the contact-authored message` (contacts_cases.py:199). Diagnosis: `activity_projection`'s member author filter admitted only `admin` messages, so a project contact's message never reached the primary account's feed — a product gap, since the senders map and the check both expect contact attribution for the primary audience. Fix `55ff6c52`: non-contact member author filter `='admin'` → `IN ('admin','contact')`; contact audience unchanged (`IN ('admin','client')` still excludes contact-authored items there). `php -l` + build refresh green; not contract-pinned.
 - Redispatch `40115508547` (push-triggered) on `55ff6c52`.
 - Sibling lane note: preflight `40098870633` failed `Server folder refusal records a bounded failure without copy claims` — refused Sent-copy POST landed one epoch-second after the successful append inside the 2s per-account copy bound; fixed by aging copy_attempts before the refused POST (`8eb0570b`, preflight lane).
+
+### 2026-10-24 (cont.) — run 40115508547 advanced past contacts; new failure at proposals
+
+- `40115508547` (`55ff6c52`) failed at check 3809 — 'Draft detail shows milestone pricing' (`tests/proposals_cases.py`). The contact-feed attribution fix held (suite progressed ~34 checks past the prior failure).
+- The detail GET returned 200 but lacked one of 'VERSION 1'/'$2495.88'/'Draft'. Product render path verified correct by inspection; `ci_proposals` has no other browser-suite writers, so the actual page body is needed. Added bounded diagnostics (`qa/proposal-detail-diagnostics.json`: pid, final URL, status, missing markers, 600-char excerpt) without weakening the assertion.
+- Pushed `c6fea48d`; push-triggered run `40131688282` in flight.
