@@ -1,6 +1,21 @@
 
 # Session handoff - Devin sole-owner continuation
 # Session handoff - Devin sole-owner continuation
+## 2026-10-24 (late) — notice-open folder field fixed; audit composite index on `cb8d2b91`; fleet in flight
+
+**State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized.
+
+**Preflight (`devin/preflight-commercial`, head `f84c4ff9`, run `40096510001`):**
+- `ad447d7b` run `40084122307` failed in both partitions. Apache: `release_126_hosting_guards.py:37` — `assertion_hash(cases,'ok') != OLD_CASE_ASSERTIONS`; root cause was the deliberate `be8d75fe` payments re-preparation `ok()` addition changing the predicate set. Re-anchored `OLD_CASE_ASSERTIONS` + the `published125_hosting_extension` guards-file pin.
+- Native/browser: `mail_notices_cases.py:69` "Notice opens the exact message over actual synthetic TLS". http log showed the real open POST returned 200 with no fixture contact — a refusal, not a read. Root cause (real product defect): the lane added `folder` to the `mail_message_route()` contract and `mail_message_admin_action` requires posted fields to equal every route key, but `site/admin/views/mail_notices.php` built the open route without `folder` → `posted('folder')===''!=='INBOX'` → 'form no longer matches'. Fixed by posting the item's folder (always INBOX), matching `mail_inbox.php:31`. Build refresh clean; inventory regenerated.
+- Committed `f84c4ff9`; acceptance `40096510001` dispatched.
+
+**Audit lane (`devin/audit-render-index`, head `cb8d2b91`):** added composite `audit_action_detail(action, detail(191))` index (schema + guarded workspace migration) after `link_events` indexes passed the old depth but provider-settings still rendered ~32s — the residual cost is correlated `ci_audit` exact-detail probes in `stackcp_access.php`/`stackcp_access_sources.php`/`stackcp_read_projection.php`. PR-triggered acceptance `40094584278` in flight; duplicate manual `40094583167` cancelled.
+
+**FSI `40087665482`** (`bf9d8584`, staff-feed holder-set expectation fix) in flight (~2h40m browser). **PHP-controls `40091116828`** (`d2a99737`, client-POST stall diagnostics) in flight; narrow PHP workflow `40091033834` went fully green — the `:428` stall is environment-dependent.
+
+**Next:** classify the four runs; audit is critical path (nameserver/docroots hit the 240-min ceiling while provider-settings inflated; exact-main verify `40053118998` failed on the same debt, not a cloud-merge regression).
+
 ## 2026-10-23 — owner-GET conjunct diagnostic added; contract chain re-settled; php-controls + nameserver freshness fixes landed
 
 **State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate work continues on lanes; no live deployment authorized.
