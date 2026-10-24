@@ -8,7 +8,16 @@ function studio_migrate(): void {
   $exists=one('SELECT table_name FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].$key]);
   if($exists){$columns=all('SHOW COLUMNS FROM '.table($key));$cols=array_column($columns,'Field');preg_match_all('/(?:\(|,)\s*([a-z_][a-z0-9_]*) (?:INT|BIGINT|VARCHAR|CHAR|TINYINT|DATETIME|LONGTEXT|TEXT)/',$sql,$m);if($cols!==$m[1]||!studio_schema_compatible($key,$sql,$columns))throw new RuntimeException('An incompatible table already uses '.$key.'. No existing table was overwritten.');}
   else db()->exec($sql);
- }save_setting('studio_schema_version','2');log_event('studio.schema','Additive workspace schema 2');}
+ }
+ if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].'audit'])){
+  foreach(['action'=>"action VARCHAR(80) COLLATE utf8mb4_bin NOT NULL",'detail'=>"detail VARCHAR(400) COLLATE utf8mb4_bin NOT NULL"] as $column=>$definition){
+   $collation=one('SELECT COLLATION_NAME FROM information_schema.columns WHERE table_schema=? AND table_name=? AND column_name=?',[config()['db']['name'],config()['db']['prefix'].'audit',$column]);
+   if(($collation['COLLATION_NAME']??'')!=='utf8mb4_bin')db()->exec('ALTER TABLE '.table('audit').' MODIFY '.$definition);
+  }
+  if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_action']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_action(action)');
+  if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_detail']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_detail(detail(191))');
+ }
+ save_setting('studio_schema_version','2');log_event('studio.schema','Additive workspace schema 2');}
  finally{query('SELECT RELEASE_LOCK(?)',[$name]);}
 }
 

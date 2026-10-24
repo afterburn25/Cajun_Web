@@ -3517,6 +3517,39 @@ PR261 (`e334678e`) run 39761594725: build, recovery and Apache lanes green; `nat
 ## 2026-10-19 — reset template controls after payment-link correction
 
 Owner request: continue the roadmap. Completed payment-link companion PR253 at b1948eeb; its first full run39247478772 remains pending. Started the separate template lane at current maina86f6f4f. Added typed provider handling, encrypted one-use history, owner review/readback UI and additive acceptance. See [scope and source-bound verification](TWENTYI_PASSWORD_RESET_TEMPLATE.md). Offline foundation and retained operation regressions pass; native SQL, installed browser and publication remain pending. No live provider request, mail send or deployment occurred. Independent source review is complete with no remaining concrete findings; 68 root source checks, 230 acceptance-helper checks, installer refresh and all shipping PHP/JavaScript checks pass. Generated mirrors/inventory and source-bound receipts are included. The initial Windows no-INI OpenSSL path failure remains recorded as a harness limitation, followed by successful explicitly configured modeled tests. Next: exact-source hosted gates and sequential integration. Full20i and the standing roadmap goal remain incomplete.
+
+### 2026-10-22 — audit action index lane started (devin/audit-render-index)
+
+- Request context: continue without stopping; hosted lanes kept dying on
+  late-suite provider-settings renders.
+- Evidence: docroots run 39821734667 died on a 30s `page.goto` to
+  provider-settings; its HTTP log shows provider-settings renders degrade
+  from <1s to median 15s/p90 27s/max 30s as audit history accumulates.
+  php-controls run 39821538684 shows the same growth (max 17s). Root cause:
+  every domain journal replays per-event `WHERE BINARY action=? AND BINARY
+  detail=?` audit lookups against an unindexed column — O(events x audit
+  rows) per render.
+- Change (`d819f044`): `audit.action` becomes `COLLATE utf8mb4_bin` and gains
+  `INDEX audit_action(action)`; `studio_migrate` applies both additively to
+  existing installs. Every action value is a code-written lowercase
+  identifier and every comparison is BINARY-exact or constant-equal, so
+  results are byte-identical while all action equality/IN/prefix-LIKE reads
+  become index serves. No query text changed; audit bytes untouched.
+- Verification: php -l on both files; build --refresh PASS (40 packages,
+  2188 dependency files, installer inventory regenerated); neither file is
+  contract-pinned. Acceptance dispatched as run 39858223574 — its own
+  browser suite is the benchmark.
+- Known limits: secondary unindexed scans remain (e.g.
+  provider_refreshes.operation); audit is the dominant per-event table and
+  is fixed first. Update installs apply the index on the next owner-run
+  studio_migrate.
+
+## 2026-10-23 — audit-index lane GREEN on hosted acceptance
+
+- Request: continue monitoring; classify run 39858223574 on `d819f044`.
+- Result: **all five jobs green** — build, recovery, apache, native-and-browser, acceptance. The `audit.action` `utf8mb4_bin` collation + `INDEX audit_action` + additive `studio_migrate` ALTER verified end-to-end on the hosted runner.
+- Benchmark evidence (checkpoint `12472430130` `http-server.log`): 851 provider-settings renders — median ~0s, p90 ~0s, max 34s. Compare the docroots-era failure baseline: late-suite median ~15s, p90 ~27s, max ~30s. The dominant unindexed `BINARY action` scan cost is gone; a residual tail up to ~34s remains — consistent with the still-unindexed `provider_refreshes.operation` column, which stays a separate follow-up lane.
+- State: green candidate, not reviewed, not merged. Next: independent review of the diff (base schema + workspace.php migration), then normal merge to current `main` in queue order.
 ## 2026-10-18 — client cloud website journey implementation
 
 Request: continue the complete roadmap with parallel agents and a usable client portal. Starting commit `e397d9a6e293850e8dff61a593e3ba39ee178400`; branch `codex/twentyi-client-cloud-websites`; intended enclosing commit `Add client cloud website requests through owner creation and confirmation`.
@@ -3635,3 +3668,12 @@ ebebd533 run 39855317065 was cancelled as superseded.
 - Fix (`f1c53d61`): re-read `provider_inventory_refresh` then the directory-indexing refresh once before the interrupted-change fixture, so the interrupted request pins a fresh binding source. Placement is load-bearing: the recovered request's verify at the end requires the same binding hash, so the re-arm must precede the second change POST — a refresh inside the recovery section would invalidate the posted binding. File not contract-pinned on this branch.
 - Dispatched run 39912832426 (`f1c53d61`); push run 39912825915 queued on the same head.
 - Note: run 39886854693 on `4fbce9db` remains the all-green dispatch for the cooldown fix; the red run was on the docs-commit head and its only failure is the freshness window now addressed.
+
+## 2026-10-24 — run 40094584278 hit the 240-minute ceiling; binary detail comparisons can't use the new index
+
+- Request: continue monitoring; classify the audit run on `cb8d2b91`.
+- Result: browser job ran the full 240-minute job budget (13:00→17:00 UTC) and was cancelled — no check failure. It survived ~72 min past the prior `provider-settings` failure depth, but the checkpoint `http-server.log` still shows ~30s per `provider-settings` render late-suite.
+- Root cause of the residual: every audit history probe compares `BINARY detail=BINARY <expr>` / `BINARY detail LIKE ?`. A binary comparison cannot use an index ordered by a case-insensitive collation — `audit_action` (on the now-`utf8mb4_bin` action column) narrows to the action bucket, but the `detail(191)` prefix index added for this purpose stays unused while `detail` keeps the default ci collation. The same applies to the many non-BINARY `detail=?`/`detail LIKE 'literal %'` probes (orders, ledger fulfillment, recurring billing) — a `_bin` detail collation makes all of them index-eligible while keeping app-written detail correspondence byte-exact.
+- Fix `f7f6b991`: `detail VARCHAR(400) COLLATE utf8mb4_bin` in `schema_statements`; `studio_migrate` applies the same guarded MODIFY for existing installs; installer inventory refreshed (280/280 verifier checks; build refresh green).
+- Run `40114885004` (push-triggered on `f7f6b991`) is the replacement run; the cancelled `40094584278` evidence is preserved.
+- Next: classify `40114885004`; if provider-settings renders drop, rerun the ceiling-hit nameserver/docroots lanes.
