@@ -22,7 +22,7 @@ In flight on exact heads:
 - **PHP-controls** `devin/fix-php-controls-minimal` `f1fdc4e2`: report-shape fix (site frame folded into `message`) + goto networkidle 30s→90s. Run `40044789245` in flight.
 - **Docroots** `devin/fix-docroots-worker-retry` `514ba7dd`: run `40029428035` externally cancelled at ~2h41m (build/recovery/apache green; native-and-browser killed). Re-dispatched `40054595694`.
 - **Diagnostic** PR264: awaiting independent review.
-- Environment: C: disk full — TEMP/downloads redirected to D:\Devin	mp-dl.
+- Environment: C: disk full — TEMP/downloads redirected to D:/Devin/tmp-dl.
 
 Merge-first sequence: next merge candidates are the leaf lanes once exact-head green lands; then exact-main verify each; PR264 after independent review; published 1.25.0 immutable, nothing live-deployed.
 
