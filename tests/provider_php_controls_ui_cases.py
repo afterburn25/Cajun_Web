@@ -221,6 +221,22 @@ def run_browser(env, browser):
                     raise AssertionError("Capture output already exists")
                 page.screenshot(path=str(qa / name), full_page=True); captures.append(name)
             check(title + " has no page errors", not errors)
+        except Exception as capture_error:
+            import json as _capture_json
+            try:
+                probe = {"title": title, "selector": selector, "error": type(capture_error).__name__,
+                         "final_url": page.url, "page_errors": errors,
+                         "has_password_form": page.locator("input[type=password]").count() > 0,
+                         "controls_blocks": page.locator("[data-php-controls]").count(),
+                         "history_blocks": page.locator("[data-php-history]").count(),
+                         "request_rows": page.locator("[data-php-request]").count(),
+                         "request_ids": page.locator("[data-php-request]").evaluate_all("ns => ns.map(n => n.dataset.phpRequest)")[:20],
+                         "notice_texts": page.locator(".notice").evaluate_all("ns => ns.map(n => n.textContent.trim().slice(0, 120))")[:10]}
+            except Exception as probe_error:
+                probe = {"title": title, "error": type(capture_error).__name__, "probe_error": type(probe_error).__name__}
+            name = "php-controls-capture-" + re.sub(r"[^A-Za-z0-9]+", "-", title) + "-diagnostics.json"
+            (qa.parent / name).write_text(_capture_json.dumps(probe, indent=2, default=str), encoding="utf-8")
+            raise
         finally:
             context.close()
 
