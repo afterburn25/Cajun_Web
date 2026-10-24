@@ -1,20 +1,23 @@
 
 # Session handoff - Devin sole-owner continuation
-# Session handoff - Devin sole-owner continuation
-## 2026-10-24 (late) — notice-open folder field fixed; audit composite index on `cb8d2b91`; fleet in flight
+## 2026-10-24 (latest) — four lanes in flight on corrected heads; binary-collation root cause for provider-settings debt
 
-**State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized.
+**State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized. Current main `125deacc` (cloud merge).
 
-**Preflight (`devin/preflight-commercial`, head `f84c4ff9`, run `40096510001`):**
-- `ad447d7b` run `40084122307` failed in both partitions. Apache: `release_126_hosting_guards.py:37` — `assertion_hash(cases,'ok') != OLD_CASE_ASSERTIONS`; root cause was the deliberate `be8d75fe` payments re-preparation `ok()` addition changing the predicate set. Re-anchored `OLD_CASE_ASSERTIONS` + the `published125_hosting_extension` guards-file pin.
-- Native/browser: `mail_notices_cases.py:69` "Notice opens the exact message over actual synthetic TLS". http log showed the real open POST returned 200 with no fixture contact — a refusal, not a read. Root cause (real product defect): the lane added `folder` to the `mail_message_route()` contract and `mail_message_admin_action` requires posted fields to equal every route key, but `site/admin/views/mail_notices.php` built the open route without `folder` → `posted('folder')===''!=='INBOX'` → 'form no longer matches'. Fixed by posting the item's folder (always INBOX), matching `mail_inbox.php:31`. Build refresh clean; inventory regenerated.
-- Committed `f84c4ff9`; acceptance `40096510001` dispatched.
+**Preflight (`devin/preflight-commercial`, head `8eb0570b`, run `40115207263`):**
+- Chain: `f84c4ff9` notice-open `folder` field fix → `e56479ae` handoff → `5e82f92b` contract-chain re-settle (verifier 1468/1468) → `8eb0570b` copy-attempt age-out.
+- `40098870633` (`5e82f92b`) failed on `mail_submissions_cases.py:239` 'Server folder refusal records a bounded failure without copy claims': the refused-copy POST landed one epoch-second after the earlier successful append and hit the product's 2s per-account copy bound (`copies.php:75`) — refused pre-transport with no `folder` result row. Latent test race; fixed by aging `ci_mail_copy_attempts` before the refused POST (same pattern the file already used at its section end).
 
-**Audit lane (`devin/audit-render-index`, head `cb8d2b91`):** added composite `audit_action_detail(action, detail(191))` index (schema + guarded workspace migration) after `link_events` indexes passed the old depth but provider-settings still rendered ~32s — the residual cost is correlated `ci_audit` exact-detail probes in `stackcp_access.php`/`stackcp_access_sources.php`/`stackcp_read_projection.php`. PR-triggered acceptance `40094584278` in flight; duplicate manual `40094583167` cancelled.
+**FSI (`devin/full-site-integration`, code head `55ff6c52` + local docs `34f71250`, run `40115508547`):**
+- `40099274221` (`fc56a32b`) — cooldown repost fix held; failed at 3775 checks on `contacts_cases.py:199` 'Primary feed attributes the contact-authored message'. Product gap: `activity_projection`'s member author filter admitted only `admin`, excluding contact-authored rows from the primary feed. Fixed to `IN ('admin','contact')`; contact audience unchanged.
 
-**FSI `40087665482`** (`bf9d8584`, staff-feed holder-set expectation fix) in flight (~2h40m browser). **PHP-controls `40091116828`** (`d2a99737`, client-POST stall diagnostics) in flight; narrow PHP workflow `40091033834` went fully green — the `:428` stall is environment-dependent.
+**Audit (`devin/audit-render-index`, head `8891a591`, run `40114937820`):**
+- `40094584278` (`cb8d2b91`) survived past the prior `provider-settings` failure depth but hit the 240-min job ceiling at ~30s renders. Root cause: probes compare `BINARY detail=`/`BINARY detail LIKE` — binary comparisons cannot use an index ordered by a ci collation, so `audit_detail(detail(191))` stayed unused. `f7f6b991` stores `detail` as `utf8mb4_bin` (schema + guarded MODIFY in `studio_migrate`); also benefits the many non-BINARY `detail=?`/`LIKE 'literal %'` audit probes. Verifier 280/280; build refresh green. `40114885004` on f7f6b991 cancelled as strict duplicate of `40114937820` on the docs tip.
 
-**Next:** classify the four runs; audit is critical path (nameserver/docroots hit the 240-min ceiling while provider-settings inflated; exact-main verify `40053118998` failed on the same debt, not a cloud-merge regression).
+**PHP-controls (`devin/fix-php-controls-minimal`, head `286a85e0`, gate run `40109388796` on `be6c96ca`):**
+- `40091116828` (`d2a99737`) failed at ~4h on a `status` probe: `staff_locked` GET_LOCK 5s bound exceeded (`accounts.php:40`) — a live packaged handler held the staff mutex past the probe window; environment contention, not a product regression (narrow `40091033834` was fully green on the same head). `be6c96ca` adds mutex-holder diagnostics (`IS_USED_LOCK` + bounded processlist) to fixture failure receipts and retries transient contention ≤4× in `state()`; a real wedge still fails with the holder recorded. Narrow `40109363882` already green on `be6c96ca`.
+
+**Next:** classify the four in-flight runs; if audit renders drop, rerun the ceiling-hit nameserver/docroots lanes; merge accepted leaf tips into preflight → FSI → main per the documented sequence; port PRs #257-#260 await dedicated component runs.
 
 ## 2026-10-23 — owner-GET conjunct diagnostic added; contract chain re-settled; php-controls + nameserver freshness fixes landed
 
