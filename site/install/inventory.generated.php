@@ -640,7 +640,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/mail-receiving/ReceivingFailure.php'=>'d22f14d999013732e86699a671257967ff4153ec0e70caead4aad84f7c7b807e',
     'includes/foundation/mail-receiving/ReceivingStream.php'=>'e3ff6bedbe20842f28013e1b73b4b2e410183f76180e90d543228474bc1afa23',
     'includes/foundation/mail-receiving/SentCopy.php'=>'e5e382a5eaa0349d9c23f12dea9b0122fdaf7115a9544bd1edb12e0eb4fb5974',
-    'includes/foundation/mail-receiving/bootstrap.php'=>'b2d42fea9e5dfb2111576f42af057625e44627207e37ce544c2629dea7f08f78',
+    'includes/foundation/mail-receiving/bootstrap.php'=>'084630e907ed5c03cc139d4cfbeab11148c58f4b2aca6cf5cd482e5074974f6b',
     'includes/foundation/mail-receiving/composer.json'=>'fd607bddecd2ffae8377859d4af58ae101de8164f43ff99be6cd67e3935cf2b1',
     'includes/foundation/mail-receiving/composer.lock'=>'e2615a5327a76d328422267ecaade1fce3ac9efba03eb646f3393975c12ed223',
     'includes/foundation/mail-receiving/licenses/directorytree-imapengine-MIT.txt'=>'a4670f2f36b1389a6f88d5ba29581e4a829b202ed765f1aeb7725f2319e62ab9',
