@@ -10,7 +10,7 @@ import math
 import re
 import time
 from types import SimpleNamespace
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse, urljoin
 
 import requests
 from playwright.sync_api import expect
@@ -113,7 +113,11 @@ def run_browser(env, browser):
         if registrar_fresh():
             return
         wait_read()
-        submit(registrar, settings, 'provider_inventory_registrar_refresh', {'current_password': OWNER})
+        # The accumulated provider history projections make the settings render
+        # slower than the shared helper's short timeout late in the suite.
+        form = env['form_for'](registrar.get(settings, timeout=90), 'provider_inventory_registrar_refresh')
+        data = form_data(form); data['current_password'] = OWNER
+        registrar.post(urljoin(settings, form.get('action') or settings), data=data, timeout=150)
 
     def navigate():
         try:
