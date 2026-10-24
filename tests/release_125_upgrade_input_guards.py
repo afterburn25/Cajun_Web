@@ -44,7 +44,7 @@ def main(helper, baseline, output):
         check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))
         for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,
                      'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,
-                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip']:
+                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip']:
             def rejected_path():
                 if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')
             try: rejected_path()
