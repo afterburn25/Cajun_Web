@@ -40,7 +40,7 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
         'provider_package_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']],
         'provider_domain_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by']],
         'provider_cloud_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by'],'approved_observation'=>['refresh_id']],
-        'provider_cloud_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']],
+        'provider_cloud_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id'],'link_events'=>['link_id']],
         'provider_domain_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']],
     };
     foreach($other as $key=>$columns)$expected[$key]=[1,$columns];
@@ -107,6 +107,7 @@ function provider_inventory_migrate(#[\SensitiveParameter] string $password): vo
         foreach($missing as $sql)db()->exec($sql);
         if($version==='1')provider_inventory_upgrade_v2();
         if(in_array($version,['1','2','3'],true) && !one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_refreshes','operation']))db()->exec('ALTER TABLE '.table('provider_refreshes').' ADD COLUMN operation VARCHAR(32) CHARACTER SET ascii COLLATE ascii_bin NULL AFTER started_epoch');
+        if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'provider_cloud_link_events'])&&!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name=? AND index_name=?',[config()['db']['prefix'].'provider_cloud_link_events','link_events']))db()->exec('ALTER TABLE '.table('provider_cloud_link_events').' ADD INDEX link_events(link_id)');
         foreach(provider_inventory_schema(config()['db']['prefix']) as $name=>$sql)provider_inventory_validate_schema($name,$sql);
         staff_transaction(function()use($actor):void {
             save_setting('provider_inventory_schema_version','5');
