@@ -20,9 +20,9 @@ Staging lanes `devin/preflight-commercial` and `devin/full-site-integration` rem
 
 In flight on exact heads:
 
-- **Audit** `40077411063` `299ce45c` — dispatched.
-- **Preflight** `40070896754` `2819c9c2` — `40057278215` held FlagWriter + payments fixes; last check `mail_message_cases.py:87` was lane-new and asserted 'Mark unread on server' on the flag POST's 303-redirect GET (structurally absent). Fixed to reload mode='message' + assert 'Mark read on server'.
-- **FSI** `40076896157` `357c253d` — `40060899371` held the recurring-invoice guard fix (3,620 checks); last check `ticket_cases.py:114` staff-feed recipients mismatch; diagnostic dump added pre-assertion (actuals pending).
+- **Audit** `40077411063` `299ce45c` — in flight.
+- **Preflight** `40084122307` `ad447d7b` — `40070896754` held the mark-control fix; new failure `mail_message_cases.py:92` 'unchanged without a write': `ORDER BY finished_at DESC LIMIT 1` uses second-precision finished_at with no tiebreaker — adjacent marks sharing a second order by random hex PK → LIMIT 1 can return the prior row. Both flag-result assertions now use deterministic COUNT; bounded diagnostics added. (Fixture already handles the no-STORE unchanged path.)
+- **FSI** `40076893710` `357c253d` — push-triggered run (duplicate manual `40076896157` cancelled). `40060899371` held the recurring-invoice guard fix (3,620 checks); last check `ticket_cases.py:114` staff-feed recipients mismatch; diagnostic dump added pre-assertion (actuals pending).
 - **PHP-controls** `40076719417` `e126df1d` — `40063538496` showed the :344 POST completed (diagnostics never fired); failure moved to Client-History capture (`data-php-request=<client_request>` absent in Chromium while present via requests at :418). `e126df1d` adds bounded page-state probes on capture miss.
 - **Docroots** `514ba7dd` + **Nameserver** `b24ac1bb` — runs cancelled at the 240-min ceiling; re-dispatch only after audit index lands (otherwise same trajectory).
 - **Diagnostic** PR264: awaiting independent review.
