@@ -248,3 +248,10 @@ Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** —
 - http-server.log shows provider-settings renders growing 5s→20s→46s over the run: `domain_contracts_audit_row` (domain_contracts.php:10-11) queries `ci_audit` on `user_id+action+detail` with only PRIMARY(id)/INDEX(created_at) — a full scan per verified row, called per history row by many provider-settings sub-views → quadratic degradation as the suite accumulates audit rows. Product perf debt noted; not lane-scope.
 - `2c088c6e` on `devin/fix-nameserver-fixture-getattr`: local 90s/150s submit in `refresh_domains`; contract re-anchored (changes-installed pred unchanged since it excludes both extensions; requests pred recomputed; requests_acceptance CONTRACT_SHA256 + self-pin updated). acceptance_artifacts_test 473/473 green. Run `40043663733` in flight.
 - Preflight `88e235f2` (`40042016903`) adds flag-path refusal logging (resolve catch, FlagWriter blanket catch, outer transport catch) for the mark-read 'connection' failure.
+
+## 2026-10-23 (cont.21) — PHP-controls 40023145297 classified; two layered fixes
+
+- Instrumentation worked: failure was `TimeoutError` at provider_php_controls_ui_cases.py:206 — the `page.goto(networkidle)` (30s default) on the packaged portal page. Same degradation class as nameserver (slow render under accumulated state).
+- Secondary failure found: my site_file/site_line keys broke the packaged export's closed report shape (`closed(error,{class,file,line,message})`), so export refused and the nested `qa/php-controls-ui/` originals broke the flat-only seal.
+- `f1fdc4e2`: failure site frame folded into `message` (shape unchanged); goto timeout 30s→90s. Contract re-anchored (`canonical` appends trailing \n — first recompute missed it), 390/390 green. Run `40044789245` queued.
+- Nameserver `40043663733` on `2c088c6e` in flight (submit refresh 90s/150s).
