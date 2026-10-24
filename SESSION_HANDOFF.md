@@ -791,3 +791,10 @@ Devin's separate assignment and posted repairs158/159/161 remain visible in [sta
 The final licensing recovery correction also checks surviving audit history when both tables and setup markers are missing. It refuses silent replacement and preserves exact interrupted fresh setup. Independent source review and 33 portable migration cases in each PHP mode pass; native SQL and full release acceptance remain pending.
 
 Verification before commit: canonical installer refresh and shipping syntax pass;385 artifact-helper checks pass with unchanged helper predicates;280 Markdown files/1952 local links and Git whitespace pass. Native fixture syntax passes default/minimal PHP8.4.25. Native Linux checkout and packaged browser acceptance remain pending.
+
+### 2026-10-24 (cont.) — apache guard failure was a Python-version pin, not a predicate change
+
+- Run `40115207263` (`8eb0570b`): apache job failed at `release_126_hosting_guards.py:37` — same `OLD_CASE_ASSERTIONS` guard. Root cause found: `assertion_hash()` hashes `ast.dump()` output, which differs between Python versions. Local box runs 3.14 (`9187e25a`); the runner uses 3.10 (`44d0a58c`). My earlier re-anchor was computed under the wrong interpreter. `OLD_DRIVER_ASSERTIONS` verified still correct under 3.10.
+- Fixed `OLD_CASE_ASSERTIONS` to `44d0a58c617f73b47d278840a5b8169de13441b30db671833c0b591ef055dece` (computed under Python 3.10/3.12 — identical output). Re-settled the contract chain (1468/1468 green). Pushed `b682522f`, dispatched `40127570987`.
+- Note for all future pin/anchor work: **always compute `ast.dump`-based hashes under Python 3.10** (`C:\Users\after\AppData\Local\Programs\Python\Python310\python.exe`) — file-sha pins are version-independent.
+- The old head's native-browser job (`40115207263` on `8eb0570b`) is still running — its result remains valid evidence for the folder-field + copy age-out fixes.
