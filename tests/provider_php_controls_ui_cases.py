@@ -425,7 +425,24 @@ def run_browser(env, browser):
         capture(client, "PHP-Controls-Client-Review", client_url, "[data-php-review]", "php82")
         client_request = client_confirmation["request_id"]; request_ids.append(client_request)
         client_change = dict(client_confirmation, current_password=CLIENT_PASSWORD, confirmed="1")
-        posts = len(provider.posts); client.post(client_url, data=client_change, timeout=120)
+        calls, posts = provider.calls, len(provider.posts)
+        try:
+            client.post(client_url, data=client_change, timeout=120)
+        except requests.RequestException as post_error:
+            probe = {"post_error": type(post_error).__name__ + ": " + str(post_error)[:300],
+                     "calls_delta": provider.calls - calls, "posts_delta": len(provider.posts) - posts,
+                     "last_post": provider.posts[-1] if provider.posts else None,
+                     "row": request_row(client_request)}
+            try:
+                probe["fresh_get"] = requests.get(portal, timeout=10).status_code
+            except Exception as probe_get:
+                probe["fresh_get_error"] = type(probe_get).__name__
+            try:
+                probe["client_get"] = client.get(client_url, timeout=10).status_code
+            except Exception as probe_client:
+                probe["client_get_error"] = type(probe_client).__name__
+            (qa.parent / "php-controls-client-change-timeout.json").write_text(_json.dumps(probe, indent=2, default=str), encoding="utf-8")
+            raise
         row = request_row(client_request)
         check("Delegated client setter retains actual client requester and recorder", len(provider.posts) == posts + 1 and row["actor_kind"] == row["terminal_actor_kind"] == "client"
               and row["actor_id"] == row["terminal_actor_id"] == 1 and row["ledger_attempts"] == 1 and row["readback"] == "pending"
