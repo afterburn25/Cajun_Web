@@ -232,7 +232,7 @@ Run `39996264484` (`514ba7dd`): `native-and-browser` exceeded the 4h0m platform 
 
 ## 2026-10-23 (cont.18) — Cloud lane green on exact head
 
-Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** — Force-SSL control lane passes full acceptance including the recovery flow and the corrected ten-read audit. Cloud lane is the first this cycle with exact-head green evidence; still requires labeled review and merge-first sequencing before it counts as deliverable.
+Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** — Force-SSL control lane passes its lane workflow including the recovery flow and the corrected ten-read audit. NOTE: `40029373442` is the narrow `Native domain renewal request checks` lane workflow, not full application acceptance; the full `Application acceptance` run on `89647b28` is `40029373374`, still in flight. Cloud lane requires that green plus labeled review and merge-first sequencing before it counts as deliverable.
 
 ## 2026-10-23 (cont.19) — Preflight run 40024614698 classified; deeper instrumentation
 
