@@ -798,3 +798,9 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - Fixed `OLD_CASE_ASSERTIONS` to `44d0a58c617f73b47d278840a5b8169de13441b30db671833c0b591ef055dece` (computed under Python 3.10/3.12 — identical output). Re-settled the contract chain (1468/1468 green). Pushed `b682522f`, dispatched `40127570987`.
 - Note for all future pin/anchor work: **always compute `ast.dump`-based hashes under Python 3.10** (`C:\Users\after\AppData\Local\Programs\Python\Python310\python.exe`) — file-sha pins are version-independent.
 - The old head's native-browser job (`40115207263` on `8eb0570b`) is still running — its result remains valid evidence for the folder-field + copy age-out fixes.
+
+### 2026-10-24 (cont.) — audit-index fix ported; doomed run replaced
+
+- `40115207263` (`8eb0570b`) evidence: apache leg failed only on the Python-version pin (fixed in `b682522f`/`91a81f32`); native-browser leg reached check 1915 then died on the provider-settings `Page.goto` 30s timeout — the audit-scan debt, absent on this head. The notice-`folder` fix held (suite passed mail-notices section) and no copy-cooldown failure recurred.
+- Ported the merged audit fix (`f26dfb6f` collations+indexes, `79d8e233` link_events; `cb8d2b91` subsumed), regenerated this tree's inventory (`28e6604c`), re-anchored the `schema/base.php` source pin and re-settled the chain (1468/1468): `06a97393`.
+- Cancelled doomed `40129554997`; dispatched `40139792396`.
