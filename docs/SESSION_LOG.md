@@ -1,5 +1,15 @@
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
+## 2026-10-22 — merge-first cycle: PR261 landed; cloud website requests candidate
+
+PR261 merged to `main` via `aeb713c6` (accepted source `467ec1bd` through candidate `e334678e`, green run 39761594725); the held merge-first docs lane landed via PR262, resulting main `bc5777f5`.
+
+Second increment: PR226 cloud website requests, fixed head `7b11f9f3` (ctype_digit removed for the extension-free minimal PHP lane), merged onto `bc5777f5` as candidate `d36d2b8d` on `devin/cloud-websites-main` (draft PR263). Nine files conflicted; resolution preserved both sides — contract union keeps `password_reset_template` and `cloud_site_requests`, harness runs cloud wiring on the merged 160-command recipe before the reset-template strip, `tools/build.py` retains the broader allowlist including `ops`, docs keep main's current status with the feature's dated entries inserted chronologically, and the installer inventory was regenerated. Contract re-anchors: predecessor counts 152->155 native, report registry 167/211, self-pin of `cloud_site_requests_wiring.py`, and reset-template predecessor report digests.
+
+Local verification: artifact verifier 280 checks green; cloud document 141 and UI 98 checks green in default and `php -n` modes; installed upgrade guards 35 green; `php -l` clean on all touched PHP. Hosted acceptance run 39803144531 dispatched; independent review pending.
+
+Same-session background work: FSI flag-write fix `ba10faee` proved correct (`Explicit mark-read issues exactly one bounded flag write` passed on run 39792613490) but surfaced the next defect — the mark control disappeared after the flag POST redirect because contents are deliberately never persisted and the plain GET has no loaded result. `d0960e15` renders the control from the latest confirmed recorded flag outcome (`mail_flag_state`) when no message is loaded; run 39804203199 dispatched. Preflight fix `1b582fa3` run 39801023070 queued; leaf lanes StackCP 39793814737, docroots 39794557286, nameserver 39779736188, php-controls 39775103325 and PR226-branch native 39795658599 remain in flight. Published 1.25.0 immutable; no deployment.
+
 ## 2026-10-22 — merge-first cycle: reset email template candidate to main
 
 Owner redirected delivery to small verified increments into `main`, starting with the reset-email-template feature. Local `main` was stale at `79d9e8e9`; fast-forwarded to `1067757d`. Accepted feature source `467ec1bd` (original green run [39422487199](https://github.com/afterburn25/Cajun_Web/actions/runs/39422487199), all five jobs) was merged into current main as candidate `e334678e` on `devin/reset-email-template-main`; the only conflicts were three prepend-style documentation files, resolved to keep the takeover rewrite and the feature's dated entries. Later feature-branch commits `69865671`/`32fe0ae1` touch only unrelated directory-listing and force-SSL test lanes and were intentionally excluded.
@@ -3540,3 +3550,121 @@ Owner request: continue the roadmap. Completed payment-link companion PR253 at b
 - Result: **all five jobs green** — build, recovery, apache, native-and-browser, acceptance. The `audit.action` `utf8mb4_bin` collation + `INDEX audit_action` + additive `studio_migrate` ALTER verified end-to-end on the hosted runner.
 - Benchmark evidence (checkpoint `12472430130` `http-server.log`): 851 provider-settings renders — median ~0s, p90 ~0s, max 34s. Compare the docroots-era failure baseline: late-suite median ~15s, p90 ~27s, max ~30s. The dominant unindexed `BINARY action` scan cost is gone; a residual tail up to ~34s remains — consistent with the still-unindexed `provider_refreshes.operation` column, which stays a separate follow-up lane.
 - State: green candidate, not reviewed, not merged. Next: independent review of the diff (base schema + workspace.php migration), then normal merge to current `main` in queue order.
+## 2026-10-18 — client cloud website journey implementation
+
+Request: continue the complete roadmap with parallel agents and a usable client portal. Starting commit `e397d9a6e293850e8dff61a593e3ba39ee178400`; branch `codex/twentyi-client-cloud-websites`; intended enclosing commit `Add client cloud website requests through owner creation and confirmation`.
+
+Root added the request service, atomic shared cloud admission/origin/current-authority hooks, portal/admin routing and exact grant confirmation navigation. Domains added signed document/storage/schema and pure checks; Catalog added screens/controllers, modeled tests and browser continuation; VPS added isolated native SQL/gateway/concurrency scenarios. Existing direct-owner creation, released packages, other candidates and Devin ownership are preserved. Details and verification limits are in [the feature guide](TWENTYI_CLIENT_CLOUD_WEBSITES.md).
+
+Actual local141 document checks and98 modeled UI checks pass in each PHP mode; changed-source lints and old cloud regression commands pass. Independent service review retained four actual cold-load successes and34 legacy-context checks per mode. The original UI test harness setup error and its correction remain in external receipts. No native SQL, packaged browser, installed update/recovery or live-provider success is inferred. Source-defined native/browser cases and additive acceptance wiring require execution on their exact committed source. Full-history performance remains unmeasured.
+
+Next: finish independent fixture/wiring review, regenerate installer inventory, commit/push the exact candidate, preserve its first GitHub runs, and complete native/browser and populated1.25 update/rollback/reapply acceptance before integration/release. Preserve every original queued/failing handle; no rerun or cancellation for queue delay. Published1.25 remains immutable and no deployment occurred.
+
+### 2026-10-18 — cloud request release wiring and installed-update review
+
+Continue the same `e397d9a6` client cloud website increment. Root added five native recipes, the reviewed browser continuation, two Apache commands and the exact1.25 baseline transfer/inventory. Prior152/164/208 native/browser/final requirements remain, expanded to157/169/215 with eight captures. VPS added three installed-update files; Domains independently cleared their exact source and reran35 portable guards. Complete-journal file rollback/reapply, six request states and persistent missing-head refusal are prepared; Linux SQL/Apache execution is pending. The existing tracked `ops` directory is admitted by the package builder; no other feature branch is copied.
+
+Actual local results:271 final helper checks,35 portable update guards,19 original1.24 negative checks and successful current-validator comparison of the immutable1.24/1.25 archives (2,591/2,895 members). The original27 legacy-map entries are unchanged. The wrong initial import hunk-count expectation, first screenshot declaration-check failure and reviewed old1.25 negative-input incompatibility are retained with their narrow corrections. No application failure is hidden and no queued CI is restarted. Shared wiring review binds the additive commands, prior-report inverses and source pins. Required next action is exact staged inventory/clean committed packaging, candidate GitHub acceptance, then the existing main/publication gates. No deployment, live operation or new release occurred.
+
+The canonical installer refresh and shipping PHP/JavaScript syntax pass. Documentation validation passes12 required documents,272 Markdown files and1,858 local links (32 headings). Independent final wiring review `59fddfa3` clears72 finite source/evidence checks and retains all221 original helper outcomes in final271. These do not substitute for the pending supported runtime matrix, actual browser images, installed Apache flow or release acceptance.
+
+The first exact staged-inventory check rejected CRLF storage bytes against the normalized Git blob. Root corrected only line endings in that storage file and the three upgrade fixtures, proving equality to their already-staged bytes; source-contract hashes already use LF. The original mismatch and four before/after hashes are retained. Installer hashes were refreshed for canonical checkout bytes; no business behavior or fixture assertion changed.
+
+
+## 2026-10-22 — Cloud candidate acceptance repairs (run 39803144531 follow-up)
+
+- Request: continue integration of the client-cloud-websites merge candidate
+  (PR263, head d36d2b8d). Hosted run 39803144531 failed two lanes.
+- Failures preserved: apache lane `baseline-seed` exited with RuntimeException
+  at credentials.php:16 (`Provider master key unavailable`); native/browser lane
+  raised `No CSRF in /existing/portal/index.php?cloud_websites=1`.
+- Fixes: d61abe0f reorders the published-baseline seed so `provider_settings_save`
+  seals the profile (creating the provider master key via vault_key(create=true))
+  before `provider_cloud_assignment_prepare`/`provider_cloud_confirmation_prepare`
+  write HMAC-sealed heads requiring the existing key; key-preservation refusal is
+  unchanged. c7e351b7 pulls the foreign client's CSRF from its workspace page,
+  which always renders a form, instead of the intake page that correctly renders
+  none for an unassigned client; the contract source pin for
+  tests/provider_cloud_site_requests_cases.py was re-anchored.
+- Tests: php -l on the fixture; local artifact verifier 280/280 checks pass on
+  c7e351b7.
+- Result: fixes pushed on devin/cloud-websites-main; hosted run 39831278201
+  dispatched on c7e351b7 and in flight at record time.
+- Remaining: hosted acceptance pending; then normal merge to main, exact-main
+  verification, and the queued force-SSL/PR246 evaluations.
+
+## 2026-10-22 — Cloud candidate registration-period browser failure (run 39831267271 follow-up)
+
+- Request: continue integration; classify hosted failure on candidate head c7e351b7.
+- Failure preserved: native-and-browser lane raised at
+  tests/provider_registration_periods_cases.py:103 — locator
+  `[data-registration-periods]` absent after a successful owner refresh POST;
+  build/apache/recovery lanes passed (baseline-seed ordering fix verified).
+- Diagnosis: the post-redirect GET never logged a response before the 5s
+  expectation elapsed; the captured DOM legitimately ended mid-render inside
+  the cloud-websites card. Server log shows provider-settings render cost
+  degrading 0-1s early to a uniform ~10s late — the new request-journal
+  validation replays every event through an unindexed `BINARY` audit lookup,
+  invoked once by `provider_cloud_sites_history`, again per linked server via
+  `provider_cloud_sites_context`, and per signed grant via document origin.
+- Fixes: `ebebd533` batches the journal's audit lookups into a single fetch
+  with byte-exact PHP matching (identical refusal semantics), retains one
+  validated journal per request keyed by the `provider_cloud_site_request_head`
+  pointer, retains one history validation per unchanged journal+grant count,
+  and waits for the document `load` event before the late-page content
+  assertion (matching existing `wait_for_load_state` convention elsewhere).
+- Tests: php -l on both touched PHP files; cloud wiring verifier passes.
+- Result: pushed on devin/cloud-websites-main; push-triggered run 39855295240
+  queued and full acceptance run 39855317065 dispatched on ebebd533.
+- Remaining: hosted acceptance pending; independent review already recorded on
+  PR263; then normal merge to main, exact-main verification, and the queued
+  force-SSL/PR246 evaluations.
+
+### Correction within the same session
+
+The initial `ebebd533` retained the validated journal across calls keyed only
+by the head pointer. The native suite tampers history inside a transaction and
+re-reads in the same process, where the pointer is unchanged — retention would
+have masked those refusals. `14ff4c43` removes journal memoization entirely
+(keeps the single batched audit fetch) and limits history validation reuse to
+read-only calls outside the caller transaction; every in-transaction path still
+revalidates fully.
+
+### Continuation — navigation bound and systemic render-cost finding
+
+`df873c66`/`60000ms` continuation: provider-settings render latency is not
+candidate-specific. The docroots diagnostic run 39821734667 (main-era code)
+died on a 30-second `page.goto` to provider-settings; its HTTP log shows
+last-third renders at median 15s/p90 27s as audit history accumulates — the
+unindexed `BINARY action`/`detail` audit scans replayed per journal event per
+render are the dominant cost. The php-controls run showed the same growth
+(max 17s). This warrants a separate main-era fix (action index plus
+ci-prefiltered lookups); the candidate carries the batched journal fetch and
+transaction-scoped history reuse from ebebd533/14ff4c43, plus a 60-second
+wait bound matching the 5a262898 congestion precedent. Fresh acceptance runs
+39856701399 (dispatch) and 39856210276 (push) cover df873c66; earlier
+ebebd533 run 39855317065 was cancelled as superseded.
+
+## 2026-10-22 (cont.) — stale installer inventory broke build lane; refreshed at 67ecaa10
+
+- Evidence: acceptance runs 39856701399 (`df873c66`) and 39857344532 (`8e4ed52a`) both failed the build job at "Exact source, installer inventory and one package build" with `RuntimeError: Installer dependency hashes are stale`. The batching (`ebebd533`/`14ff4c43`) touched `site/app/providers/cloud_site_requests_storage.php` and `cloud_sites.php` without regenerating `site/install/inventory.generated.php`; no test lane ran on those heads.
+- Fix: `python tools/build.py --refresh` regenerated two inventory hashes; committed as `67ecaa10`. Refresh output: 40 locked packages / 2188 dependency files no drift; 2201 receiving + 15 submission runtime files byte-identical; PHPMailer pins intact.
+- Also classified: push run 39834880367 (`3f6965a9`) native failed on the same `[data-registration-periods]` 5s expect race already fixed by `df873c66`'s wait-for-load bound — consistent classification, superseded head.
+- Next: full acceptance on `67ecaa10` (run 39862535705 dispatched; push run 39862407802 queued).
+
+## 2026-10-23 — run 39862535705 classified; WordPress cooldown repeat hardened
+
+- Request: continue monitoring; classify the completed cloud-candidate run.
+- Run 39862535705 on `67ecaa10`: build/recovery/apache green; native-and-browser red on one check — `WordPress installation immediate repeat obeys common cooldown`.
+- Evidence (`package-wordpress-installed-response-diagnostics.json`): `actor_reads` shows the two `package.wordpress-installed` reads at `started_epoch` 1792720133 and 1792720173 — **40s apart**. The repeat POST legitimately escaped the 30s shared cooldown because the `post()` helper re-GETs the page before posting (a ~10-30s render under congestion, plus the intermediate client GET). Product behaved correctly; the check's immediacy assumption broke.
+- Fix (owner precedent `7bbb7c50` on the directory-listing lane): `post()` now stores `post.last`, and the repeat reposts identical data directly — `owner.post(url, data=post.last)` bounded at 3 attempts until the `Wait 30 seconds` refusal appears. Semantics unchanged: an executed call still adds a provider call + observation row and the check still fails honestly.
+- File not contract-pinned on this branch. Committed `4fbce9db`, pushed; run 39886854693 dispatched.
+
+## 2026-10-23 (cont.) — run 39886951265 classified; binding-freshness re-arm before recovery window
+
+- Request: continue monitoring; classify the PR-triggered failure on docs head `e0511354`.
+- Run 39886951265 (`e0511354`): build/recovery/apache green; native-and-browser + acceptance red on `browser_acceptance.py` — Playwright `to_be_visible` timeout on `[data-directory-listing-control-recover]` inside `provider_directory_listing_controls_cases.py` (the `Directory-Listing-Control-Recovery-Owner` capture). The WordPress direct-repost fix passed on this head; this was an unrelated later check.
+- Diagnosis: `provider_directory_indexing_controls_summary` only exposes the recovery ledger (`recovery_ledger_sha256`) while `controls_context` resolves — and `provider_directory_indexing_binding` requires the latest packages-list observation inside `service_observations_fresh`'s 900-second window. The suite's last packages-list read was ~20+ minutes before the recovery section (multiple `cool()` waits, browser captures, and the refusal loop), so the request rendered non-current and the form was absent.
+- Fix (`f1c53d61`): re-read `provider_inventory_refresh` then the directory-indexing refresh once before the interrupted-change fixture, so the interrupted request pins a fresh binding source. Placement is load-bearing: the recovered request's verify at the end requires the same binding hash, so the re-arm must precede the second change POST — a refresh inside the recovery section would invalidate the posted binding. File not contract-pinned on this branch.
+- Dispatched run 39912832426 (`f1c53d61`); push run 39912825915 queued on the same head.
+- Note: run 39886854693 on `4fbce9db` remains the all-green dispatch for the cooldown fix; the red run was on the docs-commit head and its only failure is the freshness window now addressed.
