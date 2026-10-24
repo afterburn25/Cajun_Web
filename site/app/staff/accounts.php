@@ -158,6 +158,7 @@ function staff_view_permission(string $view): ?string {
 function staff_action_permission(string $action): ?string {
     if($action==='tickets_setup')return 'staff.manage';
     if(str_starts_with($action,'tickets_'))return 'support.tickets';
+    if(str_starts_with($action,'provider_reset_template_'))return 'staff.manage';
     if(str_starts_with($action,'registration_drafts_'))return 'staff.manage';
     if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
     if(str_starts_with($action,'recurring_'))return 'payments.manage';

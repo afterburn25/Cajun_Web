@@ -10,7 +10,7 @@ use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
 use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
 
-function provider_cloud_sites_history_ready(): void {
+function provider_cloud_sites_approval_history_ready(): void {
     $requests=(int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants').' WHERE operation=?',[CloudWebsiteCreate::OPERATION])->fetchColumn();
     $audits=(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=?',['provider.cloudsite_started'])->fetchColumn();
     if($requests!==$audits)throw new RuntimeException('Cloud website approval history is incomplete. Restore the original records before submitting another request.');
@@ -19,6 +19,20 @@ function provider_cloud_sites_history_ready(): void {
     $orphan=one('SELECT p.id FROM '.table('provider_operations').' p LEFT JOIN '.table('provider_operation_grants').' g ON g.consumed_key=p.idempotency_key AND g.operation=? WHERE (p.operation=? OR (p.status=? AND p.idempotency_key LIKE ?)) AND g.id IS NULL LIMIT 1',[CloudWebsiteCreate::OPERATION,CloudWebsiteCreate::OPERATION,'claimed','cloudsite:%']);
     $auditOrphan=one('SELECT a.id FROM '.table('audit').' a WHERE a.action IN (?,?) AND NOT EXISTS (SELECT 1 FROM '.table('provider_operation_grants').' g WHERE g.operation=? AND a.detail LIKE CONCAT(CAST(? AS BINARY),CAST(g.id AS BINARY),CAST(? AS BINARY))) LIMIT 1',['provider.cloudsite_started','provider.cloudsite_result',CloudWebsiteCreate::OPERATION,'Cloud website request ',' %']);
     if($orphan||$auditOrphan)throw new RuntimeException('Cloud website execution history has lost its original approval. Restore the original records before submitting another request.');
+}
+function provider_cloud_sites_history_ready(): void {
+    // One full validation per request while rendering repeated read-only checks
+    // for an unchanged journal and grant count; every request-history append or
+    // creation approval updates the key, and nothing is retained once the
+    // caller holds the transaction that performs those changes.
+    static $validated=null;
+    if(!db()->inTransaction()){
+        $marker=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_site_request_head'])['value']??'').'|'.(int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants').' WHERE operation=?',[CloudWebsiteCreate::OPERATION])->fetchColumn();
+        if($marker===$validated)return;
+        provider_cloud_assignment_inspect(static fn()=>provider_cloud_site_requests_state(false));
+        $validated=$marker;return;
+    }
+    provider_cloud_assignment_inspect(static fn()=>provider_cloud_site_requests_state(false));
 }
 
 /** Current owner, exact assignment, latest complete fresh attempt and original account. */
@@ -46,6 +60,7 @@ function provider_cloud_sites_document(array $grant): array {
     if(!is_array($doc)||($doc['version']??null)!==1||!is_array($doc['binding']??null)||!is_array($doc['params']??null)||($doc['reviewed']??null)!==true||!hash_equals($grant['scope_fingerprint'],provider_operations_scope(CloudWebsiteCreate::OPERATION,$doc)))throw new RuntimeException('Cloud website request history is inconsistent. Restore the original records.');
     CloudWebsiteCreate::params($doc['params']);
     if(($doc['binding']['server_id']??null)!==$doc['params']['cloudServerId']||$grant['consumed_key']!=='cloudsite:'.$grant['id']||(int)$grant['profile_revision']!==($doc['binding']['profile_revision']??null))throw new RuntimeException('Cloud website request binding is inconsistent.');
+    if(array_key_exists('client_request',$doc))provider_cloud_site_requests_origin($grant,$doc);
     return $doc;
 }
 
@@ -65,6 +80,7 @@ function provider_cloud_sites_authorize(array $grant,array $doc): array {
     [$actor,$profile,$binding]=provider_cloud_sites_context($b['link_id'],$b['link_revision'],$b['profile_revision'],$b['refresh_id']);
     $current=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$grant['id']]);
     if(!$current||$current!==$grant||(int)$actor['id']!==(int)$grant['granted_by']||$grant['revoked_at']!==null||(int)$grant['expires_epoch']<=time()||!hash_equals(provider_operations_scope('cloudsites.binding',$binding),provider_operations_scope('cloudsites.binding',$b)))throw new ProviderOperationAccessChanged('Cloud website approval or assignment changed.');
+    if(array_key_exists('client_request',$doc))provider_cloud_site_requests_authorize($grant,$doc);
     return $profile;
 }
 
@@ -79,14 +95,16 @@ function provider_cloud_sites_finish(array $grant,OperationResult $result): Oper
 }
 
 /** One explicit owner approval, one immutable request, at most one provider send. */
-function provider_cloud_sites_create(string $requestId,string $linkId,int $linkRevision,int $profileRevision,string $refreshId,string $domain,array $extra,bool $reviewed,#[SensitiveParameter] string $password,?callable $resolver=null,?callable $perform=null): OperationResult {
+function provider_cloud_sites_create(string $requestId,string $linkId,int $linkRevision,int $profileRevision,string $refreshId,string $domain,array $extra,bool $reviewed,#[SensitiveParameter] string $password,?callable $resolver=null,?callable $perform=null,?array $clientReview=null): OperationResult {
     if(db()->inTransaction())throw new LogicException('Cloud website creation cannot run inside a transaction.');
     if(!preg_match('/^[a-f0-9]{32}$/D',$requestId)||!$reviewed)throw new InvalidArgumentException('Review the server capacity, domain permission and website request before continuing.');
-    $started=staff_locked(fn()=>staff_transaction(function()use($requestId,$linkId,$linkRevision,$profileRevision,$refreshId,$domain,$extra,$password):array {
+    $started=staff_locked(fn()=>staff_transaction(function()use($requestId,$linkId,$linkRevision,$profileRevision,$refreshId,$domain,$extra,$password,$clientReview):array {
         [$actor,$profile,$binding]=provider_cloud_sites_context($linkId,$linkRevision,$profileRevision,$refreshId,$password);
         $params=CloudWebsiteCreate::params(['cloudServerId'=>$binding['server_id'],'domain_name'=>$domain,'extra_domain_names'=>$extra]);
-        $doc=['version'=>1,'binding'=>$binding,'params'=>$params,'reviewed'=>true];$scope=provider_operations_scope(CloudWebsiteCreate::OPERATION,$doc);
         $existing=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]);
+        $doc=['version'=>1,'binding'=>$binding,'params'=>$params,'reviewed'=>true];
+        if($clientReview!==null)$doc['client_request']=provider_cloud_site_requests_admit($clientReview,$requestId,$actor,$profile,$binding,$params,$existing);
+        $scope=provider_operations_scope(CloudWebsiteCreate::OPERATION,$doc);
         if($existing){provider_cloud_sites_document($existing);if($existing['profile_id']!==$profile['id']||(int)$existing['granted_by']!==(int)$actor['id']||!hash_equals($existing['scope_fingerprint'],$scope))throw new RuntimeException('This request was already used for different details.');return [$existing,false];}
         // A fresh nonce must not recreate a website after an accepted, uncertain or interrupted attempt.
         foreach(all('SELECT * FROM '.table('provider_operation_grants').' WHERE profile_id=? AND operation=?',[$profile['id'],CloudWebsiteCreate::OPERATION]) as $previous){$old=provider_cloud_sites_document($previous);if(array_intersect([$domain,...$extra],[$old['params']['domain_name'],...$old['params']['extra_domain_names']])){$outcome=provider_cloud_sites_result($previous);if(!$outcome||$outcome['status']!=='failed')throw new RuntimeException('A prior request for one of these domains needs review. It cannot be submitted again automatically.');}}
@@ -96,7 +114,11 @@ function provider_cloud_sites_create(string $requestId,string $linkId,int $linkR
         return [one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$requestId]),true];
     }));
     [$grant,$fresh]=$started;$doc=provider_cloud_sites_document($grant);
-    if(!$fresh){$row=provider_cloud_sites_result($grant);return match($row['status']??'uncertain'){'accepted_pending'=>OperationResult::acceptedPending(CloudWebsiteCreate::OPERATION,$row['external_id']),'failed'=>OperationResult::failed(CloudWebsiteCreate::OPERATION,'The earlier request was refused. Review its history before creating a new request.'),default=>OperationResult::uncertain(CloudWebsiteCreate::OPERATION)};}
+    if(!$fresh)return provider_cloud_sites_replay($grant);
+    if(array_key_exists('client_request',$doc)){
+        try{staff_locked(static fn()=>provider_cloud_sites_authorize($grant,$doc));}
+        catch(Throwable $e){if($e instanceof PDOException)throw $e;return provider_cloud_sites_finish($grant,OperationResult::failed(CloudWebsiteCreate::OPERATION,'The client request or current assignment changed before send.','access_changed')->withAttempts(0));}
+    }
     try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
     catch(Throwable $e){if($e instanceof PDOException)throw $e;return provider_cloud_sites_finish($grant,OperationResult::failed(CloudWebsiteCreate::OPERATION,'Provider endpoint unavailable before send.','unreachable')->withAttempts(0));}
     return staff_locked(function()use($grant,$doc,$address,$perform):OperationResult {
@@ -111,6 +133,12 @@ function provider_cloud_sites_create(string $requestId,string $linkId,int $linkR
         }catch(Throwable $e){if($e instanceof PDOException)throw $e;$result=$dispatched?OperationResult::uncertain(CloudWebsiteCreate::OPERATION,'access_changed'):OperationResult::failed(CloudWebsiteCreate::OPERATION,'Current access, assignment or credentials could not be confirmed before send.','access_changed')->withAttempts(0);}
         return provider_cloud_sites_finish($grant,$result);
     });
+}
+
+/** Historical replay reads the retained shared outcome; it never resolves or sends. */
+function provider_cloud_sites_replay(array $grant):OperationResult {
+    $row=provider_cloud_sites_result($grant);
+    return match($row['status']??'uncertain'){'accepted_pending'=>OperationResult::acceptedPending(CloudWebsiteCreate::OPERATION,$row['external_id']),'failed'=>OperationResult::failed(CloudWebsiteCreate::OPERATION,'The earlier request was refused. Review its history before creating a new request.'),default=>OperationResult::uncertain(CloudWebsiteCreate::OPERATION)};
 }
 
 /** Owner-only history. Never exposes raw provider responses or credentials. */
@@ -141,3 +169,4 @@ function provider_cloud_sites_client_history(int $serverId): array {
     return $out;
 }
 require_once CWP_CODE_ROOT.'/app/providers/cloud_site_confirmation.php';
+require_once CWP_CODE_ROOT.'/app/providers/cloud_site_requests.php';

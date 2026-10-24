@@ -27,7 +27,7 @@ final class CloudWebsiteCreate
     {
         if(!is_string($value)||strlen($value)>253||$value!==strtolower($value)||filter_var($value,FILTER_VALIDATE_IP)||!str_contains($value,'.'))throw new InvalidArgumentException('Enter a lowercase domain name without a URL or trailing dot.');
         foreach(explode('.',$value) as $label)if(!preg_match('/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/D',$label))throw new InvalidArgumentException('Enter a valid ASCII domain name.');
-        if(ctype_digit(substr($value,strrpos($value,'.')+1)))throw new InvalidArgumentException('Enter a domain name, not an address.');
+        if(preg_match('/^[0-9]+$/D',substr($value,strrpos($value,'.')+1)))throw new InvalidArgumentException('Enter a domain name, not an address.');
         return $value;
     }
 
