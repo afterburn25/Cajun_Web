@@ -10,8 +10,10 @@ function studio_migrate(): void {
   else db()->exec($sql);
  }
  if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].'audit'])){
-  $collation=one('SELECT COLLATION_NAME FROM information_schema.columns WHERE table_schema=? AND table_name=? AND column_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','action']);
-  if(($collation['COLLATION_NAME']??'')!=='utf8mb4_bin')db()->exec('ALTER TABLE '.table('audit').' MODIFY action VARCHAR(80) COLLATE utf8mb4_bin NOT NULL');
+  foreach(['action'=>"action VARCHAR(80) COLLATE utf8mb4_bin NOT NULL",'detail'=>"detail VARCHAR(400) COLLATE utf8mb4_bin NOT NULL"] as $column=>$definition){
+   $collation=one('SELECT COLLATION_NAME FROM information_schema.columns WHERE table_schema=? AND table_name=? AND column_name=?',[config()['db']['name'],config()['db']['prefix'].'audit',$column]);
+   if(($collation['COLLATION_NAME']??'')!=='utf8mb4_bin')db()->exec('ALTER TABLE '.table('audit').' MODIFY '.$definition);
+  }
   if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_action']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_action(action)');
   if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_detail']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_detail(detail(191))');
  }
