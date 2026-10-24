@@ -4,6 +4,7 @@ run_browser(env, browser) uses the fixed runner/fixture contract in INTEGRATION.
 No direct SQL, commercial row editing, production overrides or provider calls live here.
 """
 import re
+import time
 from http.cookies import SimpleCookie
 from urllib.parse import parse_qs, urlencode, urljoin, urlparse
 
@@ -122,7 +123,20 @@ def run_browser(env, browser):
         return f"{kind.capitalize()} {operations[kind]} ({detail})"
 
     def state():
-        result = fixture("status", {"request_ids": request_ids})
+        # The status snapshot acquires the shared staff mutex with a five-second
+        # bound inside the fixture. A slow packaged handler can hold it briefly
+        # past the probe, so retry transient lock contention a few times; a real
+        # wedge still fails after the bound, now with holder diagnostics.
+        for attempt in range(5):
+            try:
+                result = fixture("status", {"request_ids": request_ids})
+            except RuntimeError as error:
+                detail = str(error)
+                if attempt < 4 and ("account change is in progress" in detail.lower() or ('"file":"accounts.php"' in detail and '"line":40' in detail)):
+                    time.sleep(5)
+                    continue
+                raise
+            break
         if result.get("passed") is not True or not re.fullmatch(r"[a-f0-9]{64}", result["protected_sha256"]):
             raise AssertionError("Fixture status unavailable")
         return result

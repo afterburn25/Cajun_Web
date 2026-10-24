@@ -249,4 +249,12 @@ try {
     }
     if(session_status()===PHP_SESSION_ACTIVE&&!session_write_close())throw new RuntimeException('Could not save fixture browser session.');
     echo json_encode($output,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
-}catch(Throwable $e){if(session_status()===PHP_SESSION_ACTIVE)session_write_close();echo json_encode(['passed'=>false,'phase'=>$phase,'failure'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine()]],JSON_THROW_ON_ERROR)."\n";exit(1);}
+}catch(Throwable $e){if(session_status()===PHP_SESSION_ACTIVE)session_write_close();
+    $failure=['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'message'=>substr($e->getMessage(),0,200)];
+    try{$mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);$holder=one('SELECT IS_USED_LOCK(?) AS id',[$mutex]);
+        $failure['mutex_held']=$holder!==null&&$holder['id']!==null;
+        if($failure['mutex_held']){$failure['mutex_holder_id']=(int)$holder['id'];
+            $busy=all('SELECT ID,TIME,STATE,LEFT(INFO,240) AS INFO FROM information_schema.PROCESSLIST WHERE COMMAND<>\'Sleep\' AND TIME>1 LIMIT 8');
+            $failure['busy_processes']=array_map(static fn($r)=>['id'=>(int)$r['ID'],'time'=>(int)$r['TIME'],'state'=>$r['STATE'],'info'=>$r['INFO']],$busy);}
+    }catch(Throwable $ignored){$failure['mutex_probe_error']=get_class($ignored);}
+    echo json_encode(['passed'=>false,'phase'=>$phase,'failure'=>$failure],JSON_THROW_ON_ERROR)."\n";exit(1);}
