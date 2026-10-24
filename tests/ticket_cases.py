@@ -111,6 +111,11 @@ def run_browser(env, browser):
     check('Exact client reply replay does not duplicate history', snapshot()==saved)
     foreign.post(client_url, data=dict(reply_request, csrf=token(foreign.get(portal)), request_id='f'*32, body='Foreign client forged reply'))
     check('Foreign valid session CSRF cannot write into another ticket', snapshot()==saved)
+    (QA/'ticket-staff-feed-diagnostics.json').write_text(json.dumps({
+        'feed': db('SELECT recipient_id,kind,ref,title FROM ci_notification_feed WHERE ref=? ORDER BY recipient_id,created_at', ['ticket:'+ticket]),
+        'staff_rows': db("SELECT u.id,p.role,p.enabled,p.permissions FROM ci_users u JOIN ci_staff_profiles p ON p.user_id=u.id"),
+        'deliveries': db('SELECT notification_id,channel,state,last_error FROM ci_notification_deliveries'),
+    }, indent=2), encoding='utf-8')
     check('Client opening and reply notify ticket-holding staff once each', db('SELECT recipient_id FROM ci_notification_feed WHERE audience=? AND ref=? ORDER BY recipient_id', ['staff', 'ticket:'+ticket])==[{'recipient_id': 1}]*2+[{'recipient_id': staff_id}]*2)
     check('Private note and assignment never reach the client feed', db('SELECT id FROM ci_notification_feed WHERE audience=? AND ref=?', ['client', 'ticket:'+ticket])==[])
 
