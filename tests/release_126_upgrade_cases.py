@@ -312,6 +312,10 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     # workspace migration to 4 must precede owner-gated hosting views.
     response = submit(owner, admin + '?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
     ok('Workspace schema update precedes upgraded hosting checks', response.status_code == 200 and 'Database update completed' in response.text)
+    # Published 1.25 carries payments_schema_version 1; the explicit owner-run
+    # payment preparation to schema 2 must precede retained recurring reads.
+    response = submit(owner, admin + '?view=payments', 'payments_migrate', {'owner_password': OWNER, 'confirm': '1'})
+    ok('Payment schema update precedes upgraded retained checks', response.status_code == 200 and 'Payment preparation enabled' in response.text)
     from release_126_hosting_records import before_setup, continue_after_retention
     before_setup(repo, installed, base, prefix, php, candidate_version, owner, snapshot, hosting_evidence, qa)
     before_get = snapshot(); response = owner.get(settings, timeout=120)
