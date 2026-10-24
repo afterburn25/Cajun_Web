@@ -233,6 +233,9 @@ def run_browser(env, browser):
     r = member.post(refused_target, data={**refused_data, 'confirm_send': '1'})
     refused_sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
     refused_page = root + '?view=mail-submission&submission_id=' + refused_sid
+    # The two-second per-account copy bound counts the earlier successful append;
+    # age the attempts so the refused copy reaches the transport deterministically.
+    db('UPDATE ci_mail_copy_attempts SET started_epoch=0')
     r = member.post(refused_page, data={'csrf': token(member.get(refused_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': refused_sid})
     copy_connections += 1
     refused_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [refused_sid])[0]['mime_bytes'].encode('ascii')
