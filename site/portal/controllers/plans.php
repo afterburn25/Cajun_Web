@@ -22,7 +22,7 @@ function service_plans_portal_action(string $action,array $client):never {
 function service_plans_portal_render(array $client,string $error):never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     try {staff_locked(function()use($client):void {service_plans_current_client((int)$client['id']);});}
-    catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;fail_page('Service agreements are unavailable for this session.',403);}
+    catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;fail_page($error!==''?$error:'Service agreements are unavailable for this session.',403);}
     site_head('Your service agreements','portal');echo '<section class="page-hero compact"><div class="container"><span class="eyebrow">YOUR CLIENT WORKSPACE</span><h1>Service <span class="gold-text">agreements</span></h1><div class="button-row"><a class="btn outline" href="'.esc(studio_url()).'">All projects</a><a class="btn outline" href="'.esc(studio_url(['agreements'=>1])).'">All agreements</a></div></div></section><section class="section"><div class="container">';show_flash();
     if($error!=='')echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     try {require CWP_CODE_ROOT.'/portal/views/plans.php';}
