@@ -255,3 +255,9 @@ Run `40029373442` (`89647b28`, pull_request-triggered) completed **success** —
 - Secondary failure found: my site_file/site_line keys broke the packaged export's closed report shape (`closed(error,{class,file,line,message})`), so export refused and the nested `qa/php-controls-ui/` originals broke the flat-only seal.
 - `f1fdc4e2`: failure site frame folded into `message` (shape unchanged); goto timeout 30s→90s. Contract re-anchored (`canonical` appends trailing \n — first recompute missed it), 390/390 green. Run `40044789245` queued.
 - Nameserver `40043663733` on `2c088c6e` in flight (submit refresh 90s/150s).
+
+## 2026-10-23 (cont.22) — FSI 40036507274 classified: render guard masked action refusal
+
+- FSI `e15681e2` run `40036507274` advanced past the nav check; failed at `tests/service_plan_cases.py:197` — `Projects-only contact POST cannot consent under the shared session` (`'do not include billing' in r.text and snapshot()==denied`).
+- Root cause: the forged POST's `service_plans_portal_action` → `service_plans_client_change` → `service_plans_current_client` threw `Your contact permissions do not include billing.` correctly (caught into `$error`), but the `?agreement=` render path then re-ran the session guard (`service_plans_portal_render` plans.php:24-25) which threw again and `fail_page` emitted the generic `Service agreements are unavailable for this session.` — the specific refusal never reached the response. Authorization boundary held (state unchanged); the check was added in `cefb08d6` and had never run green.
+- `f22b4db2`: render's guard catch now uses the recorded action error when present (`$error!==''?$error:generic`), preserving the 403 and generic message for plain reads. `php -l` clean; build refresh + inventory updated. Run `40045306021` auto-dispatched on push.
