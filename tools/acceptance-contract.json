@@ -1049,7 +1049,7 @@
     },
     "source_sha256": {
       "tests/release_126_hosting_fixture.php": "de12763cb75da029cbe2c6f5573ab197ce6487d11ea34325a4012cb64dd9adf4",
-      "tests/release_126_hosting_guards.py": "7829835a32194811cf633a65d02436935c1cf15a703157b15a6242a27372fb5d",
+      "tests/release_126_hosting_guards.py": "7fe8cbff00de635bb9e3f919dfb966c0c1b3e9cb189fe206314e57c99d5157d1",
       "tests/release_126_hosting_records.py": "698a7d267049ce421ee2d275c2574abdf94603ea591fb3f7f88230636c782efb",
       "tests/release_126_provider_fixture.php": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
       "tests/release_126_upgrade_acceptance.py": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",

@@ -92,7 +92,7 @@ function setup_expected_files(): array { return [
     'admin/views/mail_drafts.php'=>'c133cb77b934120f0b0cfac58d87ca3d82c0881a6ffb4bc05669a9637b0fcb1d',
     'admin/views/mail_inbox.php'=>'f41131ccffbbe4c34d1c9553f4e34167b1d23e8564811938bdb428f6fc15884f',
     'admin/views/mail_message.php'=>'44777aa2ada8648a8a0af3e86c6b761b5b8b47ad3c6b7bbbaeb6cd4c6198698f',
-    'admin/views/mail_notices.php'=>'e0447c0e3b3813ba87a63ee4baab6b7a1032a743ec0d27582166b529dae14789',
+    'admin/views/mail_notices.php'=>'7526dfed885ad44c3054e45ce4e3204e144e2f24d6ceb41a3df12b38fe4d744e',
     'admin/views/mail_submissions.php'=>'b6bad155493ef5774a74845228220003fdc8bfe638e99f6832edc7b5bdfaca18',
     'admin/views/mail_templates.php'=>'26342cd75557f2ae5aa16e71d2cfc177c872d2340263c835aea89020a06686dd',
     'admin/views/operations.php'=>'834b7f408546a0e98d8446cef20481553c72af187f1e3c2b9c6d992af4c4c589',

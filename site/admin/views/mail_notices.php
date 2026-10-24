@@ -21,7 +21,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <nav aria-label="Assigned inbox status pages"><?php if($accountPage>1): ?><a href="<?=esc(admin_url('mail-notices',['accounts_page'=>$accountPage-1,'p'=>$page]))?>">Previous inboxes</a><?php endif; ?><?php if(count($accounts)>20): ?><a href="<?=esc(admin_url('mail-notices',['accounts_page'=>$accountPage+1,'p'=>$page]))?>">More inboxes</a><?php endif; ?></nav>
 <h3>Observed messages</h3>
 <?php if(!$items): ?><p>No recent observed messages on this page. Check an assigned inbox to populate this list.</p><?php endif; ?>
-<?php foreach(array_slice($items,0,20) as $item): $route=['account_id'=>$item['account_id'],'revision'=>(string)$item['account_revision'],'uidvalidity'=>$item['uidvalidity'],'uid'=>$item['uid'],'notice'=>$item['handle']]; ?>
+<?php foreach(array_slice($items,0,20) as $item): $route=['account_id'=>$item['account_id'],'revision'=>(string)$item['account_revision'],'folder'=>$item['folder'],'uidvalidity'=>$item['uidvalidity'],'uid'=>$item['uid'],'notice'=>$item['handle']]; ?>
 <article class="workspace-card mail-notice-item" data-mail-notice="<?=esc($item['handle'])?>"><h4>Recent message · <?=esc($item['label'])?></h4><p><?=esc($item['address'])?></p>
 <p>Observed <?=esc($item['flags_observed_at'])?> UTC · <?=(int)$item['server_seen']===1?'Read on server when checked':'Unread on server when checked'?></p>
 <p><?=esc($item['opened_at']!==null?'Opened by you '.$item['opened_at'].' UTC':($item['dismissed_at']!==null?'Dismissed by you '.$item['dismissed_at'].' UTC':'Not opened or dismissed by you'))?></p>
