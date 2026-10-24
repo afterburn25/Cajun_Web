@@ -1,3 +1,13 @@
+## 2026-10-24 — packaged-UI stall investigation and staff-mutex contention
+
+Current head `be6c96ca` on `devin/fix-php-controls-minimal` (branch renamed from codex history; this lane is 56 commits behind current main `125deacc` and will need a main merge at integration).
+
+- Run `40091116828` (`d2a99737`) completed/failure at ~4h02m: the journey passed the earlier owner-POST site and client-history capture, then a `status` probe (`fixture("status")` → `phui_scope` → `staff_locked` GET_LOCK 5s bound) threw `RuntimeException` at `site/app/staff/accounts.php:40` — 'Another account change is in progress'. A live packaged handler held the shared staff mutex past the probe's five-second window. This is environment contention from the same degraded-render regime (branch lacks the audit-index work), not a product regression — the narrow packaged workflow `40091033834` passed the same journey end-to-end on `d2a99737`.
+- `be6c96ca` arms holder identification: fixture failure receipts now carry `mutex_held`, holder connection id and the busy process list (`information_schema.PROCESSLIST`, bounded), plus the exception message. `state()` retries transient lock contention at most four times (5s spacing); a real wedge still fails, now with the holder recorded.
+- Narrow `40109363882` + gate `40109388796` dispatched on `be6c96ca`. Prior evidence chain: `40076719417` (`e126df1d`) failed at the client delegated setter POST `:428` `ReadTimeout` (added per-POST diagnostics `d2a99737`); `40063538496`/`83c3fdaa` stalled at owner POST `:344` (completed later that run — diagnostics never fired). Pattern: stalls cluster around post-capture operations in the single-worker `php -S` fixture.
+- Contract `php_controls_acceptance` re-anchored for the two pinned UI files; verifier 390/390.
+- Next: classify `40109388796`; if the mutex diagnostics fire, the holder statement identifies the wedged handler. Merge into the documented merge-first sequence after green.
+
 ## 2026-10-18 — PHP controls full-acceptance wiring
 
 Starting `7af25ed5a1b02f1e21fbac666ba4d0ca31852a79` on `codex/twentyi-php-version-controls`, this increment adds the existing 20 native PHP-controls commands to full acceptance, preserves the original 152 commands and producers, and connects the unchanged packaged owner/client browser runner through a closed public-evidence bridge. The full recipe now has 172 native commands, 186 required browser reports and 232 final reports. Sixteen existing PHP-controls capture names are retained; capture generation and visual acceptance remain pending.
