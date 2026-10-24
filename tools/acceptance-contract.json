@@ -3246,7 +3246,7 @@
       "site/assets/css/premium.css": "790097578fe9219d52a8581e3aae761c4646b5145590ae4b6e15d74a690d1743",
       "site/assets/css/site.css": "ecf7a54945d89e62b86fd43741aeafbee7480a752d4133e17053ddffe251abcf",
       "site/database/migrations/provider_catalog_variant_migrate.php": "70b27856abedb990d8eb0dbc954d73bf8fb6d12bc05612e1e526040c2d725c5c",
-      "site/database/schema/base.php": "3a6100b41ba400d0ac9871036ddf4c5604b3f199e2aff46fa48ce484bca26da1",
+      "site/database/schema/base.php": "2746d60a0496ec78e0bf26c133b96a8be37511d643ceb05c242a137108cecc38",
       "site/database/schema/provider_catalog_import_schema.php": "dc047d538a5579676b1ef01969a0d8af30700729aa59d5045d8e70e3f1e1fb8a",
       "site/database/schema/provider_catalog_variant_schema.php": "039464e56be9e060f009ae5c9b1ccab63303a4c12ce9e2c900dfca9dfb7f77ce",
       "site/database/schema/recurring_billing_schema.php": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
@@ -3275,7 +3275,7 @@
   },
   "hosting_billing_selector": {
     "predecessor_commit": "e7deced05e0b625994ee2facf628ebe337030081",
-    "predecessor_contract_sha256": "c32e7b63e12e175416ced83c82c8462f0febbe2e88774fcd1415484a857b2fac",
+    "predecessor_contract_sha256": "20cd88563972f3a92eb1280e89ec1f74a435ca9cca4e01a87d55a66007b33081",
     "predecessor_reports_sha256": "8672eee23aea1fef5ec362cf6f7e02ead15f501cf3f4f0ea3ff8b63e3c5ad98c",
     "native_after": "CWP_TEST_HOSTING_VARIANTS=1 \"$PHP_BINARY\" tests/hosting_catalog_variants_native.php",
     "native_additions": [
@@ -3832,7 +3832,7 @@
       "site/assets/css/premium.css": "790097578fe9219d52a8581e3aae761c4646b5145590ae4b6e15d74a690d1743",
       "site/assets/css/site.css": "ecf7a54945d89e62b86fd43741aeafbee7480a752d4133e17053ddffe251abcf",
       "site/database/migrations/provider_catalog_variant_migrate.php": "70b27856abedb990d8eb0dbc954d73bf8fb6d12bc05612e1e526040c2d725c5c",
-      "site/database/schema/base.php": "3a6100b41ba400d0ac9871036ddf4c5604b3f199e2aff46fa48ce484bca26da1",
+      "site/database/schema/base.php": "2746d60a0496ec78e0bf26c133b96a8be37511d643ceb05c242a137108cecc38",
       "site/database/schema/provider_catalog_import_schema.php": "dc047d538a5579676b1ef01969a0d8af30700729aa59d5045d8e70e3f1e1fb8a",
       "site/database/schema/provider_catalog_variant_schema.php": "039464e56be9e060f009ae5c9b1ccab63303a4c12ce9e2c900dfca9dfb7f77ce",
       "site/database/schema/recurring_billing_schema.php": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
@@ -3867,7 +3867,7 @@
   },
   "hosting_billing_options": {
     "predecessor_commit": "826eb5dd6807eb8424efc677706d21d07b6748c3",
-    "predecessor_contract_sha256": "e711f2dc1ba976b1a292d71907c32f112836ee23cfbadda14b95c0c2cd6d4e7b",
+    "predecessor_contract_sha256": "2311cb38909b644272cc3fd6d23743302183386c54d2d393bd463878edb61e30",
     "predecessor_reports_sha256": "90bde2f7f2b422b45d5438788f713d5c9605c47cc9fed0113ee650844bdb93e3",
     "native_after": "CWP_TEST_HOSTING_BILLING=1 \"$PHP_BINARY\" tests/hosting_catalog_billing_native.php",
     "native_additions": [
@@ -5500,7 +5500,7 @@
   },
   "client_https_requests": {
     "predecessor_commit": "dcd6966c4e0c209d15f9d88c8832ef601765c336",
-    "predecessor_contract_sha256": "9896754733a113c13e3b6708c72f49b5248cb007d3d5dd3ea5a77d853b641ff9",
+    "predecessor_contract_sha256": "f39ed50812a48196fb8c006604dcaf7f99ddbf0c7e6f307cfdcb2fc17a748056",
     "predecessor_reports_sha256": "639a9bb2b7252e49882de7b5a5a176f531402d57235c35f7544e201002ceec3e",
     "native_after": "\"$PHP_BINARY\" tests/provider_force_ssl_controls_native.php",
     "native_additions": [
@@ -5812,7 +5812,7 @@
   },
   "client_directory_requests": {
     "predecessor_commit": "1a8ae8507416cb2c79dd41e5e06cadf7e73d0bab",
-    "predecessor_contract_sha256": "6790e71feddb017275f6fb34da22050a8332b02f487ca81815aabe4b695bcb2a",
+    "predecessor_contract_sha256": "ea3cd3977267a91ccef14da52a99040732f743f37a5bac35e029376d9bce883d",
     "predecessor_reports_sha256": "9bace2c26fa5a8090bd3dac21afe2790940a22ef16be37547eeb0ff1df6e3c4b",
     "native_after": "\"$PHP_BINARY\" tests/provider_directory_listing_controls_native.php",
     "native_additions": [
