@@ -12,9 +12,29 @@ Staging lanes `devin/preflight-commercial` and `devin/full-site-integration` rem
 
 ## Lane state — 2026-10-24 (latest)
 
-**MERGED**: PR263 `devin/cloud-websites-main` (`89647b28`) merged to main as `125deacc` — first merge-first delivery of the cycle. Evidence: full `Application acceptance` run `40029373374` green on exact head (includes 1.25.0 published-baseline upgrade matrix + recovery flow); labeled self-review posted on merge; main has no enforced review gate. Exact-main verify `40053118998` in flight. Not a release; nothing deployed.
+**MERGED**: PR263 `devin/cloud-websites-main` (`89647b28`) merged to main as `125deacc` — first merge-first delivery of the cycle. Evidence: full `Application acceptance` run `40029373374` green on exact head (includes 1.25.0 published-baseline upgrade matrix + recovery flow); labeled self-review posted on merge; main has no enforced review gate. Exact-main verify `40053118998` FAILED — `Page.goto` 30s timeout on `provider-settings&stackcp_page=1&stackcp_access_page=1` (late-suite renders 15–34s). Classified as product perf debt, not a merge regression (all 2,997 checks passed). Not a release; nothing deployed.
+
+**Systemic blocker identified**: unindexed history scans inflate every suite past limits — nameserver `40059504320` and docroots `40054595694` both hit the workflow `timeout-minutes: 240` job ceiling at ~4h01m. The `ci_audit(action)` index (audit lane) alone did NOT cure provider-settings (still 15–33s on `1cbd6c5c`): `provider_registrar_events` and `provider_cloud_link_events` lacked `link_id` indexes; `cloud_assignment.php:106` iterates all events with a per-row `BINARY link_id=? AND id>?` scan (O(n²)).
+
+**Audit lane extended** `devin/audit-render-index` `299ce45c`: `link_events(link_id)` added to both CREATE TABLEs + strict expected-index maps + guarded ALTERs for existing tables; inventory regenerated; contract 280/280. PR265 open/mergeable; full acceptance `40077411063` dispatched on exact head. When green → merge → lanes merge main → redispatch.
 
 In flight on exact heads:
+
+- **Audit** `40077411063` `299ce45c` — dispatched.
+- **Preflight** `40070896754` `2819c9c2` — `40057278215` held FlagWriter + payments fixes; last check `mail_message_cases.py:87` was lane-new and asserted 'Mark unread on server' on the flag POST's 303-redirect GET (structurally absent). Fixed to reload mode='message' + assert 'Mark read on server'.
+- **FSI** `40076896157` `357c253d` — `40060899371` held the recurring-invoice guard fix (3,620 checks); last check `ticket_cases.py:114` staff-feed recipients mismatch; diagnostic dump added pre-assertion (actuals pending).
+- **PHP-controls** `40076719417` `e126df1d` — `40063538496` showed the :344 POST completed (diagnostics never fired); failure moved to Client-History capture (`data-php-request=<client_request>` absent in Chromium while present via requests at :418). `e126df1d` adds bounded page-state probes on capture miss.
+- **Docroots** `514ba7dd` + **Nameserver** `b24ac1bb` — runs cancelled at the 240-min ceiling; re-dispatch only after audit index lands (otherwise same trajectory).
+- **Diagnostic** PR264: awaiting independent review.
+- Environment: C: disk full — TEMP/downloads redirected to D:/Devin/tmp-dl.
+
+Merge-first sequence: audit `299ce45c` green → merge PR265 → exact-main verify → then lanes merge main (index) and rerun; PR264 after independent review; published 1.25.0 immutable, nothing live-deployed.
+
+## Lane state — 2026-10-24 (earlier, superseded)
+
+**MERGED**: PR263 `devin/cloud-websites-main` (`89647b28`) merged to main as `125deacc` — first merge-first delivery of the cycle. Evidence: full `Application acceptance` run `40029373374` green on exact head (includes 1.25.0 published-baseline upgrade matrix + recovery flow); labeled self-review posted on merge; main has no enforced review gate. Exact-main verify `40053118998` in flight. Not a release; nothing deployed.
+
+In flight on exact heads (earlier snapshot):
 
 - **FSI** `devin/full-site-integration` `68ca05ec`: mail bounds verified green (SMTP send + sent-copy APPEND); `f22b4db2` fixed the render-guard masking the 'do not include billing' refusal on contact POSTs; `68ca05ec` corrected the over-specified `403` assertion for revoked-contact sessions (real outcome: session invalidated → anonymous login form, per `studio_client()` + `contacts_cases` convention). Run `40053078796` in flight.
 - **Preflight** `devin/preflight-commercial` `be8d75fe`: FlagWriter bootstrap require (ported `ba10faee` fix — `Class FlagWriter not found` root-caused the mark-read 'connection' refusal) + added the documented owner `payments_migrate` step to the retained-1.25 upgrade fixture (`payments_ready` requires schema v2). Contract re-anchored, 1468/1468. Run `40057278215` in flight.
