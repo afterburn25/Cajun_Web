@@ -1,6 +1,16 @@
 
 # Session handoff - Devin sole-owner continuation
-## 2026-10-24 (latest) — four lanes in flight on corrected heads; binary-collation root cause for provider-settings debt
+## 2026-10-24 (latest) — preflight corrected head 49bdeaea; audit-fix port repaired after cherry-pick reverts
+
+**State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized. Current main `a331599a` (audit-fix merge).
+
+**Preflight (`devin/preflight-commercial`, head `49bdeaea`, run `40142115998`):**
+- Run `40139792396` (`06a97393`) failed fast on BOTH apache/native: `Table 'cwp_test.aor1_studio_progress_events' doesn't exist` in the retained 1.23.0 organized-upgrade progress section.
+- Root cause: the audit-fix cherry-picks (`f26dfb6f`, `79d8e233`) silently reverted this branch's newer `studio_migrate` (marker-aware v4 workspace family) and the `base.php` schema tail (`contacts_schema` + `notification_feed_schema`). Same suite passed at `8eb0570b`; only port commits sat between.
+- Fix `49bdeaea`: restored lane `workspace.php`/`base.php` with the audit collation/index block kept additive; inventory regenerated; contract re-settled (1468/1468).
+- Prior classifications on this lane: `OLD_CASE_ASSERTIONS` is a Python-version-dependent `ast.dump` hash — CI-compatible value is `44d0a58c…` (3.10/3.12), not the local 3.14 value. Mail-notice open now posts `folder` (route contract). Copy refusal aged out of the 2-second copy cooldown.
+
+## 2026-10-24 — four lanes in flight on corrected heads; binary-collation root cause for provider-settings debt
 
 **State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized. Current main `125deacc` (cloud merge).
 
