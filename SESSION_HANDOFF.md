@@ -1,4 +1,12 @@
-# Session handoff - Devin sole-owner continuation
+# Session handoff
+
+## 2026-10-25 (latest) — proposals milestone check was a test-literal/format mismatch, not a render defect
+
+- The `Draft detail shows milestone pricing` failure (run `40115508547`) could never pass: `proposal_version_card` emits `number_format(amount/100,2)` → `Total $2,495.88 USD` and `$2,400.00` milestones (product invoice convention), while the lane-new P-02 cases asserted `'$2495.88'` — matching only the no-comma form-prefill format in `proposal_version_prefill`. Deterministic mismatch, not renderer or fixture-selection defect (pid is pinned — one proposal exists at that point).
+- `3bdf2823`: corrected both literals (`:24` draft detail + diagnostic missing-list, `:28` client sent-version) to `'$2,495.88'` — still asserting the exact rendered total, not weakened. File unpinned; `py_compile` clean.
+- Run `40142523950` auto-dispatched on `3bdf2823`; superseded `40131688282` (c6fea48d, diagnostics-only) cancelled.
+- Next: when the run reaches the proposals suite (~3.8k checks in), the corrected literals should pass if the page renders as designed; the retained diagnostic still captures the response if anything else is missing.
+ - Devin sole-owner continuation
 
 ## Owner request recorded 2026-10-19
 
