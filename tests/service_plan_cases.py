@@ -206,7 +206,7 @@ def run_browser(env, browser):
     r = owner.post(admin+'?view=studio-clients', data=edit)
     check('Contact permission edit saves', 'Contact saved' in r.text)
     r = billing_session.get(turl)
-    check('Revoked contact permission ends the billing session', r.status_code==403)
+    check('Revoked contact permission ends the billing session', soup(r).select_one('[name=action][value=login]') is not None and 'Reviewed care plan' not in r.text)
     submit(billing_session, portal, 'login', {'email': 'agreement-billing@example.invalid', 'password': 'Synthetic contact passphrase 2026'})
     r = billing_session.get(turl)
     check('Re-authenticated contact without billing cannot read terms', r.status_code==403 and 'Reviewed care plan' not in r.text)
