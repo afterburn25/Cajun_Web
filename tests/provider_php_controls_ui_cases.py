@@ -341,9 +341,26 @@ def run_browser(env, browser):
         owner_request = confirmation["request_id"]; request_ids.append(owner_request)
         owner_change = dict(confirmation, current_password=OWNER_PASSWORD, confirmed="1")
         calls, posts = provider.calls, len(provider.posts)
-        response = owner.post(owner_url, data=owner_change, timeout=120)
-        row = request_row(owner_request)
         import json as _json
+        try:
+            response = owner.post(owner_url, data=owner_change, timeout=120)
+        except requests.RequestException as post_error:
+            probe = {"post_error": type(post_error).__name__ + ": " + str(post_error)[:300],
+                     "calls_delta": provider.calls - calls, "posts_delta": len(provider.posts) - posts,
+                     "last_post": provider.posts[-1] if provider.posts else None,
+                     "row": request_row(owner_request)}
+            # A fresh anonymous GET distinguishes a wedged worker from an owner session lock.
+            try:
+                probe["fresh_get"] = requests.get(admin, timeout=10).status_code
+            except Exception as probe_get:
+                probe["fresh_get_error"] = type(probe_get).__name__
+            try:
+                probe["owner_get"] = owner.get(owner_url, timeout=10).status_code
+            except Exception as probe_owner:
+                probe["owner_get_error"] = type(probe_owner).__name__
+            (qa.parent / "php-controls-owner-change-timeout.json").write_text(_json.dumps(probe, indent=2, default=str), encoding="utf-8")
+            raise
+        row = request_row(owner_request)
         gate_diag = {}
         try:
             gate_diag["gates"] = fixture("gate", {"request_id": owner_request}).get("gates")
