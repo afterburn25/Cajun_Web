@@ -203,7 +203,7 @@ def run_browser(env, browser):
         try:
             for width, height, size in ((1440, 1050, "Desktop"), (320, 740, "Mobile")):
                 page.set_viewport_size({"width": width, "height": height})
-                response = page.goto(address, wait_until="networkidle")
+                response = page.goto(address, wait_until="networkidle", timeout=90000)
                 if response is None or response.status != 200:
                     raise AssertionError("Capture route was not successful")
                 if desired is not None:

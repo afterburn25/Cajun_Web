@@ -317,8 +317,7 @@ def main():
         frames = traceback.extract_tb(error.__traceback__)
         site = next((f for f in reversed(frames) if "provider_php_controls_ui" in Path(f.filename).name), None)
         report["failure"] = {"class": type(error).__name__, "file": Path(frames[-1].filename).name if frames else "", "line": frames[-1].lineno if frames else 0,
-                             "site_file": Path(site.filename).name if site else "", "site_line": site.lineno if site else 0,
-                             "message": str(error)[:400]}
+                             "message": (str(error)[:340] + " @ " + Path(site.filename).name + ":" + str(site.lineno))[:400] if site else str(error)[:400]}
         report["passed"] = False
         try:
             private_write(runtime / "failure.txt", traceback.format_exc().encode())
