@@ -3668,3 +3668,12 @@ ebebd533 run 39855317065 was cancelled as superseded.
 - Fix (`f1c53d61`): re-read `provider_inventory_refresh` then the directory-indexing refresh once before the interrupted-change fixture, so the interrupted request pins a fresh binding source. Placement is load-bearing: the recovered request's verify at the end requires the same binding hash, so the re-arm must precede the second change POST — a refresh inside the recovery section would invalidate the posted binding. File not contract-pinned on this branch.
 - Dispatched run 39912832426 (`f1c53d61`); push run 39912825915 queued on the same head.
 - Note: run 39886854693 on `4fbce9db` remains the all-green dispatch for the cooldown fix; the red run was on the docs-commit head and its only failure is the freshness window now addressed.
+
+## 2026-10-24 — run 40094584278 hit the 240-minute ceiling; binary detail comparisons can't use the new index
+
+- Request: continue monitoring; classify the audit run on `cb8d2b91`.
+- Result: browser job ran the full 240-minute job budget (13:00→17:00 UTC) and was cancelled — no check failure. It survived ~72 min past the prior `provider-settings` failure depth, but the checkpoint `http-server.log` still shows ~30s per `provider-settings` render late-suite.
+- Root cause of the residual: every audit history probe compares `BINARY detail=BINARY <expr>` / `BINARY detail LIKE ?`. A binary comparison cannot use an index ordered by a case-insensitive collation — `audit_action` (on the now-`utf8mb4_bin` action column) narrows to the action bucket, but the `detail(191)` prefix index added for this purpose stays unused while `detail` keeps the default ci collation. The same applies to the many non-BINARY `detail=?`/`detail LIKE 'literal %'` probes (orders, ledger fulfillment, recurring billing) — a `_bin` detail collation makes all of them index-eligible while keeping app-written detail correspondence byte-exact.
+- Fix `f7f6b991`: `detail VARCHAR(400) COLLATE utf8mb4_bin` in `schema_statements`; `studio_migrate` applies the same guarded MODIFY for existing installs; installer inventory refreshed (280/280 verifier checks; build refresh green).
+- Run `40114885004` (push-triggered on `f7f6b991`) is the replacement run; the cancelled `40094584278` evidence is preserved.
+- Next: classify `40114885004`; if provider-settings renders drop, rerun the ceiling-hit nameserver/docroots lanes.
