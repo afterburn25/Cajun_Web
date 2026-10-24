@@ -60,7 +60,7 @@ function activity_projection(array $actor): array {
         $parts[]="SELECT CAST(CONCAT('".$kind.":',".$keySource.") AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time." AS occurred_at,".$author.' AS author_type,'.$sequence.' AS sort_sequence FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($member?' AND j.client_id=?':'');
         if($member)$args[]=$actor['client_id'];
     };
-    $authors=$member?($contact?" IN ('admin','client')":"='admin'"):" IN ('client','contact')";
+    $authors=$member?($contact?" IN ('admin','client')":" IN ('admin','contact')"):" IN ('client','contact')";
     if($can('projects')){
         $add('studio_messages','message','s.created_at',"''","s.author_type".$authors,'s.id','s.id','s.author_type');
         $add('studio_files','file','s.created_at','s.original_name',"s.author_type".$authors);
