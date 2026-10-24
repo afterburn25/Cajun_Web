@@ -10,7 +10,25 @@ Next candidates after PR261: cloud website intake and directory-listing controls
 
 Staging lanes `devin/preflight-commercial` and `devin/full-site-integration` remain in flight for the wider backlog and are not the delivery path for small increments. FSI browser-lane failure at `67d70e4a` was a test-side `NameError` (`ROOT` missing from `mail_message_cases.run_browser` env pull); fixed at `9ec4e2b1`.
 
-## Lane state — 2026-10-23 (latest)
+## Lane state — 2026-10-24 (latest)
+
+**MERGED**: PR263 `devin/cloud-websites-main` (`89647b28`) merged to main as `125deacc` — first merge-first delivery of the cycle. Evidence: full `Application acceptance` run `40029373374` green on exact head (includes 1.25.0 published-baseline upgrade matrix + recovery flow); labeled self-review posted on merge; main has no enforced review gate. Exact-main verify `40053118998` in flight. Not a release; nothing deployed.
+
+In flight on exact heads:
+
+- **FSI** `devin/full-site-integration` `68ca05ec`: mail bounds verified green (SMTP send + sent-copy APPEND); `f22b4db2` fixed the render-guard masking the 'do not include billing' refusal on contact POSTs; `68ca05ec` corrected the over-specified `403` assertion for revoked-contact sessions (real outcome: session invalidated → anonymous login form, per `studio_client()` + `contacts_cases` convention). Run `40053078796` in flight.
+- **Preflight** `devin/preflight-commercial` `b648c16f`/`88e235f2`: runs `40041496495` (recurring-page notice diagnostics) and `40042016903` (+ FlagWriter refusal logging) in flight.
+- **Nameserver** `devin/fix-nameserver-fixture-getattr` `2c088c6e`: render-degradation timeout fix (`ci_audit` unindexed scan → 5s→46s provider-settings renders; scoped 90s/150s submit). Run `40043663733` in flight. Product perf debt (missing index on `ci_audit`) recorded — separate lane.
+- **PHP-controls** `devin/fix-php-controls-minimal` `f1fdc4e2`: report-shape fix (site frame folded into `message`) + goto networkidle 30s→90s. Run `40044789245` in flight.
+- **Docroots** `devin/fix-docroots-worker-retry` `514ba7dd`: run `40029428035` externally cancelled at ~2h41m (build/recovery/apache green; native-and-browser killed). Re-dispatched `40054595694`.
+- **Diagnostic** PR264: awaiting independent review.
+- Environment: C: disk full — TEMP/downloads redirected to D:\Devin	mp-dl.
+
+Merge-first sequence: next merge candidates are the leaf lanes once exact-head green lands; then exact-main verify each; PR264 after independent review; published 1.25.0 immutable, nothing live-deployed.
+
+---
+
+## Lane state — 2026-10-23 (superseded)
 
 All lanes carry committed fixes and in-flight runs on exact heads. `rerun --failed` is structurally dead on `application-tests.yml` (attempt-identity check, `acceptance_artifacts.py:249`) — always use fresh `workflow_dispatch`. `devin/*` push triggers do not fire application-tests — dispatch manually or use an open PR's pull_request run. Full detail: `docs/DEVIN_INTEGRATION_QUEUE.md`.
 
