@@ -116,7 +116,8 @@ def run_browser(env, browser):
         'staff_rows': db("SELECT u.id,p.role,p.enabled,p.permissions FROM ci_users u JOIN ci_staff_profiles p ON p.user_id=u.id"),
         'deliveries': db('SELECT notification_id,channel,state,last_error FROM ci_notification_deliveries'),
     }, indent=2), encoding='utf-8')
-    check('Client opening and reply notify ticket-holding staff once each', db('SELECT recipient_id FROM ci_notification_feed WHERE audience=? AND ref=? ORDER BY recipient_id', ['staff', 'ticket:'+ticket])==[{'recipient_id': 1}]*2+[{'recipient_id': staff_id}]*2)
+    holders=[r['id'] for r in db('SELECT u.id,p.role,p.permissions FROM ci_users u JOIN ci_staff_profiles p ON p.user_id=u.id WHERE p.enabled=1') if r['role']=='owner' or 'support.tickets' in json.loads(r['permissions'] or '[]')]
+    check('Client opening and reply notify ticket-holding staff once each', db('SELECT recipient_id FROM ci_notification_feed WHERE audience=? AND ref=? ORDER BY recipient_id', ['staff', 'ticket:'+ticket])==[{'recipient_id': i} for i in sorted(holders) for _ in range(2)] and staff_id in holders)
     check('Private note and assignment never reach the client feed', db('SELECT id FROM ci_notification_feed WHERE audience=? AND ref=?', ['client', 'ticket:'+ticket])==[])
 
     submit(owner, owner_url, 'tickets_reply', {'body': 'Studio response for your design'})
