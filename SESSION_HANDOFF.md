@@ -450,3 +450,9 @@ The final licensing recovery correction also checks surviving audit history when
 - Earlier in this cycle: ticket staff-feed recipient fix `bf9d8584` (derive expected set from enabled staff holding `support.tickets` — all 15 synthetic owners + the ticket admin), recurring-invoice guard fix `cc41212a` held through 3,620 checks.
 
 **Runs in flight:** FSI `40099274221` (`fc56a32b`); preflight `40098870633` (`5e82f92b` — notice-open `folder` field fix + contract-chain re-settle); audit `40094584278` (`cb8d2b91` — composite `ci_audit(action,detail(191))` index, critical path); php-controls `40091116828` (`d2a99737` diagnostics).
+
+### 2026-10-24 (cont.) — contact-feed attribution product fix + preflight classification aid
+
+- Run `40099274221` (`fc56a32b`) — the cooldown-repost fix held; suite reached 3775 checks then failed `Primary feed attributes the contact-authored message` (contacts_cases.py:199). Diagnosis: `activity_projection`'s member author filter admitted only `admin` messages, so a project contact's message never reached the primary account's feed — a product gap, since the senders map and the check both expect contact attribution for the primary audience. Fix `55ff6c52`: non-contact member author filter `='admin'` → `IN ('admin','contact')`; contact audience unchanged (`IN ('admin','client')` still excludes contact-authored items there). `php -l` + build refresh green; not contract-pinned.
+- Redispatch `40115508547` (push-triggered) on `55ff6c52`.
+- Sibling lane note: preflight `40098870633` failed `Server folder refusal records a bounded failure without copy claims` — refused Sent-copy POST landed one epoch-second after the successful append inside the 2s per-account copy bound; fixed by aging copy_attempts before the refused POST (`8eb0570b`, preflight lane).
