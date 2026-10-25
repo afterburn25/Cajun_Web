@@ -1,5 +1,21 @@
 
 # Session handoff - Devin sole-owner continuation
+## 2026-10-25 (latest) — marker-retention + hosting-evidence fixed; FSI's suite fixes ported; armed run 40183179728 in flight
+
+**State:** integration owner; published 1.25.0 immutable; no live deployment authorized. Preflight head `160bfd33` (docs) over code head `083c046c`.
+
+**Preflight acceptance state:**
+- Run `40183179728` on `083c046c` — armed head: marker-aware retention (`167d9cb7`) + hosting-card evidence seal (`c1f72286`) + ported FSI suite fixes (mail dispatch aging, cooldown bounded retries, proposals `$2,495.88` pricing + workspace diagnostics).
+- Run `40178855940` on `c1f72286` still in flight: apache leg validates hosting-evidence seal; native leg expected to fail at the mail folder-refusal check (fixed only on `083c046c`) — its result is preserved evidence, not wasted.
+- Root causes decoded this session: (a) mail 'Server folder refusal' — missing `age_dispatches()` let the refused submission's `confirm_send` bounce off the per-account dispatch bound, so the copy refused pre-transport; (b) WP 'immediate repeat obeys common cooldown' — the suite's own inter-POST work exceeded the hard 30s `provider_refreshes` window on a slow runner (actor_reads 43s apart); (c) `proposals_cases` `$2495.88` assertion was stale — app renders `number_format` comma `$2,495.88`.
+- FSI `9e209e82` unexplained residual: `Client workspace lists the sent proposal` failed at check 3899 after 'Proposal sent' passed; `qa/proposal-workspace-diagnostics.json` seal now exists on `083c046c` for the next occurrence.
+- Single-job `gh run rerun` is architecturally refused by the workflow (`Wrong source/run/attempt identity`) — re-testing requires a full new run on the head.
+- Contract: six ported files are NOT contract-pinned (hash-ref scan clean); no re-settle required.
+
+**Lane board (latest known):** nameserver `c8d68a0a` + docroots `78df0378` build/recovery/apache green, native in progress · php-controls `0a66ec20` native failed on a 50s packaged-UI subprocess timeout (flake-class) · cloud-intake `3ed53b7a` native failed on the WP cooldown (fix lands via preflight merge) · FSI `9e209e82` native failed on proposals check · ports #257–#260 held.
+
+**Next:** monitor `40183179728` + in-flight legs; classify any new named failures from sealed diagnostics; sequential leaf→preflight→FSI→main merges once gates green; contract re-settle per merge.
+
 ## 2026-10-24 (latest) — preflight recovery no-DB guard 5b735f11; FSI/leaf lanes carry seed-migrate fix
 
 **State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized.
