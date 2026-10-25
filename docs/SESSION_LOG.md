@@ -5798,3 +5798,12 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - **Tests**: `php -l site/app/updates/structure.php` clean; `python tests/acceptance_artifacts_test.py --report ...` real unpatched `main()` = `{"passed": true, "checks": 1468, "error": null}`; canonical bundle byte-match during refresh PASS.
 - **Known failures**: run 40165950483's recovery job failed on `b07d5e56` (this fix); native/Apache lanes of that run still in flight at time of commit — the cloud-request seed fix is already present on this head.
 - **Next action**: commit/push, redispatch preflight acceptance, classify all in-flight lanes, then sequential merges.
+
+## 2026-10-19 — Devin (recurring recovery assertion corrected for functional old release)
+
+- **Request**: continue without stopping; classify apache failure on run 40165950483 (`b07d5e56`).
+- **Failure**: apache check "rewrite 1.23.0 old release retains recurring data without claiming recurring controls" — only flipped check vs pre-marker run `40142115998` (3345/3345 apache checks had passed).
+- **Cause**: with schema markers now journaled and restored (`5b735f11`), the recovered 1.23.0 release is functional again (`studio_schema_version` back to `2`) and its portal workspace view legitimately renders the retained invoice title "Retained recurring website care". The assertion `'...' not in client.get(...)` only passed under the previously degraded recovered state; it conflated retained-data display with recurring controls.
+- **Changed**: `tests/recurring_billing_upgrade_cases.py` — the recovered-state operand now asserts no `[name=command]` control element on the client schedule page (1.23 has none anywhere), matching the sibling pattern in `design_financial_upgrade_cases.py` (`id="financial"`) and `project_*_upgrade_cases.py` (`.project-planning`/`.project-progress`). Data retention is still asserted by `retained(saved)`; "Rolled-back" and the owner-side `[name=command]` absence are unchanged.
+- **Tests**: `python -m py_compile` clean; file is not contract-pinned. The superseded run's evidence partitions remain sealed; `b07d5e56` apache failure preserved as-is.
+- **Next**: push and redispatch preflight acceptance; continue lane classification.

@@ -162,7 +162,7 @@ def run(env):
     response = action('recover')
     check(label + ' old release retains recurring data without claiming recurring controls',
           '<h2>Rolled-back</h2>' in response.text and retained(saved)
-          and 'Retained recurring website care' not in client.get(client_detail).text
+          and BeautifulSoup(client.get(client_detail).text, 'html.parser').select_one('[name=command]') is None
           and BeautifulSoup(owner.get(detail).text, 'html.parser').select_one('[name=command]') is None)
     response = action('apply')
     check(label + ' reapplication restores recurring terms dates and partial invoice balance',
