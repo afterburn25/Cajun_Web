@@ -864,3 +864,9 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - Fixed `167d9cb7`: `marker_transition_cells()` + `exact_business_recovered()` added; recovery-crossing comparisons in the four suites are marker-aware; `updater_retained()` in both request suites permits declared transitions; requests seed check names all journaled migrations. Strict comparisons retained where no recovery boundary is crossed (verified `terminal_recovery_retained` is an app-level path, not `structure_recover`).
 - Contract re-settled through the full peel chain: billing_options `source_deltas`/`before_sha256` for the edited file recomputed (`6cbe4918`), its three repins' `before` updated, all era predecessor hashes re-derived in dependency order, leaf `CONTRACT_SHA256` re-mirrored (`46db6ec5…`) — verifier passes unpatched on iteration 0.
 - Dispatched `40173946345` on `167d9cb7`. Watch its apache leg for the nameserver-changes/requests + cloud-requests upgrade suites; the in-flight native legs of prior runs still produce valid evidence on their heads.
+
+### 2026-10-25 (cont.) — apache frontier reached release-126 hosting browser block
+
+- `40173946345` (`167d9cb7`): all three re-fixed nameserver suites and every apache check green (3347); the job now fails inside `release_126_upgrade_acceptance` at `release_126_hosting_records.py:232` — `assert card.count() == 1` for the freshly published "Upgraded catalog-only hosting" card on `index.php?page=hosting`. Bare AssertionError, no sealed page.
+- This is first-time territory for the lane (prior heads died earlier); the publication's binding check passed immediately before, so the offer is recorded — the question is render/projection vs page error.
+- `c1f72286` seals the rendered page + card diagnostics into `qa/` on count mismatch; contract re-settled; dispatched `40178855940`. Its apache leg names the operand; `40173946345` native leg remains valid `167d9cb7` evidence.
