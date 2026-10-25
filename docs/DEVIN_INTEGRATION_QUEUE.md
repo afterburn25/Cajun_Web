@@ -165,17 +165,33 @@ caught up; check this queue before opening new branches. Full text in
 dependency-gated: green leaf -> Group B (`devin/preflight-commercial`) ->
 combined `devin/full-site-integration` acceptance -> normal merge to `main`.
 
-## Concrete blockers and next actions
+## Concrete blockers and next actions — refreshed 2026-10-23
 
-1. Nine corrected-head acceptance runs in flight (2026-10-20 redispatch);
-   merge each leaf only after its own run reports green on the corrected head:
-   - fsi `f6cacdcd` -> run `39474415962`
-   - preflight `4cb0f4a3` -> run `39477280053` (native job failed inside the
-     isolated-runtime prep step before any test executed — environmental;
-     apache lane carries the named `failed_checks` diagnostic)
-   - stackcp `1727f6fc` -> `39477425662`; cloud `d39fae8c` -> `39477432779`
-   - docroots `5adfac76` -> `39477439335`; php-controls `a3c4bd1c` -> `39477446040`
-   - nameserver `a982ae71` -> `39477452542`; force-ssl `02e7b0d4` -> `39477459453`
-   - dir-listing `ace1f69b` -> `39477467791`
-2. Merge port PRs #257–#260 only after their dedicated component runs report.
-3. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
+1. Audit render fix `a331599a` is MERGED to `main` (PR #265). The
+   `utf8mb4_bin` collation on audit `action`/`detail` plus `audit_action` and
+   `audit_detail(detail(191))` indexes cleared the ~30s provider-settings
+   renders; branch acceptance on `8891a591` was fully green inside the job
+   ceiling. Exact-main verify `40135493307` on `a331599a` in flight.
+   Superseded duplicate dispatch `40135533714` cancelled — retained as
+   evidence, not success.
+2. Six application-acceptance lanes in flight on corrected heads; merge each
+   only after its own run reports green:
+   - preflight `49bdeaea` -> `40142115998` (cherry-pick reverts of marker-aware
+     `studio_migrate` + schema tail repaired; contract 1468/1468)
+   - fsi `3bdf2823` -> `40142523950` (proposal totals asserted with product
+     thousands separator)
+   - php-controls `bd0bbce5` -> `40136175063` (audit fix ported; earlier stub
+     proved POST received + uncertain ledger while client timed out)
+   - nameserver `2993656f` -> `40136678842` (audit fix ported)
+   - docroots `50c1a3f0` -> `40137290812` (audit fix ported; inventory
+     re-anchored)
+3. Port PRs #257–#260 (base `devin/full-site-integration`): current `main`
+   merged into each branch; contract verifier 288/288 green locally; dedicated
+   component workflows GREEN on merged heads — #257 `d5dc0b3c`/`40145014173`,
+   #258 `b41b961b`/`40144533735` + `454f3105`/`40145799872`, #259
+   `95dbab38`/`40144765934` + `51ac85f9`/`40145804668`, #260
+   `1f2d933a`/`40144990577` + `268441a8`/`40145809933`. Merge gate satisfied;
+   hold until the in-flight FSI acceptance run resolves to avoid superseding
+   its head.
+4. The 50+ Group A source PRs auto-resolve when their heads reach `main`.
+
