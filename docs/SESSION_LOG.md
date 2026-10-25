@@ -1199,6 +1199,13 @@ Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled can
 
 
 
+
+### 2026-10-25 (cont.) — cloud-intake leaf fully green; first leaf merged into preflight
+
+- Run `40184256158` (`3ed53b7a`, `devin/fix-cloud-intake-ctype`) completed **all five legs green** — build, recovery, apache, native-and-browser (full ~4h suite), acceptance. The WP-cooldown 43s-gap failure on `3ed53b7a`'s first attempt did not reproduce → classified runner-saturation flake.
+- Merged into `devin/preflight-commercial` as `5dedc834`: union merge of `docs/SESSION_LOG.md` (both histories retained), contract resolved to preflight's (leaf contract is lane-scoped); the leaf's `provider_cloud_site_requests_upgrade_fixture.php` change was already present (pin `6fd0b326` unchanged). Unpatched verifier 1468/1468 on the merged tree.
+- Code-identical to `e01a0cba` apart from the log — `40196057312` remains the operative acceptance evidence for the merged content.
+
 ### 2026-10-25 (cont.) — php-controls 50s fixture bound reproduced; raised to 120s on e045b43d
 
 - Run `40184213691` (`0a66ec20`) native failed after ~203m: `Private CLI phase timed out: status` at `provider_php_controls_ui_browser.py:243` — the same 50s packaged-UI subprocess bound as `40167841712`. All 137 sealed checks passed; the process was still inside the `status` fixture when the bound hit under runner saturation.
