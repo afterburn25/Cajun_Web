@@ -228,21 +228,23 @@ def continue_after_retention(repo, installed, base, prefix, php, target, owner, 
         for size, width, height in [('Desktop', 1440, 1000), ('Mobile', 320, 844)]:
             page.set_viewport_size({'width': width, 'height': height})
             response = page.goto(base + '/index.php?page=hosting', wait_until='load', timeout=30000)
-            card = page.locator('article.workspace-card').filter(has=page.get_by_role('heading', name=TITLE, exact=True))
-            if card.count() != 1:
+            plan = page.locator('.hosting-comparison-plan').filter(has=page.get_by_role('heading', name=TITLE, exact=True))
+            if plan.count() != 1:
                 (qa / ('apache-release126-' + prefix + '-hosting-page-' + size.lower() + '.html')).write_text(page.content(), encoding='utf-8')
                 (qa / ('apache-release126-' + prefix + '-hosting-count-' + size.lower() + '.json')).write_text(json.dumps(
-                    {'status': response.status if response else None, 'cards': card.count(),
-                     'all_titles': page.locator('article.workspace-card h1,article.workspace-card h2,article.workspace-card h3,article.workspace-card h4').all_inner_texts(),
+                    {'status': response.status if response else None, 'plans': plan.count(),
+                     'all_titles': page.locator('.hosting-comparison-plan h2,.hosting-comparison-plan h3,.hosting-comparison-plan h4').all_inner_texts(),
                      'notices': page.locator('.notice,.hosting-comparison-empty').all_inner_texts(),
                      'page_errors': errors}, indent=2) + '\n', encoding='utf-8')
-            assert card.count() == 1
-            card.scroll_into_view_if_needed(timeout=30000)
+            assert plan.count() == 1
+            column = plan.evaluate("el => Array.prototype.indexOf.call(el.closest('th').parentElement.children, el.closest('th')) - 1")
+            price_cell = page.locator('table.hosting-comparison-table tbody tr', has_text='Price & billing period').locator('td').nth(column)
+            plan.scroll_into_view_if_needed(timeout=30000)
             page.wait_for_timeout(350)
             page.wait_for_function("() => {const e=document.querySelector('.hosting-catalog-image');return e&&e.complete&&e.naturalWidth>0;}", timeout=30000)
             check('Actual upgraded hosting ' + size + ' shows safe public terms and decoded local image',
-                  response.status == 200 and TITLE in card.inner_text() and '$120.00' in card.inner_text()
-                  and 'per year' in card.inner_text() and card.locator('img').get_attribute('src').startswith(base + '/media/index.php?id=')
+                  response.status == 200 and TITLE in plan.inner_text() and '$120.00' in price_cell.inner_text()
+                  and 'per year' in price_cell.inner_text() and plan.locator('img').get_attribute('src').startswith(base + '/media/index.php?id=')
                   and all(s not in page.content() for s in ['PRIVATE_UPGRADE_', 'source_key_fingerprint', 'credential_sha256', password]))
             check('Actual upgraded hosting ' + size + ' fits the viewport', page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
             name = names(prefix)['images'][0 if size == 'Desktop' else 1]
