@@ -29,9 +29,7 @@
 - Single-job `gh run rerun` is architecturally refused by the workflow (`Wrong source/run/attempt identity`) — re-testing requires a full new run on the head.
 - Contract: six ported files are NOT contract-pinned (hash-ref scan clean); no re-settle required.
 
-**Milestone**: run `40183776933` on `d63d7e34` has build+recovery+apache green — the release-126 hosting suite passed on the corrected `.hosting-comparison-plan` selector; only its native leg remains.
-
-**Lane board (latest known):** nameserver rerun `40186085321` (`c8d68a0a`) + docroots rerun `40188491299` (`edcd8483`, 360m ceiling + re-anchored contract — leaf verifier 360/360) build/recovery/apache green, native in progress · php-controls `0a66ec20` native failed on a 50s packaged-UI subprocess timeout (flake-class) · cloud-intake `3ed53b7a` native failed on the WP cooldown (fix lands via preflight merge) · FSI `9e209e82` native failed on proposals check · ports #257–#260 held.
+**Lane board (at that time):** nameserver `c8d68a0a` + docroots `78df0378` build/recovery/apache green, native in progress · php-controls `0a66ec20` native failed on a 50s packaged-UI subprocess timeout (flake-class) · cloud-intake `3ed53b7a` native failed on the WP cooldown (fix lands via preflight merge) · FSI `9e209e82` native failed on proposals check · ports #257–#260 held.
 
 **Next:** monitor `40183179728` + in-flight legs; classify any new named failures from sealed diagnostics; sequential leaf→preflight→FSI→main merges once gates green; contract re-settle per merge.
 
