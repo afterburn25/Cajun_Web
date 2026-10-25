@@ -173,10 +173,26 @@ function provider_php_controls_lifecycle_release(string $requestId,array &$state
     if($terminal['document']['ledger']===null||$terminal['document']['ledger']['status']==='claimed')return null;
     $rows=all('SELECT id FROM '.table('provider_php_change_checks').' WHERE request_id=? AND BINARY disposition=? LIMIT 2',[$requestId,'observed']);if(count($rows)>1)throw new RuntimeException('PHP request has multiple release witnesses.');if(!$rows)return null;$check=provider_php_controls_lifecycle_decode('check',$rows[0]['id'],$state);return $check['audit_id'];
 }
+/** Retained-state fingerprint covering every table the validators read; a changed stamp forces a fresh full validation. */
+function provider_php_controls_lifecycle_stamp():array {
+    static $columns=[];
+    $prefix=config()['db']['prefix'];$stamp=['audit'=>implode('.',one('SELECT COUNT(*) c,COALESCE(MAX(id),0) m FROM '.table('audit')))];
+    foreach(['settings','provider_php_control_reads','provider_php_control_read_results','provider_php_changes','provider_php_dispatch_ends','provider_php_change_checks','provider_php_control_delegations','provider_refreshes','provider_refresh_results','provider_php_reads','provider_php_observations','provider_php_permissions','provider_package_links','provider_package_link_events','provider_observation_packages','service_observation_permissions','provider_profiles','provider_revisions','provider_operations','provider_operation_grants','users','studio_clients'] as $name){
+        if(empty($columns[$name]))$columns[$name]=array_column(all('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? ORDER BY ORDINAL_POSITION',[$prefix.$name]),'COLUMN_NAME');
+        if(!$columns[$name]){$stamp[$name]='missing';continue;}
+        $body='CONCAT('.implode(',CHAR(30),',array_map(static fn(string $c):string=>'COALESCE(`'.$c.'`,CHAR(31))',$columns[$name])).')';
+        $r=one('SELECT COUNT(*) c,COALESCE(BIT_XOR(CRC32('.$body.')),0) x,COALESCE(SUM(CRC32('.$body.')),0) s FROM `'.$prefix.$name.'`');
+        $stamp[$name]=$r['c'].'.'.$r['x'].'.'.$r['s'];
+    }
+    ksort($stamp);return $stamp;
+}
 /** Full history validation. LIMIT-based UI pagination does not bound this work. No DDL or current-authority lookup. */
 function provider_php_controls_lifecycle_history():?array {
-    provider_php_controls_guard();$n=provider_php_controls_lifecycle_namespaces();$version=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_php_control_lifecycle_schema_version'])['value']??'';$ledgers=provider_php_controls_lifecycle_ledgers();provider_php_controls_lifecycle_no_grants();
-    if($version===''){if($n['tables']||$n['settings']||$n['actions']||$ledgers)throw new RuntimeException('Restore original PHP change lifecycle history.');return null;}
+    static $memo=null,$memoStamp=null;
+    provider_php_controls_guard();$stamp=PHP_SAPI==='cli'?null:provider_php_controls_lifecycle_stamp();
+    if($stamp!==null&&$memoStamp!==null&&$stamp===$memoStamp)return $memo;
+    $n=provider_php_controls_lifecycle_namespaces();$version=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_php_control_lifecycle_schema_version'])['value']??'';$ledgers=provider_php_controls_lifecycle_ledgers();provider_php_controls_lifecycle_no_grants();
+    if($version===''){if($n['tables']||$n['settings']||$n['actions']||$ledgers)throw new RuntimeException('Restore original PHP change lifecycle history.');if($stamp!==null){$memo=null;$memoStamp=$stamp;}return null;}
     $tables=array_map(static fn($v)=>config()['db']['prefix'].$v,array_values(provider_php_controls_lifecycle_tables()));sort($tables,SORT_STRING);$settings=['provider_php_control_lifecycle_schema_version'];$actions=['provider.php_control_lifecycle_started','provider.php_control_lifecycle_prepared'];foreach(array_keys(provider_php_controls_lifecycle_tables()) as $kind){$settings[]='provider_php_control_lifecycle_'.$kind.'_count';$actions[]='provider.php_control_lifecycle_'.$kind;}sort($settings,SORT_STRING);
     if($version!=='1'||$n['tables']!==$tables||$n['settings']!==$settings||array_diff($n['actions'],$actions))throw new RuntimeException('PHP change lifecycle storage needs recovery.');
     if(!provider_php_controls_ready()||!provider_operations_ready())throw new RuntimeException('Original PHP delegation and operation storage is required.');foreach(array_keys(provider_php_controls_lifecycle_tables()) as $kind)provider_php_controls_lifecycle_validate_schema($kind);
@@ -184,6 +200,7 @@ function provider_php_controls_lifecycle_history():?array {
     $start=provider_php_controls_lifecycle_preparation_witness('started');$prepared=provider_php_controls_lifecycle_preparation_witness('prepared');if($start>=$prepared)throw new RuntimeException('PHP lifecycle preparation order needs recovery.');$state=['counts'=>[],'decoded'=>[],'visiting'=>[],'prepared'=>$prepared];
     foreach(array_keys(provider_php_controls_lifecycle_tables()) as $kind)$state['counts'][$kind]=provider_php_controls_lifecycle_counter($kind);
     provider_php_controls_lifecycle_validate_history($state);
+    if($stamp!==null){$memo=$state;$memoStamp=$stamp;}
     return $state;
 }
 function provider_php_controls_lifecycle_ready():bool {return provider_php_controls_lifecycle_history()!==null;}

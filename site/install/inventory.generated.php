@@ -277,7 +277,7 @@ function setup_expected_files(): array { return [
     'app/providers/php_controls_delegation_storage.php'=>'469c76aea26e6e9679350972792572eee7e512fe1beec6078fb8717d4a845ecc',
     'app/providers/php_controls_http.php'=>'4904526d60b0ca9319adabb25d6174e65b62dd1ab2dc0df45400863218a91d24',
     'app/providers/php_controls_lifecycle_document.php'=>'28b7d9bee3ccf88515c91d1329eb910646fe12f6ea37350e10bd56008b4d44e5',
-    'app/providers/php_controls_lifecycle_storage.php'=>'4133b582f3be91306003ffb7cb2a6fe3db44198225c052dc99b18506a117cc41',
+    'app/providers/php_controls_lifecycle_storage.php'=>'a2149ae6dfda62b0bf5841452c948b5924194fb48a1e1b6c9e01feefe29bfacf',
     'app/providers/php_controls_projection.php'=>'409ba339aaa9efd8e37513187ae04216265a1a273f1674acb7d30dcca0a756b7',
     'app/providers/php_controls_read_limits.php'=>'529abd27c397582414430863f58ec474a54a6184d61107d5c7381b5f512a50cf',
     'app/providers/php_controls_reads.php'=>'a6e33e2aa247de94b38472b9f49d158458c60a2ff6459512a27c43b183d5e6b8',
