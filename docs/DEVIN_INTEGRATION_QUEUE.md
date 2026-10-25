@@ -171,7 +171,7 @@ combined `devin/full-site-integration` acceptance -> normal merge to `main`.
    `utf8mb4_bin` collation on audit `action`/`detail` plus `audit_action` and
    `audit_detail(detail(191))` indexes cleared the ~30s provider-settings
    renders; branch acceptance on `8891a591` was fully green inside the job
-   ceiling. Exact-main verify `40135493307` on `a331599a` in flight.
+   ceiling. Exact-main verify `40135493307` on `a331599a`: **GREEN — merge result fully verified**.
    Superseded duplicate dispatch `40135533714` cancelled — retained as
    evidence, not success.
 2. Six application-acceptance lanes in flight on corrected heads; merge each
