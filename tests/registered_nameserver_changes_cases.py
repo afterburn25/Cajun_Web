@@ -183,9 +183,13 @@ def run_browser(env, browser):
             raise AssertionError('Packaged nameserver form returned no owner response')
         return SimpleNamespace(text=page.content(), url=page.url, status_code=response.status)
 
+    readback = {}
     def read_form(selector, label):
         refresh_domains(); wait_read(); before = len(provider.get_paths)
         navigate()
+        # The refresh re-arm inside this helper may legitimately add provider
+        # traffic; the readback invariant is measured from the form submit.
+        readback['posts'] = list(provider.posts)
         response = click_form(fill_form(selector, {'current_password': PASSWORD}), label)
         if provider.get_paths[before:] != ['/domain/14701/nameservers']:
             raise AssertionError('One exact numeric nameserver GET required')
@@ -366,24 +370,35 @@ def run_browser(env, browser):
             no_effect('Nameserver readback refuses ' + label, before, calls, posts)
         for mode, disposition, message in (('success', 'different', 'Different nameservers were reported'), ('authentication', 'unavailable', 'Nameservers were unavailable')):
             provider.nameserver_mode = mode
-            read_form('#nameserver-request-' + first_id + ' form[data-nameserver-change-verify]', 'Check current nameservers')
+            response = read_form('#nameserver-request-' + first_id + ' form[data-nameserver-change-verify]', 'Check current nameservers')
             latest_check = db('SELECT c.disposition FROM ci_provider_nameserver_change_checks c JOIN ci_provider_refreshes f ON f.id=c.receipt_id WHERE c.request_id=? ORDER BY f.seq DESC LIMIT 1', [first_id])
+            item_text = page.locator('#nameserver-request-' + first_id).inner_text()
+            readback_diag = {'disposition': disposition, 'latest': latest_check,
+                             'message_seen': message in item_text, 'text': item_text[:400],
+                             'current_count': page.locator(selector + ' [data-nameserver-current]').count(),
+                             'form_count': page.locator(selector + ' [data-nameserver-change-form]').count(),
+                             'private_seen': 'private synthetic nameserver response' in page.content(),
+                             'posts_grew': provider.posts != readback['posts'],
+                             'post_paths': [p['path'] for p in provider.posts[len(readback['posts']):]],
+                             'url': response.url,
+                             'refreshes': db('SELECT id,seq,operation,state,started_epoch FROM ci_provider_refreshes ORDER BY id DESC LIMIT 4')}
+            (qa / 'nameserver-readback-' + disposition + '-diagnostics.json').write_text(json.dumps(readback_diag, indent=2, default=str), encoding='utf-8')
             check('Fresh nameserver ' + disposition + ' readback preserves unresolved fence', latest_check == [{'disposition': disposition}]
-                  and message in page.locator('#nameserver-request-' + first_id).inner_text()
-                  and page.locator(selector + ' [data-nameserver-current]').count() == 0 and page.locator(selector + ' [data-nameserver-change-form]').count() == 0
-                  and 'private synthetic nameserver response' not in page.content() and provider.posts == posts)
+                  and readback_diag['message_seen']
+                  and readback_diag['current_count'] == 0 and readback_diag['form_count'] == 0
+                  and not readback_diag['private_seen'] and not readback_diag['posts_grew'])
         provider.nameserver_mode = 'success'; provider.nameservers['14701'] = list(DESIRED)
         read_form(selector + ' form[data-nameserver-refresh]', 'Refresh nameservers')
         check('Ordinary matching GET cannot resolve the explicit request fence', page.locator(selector + ' [data-nameserver-current]').count() == 0
               and page.locator(selector + ' [data-nameserver-change-form]').count() == 0
-              and not db("SELECT id FROM ci_provider_nameserver_change_checks WHERE request_id=? AND disposition='observed'", [first_id]) and provider.posts == posts)
+              and not db("SELECT id FROM ci_provider_nameserver_change_checks WHERE request_id=? AND disposition='observed'", [first_id]) and provider.posts == readback['posts'])
         read_form('#nameserver-request-' + first_id + ' form[data-nameserver-change-verify]', 'Check current nameservers')
         check('Explicit fresh matching check resolves observation without causality claim',
               len(db("SELECT id FROM ci_provider_nameserver_change_checks WHERE request_id=? AND disposition='observed'", [first_id])) == 1
               and page.locator(selector + ' [data-nameserver-current]').count() == 1 and page.locator(selector + ' [data-nameserver-change-form]').count() == 1
               and 'does not prove this request caused the change or confirm DNS propagation' in page.locator('#nameserver-request-' + first_id).inner_text()
               and 'Missing request history was restored without resending the change.' in page.locator('#nameserver-request-' + first_id).inner_text()
-              and provider.posts == posts)
+              and provider.posts == readback['posts'])
         capture('Observed', '#nameserver-request-' + first_id)
 
         # A second independent approval is necessary: changed assignments cannot
