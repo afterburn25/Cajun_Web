@@ -161,8 +161,11 @@ jobs:
     runs-on: ubuntu-24.04
     # Original run38909577278 exhausted105m; run39024070818 later exhausted180m
     # during the final scheduler flow, with requests completing until the job cap.
+    # Run40167839955 exhausted300m under concurrent-runner saturation: the sealed
+    # partition shows native (65/65) green and the HTTP suite still serving
+    # ~60-70s-apart requests at cancel time; no assertion failed.
     # Preserve every assertion, request/browser/provider limit and native-to-browser state.
-    timeout-minutes: 300
+    timeout-minutes: 360
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}
