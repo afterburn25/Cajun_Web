@@ -1197,6 +1197,11 @@ Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled can
 
 
 
+
+### 2026-10-25 (cont.) — 40183776933 classified: same SMTP-overflow root cause
+
+- Run `40183776933` (`d63d7e34`) native leg failed after ~183m at `HTTP sends attachment-bearing MIME byte-exactly` — identical to `40183179728`: the 64KiB DATA bound in `tests/mail_submission_server.py` predating the buffered-harness port. Already fixed on `e01a0cba` (`40196057312` in flight). Preserved evidence; nothing else failed before it.
+
 ### 2026-10-25 (cont.) — attachment-MIME failure classified; buffered SMTP harness ported; e01a0cba dispatched
 
 - Run `40183179728` (`083c046c`) native leg failed after ~168m (not the cap): single failed check `HTTP sends attachment-bearing MIME byte-exactly`. Sealed `qa/attachment-mime-diagnostics.json` named it — `AssertionError: Synthetic SMTP DATA overflow`; wire stopped at 65571 of 141078 MIME bytes. The real-PDF attachment from the FSI port overflows the fixture's 64KiB DATA bound.

@@ -1,7 +1,7 @@
 
 # Session handoff - Devin sole-owner continuation
 ## 2026-10-25 (latest) — hosting selector corrected to real comparison markup; run 40183776933 on d63d7e34
-- `c7edb900` on `devin/preflight-commercial` raises the native job ceiling 240→360m (run `40173946345` was cancelled at the cap with zero failed checks) and re-settles the provenance chain end-to-end — stage-hash map replayed across both peel branches for the workflow and verifier, sequential strip-chain replay for the four inner `predecessor_workflow_sha256` pins, tamper-deny probes rebased to 360, requests leaf `CONTRACT_SHA256` = `ce7b20af`. Unpatched verifier: 1468/1468. Dispatched **`40191709282`** on `c7edb900`; `40183776933` (d63d7e34) remains valid selector evidence but its native leg will hit the old 240m cap.
+- `c7edb900` on `devin/preflight-commercial` raises the native job ceiling 240→360m (run `40173946345` was cancelled at the cap with zero failed checks) and re-settles the provenance chain end-to-end — stage-hash map replayed across both peel branches for the workflow and verifier, sequential strip-chain replay for the four inner `predecessor_workflow_sha256` pins, tamper-deny probes rebased to 360, requests leaf `CONTRACT_SHA256` = `ce7b20af`. Unpatched verifier: 1468/1468. Dispatched **`40191709282`** on `c7edb900`; `40183776933` (d63d7e34) completed — apache green (selector verified), native failed at the same SMTP-overflow check now fixed on `e01a0cba`.
 
 **State:** integration owner; published 1.25.0 immutable; no live deployment authorized. Preflight head `e01a0cba`.
 
