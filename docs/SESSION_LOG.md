@@ -5874,3 +5874,9 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - **Root cause**: `qa/http-server.log` shows the runner so saturated that every `POST provider-settings` completes ~60-70s apart throughout the leg (e.g. 10:27:07→10:28:09→10:29:14→10:30:19→10:31:24→10:32:33→10:33:38). The nameserver form POST queued behind the same cadence; `expect_navigation(wait_until='load', timeout=90000)` outlived the click's own ~64s internal wait. Environmental timing, not a lane defect — same class as the php-controls 50s packaged-UI timeout and the cloud-intake 43s-gap cooldown failure.
 - **Action**: fresh dispatch `40186085321` on `c8d68a0a` (single-job reruns are refused by the workflow's attempt-identity guard). If it re-fails at the same class, options are a bounded click/navigation timeout raise or documented flake.
 
+## 2026-10-25 (cont.) — docroots native leg cancelled at 300m ceiling under saturation; ceiling raised to 360, rerun 40187905664
+
+- **Failure**: `40167839955` (`78df0378`) — build/recovery/apache green; native-and-browser `cancelled` at exactly 300m (job `timeout-minutes: 300`, 06:08→11:09). Sealed partition: `native-results.json` green (65/65), `http-results.json` absent — the HTTP suite was mid-flight, log still serving `provider-settings` requests ~60-70s apart at cancel. Zero named check failures — a wall-clock ceiling exhaustion under runner saturation, not an assertion failure.
+- **Fix**: `ed09ed98` on `devin/fix-docroots-worker-retry` raises the job ceiling 300→360m (same pattern as nameserver `70ba58b8` raising 240→300; the docroots lane has a documented exhaustion history: 105m→180m→300m→now). Assertions/request/browser/provider limits unchanged. Rerun `40187905664` dispatched.
+- **Cancelled runs are not success** — `40167839955` remains preserved failure evidence.
+
