@@ -1,6 +1,21 @@
 
 # Session handoff - Devin sole-owner continuation
-## 2026-10-25 (latest) — marker-retention + hosting-evidence fixed; FSI's suite fixes ported; armed run 40183179728 in flight
+## 2026-10-25 (latest) — hosting selector corrected to real comparison markup; run 40183776933 on d63d7e34
+
+**State:** integration owner; published 1.25.0 immutable; no live deployment authorized. Preflight head `d63d7e34`.
+
+**Preflight acceptance state:**
+- Run `40183776933` on `d63d7e34` — hosting publication check now selects `.hosting-comparison-plan` and reads price from the matching `Price & billing period` column; contract re-settled and verifier green (1468 checks, unpatched).
+- Run `40183179728` on `083c046c` still in flight — validates ported FSI native fixes; its apache leg will fail at the stale `article.workspace-card` selector (fixed only on `d63d7e34`) — preserved evidence.
+- Runs `40178855940` (`c1f72286`) + `40173946345` (`167d9cb7`) still in flight — earlier heads.
+- Root cause decoded this session: sealed HTML showed the upgraded offer rendering correctly (title, $120.00/year, local media image, no page errors) — `site/pages/services/hosting.php` only ever calls `hosting_catalog_comparison()` (table markup); `article.workspace-card` was never this page's markup. The check was previously masked (never reached) on this lane.
+- Contract machinery note: `predecessor_reports_sha256` covers `tools/acceptance-reports.json` only — it must equal HEAD's value whenever reports.json is unchanged. The old settle script's reports-peel model is stale (wrote 5 wrong values); restore reports pins from HEAD and use `--contract-pins-only`. Leaf `CONTRACT_SHA256`/`REPORTS_SHA256` constants mirror the requests-era predecessor hashes: `1a26cc69` / `e6161a58` on `d63d7e34`.
+
+**Lane board (latest known):** nameserver `c8d68a0a` + docroots `78df0378` build/recovery/apache green, native in progress · php-controls `0a66ec20` native failed on a 50s packaged-UI subprocess timeout (flake-class) · cloud-intake `3ed53b7a` native failed on the WP cooldown (fix lands via preflight merge) · FSI `9e209e82` native failed on proposals check (diagnostic seal exists on 083c046c+) · ports #257-#260 held.
+
+**Next:** monitor `40183776933`; classify any new named failures from sealed diagnostics; sequential leaf->preflight->FSI->main merges once gates green; contract re-settle per merge.
+
+## 2026-10-25 (previous) — marker-retention + hosting-evidence fixed; FSI's suite fixes ported; armed run 40183179728 in flight
 
 **State:** integration owner; published 1.25.0 immutable; no live deployment authorized. Preflight head `160bfd33` (docs) over code head `083c046c`.
 
