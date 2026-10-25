@@ -399,7 +399,7 @@ function setup_expected_files(): array { return [
     'app/support/ticket_reads.php'=>'1c4d1a41fdbaa523e00cb72ce8f9d0a6508a2540a90047decec912b3ee742d90',
     'app/support/ticket_views.php'=>'aeae905e28566b7bd87554a65cbe56ac96d93bb791edcbdee8d3766cd02c4435',
     'app/support/tickets.php'=>'904c116c955cec9ce31716566b0f5d0f182740a603274e3a122eed359e5613ec',
-    'app/updates/structure.php'=>'bb4480350d261835c08a67fc87f951a444a89b4a63c026d81fe51c532103081e',
+    'app/updates/structure.php'=>'781839fe6caf22ecf6dcc14b96bd47ce6b4faa4cf68996494147a7651729265e',
     'assets/css/admin.css'=>'2ef993f118245c2089d1528f0de5e6e4822a2a2dd4c051417c4afe4e68daba44',
     'assets/css/growth.css'=>'e0faa0472f3ca6e725a555bcea4255e16ad005a59b0515c8f3a23d236fd4e958',
     'assets/css/hosting-comparison.css'=>'c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403',

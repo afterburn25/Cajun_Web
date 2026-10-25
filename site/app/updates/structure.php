@@ -61,6 +61,8 @@ function structure_save(string $dir,array $j): void {
 }
 function structure_schema_markers(): array {
     $markers=[];
+    // File-only context (no configured database) has no marker state to journal.
+    if(!isset(config()['db']['prefix']))return $markers;
     foreach(all('SELECT name,value FROM '.table('settings')) as $row)
         if(str_ends_with((string)$row['name'],'_schema_version'))$markers[(string)$row['name']]=(string)$row['value'];
     return $markers;
