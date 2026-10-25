@@ -229,6 +229,13 @@ def continue_after_retention(repo, installed, base, prefix, php, target, owner, 
             page.set_viewport_size({'width': width, 'height': height})
             response = page.goto(base + '/index.php?page=hosting', wait_until='load', timeout=30000)
             card = page.locator('article.workspace-card').filter(has=page.get_by_role('heading', name=TITLE, exact=True))
+            if card.count() != 1:
+                (qa / ('apache-release126-' + prefix + '-hosting-page-' + size.lower() + '.html')).write_text(page.content(), encoding='utf-8')
+                (qa / ('apache-release126-' + prefix + '-hosting-count-' + size.lower() + '.json')).write_text(json.dumps(
+                    {'status': response.status if response else None, 'cards': card.count(),
+                     'all_titles': page.locator('article.workspace-card h1,article.workspace-card h2,article.workspace-card h3,article.workspace-card h4').all_inner_texts(),
+                     'notices': page.locator('.notice,.hosting-comparison-empty').all_inner_texts(),
+                     'page_errors': errors}, indent=2) + '\n', encoding='utf-8')
             assert card.count() == 1
             card.scroll_into_view_if_needed(timeout=30000)
             page.wait_for_timeout(350)
