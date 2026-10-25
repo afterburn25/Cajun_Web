@@ -3,14 +3,14 @@
 ## 2026-10-25 (latest) — hosting selector corrected to real comparison markup; run 40183776933 on d63d7e34
 - `c7edb900` on `devin/preflight-commercial` raises the native job ceiling 240→360m (run `40173946345` was cancelled at the cap with zero failed checks) and re-settles the provenance chain end-to-end — stage-hash map replayed across both peel branches for the workflow and verifier, sequential strip-chain replay for the four inner `predecessor_workflow_sha256` pins, tamper-deny probes rebased to 360, requests leaf `CONTRACT_SHA256` = `ce7b20af`. Unpatched verifier: 1468/1468. Dispatched **`40191709282`** on `c7edb900`; `40183776933` (d63d7e34) remains valid selector evidence but its native leg will hit the old 240m cap.
 
-**State:** integration owner; published 1.25.0 immutable; no live deployment authorized. Preflight head `d63d7e34`.
+**State:** integration owner; published 1.25.0 immutable; no live deployment authorized. Preflight head `8e37a75f` (docs) over code head `c7edb900`.
 
 **Preflight acceptance state:**
 - Run `40183776933` on `d63d7e34` — hosting publication check now selects `.hosting-comparison-plan` and reads price from the matching `Price & billing period` column; contract re-settled and verifier green (1468 checks, unpatched).
 - Run `40183179728` on `083c046c` still in flight — validates ported FSI native fixes; its apache leg will fail at the stale `article.workspace-card` selector (fixed only on `d63d7e34`) — preserved evidence.
 - Runs `40178855940` (`c1f72286`) + `40173946345` (`167d9cb7`) still in flight — earlier heads.
 - Root cause decoded this session: sealed HTML showed the upgraded offer rendering correctly (title, $120.00/year, local media image, no page errors) — `site/pages/services/hosting.php` only ever calls `hosting_catalog_comparison()` (table markup); `article.workspace-card` was never this page's markup. The check was previously masked (never reached) on this lane.
-- Contract machinery note: `predecessor_reports_sha256` covers `tools/acceptance-reports.json` only — it must equal HEAD's value whenever reports.json is unchanged. The old settle script's reports-peel model is stale (wrote 5 wrong values); restore reports pins from HEAD and use `--contract-pins-only`. Leaf `CONTRACT_SHA256`/`REPORTS_SHA256` constants mirror the requests-era predecessor hashes: `1a26cc69` / `e6161a58` on `d63d7e34`.
+- Contract machinery note: `predecessor_reports_sha256` covers `tools/acceptance-reports.json` only — it must equal HEAD's value whenever reports.json is unchanged. The old settle script's reports-peel model is stale (wrote 5 wrong values); restore reports pins from HEAD and use `--contract-pins-only`. Leaf `CONTRACT_SHA256`/`REPORTS_SHA256` constants mirror the requests-era predecessor hashes: `ce7b20af` / `e6161a58` on `c7edb900`.
 
 **Milestone**: run `40183776933` on `d63d7e34` has build+recovery+apache green — the release-126 hosting suite passed on the corrected `.hosting-comparison-plan` selector; only its native leg remains.
 
