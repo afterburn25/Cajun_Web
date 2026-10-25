@@ -286,3 +286,9 @@ The final licensing recovery correction also checks surviving audit history when
 
 - Audit fix ported: `4c5ce519` (binary collations + detail index) + `2993656f` (link_events); `cb8d2b91` subsumed. Contract 473/473, canonical refresh clean. This directly addresses the 240-minute ceiling failures — `provider-settings` renders were ~30s from unindexed `BINARY detail=` probes.
 - Rerun dispatched: `40136678842` on `2993656f`.
+
+### 2026-10-25 (cont.) — nameserver readback CSRF stale snapshot fixed (81b19915)
+
+- Run `40202419849` (`3e469969`): recovery CSRF block passed; native failed on `Nameserver readback refuses CSRF` — same stale-snapshot class: `refresh_domains()` + `current()` GET ran between the line-357 snapshot and the refusal loop.
+- Fix `81b19915`: re-snapshot after the readback `fields(current(),...)` GET (mirrors the recovery block). Contract re-settled via the two-era fixpoint (installed.pred ← peeled-commands preimage; req_pred ← commands_predecessor preimage; CONTRACT_SHA256 mirror) — verifier **473/473**.
+- Redispatched `40221630205` on `81b19915`.
