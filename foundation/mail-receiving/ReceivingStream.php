@@ -125,11 +125,11 @@ final class ReceivingStream implements StreamInterface
     }
 
     /** One opaque literal payload per connection, only for the fixed APPEND profile. */
-    public function fwriteLiteral(#[\SensitiveParameter] string $data): int|false
+    public function fwriteLiteral(#[\SensitiveParameter] string $data, int $max = 65536): int|false
     {
         if ($this->profile !== ReadProfile::Append || $this->literalUsed) throw new ReceivingFailure('protocol');
         $length = strlen($data);
-        if ($length < 1 || $length > 65536) throw new ReceivingFailure('limit');
+        if ($length < 1 || $length > $max || $max > 1048576) throw new ReceivingFailure('limit');
         $this->literalUsed = true;
         $at = 0;
         while ($at < $length) {
