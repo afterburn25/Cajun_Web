@@ -945,7 +945,7 @@
       "tests/registered_nameserver_requests_native.php": "df4aef98c107bb09d1c22317de19195903224c1c12f51c0bfbd669be17d19741",
       "tests/registered_nameserver_requests_storage.php": "fe9fd6e4fe1969ec93af0990c3180513d544e79877a60d079bb32121eebb9954",
       "tests/registered_nameserver_requests_upgrade.py": "ae52fa568f08114e0b56d03ddd8138539141e453e6d42afa493e1ceb96e566c7",
-      "tests/registered_nameserver_requests_upgrade_fixture.php": "8a5c75eb15290c635992e92a294e649e3207692da3da6669516bde18d67adf90",
+      "tests/registered_nameserver_requests_upgrade_fixture.php": "0c284852dc6047213f2f602d18f19e515d9b440d588c05de7c35b49445ef7b1e",
       "tests/registered_nameserver_requests_upgrade_test.py": "bb760f62d2a2d3c7efb4c4cf4e6b756389d7a142b5178af84323995da2d9b413",
       "tests/registered_nameserver_requests_views.php": "75ddf61d8500c238c84fbf72b81c9fa43fd8fa1a930a8d86c08cb55e14eb5720",
       "tests/registered_nameservers_cases.py": "342124ac73029685c8833b310cbcd6a836701b9ca9b3a7d210892695e5c8349e",

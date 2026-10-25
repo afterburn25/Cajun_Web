@@ -3506,3 +3506,8 @@ The enclosing **fix: include retained diagnostic sources in development package*
 
 - Run 39901898005 (`4310ee17`) completed **cancelled** at ~08:53Z — the workflow's concurrency is `cancel-in-progress: false`, so the cancellation was external (not capacity, not a superseding push). A cancelled run is neither green nor classified evidence; the `4310ee17` registrar-freshness fix still needs its acceptance signal.
 - Redispatched `39928784590` on branch tip `b2d4c714` (docs-only delta over `4310ee17`; code under test identical).
+
+## 2026-10-25 — request-upgrade seed gains the candidate studio migration
+
+- The `seed` mode of `tests/registered_nameserver_requests_upgrade_fixture.php` prepares registered nameserver requests, whose gate requires `studio_ready()`. On `'4'`-era merge trees (preflight/mergeprep) a baseline-seeded `'2'` marker survives the file update because nothing ran `studio_migrate()` after `apply` — the same gap that failed `provider_cloud_site_requests_upgrade` on run `40157399569`. Sibling fixtures (`registered_nameservers_upgrade`, `registered_nameserver_changes_upgrade`) already run the guarded migrate in seed mode.
+- Added `if(!studio_ready())studio_migrate();` before the request preparation — inert on this `'2'`-era lane, required once merged into `'4'`-era trees. `php -l` clean; contract `source_sha256` re-anchored; verifier `{"passed": true, "checks": 473}`.

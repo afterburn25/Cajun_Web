@@ -230,7 +230,7 @@ try{
     }elseif($mode==='unprepared'){
         $before=rnru_digest();$screen=registered_nameserver_requests_screen();rnru_ok('Target update does not silently prepare local requests',!$screen['ready']&&$screen['items']===[]&&$screen['options']===[]&&$before===rnru_digest());
     }elseif($mode==='seed'){
-        rnru_ok('Candidate client request preparation starts absent',!rnru_scope(fn()=>registered_nameserver_requests_ready()));registered_nameservers_prepare(RNRU_PASSWORD);registered_nameserver_changes_prepare(RNRU_PASSWORD);registered_nameserver_requests_prepare(RNRU_PASSWORD);
+        rnru_ok('Candidate client request preparation starts absent',!rnru_scope(fn()=>registered_nameserver_requests_ready()));if(!studio_ready())studio_migrate();registered_nameservers_prepare(RNRU_PASSWORD);registered_nameserver_changes_prepare(RNRU_PASSWORD);registered_nameserver_requests_prepare(RNRU_PASSWORD);
         $before=rnru_digest();registered_nameserver_requests_prepare(RNRU_PASSWORD);rnru_ok('Explicit owner setup is idempotent',rnru_scope(fn()=>registered_nameserver_requests_ready())&&$before===rnru_digest());
         $link=rnru_link();$source=rnru_refresh_domains($link['profile_id']);rnru_ok('Actual candidate current registrar refresh completes',$source['state']==='complete');
         rnru_create(10,14701);rnru_create(20,14702);$client=rnru_client();registered_nameserver_requests_change(rnru_id(20),rnru_id(20),rnru_id(21),'cancel','',$client);
