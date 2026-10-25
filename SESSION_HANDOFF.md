@@ -1025,3 +1025,10 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - Leaf `devin/fix-nameserver-fixture-getattr`: run `40202419849` classified — `Nameserver readback refuses CSRF`, same stale-snapshot class as the recovery block (refresh re-arm + page GET between snapshot and refusal loop). Fixed `81b19915` + contract re-settled (verifier 473/473); rerun `40221630205` dispatched.
 - Preflight merge `599351b8` (php-controls) pushed and verified 1693/1693 locally; hosted run pending queue drain.
 - In flight: `40215025927` (d9fbca9d candidate — transport bound port) apache green, native running; `40221630205` nameserver rerun; docroots rerun still held.
+
+### 2026-10-25 (cont.) — d9fbca9d native classified: sent-copy APPEND literal bound
+
+- Run `40215025927` (`d9fbca9d`): the transport-bound port held — `HTTP sends attachment-bearing MIME byte-exactly` PASSED (sealed: wire_len==mime_len==141078, terminator true, decoded ok). The frontier moved one check: `Sent copy carries the larger attachment MIME byte-exactly` failed — the IMAP `APPEND "Sent"` literal path.
+- Root cause: `foundation/mail-receiving/ReceivingStream.php` `fwriteLiteral` hard-capped the literal at 65536; `AppendSession` never forwarded its `maxBytes`. Caller `mail_submission_copy` already passes `PreparedMime::MAX_BYTES` (786432).
+- Fix `1253e077`: FSI port `7fbc46a7` — `fwriteLiteral($message, $this->maxBytes)` + parameterized cap (`$length > $max || $max > 1048576`). All four files (canonical + generated mirrors) byte-identical to FSI; build refresh PASS; php -l clean; files un-pinned in the contract.
+- New candidate run `40236365564` on `1253e077` (includes the php-controls merge `599351b8`). Still in flight: nameserver `40221630205` native; docroots rerun held.
