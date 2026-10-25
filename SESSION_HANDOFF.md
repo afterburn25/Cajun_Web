@@ -11,7 +11,9 @@
 - Root cause decoded this session: sealed HTML showed the upgraded offer rendering correctly (title, $120.00/year, local media image, no page errors) — `site/pages/services/hosting.php` only ever calls `hosting_catalog_comparison()` (table markup); `article.workspace-card` was never this page's markup. The check was previously masked (never reached) on this lane.
 - Contract machinery note: `predecessor_reports_sha256` covers `tools/acceptance-reports.json` only — it must equal HEAD's value whenever reports.json is unchanged. The old settle script's reports-peel model is stale (wrote 5 wrong values); restore reports pins from HEAD and use `--contract-pins-only`. Leaf `CONTRACT_SHA256`/`REPORTS_SHA256` constants mirror the requests-era predecessor hashes: `1a26cc69` / `e6161a58` on `d63d7e34`.
 
-**Lane board (latest known):** nameserver `c8d68a0a` + docroots `78df0378` build/recovery/apache green, native in progress · php-controls `0a66ec20` flake-probe rerun `40184213691` dispatched (50s packaged-UI subprocess timeout) · cloud-intake `3ed53b7a` rerun `40184256158` dispatched on `devin/fix-cloud-intake-ctype` (WP cooldown 43s-gap flake probe; fix also lands via preflight merge) · FSI `9e209e82` native failed on proposals check (diagnostic seal exists on 083c046c+) · ports #257-#260 held.
+**Milestone**: run `40183776933` on `d63d7e34` has build+recovery+apache green — the release-126 hosting suite passed on the corrected `.hosting-comparison-plan` selector; only its native leg remains.
+
+**Lane board (latest known):** nameserver rerun `40186085321` (`c8d68a0a`) + docroots rerun `40188491299` (`edcd8483`, 360m ceiling + re-anchored contract — leaf verifier 360/360) build/recovery/apache green, native in progress · php-controls rerun `40184213691` (`0a66ec20`) build/recovery/apache green, native re-testing the 50s packaged-UI timeout (50s packaged-UI subprocess timeout) · cloud-intake rerun `40184256158` (`3ed53b7a`) build/recovery/apache green, native re-testing the WP cooldown (WP cooldown 43s-gap flake probe; fix also lands via preflight merge) · FSI `9e209e82` native failed on proposals check (diagnostic seal exists on 083c046c+) · ports #257-#260 held.
 
 **Next:** monitor `40183776933`; classify any new named failures from sealed diagnostics; sequential leaf->preflight->FSI->main merges once gates green; contract re-settle per merge.
 
@@ -27,7 +29,9 @@
 - Single-job `gh run rerun` is architecturally refused by the workflow (`Wrong source/run/attempt identity`) — re-testing requires a full new run on the head.
 - Contract: six ported files are NOT contract-pinned (hash-ref scan clean); no re-settle required.
 
-**Lane board (latest known):** nameserver `c8d68a0a` + docroots `78df0378` build/recovery/apache green, native in progress · php-controls `0a66ec20` native failed on a 50s packaged-UI subprocess timeout (flake-class) · cloud-intake `3ed53b7a` native failed on the WP cooldown (fix lands via preflight merge) · FSI `9e209e82` native failed on proposals check · ports #257–#260 held.
+**Milestone**: run `40183776933` on `d63d7e34` has build+recovery+apache green — the release-126 hosting suite passed on the corrected `.hosting-comparison-plan` selector; only its native leg remains.
+
+**Lane board (latest known):** nameserver rerun `40186085321` (`c8d68a0a`) + docroots rerun `40188491299` (`edcd8483`, 360m ceiling + re-anchored contract — leaf verifier 360/360) build/recovery/apache green, native in progress · php-controls `0a66ec20` native failed on a 50s packaged-UI subprocess timeout (flake-class) · cloud-intake `3ed53b7a` native failed on the WP cooldown (fix lands via preflight merge) · FSI `9e209e82` native failed on proposals check · ports #257–#260 held.
 
 **Next:** monitor `40183179728` + in-flight legs; classify any new named failures from sealed diagnostics; sequential leaf→preflight→FSI→main merges once gates green; contract re-settle per merge.
 
