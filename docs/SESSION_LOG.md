@@ -5867,3 +5867,10 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - **Committed**: `d63d7e34`; pushed; dispatched `40183776933`.
 - **In flight**: `40183776933` (`d63d7e34`, current candidate), `40183179728` (`083c046c`, validates ported native fixes; apache leg expected to fail at the now-fixed selector), `40178855940` (`c1f72286`), `40173946345` (`167d9cb7`), plus leaf native legs (nameserver `c8d68a0a`, docroots `78df0378`).
 - **Next action**: monitor `40183776933` apache leg for the corrected selector (desktop+mobile: terms, decoded image, viewport fit, no page errors, no external requests); then sequential leaf→preflight→FSI→main integration.
+
+## 2026-10-25 (cont.) — nameserver native failure classified as runner-saturation flake; rerun 40186085321
+
+- **Failure**: `40167838560` (`c8d68a0a`) native-and-browser leg — `AssertionError('Nameserver form "Request nameserver change" click/navigation: TimeoutError: Timeout 63997ms exceeded.')` in `tests/registered_nameserver_changes_cases.py:319` (`click_form`), immediately after the last recorded check `Nameserver terminal fault refuses prior disposable objects` (3237 http checks, zero named failures).
+- **Root cause**: `qa/http-server.log` shows the runner so saturated that every `POST provider-settings` completes ~60-70s apart throughout the leg (e.g. 10:27:07→10:28:09→10:29:14→10:30:19→10:31:24→10:32:33→10:33:38). The nameserver form POST queued behind the same cadence; `expect_navigation(wait_until='load', timeout=90000)` outlived the click's own ~64s internal wait. Environmental timing, not a lane defect — same class as the php-controls 50s packaged-UI timeout and the cloud-intake 43s-gap cooldown failure.
+- **Action**: fresh dispatch `40186085321` on `c8d68a0a` (single-job reruns are refused by the workflow's attempt-identity guard). If it re-fails at the same class, options are a bounded click/navigation timeout raise or documented flake.
+
