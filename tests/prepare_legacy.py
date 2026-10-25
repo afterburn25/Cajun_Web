@@ -365,3 +365,27 @@ with zipfile.ZipFile(organized_baseline) as z:
         assert (item.external_attr>>16)&0o170000 != 0o120000
     z.extractall(root/'test-runtime/released-1.24.0')
 print('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')
+
+# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.
+organized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_bytes=response.read(15843209)
+assert len(organized_bytes)==15843208
+assert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'
+organized_baseline.write_bytes(organized_bytes)
+organized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']
+assert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    names=z.namelist()
+    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895
+    assert set(names)==set(organized_history['files'])
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename
+        assert not any(part in ('','.','..') for part in item.filename.split('/'))
+        assert '\\' not in item.filename and ':' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]
+    z.extractall(root/'test-runtime/released-1.25.0')
+print('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')
