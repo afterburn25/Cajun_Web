@@ -856,3 +856,11 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - Fixed `48e22b54`: marker excluded from data-retention comparison; check decomposed; `qa/` now seals the recover response + recovered page bodies for this suite.
 - Dispatched `40169121164` on `48e22b54`.
 - `6c58b14c` follow-up: the qa evidence names needed the `organized-` prefix — apache-lane `seal()` admits only `apache-*`/`organized-*` names (`tools/acceptance_artifacts.py:283`); un-prefixed files would have failed sealing after otherwise-green checks. `40169121164` on `48e22b54` cancelled as doomed-at-seal (evidence names only; check logic identical). Redispatched `40169399783` on `6c58b14c`.
+
+### 2026-10-25 (cont.) — nameserver/cloud upgrade suites made marker-aware; contract re-settled
+
+- Run `40169399783` (`6c58b14c`) apache: all 3347 checks passed; the job died in the silent post-suite command — sealed `qa/` partition pinned `registered_nameserver_changes_upgrade.py` (artifacts stop at the sibling suite).
+- Root cause: `release_125_retention.py` compared full `settings` snapshots with no marker concept, so journaled `*_schema_version` restores on recovery were rejected as business corruption; `updater_retained()` inside every apply/recover action raised first — hence the silent exit ~100s in.
+- Fixed `167d9cb7`: `marker_transition_cells()` + `exact_business_recovered()` added; recovery-crossing comparisons in the four suites are marker-aware; `updater_retained()` in both request suites permits declared transitions; requests seed check names all journaled migrations. Strict comparisons retained where no recovery boundary is crossed (verified `terminal_recovery_retained` is an app-level path, not `structure_recover`).
+- Contract re-settled through the full peel chain: billing_options `source_deltas`/`before_sha256` for the edited file recomputed (`6cbe4918`), its three repins' `before` updated, all era predecessor hashes re-derived in dependency order, leaf `CONTRACT_SHA256` re-mirrored (`46db6ec5…`) — verifier passes unpatched on iteration 0.
+- Dispatched `40173946345` on `167d9cb7`. Watch its apache leg for the nameserver-changes/requests + cloud-requests upgrade suites; the in-flight native legs of prior runs still produce valid evidence on their heads.
