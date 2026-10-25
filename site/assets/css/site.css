@@ -11,3 +11,23 @@ html:has(.cwp-site.motion-off){scroll-behavior:auto}.brand{position:relative;ove
 
 /* Product artwork shared by public, owner and client hosting cards. */
 .hosting-catalog-image{display:block;width:100%;height:12rem;object-fit:contain;margin-bottom:1rem}
+/* Single-website PHP settings, shared by owner and client pages. */
+.php-controls{display:grid;gap:1.25rem;max-width:76rem;margin-inline:auto;min-width:0}
+.php-controls .workspace-card{min-width:0;margin:0;overflow-wrap:anywhere}
+.php-controls .php-controls-observations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;margin:0}
+.php-controls form{display:grid;gap:1rem;min-width:0;align-content:start}
+.php-controls form+form{margin-top:1.25rem}
+.php-controls .field-grid form+form{margin-top:0}
+.php-controls label{display:grid;gap:.5rem;min-width:0}
+.php-controls input:not([type=checkbox]),.php-controls select{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.php-controls label.check{display:flex;align-items:flex-start;gap:.65rem;line-height:1.5}
+.php-controls label.check input{flex:none;width:1.1rem;height:1.1rem;margin-top:.2rem}
+.php-controls .btn{justify-self:start;white-space:normal;max-width:100%;text-align:center}
+.php-controls .php-controls-options{padding-left:1.4rem;display:grid;gap:.5rem}
+.php-controls .php-controls-facts{display:grid;grid-template-columns:minmax(9rem,1fr) minmax(0,2fr);gap:.65rem 1rem}
+.php-controls .php-controls-facts dt{font-weight:700}.php-controls .php-controls-facts dd{margin:0;min-width:0}
+.php-controls [data-php-request]{margin-top:1rem}.php-controls [data-php-request] h4{margin-top:0}
+.php-controls [data-php-history] nav{margin-top:1.25rem}
+.admin-body .php-controls label,.admin-body .php-controls .btn{font-size:14px}
+.admin-body .php-controls .hint{font-size:13px}
+@media(max-width:640px){.php-controls .php-controls-observations,.php-controls .field-grid{grid-template-columns:1fr}.php-controls .php-controls-facts{grid-template-columns:1fr;gap:.25rem}.php-controls .php-controls-facts dd{margin-bottom:.75rem}.php-controls .btn{width:100%;justify-self:stretch}}

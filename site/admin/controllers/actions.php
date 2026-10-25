@@ -17,6 +17,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'tickets_'))support_tickets_admin_action($action);
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);
+    if(str_starts_with($action,'php_controls_')){$phpControlsReview=provider_php_controls_admin_action($action);return;}
     if(str_starts_with($action,'provider_settings_')){provider_settings_admin_action($action);return;}
     if(str_starts_with($action,'provider_https_'))provider_force_ssl_requests_admin_action($action);
     if(str_starts_with($action,'provider_directory_request_'))provider_directory_indexing_requests_admin_action($action);

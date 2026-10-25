@@ -14,6 +14,7 @@ if(array_key_exists('domain_expiry',$_GET))header('Cache-Control: no-store, priv
 if(array_key_exists('domain_dates',$_GET))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_php.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/php_controls.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/document_roots.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_force_ssl.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/force_ssl_requests.php';
@@ -53,6 +54,9 @@ if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');hea
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_search')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';require_once CWP_CODE_ROOT.'/includes/layout/project_planning.php';require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';
+$phpControlsRequested=array_key_exists('php_controls',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'php_controls_'));
+if($phpControlsRequested){header('Cache-Control: no-store, private');provider_php_controls_http_session_gate();}
+$phpControlsReview=null;
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
 if($supportRequested){
  if($_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??null)==='support_end'){
@@ -92,6 +96,7 @@ if(array_key_exists('domain_expiry',$_GET))domain_expiry_client_render($client);
 if(array_key_exists('domain_renewals',$_GET))domain_renewals_client_render($client,$error);
 if(array_key_exists('nameserver_requests',$_GET))registered_nameserver_requests_client_render($client,$error);
 if(array_key_exists('service_history',$_GET))service_observations_client_render($client);
+if(array_key_exists('php_controls',$_GET))provider_php_controls_client_settings_render($client,$error,$phpControlsReview);
 if(array_key_exists('php_version',$_GET))provider_php_client_render($client);
 if(array_key_exists('document_roots',$_GET))provider_document_roots_client_render($client);
 if(array_key_exists('force_ssl',$_GET))provider_force_ssl_client_render($client);

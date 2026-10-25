@@ -12,6 +12,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/providers.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/registered_nameserver_requests.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/force_ssl_requests.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/directory_listing_requests.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_php_controls.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_inbox.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_message.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_notices.php';
@@ -36,7 +37,7 @@ $validViews[]='directory-requests';
 if(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'provider_directory_request_'))$view='directory-requests';
 if($view==='directory-requests'){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='https-requests'){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
-$validViews=array_merge($validViews,['nameserver-requests','hosting-purchases','hosting-offers','registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications','tickets','ticket','ticket-new','backups','proposals','proposal','notifications'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['nameserver-requests','hosting-purchases','hosting-offers','registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-php-controls','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications','tickets','ticket','ticket-new','backups','proposals','proposal','notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 if(in_array($view,['studio-clients','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_plans_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
@@ -44,6 +45,8 @@ if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))
 if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['studio-clients','studio-job','studio-upgrade','hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='nameserver-requests'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'provider_nameserver_request_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if($view==='provider-php-controls'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'php_controls_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+$phpControlsReview=null;
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
 if($view==='staff-setup')staff_setup_render($error);
@@ -71,6 +74,7 @@ if($view==='provider-settings')provider_settings_admin_render($error);
 if($view==='nameserver-requests')registered_nameserver_requests_admin_render($error);
 if($view==='https-requests')provider_force_ssl_requests_admin_render($error);
 if($view==='directory-requests')provider_directory_indexing_requests_admin_render($error);
+if($view==='provider-php-controls')provider_php_controls_admin_render($error,$phpControlsReview);
 if($view==='domain-renewal-agreements')domain_renewal_agreements_admin_render($error);
 if($view==='domain-renewal-dispatch')domain_renewal_dispatch_admin_render($error);
 if($view==='provider-operations')provider_operations_admin_render($error);
