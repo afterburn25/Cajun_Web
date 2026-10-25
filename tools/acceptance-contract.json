@@ -6374,7 +6374,7 @@
       "tests/provider_cloud_site_requests_cases.py": "82573ab01bd25e3a90f2918b21dee2bcb91be4c7bd41f705c8a2c2ea2b359f30",
       "tests/cloud_site_requests_wiring.py": "a9b77582ac9324b8c6a568771e907aa14d645152fa6149c2febb057ea5916dda",
       "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
-      "tests/provider_cloud_site_requests_upgrade_fixture.php": "0a886de3c53dce09adb30964b0b76f284710bd954fe4de85f4377353bde4c1a2",
+      "tests/provider_cloud_site_requests_upgrade_fixture.php": "6fd0b32665eb363322e01a2f7a98905d5ffd2dcccf353521471604009950a7ab",
       "tests/provider_cloud_site_requests_upgrade_test.py": "07c0c53741dd51652751a78744411c1c0717ad3a503dc011410d7b4723b945b3",
       "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
     },

@@ -822,3 +822,9 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - Suite updates declare the migrated marker cells honestly (`studio_schema_version`, `payments_schema_version` in `changed_cells`) and the published-1.24 suite drops its degraded `workspace=False` branch — recovered portals are now functional everywhere. `hosting_catalog_recovery_native.php` probes marker flip→restore→forward-capture.
 - `tools/acceptance-contract.json` re-settled to a verified fixpoint via real-verifier digests plus exact peel replicas; `registered_nameserver_requests_acceptance.py` consts re-mirrored (`d0643b28…`/`e6161a58…`, source pin `b05430c7…`). **Verifier: `python tests/acceptance_artifacts_test.py --report …` → `{"passed": true, "checks": 1468, "error": null}` unpatched.** Guards 43/43 and 42/42 (py3.12; AST pins verified under py3.10).
 - Next: commit, push, redispatch this lane's hosted acceptance; continue lane classification + sequential merges.
+
+### 2026-10-25 (cont.) — cloud-requests upgrade seed lacked candidate studio migration
+
+- FSI `40157399569` (`d0954e59`) apache failure was NOT the 3233-check partition (all passed) — the step's last command `provider_cloud_site_requests_upgrade.py` failed in `seed`: `cloud_site_requests_storage.php:67` 'Prepare hosting inventory and client accounts first'. The baseline `'2'` studio marker never migrated after `apply` because the fixture's `seed` mode omitted `if(!studio_ready())studio_migrate()` (every sibling upgrade fixture has it). Native lane failed identically on `provider_cloud_site_requests_native.php` seeding `'2'` vs required `'4'`.
+- This lane's fixture fixed (seed mode now runs guarded `studio_migrate()`); contract pin re-anchored; verifier 1468/1468 unpatched.
+- FSI still needs: this fixture edit AND the `3ef9f6ab` native `'2'→'4'` marker port (only `provider_cloud_site_requests_native.php` — FSI has no `provider_directory_listing_requests_native.php`).
