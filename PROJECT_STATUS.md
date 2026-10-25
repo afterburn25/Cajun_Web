@@ -1,4 +1,10 @@
 
+## 2026-10-24 — updater recovery now restores schema markers; acceptance lanes green through Apache
+
+On `devin/preflight-commercial` (`c52432fe`), the file updater journals every `*_schema_version` marker at plan time, restores the pre-update markers on recovery, captures the applied set as forward state, and reasserts it on reapplication — a recovered 1.23/1.25 workspace is functional rather than degraded. File-only update contexts with no configured database journal an empty marker set. `tests/recurring_billing_upgrade_cases.py` now asserts the absence of recurring command controls on recovered old releases instead of asserting that retained invoice titles stay hidden. Contract chain re-settled; local verifier **1468 checks pass** unpatched. Hosted acceptance run `40167673092` in progress; superseded heads `b07d5e56`/`64eb22f4` retain their failed evidence.
+
+Four leaf lanes carry the guarded `studio_migrate()` in upgrade-fixture seed mode (inert on their `'2'`-era code; required once `'4'`-era mergeprep trees absorb them): nameserver `c8d68a0a`, docroots `78df0378`, php-controls `0a66ec20`, cloud-intake `3ed53b7a` — fresh hosted runs dispatched on each head; earlier same-lane runs passed Apache and recovery on product-identical code. FSI `9e209e82` carries the same seed fix plus the `'4'` native marker; its recovery lane is green with native/Apache in progress. Port PRs #257-#260 all merge cleanly onto `main` `a331599a` and remain queued for sequential integration after FSI.
+
 # CajunWebPro current status
 ## 2026-10-19 — nameserver-requests leaf merge preflighted (024b50dc)
 
