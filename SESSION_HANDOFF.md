@@ -1,3 +1,11 @@
+## Nameserver CSRF check flake fix (`3e469969`, 2026-05-21 ~14:30Z)
+
+- Run `40186085321` native leg failed `Nameserver local recovery refuses CSRF` — not a timeout (≈3h34m runtime).
+- Root cause: `tests/registered_nameserver_changes_cases.py` snapshotted `state()`/`provider.calls`/`provider.posts` BEFORE the page GET/refresher; under runner saturation the provider-refresh TTL elapsed mid-sequence and `current()` recorded a real refresh (refresh rows + provider calls), so refusal comparisons failed against a stale snapshot. The CSRF refusals themselves behaved.
+- Fix: re-snapshot `before, calls, posts` after the recovery form is fetched, immediately before the refusal loop — refusal no-effect semantics preserved.
+- Contract settle: `registered_nameserver_changes_installed` + `registered_nameserver_requests` source pins for the cases file; installed-era `predecessor_contract_sha256` (58f6bfe0) computed on the requests-peeled served contract (cycle break — module pin lives inside the requests section); requests `predecessor_contract_sha256` + `CONTRACT_SHA256` = `2c0c9f23` using the leaf module's own `canonical` (compact JSON, no trailing newline — differs from `a.canonical`). Verifier: **473/473**.
+- Pushed `3e469969`; rerun `40202419849` dispatched.
+
 ## 2026-10-18 — client nameserver request candidate
 
 Packaging follow-up: the first clean63444bcd build failed before archive creation on `ops/twentyi-catalog-schema/diagnostic.py`. The enclosing **fix: include retained diagnostic sources in development package** commit admits only the four retained diagnostic Python paths to FULL-PROJECT. All shipping bytes and workflow/report contracts remain unchanged. Root22 portable builder-path checks pass; full rebuild and exact new-source acceptance are next. Preserve original634 full39181546946 and focused39181546963 (queued attempt1 at discovery), PR230 and failed local build log; do not label those old runs as corrected-source results.
