@@ -1,5 +1,13 @@
 
 # Session handoff - Devin sole-owner continuation
+## `40196057312` (e01a0cba) native classified — app transport bound; fix `d9fbca9d`, 2026-10-25 ~17:05Z
+
+- Native failed `HTTP sends attachment-bearing MIME byte-exactly` at check 2138 with the buffered harness in place: `wire_len=73449`, `mime_len=141078`, `terminator=false`, `server_errors=[]`.
+- Root cause is the **application** transport, not the fixture: `SubmissionChannel::write()` caps `sent>73728`/`writes>1100` and `SmtpSession::client_send()` caps `sentBytes>73728`/`writes>1100`. The wire stopped at 73449 = bound minus ~279 bytes of envelope commands → `ProbeFailure('limit')` → mid-DATA drop.
+- FSI `9e209e82` carries `sent>1048576`/`writes>32768` in both files and passes this check. Ported to the canonical `foundation/mail-submission/` copies (site/includes are generated), `build.py --refresh` regenerated `site/install/inventory.generated.php`. No contract pins cover these files. All four files byte-identical to FSI.
+- Committed `d9fbca9d`, pushed; candidate run `40215025927` dispatched.
+- `40191709282` (c7edb900) separately classified: 1911 checks green, abort on 30s `Page.goto` timeout to `provider-settings` — runner saturation, superseded head.
+
 ## `40191709282` (c7edb900) native classified — nav-timeout abort, 2026-10-25 ~16:15Z
 
 - Native leg failed after **1911/1911 passed checks** — suite aborted on `Page.goto` 30s timeout for `admin/index.php?view=provider-settings` (the same saturated page that took ~60-70s/request on the nameserver lane). Zero failed assertions; the abort preceded the mail/MIME section entirely.
