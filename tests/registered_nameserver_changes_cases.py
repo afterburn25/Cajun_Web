@@ -359,6 +359,8 @@ def run_browser(env, browser):
         no_effect('Exact recovered approval replay retains one immutable send', before, calls, posts)
         refresh_domains()
         check_fields = fields(current(), '#nameserver-request-' + first_id + ' form[data-nameserver-change-verify]')
+        # The refresh re-arm and page GET land after the replay snapshot; the readback refusal checks compare the fresh post-GET state.
+        before, calls, posts = state(), provider.calls, list(provider.posts)
         for changed, label in (({'csrf': 'bad'}, 'CSRF'), ({'current_password': 'wrong'}, 'password')):
             owner.post(settings, data={**check_fields, 'current_password': PASSWORD, **changed}, timeout=30)
             no_effect('Nameserver readback refuses ' + label, before, calls, posts)
