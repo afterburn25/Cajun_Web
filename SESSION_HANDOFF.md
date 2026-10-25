@@ -498,3 +498,8 @@ The final licensing recovery correction also checks surviving audit history when
 - `40115508547` (`55ff6c52`) failed at check 3809 — 'Draft detail shows milestone pricing' (`tests/proposals_cases.py`). The contact-feed attribution fix held (suite progressed ~34 checks past the prior failure).
 - The detail GET returned 200 but lacked one of 'VERSION 1'/'$2495.88'/'Draft'. Product render path verified correct by inspection; `ci_proposals` has no other browser-suite writers, so the actual page body is needed. Added bounded diagnostics (`qa/proposal-detail-diagnostics.json`: pid, final URL, status, missing markers, 600-char excerpt) without weakening the assertion.
 - Pushed `c6fea48d`; push-triggered run `40131688282` in flight.
+
+### 2026-10-25 (cont.) — run 40157399569 root cause: missing seed migration
+
+- Apache lane: the 3233-check partition passed; the step then failed at `provider_cloud_site_requests_upgrade.py` seed — the fixture never ran the candidate `studio_migrate()` after `apply`, so the `'4'` readiness gate saw baseline `'2'`. Native lane: same gate, fixture seeded `'2'` directly.
+- Fixed: seed mode now runs `if(!studio_ready())studio_migrate()` (matching sibling fixtures); native fixture seeds `'4'` (the `3ef9f6ab` correction). Pins re-anchored; verifier green.

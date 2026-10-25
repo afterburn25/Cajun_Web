@@ -194,6 +194,7 @@ try{
     }elseif($mode==='unprepared'){
         $before=cwru_digest();cwru_ok('Updated feature remains absent until owner explicitly prepares',!provider_cloud_site_requests_ready()&&provider_cloud_site_requests_options()===[]&&provider_cloud_site_requests_history()===[]&&$before===cwru_digest());
     }elseif($mode==='seed'){
+        if(!studio_ready())studio_migrate();
         cwru_ok('Candidate request preparation is initially absent',!provider_cloud_site_requests_ready());provider_cloud_site_requests_prepare(CWRU_PASSWORD);$before=cwru_digest();provider_cloud_site_requests_prepare(CWRU_PASSWORD);cwru_ok('Owner explicit setup retains exact repeated preparation',provider_cloud_site_requests_ready()&&$before===cwru_digest());
         $link=cwru_link();$read=cwru_refresh($link['profile_id'],InventoryRead::CLOUD_SERVERS_LIST,cwru_cloud());cwru_ok('Candidate real current cloud source refresh completes',$read['state']==='complete');
         cwru_intake(10,'pending.cloud.example');cwru_intake(20,'cancelled.cloud.example');$client=cwru_client();provider_cloud_site_requests_change(cwru_id(20),cwru_id(20),cwru_id(21),'cancel','',$client);

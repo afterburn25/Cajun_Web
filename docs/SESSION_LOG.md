@@ -5193,3 +5193,10 @@ ebebd533 run 39855317065 was cancelled as superseded.
 - Fix `f7f6b991`: `detail VARCHAR(400) COLLATE utf8mb4_bin` in `schema_statements`; `studio_migrate` applies the same guarded MODIFY for existing installs; installer inventory refreshed (280/280 verifier checks; build refresh green).
 - Run `40114885004` (push-triggered on `f7f6b991`) is the replacement run; the cancelled `40094584278` evidence is preserved.
 - Next: classify `40114885004`; if provider-settings renders drop, rerun the ceiling-hit nameserver/docroots lanes.
+
+## 2026-10-25 (cont.) — cloud-request seed lacked candidate studio migration
+
+- Run `40157399569` failure classification: the apache job's last command (`provider_cloud_site_requests_upgrade.py`) failed in its `seed` helper — `RuntimeException` at `cloud_site_requests_storage.php:67` ("Prepare hosting inventory and client accounts first"). All 3233 apache protection checks and both earlier upgrade suites passed first; `native-and-browser` failed identically at the `preparation` stage of `provider_cloud_site_requests_native.php`. `acceptance` then failed downstream with `complete: false`.
+- Root cause: post-update `seed` calls `provider_cloud_site_requests_prepare`, whose gate requires `studio_ready()` (`studio_schema_version==='4'` on this tree). `baseline-seed` migrates under published 1.25 code (marker `'2'`) and nothing ran the candidate studio migration after `apply`. Sibling upgrade fixtures already run `if(!studio_ready())studio_migrate()` in seed mode; this fixture omitted it, and the native fixture still seeded `'2'`.
+- Changes: `tests/provider_cloud_site_requests_upgrade_fixture.php` seed mode gains the guarded `studio_migrate()`; `tests/provider_cloud_site_requests_native.php` seeds `studio_schema_version='4'` (ports the `3ef9f6ab` native-marker correction to this tree). `php -l` clean; `tools/acceptance-contract.json` source pins re-anchored; verifier `{"passed": true, "checks": 288}`.
+- Next: commit, push, redispatch hosted acceptance on this head; the earlier `complete: false` evidence is preserved as a genuine failure, not superseded.
