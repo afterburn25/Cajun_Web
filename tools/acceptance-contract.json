@@ -638,7 +638,7 @@
     "parent": "8558119bcea66722af4180d6e3db3d1bd923adf2",
     "apache_after": "          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n",
     "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade_test.py --report qa/apache-document-root-controls-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
-    "predecessor_workflow_sha256": "91e4b5ce753083cb0cac5101f6ef1d690448b66b63ce06753190a0844b62d6f4",
+    "predecessor_workflow_sha256": "a5771325b529af3af8710995ab56fed323bf437acd0d32e15e652cbee860d856",
     "reports": [
       "apache-document-root-controls-upgrade-guard-results.json",
       "apache-document-root-controls-upgrade-results.json"
@@ -717,27 +717,27 @@
       "apache-document-root-requests-upgrade-guard-results.json",
       "apache-document-root-requests-upgrade-results.json"
     ],
-    "predecessor_contract_sha256": "6613b6226088660c5b4e4edde5442bfe26a0f8a91e0653e550adac4d490a886c",
+    "predecessor_contract_sha256": "9948a20e5c209d9e86369eb2b45021e888ed000990487028fdd9ac478de1e2cc",
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
-        "before_sha256": "4894e83a9538866a6afabee1909b3abb70105656605a7a5affc86ecbd9861c83",
-        "after_sha256": "2049d37b9753ae69113ced9953983f9fed4b10da7d06c561e329c9449a75878d",
+        "before_sha256": "e4423be089ff0e4756244cf9fcdb75f3371b42ba5df4aae9aea8471a29fd4910",
+        "after_sha256": "4da1b9dbb54f01d887a870d6e4ba8ce56eeca1ac3f374d3e046df3a1026420f7",
         "changes": [
           {
-            "after_start": 374,
-            "after_end": 383,
+            "after_start": 377,
+            "after_end": 386,
             "before": "",
             "after": "          \"$PHP_BINARY\" tests/document_root_requests_document.php > qa/document-root-requests-document-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_document.php > qa/document-root-requests-document-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_storage.php > qa/document-root-requests-storage-default-results.json\n          \"$PHP_BINARY\" -n tests/document_root_requests_storage.php > qa/document-root-requests-storage-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_contract.php > qa/document-root-requests-contract-default-results.json\n          \"$PHP_BINARY\" -n -d extension=pdo tests/document_root_requests_contract.php > qa/document-root-requests-contract-minimal-results.json\n          \"$PHP_BINARY\" tests/document_root_requests_views.php > qa/document-root-requests-views-default-results.json\n          \"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/document_root_requests_views.php > qa/document-root-requests-views-minimal-results.json\n          CWP_TEST_DOCUMENT_ROOT_REQUESTS=1 \"$PHP_BINARY\" tests/provider_document_root_requests_native.php\n"
           },
           {
-            "after_start": 446,
-            "after_end": 448,
+            "after_start": 449,
+            "after_end": 451,
             "before": "",
             "after": "      - name: Website folder request layout models\n        run: .ci-venv/bin/python -B tests/document_root_requests_browser.py --php \"$PHP_BINARY\" --report qa/document-root-requests-modeled-browser-results.json\n"
           },
           {
-            "after_start": 718,
-            "after_end": 720,
+            "after_start": 721,
+            "after_end": 723,
             "before": "",
             "after": "          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade_test.py --report qa/apache-document-root-requests-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_requests_upgrade.py\n"
           }
