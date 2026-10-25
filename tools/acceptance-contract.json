@@ -896,7 +896,7 @@
       "Client-Nameserver-Request-Client-Observed-Mobile.png"
     ],
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "81e1f939cec8573227d2fcea5337c869739c029f300e813d61c2eda8e4b82c75",
+      ".github/workflows/application-tests.yml": "2f1d230a02085c49b4b025500cf33ae5bf6fa27c951f93608a05e09504ad5336",
       ".github/workflows/provider-nameserver-changes.yml": "c86415c1671d02cb0a69c0edc691c68f577c808ca60c80b255fb03575683779e",
       ".github/workflows/provider-registrar.yml": "e34915e8e92f6dd16c57ebb6fc1c1ce67ad39ea7a1632cfe54bad8791c4458e4",
       "site/admin/controllers/actions.php": "6ac0f7d6738f73dd2ed2bc12b356260fb69d6a914def2e51dc9a0c5c47a38a10",
@@ -956,7 +956,7 @@
     "source_delta": {
       ".github/workflows/application-tests.yml": {
         "predecessor_sha256": "9a1f579de4352d3b4e05b1f13a4ca3f20288755f65490efbd56386b367d0a80f",
-        "current_sha256": "81e1f939cec8573227d2fcea5337c869739c029f300e813d61c2eda8e4b82c75",
+        "current_sha256": "2f1d230a02085c49b4b025500cf33ae5bf6fa27c951f93608a05e09504ad5336",
         "replacements": [
           {
             "before": "name: Application acceptance\non:\n  push:\n    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-nameserver-changes]\n    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']\n  pull_request:\n    branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]\n",
@@ -969,6 +969,10 @@
           {
             "before": "          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n",
             "after": "          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade_test.py --report qa/apache-registered-nameserver-requests-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_requests_upgrade.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n"
+          },
+          {
+            "before": "    # Preserve every assertion, request/browser/provider limit and native-to-browser state.\n    timeout-minutes: 240",
+            "after": "    # Run40136678842 exhausted240m mid-browser-acceptance; the suite needs ~245m+.\n    # Preserve every assertion, request/browser/provider limit and native-to-browser state.\n    timeout-minutes: 300"
           }
         ]
       },
