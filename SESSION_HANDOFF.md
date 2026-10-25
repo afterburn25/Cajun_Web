@@ -1,3 +1,7 @@
+## 2026-10-20 — document-roots acceptance job ceiling raised to 300 minutes
+
+Hosted full acceptance run 40137290812 was cancelled at the 240-minute  job ceiling while the browser suite was still executing (audit lane's identical suite completed in ~2h52m, right at the boundary). Changed only  ->  in that job. Re-anchored  exactly:  before/after SHA-256 pins now bind the post-bump baseline (the requests section requires workflow = predecessor + additions only, so the bump folds into the reconstructed baseline),  re-anchored to reconstructed-minus-extension, and  refreshed. Combined verifier : 360 checks passed locally (PYTHONUTF8=1). No assertion, fixture or provider limit changed. Redispatch the full acceptance on the new head after push.
+
 ## 2026-10-19 — client website folder request implementation
 
 Current work: `codex/twentyi-client-document-roots`, feature parent `3bd43ca891c9faefc6c07a293e4d2d59e00d4a62`; enclosing commit **Add client website folder requests with owner review**. This parent normally merges owner-control `f545cf939bfc11534978346171f3f4471784dbac` with main `dcd6966c4e0c209d15f9d88c8832ef601765c336`, retaining both histories and all shipping bytes. Read [the new capability guide](docs/TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md) before extending it.

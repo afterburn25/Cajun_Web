@@ -638,7 +638,7 @@
     "parent": "8558119bcea66722af4180d6e3db3d1bd923adf2",
     "apache_after": "          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n",
     "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade_test.py --report qa/apache-document-root-controls-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
-    "predecessor_workflow_sha256": "1f1cebc2a15a5387d21bc922d4c221df05db5d6389e744dad7fdc4bcfa4de9ee",
+    "predecessor_workflow_sha256": "91e4b5ce753083cb0cac5101f6ef1d690448b66b63ce06753190a0844b62d6f4",
     "reports": [
       "apache-document-root-controls-upgrade-guard-results.json",
       "apache-document-root-controls-upgrade-results.json"
@@ -717,11 +717,11 @@
       "apache-document-root-requests-upgrade-guard-results.json",
       "apache-document-root-requests-upgrade-results.json"
     ],
-    "predecessor_contract_sha256": "1c60cbaeb42b47d75ba55a60aa9f677ac33add3857ec01edb43a1074ec143701",
+    "predecessor_contract_sha256": "091667a98368226d04e892e64c135f5ad2e7c800277ee4cec91988da7fe9a803",
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
-        "before_sha256": "cb51a74c10a0a46e7f2216c7e101b086f9fa668a625be84ed74c5915af86659a",
-        "after_sha256": "a359d42fa7547c3bda819e57b8a60fce6063054b005be1ab71bda43eeb5b39fb",
+        "before_sha256": "4894e83a9538866a6afabee1909b3abb70105656605a7a5affc86ecbd9861c83",
+        "after_sha256": "2049d37b9753ae69113ced9953983f9fed4b10da7d06c561e329c9449a75878d",
         "changes": [
           {
             "after_start": 374,
