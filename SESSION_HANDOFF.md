@@ -1,5 +1,11 @@
 
 # Session handoff - Devin sole-owner continuation
+## `40188491299` (docroots edcd8483) native classified — HTTP read timeout, 2026-10-25 ~17:15Z
+
+- 3223 checks all green; suite aborted on `HTTPConnectionPool Read timed out` mid-request — runner saturation (60-70s/request cadence exceeds harness read bounds), not a named assertion failure. The 360m ceiling was not hit.
+- Same environment-flake family as the provider-settings nav timeout (40191709282), nameserver click timeout, php-controls 50s bound, and the nameserver stale snapshot. Four distinct bounds have now tripped on saturation.
+- The docroots leaf still lacks a completed native leg; a rerun is pending runner-capacity clearing. Additional dispatches while saturated feed the same flakes.
+
 ## `40196057312` (e01a0cba) native classified — app transport bound; fix `d9fbca9d`, 2026-10-25 ~17:05Z
 
 - Native failed `HTTP sends attachment-bearing MIME byte-exactly` at check 2138 with the buffered harness in place: `wire_len=73449`, `mime_len=141078`, `terminator=false`, `server_errors=[]`.
