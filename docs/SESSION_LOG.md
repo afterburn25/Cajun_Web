@@ -1196,6 +1196,14 @@ Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled can
 **Release documentation and browser continuation:** parent 7f8a6af. Actual browser forms now submit and persist; remaining run stopped on a test locator expecting Sign in without the displayed arrow. Corrected the locator and added browser protected-download/logout verification. Updated source layout, installation versus 1.0.8 upgrade, current roadmap/ownership/release status and official competitor reference review. No published release yet; run final combined acceptance before merging. Commit: docs: reconcile release instructions and browser acceptance.
 
 
+
+### 2026-10-25 (cont.) — attachment-MIME failure classified; buffered SMTP harness ported; e01a0cba dispatched
+
+- Run `40183179728` (`083c046c`) native leg failed after ~168m (not the cap): single failed check `HTTP sends attachment-bearing MIME byte-exactly`. Sealed `qa/attachment-mime-diagnostics.json` named it — `AssertionError: Synthetic SMTP DATA overflow`; wire stopped at 65571 of 141078 MIME bytes. The real-PDF attachment from the FSI port overflows the fixture's 64KiB DATA bound.
+- `qa/copy-refusal-diagnostics.json` confirms the `age_dispatches()` port works: refusal now reaches the transport (`result_code='folder'`, `appended_len==mime_len`), the check passed.
+- Ported `tests/mail_submission_server.py` byte-identically from `devin/full-site-integration` (`46601778`): DATA bound 64KiB→1MiB + buffered `recv(65536)` line assembly. Not contract-pinned; no re-settle needed.
+- `e01a0cba` committed/pushed; dispatched `40196057312`. `40191709282` (c7edb900) keeps running as evidence — its native leg will fail at the same attachment check since it predates this port.
+
 ### 2026-10-25 (cont.) — preflight native ceiling raised to 360m; contract re-settled at fixpoint
 
 - Run `40173946345` (`167d9cb7`) native leg ran ~241m and was cancelled exactly at the job `timeout-minutes: 240` cap with zero failed checks — same wall docroots hit at 300m (fixed there as `edcd8483`).
