@@ -76,7 +76,7 @@ final class SoftwareLicensePolicy {
     ): array {
         self::type($kind);
         $name = trim($licensee);
-        if ($name === '' || mb_strlen($name, 'UTF-8') > 190) {
+        if ($name === '' || strlen($name) > 190) {
             throw new InvalidArgumentException('Licensee name is required (190 characters maximum).');
         }
         if ($kind === self::MASTER) {
