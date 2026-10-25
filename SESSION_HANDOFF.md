@@ -1,5 +1,11 @@
 # Session handoff - Devin sole-owner continuation
 
+## Port merge status — 2026-10-23 (VPS uncertainty port, PR #257)
+
+Merged current `main` (`a331599a`, audit utf8mb4_bin + detail index fix) into `devin/vps-uncertainty-port` for exact-head acceptance. Merge commit `d5dc0b3c`. Conflict resolution: unioned action routing in `accounts.php`, preserved marker-aware `studio_migrate` plus additive guarded audit migration in `workspace.php`, kept binary audit DDL + lane schema tail in `base.php`, unioned build areas, re-settled contract predecessor chain (post-cloud 160 / post-reset 157 / post-non20i 152 / import base 149), regenerated installer inventory. `PYTHONUTF8=1` artifact verifier: {"passed": true, "checks": 288}.
+
+Dedicated component run `40145014173` on `d5dc0b3c`: **success**. Earlier run `40142688666` on pre-merge `ae1bf15d` also green (stale-head evidence). PR base is `devin/full-site-integration`; merge held until the in-flight FSI acceptance run resolves (ports land on FSI before its combined acceptance, per the merge-first order).
+
 ## Merge-first delivery cycle — 2026-10-22
 
 Owner directive (reaffirmed): completed features reach `main` in small, verified increments — a completed branch is undelivered until its accepted implementation lands on `main` and the resulting main commit verifies. Full standing text: `AGENTS.md` "Standing owner directive - merge-first"; queue: `docs/DEVIN_INTEGRATION_QUEUE.md`.
