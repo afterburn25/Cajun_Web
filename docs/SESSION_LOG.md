@@ -1195,6 +1195,13 @@ Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled can
 
 **Release documentation and browser continuation:** parent 7f8a6af. Actual browser forms now submit and persist; remaining run stopped on a test locator expecting Sign in without the displayed arrow. Corrected the locator and added browser protected-download/logout verification. Updated source layout, installation versus 1.0.8 upgrade, current roadmap/ownership/release status and official competitor reference review. No published release yet; run final combined acceptance before merging. Commit: docs: reconcile release instructions and browser acceptance.
 
+
+### 2026-10-25 (cont.) — preflight native ceiling raised to 360m; contract re-settled at fixpoint
+
+- Run `40173946345` (`167d9cb7`) native leg ran ~241m and was cancelled exactly at the job `timeout-minutes: 240` cap with zero failed checks — same wall docroots hit at 300m (fixed there as `edcd8483`).
+- Fix `c7edb900`: `timeout-minutes: 360` line-neutral on `.github/workflows/application-tests.yml`; the four tamper-deny probes in `tests/acceptance_artifacts_test.py` rebased to tamper the 360 baseline; `tools/acceptance-contract.json` re-settled by per-file stage-hash replay across both peel branches (workflow + verifier, 24 stage values, 187 pin sites), sequential strip-chain replay for `hosting_checkout`/`published125_hosting_extension`/`hosting_joined_purchase`/`hosting_catalog_offers` `predecessor_workflow_sha256`, era `predecessor_contract_sha256` re-solved, requests leaf `CONTRACT_SHA256` = `ce7b20af`, `REPORTS_SHA256` unchanged.
+- Unpatched verifier: **1468/1468**. Dispatched `40191709282` on `c7edb900`. `40183776933` (d63d7e34) remains valid selector evidence; its native leg will hit the old 240m cap.
+
 ### 2026-10-13 — Final browser acceptance coverage
 
 Parent `f007803`; request remains finish and publish 1.1.0. Native and package-upgrade tests passed; run 38354497138 stopped at browser console classification after account revocation. Added scoped expected-422 handling with retained diagnostics, original inquiry regression, actual browser installer with saved-state and cleanup checks, and PHP log scanning. Wrapped consent prose for mobile layout and refreshed package hashes. Corrected obsolete documentation-job summary. No external mail or live operations; next action is complete candidate CI and visual review.

@@ -1,6 +1,7 @@
 
 # Session handoff - Devin sole-owner continuation
 ## 2026-10-25 (latest) — hosting selector corrected to real comparison markup; run 40183776933 on d63d7e34
+- `c7edb900` on `devin/preflight-commercial` raises the native job ceiling 240→360m (run `40173946345` was cancelled at the cap with zero failed checks) and re-settles the provenance chain end-to-end — stage-hash map replayed across both peel branches for the workflow and verifier, sequential strip-chain replay for the four inner `predecessor_workflow_sha256` pins, tamper-deny probes rebased to 360, requests leaf `CONTRACT_SHA256` = `ce7b20af`. Unpatched verifier: 1468/1468. Dispatched **`40191709282`** on `c7edb900`; `40183776933` (d63d7e34) remains valid selector evidence but its native leg will hit the old 240m cap.
 
 **State:** integration owner; published 1.25.0 immutable; no live deployment authorized. Preflight head `d63d7e34`.
 
@@ -15,7 +16,7 @@
 
 **Lane board (latest known):** nameserver rerun `40186085321` (`c8d68a0a`) + docroots rerun `40188491299` (`edcd8483`, 360m ceiling + re-anchored contract — leaf verifier 360/360) build/recovery/apache green, native in progress · php-controls rerun `40184213691` (`0a66ec20`) build/recovery/apache green, native re-testing the 50s packaged-UI timeout (50s packaged-UI subprocess timeout) · cloud-intake rerun `40184256158` (`3ed53b7a`) build/recovery/apache green, native re-testing the WP cooldown (WP cooldown 43s-gap flake probe; fix also lands via preflight merge) · FSI `9e209e82` native failed on proposals check (diagnostic seal exists on 083c046c+) · ports #257-#260 held.
 
-**Next:** monitor `40183776933`; classify any new named failures from sealed diagnostics; sequential leaf->preflight->FSI->main merges once gates green; contract re-settle per merge.
+**Next:** monitor `40191709282` (c7edb900, 360m ceiling) — the current candidate; `40183776933` (d63d7e34) keeps valid selector evidence but its native leg will hit the old 240m cap; classify any new named failures from sealed diagnostics; sequential leaf->preflight->FSI->main merges once gates green; contract re-settle per merge.
 
 ## 2026-10-25 (previous) — marker-retention + hosting-evidence fixed; FSI's suite fixes ported; armed run 40183179728 in flight
 
