@@ -1,0 +1,27 @@
+name: Software license policy checks
+
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/app/licenses/software_license_policy.php'
+      - 'tests/software_license_policy.php'
+      - '.github/workflows/software-license-policy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PHP syntax
+        run: |
+          php -l site/app/licenses/software_license_policy.php
+          php -l tests/software_license_policy.php
+      - name: Run pure license contract checks
+        run: php tests/software_license_policy.php
