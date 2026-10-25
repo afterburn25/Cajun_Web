@@ -1032,3 +1032,9 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - Root cause: `foundation/mail-receiving/ReceivingStream.php` `fwriteLiteral` hard-capped the literal at 65536; `AppendSession` never forwarded its `maxBytes`. Caller `mail_submission_copy` already passes `PreparedMime::MAX_BYTES` (786432).
 - Fix `1253e077`: FSI port `7fbc46a7` — `fwriteLiteral($message, $this->maxBytes)` + parameterized cap (`$length > $max || $max > 1048576`). All four files (canonical + generated mirrors) byte-identical to FSI; build refresh PASS; php -l clean; files un-pinned in the contract.
 - New candidate run `40236365564` on `1253e077` (includes the php-controls merge `599351b8`). Still in flight: nameserver `40221630205` native; docroots rerun held.
+
+### 2026-10-25 (cont.) — pin-discipline fix + nameserver readback decomposition
+
+- Candidate run `40236365564` (`1253e077`) failed at **build**: `PHP controls current source pin SESSION_HANDOFF.md` — the handoff doc commit (`1ce93deb`) landed after the php-era pin settle. Discipline correction going forward: every docs commit on preflight must include the php-section pin re-settle in the same commit; this commit does exactly that.
+- Nameserver `40221630205` (`81b19915`) native: `Fresh nameserver different readback preserves unresolved fence` — the CSRF refusals now pass; the frontier moved to the readback block. Leaf `935584dd`: readback posts-invariant now measured from the form submit (the `refresh_domains()` re-arm inside `read_form` can legitimately add provider traffic mid-block under saturation), and each readback iteration seals `qa/nameserver-readback-<disposition>-diagnostics.json` (latest row, locator counts, post paths, refresh rows) so any residual failure names its operand. Verifier 473/473; rerun `40240006270` dispatched.
+- In flight: `40240006270` (nameserver `935584dd`); docroots rerun still held for queue drain.
