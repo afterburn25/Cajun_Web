@@ -240,7 +240,7 @@ def hosting_checkout_wiring_checks(tmp, workflow, contract, reports=None):
         deny('Checkout recipe refuses ' + label, lambda c=changed: hosting_checkout_recipe_predecessor(c, contract))
     deny('Checkout cannot omit native opt-in', lambda: hosting_checkout_recipe_predecessor([c.replace('CWP_TEST_HOSTING_CHECKOUT=1 ', '') for c in commands], contract))
     deny('Checkout cannot replace a PHP filename suffix', lambda: hosting_checkout_recipe_predecessor([c.replace('hosting_checkout_document.php', 'hosting_checkout_document."$PHP_BINARY"') for c in commands], contract))
-    deny('Checkout workflow cannot alter old timeout', lambda: hosting_checkout_workflow_predecessor(workflow.replace('timeout-minutes: 240', 'timeout-minutes: 241', 1), checkout))
+    deny('Checkout workflow cannot alter old timeout', lambda: hosting_checkout_workflow_predecessor(workflow.replace('timeout-minutes: 360', 'timeout-minutes: 361', 1), checkout))
     deny('Checkout workflow cannot omit full-suite output mode', lambda: hosting_checkout_workflow_predecessor(workflow.replace('hosting_checkout_http_browser.py --full-suite', 'hosting_checkout_http_browser.py'), checkout))
     check('Checkout guards then browser run once after unchanged packaged continuation', checkout['browser_additions'] == ['.ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json', '.ci-venv/bin/python -B tests/hosting_checkout_http_browser.py --full-suite']
           and all(workflow.count(c) == 1 for c in checkout['browser_additions'])
@@ -315,7 +315,7 @@ def hosting_upgrade_wiring_checks(tmp, workflow, contract, reports=None):
     prior_workflow = hosting_upgrade_workflow_predecessor(workflow, extension)
     check('Hosting upgrade adds its guard while retaining the exact prior full workflow', bool(prior_workflow))
     deny('Hosting upgrade workflow cannot omit its guard', lambda: hosting_upgrade_workflow_predecessor(prior_workflow, extension))
-    deny('Hosting upgrade workflow cannot change an old timeout', lambda: hosting_upgrade_workflow_predecessor(workflow.replace('timeout-minutes: 240', 'timeout-minutes: 241', 1), extension))
+    deny('Hosting upgrade workflow cannot change an old timeout', lambda: hosting_upgrade_workflow_predecessor(workflow.replace('timeout-minutes: 360', 'timeout-minutes: 361', 1), extension))
     hosting_source_bytes(ROOT, extension['source_sha256'])
     check('Hosting upgrade binds all six actual source files', set(extension['source_sha256']) == {
         'tests/release_126_hosting_records.py', 'tests/release_126_hosting_fixture.php', 'tests/release_126_hosting_guards.py',
@@ -400,7 +400,7 @@ def hosting_purchase_wiring_checks(tmp, workflow, commands, contract, reports=No
     for label,changed in [('missing',commands[:-1]),('duplicate',commands+[joined['additions'][0]]),('reordered',commands[1:]+commands[:1])]:
         deny('Joined recipe refuses '+label,lambda c=changed:hosting_purchase_recipe_predecessor(c,contract))
     deny('Joined recipe cannot omit full-suite output mode',lambda:hosting_purchase_recipe_predecessor([c.replace('hosting_catalog_purchase.py --full-suite','hosting_catalog_purchase.py') for c in commands],contract))
-    deny('Joined workflow cannot alter existing job timeout',lambda:hosting_purchase_workflow_predecessor(workflow.replace('timeout-minutes: 240','timeout-minutes: 241',1),joined))
+    deny('Joined workflow cannot alter existing job timeout',lambda:hosting_purchase_workflow_predecessor(workflow.replace('timeout-minutes: 360','timeout-minutes: 361',1),joined))
     deny('Joined workflow cannot omit isolated clock dependency',lambda:hosting_purchase_workflow_predecessor(workflow.replace('install -y libfaketime ','install -y ',1),joined))
     hosting_source_bytes(ROOT,joined['source_sha256'])
     check('Joined purchase exact current source producers and runtime dependencies are pinned',True)
@@ -467,7 +467,7 @@ def hosting_wiring_checks(tmp, workflow, commands, contract, reports=None):
         deny('Hosting recipe refuses ' + label + ' commands', lambda c=changed: hosting_recipe_predecessor(c, contract))
     wrong = copy.deepcopy(contract); wrong['hosting_catalog_offers']['additions'][2] = wrong['hosting_catalog_offers']['additions'][2].replace('CWP_TEST_HOSTING_RECOVERY=1 ', '')
     deny('Hosting recovery opt-in cannot silently disappear', lambda: hosting_recipe_predecessor(commands, wrong))
-    deny('Hosting workflow refuses an unrelated timeout change', lambda: hosting_workflow_predecessor(workflow.replace('timeout-minutes: 240', 'timeout-minutes: 241', 1), hosting))
+    deny('Hosting workflow refuses an unrelated timeout change', lambda: hosting_workflow_predecessor(workflow.replace('timeout-minutes: 360', 'timeout-minutes: 361', 1), hosting))
     deny('Hosting workflow refuses removal of raw recovery retention', lambda: hosting_workflow_predecessor(workflow.replace(hosting['workflow_delta'][-1]['after'], hosting['workflow_delta'][-1]['before'], 1), hosting))
     hosting_source_bytes(ROOT, hosting['source_sha256'])
     check('Hosting source and recovery producers match every exact current pin', True)
