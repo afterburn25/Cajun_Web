@@ -20,6 +20,11 @@ Five isolated pure suites have reviewed PR path filters, with complete current d
 ## Shared payment-link correction — 2026-10-19
 
 HC-11 shareable requests remain an unreleased Devin candidate. The separate [payment-link view correction](PAYMENT_LINK_VIEW_REVIEW.md) closes stale-link invoice disclosure and contradictory paid amounts; local modeled checks, actual SQL and installed HTTP evidence remain distinct. It does not implement card checkout, publish a version, or change the separate 20i lane.
+## 2026-10-18 — client cloud website journey
+
+From main `e397d9a6e293850e8dff61a593e3ba39ee178400`, branch `codex/twentyi-client-cloud-websites` implements primary-client request/cancel, owner decline/explicit creation, retained outcomes and exact returned-package confirmation navigation. Client dispatch and the existing shared grant commit atomically; replay never sends again. The current intake requires a complete cloud observation within15 minutes. [Behavior, authority, evidence and remaining gates](TWENTYI_CLIENT_CLOUD_WEBSITES.md).
+
+Local evidence:141 document and98 modeled UI checks per PHP mode; four actual module cold loads;34 legacy-context checks per mode;271 final artifact-helper checks;35 portable installed-update guards;19 actual published-baseline negative checks. Original1.24 and1.25 ZIP bytes validate against their retained member inventories, with all27 earlier release maps unchanged. Independent service, browser, installed-update and shared-wiring review is recorded in the feature guide. Native SQL/concurrency, packaged browser pixels, installed Linux/Apache execution and full combined acceptance remain pending. No live operation, new release or deployment; published1.25 and all separate original CI handles remain unchanged.
 
 ## Verified increment and remaining work — 2026-10-18
 

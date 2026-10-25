@@ -1,6 +1,6 @@
 {
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
-  "base_workflow_sha256": "b1a20da04f7c4562b663c29195cfda38b305c0065c90e718ae46c2c0e13701ac",
+  "base_workflow_sha256": "c37409cf433b749b8d7dfee9359aab01bd2cb74256d965809a6b8a7d7af10eb7",
   "unchanged_test_sha256": {
     "tests/browser_acceptance.py": "19f7a21c2649bdc3a8adc45b22d10e730f2d9d001e64886b218f2efde90786a7",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
@@ -63,6 +63,11 @@
     "\"$PHP_BINARY\" tests/provider_inventory_native.php",
     "\"$PHP_BINARY\" tests/provider_cloud_sites_native.php",
     "\"$PHP_BINARY\" tests/provider_cloud_confirmation_native.php",
+    "\"$PHP_BINARY\" tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-default.json",
+    "\"$PHP_BINARY\" -n tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-minimal.json",
+    "\"$PHP_BINARY\" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json",
+    "\"$PHP_BINARY\" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json",
+    "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
     "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
@@ -475,7 +480,7 @@
       "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
       "tests/release_125_upgrade_cases.py": "baea5a7a161a25891eb73aa5588ac21dbfd0197f43c94d96968d0f4da69129f0",
       "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
-      "tests/release_125_upgrade_input_guards.py": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
     },
     "scope": "Actual published original and synthetic business records; later agreement/recurring/licensing families are created only after candidate upgrade; all prior acceptance remains required."
   },
@@ -580,8 +585,8 @@
     "predecessor_sha256": "c302bf3821961204fb4992dec424e2b298780dbba8d945fb67ce79517b2636e7",
     "predecessor_browser_sha256": "bc124cd52768ea266ab27e34ab12d63389e11673d2e70f5fdbcefca8209f0bdf",
     "predecessor_reports_sha256": {
-      "browser": "bd1ecdf1f93c8b1ed65462793e01bbb910921aca3220beb845a6bf53e720777e",
-      "final": "b2eccedb62dd5a780a562111687ab95ff4c72c01bd10933fca474fac5c2beb8c"
+      "browser": "55a70fe19fb38d1cab8095365e29d0f3c749ae4ee305176c96a70a6168b4ab92",
+      "final": "84c4eb299e27856c5e5b4e69a605932cdb51336620e4439cafff92aa1b5d99d7"
     },
     "screenshots": [
       "Password-Reset-Template-Review-Desktop.png",
@@ -611,6 +616,90 @@
       "tests/backups_native.php": "eef89576d68b4321d9136c852cc81e692d665b7dc1d40f4dc88e6e8133f7afe0",
       "tests/notification_feed_native.php": "02fd546bf478ce98484dfa51d7140b28c6eb04e085d1eb67c999071139ca3dbe",
       "tests/support_tickets_native.php": "64adb30582eb4e62b5d91429745c412213fb6b7faa30e532fb0bca0b19f5b46c"
+    }
+  },
+  "cloud_site_requests": {
+    "source_base": "e397d9a6e293850e8dff61a593e3ba39ee178400",
+    "predecessor_native_count": 160,
+    "predecessor_native_sha256": "850965de6597d44a94bc7c6accb36cdee1e7650d9cf9c3273585be0e00ee9fdc",
+    "additions_after": "\"$PHP_BINARY\" tests/provider_cloud_confirmation_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-default.json",
+      "\"$PHP_BINARY\" -n tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-minimal.json",
+      "\"$PHP_BINARY\" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json",
+      "\"$PHP_BINARY\" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json",
+      "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php"
+    ],
+    "reports": [
+      "cloud-site-requests-document-default.json",
+      "cloud-site-requests-document-minimal.json",
+      "cloud-site-requests-ui-default.json",
+      "cloud-site-requests-ui-minimal.json",
+      "provider-cloud-site-requests-native-results.json"
+    ],
+    "predecessor_reports": {
+      "browser": {
+        "count": 170,
+        "sha256": "a180bb51668e9c7069d5a300f6405d3559a417820db16de526182990f423c936"
+      },
+      "final": {
+        "count": 214,
+        "sha256": "b855f597fcb975a09eda1774fc8f8ae9c6ec4faf56a45d82f814cceaa314b046"
+      }
+    },
+    "browser_hook": "    from provider_cloud_site_requests_cases import run_browser as client_cloud_sites_browser\n    client_cloud_sites_browser(env,browser,owner,client,other,profile)\n",
+    "browser_predecessor_sha256": "01e8d06d31927d904c3e09416a6529fd874846cc67c2f3f5bc2c888b652b5eae",
+    "screenshots": [
+      "Cloud-Client-Website-Request-Desktop.png",
+      "Cloud-Client-Website-Request-Mobile.png",
+      "Cloud-Client-Website-Review-Desktop.png",
+      "Cloud-Client-Website-Review-Mobile.png",
+      "Cloud-Client-Website-Accepted-Desktop.png",
+      "Cloud-Client-Website-Accepted-Mobile.png",
+      "Cloud-Client-Website-Confirmed-Desktop.png",
+      "Cloud-Client-Website-Confirmed-Mobile.png"
+    ],
+    "source_sha256": {
+      "tests/twentyi-cloud-site-requests/documents.php": "0a227898eeb5b4cec6cf3f7f4800580b1e02421edbcd675484aae741df91790b",
+      "tests/cloud_site_requests_ui_contract.php": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
+      "tests/provider_cloud_site_requests_native.php": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
+      "tests/provider_cloud_site_requests_cases.py": "4862727e170bcfaff792e70f557698a0109dd27202b3207f9a9bddca24861fc8",
+      "tests/cloud_site_requests_wiring.py": "2264c53cbf0dd2eb174d99644a5d35383d24c1c47b6045b62fa40ba3bd1d3a6c",
+      "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
+      "tests/provider_cloud_site_requests_upgrade_fixture.php": "b95a5562df22b2c5e242219ca2c911f160699a64f9ca3b15d0fbc0aeaa403da5",
+      "tests/provider_cloud_site_requests_upgrade_test.py": "07c0c53741dd51652751a78744411c1c0717ad3a503dc011410d7b4723b945b3",
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
+    },
+    "scope": "Client request, owner one-send dispatch, exact grant confirmation navigation, real supported SQL and packaged synthetic HTTPS/browser. No live provider execution or installed upgrade claim.",
+    "published_baseline": {
+      "source": "f545cf939bfc11534978346171f3f4471784dbac",
+      "base": "e397d9a6e293850e8dff61a593e3ba39ee178400",
+      "preparation_appendix": "\n# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n",
+      "source_sha256": {
+        "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+        "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6"
+      },
+      "unchanged_historical_versions": 27,
+      "new_members": 2895,
+      "input_guard_correction": {
+        "path": "tests/release_125_upgrade_input_guards.py",
+        "before": "test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+        "after": "test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip",
+        "predecessor_sha256": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
+      }
+    },
+    "upgrade": {
+      "commands": [
+        ".ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade_test.py --report qa/apache-cloud-site-requests-upgrade-guards-results.json",
+        ".ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade.py"
+      ],
+      "reports": [
+        "apache-cloud-site-requests-upgrade-guards-results.json",
+        "apache-cloud-site-requests-upgrade-results.json"
+      ],
+      "diagnostic": "apache-cloud-site-requests-upgrade-retention.json",
+      "predecessor_apache_sha256": "c4eea0a190c5e736dc44b5bc73002b22f4fa26e83c84d1e5c784b2b6642e10bf",
+      "scope": "Actual published 1.25 subfolder installation followed by exact candidate UPDATE, complete-journal file rollback, reapply and missing request-head refusal. No interrupted-application or live provider claim."
     }
   },
   "source_sha256": {}

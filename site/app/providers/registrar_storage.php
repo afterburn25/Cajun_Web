@@ -33,7 +33,7 @@ function provider_registrar_validate(string $name,string $sql):void {
         if($column['Extra']!==($auto?'auto_increment':'')||$column['Default']!==null||$column['Collation']!==($ascii?'ascii_bin':null))throw new RuntimeException('Incompatible registered-domain columns. Existing data was preserved.');
     }
     $expected=['PRIMARY'=>[0,['id']]];foreach($unique as $key=>$columns)$expected[$key]=[0,$columns];
-    $other=match($name){'provider_registrar_observations'=>[], 'provider_registrar_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by'],'approved_observation'=>['refresh_id']], 'provider_registrar_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']]};
+    $other=match($name){'provider_registrar_observations'=>[], 'provider_registrar_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by'],'approved_observation'=>['refresh_id']], 'provider_registrar_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id'],'link_events'=>['link_id']]};
     foreach($other as $key=>$columns)$expected[$key]=[1,$columns];$actual=[];
     foreach(all('SHOW INDEX FROM '.table($name)) as $index){if($index['Sub_part']!==null||$index['Index_type']!=='BTREE')throw new RuntimeException('Incompatible registered-domain indexes.');$actual[$index['Key_name']][0]=(int)$index['Non_unique'];$actual[$index['Key_name']][1][(int)$index['Seq_in_index']]=$index['Column_name'];}
     foreach($actual as &$index){ksort($index[1]);$index[1]=array_values($index[1]);}unset($index);ksort($actual);ksort($expected);if($actual!==$expected)throw new RuntimeException('Incompatible registered-domain indexes.');
@@ -52,6 +52,7 @@ function provider_registrar_prepare(#[SensitiveParameter] string $password):void
         $tables=provider_registrar_tables();$history=provider_registrar_history();
         if(($version==='1'||$history)&&in_array(false,$tables,true))throw new RuntimeException('Registered-domain history needs recovery from the original database.');
         if($version===''&&$history)throw new RuntimeException('Registered-domain history marker needs recovery.');
+        if($tables['provider_registrar_events']&&!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name=? AND index_name=?',[config()['db']['prefix'].'provider_registrar_events','link_events']))db()->exec('ALTER TABLE '.table('provider_registrar_events').' ADD INDEX link_events(link_id)');
         foreach(provider_registrar_schema(config()['db']['prefix']) as $name=>$sql)if($tables[$name]){
             provider_registrar_validate($name,$sql);
             if($version===''&&(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn()>0)throw new RuntimeException('Unmarked registered-domain history needs recovery.');

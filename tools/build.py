@@ -70,7 +70,7 @@ def safe(name):
 
 def full_project_area(name):
     safe(name)
-    allowed={'.github','docs','tests','tools','brand','foundation','site'}
+    allowed={'.github','docs','tests','tools','brand','foundation','site','ops'}
     if '/' in name and name.split('/')[0] not in allowed and name not in FULL_PROJECT_DIAGNOSTICS:
         raise RuntimeError('Unapproved full-project area: '+name)
 def inventory():

@@ -133,7 +133,7 @@ def run_browser(env, browser):
     # The verify form and each follow-up verify require the latest packages.list
     # observation inside the 900-second freshness window. The replay/refusal and
     # browser capture sections above can cross it, so re-read hosting once here;
-    # the recovery section re-reads again at its own boundary below.
+    # the recovery fixture below re-reads again at its own boundary.
     cool(); response = post('provider_inventory_refresh'); evidence('Control hosting re-read before follow-up verifies', response)
     verify = 'provider_force_ssl_control_verify'
     cool(); response = post(verify, request_id=request['id']); evidence('Fresh reported false differs from requested true', response)
@@ -146,8 +146,15 @@ def run_browser(env, browser):
     check('Separately shared client sees reported flag without setter or health claim', 'Flag reported set' in response.text and 'Latest saved observation' in response.text and 'does not check its certificate or whether HTTPS works' in response.text and 'Request flag' not in response.text and request['id'] not in response.text)
     capture(owner, 'Force-SSL-Control-Observed-Owner', url, '#force-ssl-changes')
     capture(client, 'Force-SSL-Control-Observed-Client', target, '[data-client-force-ssl]')
+    # The interrupted request pins the binding source it later verifies, and the
+    # recover form renders only inside the same 900-second window. The hosting
+    # refresh also changes the binding source, so the flag must be re-read too:
+    # the change precondition requires the anchor observation under the current
+    # binding (provider_force_ssl_controls_precondition).
     # Reproduce the precise recoverable window with a real terminal audit rollback
     # after the synchronous synthetic POST has saved its durable ledger result.
+    cool(); response = post('provider_inventory_refresh'); evidence('Recovery hosting context', response)
+    cool(); provider.force_ssl_mode = 'success'; provider.force_ssl = True; response = post(refresh, link_id=link['id']); evidence('Recovery flag re-read', response)
     db("CREATE TRIGGER ci_force_ssl_recovery_fault BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action='provider.force_ssl_control_terminal' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic terminal rollback'; END IF; END")
     before_write_calls = provider.calls
     try:
@@ -157,12 +164,23 @@ def run_browser(env, browser):
     interrupted = db('SELECT * FROM ci_provider_force_ssl_changes WHERE link_id=? ORDER BY grant_seq DESC LIMIT 1', [link['id']])[0]
     interrupted_grant = db('SELECT * FROM ci_provider_operation_grants WHERE id=?', [interrupted['id']])[0]
     interrupted_ledger = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['forcessl:' + interrupted['id']])[0]
+    dispatch_ends = db('SELECT id FROM ci_provider_force_ssl_dispatch_ends WHERE id=?', [interrupted['id']])
+    recovery_state = {'distinct_row': interrupted['id'] != request['id'],
+                      'calls_delta': provider.calls - before_write_calls,
+                      'last_post': provider.posts[-1] if provider.posts else None,
+                      'ledger_status': interrupted_ledger['status'],
+                      'ledger_attempts': interrupted_ledger['attempts'],
+                      'resolved_epoch': interrupted_ledger['resolved_epoch'],
+                      'dispatch_ends': dispatch_ends,
+                      'response_status': response.status_code,
+                      'response_excerpt': response.text[:600]}
+    (qa / 'force-ssl-recovery-diagnostics.json').write_text(json.dumps(recovery_state, indent=2, default=str))
     check('Recovery HTTP fixture retains one finished attempt and genuinely absent terminal after rollback',
-          interrupted['id'] != request['id'] and provider.calls == before_write_calls + 1
-          and provider.posts[-1] == {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}
-          and interrupted_ledger['status'] == 'uncertain' and interrupted_ledger['attempts'] == 1
-          and interrupted_ledger['resolved_epoch'] is not None
-          and not db('SELECT id FROM ci_provider_force_ssl_dispatch_ends WHERE id=?', [interrupted['id']]))
+          recovery_state['distinct_row'] and recovery_state['calls_delta'] == 1
+          and recovery_state['last_post'] == {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}
+          and recovery_state['ledger_status'] == 'uncertain' and recovery_state['ledger_attempts'] == 1
+          and recovery_state['resolved_epoch'] is not None
+          and not dispatch_ends)
     cool(); response = post('provider_inventory_refresh'); evidence('Recovery hosting context', response)
     recovery_action = 'provider_force_ssl_control_recover'
     calls = provider.calls
@@ -231,7 +249,7 @@ def run_browser(env, browser):
         db('INSERT INTO ci_settings (name,value) VALUES (?,?)', ['provider_force_ssl_control_request_count', counter])
     check('Exact control history restoration recovers saved owner evidence', 'Desired flag observed after the request' in owner.get(url).text)
     rows = db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [force_ssl_owner['id']])
-    check('Control workflow uses nine own reads and two synthetic writes with local-only recovery', [r['operation'] for r in rows] == ['packages.list', 'packages.list', 'package.force-ssl', 'packages.list'] + ['package.force-ssl'] * 3 + ['packages.list', 'package.force-ssl'] and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}, {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}] and not provider.errors)
+    check('Control workflow uses eleven own reads and two synthetic writes with local-only recovery', [r['operation'] for r in rows] == ['packages.list', 'packages.list', 'package.force-ssl', 'packages.list'] + ['package.force-ssl'] * 3 + ['packages.list', 'package.force-ssl', 'packages.list', 'package.force-ssl'] and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}, {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}] and not provider.errors)
     retained = db('SELECT * FROM ci_provider_refreshes WHERE seq<=? ORDER BY seq', [max((r['seq'] for r in inherited), default=0)])
     retained_audits = db('SELECT * FROM ci_audit WHERE id<=? ORDER BY id', [max((r['id'] for r in inherited_audits), default=0)])
     check('Controls preserve every inherited intent and audit byte', retained == inherited and retained_audits == inherited_audits)
