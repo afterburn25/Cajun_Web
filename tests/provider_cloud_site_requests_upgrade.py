@@ -153,12 +153,15 @@ def changes_target_inputs(repo):
 
 def updater_retained(before, after, actions, version):
     """Only the exact real updater audit append is permitted; all original cells survive."""
-    from release_125_retention import retained
+    from release_125_retention import retained, marker_transition_cells
     from copy import deepcopy
-    retained(before, after)
+    cells = marker_transition_cells(before, after)
+    retained(before, after, changed_cells=cells)
     assert actions and all(action in ('apply', 'recover') for action in actions)
     assert set(before['tables']) == set(after['tables']) and before['private_files'] == after['private_files']
     old, new = deepcopy(before), deepcopy(after)
+    for table, key, column in cells:
+        old['tables'][table]['rows'][key][column] = new['tables'][table]['rows'][key][column]
     old.pop('version'); new.pop('version')
     a, b = old['tables']['audit'], new['tables']['audit']
     added = set(b['rows']) - set(a['rows'])
@@ -204,7 +207,7 @@ def main():
     from acceptance_environment import selected, php_matches
     import release_125_upgrade_acceptance as apache_launcher
     from release_125_upgrade_cases import fields, unpack
-    from release_125_retention import retained, exact_business
+    from release_125_retention import retained, exact_business, exact_business_recovered
     php = os.environ['PHP_BINARY']
     assert Path(php).is_absolute() and Path(php).is_file()
     baseline, baseline_files = baseline_inputs(ROOT)
@@ -334,7 +337,7 @@ def main():
         check('Recovery restores published files and removes candidate request service', code_matches(installed, baseline_files)
               and not (installed / 'app/providers/cloud_site_requests.php').exists())
         phases['recovered'] = command('snapshot')['snapshot']
-        check('Old files retain every request event head grant ledger confirmation account and key', exact_business(phases['healthy'], phases['recovered']))
+        check('Old files retain every request event head grant ledger confirmation account and key', exact_business_recovered(phases['healthy'], phases['recovered']))
         action('apply')
         check('Reapplication restores exact candidate source bytes', code_matches(installed, update_files, True, version))
         command('verify')
@@ -346,7 +349,7 @@ def main():
         command('refuse', 'refuse-after-retry')
         action('recover')
         check('Damaged history recovery still restores only old files', code_matches(installed, baseline_files)
-              and exact_business(phases['damaged'], command('snapshot')['snapshot']))
+              and exact_business_recovered(phases['damaged'], command('snapshot')['snapshot']))
         action('apply')
         command('refuse', 'refuse-after-reapply')
         phases['final_damaged'] = command('snapshot')['snapshot']

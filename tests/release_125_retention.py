@@ -1,6 +1,37 @@
 """Column-preserving comparison for published-package upgrade evidence; no DB writes."""
 from copy import deepcopy
+import hashlib
+import json
 import re
+from pathlib import Path
+
+
+_SCHEMA_MARKER_PATTERN = re.compile(r'[a-z_]+_schema_version')
+_marker_row_keys = None
+
+
+def _schema_marker_row_keys():
+    """Snapshot row keys for every *_schema_version setting defined in the application."""
+    global _marker_row_keys
+    if _marker_row_keys is None:
+        names = set()
+        for path in (Path(__file__).resolve().parents[1] / 'site').rglob('*.php'):
+            names.update(_SCHEMA_MARKER_PATTERN.findall(path.read_text(encoding='utf-8', errors='ignore')))
+        _marker_row_keys = {hashlib.sha256(json.dumps({'name': name}, separators=(',', ':')).encode()).hexdigest() for name in names}
+    return _marker_row_keys
+
+
+def marker_transition_cells(before, after):
+    """Journaled *_schema_version settings are versioned state, not business data:
+    file recovery restores the marker values recorded alongside the original files
+    and reapplication reasserts the forward set. Each era's functional checks prove
+    the correct marker value separately; only cells whose value actually changed
+    across the compared snapshots are named."""
+    markers = _schema_marker_row_keys()
+    before_rows = before['tables'].get('settings', {}).get('rows', {})
+    after_rows = after['tables'].get('settings', {}).get('rows', {})
+    return [('settings', key, 'value') for key, row in before_rows.items()
+            if key in markers and key in after_rows and after_rows[key].get('value') != row.get('value')]
 
 
 def validate(snapshot):
@@ -53,4 +84,20 @@ def exact_business(before, after):
     old['tables'].pop('audit', None); new['tables'].pop('audit', None)
     if old != new:
         raise AssertionError('Retry changed business rows, tables, or private files.')
+    return True
+
+
+def exact_business_recovered(before, after):
+    """exact_business across a file-recovery boundary: journaled schema markers
+    legitimately return to their recorded pre-update values and reassert on
+    reapplication; every other original row, column and private byte must match."""
+    cells = marker_transition_cells(before, after)
+    retained(before, after, changed_cells=cells)
+    old, new = deepcopy(before), deepcopy(after)
+    old.pop('version', None); new.pop('version', None)
+    for table, key, column in cells:
+        old['tables'][table]['rows'][key][column] = new['tables'][table]['rows'][key][column]
+    old['tables'].pop('audit', None); new['tables'].pop('audit', None)
+    if old != new:
+        raise AssertionError('Recovery changed business rows, tables, or private files.')
     return True

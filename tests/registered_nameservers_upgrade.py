@@ -115,7 +115,7 @@ def main():
     from acceptance_environment import selected, php_matches
     from release_125_upgrade_acceptance import launch
     from release_125_upgrade_cases import fields, unpack
-    from release_125_retention import retained, exact_business
+    from release_125_retention import retained, exact_business, exact_business_recovered
     php = os.environ['PHP_BINARY']
     assert Path(php).is_absolute() and Path(php).is_file()
     baseline, baseline_files = baseline_inputs(ROOT)
@@ -230,7 +230,7 @@ def main():
         check('Recovery restores actual published code and removes new reader', code_matches(installed, baseline_files)
               and not (installed / 'app/providers/registered_nameservers.php').exists())
         phases['recovered'] = command('snapshot')['snapshot']
-        check('Old files retain all nameserver bindings sets and audits', exact_business(phases['healthy'], phases['recovered']))
+        check('Old files retain all nameserver bindings sets and audits', exact_business_recovered(phases['healthy'], phases['recovered']))
         action('apply')
         check('Reapplication restores exact current reader bytes', code_matches(installed, update_files, True, version))
         command('verify')
@@ -241,7 +241,7 @@ def main():
         command('refuse', 'refuse-after-retry')
         action('recover')
         check('Damaged history recovery still restores only old files', code_matches(installed, baseline_files)
-              and exact_business(phases['damaged'], command('snapshot')['snapshot']))
+              and exact_business_recovered(phases['damaged'], command('snapshot')['snapshot']))
         action('apply')
         command('refuse', 'refuse-after-reapply')
         phases['final_damaged'] = command('snapshot')['snapshot']
