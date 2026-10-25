@@ -219,7 +219,7 @@ try{
     $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/subfolder/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$web;
     start_session();drru_owner();provider_settings_owner(DRRU_PASSWORD);
     if($mode==='seed'){
-        provider_settings_migrate(DRRU_PASSWORD);provider_inventory_migrate(DRRU_PASSWORD);provider_operations_migrate(DRRU_PASSWORD);provider_document_roots_prepare(DRRU_PASSWORD);
+        provider_settings_migrate(DRRU_PASSWORD);provider_inventory_migrate(DRRU_PASSWORD);provider_operations_migrate(DRRU_PASSWORD);if(!studio_ready())studio_migrate();provider_document_roots_prepare(DRRU_PASSWORD);
         drru_ok('Installed target leaves change storage explicitly unprepared',!drru_ready());provider_document_root_controls_prepare(DRRU_PASSWORD);$before=drru_digest();provider_document_root_controls_prepare(DRRU_PASSWORD);
         drru_ok('Explicit change setup is ready and idempotent',drru_ready()&&$before===drru_digest());
         provider_document_root_requests_prepare(DRRU_PASSWORD);$ready=drru_digest();provider_document_root_requests_prepare(DRRU_PASSWORD);drru_ok('Explicit installed client request setup is ready and idempotent',drru_scope(fn()=>provider_document_root_requests_ready())&&$ready===drru_digest());

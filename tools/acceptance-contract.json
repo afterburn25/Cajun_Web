@@ -660,7 +660,7 @@
       "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
       "tests/provider_document_root_controls_upgrade.py": "34ded6e92834ebd97044969ef6945b7c72abfaee13d355cbd849026b068dec9e",
       "tests/provider_document_root_controls_upgrade_test.py": "261e30198a72b484071ecc19607b56f2c7e5609a22085d4e5507d893e61f63a7",
-      "tests/provider_document_root_controls_upgrade_fixture.php": "a02c455a30913670ffc2a613303ee6657937e0e83de79637ae8a0a3eb1ea1043"
+      "tests/provider_document_root_controls_upgrade_fixture.php": "cef2147e6b44659913cc43e06e83240f5d52289eb405bafc65d270e85c38aa59"
     },
     "old_baseline_guard": {
       "path": "tests/release_125_upgrade_input_guards.py",
@@ -717,7 +717,7 @@
       "apache-document-root-requests-upgrade-guard-results.json",
       "apache-document-root-requests-upgrade-results.json"
     ],
-    "predecessor_contract_sha256": "091667a98368226d04e892e64c135f5ad2e7c800277ee4cec91988da7fe9a803",
+    "predecessor_contract_sha256": "6613b6226088660c5b4e4edde5442bfe26a0f8a91e0653e550adac4d490a886c",
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
         "before_sha256": "4894e83a9538866a6afabee1909b3abb70105656605a7a5affc86ecbd9861c83",
@@ -848,7 +848,7 @@
       "tests/provider_document_root_requests_cases.py": "8e89546205b04a5e275c6afd351b93833522b388daecf01f839823f7b274fef8",
       "tests/provider_document_root_requests_native.php": "139bbb5a791f2f2d578c2444828ee3c7efcfcdfe009e3c5e30a1ac4a05c02403",
       "tests/provider_document_root_requests_upgrade.py": "84c36fe5b8c13b9bd392093c0b92fa5c6bb722850114f8bfedb69d3ad1ddb573",
-      "tests/provider_document_root_requests_upgrade_fixture.php": "b380f4b9ff21ae111640c1015efd0801993eb91e0c78dc07f3fde7053d4d77ec",
+      "tests/provider_document_root_requests_upgrade_fixture.php": "6bee07fd3e1cdd84366109673fe0d9c7050cca847771eea5358ce34c4421963a",
       "tests/provider_document_root_requests_upgrade_test.py": "4c29393bd51978a888a5b075e00f0d58f2eb92a43b797cca82c77443f63deae5"
     },
     "screenshots": [

@@ -191,7 +191,7 @@ try{
     $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/subfolder/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$web;
     start_session();drcu_owner();provider_settings_owner(DRCU_PASSWORD);
     if($mode==='seed'){
-        provider_settings_migrate(DRCU_PASSWORD);provider_inventory_migrate(DRCU_PASSWORD);provider_operations_migrate(DRCU_PASSWORD);provider_document_roots_prepare(DRCU_PASSWORD);
+        provider_settings_migrate(DRCU_PASSWORD);provider_inventory_migrate(DRCU_PASSWORD);provider_operations_migrate(DRCU_PASSWORD);if(!studio_ready())studio_migrate();provider_document_roots_prepare(DRCU_PASSWORD);
         drcu_ok('Installed target leaves change storage explicitly unprepared',!drcu_ready());provider_document_root_controls_prepare(DRCU_PASSWORD);$before=drcu_digest();provider_document_root_controls_prepare(DRCU_PASSWORD);
         drcu_ok('Explicit change setup is ready and idempotent',drcu_ready()&&$before===drcu_digest());
         $profile=provider_settings_save('',0,DRCU_LABEL,true,DRCU_SECRET,DRCU_PASSWORD);
