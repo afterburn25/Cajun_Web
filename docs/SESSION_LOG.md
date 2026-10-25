@@ -5880,3 +5880,10 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - **Fix**: `ed09ed98` on `devin/fix-docroots-worker-retry` raises the job ceiling 300→360m (same pattern as nameserver `70ba58b8` raising 240→300; the docroots lane has a documented exhaustion history: 105m→180m→300m→now). Assertions/request/browser/provider limits unchanged. Rerun `40187905664` dispatched.
 - **Cancelled runs are not success** — `40167839955` remains preserved failure evidence.
 
+## 2026-10-25 (cont.) — docroots 360m bump re-anchored in leaf contract; rerun 40188491299 on edcd8483
+
+- **First rerun failed at build**: `40187905664` (`ed09ed98`) died in `Offline transfer` — `document_root_requests_acceptance.py:17` `ValueError: Client folder requests current source changed`. The leaf contract's workflow `source_deltas` pin covers `.github/workflows/application-tests.yml`; the ceiling bump changed bytes the delta expected exactly.
+- **Settle**: replicated `adb3bbe5`'s baseline-advance — the leaf's `changes` ranges are line-anchored, so each `after_start`/`after_end` shifted +3 for the new evidence comment lines; `after_sha256` := new file hash `4da1b9db…`, `before_sha256` := inverse reconstruction `e4423be0…`; `document_root_controls_upgrade.predecessor_workflow_sha256` := sha(requests-peeled workflow − controls extension) `a5771325…` (model verified against pre-edit state: `sha(old_pred−ext)=91e4b5ce` matched the old pin exactly); `client_document_root_requests.predecessor_contract_sha256` := `9948a20e…` (the only contract-predecessor field on the leaf; its preimage covers the controls section).
+- **Verified**: unpatched `tests/acceptance_artifacts_test.py --report` → `{"passed": true, "checks": 360}`.
+- **Committed**: `edcd8483` on `devin/fix-docroots-worker-retry`; dispatched `40188491299`. `40187905664` preserved as the stale-contract failure evidence.
+
