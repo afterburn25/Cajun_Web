@@ -1,3 +1,7 @@
+## 2026-10-25 — merged current main (audit fix) into FSI after hosted browser stall
+
+Full acceptance run 40142523950 on  failed : the browser suite hit a 30s  timeout on  — the audit-scan render stall the audit-index lane fixed on main. FSI was 47 commits behind and lacked . Merged  (/ ancestry) into the branch as merge : schema keeps both the indexed binary audit DDL and FSI-only contacts/notification-feed tables;  keeps marker-4 logic and gains the audit collation/index ALTER block; directory-listing/force-SSL case files union both sides' freshness re-reads plus main's recovery diagnostics (read sequences now expect eleven reads); contract unions  +  with merged-universe pins re-anchored (cloud peel first at 160, template predecessor 157, report hashes recomputed);  re-anchored after raising  to 300 minutes (same ceiling risk as nameserver/docroots); installer inventory regenerated (40 packages, 2,188 deps, 2,206 runtime bytes exact). Artifact verifier 288/288 green locally. Redispatching hosted acceptance on the merged head.
+
 # Session handoff - Devin sole-owner continuation
 
 ## Merge-first delivery cycle — 2026-10-22
