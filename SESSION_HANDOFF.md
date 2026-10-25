@@ -1,5 +1,26 @@
 
 # Session handoff - Devin sole-owner continuation
+## 2026-10-24 (latest) — preflight recovery no-DB guard 5b735f11; FSI/leaf lanes carry seed-migrate fix
+
+**State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized.
+
+**Preflight (`devin/preflight-commercial`, head `5b735f11`):**
+- Run `40165950483` (`b07d5e56`): recovery failed in `tests/structure_acceptance.py` — "Real migration interruption is reported". Cause: the file-only `structure_worker` fixture has no `db` config, so the new `structure_schema_markers()` journal read threw a DB error before the synthetic interruption point.
+- Fix: `structure_schema_markers()` returns `[]` when `config()['db']['prefix']` is unset — file-only context has no marker state; a configured-but-broken DB still fails loudly (no silent bypass). Inventory regenerated; contract re-settled (verifier `1468/1468` unpatched `main()`).
+- Earlier on this head: `b07d5e56` guarded `studio_migrate()` into the cloud-request upgrade fixture `seed` mode (candidate marker `4` vs published-baseline `2`).
+
+**FSI (`devin/full-site-integration`, head `9e209e82`, run `40165907596`):**
+- Same seed-mode migrate + native fixture marker `'2'->'4'` (the `3ef9f6ab` class). Verifier 288/288.
+
+**Leaf lanes (all '2'-era; guarded migrate is inert there, propagates to mergeprep '4'-era trees at merge):**
+- nameserver `c8d68a0a` (473/473), docroots `78df0378` (360/360), php-controls `0a66ec20` (390/390), cloud-intake `3ed53b7a` (292/292).
+
+**In-flight runs:** preflight `40165950483` on `b07d5e56` (recovery fixed by `5b735f11` — redispatch needed); FSI `40165907596` on `9e209e82`; nameserver `40157400772`; docroots `40157402004`; php-controls `40157425343` (memo + 120s ReadTimeout fix `f7b1e071`).
+
+**Contract-pin note:** leaf-module `predecessor_contract_sha256`/`predecessor_reports_sha256` use sort-keys canonical WITHOUT trailing newline; era/merged-stage pins use indent-2 `dump` + newline. The changes-installed verify sees the contract AFTER the requests era is peeled (`requests_predecessor['contract']`).
+
+**Next:** redispatch preflight acceptance on `5b735f11`, classify all in-flight runs, then sequential merges to `main` with exact-main verify. Port PRs #257-#260 remain held.
+
 ## 2026-10-24 (latest) — preflight corrected head 49bdeaea; audit-fix port repaired after cherry-pick reverts
 
 **State:** integration owner; published 1.25.0 immutable; 1.26.0 candidate lanes; no live deployment authorized. Current main `a331599a` (audit-fix merge).
