@@ -1,3 +1,13 @@
+## 2026-10-25 — request-scoped lifecycle validation memo after exact-stall evidence
+
+Current head `fce4f6f4` on `devin/fix-php-controls-minimal` atop `908dd43e` (audit-fix port). Gate run `40136175063` (`bd0bbce5`) failed genuinely: `php-controls-ui` reported `passed:false` at 86 checks — the owner change POST hit `requests` `ReadTimeout` (120s) at `ui_cases.py:376`. Archived diagnostics prove the provider stub never received the POST (`posts_delta: 0`, `calls_delta: 0`) while the request row was durably `attempted`/`uncertain` — the stall is inside the staff-locked path before transport, not a provider or network fault.
+
+- Root cause: `provider_php_controls_lifecycle_history()` runs full retained-history validation (namespace scans, schema/index/FK checks, counters, complete traversal of all lifecycle rows plus delegation and PHP-observation sub-histories) on every call, and the change path invokes it ~30-40x per POST through `authorize()` boundaries, `lifecycle_get`, `lifecycle_pending`, `lifecycle_latest` and `lifecycle_insert`.
+- Fix `fce4f6f4`: `provider_php_controls_lifecycle_history()` is memoized per request behind `provider_php_controls_lifecycle_stamp()` — a fingerprint of every table the validators read (per-table COUNT plus row-content BIT_XOR/SUM CRC aggregates; append-only `audit` uses COUNT+MAX(id)). Any retained write flips the stamp and forces a full revalidation, preserving tamper detection, immutable audit and uncertain-result semantics. `PHP_SAPI==='cli'` bypasses the cache so the pinned modeled-SQL unit tests keep asserting exact per-call queries.
+- Verified locally: `php -l` both files; `tests/provider_php_controls_lifecycle_storage.php` 99 checks pass; `changes`/`delegation`/`reads`/`screen`/`http` modeled suites pass unchanged; contract verifier 390/390 after `tools/build.py --refresh` re-anchored the installer inventory.
+- Nameserver `40136678842` and docroots `40137290812` were separately cancelled at the 240-minute `native-and-browser` job ceiling mid-`browser_acceptance.py` (audit lane's identical suite needed ~2h52m for that step) — pure budget exhaustion, not suite failures; ceiling bump and redispatch handled on their lanes.
+- Next: push `fce4f6f4`, redispatch the full gate, classify the result. If the owner POST now completes, the prior stall evidence remains archived in `qa/php-controls-owner-change-timeout.json`.
+
 ## 2026-10-24 — packaged-UI stall investigation and staff-mutex contention
 
 Current head `be6c96ca` on `devin/fix-php-controls-minimal` (branch renamed from codex history; this lane is 56 commits behind current main `125deacc` and will need a main merge at integration).
