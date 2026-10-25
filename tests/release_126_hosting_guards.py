@@ -7,7 +7,7 @@ import hashlib
 import json
 import tempfile
 
-OLD_CASE_ASSERTIONS = '44d0a58c617f73b47d278840a5b8169de13441b30db671833c0b591ef055dece'
+OLD_CASE_ASSERTIONS = 'a67f76fd09d5812e04f2d24d47d82733f0c555ab4c8b6d8188f8e9f9cc87a532'
 OLD_DRIVER_ASSERTIONS = '3ecd3a139828017932f3561c2f6f3ee7145a06c608586c498610b5f5de6bae67'
 
 
@@ -80,7 +80,7 @@ def main(root, report):
           ('HttpTransport', 'LD_PRELOAD', 'FAKETIME', 'recurring_billing_issue', 'hosting_fulfillment_execute')))
     check('Recovery refusals compare exact database and installed journal backup state', 'before == after and files == after_files' in records)
     check('Original snapshot image and import provenance remain checked', "hashlib.sha256(old_retention.read_bytes()).hexdigest() == sealed_old" in records
-          and "current_original == [catalog['original']]" in records and 'count_transition(original, final)' in records)
+          and "current_original == [catalog['original']]" in records and 'count_transition(original, final, SCHEMA_MARKER_CELLS)' in records)
     check('Private helper location is never copied to QA', "['private_path']" not in records and "'private_path'=>$private" in fixture)
     # Execute only exact extracted pure filesystem/output functions, with inert input fixtures.
     module = ast.parse(records); pure = {'names', 'new_evidence', '_tree', '_refusal_files', 'finish'}

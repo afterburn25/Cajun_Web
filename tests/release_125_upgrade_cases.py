@@ -257,34 +257,29 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
         ok('Updater preserves original config and installed guard',
            (installed / 'config.php').read_bytes() == config_bytes and (installed / '.installed.php').read_bytes() == guard_bytes)
 
-    def retained_access(stage, workspace=True):
+    def retained_access(stage):
         nonlocal alice, bob
         active_owner = login('organized@example.invalid', OWNER)
         restricted = login('retained-staff@example.invalid', STAFF)
         ok(stage + ' original restricted administrator retains exact permission boundary', restricted.get(clients, timeout=120).status_code == 200
            and restricted.get(settings, timeout=120).status_code == 403)
-        if not workspace:
-            portal_page = requests.get(portal, timeout=120)
-            ok(stage + ' rolled-back files keep the newer workspace schema read-only',
-               portal_page.status_code == 200 and 'preparing this workspace' in portal_page.text)
-        else:
-            alice, bob = login(first['email'], CLIENT, True), login(second['email'], CLIENT, True)
-            page = alice.get(client_job, timeout=120)
-            ok(stage + ' client sees original project and attributed messages', page.status_code == 200 and all(text in page.text for text in
-               ['Organized retained website', 'Original owner project message', 'Original direct-client project message', 'Original attributed support message']))
-            ok(stage + ' private bytes remain exactly downloadable', alice.get(file_url, timeout=120).content == image)
-            ok(stage + ' other client cannot read project or private file', bob.get(client_job, timeout=120).status_code == 404 and bob.get(file_url, timeout=120).status_code == 404)
-            ok(stage + ' anonymous private file is refused', requests.get(file_url, timeout=120).status_code == 403)
-            website = alice.get(download, timeout=120)
-            ok(stage + ' original published ZIP remains exact and private', website.status_code == 200 and website.content == delivery_bytes
-               and website.headers.get('ETag') == '"' + hashlib.sha256(delivery_bytes).hexdigest() + '"')
-            ok(stage + ' other client and anonymous cannot download website ZIP', bob.get(download, timeout=120).status_code == 404
-               and requests.get(download, timeout=120).status_code == 404)
-            statement = portal + '?invoice=' + str(invoice_id)
-            response = alice.get(statement, timeout=120)
-            ok(stage + ' own original invoice retains partial receipt balance', response.status_code == 200 and '$5.00' in response.text and '$250.00' in response.text)
-            ok(stage + ' other client cannot read invoice', bob.get(statement, timeout=120).status_code == 404)
-            ok(stage + ' ended original support URL never revives', owner.get(support_job, timeout=120).status_code == 403)
+        alice, bob = login(first['email'], CLIENT, True), login(second['email'], CLIENT, True)
+        page = alice.get(client_job, timeout=120)
+        ok(stage + ' client sees original project and attributed messages', page.status_code == 200 and all(text in page.text for text in
+           ['Organized retained website', 'Original owner project message', 'Original direct-client project message', 'Original attributed support message']))
+        ok(stage + ' private bytes remain exactly downloadable', alice.get(file_url, timeout=120).content == image)
+        ok(stage + ' other client cannot read project or private file', bob.get(client_job, timeout=120).status_code == 404 and bob.get(file_url, timeout=120).status_code == 404)
+        ok(stage + ' anonymous private file is refused', requests.get(file_url, timeout=120).status_code == 403)
+        website = alice.get(download, timeout=120)
+        ok(stage + ' original published ZIP remains exact and private', website.status_code == 200 and website.content == delivery_bytes
+           and website.headers.get('ETag') == '"' + hashlib.sha256(delivery_bytes).hexdigest() + '"')
+        ok(stage + ' other client and anonymous cannot download website ZIP', bob.get(download, timeout=120).status_code == 404
+           and requests.get(download, timeout=120).status_code == 404)
+        statement = portal + '?invoice=' + str(invoice_id)
+        response = alice.get(statement, timeout=120)
+        ok(stage + ' own original invoice retains partial receipt balance', response.status_code == 200 and '$5.00' in response.text and '$250.00' in response.text)
+        ok(stage + ' other client cannot read invoice', bob.get(statement, timeout=120).status_code == 404)
+        ok(stage + ' ended original support URL never revives', owner.get(support_job, timeout=120).status_code == 403)
         response = active_owner.get(admin + '?view=mail-submissions', timeout=120)
         ok(stage + ' original nonempty mail outcome history remains visible', response.status_code == 200 and all(text in response.text for text in
            ['Server accepted', 'Confirmation missing', 'Submission unresolved', 'Preparation incomplete']))
@@ -313,8 +308,8 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     retained_access('updated')
     stable = snapshot(); unpack(updates[0], installed); update('apply')
     ok('Completed repeated update adds no business table row or private file', exact_business(stable, snapshot()))
-    update('recover'); retained_access('recovered', workspace=False)
-    ok('Recovered old code retains all original columns and migrated marker', retained(initial, snapshot(), changed_cells=changed))
+    update('recover'); retained_access('recovered')
+    ok('Recovered old code retains all original columns and restores the recorded marker state', retained(initial, snapshot(), changed_cells=changed))
     update('apply'); retained_access('reapplied')
     ok('Reapplication retains original encrypted files and business rows', retained(initial, snapshot(), changed_cells=changed))
     receipt_before = snapshot()
@@ -324,7 +319,9 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     from release_125_later_records import prepare as later_prepare
     later = later_prepare(repo, installed, base, php, owner, alice, bob, first['id'], job_id, OWNER, fields, submit, snapshot, ok)
     later_snapshot = snapshot(); update('recover')
-    ok('Old1.24 files leave later recurring and licensing data intact', retained(later_snapshot, snapshot()))
+    payments_marker = hashlib.sha256(json.dumps({'name': 'payments_schema_version'}, separators=(',', ':')).encode()).hexdigest()
+    later_changed = changed + [('settings', payments_marker, 'value')]
+    ok('Old1.24 files leave later recurring and licensing data intact', retained(later_snapshot, snapshot(), changed_cells=later_changed))
     update('apply')
     ok('Reapplication preserves original and later journals keys and licensing', retained(later_snapshot, snapshot()))
     later['verify'](); retained_access('final')

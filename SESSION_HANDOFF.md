@@ -814,3 +814,11 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - `40115207263` (`8eb0570b`) evidence: apache leg failed only on the Python-version pin (fixed in `b682522f`/`91a81f32`); native-browser leg reached check 1915 then died on the provider-settings `Page.goto` 30s timeout — the audit-scan debt, absent on this head. The notice-`folder` fix held (suite passed mail-notices section) and no copy-cooldown failure recurred.
 - Ported the merged audit fix (`f26dfb6f` collations+indexes, `79d8e233` link_events; `cb8d2b91` subsumed), regenerated this tree's inventory (`28e6604c`), re-anchored the `schema/base.php` source pin and re-settled the chain (1468/1468): `06a97393`.
 - Cancelled doomed `40129554997`; dispatched `40139792396`.
+
+### 2026-10-24 (cont.) — recovery journals schema markers; contract chain at real fixpoint
+
+- Apache acceptance failure on `49bdeaea` (run `40142115998`) root-caused: `structure_recover` rolled back files only, leaving `studio_schema_version='4'` on recovered 1.25 code (which requires `'2'`), so the portal rendered 'preparing this workspace' with no `login` form.
+- Implemented the lane's intended semantic: `structure_plan` journals all `*_schema_version` settings; `structure_recover` captures the applied set as `schema_markers_forward` and restores the prior markers; re-applying the UPDATE re-asserts the forward markers without re-migrating. `php -l` clean; inventory regenerated.
+- Suite updates declare the migrated marker cells honestly (`studio_schema_version`, `payments_schema_version` in `changed_cells`) and the published-1.24 suite drops its degraded `workspace=False` branch — recovered portals are now functional everywhere. `hosting_catalog_recovery_native.php` probes marker flip→restore→forward-capture.
+- `tools/acceptance-contract.json` re-settled to a verified fixpoint via real-verifier digests plus exact peel replicas; `registered_nameserver_requests_acceptance.py` consts re-mirrored (`d0643b28…`/`e6161a58…`, source pin `b05430c7…`). **Verifier: `python tests/acceptance_artifacts_test.py --report …` → `{"passed": true, "checks": 1468, "error": null}` unpatched.** Guards 43/43 and 42/42 (py3.12; AST pins verified under py3.10).
+- Next: commit, push, redispatch this lane's hosted acceptance; continue lane classification + sequential merges.

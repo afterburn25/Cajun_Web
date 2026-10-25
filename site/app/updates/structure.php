@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
-/** Bounded file migration only. No database migrations, recursive deletion or configuration changes. */
+/** Bounded file migration plus journal-recorded schema-marker recovery. No data migrations, recursive deletion or other configuration changes. */
 function structure_path(string $root, string $name): string {
     // Maintained locale files use @ modifiers; both dot-segment forms remain forbidden.
     if (!preg_match('~^[a-zA-Z0-9_@.-]+(?:/[a-zA-Z0-9_@.-]+)*$~D',$name) || array_intersect(['.','..'],explode('/',$name))) throw new RuntimeException('Unsafe update path.');
@@ -58,6 +58,16 @@ function structure_save(string $dir,array $j): void {
     $tmp=$dir.'/journal-'.bin2hex(random_bytes(8)).'.php';
     write_private_file($tmp,CWP_GUARD.json_encode($j,JSON_THROW_ON_ERROR|JSON_PRETTY_PRINT));
     if(!@rename($tmp,structure_path($dir,'journal.php'))){@unlink($tmp);throw new RuntimeException('Could not commit the recovery journal.');}
+}
+function structure_schema_markers(): array {
+    $markers=[];
+    foreach(all('SELECT name,value FROM '.table('settings')) as $row)
+        if(str_ends_with((string)$row['name'],'_schema_version'))$markers[(string)$row['name']]=(string)$row['value'];
+    return $markers;
+}
+function structure_restore_markers(array $markers): void {
+    // Only the journal-recorded marker names are restored; additive newer markers stay intact.
+    foreach($markers as $name=>$value)save_setting($name,$value);
 }
 function structure_verified_payload(string $payload,array $manifest): void {
     if(($manifest['version']??'')!==CWP_VERSION || count($manifest['files']??[])<100)throw new RuntimeException('Unrecognized structure update manifest.');
@@ -125,7 +135,7 @@ function structure_plan(string $payload,array $manifest,array $history): array {
     }
     // Back up the old server policy even if it was already identical to the replacement.
     $ops['.htaccess']=['old'=>structure_hash(CWP_ROOT.'/.htaccess'),'new'=>$manifest['files']['.htaccess'],'source'=>'.htaccess'];
-    return ['root'=>realpath(CWP_ROOT)?:CWP_ROOT,'version'=>$version,'target'=>CWP_VERSION,'commit'=>$manifest['source_commit'],'backup_id'=>bin2hex(random_bytes(12)),'state'=>'planned','operations'=>$ops,'preserved'=>$preserved,'created_at'=>gmdate('c')];
+    return ['root'=>realpath(CWP_ROOT)?:CWP_ROOT,'version'=>$version,'target'=>CWP_VERSION,'commit'=>$manifest['source_commit'],'backup_id'=>bin2hex(random_bytes(12)),'state'=>'planned','schema_markers'=>structure_schema_markers(),'operations'=>$ops,'preserved'=>$preserved,'created_at'=>gmdate('c')];
 }
 function structure_backup(string $dir,string $name,string $hash,string $id): void {
     $backup=structure_path($dir,$id.'-'.hash('sha256',$name).'.php');
@@ -167,13 +177,16 @@ function structure_apply(string $payload,array $manifest,array $history,string $
     if($j && ($j['commit']!==$manifest['source_commit'] || $j['target']!==CWP_VERSION))throw new RuntimeException('Recovery belongs to a different build. Use that exact UPDATE package.');
     if($j && $j['state']==='complete')return $j;
     if($j && $j['state']==='rolled-back'){
+        $forward=$j['schema_markers_forward']??null;
         $next=structure_plan($payload,$manifest,$history);
         $archive=$dir.'/recovered-'.$j['backup_id'].'.php';$bytes=CWP_GUARD.json_encode($j,JSON_THROW_ON_ERROR);
         if(file_exists($archive)){if(is_link($archive)||file_get_contents($archive)!==$bytes)throw new RuntimeException('Recovered journal archive differs. Keep it for owner review.');}
         else write_private_file($archive,$bytes);
+        if($forward!==null)$next['schema_markers_forward']=$forward;
         $j=$next;structure_save($dir,$j);
     }
     if(!$j){$j=structure_plan($payload,$manifest,$history);structure_save($dir,$j);}
+    if(!isset($j['schema_markers'])){$j['schema_markers']=structure_schema_markers();structure_save($dir,$j);}
     if($j['state']==='planned'){
         foreach($j['operations'] as $name=>$op)if($op['old']!==null)structure_backup($dir,$name,$op['old'],$j['backup_id']);
         $j['state']='backed-up';structure_save($dir,$j);
@@ -196,6 +209,7 @@ function structure_apply(string $payload,array $manifest,array $history,string $
         if($op['new']!==null)structure_refresh_php($path);
     }
     structure_replace('.htaccess',file_get_contents($payload.'/.htaccess'));
+    if(isset($j['schema_markers_forward'])){structure_restore_markers($j['schema_markers_forward']);unset($j['schema_markers_forward']);}
     $j['state']='complete';$j['completed_at']=gmdate('c');structure_save($dir,$j);return $j;
 }
 function structure_recover(string $dir): array {
@@ -219,5 +233,7 @@ function structure_recover(string $dir): array {
     $old=$j['operations']['.htaccess']['old'];
     if($old!==null){$bytes=file_get_contents($dir.'/'.$j['backup_id'].'-'.hash('sha256','.htaccess').'.php');if(!str_starts_with($bytes,CWP_GUARD)||!hash_equals($old,hash('sha256',substr($bytes,strlen(CWP_GUARD)))))throw new RuntimeException('Server policy recovery copy invalid.');structure_replace('.htaccess',substr($bytes,strlen(CWP_GUARD)));}
     else if(!@unlink(CWP_ROOT.'/.htaccess'))throw new RuntimeException('Cannot restore absent server policy.');
+    // Recovered code expects the marker state recorded before this update; the applied set is kept for reapplication.
+    if(isset($j['schema_markers'])){$j['schema_markers_forward']=structure_schema_markers();structure_restore_markers($j['schema_markers']);}
     $j['state']='rolled-back';structure_save($dir,$j);return $j;
 }

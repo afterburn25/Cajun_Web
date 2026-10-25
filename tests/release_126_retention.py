@@ -1,6 +1,14 @@
 """Column-preserving comparison for published-package upgrade evidence; no DB writes."""
 from copy import deepcopy
+import hashlib
+import json
 import re
+
+
+# The update journal restores these recorded schema markers on file recovery and
+# re-applies the marker state current at that recovery. Compare them honestly.
+SCHEMA_MARKER_CELLS = [('settings', hashlib.sha256(json.dumps({'name': name}, separators=(',', ':')).encode()).hexdigest(), 'value')
+                       for name in ('studio_schema_version', 'payments_schema_version')]
 
 
 def validate(snapshot):
@@ -45,10 +53,13 @@ def retained(before, after, *, changed_cells=()):
     return True
 
 
-def exact_business(before, after):
+def exact_business(before, after, *, changed_cells=()):
     """Retries may append a legitimate audit, but cannot alter existing audits or business rows."""
-    retained(before, after)
+    retained(before, after, changed_cells=changed_cells)
     old, new = deepcopy(before), deepcopy(after)
+    for table, key, column in changed_cells:
+        old['tables'][table]['rows'].get(key, {}).pop(column, None)
+        new['tables'][table]['rows'].get(key, {}).pop(column, None)
     old.pop('version', None); new.pop('version', None)
     old['tables'].pop('audit', None); new['tables'].pop('audit', None)
     if old != new:

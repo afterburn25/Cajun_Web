@@ -185,6 +185,7 @@ try{
         if(!is_resource($watch))throw new RuntimeException('Cannot start actual second-connection observer.');fclose($wp[0]);
         $deadline=microtime(true)+10;while(!is_file($root.'/watch-ready')&&microtime(true)<$deadline)usleep(1000);
         if(!is_file($root.'/watch-ready'))throw new RuntimeException('Second-connection observer did not become ready.');
+        $markerPrior=setting('studio_schema_version');save_setting('studio_schema_version','probe-forward-marker');
         try{$recovered=hcr_call();}finally{file_put_contents($root.'/watch-done','done',LOCK_EX);}
         $watchOut=stream_get_contents($wp[1]);$watchErr=stream_get_contents($wp[2]);fclose($wp[1]);fclose($wp[2]);$watchStatus=proc_close($watch);$watch=null;$w=json_decode($watchOut,true,16,JSON_THROW_ON_ERROR);
         hcr_ok('Recovery '.$phase.' holds the actual staff mutex during file restoration',$watchStatus===0&&$watchErr===''&&$w['finished']===true&&$w['observations']>0&&$w['failures']===[]);
@@ -192,6 +193,10 @@ try{
         try{hcr_ok('Recovery '.$phase.' releases the staff mutex after restoration',$released);}finally{if($released){$s=$other->prepare('SELECT RELEASE_LOCK(?)');$s->execute([hcr_lock_key()]);}}
         hcr_ok('Recovery '.$phase.' restores exact files and server policy with real recovery',$recovered['state']==='rolled-back'&&structure_journal($GLOBALS['hcr_recovery'])===$recovered&&hcr_files(CWP_ROOT)===$original);
         hcr_ok('Recovery '.$phase.' leaves SQL and private media unchanged',hcr_database()===$entry['database']&&hcr_files(config()['storage'])===$entry['private']);
+        hcr_ok('Recovery '.$phase.' restores the journal-recorded schema markers and retains the applied marker set',
+            setting('studio_schema_version')===$markerPrior
+            &&($applied['schema_markers']['studio_schema_version']??null)===$markerPrior
+            &&($recovered['schema_markers_forward']['studio_schema_version']??null)==='probe-forward-marker');
         $diagnostics['lock_observer']=$w;
     }else{
         $publications=(int)query('SELECT COUNT(*) FROM '.table('hosting_catalog_publications'))->fetchColumn();$withdrawals=(int)query('SELECT COUNT(*) FROM '.table('hosting_catalog_withdrawals'))->fetchColumn();

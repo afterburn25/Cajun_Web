@@ -10,7 +10,7 @@ import zlib
 from urllib.parse import parse_qs, urlparse
 
 import requests
-from release_126_retention import retained, exact_business
+from release_126_retention import retained, exact_business, SCHEMA_MARKER_CELLS
 
 
 def png():
@@ -20,13 +20,13 @@ def png():
             + chunk(b'IDAT', zlib.compress((b'\x00' + bytes((30, 80, 120)) * 32) * 24)) + chunk(b'IEND', b''))
 
 
-def count_transition(before, after):
+def count_transition(before, after, changed_cells=()):
     """Only the explicitly exercised second import changes the existing count cell."""
     key = hashlib.sha256(json.dumps({'name': 'provider_catalog_import_count'}, separators=(',', ':')).encode()).hexdigest()
     column = ('settings', key, 'value')
     assert before['tables']['settings']['rows'][key]['value'] == hashlib.sha256(b'"1"').hexdigest()
     assert after['tables']['settings']['rows'][key]['value'] == hashlib.sha256(b'"2"').hexdigest()
-    return retained(before, after, changed_cells=[column])
+    return retained(before, after, changed_cells=[column] + list(changed_cells))
 
 
 def prepare_original(base, owner, password, fields, submit, snapshot, identity, ok):
@@ -93,11 +93,11 @@ def activate_catalog(base, owner, password, fields, submit, snapshot, identity, 
     response = owner.post(target, data=captured, timeout=120)
     prepared = snapshot()
     ok('Explicit updated owner activation adds both empty catalog tables and preserves original data',
-       response.status_code == 200 and identity()['package_types_version'] == '1' and retained(initial, prepared)
+       response.status_code == 200 and identity()['package_types_version'] == '1' and retained(initial, prepared, changed_cells=SCHEMA_MARKER_CELLS)
        and all(prepared['tables'][name]['count'] == 0 for name in ['provider_package_type_intents', 'provider_observation_package_types']))
     observed = command('release_126_provider_fixture.php', 'catalog-read')
     ok('Updated catalog stores one synthetic direct response without a provider request',
-       observed == {'state': 'complete', 'synthetic_reads': 1, 'live_requests': 0, 'catalog_only_uninstalled': True} and retained(initial, snapshot()))
+       observed == {'state': 'complete', 'synthetic_reads': 1, 'live_requests': 0, 'catalog_only_uninstalled': True} and retained(initial, snapshot(), changed_cells=SCHEMA_MARKER_CELLS))
     before = snapshot(); reused = command('release_126_provider_fixture.php', 'catalog-replay')
     ok('Direct catalog matching original type preserves its original provenance image and local fields',
        reused == {'existing_product_id': catalog['product_id']} and exact_business(before, snapshot()))
@@ -107,7 +107,7 @@ def activate_catalog(base, owner, password, fields, submit, snapshot, identity, 
     rows = identity()['catalog_imports']; new = [row for row in rows if row['type_ref'] == '901']
     ok('Updated owner imports a catalog-only type as a second local draft with original rows retained',
        response.status_code == 200 and len(rows) == 2 and len(new) == 1 and new[0]['media_id'] is None
-       and new[0]['type_name'] == 'Catalog-only retained hosting' and count_transition(initial, snapshot()))
+       and new[0]['type_name'] == 'Catalog-only retained hosting' and count_transition(initial, snapshot(), SCHEMA_MARKER_CELLS))
 
     def verify():
         stable = snapshot(); response = owner.post(target, data=captured_import, timeout=120)
@@ -120,6 +120,6 @@ def activate_catalog(base, owner, password, fields, submit, snapshot, identity, 
            and by_type['9']['origin_operation'] == 'packages.list' and by_type['9']['origin_name'] == 'Retained web'
            and int(by_type['9']['product_id']) == catalog['product_id']
            and by_type['901']['origin_operation'] == 'package.types' and by_type['901']['origin_name'] == 'Catalog-only retained hosting'
-           and count_transition(initial, snapshot()))
+           and count_transition(initial, snapshot(), SCHEMA_MARKER_CELLS))
     verify()
     return {'verify': verify}

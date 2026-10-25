@@ -12,7 +12,7 @@ import zipfile
 
 import requests
 from bs4 import BeautifulSoup
-from release_126_retention import retained, exact_business
+from release_126_retention import retained, exact_business, SCHEMA_MARKER_CELLS
 
 BASELINE_SHA = 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'
 BASELINE_SOURCE = 'b79c67110829126916e3a65e616191542448bccc'
@@ -322,6 +322,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     ok('Upgraded provider GET does not migrate or replace original history', response.status_code == 200 and exact_business(before_get, snapshot()))
     ok('Updated1.26 keeps the original current inventory marker without implicit migration', identity()['inventory_version'] == '5')
     changed = []
+    migrated = list(SCHEMA_MARKER_CELLS)
     original['verify'](); catalog['verify']('updated')
     retained_access('updated')
     stable = snapshot(); unpack(updates[0], installed); update('apply')
@@ -331,7 +332,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     original['verify'](); catalog['verify']('recovered before activation')
     ok('Recovered old code retains all original columns and unchanged inventory marker', retained(initial, snapshot(), changed_cells=changed))
     update('apply'); retained_access('reapplied')
-    ok('Reapplication retains original encrypted files and business rows', retained(initial, snapshot(), changed_cells=changed))
+    ok('Reapplication retains original encrypted files and business rows', retained(initial, snapshot(), changed_cells=migrated))
     receipt_before = snapshot()
     response = owner.post(receipt_target, data=receipt_request, timeout=120)
     ok('Original captured receipt cannot duplicate payment after reapplication', response.status_code == 200 and exact_business(receipt_before, snapshot()))
@@ -339,7 +340,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     activation = activate_catalog(base, owner, OWNER, fields, submit, snapshot, identity, command, ok, initial, catalog)
     activated = snapshot(); update('recover')
     ok('Recovery after catalog activation serves actual original1.25 code', identity()['version'] == '1.25.0')
-    ok('Recovered1.25 files preserve every new catalog intent observation import and image', retained(activated, snapshot()))
+    ok('Recovered1.25 files preserve every new catalog intent observation import and image', retained(activated, snapshot(), changed_cells=migrated))
     # Original files do not implement package.types; do not treat their UI as new-catalog readiness.
     original['verify'](); catalog['verify']('recovered after activation'); retained_access('recovered after activation')
     update('apply')

@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
-from release_126_retention import exact_business
+from release_126_retention import exact_business, SCHEMA_MARKER_CELLS
 from release_126_catalog_records import count_transition, png
 
 PREFIXES = ('r126_ron_', 'r126_son_', 'r126_roff_', 'r126_soff_')
@@ -142,7 +142,7 @@ def continue_after_retention(repo, installed, base, prefix, php, target, owner, 
     original_plan = fixture('plan-original')
     check('Real owner wrappers add a matching original plan and saved mapping without provider requests',
           original_plan['product_id'] == catalog['product_id'] and original_plan['type_ref'] == '9'
-          and original_plan['live_requests'] == 0 and count_transition(original, snapshot()))
+          and original_plan['live_requests'] == 0 and count_transition(original, snapshot(), SCHEMA_MARKER_CELLS))
     before = snapshot(); target_url, setup = fields(owner.get(admin, timeout=120), 'hosting_catalog_setup')
     for label, changes in [('confirmation', {'confirm': ''}), ('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'})]:
         response = owner.post(target_url, data={**setup, 'current_password': password, 'confirm': '1', **changes}, timeout=120)
@@ -162,7 +162,7 @@ def continue_after_retention(repo, installed, base, prefix, php, target, owner, 
           and set(prepared['counts']) == set(TABLES) and set(prepared['counts'].values()) == {0}
           and dict((r['name'], r['value']) for r in prepared['settings']) == {
               **{t + '_count': '0' for t in TABLES}, 'hosting_catalog_version': '1'}
-          and prepared['audit_count'] == 1 and count_transition(original, snapshot()))
+          and prepared['audit_count'] == 1 and count_transition(original, snapshot(), SCHEMA_MARKER_CELLS))
     # The captured exact setup retry is valid even though the successful page no longer offers setup.
     before = snapshot(); response = owner.post(target_url, data={**setup, 'current_password': password, 'confirm': '1'}, timeout=120)
     check('Repeated explicit setup is idempotent', response.status_code == 200 and exact_business(before, snapshot()))
@@ -175,7 +175,7 @@ def continue_after_retention(repo, installed, base, prefix, php, target, owner, 
     update('recover', 'Prepared-empty hosting permits real original-file recovery')
     recovered = snapshot(); stages['prepared_empty_recovered'] = recovered
     check('Actual recovered1.25 preserves original and prepared-empty database and private bytes',
-          identity()['version'] == '1.25.0' and exact_business(stages['prepared_empty'], recovered)
+          identity()['version'] == '1.25.0' and exact_business(stages['prepared_empty'], recovered, changed_cells=SCHEMA_MARKER_CELLS)
           and alice.get(portal + '?job=' + str(job_id), timeout=120).status_code == 200)
     update('apply', 'Prepared-empty recovery reapplies the exact candidate UPDATE')
     check('Reapplied current hosting validates retained empty history', identity()['version'] == target
@@ -197,13 +197,13 @@ def continue_after_retention(repo, installed, base, prefix, php, target, owner, 
         'summary': 'A reviewed yearly hosting offer after the published upgrade.', 'features': 'PRIVATE_UPGRADE_FEATURES',
         'terms': 'PRIVATE_UPGRADE_TERMS', 'provider_ref': 'PRIVATE_UPGRADE_REFERENCE'}, {'id': product})
     check('Owner prices only the new catalog-only draft through the real form', response.status_code == 200
-          and TITLE in response.text and count_transition(original, snapshot()))
+          and TITLE in response.text and count_transition(original, snapshot(), SCHEMA_MARKER_CELLS))
     response = submit(owner, edit, 'catalog_import_image', {'owner_password': password}, {'id': product},
                       files={'product_image': ('hosting-upgrade.png', png(), 'image/png')})
     image = next(r for r in identity()['catalog_imports'] if int(r['product_id']) == product)
     check('Owner adds a real local multipart image only to the new draft', response.status_code == 200
           and isinstance(image['media_id'], str) and re.fullmatch('[a-f0-9]{32}', image['media_id']) is not None
-          and image['media_id'] != catalog['original']['media_id'] and count_transition(original, snapshot()))
+          and image['media_id'] != catalog['original']['media_id'] and count_transition(original, snapshot(), SCHEMA_MARKER_CELLS))
     positive_plan = fixture('plan-positive'); stages['reviewed_local_terms'] = snapshot()
     selected = admin + '&product_id=' + str(product)
     response = submit(owner, selected, 'hosting_catalog_preview', {'plan_id': positive_plan['plan_id']})
@@ -309,7 +309,7 @@ def continue_after_retention(repo, installed, base, prefix, php, target, owner, 
     original_image = requests.get(old_image, timeout=120)
     current_original = [r for r in identity()['catalog_imports'] if int(r['product_id']) == catalog['product_id']]
     check('Every original business row key provenance and image survives the complete extension',
-          count_transition(original, final) and current_original == [catalog['original']]
+          count_transition(original, final, SCHEMA_MARKER_CELLS) and current_original == [catalog['original']]
           and original_image.status_code == 200 and hashlib.sha256(original_image.content).hexdigest() == old_image_sha)
     check('Original completed upgrade snapshot remains byte exact', hashlib.sha256(old_retention.read_bytes()).hexdigest() == sealed_old)
     record = {'baseline_source': baseline_source, 'baseline_sha256': baseline_sha, 'candidate_version': target,
