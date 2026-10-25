@@ -1,5 +1,12 @@
 
 # Session handoff - Devin sole-owner continuation
+## Nameserver snapshot-fix settle (`3e469969` on lf-02, 2026-05-21 ~14:35Z)
+
+- Classified `40186085321` native failure `Nameserver local recovery refuses CSRF`: snapshot taken before the settings-page GET became stale when a provider refresh fired mid-sequence under saturation; refusals themselves behaved. Fixed on the leaf by re-snapshotting `before/calls/posts` immediately before the refusal loop.
+- Leaf verifier **473/473**; rerun `40202419849` dispatched on `3e469969` (+ docs `4fcf5c5c` on the leaf branch).
+- Settle lesson: leaf acceptance modules use their OWN `canonical()` (compact JSON, NO trailing newline) for contract-predecessor hashing — distinct from `tools/acceptance_artifacts.canonical` (newline-terminated). Installed-era `predecessor_contract_sha256` is computed on the requests-peeled served contract, which breaks the module-constant circularity; `req_pred` must be derived only after `installed.pred` is final.
+- Lane board: `40196057312` (e01a0cba candidate) build+recovery+apache ✅ native running; `40191709282` (c7edb900) same; `40188491299` docroots same; `40199480061` php-controls e045b43d apache running; `40202419849` nameserver build running.
+
 ## 2026-10-25 (latest) — hosting selector corrected to real comparison markup; run 40183776933 on d63d7e34
 - `c7edb900` on `devin/preflight-commercial` raises the native job ceiling 240→360m (run `40173946345` was cancelled at the cap with zero failed checks) and re-settles the provenance chain end-to-end — stage-hash map replayed across both peel branches for the workflow and verifier, sequential strip-chain replay for the four inner `predecessor_workflow_sha256` pins, tamper-deny probes rebased to 360, requests leaf `CONTRACT_SHA256` = `ce7b20af`. Unpatched verifier: 1468/1468. Dispatched **`40191709282`** on `c7edb900`; `40183776933` (d63d7e34) completed — apache green (selector verified), native failed at the same SMTP-overflow check now fixed on `e01a0cba`.
 
