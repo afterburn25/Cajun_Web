@@ -343,6 +343,8 @@ def run_browser(env, browser):
         no_effect('Another approval remains fenced while original terminal is interrupted', before, calls, posts)
         refresh_domains()
         recovery = fields(current(), '#nameserver-request-' + first_id + ' form[data-nameserver-change-recover]')
+        # The refresh re-arm and page GET land after the earlier snapshot; the refusal checks compare the fresh post-GET state.
+        before, calls, posts = state(), provider.calls, list(provider.posts)
         for changed, label in (({'csrf': 'bad'}, 'CSRF'), ({'current_password': 'wrong'}, 'password'), ({'reviewed': ''}, 'confirmation'), ({'ledger_sha256': '0' * 64}, 'ledger digest')):
             owner.post(settings, data={**recovery, 'current_password': PASSWORD, 'reviewed': '1', **changed}, timeout=30)
             no_effect('Nameserver local recovery refuses ' + label, before, calls, posts)
