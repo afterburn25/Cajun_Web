@@ -849,3 +849,9 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - FSI `40157399569` (`d0954e59`) apache failure was NOT the 3233-check partition (all passed) — the step's last command `provider_cloud_site_requests_upgrade.py` failed in `seed`: `cloud_site_requests_storage.php:67` 'Prepare hosting inventory and client accounts first'. The baseline `'2'` studio marker never migrated after `apply` because the fixture's `seed` mode omitted `if(!studio_ready())studio_migrate()` (every sibling upgrade fixture has it). Native lane failed identically on `provider_cloud_site_requests_native.php` seeding `'2'` vs required `'4'`.
 - This lane's fixture fixed (seed mode now runs guarded `studio_migrate()`); contract pin re-anchored; verifier 1468/1468 unpatched.
 - FSI still needs: this fixture edit AND the `3ef9f6ab` native `'2'→'4'` marker port (only `provider_cloud_site_requests_native.php` — FSI has no `provider_directory_listing_requests_native.php`).
+
+### 2026-10-25 (cont.) — recurring retained() compared journaled payments marker
+
+- Run `40167673092` (`c52432fe`) apache: the recurring check failure was `retained(saved)` — the `'payments'` fixture's `marker` cell. Recovery restores the journaled `'1'` (1.23 `payments_ready()` requires `'1'`); the baseline was captured post-migration at `'2'`. Only this suite snapshots `payments` mode, which is why siblings passed. The `mod_php match` environment failure was pure cascade: the abort skipped the no-rewrite iteration so its probe was never recorded.
+- Fixed `48e22b54`: marker excluded from data-retention comparison; check decomposed; `qa/` now seals the recover response + recovered page bodies for this suite.
+- Dispatched `40169121164` on `48e22b54`.
