@@ -169,9 +169,9 @@ def run(env):
     owner_recovered = owner.get(detail).text
     evidence = Path(__file__).resolve().parents[1] / 'qa'
     evidence.mkdir(exist_ok=True)
-    (evidence / (label + 'recurring-recover-response.html')).write_text(response.text)
-    (evidence / (label + 'recurring-recovered-client.html')).write_text(client_recovered)
-    (evidence / (label + 'recurring-recovered-owner.html')).write_text(owner_recovered)
+    (evidence / ('organized-' + label + 'recurring-recover-response.html')).write_text(response.text)
+    (evidence / ('organized-' + label + 'recurring-recovered-client.html')).write_text(client_recovered)
+    (evidence / ('organized-' + label + 'recurring-recovered-owner.html')).write_text(owner_recovered)
     check(label + ' old release reports rolled back and retains recurring data',
           '<h2>Rolled-back</h2>' in response.text and retained(saved))
     check(label + ' old release claims no recurring controls',
