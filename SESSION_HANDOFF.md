@@ -1019,3 +1019,9 @@ Verification before commit: canonical installer refresh and shipping syntax pass
 - Verifier now models php-controls as the outermost acceptance era: new `run(tmp)` validates merged bytes raw, then serves php-peeled contract/reports/source to the entire deeper chain. Delta set regenerated merged↔preflight: 32 delta paths / 56 pins. Local verifier **1693/1693**; build refresh PASS; 55 PHP lints clean.
 - In-flight evidence: candidate `d9fbca9d` run `40215025927` native leg running (transport-bound port); nameserver `3e469969` run `40202419849` native running; docroots `edcd8483` run `40188491299` classified saturation read-timeout (3223 checks green pre-abort), rerun held for queue drain; `c7edb900` run `40191709282` classified `Page.goto` saturation.
 - Next: commit + push this merge; continue lane monitor; merge docroots/nameserver lanes as their reruns go green; then FSI integration.
+
+### 2026-10-25 (cont.) — nameserver readback fix dispatched (leaf 81b19915)
+
+- Leaf `devin/fix-nameserver-fixture-getattr`: run `40202419849` classified — `Nameserver readback refuses CSRF`, same stale-snapshot class as the recovery block (refresh re-arm + page GET between snapshot and refusal loop). Fixed `81b19915` + contract re-settled (verifier 473/473); rerun `40221630205` dispatched.
+- Preflight merge `599351b8` (php-controls) pushed and verified 1693/1693 locally; hosted run pending queue drain.
+- In flight: `40215025927` (d9fbca9d candidate — transport bound port) apache green, native running; `40221630205` nameserver rerun; docroots rerun still held.
