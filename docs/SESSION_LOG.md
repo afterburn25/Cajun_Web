@@ -1198,6 +1198,12 @@ Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled can
 
 
 
+
+### 2026-10-25 (cont.) — php-controls 50s fixture bound reproduced; raised to 120s on e045b43d
+
+- Run `40184213691` (`0a66ec20`) native failed after ~203m: `Private CLI phase timed out: status` at `provider_php_controls_ui_browser.py:243` — the same 50s packaged-UI subprocess bound as `40167841712`. All 137 sealed checks passed; the process was still inside the `status` fixture when the bound hit under runner saturation.
+- Fix `e045b43d` (leaf `devin/fix-php-controls-minimal`): `timeout=50`→`120` on the fixture subprocess; contract pin + `predecessor_contract_sha256` re-settled; leaf verifier 390/390 unpatched. Redispatched `40199480061`.
+
 ### 2026-10-25 (cont.) — 40183776933 classified: same SMTP-overflow root cause
 
 - Run `40183776933` (`d63d7e34`) native leg failed after ~183m at `HTTP sends attachment-bearing MIME byte-exactly` — identical to `40183179728`: the 64KiB DATA bound in `tests/mail_submission_server.py` predating the buffered-harness port. Already fixed on `e01a0cba` (`40196057312` in flight). Preserved evidence; nothing else failed before it.
