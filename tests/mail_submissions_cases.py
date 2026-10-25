@@ -227,18 +227,27 @@ def run_browser(env, browser):
     check('HTTP cannot append a recorded Sent copy twice', 'already has a recorded Sent copy' in r.text and inbox_server.connections == inbox_connections + copy_connections)
     r = owner.post(copy_page, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_submissions_copy_sent', 'submission_id': sent_sid})
     check('Another author cannot drive a Sent copy', 'copy was saved' not in r.text and inbox_server.connections == inbox_connections + copy_connections)
+    age_dispatches()
     inbox_server.mode = 'append-refused'
     refused_did, refused_url = create(sent_aid)
     refused_target, refused_data = review(refused_url)
     r = member.post(refused_target, data={**refused_data, 'confirm_send': '1'})
     refused_sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
     refused_page = root + '?view=mail-submission&submission_id=' + refused_sid
-    # The two-second per-account copy bound counts the earlier successful append;
-    # age the attempts so the refused copy reaches the transport deterministically.
+    # The refused copy must pass the 2-second per-account copy gate to reach the
+    # folder refusal; the accepted copy above can complete inside that window.
     db('UPDATE ci_mail_copy_attempts SET started_epoch=0')
     r = member.post(refused_page, data={'csrf': token(member.get(refused_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': refused_sid})
     copy_connections += 1
     refused_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [refused_sid])[0]['mime_bytes'].encode('ascii')
+    copy_rows = db('SELECT a.id,a.folder,a.started_epoch,r.outcome,r.result_code FROM ci_mail_copy_attempts a LEFT JOIN ci_mail_copy_results r ON r.id=a.id WHERE a.submission_id=?', [refused_sid])
+    refusal_diag = {'status_code': r.status_code, 'message': 'did not accept the configured Sent folder' in r.text,
+                    'wait_gate': 'Wait 2 seconds' in r.text, 'not_accepted': 'Only a submission' in r.text,
+                    'submission_status': db('SELECT status FROM ci_mail_submission_results WHERE submission_id=?', [refused_sid]),
+                    'copy_rows': copy_rows,
+                    'appended_len': None if inbox_server.appended is None else len(inbox_server.appended),
+                    'mime_len': len(refused_mime), 'commands_tail': inbox_server.commands[-4:], 'server_errors': inbox_server.errors[-4:]}
+    (QA / 'copy-refusal-diagnostics.json').write_text(json.dumps(refusal_diag, indent=2), encoding='utf-8')
     check('Server folder refusal records a bounded failure without copy claims', 'did not accept the configured Sent folder' in r.text and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [refused_sid]) == [{'result_code': 'folder'}] and inbox_server.appended == refused_mime)
     inbox_server.mode = 'ok'
     db('UPDATE ci_mail_copy_attempts SET started_epoch=0')
@@ -250,7 +259,9 @@ def run_browser(env, browser):
     check('Owner prepares additive attachment storage', 'attachments are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_files_schema_version'") == [{'value': '1'}])
     attach_did, attach_url = create(sent_aid)
     attach_page = draft_url + '&draft_id=' + attach_did
-    attach_bytes = b'SYNTHETIC_ATTACHMENT_BYTES\x00\xff' + bytes(range(256)) * 400
+    # The stored mime is server-sniffed (finfo), not client-declared, so the
+    # payload must be real PDF bytes for the stored mime to be application/pdf.
+    attach_bytes = b'%PDF-1.4\n% SYNTHETIC_ATTACHMENT_BYTES\x00\xff' + bytes(range(256)) * 400 + b'\n%%EOF'
     def file_post(action, revision, **extra):
         data = {'csrf': token(member.get(attach_page)), 'action': action, 'draft_id': attach_did, 'revision': str(revision), **extra}
         files = {'file': ('report.pdf', attach_bytes, 'application/pdf')} if action == 'mail_drafts_attach' else None
@@ -277,10 +288,20 @@ def run_browser(env, browser):
     wire = submission_server.attempts[-1]
     parts = BytesParser(policy=policy.default).parsebytes(wire['data'])
     decoded = [p.get_payload(decode=True) for p in parts.walk() if p.get_content_disposition() == 'attachment']
-    check('HTTP sends attachment-bearing MIME byte-exactly', wire['data'] == db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [attach_sid])[0]['mime_bytes'].encode('ascii') and decoded == [attach_bytes] and submission_server.connections == count + 1)
+    attach_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [attach_sid])[0]['mime_bytes'].encode('ascii')
+    diverge = next((i for i, (a, b) in enumerate(zip(wire['data'], attach_mime)) if a != b), min(len(wire['data']), len(attach_mime)))
+    wire_diag = {'wire_len': len(wire['data']), 'mime_len': len(attach_mime), 'first_divergence': diverge,
+                 'wire_tail': wire['data'][-40:].decode('ascii', 'backslashreplace'), 'mime_tail': attach_mime[-40:].decode('ascii', 'backslashreplace'),
+                 'decoded_ok': decoded == [attach_bytes], 'decoded_lengths': [len(d or b'') for d in decoded], 'attach_len': len(attach_bytes),
+                 'connections': submission_server.connections, 'expected_connections': count + 1,
+                 'terminator': wire['terminator'], 'server_errors': submission_server.errors[-4:]}
+    (QA / 'attachment-mime-diagnostics.json').write_text(json.dumps(wire_diag, indent=2), encoding='utf-8')
+    check('HTTP sends attachment-bearing MIME byte-exactly', wire['data'] == attach_mime and decoded == [attach_bytes] and submission_server.connections == count + 1)
     check('Submission record shows the saved attachment', 'report.pdf' in member.get(root + '?view=mail-submission&submission_id=' + attach_sid).text)
+    inbox_server.mode = 'append'
     r = member.post(root + '?view=mail-submission&submission_id=' + attach_sid, data={'csrf': token(member.get(copy_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': attach_sid})
     copy_connections += 1
+    inbox_server.mode = 'ok'
     check('Sent copy carries the larger attachment MIME byte-exactly', inbox_server.appended == wire['data'] and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [attach_sid]) == [{'result_code': 'appended'}])
     r = file_post('mail_drafts_detach', db('SELECT revision FROM ci_mail_drafts WHERE id=?', [attach_did])[0]['revision'], file_id=file_id)
     check('Author removes the saved attachment', 'Attachment removed' in r.text and not db('SELECT * FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]))
