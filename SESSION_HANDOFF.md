@@ -1,5 +1,11 @@
 
 # Session handoff - Devin sole-owner continuation
+## `40191709282` (c7edb900) native classified — nav-timeout abort, 2026-10-25 ~16:15Z
+
+- Native leg failed after **1911/1911 passed checks** — suite aborted on `Page.goto` 30s timeout for `admin/index.php?view=provider-settings` (the same saturated page that took ~60-70s/request on the nameserver lane). Zero failed assertions; the abort preceded the mail/MIME section entirely.
+- Same flake family as nameserver's 64s click timeout and php-controls' 50s bound — environment cadence, not application defect. Superseded head evidence; `40196057312` (`e01a0cba`) is the candidate and carries the same nav exposure.
+- Artifacts preserved under run `40191709282` (`qa/http-results.json` + partition).
+
 ## Nameserver snapshot-fix settle (`3e469969` on lf-02, 2026-05-21 ~14:35Z)
 
 - Classified `40186085321` native failure `Nameserver local recovery refuses CSRF`: snapshot taken before the settings-page GET became stale when a provider refresh fired mid-sequence under saturation; refusals themselves behaved. Fixed on the leaf by re-snapshotting `before/calls/posts` immediately before the refusal loop.
