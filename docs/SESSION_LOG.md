@@ -5498,6 +5498,7 @@ Local evidence: 177 portable intake checks and 98 UI checks per PHP mode pass; t
 
 Next: verify the exact staged inventory, commit and build the clean candidate packages, push a separate stacked PR and run its first complete application workflow. Inspect the actual native/browser/installed evidence before integration. The original e2 full run39162461271 and 1.26 candidate run39098588864 were rechecked this continuation: both remain queued at attempt1. Devin PR198 remains open at `f717a118e45003528d79e6656f7f6c5eabdaa103`; it is preserved separately.
 
+HEAD
 ## 2026-10-21 — leaf merge repairs; cooldown repost and notification corrections
 
 Merge-first integration continued: green leaves land on `devin/preflight-commercial`/`devin/full-site-integration`, then combined trees gate `main`. This batch landed reset-email on FSI (`02183814`), directory-listing on preflight (`78583631`) and cloud intake on preflight (`4af3b316`, 1468 local artifact checks). Subsequent combined-lane failures were diagnosed and corrected on their exact sources:
@@ -5913,3 +5914,8 @@ No production provider request, charge, mail, SSH or deployment occurred.
 - **Verified**: unpatched `tests/acceptance_artifacts_test.py --report` → `{"passed": true, "checks": 360}`.
 - **Committed**: `edcd8483` on `devin/fix-docroots-worker-retry`; dispatched `40188491299`. `40187905664` preserved as the stale-contract failure evidence.
 
+
+## 2026-10-25 — cloud-request upgrade seed gains the candidate studio migration
+
+- `provider_cloud_site_requests_upgrade_fixture.php` seed calls `provider_cloud_site_requests_prepare`, which requires `studio_ready()`. On `'4'`-era merge trees the baseline `'2'` marker survives the file update — the failure that broke run `40157399569` on the FSI lane. Added the guarded `if(!studio_ready())studio_migrate();` at seed start — inert on this `'2'`-era lane, required once merged. `php -l` clean; `cloud_site_requests.source_sha256` re-anchored (`6fd0b326…`); verifier `{"passed": true, "checks": 292}`.
+origin/devin/fix-cloud-intake-ctype
