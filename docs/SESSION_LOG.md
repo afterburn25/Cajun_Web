@@ -3528,3 +3528,7 @@ Next: inspect the first exact-successor runtime results, review all 16 actual im
 - Pins: `provider_php_controls_ui_fixture.php` 3cdfacc7→da4fbef5, `provider_php_controls_ui_cases.py` 2d0c0a58→cfe775bd (self-excluded section, no cascade). php -l + py_compile clean, local verifier 390/390.
 - Committed `45131d4d`, pushed; run 39927330966 dispatched.
 - Interpretation on next run: a named gate failure identifies the predicate; all-pass gates mean the throw was the connector DNS/SAPI boundary or another transient inside the span — the endpoint probe then stays the only non-replayable step.
+
+## 2026-10-25 — php-controls upgrade seed gains the candidate studio migration
+
+- `provider_php_controls_upgrade_fixture.php` seed calls `provider_php_prepare`, whose gate requires `studio_ready()`. On `'4'`-era merge trees the baseline `'2'` marker survives the file update — the same readiness-gate failure seen in run `40157399569`'s cloud-request seed. Added the guarded `if(!studio_ready())studio_migrate();` before the preparation — inert on this `'2'`-era lane, required once merged. `php -l` clean; `php_controls_acceptance.source_sha256` re-anchored; verifier `{"passed": true, "checks": 390}`.

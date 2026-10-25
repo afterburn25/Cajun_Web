@@ -677,7 +677,7 @@
       "tests/provider_php_controls_ui_fixture.php": "521616c07bda9bcd56a77b12414776ef1b694dfa78420b42ce140ebaf69fb9ce",
       "tests/provider_php_controls_ui_guards.py": "6f22e9315fbc38a80f540364b1269b0d8451cdbeb445a98c064b3bda65f52dd0",
       "tests/provider_php_controls_upgrade.py": "92f2cc1741df863e0f0dc039b12227bec64cd48dd22f65ed1cc41d561d5165ef",
-      "tests/provider_php_controls_upgrade_fixture.php": "92d725ebba6153b51d034157bd0023f42b51cc7043cc0b6e4ee42a2a5337dce7",
+      "tests/provider_php_controls_upgrade_fixture.php": "d326b2eff981f9d50ee6e0edbb1ea0e0ce5ac0b79106d9b46973b072ca14ad39",
       "tests/provider_php_controls_upgrade_test.py": "88c085e65285b6f3c5d4490bf5c2590eaae10304fdaf2d059a433c96d2110536",
       "tests/provider_php_controls_views.php": "ae1cb59003188bf8fcaf06fb0f19a8d6ff6a650cf99e9b3fbe89926cb40dd79b",
       "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",

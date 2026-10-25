@@ -203,7 +203,7 @@ try{
     $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/subfolder/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$web;start_session();phcu_owner();provider_settings_owner(PHCU_PASSWORD);
     if($mode==='seed'){
         phcu_ok('Target update leaves new PHP schemas unprepared',!phcu_scope(fn()=>provider_php_controls_ready())&&!phcu_ready());
-        provider_settings_migrate(PHCU_PASSWORD);provider_inventory_migrate(PHCU_PASSWORD);provider_php_prepare(PHCU_PASSWORD);provider_operations_migrate(PHCU_PASSWORD);
+        provider_settings_migrate(PHCU_PASSWORD);provider_inventory_migrate(PHCU_PASSWORD);if(!studio_ready())studio_migrate();provider_php_prepare(PHCU_PASSWORD);provider_operations_migrate(PHCU_PASSWORD);
         $profile=provider_settings_save('',0,PHCU_LABEL,true,PHCU_SECRET,PHCU_PASSWORD);
         $client=studio_client_save(0,'','PHP controls upgrade client','phc-upgrade-client@example.invalid',true);$clientRow=one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=?',[$client]);
         $url=studio_new_invite($client,$clientRow['auth_version']);parse_str((string)parse_url($url,PHP_URL_QUERY),$invite);studio_activate($invite['invite'],PHCU_CLIENT_PASSWORD);
