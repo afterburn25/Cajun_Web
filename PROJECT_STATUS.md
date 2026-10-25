@@ -1,4 +1,10 @@
 
+## 2026-10-25 — hosting acceptance selector corrected; contract at fixpoint; leaf reruns armed
+
+On `devin/preflight-commercial` (code head `d63d7e34`, docs head `8e57426c`), run `40183776933` has build+recovery+Apache green — the release-126 hosting suite passed after its selector was corrected to the real `.hosting-comparison-plan` comparison markup (`article.workspace-card` was never this page's markup; sealed evidence proved the offer rendered correctly). Marker-aware recovery-retention comparisons (`167d9cb7`) unblocked all four nameserver/cloud upgrade suites (152+146+67 checks green). Acceptance contract re-settled to fixpoint; unpatched verifier 1468/1468.
+
+Runner saturation produced a shared flake class across lanes (requests ~60-70s apart): nameserver `c8d68a0a` native failed on a 64s form-navigation timeout (rerun `40186085321`), docroots `78df0378` native exhausted the 300m job ceiling mid-HTTP-suite (ceiling raised to 360m on `edcd8483` with contract re-anchor; rerun `40188491299`), php-controls `0a66ec20` and cloud-intake `3ed53b7a` reruns `40184213691`/`40184256158` in flight with all faster legs green. All failed/cancelled runs preserved as evidence.
+
 ## 2026-10-24 — updater recovery now restores schema markers; acceptance lanes green through Apache
 
 On `devin/preflight-commercial` (`c52432fe`), the file updater journals every `*_schema_version` marker at plan time, restores the pre-update markers on recovery, captures the applied set as forward state, and reasserts it on reapplication — a recovered 1.23/1.25 workspace is functional rather than degraded. File-only update contexts with no configured database journal an empty marker set. `tests/recurring_billing_upgrade_cases.py` now asserts the absence of recurring command controls on recovered old releases instead of asserting that retained invoice titles stay hidden. Contract chain re-settled; local verifier **1468 checks pass** unpatched. Hosted acceptance run `40167673092` in progress; superseded heads `b07d5e56`/`64eb22f4` retain their failed evidence.
