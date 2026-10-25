@@ -654,7 +654,7 @@
       "PHP-Controls-Client-Unavailable-Mobile.png"
     ],
     "source_sha256": {
-      ".github/workflows/application-tests.yml": "32ecccc852907a3bb63c8199add880748ae8d7f335df909e10a08526df4f87e6",
+      ".github/workflows/application-tests.yml": "f795d5663d7a7b88e0eecd45a23ddd4e5ee9b960e7791529bf87afd8f7f7105f",
       ".github/workflows/provider-package-php.yml": "0247cd5305193fc9bae51b857452a5cb3d042894f02335e50de91854101149da",
       "tests/acceptance_artifacts_test.py": "9641e517921f6cb5020dfbb126034f5351704938d0ec47b345a85024b37f5a12",
       "tests/acceptance_environment.py": "badcf351f774ac4fa6e55afa695e13e4ed8cb26d35ba04ec27821e178f1a7d1f",
@@ -688,7 +688,7 @@
     "source_delta": {
       ".github/workflows/application-tests.yml": {
         "predecessor_sha256": "5879a7db5bdecb81716c2509c427e5db3b546f91497dea29bd465165ca3f369f",
-        "current_sha256": "32ecccc852907a3bb63c8199add880748ae8d7f335df909e10a08526df4f87e6",
+        "current_sha256": "f795d5663d7a7b88e0eecd45a23ddd4e5ee9b960e7791529bf87afd8f7f7105f",
         "replacements": [
           {
             "before": "          \"$PHP_BINARY\" tests/twentyi-package-php/run.php > qa/package-php-document-results.json\n          \"$PHP_BINARY\" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json\n          \"$PHP_BINARY\" tests/provider_package_php_native.php\n          \"$PHP_BINARY\" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json\n          \"$PHP_BINARY\" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json\n          \"$PHP_BINARY\" tests/provider_document_roots_native.php\n",
@@ -701,6 +701,10 @@
           {
             "before": "          .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n",
             "after": "          .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json\n          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n          .ci-venv/bin/python tests/provider_php_controls_upgrade_test.py --report qa/apache-php-controls-upgrade-guards-results.json\n          .ci-venv/bin/python tests/provider_php_controls_upgrade.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n"
+          },
+          {
+            "before": "    timeout-minutes: 240\n",
+            "after": "    timeout-minutes: 300\n"
           }
         ]
       },
