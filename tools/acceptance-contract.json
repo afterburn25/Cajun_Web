@@ -671,7 +671,7 @@
       "tests/provider_php_controls_screen.php": "37a39e08a4ed4984d6072e3ed733d30037372033ed0820eaaaa68c516cb80ebe",
       "tests/provider_php_controls_ui_acceptance.py": "f6f81e4661cdfb710a4453cc74523d431fbc68c906cf5b16f74d35ce7cd54842",
       "tests/provider_php_controls_ui_acceptance_test.py": "35e5860ed977f100e8650fab7d3902c9c02c82e027d6959011c3cd5459aa4b27",
-      "tests/provider_php_controls_ui_browser.py": "8017a104264d7676a97ddd067b999cb3597db7ca8691f581f55e773157704981",
+      "tests/provider_php_controls_ui_browser.py": "932eed285af3f41e888c0d1000d449e3c0191b5aa6f2e5db793645a8205bddd3",
       "tests/provider_php_controls_ui_cases.py": "dea95529ff4a2863886afff572de7bb7b8ffa64ade4cb6412468b0df298ca579",
       "tests/provider_php_controls_ui_connector.php": "d6f8145f8c3b2f03ad80b863eaf153e2ac69db0f1566f4768e4035053d46dd89",
       "tests/provider_php_controls_ui_fixture.php": "521616c07bda9bcd56a77b12414776ef1b694dfa78420b42ce140ebaf69fb9ce",

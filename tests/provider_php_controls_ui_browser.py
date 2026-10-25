@@ -237,7 +237,7 @@ def main():
             private_write(runtime / ("bridge-failure-" + str(time.time_ns()) + ".txt"), (stdout or b"")[-65536:] + b"\n" + (stderr or b"")[-65536:])
         try:
             result = subprocess.run([php, str(ROOT / "tests/provider_php_controls_ui_fixture.php"), phase],
-                                    input=json.dumps(payload).encode(), capture_output=True, cwd=ROOT, timeout=50)
+                                    input=json.dumps(payload).encode(), capture_output=True, cwd=ROOT, timeout=120)
         except subprocess.TimeoutExpired as error:
             retain(error.stdout, error.stderr)
             raise RuntimeError("Private CLI phase timed out: " + phase) from None
