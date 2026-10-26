@@ -67,6 +67,49 @@ function software_anet_subscription_charge_details(array $details,string $transa
     ];
 }
 
+/** Verify ARBGetSubscription readback against the exact locally-created subscription contract. */
+function software_anet_subscription_profile_details(array $details,string $subscriptionId,int $invoiceId,
+    int $cents,int $intervalMonths,string $startDate):array{
+    if(!preg_match('/^[0-9]{1,25}$/D',$subscriptionId)||$invoiceId<1
+        ||!in_array($intervalMonths,[1,12],true)
+        ||!preg_match('/^\\d{4}-\\d{2}-\\d{2}$/D',$startDate)
+        ||!checkdate((int)substr($startDate,5,2),(int)substr($startDate,8,2),(int)substr($startDate,0,4))){
+        throw new InvalidArgumentException('Invalid expected subscription identity.');
+    }
+    $sub=$details['subscription']??null;
+    if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($sub)){
+        throw new RuntimeException('Gateway subscription readback was not successful.');
+    }
+    $status=(string)($sub['status']??'');
+    if(!in_array($status,['active','expired','suspended','canceled','terminated'],true)){
+        throw new RuntimeException('Gateway subscription status is unrecognized.');
+    }
+    $schedule=$sub['paymentSchedule']??null;
+    $interval=is_array($schedule)?($schedule['interval']??null):null;
+    $length=is_array($interval)?($interval['length']??null):null;
+    $unit=is_array($interval)?($interval['unit']??null):null;
+    $total=is_array($schedule)?($schedule['totalOccurrences']??null):null;
+    $gatewayStart=is_array($schedule)?($schedule['startDate']??null):null;
+    $invoice=(string)($sub['order']['invoiceNumber']??'');
+    if((string)($sub['name']??'')!=='CajunWebPro software '.$invoiceId
+        ||software_charge_exact_cents($sub['amount']??null)!==$cents
+        ||(string)$length!==(string)$intervalMonths
+        ||(string)$unit!=='months'
+        ||(string)$total!=='9999'
+        ||(string)$gatewayStart!==$startDate
+        ||$invoice!==substr('CWP-'.$invoiceId,0,20)){
+        throw new RuntimeException('Gateway subscription does not match the expected CajunWebPro invoice and schedule.');
+    }
+    return [
+        'subscription_id'=>$subscriptionId,
+        'status'=>$status,
+        'amount_cents'=>$cents,
+        'interval_months'=>$intervalMonths,
+        'start_date'=>$startDate,
+        'invoice_number'=>$invoice,
+    ];
+}
+
 function software_subscription_event_target(string $eventType,string $currentStatus):?string{
     if($currentStatus==='review') return 'review';
     return match($eventType){
