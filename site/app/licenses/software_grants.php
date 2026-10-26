@@ -124,6 +124,13 @@ function software_grant_verdict(array $license,string $domain):bool {
         }
         return true; // genuine pre-commerce v3 licenses are not migrated implicitly
     }
+    if((int)$license['is_master']!==1){
+        $limit=(int)($row['max_installations']??0);
+        if($limit<1||$limit>25)throw new RuntimeException('Software installation policy is invalid.');
+        $active=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',
+            [(int)$license['id']])->fetchColumn();
+        if($active>$limit)return false;
+    }
     $bound=one('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 AND domain=?',
         [(int)$license['id'],license_canonical_domain($domain)]);
     return SoftwareLicensePolicy::authorized([
@@ -131,4 +138,23 @@ function software_grant_verdict(array $license,string $domain):bool {
         'domain'=>$bound['domain']??null,'expires_at'=>$row['expires_at'],
         'internal_only'=>(int)$license['is_master']===1
     ],$domain,new DateTimeImmutable('now',new DateTimeZone('UTC')));
+}
+
+/** Optional installed-version check for newer clients; legacy clients may omit it. */
+function software_grant_version_verdict(array $license,string $version):?bool {
+    if(!preg_match('/^[0-9A-Za-z][0-9A-Za-z._-]{0,39}$/D',$version)){
+        throw new InvalidArgumentException('Invalid software version format.');
+    }
+    if(!software_commerce_ready())return true;
+    $entitlement=one('SELECT updates_until FROM '.table('software_entitlements').' WHERE license_id=?',[(int)$license['id']]);
+    if(!$entitlement)return true; // genuine pre-commerce license, already classified by software_grant_verdict()
+    $sku=(string)($license['product_id']??'');
+    if($sku===''){
+        $stored=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[(int)$license['id']]);
+        $sku=(string)($stored['product_id']??'');
+    }
+    $asset=one('SELECT created_at FROM '.table('software_assets').' WHERE sku=? AND version=? AND is_published=1',
+        [$sku,$version]);
+    if(!$asset)return null;
+    return $entitlement['updates_until']===null||(string)$asset['created_at']<=(string)$entitlement['updates_until'];
 }
