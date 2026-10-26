@@ -54,7 +54,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}
  elseif($action==='activity_mark')activity_post('client');
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
- elseif($action==='login'){studio_login(strtolower(posted('email',190)),posted('password',1000));redirect(studio_url());}
+ elseif($action==='login'){
+  studio_login(strtolower(posted('email',190)),posted('password',1000));
+  redirect(array_key_exists('software',$_GET)?studio_url(['software'=>1]):studio_url());
+ }
  elseif($action==='logout'){unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['client_last'],$_SESSION['client_login']);session_regenerate_id(true);redirect(studio_url());}
  else{if(!$client)throw new RuntimeException('Sign in to continue.');
  if($action==='license_domain_add'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
