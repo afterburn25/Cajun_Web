@@ -184,6 +184,14 @@ def run_browser(env, browser):
     check('Software catalog offer is published through actual owner form',
           len(product)==1 and product[0]['status']=='published'
           and product[0]['amount_cents']==4999 and product[0]['term']=='once')
+    public_products=requests.get(base+'/existing/index.php?page=products',timeout=25)
+    public_doc=soup(public_products)
+    software_cta=next((a for a in public_doc.select('a[href]') if a.get_text(' ',strip=True)=='Open My Software →'),None)
+    check('Public Products page routes software buyers into the same authenticated portal',
+          public_products.status_code==200
+          and 'SOFTWARE LICENSING' in public_products.text
+          and software_cta is not None
+          and software_cta.get('href','').endswith('/existing/portal/index.php?software=1'))
     pid=product[0]['id'];revision=product[0]['revision']
 
     policy_page=admin.get(licenses,timeout=25)
