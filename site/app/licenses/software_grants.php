@@ -31,6 +31,13 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     $effectivePolicy=$purchasePolicy===null
         ? software_product_policy_purchase_snapshot(software_product_policy_for_sku($sku))
         : software_product_policy_purchase_snapshot($purchasePolicy);
+    if($kind===SoftwareLicensePolicy::MASTER){
+        // Internal master keys are owner-controlled QA/release keys. They remain
+        // product-specific but are not constrained by customer update windows
+        // or installation-seat policy.
+        $effectivePolicy['update_months']=0;
+        $effectivePolicy['max_installations']=25;
+    }
     if($kind!==SoftwareLicensePolicy::MASTER
         &&!software_dependencies_satisfied($clientId,$effectivePolicy['dependency_skus'])){
         throw new RuntimeException('Required software dependencies are not currently licensed to this customer.');
@@ -264,5 +271,6 @@ function software_grant_version_verdict(array $license,string $version):?bool {
     $asset=one('SELECT released_at FROM '.table('software_assets').' WHERE sku=? AND version=? AND is_published=1 AND released_at IS NOT NULL',
         [$sku,$version]);
     if(!$asset)return null;
+    if((int)($license['is_master']??0)===1)return true;
     return $entitlement['updates_until']===null||(string)$asset['released_at']<=(string)$entitlement['updates_until'];
 }
