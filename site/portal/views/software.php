@@ -75,7 +75,7 @@ function software_portal_render(?array $client,string $error=''):never{
         }
         if(!$licenses)echo '<p>No issued software licenses yet.</p>';
         echo '</div><h2>Purchased downloads</h2>';
-        $assets=all('SELECT a.id,a.sku,a.version,a.title,a.created_at,l.id AS license_id,e.invoice_id,e.unit_number FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.created_at<=e.updates_until) ORDER BY a.sku,a.created_at DESC,a.id DESC,l.id LIMIT 250',[$clientId]);
+        $assets=all('SELECT a.id,a.sku,a.version,a.title,a.released_at,l.id AS license_id,e.invoice_id,e.unit_number FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND a.released_at IS NOT NULL AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.released_at<=e.updates_until) ORDER BY a.sku,a.released_at DESC,a.id DESC,l.id LIMIT 250',[$clientId]);
         $shown=[];$downloadCount=0;
         foreach($assets as $asset){
             if(isset($shown[(int)$asset['id']]))continue;
