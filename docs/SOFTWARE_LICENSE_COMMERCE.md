@@ -38,6 +38,7 @@
 ### Validation and usage
 - Preserve `POST /api/validate.php` semantics for existing products; introduce optional versioned client request fields only with backward-compatible parsing. Validate server-side type, expiry, product, client-owned entitlement, revocation, registered domain and seat limit.
 - Record bounded validation outcomes and last-seen timestamps per activation using a well-defined verified signal. Rate-limit and batch writes; keep separate immutable security audit, short operational retention and no raw visitor analytics. A successful validation is evidence of a check, not proof the software is currently running.
+- Validation heartbeats do not create permanent per-request audit rows containing IP/domain data. Successful software checks use one minute-bucketed observation row per license/domain; observations for domains that are no longer active are automatically purged after 180 days. Owner/admin license mutations remain in the immutable audit trail.
 - For unavailable license storage or transient failures return non-200 (inconclusive) instead of forcing installed customer websites offline. Expiry/revocation of a verified grant is a definitive denial only when entitlements and history are trustworthy.
 
 ## Incremental implementation gates
