@@ -77,10 +77,7 @@ function software_subscription_settle(array $details,string $transactionId): str
             if(!in_array($duration,[1,12],true))throw new RuntimeException('Invalid subscription renewal interval.');
             foreach($grants as $g){
                 $action=software_subscription_renewal_grant_action($g);
-                if($action==='review'){
-                    $renewalReview=true;
-                    continue;
-                }
+                if($action==='review')$renewalReview=true;
                 $now=new DateTimeImmutable('now',new DateTimeZone('UTC'));
                 $extended=software_subscription_extend_expiry((string)$g['expires_at'],$duration,$now);
                 query('UPDATE '.table('software_entitlements').' SET expires_at=?,updates_until=? WHERE license_id=?',
@@ -90,7 +87,7 @@ function software_subscription_settle(array $details,string $transactionId): str
                 query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
                 license_audit(0,'subscription.renewal.review',
                     'Verified recurring transaction '.$transactionId.' paid invoice '.$invoiceId.
-                    ' but at least one software license is suspended; entitlement extension requires owner review');
+                    ' and extended paid-through entitlement, but at least one software license remains suspended; owner review is required before access can resume');
             }else{
                 query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
                     [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
