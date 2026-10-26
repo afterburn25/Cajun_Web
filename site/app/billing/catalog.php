@@ -63,8 +63,15 @@ function catalog_table_exists(string $suffix):bool{
         [config()['db']['prefix'].$suffix]);
 }
 function catalog_software_identity_used(int $productId,string $sku):bool{
-    if(catalog_table_exists('software_orders')
-        &&one('SELECT id FROM '.table('software_orders').' WHERE product_id=? LIMIT 1',[$productId]))return true;
+    if(catalog_table_exists('software_orders')){
+        if(one('SELECT id FROM '.table('software_orders').' WHERE product_id=? LIMIT 1',[$productId]))return true;
+        // Order snapshots preserve the exact dependency SKUs disclosed at purchase.
+        // Once a SKU appears in any immutable purchase snapshot, renaming it would
+        // make an already-accepted dependency impossible to satisfy even if the
+        // current product policy later removes that dependency.
+        $needle=json_encode($sku,JSON_THROW_ON_ERROR);
+        if(one('SELECT id FROM '.table('software_orders').' WHERE LOCATE(?,snapshot)>0 LIMIT 1',[$needle]))return true;
+    }
     if(catalog_table_exists('software_assets')
         &&one('SELECT id FROM '.table('software_assets').' WHERE sku=? LIMIT 1',[$sku]))return true;
     if(catalog_table_exists('website_licenses')
