@@ -53,7 +53,7 @@ try{
     db()->commit();
     swok(software_grant_verdict(license_get($master['key']),'other.example.com'),'Owner master supports any domain');
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        ['SOFTWARE-TEST','Test software','addon','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
+        ['NEXUSCORE','Test software','software','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     $product=(int)db()->lastInsertId();
     $hash=hash('sha256','synthetic software order');
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
