@@ -3511,3 +3511,10 @@ The enclosing **fix: include retained diagnostic sources in development package*
 
 - The `seed` mode of `tests/registered_nameserver_requests_upgrade_fixture.php` prepares registered nameserver requests, whose gate requires `studio_ready()`. On `'4'`-era merge trees (preflight/mergeprep) a baseline-seeded `'2'` marker survives the file update because nothing ran `studio_migrate()` after `apply` — the same gap that failed `provider_cloud_site_requests_upgrade` on run `40157399569`. Sibling fixtures (`registered_nameservers_upgrade`, `registered_nameserver_changes_upgrade`) already run the guarded migrate in seed mode.
 - Added `if(!studio_ready())studio_migrate();` before the request preparation — inert on this `'2'`-era lane, required once merged into `'4'`-era trees. `php -l` clean; contract `source_sha256` re-anchored; verifier `{"passed": true, "checks": 473}`.
+
+### 2026-10-26 — nameserver change approval form TTL re-arms (pending commit)
+
+- Run `40240006270` (`935584dd`) native failed on bare `AssertionError('Expected nameserver change form missing')` at `fields()` after the support-denial block — check 3232 was the last named pass. The sealed readback diagnostics were never reached.
+- Root cause: `registered_nameserver_changes_precondition` requires `observed_epoch >= time()-900`; the approval form renders only while the nameserver observation is <900s old. The two approval-form sites called `refresh_domains()` (registrar `domains.list` only), so a >15min gap since the last `data-nameserver-refresh` read hid the form. Recover/verify forms have no TTL dependency and are unchanged.
+- Fix: both approval-form sites now call `read_form(selector + ' form[data-nameserver-refresh]', 'Refresh nameservers')` first — the established pattern from the first approval site — performing a real nameserver GET (with cooldown wait) before reading the form. `provider.posts` invariants are measured after each re-arm.
+- Contract re-settled (requests+installed `source_sha256` pins, requests `predecessor_contract_sha256`, `CONTRACT_SHA256` mirror); verifier `{"passed": true, "checks": 473}`.

@@ -308,8 +308,10 @@ def run_browser(env, browser):
         submit(owner, portal + '?support=' + support_id, 'support_end')
         chosen_form(owner, admin + '?view=support', 'support_policy', 'client_id', link['client_id'], {'allowed': None, 'owner_password': PASSWORD})
 
-        refresh_domains()
-        navigate(); first = fields(SimpleNamespace(text=page.content()), selector + ' form[data-nameserver-change-form]')
+        # The change form requires a nameserver observation newer than 900
+        # seconds; a registrar refresh alone leaves an expired read hidden.
+        read_form(selector + ' form[data-nameserver-refresh]', 'Refresh nameservers')
+        first = fields(SimpleNamespace(text=page.content()), selector + ' form[data-nameserver-change-form]')
         first_id = first['request_id']
         if re.fullmatch('[a-f0-9]{32}', first_id) is None:
             raise AssertionError('Exact native generated request identifier required')
@@ -403,8 +405,8 @@ def run_browser(env, browser):
 
         # A second independent approval is necessary: changed assignments cannot
         # be artificially restored to resolve the first request's old context.
-        refresh_domains()
-        navigate(); second = fields(SimpleNamespace(text=page.content()), selector + ' form[data-nameserver-change-form]')
+        read_form(selector + ' form[data-nameserver-refresh]', 'Refresh nameservers')
+        second = fields(SimpleNamespace(text=page.content()), selector + ' form[data-nameserver-change-form]')
         second_id = second['request_id']
         click_form(fill_form(selector + ' form[data-nameserver-change-form]', {'desired_nameservers': '\n'.join(FINAL), 'reviewed': '1', 'current_password': PASSWORD}), 'Request nameserver change')
         second_ledger = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['nameservers:' + second_id])
