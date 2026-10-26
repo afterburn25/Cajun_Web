@@ -74,14 +74,14 @@ def run_browser(env, browser):
               response.status_code==200 and settings('invoice_ledger_schema_version')==[{'value':'1'}])
 
     before=admin.get(licenses,timeout=25)
-    if settings('software_commerce_version') != [{'value':'2'}]:
+    if settings('software_commerce_version') != [{'value':'3'}]:
         setup=_action_form(soup,before,'software_commerce_setup')
         check('Software commerce owner setup is explicit before use',True)
         data=form_data(setup);data['current_password']=OWNER
         response=admin.post(licenses,data=data,timeout=40)
         check('Software commerce owner preparation succeeds through actual admin form',
               response.status_code==200
-              and settings('software_commerce_version')==[{'value':'2'}]
+              and settings('software_commerce_version')==[{'value':'3'}]
               and 'Software license and purchase storage is prepared' in response.text)
     else:
         check('Software commerce storage is already prepared for installed acceptance',True)
