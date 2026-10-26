@@ -44,6 +44,7 @@ Each needs its own hosted green at exact head before any merge; contract re-anch
 | Renewal invoicing | #252 `632362f6` | PENDING-ACCEPTANCE |
 | Payment-link privacy | #253 `b1948eeb` | PENDING-ACCEPTANCE |
 | Old codex draft stacks #102–#125 | codex/* | SUPERSEDED — port parity verified, closed 2026-10-19 |
+| Component ports #257–#260 (vps/ssh-access/provider-catalog/domains) | devin/*-port → FSI | **MERGED into FSI 2026-10-26** — `595247ef`/`9ec8b60f`/`0c40d226`/`bff3f648` + inventory `7f924170`; local suites green (311+70+171+50+81), each port's merge-head hosted run was success; combined FSI acceptance queued |
 
 ## Blockers on record
 
