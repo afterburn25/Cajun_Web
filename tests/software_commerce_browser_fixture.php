@@ -76,6 +76,16 @@ if($operation==='reconcile-review'){
     echo json_encode(['transaction_id'=>'650'.str_pad((string)$invoice,7,'0',STR_PAD_LEFT)],JSON_THROW_ON_ERROR);
     exit;
 }
+if($operation==='subscription-charge-review'){
+    if($invoice<1)exit(2);
+    $sub=one('SELECT id,status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice]);
+    if(!$sub)throw new RuntimeException('Synthetic recurring charge review requires a local subscription row.');
+    $gatewayId='777'.str_pad((string)$invoice,7,'0',STR_PAD_LEFT);
+    query('UPDATE '.table('software_subscriptions').' SET gateway_subscription_id=?,status=? WHERE id=?',
+        [$gatewayId,'pending_first_payment',$sub['id']]);
+    echo json_encode(['gateway_subscription_id'=>$gatewayId,'status'=>'pending_first_payment'],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation==='subscription-review'){
     if($invoice<1)exit(2);
     require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
