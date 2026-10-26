@@ -186,10 +186,34 @@ try{
     swok((bool)one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
         [(int)$orphan['id'],'orphan.example.com']),
         'Rejected orphan software domain mutation preserves the original active domain');
+    db()->beginTransaction();
+    $dependencyGrant=software_grant_create(1,'SOFTWARE-TEST','standard','Synthetic Buyer','dependency.example.com',null,1);
+    db()->commit();
+    swok(software_customer_has_valid_product(1,'SOFTWARE-TEST'),
+        'Customer dependency check recognizes a valid ordinary software entitlement');
+    swok(!software_customer_has_valid_product(2,'SOFTWARE-TEST'),
+        'Software dependency entitlement is tenant-isolated');
+
     $hash=hash('sha256','synthetic software order');
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
-    $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false);
-    swok($invoice===software_order_place($buyer,$product,1,2,'new.example.com',$hash,false),'Order retry reuses invoice');
+    $otherBuyer=['id'=>2,'name'=>'Other Buyer'];
+    swdenied(fn()=>software_order_place($otherBuyer,$product,1,1,'other.example.com',
+        hash('sha256','missing dependency order'),false,1),
+        'Customer without required software dependency cannot create the order');
+    $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false,1);
+    $ordered=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);
+    $orderedPolicy=software_order_policy_snapshot($ordered);
+    swok($orderedPolicy['revision']===1&&$orderedPolicy['update_months']===12
+        &&$orderedPolicy['max_installations']===1&&$orderedPolicy['dependency_skus']===['SOFTWARE-TEST'],
+        'Software order stores the exact entitlement policy disclosed at purchase');
+    $policy2=software_product_policy_save($product,1,'nexus-core','SOFTWARE-TEST',0,3,$password);
+    swok($policy2['revision']===2&&$policy2['update_months']===0&&$policy2['max_installations']===3,
+        'Owner can publish a later policy revision after an order is created');
+    swok($invoice===software_order_place($buyer,$product,1,2,'new.example.com',$hash,false,1),
+        'Exact order retry reuses its original invoice after policy changes');
+    swdenied(fn()=>software_order_place($buyer,$product,1,1,'stale-policy.example.com',
+        hash('sha256','stale policy checkout'),false,1),
+        'New checkout with a stale disclosed policy revision is refused');
     $identityInput=[
         'sku'=>'NEXUSCORE-RENAMED','title'=>'Test software','family'=>'software','status'=>'published','term'=>'once',
         'currency'=>'USD','amount'=>'24.99','setup'=>'0.00','cost'=>'','provider_ref'=>'','summary'=>'Synthetic',
@@ -300,9 +324,6 @@ try{
     swok(software_grant_version_verdict($usageLicenseRow,'9.9.9')===null,
         'Version-aware validation treats an unknown release as inconclusive');
 
-    $policy2=software_product_policy_save($product,1,'nexus-core','SOFTWARE-TEST',0,3,$password);
-    swok($policy2['revision']===2&&$policy2['update_months']===0&&$policy2['max_installations']===3,
-        'Owner can publish a later policy revision for future grants');
     $unchanged=one('SELECT updates_until,max_installations,policy_revision FROM '.table('software_entitlements').' WHERE license_id=?',[$usageLicense]);
     swok(($unchanged['updates_until']??null)===$cutoff
         &&(int)$unchanged['max_installations']===1&&(int)$unchanged['policy_revision']===1,
