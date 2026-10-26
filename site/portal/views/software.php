@@ -111,15 +111,24 @@ function software_portal_render(?array $client,string $error=''):never{
                 }
                 $sub=one('SELECT status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]);
                 if($sub){
+                    $invoicePaid=(string)$order['status']==='paid';
                     $subscriptionLabel=match((string)$sub['status']){
-                        'creating'=>'Enrollment pending',
-                        'pending_first_payment'=>'Awaiting first verified payment',
+                        'creating'=>'Enrollment pending · software remains locked until verified payment',
+                        'pending_first_payment'=>'Awaiting first verified payment · software remains locked',
                         'active'=>'Active recurring billing',
-                        'cancelling'=>'Cancellation pending',
-                        'cancelled'=>'Cancelled · paid-through access remains until license expiry',
-                        'review'=>'Billing review · paid-through access remains until current license expiry',
+                        'cancelling'=>$invoicePaid
+                            ?'Cancellation pending · paid-through access remains until license expiry'
+                            :'Cancellation pending · software remains locked until verified payment',
+                        'cancelled'=>$invoicePaid
+                            ?'Cancelled · paid-through access remains until license expiry'
+                            :'Cancelled · no paid software access was granted',
+                        'review'=>$invoicePaid
+                            ?'Billing review · paid-through access remains until current license expiry'
+                            :'Billing review · software remains locked until payment is reconciled',
                         'sandbox_test'=>'Sandbox test only · no paid access',
-                        'awaiting_gateway_setup'=>'Gateway enrollment pending',
+                        'awaiting_gateway_setup'=>$invoicePaid
+                            ?'Gateway enrollment pending · current paid-through access remains recorded'
+                            :'Gateway enrollment pending · software remains locked',
                         default=>'Billing status: '.(string)$sub['status'],
                     };
                     echo '<p class="hint">Subscription: '.esc($subscriptionLabel).'</p>';
