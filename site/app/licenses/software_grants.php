@@ -97,7 +97,16 @@ function software_grant_verdict(array $license,string $domain):bool {
         return true;
     }
     $row=one('SELECT * FROM '.table('software_entitlements').' WHERE license_id=?',[(int)$license['id']]);
-    if (!$row) return true; // legacy product licenses are not migrated implicitly
+    if (!$row) {
+        $softwareProduct=one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND family=?',
+            [(string)($license['product_id']??''),'software']);
+        $issued=one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+            ['license.software.issue','Software license '.(int)$license['id'].' issued as %']);
+        if($softwareProduct||$issued){
+            throw new RuntimeException('Software entitlement history is incomplete.');
+        }
+        return true; // genuine pre-commerce v3 licenses are not migrated implicitly
+    }
     $bound=one('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 AND domain=?',
         [(int)$license['id'],license_canonical_domain($domain)]);
     return SoftwareLicensePolicy::authorized([
