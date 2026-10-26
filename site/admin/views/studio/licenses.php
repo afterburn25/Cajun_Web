@@ -42,6 +42,14 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Save software payment mode</button></form>
 </section>
+<section class="workspace-card">
+<h2>Customer domain replacement policy</h2>
+<p>Set how long a customer must wait before moving the same software license again. Use 0 only if you intentionally want no cooldown.</p>
+<form method="post"><?php admin_action('software_domain_policy'); ?>
+<?php admin_input('domain_cooldown_hours','Cooldown hours',(string)setting('software_domain_change_cooldown_hours','24'),'number','required min="0" max="720"'); ?>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn gold">Save domain policy</button></form>
+</section>
 <?php endif; ?>
 <div class="workspace-grid">
 <section class="workspace-card">
