@@ -13,7 +13,10 @@ $cases = [
     ['125.00junk', null],
     ['1e2', null],
     ['-1.00', null],
+    [49.99, 4999],
+    [125.00, 12500],
     [125.001, null],
+    [INF, null],
     [null, null],
 ];
 foreach ($cases as [$amount, $expected]) {
