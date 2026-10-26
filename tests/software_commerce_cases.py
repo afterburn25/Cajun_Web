@@ -435,6 +435,16 @@ def run_browser(env, browser):
        [datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),invoice])
     exhausted_page=admin.get(licenses,timeout=25)
     reset_form=_action_form(soup,exhausted_page,'software_notice_reset',invoice_id=invoice)
+    wrong_reset=form_data(reset_form);wrong_reset['current_password']='Incorrect owner passphrase'
+    wrong_response=admin.post(licenses,data=wrong_reset,timeout=25)
+    wrong_notice=db('SELECT status,attempts,last_attempt,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
+    check('Delivery retry reset rejects wrong owner password at the service boundary',
+          'current password is not correct' in wrong_response.text.lower()
+          and wrong_notice['attempts']==10
+          and db("SELECT COUNT(*) AS n FROM ci_audit WHERE action='license.software.notice.reset' AND detail LIKE ?",
+                 ['Software delivery retry budget reset for invoice '+str(invoice)+'%'])==[{'n':0}])
+    exhausted_page=admin.get(licenses,timeout=25)
+    reset_form=_action_form(soup,exhausted_page,'software_notice_reset',invoice_id=invoice)
     reset_data=form_data(reset_form);reset_data['current_password']=OWNER
     reset_response=admin.post(licenses,data=reset_data,timeout=25)
     reset_notice=db('SELECT status,attempts,last_attempt,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
