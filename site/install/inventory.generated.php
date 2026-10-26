@@ -184,7 +184,7 @@ function setup_expected_files(): array { return [
     'app/hosting/storage.php'=>'ec3b6cfc8ef37e534a8ba2b59608345a5a62236af6f86e37698e982836216c86',
     'app/index.php'=>'696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
     'app/jobs/run.php'=>'b210c3d534899b595910b801b64c0b397595f688881ea62b4774f5a3e2a31d18',
-    'app/licenses/bundle.php'=>'f3f7d2f2eca8f62842f0eebf649c1351cd89a29f2f3f588a2e143551dc8385bf',
+    'app/licenses/bundle.php'=>'5b5e29fab554eafc19c98659fecb1f15b75fb025d2a267c3eaa6a9e0756510cf',
     'app/licenses/fulfill.php'=>'bdfa8e208c01e07281b560c306ac44127068e5df65747dd6dceaa11249b1e978',
     'app/licenses/legacy.php'=>'875542e05b93685659f0be81115b143c5ef224dde1515f4cbf9cf021272ee5dd',
     'app/licenses/service.php'=>'46d8ea6d3b427faa587cff7d877ffc49f97f07b85f3fd5d344cca951b4ce7798',
