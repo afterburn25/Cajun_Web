@@ -872,6 +872,10 @@ try{
         [$invoice,1,'123456789',1,(int)$payment['amount_cents'],'active',$now,$now]);
     $subscriptionId=(int)one('SELECT id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['id'];
     query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['cancelling',$subscriptionId]);
+    swdenied(fn()=>software_subscription_cancel_finalize($subscriptionId,2,$invoice),
+        'Cancellation finalizer refuses a foreign customer even after gateway cancellation');
+    swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE id=?',[$subscriptionId])===['status'=>'cancelling'],
+        'Rejected cancellation ownership leaves the local subscription pending finalization');
     swok(software_subscription_cancel_finalize($subscriptionId,1,$invoice)==='cancelled',
         'Cancellation finalizer confirms stored cancelled state');
     query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$subscriptionId]);
