@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 from datetime import datetime, timedelta
+from urllib.parse import parse_qs, urlparse
 
 import requests
 from playwright.sync_api import expect
