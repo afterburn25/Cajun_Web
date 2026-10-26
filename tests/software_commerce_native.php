@@ -41,23 +41,47 @@ try{
     swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Pre-commerce install preserves legacy v3 validation');
     software_commerce_prepare($password);
-    swok(software_commerce_ready(),'Owner preparation creates new v2 storage');
+    swok(software_commerce_ready(),'Owner preparation creates new v3 storage');
+    swok(software_commerce_table_present('software_product_policies')
+        &&software_commerce_column_present('software_entitlements','updates_until')
+        &&software_commerce_column_present('software_entitlements','max_installations')
+        &&software_commerce_column_present('software_entitlements','policy_revision'),
+        'Fresh v3 storage includes product policy and entitlement snapshot metadata');
     save_setting('software_commerce_version','');
     swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Existing entitlement storage without readiness marker is inconclusive, not authorized');
+
+    db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_product_policies'.chr(96));
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_charge_attempts'.chr(96));
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_reversals'.chr(96));
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_disputes'.chr(96));
-    db()->exec('ALTER TABLE '.chr(96).config()['db']['prefix'].'software_entitlements'.chr(96).' DROP COLUMN purpose');
+    $entitlementTable=chr(96).config()['db']['prefix'].'software_entitlements'.chr(96);
+    db()->exec('ALTER TABLE '.$entitlementTable.' DROP COLUMN policy_revision, DROP COLUMN max_installations, DROP COLUMN updates_until, DROP COLUMN purpose');
     save_setting('software_commerce_version','1');
     software_commerce_prepare($password);
-    swok(software_commerce_ready(),'Published branch v1 storage upgrades additively to v2');
-    swok(software_commerce_table_present('software_charge_attempts')&&software_commerce_table_present('software_payment_reversals')&&software_commerce_table_present('software_payment_disputes'),
-        'V2 upgrade restores charge-attempt, reversal and dispute history tables');
-    swok(software_commerce_column_present('software_entitlements','purpose'),
-        'V2 upgrade adds master-purpose metadata without rebuilding entitlements');
+    swok(software_commerce_ready(),'Published branch v1 storage upgrades additively to v3');
+    swok(software_commerce_table_present('software_charge_attempts')
+        &&software_commerce_table_present('software_payment_reversals')
+        &&software_commerce_table_present('software_payment_disputes')
+        &&software_commerce_table_present('software_product_policies'),
+        'V1 to v3 upgrade restores payment review and software policy tables');
+    foreach(['purpose','updates_until','max_installations','policy_revision'] as $column){
+        swok(software_commerce_column_present('software_entitlements',$column),
+            'V1 to v3 upgrade adds entitlement column '.$column);
+    }
+
+    db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_product_policies'.chr(96));
+    db()->exec('ALTER TABLE '.$entitlementTable.' DROP COLUMN policy_revision, DROP COLUMN max_installations, DROP COLUMN updates_until');
+    save_setting('software_commerce_version','2');
     software_commerce_prepare($password);
-    swok(software_commerce_ready(),'V2 preparation can be repeated safely');
+    swok(software_commerce_ready(),'Published branch v2 storage upgrades additively to v3');
+    swok(software_commerce_table_present('software_product_policies')
+        &&software_commerce_column_present('software_entitlements','updates_until')
+        &&software_commerce_column_present('software_entitlements','max_installations')
+        &&software_commerce_column_present('software_entitlements','policy_revision'),
+        'V2 to v3 upgrade adds product policy and entitlement snapshot metadata');
+    software_commerce_prepare($password);
+    swok(software_commerce_ready(),'V3 preparation can be repeated safely');
     swdenied(fn()=>software_commerce_prepare('wrong-password'),'Wrong owner password refused');
 
     $private=software_asset_private_root();
