@@ -28,7 +28,14 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     if(!$product||(($product['family']??'')!=='software'&&!$legacy)){
         throw new InvalidArgumentException('Choose a registered software catalog product.');
     }
-    $policy=software_entitlement_policy_snapshot($sku,$metadata['expires_at'],$recurring,$issuedAt,$purchasePolicy);
+    $effectivePolicy=$purchasePolicy===null
+        ? software_product_policy_purchase_snapshot(software_product_policy_for_sku($sku))
+        : software_product_policy_purchase_snapshot($purchasePolicy);
+    if($kind!==SoftwareLicensePolicy::MASTER
+        &&!software_dependencies_satisfied($clientId,$effectivePolicy['dependency_skus'])){
+        throw new RuntimeException('Required software dependencies are not currently licensed to this customer.');
+    }
+    $policy=software_entitlement_policy_snapshot($sku,$metadata['expires_at'],$recurring,$issuedAt,$effectivePolicy);
     if (!db()->inTransaction()) throw new LogicException('Issue grants in the enclosing locked transaction.');
     $key=license_create($clientId,$sku,$issuer,$kind==='master');
     $license=one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$key]);
