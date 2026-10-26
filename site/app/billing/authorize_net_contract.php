@@ -28,6 +28,18 @@ function software_charge_exact_cents(mixed $value): ?int {
     return ((int)$parts[1])*100+(int)str_pad($parts[2]??'',2,'0');
 }
 
+/** Verify a non-subscription one-time charge against the exact CajunWebPro invoice. */
+function software_anet_one_time_charge_confirmed(array $details,string $transactionId,int $invoice,int $cents):bool{
+    if($invoice<1||$cents<1||!preg_match('/^[0-9]{5,30}$/D',$transactionId))return false;
+    $tx=$details['transaction']??null;
+    if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx))return false;
+    if(isset($tx['subscription']))return false; // ARB charges must use the recurring reconciliation path.
+    return (string)($tx['transId']??'')===$transactionId
+        &&(string)($tx['order']['invoiceNumber']??'')===substr('CWP-'.$invoice,0,20)
+        &&software_charge_exact_cents($tx['authAmount']??null)===$cents
+        &&in_array($tx['transactionStatus']??'',['capturedPendingSettlement','settledSuccessfully'],true);
+}
+
 function software_anet_reversal_details(array $details,string $eventTransactionId,string $eventType):array{
     $expectedType = match($eventType){
         'net.authorize.payment.refund.created'=>'refundTransaction',
