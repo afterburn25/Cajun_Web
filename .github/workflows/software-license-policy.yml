@@ -24,6 +24,8 @@ jobs:
           php -l site/app/licenses/software_asset_access.php
           php -l site/app/billing/software_payment_review.php
           php -l site/app/billing/catalog.php
+          php -l site/app/billing/software_charge_guard.php
+          php -l site/app/billing/software_charge.php
           php -l site/app/licenses/software_usage.php
           php -l site/app/billing/authorize_net_contract.php
           php -l site/app/billing/authorize_net_webhooks.php
