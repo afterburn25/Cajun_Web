@@ -131,6 +131,22 @@ def run_browser(env, browser):
           and product[0]['amount_cents']==4999 and product[0]['term']=='once')
     pid=product[0]['id'];revision=product[0]['revision']
 
+    policy_page=admin.get(licenses,timeout=25)
+    policy_form=_action_form(soup,policy_page,'software_product_policy',product_id=pid)
+    policy_data=form_data(policy_form)
+    policy_data.update({
+        'module_key':'browser-acceptance',
+        'dependencies':'',
+        'update_months':'6',
+        'max_installations':'1',
+        'current_password':OWNER,
+    })
+    policy_response=admin.post(licenses,data=policy_data,timeout=25)
+    policy_rows=db('SELECT module_key,update_months,max_installations,revision FROM ci_software_product_policies WHERE product_id=?',[pid])
+    check('Owner saves software update and installation policy through actual form',
+          policy_response.status_code==200
+          and policy_rows==[{'module_key':'browser-acceptance','update_months':6,'max_installations':1,'revision':1}])
+
     orphan=fixture('orphan-license',pid)
     validate=base+'/existing/api/validate.php'
     response=requests.post(validate,json={
@@ -188,7 +204,15 @@ def run_browser(env, browser):
     check('Paid software portal exposes owned license and approved download',
           'SOFTWARE-HTTP-ACCEPT' in owned.text
           and 'Synthetic browser acceptance download' in owned.text
-          and 'software-http.example' in owned.text)
+          and 'software-http.example' in owned.text
+          and 'Installations: 1 / 1' in owned.text
+          and 'Updates: through ' in owned.text)
+    extra={'csrf':token(owned),'action':'license_domain_add','license_id':str(license_id),'domain':'second-http.example'}
+    denied_install=alice.post(portal,data=extra,timeout=25)
+    check('Generic client domain action cannot bypass software installation cap',
+          'already has 1 active installation' in denied_install.text
+          and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':'software-http.example'}])
     check('Another customer cannot see the paid license or asset',
           'Synthetic browser acceptance download' not in bob.get(portal,timeout=25).text)
     owner_register=admin.get(licenses,timeout=25)
