@@ -89,6 +89,9 @@ try{
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
     $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false);
     swok($invoice===software_order_place($buyer,$product,1,2,'new.example.com',$hash,false),'Order retry reuses invoice');
+    swdenied(fn()=>software_order_place($buyer,$product,1,1,'new.example.com',
+        hash('sha256','synthetic one-time recurring-consent mismatch'),true),
+        'One-time software refuses recurring billing consent');
     swdenied(fn()=>software_order_place($buyer,$product,1,1,'new.example.com',$hash,false),'Changed order cannot reuse request');
     $attemptOne=hash('sha256','native-declined-charge-1');
     $attemptTwo=hash('sha256','native-declined-charge-2');
