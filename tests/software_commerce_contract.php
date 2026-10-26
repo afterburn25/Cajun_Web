@@ -35,6 +35,27 @@ check($opaque['subscription']['paymentSchedule']['interval']['length']===1,
     'ARB monthly interval is one month');
 reject(fn()=>software_anet_arb_opaque(12,9900,1,'2000-01-01','COMMON.ACCEPT.INAPP.PAYMENT','synthetic-token'),
     'ARB cannot begin in the past');
+$oneTime=[
+    'messages'=>['resultCode'=>'Ok'],
+    'transaction'=>[
+        'transId'=>'600000010',
+        'transactionType'=>'authCaptureTransaction',
+        'transactionStatus'=>'capturedPendingSettlement',
+        'authAmount'=>'12.34',
+        'order'=>['invoiceNumber'=>'CWP-42']
+    ]
+];
+check(software_anet_one_time_charge_confirmed($oneTime,'600000010',42,1234),
+    'One-time readback accepts exact authCapture transaction');
+$wrongType=$oneTime;
+$wrongType['transaction']['transactionType']='priorAuthCaptureTransaction';
+check(!software_anet_one_time_charge_confirmed($wrongType,'600000010',42,1234),
+    'One-time readback rejects a different transaction operation even when amount and invoice match');
+$subscriptionShaped=$oneTime;
+$subscriptionShaped['transaction']['subscription']=['id'=>'12345'];
+check(!software_anet_one_time_charge_confirmed($subscriptionShaped,'600000010',42,1234),
+    'One-time readback rejects subscription-shaped capture transactions');
+
 $refundDetails=[
     'messages'=>['resultCode'=>'Ok'],
     'transaction'=>[
