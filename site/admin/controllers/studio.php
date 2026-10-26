@@ -219,15 +219,21 @@ function studio_admin_action(string $action,array $user): never {
             require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
             $kind=posted('license_type',20);$licensee=posted('licensee_name',190);
             $master=$kind==='master';
-            $purpose='';
-            if($master){staff_require('staff.manage');staff_owner(posted('current_password',200));$purpose=posted('master_purpose',200);}
+            $purpose='';$masterPassword=null;
+            if($master){
+                staff_require('staff.manage');
+                $masterPassword=posted('current_password',200);
+                staff_owner($masterPassword); // refuse before opening the issuance transaction
+                $purpose=posted('master_purpose',200);
+            }
             $domain=$master?null:posted('domain',253);
             $raw=posted('expires_at',19);
             $expiry=$raw!==''?str_replace('T',' ',$raw).':00':null;
             if(db()->inTransaction())throw new LogicException('License issuance owns its transaction.');
             db()->beginTransaction();
             try{
-                $result=software_grant_create($customerId,strtoupper($productId),$kind,$licensee,$domain,$expiry,(int)$user['id'],null,null,$purpose);
+                $result=software_grant_create($customerId,strtoupper($productId),$kind,$licensee,$domain,$expiry,
+                    (int)$user['id'],null,null,$purpose,false,null,$masterPassword);
                 db()->commit();$key=$result['key'];
             }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
         }else{
