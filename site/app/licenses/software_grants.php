@@ -5,12 +5,14 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_license_policy.php';
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
 
 function software_grant_create(int $clientId, string $sku, string $kind, string $name,
-    ?string $domain, ?string $expires, int $issuer=0, ?int $invoice=null, ?int $unit=null, string $purpose=''):array {
+    ?string $domain, ?string $expires, int $issuer=0, ?int $invoice=null, ?int $unit=null,
+    string $purpose='', bool $recurring=false):array {
     if (!software_commerce_ready()) throw new RuntimeException('Software licensing is not prepared.');
-    $metadata=SoftwareLicensePolicy::issue($kind,$name,$domain,$expires,$issuer>0,
-        new DateTimeImmutable('now',new DateTimeZone('UTC')));
+    $issuedAt=new DateTimeImmutable('now',new DateTimeZone('UTC'));
+    $metadata=SoftwareLicensePolicy::issue($kind,$name,$domain,$expires,$issuer>0,$issuedAt);
     $purpose=trim($purpose);
     if($kind===SoftwareLicensePolicy::MASTER){
         if(strlen($purpose)<10||strlen($purpose)>200)throw new InvalidArgumentException('Master license purpose is required (10–200 characters).');
@@ -26,20 +28,23 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     if(!$product||(($product['family']??'')!=='software'&&!$legacy)){
         throw new InvalidArgumentException('Choose a registered software catalog product.');
     }
+    $policy=software_entitlement_policy_snapshot($sku,$metadata['expires_at'],$recurring,$issuedAt);
     if (!db()->inTransaction()) throw new LogicException('Issue grants in the enclosing locked transaction.');
     $key=license_create($clientId,$sku,$issuer,$kind==='master');
     $license=one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$key]);
     if (!$license) throw new RuntimeException('License creation failed.');
     $id=(int)$license['id'];
-    query('INSERT INTO '.table('software_entitlements').' (license_id,license_type,licensee,expires_at,issued_by,purpose,invoice_id,unit_number,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
-        [$id,$kind,$metadata['licensee'],$metadata['expires_at'],$issuer,$purpose,$invoice,$unit,gmdate('Y-m-d H:i:s')]);
+    query('INSERT INTO '.table('software_entitlements').' (license_id,license_type,licensee,expires_at,updates_until,max_installations,policy_revision,issued_by,purpose,invoice_id,unit_number,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        [$id,$kind,$metadata['licensee'],$metadata['expires_at'],$policy['updates_until'],$policy['max_installations'],
+         $policy['policy_revision'],$issuer,$purpose,$invoice,$unit,$issuedAt->format('Y-m-d H:i:s')]);
     if ($metadata['domain']!==null) {
         query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at) VALUES (?,?,1,?)',
             [$id,$metadata['domain'],gmdate('Y-m-d H:i:s')]);
     }
     license_audit($issuer,'software.issue','Software license '.$id.' issued as '.$kind.' for SKU '.$sku.
         ($kind===SoftwareLicensePolicy::MASTER?' purpose: '.$purpose:''));
-    return ['id'=>$id,'key'=>$key,'type'=>$kind];
+    return ['id'=>$id,'key'=>$key,'type'=>$kind,'updates_until'=>$policy['updates_until'],
+        'max_installations'=>$policy['max_installations'],'policy_revision'=>$policy['policy_revision']];
 }
 /** Owner-configured customer domain-move cooldown; zero disables the delay. */
 function software_domain_change_cooldown_hours():int {
