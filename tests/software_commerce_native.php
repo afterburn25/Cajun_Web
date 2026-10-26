@@ -49,9 +49,20 @@ try{
         [gmdate('Y-m-d H:i:s',time()-86400),$trial['id']]);
     swok(!software_grant_verdict($lic,'example.com'),'Expired trial denied');
     db()->beginTransaction();
-    $master=software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1);
+    try{
+        software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1);
+        db()->rollBack();
+        swok(false,'Master requires recorded purpose');
+    }catch(InvalidArgumentException $expected){
+        if(db()->inTransaction())db()->rollBack();
+        swok(true,'Master requires recorded purpose');
+    }
+    db()->beginTransaction();
+    $master=software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,'Owner-approved release validation');
     db()->commit();
     swok(software_grant_verdict(license_get($master['key']),'other.example.com'),'Owner master supports any domain');
+    $masterMeta=one('SELECT purpose FROM '.table('software_entitlements').' WHERE license_id=?',[$master['id']]);
+    swok(($masterMeta['purpose']??'')==='Owner-approved release validation','Master purpose is persisted for owner review');
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['NEXUSCORE','Test software','software','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     $product=(int)db()->lastInsertId();
