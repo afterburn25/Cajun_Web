@@ -344,7 +344,14 @@ try{
     $reconcileCents=software_charge_prepare($reconcileInvoice,1,$reconcileRequest);
     swok($reconcileCents===4200,'Uncertain-charge fixture reserves the exact software invoice amount');
     software_charge_mark($reconcileInvoice,'uncertain','650000001');
-    swok(software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,1)==='paid',
+    swdenied(fn()=>software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,'wrong-password'),
+        'Paid reconciliation finalizer refuses incorrect owner password inside the mutation boundary');
+    swok(one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$reconcileInvoice])
+        ===['status'=>'uncertain','transaction_id'=>'650000001']
+        &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$reconcileInvoice])===['status'=>'issued']
+        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoice])->fetchColumn()===0,
+        'Rejected owner proof leaves uncertain charge, invoice and entitlements unchanged');
+    swok(software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,$password)==='paid',
         'Owner reconciliation finalizes an independently verified uncertain charge');
     $reconciledCharge=one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$reconcileInvoice]);
     $reconciledAttempt=one('SELECT status,transaction_id FROM '.table('software_charge_attempts').' WHERE request_key=?',[$reconcileRequest]);
@@ -354,7 +361,7 @@ try{
         'Reconciliation atomically aligns charge attempt, charge and invoice states');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoice])->fetchColumn()===1,
         'Reconciled payment safely fulfills exactly one purchased entitlement');
-    swok(software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,1)==='already_paid'
+    swok(software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,$password)==='already_paid'
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoice])->fetchColumn()===1,
         'Reconciliation replay is idempotent and does not mint a duplicate license');
     swok((int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=? AND detail LIKE ?',
@@ -384,7 +391,7 @@ try{
         &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$webhookInvoice])===['status'=>'issued']
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookInvoice])->fetchColumn()===0,
         'One-time capture webhook retains transaction identity without paying or fulfilling the invoice');
-    swok(software_charge_reconcile_finalize($webhookInvoice,'650000003',$webhookCents,1)==='paid',
+    swok(software_charge_reconcile_finalize($webhookInvoice,'650000003',$webhookCents,$password)==='paid',
         'Owner can finalize the exact one-time webhook review after independent reconciliation');
     swok(software_charge_capture_webhook_review($webhookDetails,'650000003')==='one_time_replay'
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookInvoice])->fetchColumn()===1,
@@ -432,7 +439,7 @@ try{
     $reconcileRequestTwo=hash('sha256','software reconcile second attempt');
     $reconcileCentsTwo=software_charge_prepare($reconcileInvoiceTwo,1,$reconcileRequestTwo);
     software_charge_mark($reconcileInvoiceTwo,'uncertain');
-    swdenied(fn()=>software_charge_reconcile_finalize($reconcileInvoiceTwo,'650000001',$reconcileCentsTwo,1),
+    swdenied(fn()=>software_charge_reconcile_finalize($reconcileInvoiceTwo,'650000001',$reconcileCentsTwo,$password),
         'Gateway transaction already assigned to another software invoice cannot be reused');
     swok(one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$reconcileInvoiceTwo])===['status'=>'issued']
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoiceTwo])->fetchColumn()===0,
@@ -764,7 +771,7 @@ try{
     swok(one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])
         ===['status'=>'dispute_review','transaction_id'=>'600000001'],
         'Late capture webhook cannot downgrade dispute review state');
-    swdenied(fn()=>software_charge_reconcile_finalize($invoice,'600000001',(int)$payment['amount_cents'],1),
+    swdenied(fn()=>software_charge_reconcile_finalize($invoice,'600000001',(int)$payment['amount_cents'],$password),
         'Owner paid reconciliation remains blocked after refund or dispute review');
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
         [900001,1,1,2499,'creating',$now,$now]);
