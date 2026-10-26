@@ -18,7 +18,7 @@ $refund=[
         'transId'=>'700000001',
         'transactionType'=>'refundTransaction',
         'refTransId'=>'600000001',
-        'authAmount'=>'12.50'
+        'authAmount'=>12.50
     ]
 ];
 $r=software_anet_reversal_details($refund,'700000001','net.authorize.payment.refund.created');
