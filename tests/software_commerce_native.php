@@ -382,6 +382,14 @@ try{
     swok(software_charge_capture_webhook_review($webhookDetails,'650000003')==='one_time_replay'
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookInvoice])->fetchColumn()===1,
         'Paid one-time capture webhook replay is acknowledged without duplicate fulfillment');
+    $sandboxBefore=one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$webhookInvoice]);
+    swok(software_sandbox_capture_verify($webhookDetails,'650000003')==='sandbox_payment_verified',
+        'Sandbox one-time capture shape is verified against the exact local invoice and amount');
+    swok(one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$webhookInvoice])===$sandboxBefore,
+        'Sandbox one-time capture verification does not mutate paid state');
+    $sandboxWrong=$webhookDetails;$sandboxWrong['transaction']['authAmount']='41.99';
+    swdenied(fn()=>software_sandbox_capture_verify($sandboxWrong,'650000003'),
+        'Sandbox one-time capture refuses amount mismatch instead of simulating payment');
 
     $webhookMismatchInvoice=software_order_place($buyer,$reconcileProduct,1,1,'webhook-mismatch.example.com',
         hash('sha256','software one-time webhook mismatch order'),false,0);
@@ -753,6 +761,20 @@ try{
     $finalized=one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[900001]);
     swok(($finalized['gateway_subscription_id']??'')==='223456789'&&($finalized['status']??'')==='pending_first_payment',
         'ARB enrollment finalizer persists verified gateway identity');
+    $sandboxSubDetails=[
+        'messages'=>['resultCode'=>'Ok'],
+        'transaction'=>[
+            'transId'=>'650009001',
+            'transactionStatus'=>'capturedPendingSettlement',
+            'authAmount'=>'24.99',
+            'subscription'=>['id'=>'223456789'],
+            'order'=>['invoiceNumber'=>'CWP-900001']
+        ]
+    ];
+    swok(software_sandbox_capture_verify($sandboxSubDetails,'650009001')==='sandbox_subscription_verified',
+        'Sandbox recurring capture shape is verified against stored subscription identity amount and invoice');
+    swok(one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[900001])===$finalized,
+        'Sandbox recurring capture verification does not advance subscription state');
 
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
         [900002,1,1,2499,'review',$now,$now]);
