@@ -64,6 +64,22 @@ if($operation==='payment-review'){
     echo json_encode(['original_transaction_id'=>$original,'reversal_transaction_id'=>$event,'state'=>$state],JSON_THROW_ON_ERROR);
     exit;
 }
+if($operation==='live-trial'){
+    if($invoice<1)exit(2);
+    require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+    $product=one('SELECT sku,family FROM '.table('catalog_products').' WHERE id=?',[$invoice]);
+    if(!$product||$product['family']!=='software')throw new RuntimeException('Synthetic live-trial fixture requires a software product.');
+    db()->beginTransaction();
+    try{
+        $trial=software_grant_create(1,(string)$product['sku'],'trial','Synthetic Buyer',
+            'software-http.example',gmdate('Y-m-d H:i:s',time()+86400*7),1);
+        db()->commit();
+    }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+    $row=one('SELECT l.license_key,l.created_at,e.created_at AS entitlement_created,e.issued_by FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.id=?',[(int)$trial['id']]);
+    echo json_encode(['license_key'=>$trial['key'],'license_id'=>(int)$trial['id'],
+        'created_at'=>$row['created_at'],'entitlement_created'=>$row['entitlement_created'],'issued_by'=>(int)$row['issued_by']],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation==='expired-trial'){
     if($invoice<1)exit(2);
     require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
