@@ -131,6 +131,12 @@ try{
         'Distinct partial refund against same charge is retained');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=?',['600000001'])->fetchColumn()===2,
         'Both distinct refund transactions are preserved');
+    swdenied(fn()=>software_payment_reversal_apply([
+        'kind'=>'refund','transaction_id'=>'700000003','original_transaction_id'=>'600000001',
+        'amount_cents'=>(int)$payment['amount_cents']
+    ]),'Cumulative one-time refunds cannot exceed the verified original payment');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=?',['600000001'])->fetchColumn()===2,
+        'Rejected over-refund creates no reversal receipt');
     swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',1)==='one_time_dispute_review',
         'Owner can record verified merchant dispute against one-time payment');
     swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',1)==='replay',
@@ -163,6 +169,10 @@ try{
     query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=?',['active',$invoice]);
     query('INSERT INTO '.table('software_subscription_receipts').' (subscription_invoice_id,gateway_transaction_id,invoice_id,created_at) VALUES (?,?,?,?)',
         [$invoice,'600000099',$invoice,$now]);
+    swdenied(fn()=>software_payment_reversal_apply([
+        'kind'=>'refund','transaction_id'=>'700000098','original_transaction_id'=>'600000099',
+        'amount_cents'=>(int)$payment['amount_cents']+1
+    ]),'Recurring refund cannot exceed the verified period payment');
     swok(software_payment_reversal_apply(['kind'=>'void','transaction_id'=>'700000099','original_transaction_id'=>'600000099','amount_cents'=>null])==='subscription_reversal_review',
         'Recurring payment reversal moves subscription to review');
     swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
