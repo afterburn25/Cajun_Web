@@ -5,6 +5,10 @@ on:
     paths:
       - 'tests/software_commerce_native.php'
       - 'site/app/billing/software_payment_review.php'
+      - 'site/app/billing/catalog.php'
+      - 'site/app/billing/software_orders.php'
+      - 'site/app/licenses/software_grants.php'
+      - 'site/app/licenses/software_notices.php'
       - 'site/app/billing/software_subscription_settle.php'
       - 'site/app/billing/software_subscription_enroll.php'
       - 'site/app/billing/software_subscription_cancel.php'
