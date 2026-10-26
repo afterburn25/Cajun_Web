@@ -29,8 +29,14 @@ try{
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
     swok(!software_commerce_ready(),'Not ready until owner explicitly prepares');
+    swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
+        'Pre-commerce install preserves legacy v3 validation');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'Owner preparation creates new storage');
+    save_setting('software_commerce_version','');
+    swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
+        'Existing entitlement storage without readiness marker is inconclusive, not authorized');
+    save_setting('software_commerce_version','1');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'Preparation can be repeated');
     swdenied(fn()=>software_commerce_prepare('wrong-password'),'Wrong owner password refused');
