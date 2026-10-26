@@ -52,6 +52,13 @@ jobs:
           php -l site/portal/views/workspace.php
           php -l site/admin/controllers/studio.php
           php -l site/admin/views/studio/licenses.php
+      - name: Keep real-sandbox acceptance source sandbox-only
+        run: |
+          python3 -m py_compile tests/software_anet_sandbox_acceptance.py
+          ! grep -F 'https://api.authorize.net' tests/software_anet_sandbox_acceptance.py
+          ! grep -F 'https://js.authorize.net' tests/software_anet_sandbox_acceptance.py
+          grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/software_anet_sandbox_acceptance.py
+          grep -F 'https://jstest.authorize.net/v1/Accept.js' tests/software_anet_sandbox_acceptance.py
       - name: Run pure license contract checks
         run: |
           php tests/software_license_policy.php
