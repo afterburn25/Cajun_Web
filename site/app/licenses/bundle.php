@@ -8,7 +8,14 @@ function license_bundle_is_software_entitlement(int $licenseId): bool {
     if($licenseId<1)return false;
     $table=config()['db']['prefix'].'software_entitlements';
     $present=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$table]);
-    return $present && (bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
+    if($present&&one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]))return true;
+    $license=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
+    if(!$license)return false;
+    $sku=(string)($license['product_id']??'');
+    $product=one('SELECT family FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
+    if(($product['family']??'')==='software')return true;
+    return (bool)one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+        ['license.software.issue','Software license '.$licenseId.' issued as %']);
 }
 
 /**
