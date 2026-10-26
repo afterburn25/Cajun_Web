@@ -82,6 +82,12 @@ try{
     software_fulfill_paid_order($invoice);
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,'Paid two-unit invoice mints exactly two keys after retry');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice])->fetchColumn()===1,'One delivery email outbox entry');
+    $issued=one('SELECT license_id FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number LIMIT 1',[$invoice]);
+    software_grant_replace_domain((int)$issued['license_id'],'new.example.com','moved.example.com',1);
+    swok((bool)one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
+        [(int)$issued['license_id'],'moved.example.com']),'First customer software domain move succeeds');
+    swdenied(fn()=>software_grant_replace_domain((int)$issued['license_id'],'moved.example.com','again.example.com',1),
+        'Immediate repeated software domain move is blocked by cooldown');
     query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
         [$invoice,1,(int)$payment['amount_cents'],'paid',hash('sha256','native-reversal-request'),'600000001',$now,$now]);
     swok(software_payment_reversal_apply(['kind'=>'refund','original_transaction_id'=>'600000001'])==='one_time_reversal_review',
