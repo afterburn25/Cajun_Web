@@ -760,6 +760,21 @@ try{
     $usage=one('SELECT check_count FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
         [$usageLicense,'new.example.com']);
     swok((int)$usage['check_count']===2,'Validation after the one-minute bucket advances observed usage once');
+
+    query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 220 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 181 DAY),3)', 
+        [(int)$futureGrant['id'],'policy-three.example.com']);
+    query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at,deactivated_at) VALUES (?,?,0,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 220 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY))',
+        [(int)$futureGrant['id'],'owner-view-stale.example.com']);
+    query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 220 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 181 DAY),4)',
+        [(int)$futureGrant['id'],'owner-view-stale.example.com']);
+    $ownerUsage=software_usage_recent((int)$futureGrant['id'],10);
+    swok((bool)array_filter($ownerUsage,static fn($row)=>($row['domain']??'')==='policy-three.example.com'),
+        'Owner usage view retains old observations for still-active installations');
+    swok(!(bool)array_filter($ownerUsage,static fn($row)=>($row['domain']??'')==='owner-view-stale.example.com'),
+        'Owner usage view applies the 180-day inactive-domain retention boundary');
+    swok(software_usage_for_customer((int)$futureGrant['id'],2)===[],
+        'Customer usage helper does not expose another customer software observations');
+
     $issued=one('SELECT license_id FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number LIMIT 1',[$invoice]);
     software_grant_replace_domain((int)$issued['license_id'],'new.example.com','moved.example.com',1);
     swok((bool)one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
