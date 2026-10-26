@@ -30,6 +30,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
+    require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
     swok(!software_commerce_ready(),'Not ready until owner explicitly prepares');
     swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
@@ -110,6 +111,14 @@ try{
         'Both distinct refund transactions are preserved');
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
         [$invoice,1,'123456789',1,(int)$payment['amount_cents'],'active',$now,$now]);
+    $subscriptionId=(int)one('SELECT id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['id'];
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['cancelling',$subscriptionId]);
+    swok(software_subscription_cancel_finalize($subscriptionId,1,$invoice)==='cancelled',
+        'Cancellation finalizer confirms stored cancelled state');
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$subscriptionId]);
+    swok(software_subscription_cancel_finalize($subscriptionId,1,$invoice)==='review',
+        'Cancellation finalizer preserves concurrent review state');
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['active',$subscriptionId]);
     swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.failed','123456789')==='subscription_review',
         'Failed gateway subscription enters review');
     swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
