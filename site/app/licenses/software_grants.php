@@ -98,8 +98,13 @@ function software_grant_verdict(array $license,string $domain):bool {
     }
     $row=one('SELECT * FROM '.table('software_entitlements').' WHERE license_id=?',[(int)$license['id']]);
     if (!$row) {
+        $productId=(string)($license['product_id']??'');
+        if($productId===''){
+            $stored=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[(int)$license['id']]);
+            $productId=(string)($stored['product_id']??'');
+        }
         $softwareProduct=one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND family=?',
-            [(string)($license['product_id']??''),'software']);
+            [$productId,'software']);
         $issued=one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
             ['license.software.issue','Software license '.(int)$license['id'].' issued as %']);
         if($softwareProduct||$issued){
