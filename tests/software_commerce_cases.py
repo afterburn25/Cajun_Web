@@ -212,6 +212,25 @@ def run_browser(env, browser):
           response.status_code==500
           and response.headers.get('Content-Type','').startswith('application/json')
           and response.json()=={'authorized':False,'error':'Internal server error'})
+    orphan_page=alice.get(portal,timeout=25)
+    orphan_add={
+        'csrf':token(orphan_page),'action':'license_domain_add',
+        'license_id':str(orphan['license_id']),'domain':'orphan-second.example'
+    }
+    orphan_add_result=alice.post(portal,data=orphan_add,timeout=25)
+    check('Orphan software entitlement cannot mutate through generic add-install action',
+          'entitlement history is incomplete' in orphan_add_result.text.lower()
+          and db('SELECT COUNT(*) AS n FROM ci_license_domains WHERE license_id=?',[orphan['license_id']])==[{'n':1}])
+    orphan_page=alice.get(portal,timeout=25)
+    orphan_deactivate={
+        'csrf':token(orphan_page),'action':'license_domain_deactivate',
+        'license_id':str(orphan['license_id']),'domain':'orphan-software.example'
+    }
+    orphan_deactivate_result=alice.post(portal,data=orphan_deactivate,timeout=25)
+    check('Orphan software entitlement cannot mutate through generic deactivate action',
+          'entitlement history is incomplete' in orphan_deactivate_result.text.lower()
+          and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[orphan['license_id']])
+              ==[{'domain':'orphan-software.example'}])
 
     expired=fixture('expired-trial',pid)
     expired_response=requests.post(validate,json={
@@ -473,6 +492,15 @@ def run_browser(env, browser):
           'Installation deactivated' in deactivated.text
           and 'Installations: 1 / 2' in deactivated.text
           and 'Add installation domain' in deactivated.text
+          and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':'software-http.example'}])
+    bypass={
+        'csrf':token(deactivated),'action':'license_domain_add',
+        'license_id':str(license_id),'domain':'cooldown-bypass.example'
+    }
+    bypass_result=alice.post(portal,data=bypass,timeout=25)
+    check('Deactivate then add a different domain cannot bypass software replacement cooldown',
+          'recently changed installations' in bypass_result.text.lower()
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     single=alice.get(portal,timeout=25)
