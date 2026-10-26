@@ -127,8 +127,32 @@ function software_portal_render(?array $client,string $error=''):never{
         echo '<h2>Purchase software</h2>';
         foreach(catalog_public() as $offer){
             if(!software_order_offer($offer))continue;
+            $policy=software_product_policy((int)$offer['id']);
             echo '<article class="workspace-card"><h3>'.esc($offer['title']).'</h3><p>'.esc($offer['summary']).'</p>';
-            echo '<p>$'.esc(number_format((int)$offer['amount_cents']/100,2)).' · '.esc(catalog_terms()[$offer['term']]).'</p>';
+            echo '<p>
+            echo '<input type="hidden" name="product_id" value="'.(int)$offer['id'].'">';
+            echo '<input type="hidden" name="revision" value="'.(int)$offer['revision'].'">';
+            echo '<input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
+            echo '<label>Installation domain<input name="domain" maxlength="253" required placeholder="example.com"></label>';
+            echo '<label>Licenses<input name="quantity" type="number" min="1" max="25" value="1" required></label>';
+            if($offer['term']!=='once')echo '<label><input name="subscribe" type="checkbox" value="1" required> I authorize the '.esc($offer['term']).' subscription and understand recurring charges and cancellation terms.</label>';
+            echo '<button class="btn gold" type="submit">Create invoice</button></form></article>';
+        }
+    }
+    echo '</div></section>';
+    if($gateway){
+        $external=$gateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';
+        echo '<script nonce="'.nonce().'" defer src="'.esc($external).'"></script>';
+        echo '<script nonce="'.nonce().'" defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
+    }
+    site_foot(false);
+    exit;
+}
+.esc(number_format((int)$offer['amount_cents']/100,2)).' · '.esc(catalog_terms()[$offer['term']]).'</p>';
+            echo '<p class="hint">Licensing: '.((int)$policy['update_months']===0?'updates while the license remains valid':(int)$policy['update_months'].' months of updates from issue');
+            echo ' · up to '.(int)$policy['max_installations'].' concurrent installation'.((int)$policy['max_installations']===1?'':'s').' per license.</p>';
+            if($policy['module_key']!=='')echo '<p class="hint">Module: <code>'.esc($policy['module_key']).'</code></p>';
+            if($policy['dependency_skus'])echo '<p class="hint">Product dependencies: '.esc(implode(', ',$policy['dependency_skus'])).'. Review these requirements before purchase.</p>';
             echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="software_order_buy">';
             echo '<input type="hidden" name="product_id" value="'.(int)$offer['id'].'">';
             echo '<input type="hidden" name="revision" value="'.(int)$offer['revision'].'">';
