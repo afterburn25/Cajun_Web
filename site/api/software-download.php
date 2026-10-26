@@ -4,7 +4,7 @@ declare(strict_types=1);
 define('CWP_BOOT',true);
 require __DIR__.'/../includes/bootstrap.php';
 require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
-require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 boot();
 $client=studio_client();
 if(!$client||support_current()||!software_commerce_ready()){http_response_code(403);exit;}
@@ -12,14 +12,7 @@ $id=$_GET['id']??null;
 if(!is_string($id)||!preg_match('/^[1-9][0-9]{0,18}$/D',$id)){http_response_code(404);exit;}
 $asset=one('SELECT a.* FROM '.table('software_assets').' a WHERE a.id=? AND a.is_published=1',[(int)$id]);
 if(!$asset){http_response_code(404);exit;}
-$licenses=all('SELECT l.* FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.product_id=? AND l.is_active=1 AND l.is_master=0 LIMIT 100',
-    [$client['id'],$asset['sku']]);
-$allowed=false;
-foreach($licenses as $license){
-    $domain=one('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY id LIMIT 1',[$license['id']]);
-    if($domain&&software_grant_verdict($license,$domain['domain'])){$allowed=true;break;}
-}
-if(!$allowed){http_response_code(404);exit;}
+if(!software_asset_customer_authorized((int)$client['id'],(string)$asset['sku'])){http_response_code(404);exit;}
 $storage=realpath(config()['storage']??'');
 $file=realpath($asset['file_path']);
 if(!$storage||!$file||!str_starts_with(str_replace('\\','/',$file),rtrim(str_replace('\\','/',$storage),'/').'/')
