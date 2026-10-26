@@ -29,6 +29,73 @@ function software_charge_record_paid(int $invoice,string $transactionId,int $cen
     try{license_fulfill_invoice($invoice);}catch(Throwable $e){report_error($e);}
 }
 /**
+ * Signed production capture webhook handling for one-time software charges.
+ * A webhook never fulfills or marks an invoice paid by itself: it only
+ * acknowledges an already-paid replay or fences the local charge into owner
+ * review with the gateway transaction identity retained.
+ */
+function software_charge_capture_webhook_review(array $details,string $transactionId):string{
+    if(!preg_match('/^[0-9]{5,30}$/D',$transactionId)){
+        throw new InvalidArgumentException('Invalid gateway transaction ID.');
+    }
+    $tx=$details['transaction']??null;
+    if(!is_array($tx)||isset($tx['subscription'])){
+        throw new InvalidArgumentException('One-time webhook review requires a non-subscription transaction.');
+    }
+    $invoiceNumber=(string)($tx['order']['invoiceNumber']??'');
+    if(!preg_match('/^CWP-([1-9][0-9]{0,14})$/D',$invoiceNumber,$match)){
+        return 'one_time_unmatched';
+    }
+    $invoice=(int)$match[1];
+    if(db()->inTransaction())throw new LogicException('One-time webhook review owns its transaction.');
+    db()->beginTransaction();
+    try{
+        $charge=one('SELECT * FROM '.table('software_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
+        if(!$charge){
+            db()->commit();return 'one_time_unmatched';
+        }
+        $localTransaction=$charge['transaction_id']===null?null:(string)$charge['transaction_id'];
+        if($localTransaction!==null&&!hash_equals($localTransaction,$transactionId)){
+            license_audit(0,'payment.webhook.conflict',
+                'Software invoice '.$invoice.' received verified capture '.$transactionId.
+                ' but retains gateway transaction '.$localTransaction.' for owner review');
+            db()->commit();return 'one_time_conflict';
+        }
+        $confirmed=software_charge_confirmed($details,$transactionId,$invoice,(int)$charge['amount_cents']);
+        $invoiceRow=one('SELECT status FROM '.table('studio_invoices').' WHERE id=? FOR UPDATE',[$invoice]);
+        if((string)$charge['status']==='paid'){
+            if($confirmed&&$localTransaction===$transactionId&&($invoiceRow['status']??'')==='paid'){
+                db()->commit();return 'one_time_replay';
+            }
+            license_audit(0,'payment.webhook.conflict',
+                'Paid software invoice '.$invoice.' received inconsistent capture '.$transactionId.' for owner review');
+            db()->commit();return 'one_time_conflict';
+        }
+        if(in_array((string)$charge['status'],['reversal_review','dispute_review'],true)){
+            db()->commit();return 'one_time_review';
+        }
+        if(!in_array((string)$charge['status'],['processing','uncertain','review','declined','sandbox_test'],true)){
+            throw new RuntimeException('One-time software charge is in an unrecognized webhook state.');
+        }
+        $now=gmdate('Y-m-d H:i:s');
+        query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE id=?',
+            ['review',$transactionId,$now,$charge['id']]);
+        query('UPDATE '.table('software_charge_attempts').' SET status=?,transaction_id=?,updated_at=? '.
+            'WHERE request_key=? AND status IN (?,?,?,?,?) AND (transaction_id IS NULL OR transaction_id=?)',
+            ['review',$transactionId,$now,$charge['request_key'],
+             'processing','uncertain','review','declined','sandbox_test',$transactionId]);
+        license_audit(0,$confirmed?'payment.webhook.review':'payment.webhook.mismatch',
+            'Software invoice '.$invoice.' capture '.$transactionId.
+            ($confirmed?' verified and retained for owner reconciliation':' did not exactly match the local charge contract'));
+        db()->commit();
+        return $confirmed?'one_time_review':'one_time_mismatch';
+    }catch(Throwable $e){
+        if(db()->inTransaction())db()->rollBack();
+        throw $e;
+    }
+}
+
+/**
  * Finalize an owner-reconciled charge only after an independent exact gateway
  * transaction readback. This is idempotent for the same paid transaction and
  * refuses declined/sandbox/reversal/dispute states.
