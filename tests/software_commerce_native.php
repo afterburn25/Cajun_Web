@@ -277,6 +277,13 @@ try{
     swok(!one('SELECT id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$monthlyInvoice]),
         'Malformed subscription token leaves no subscription attempt row');
 
+    license_deactivate_domain((int)$dependencyGrant['id'],'dependency.example.com',1);
+    swdenied(fn()=>software_charge_prepare($invoice,1,hash('sha256','dependency-missing-charge')),
+        'Missing required software dependency blocks charge reservation');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_charge_attempts').' WHERE invoice_id=?',[$invoice])->fetchColumn()===0,
+        'Dependency refusal creates no gateway charge attempt');
+    license_register_domain((int)$dependencyGrant['id'],'dependency.example.com',1);
+
     $attemptOne=hash('sha256','native-declined-charge-1');
     $attemptTwo=hash('sha256','native-declined-charge-2');
     swok(software_charge_prepare($invoice,1,$attemptOne)===(int)ledger_invoice($invoice)['amount_cents'],
@@ -296,6 +303,12 @@ try{
     ledger_insert($payment,0,'gateway',(int)$payment['amount_cents'],'authorize_net','Synthetic gateway approval only',gmdate('Y-m-d'));
     query('UPDATE '.table('studio_invoices').' SET status=?,paid_at=? WHERE id=?',['paid',gmdate('Y-m-d H:i:s'),$invoice]);
     db()->commit();
+    license_deactivate_domain((int)$dependencyGrant['id'],'dependency.example.com',1);
+    swdenied(fn()=>software_fulfill_paid_order($invoice),
+        'Paid software does not mint licenses while its snapshotted dependency is missing');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===0,
+        'Dependency failure after payment leaves paid order unfulfilled for owner review');
+    license_register_domain((int)$dependencyGrant['id'],'dependency.example.com',1);
     software_fulfill_paid_order($invoice);
     software_fulfill_paid_order($invoice);
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,'Paid two-unit invoice mints exactly two keys after retry');
