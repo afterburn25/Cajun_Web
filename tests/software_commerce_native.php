@@ -109,6 +109,14 @@ try{
         'Distinct partial refund against same charge is retained');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=?',['600000001'])->fetchColumn()===2,
         'Both distinct refund transactions are preserved');
+    swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',1)==='one_time_dispute_review',
+        'Owner can record verified merchant dispute against one-time payment');
+    swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',1)==='replay',
+        'Repeated merchant dispute case is idempotent');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_disputes').' WHERE case_reference=?',['MSP-CASE-001'])->fetchColumn()===1,
+        'Merchant dispute evidence is retained once');
+    swok(one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])['status']==='dispute_review',
+        'Merchant dispute places one-time charge into review');
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
         [$invoice,1,'123456789',1,(int)$payment['amount_cents'],'active',$now,$now]);
     $subscriptionId=(int)one('SELECT id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['id'];
