@@ -110,6 +110,37 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
     return software_product_policy($productId);
 }
 
+function software_product_policy_purchase_snapshot(array $policy):array{
+    $module=(string)($policy['module_key']??'');
+    $deps=$policy['dependency_skus']??null;
+    $months=$policy['update_months']??null;
+    $max=$policy['max_installations']??null;
+    $revision=$policy['revision']??null;
+    if($module!==''&&!preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$/D',$module)
+        ||!is_array($deps)||!array_is_list($deps)||count($deps)>25
+        ||!is_int($months)||$months<0||$months>120
+        ||!is_int($max)||$max<1||$max>25
+        ||!is_int($revision)||$revision<0){
+        throw new RuntimeException('Software product policy snapshot is invalid.');
+    }
+    $clean=[];$seen=[];
+    foreach($deps as $sku){
+        if(!is_string($sku)||!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku)){
+            throw new RuntimeException('Software dependency policy snapshot is invalid.');
+        }
+        if(isset($seen[$sku]))continue;
+        $seen[$sku]=true;$clean[]=$sku;
+    }
+    sort($clean,SORT_STRING);
+    return [
+        'module_key'=>$module,
+        'dependency_skus'=>$clean,
+        'update_months'=>$months,
+        'max_installations'=>$max,
+        'revision'=>$revision,
+    ];
+}
+
 function software_policy_add_months(DateTimeImmutable $base,int $months):string{
     if($months<1||$months>120)throw new InvalidArgumentException('Software update period must be between one and 120 months.');
     $utc=$base->setTimezone(new DateTimeZone('UTC'));
@@ -121,8 +152,10 @@ function software_policy_add_months(DateTimeImmutable $base,int $months):string{
     return $first->setDate($targetYear,$targetMonth,$targetDay)->format('Y-m-d H:i:s');
 }
 
-function software_entitlement_policy_snapshot(string $sku,?string $expires,bool $recurring,DateTimeImmutable $now):array{
-    $policy=software_product_policy_for_sku($sku);
+function software_entitlement_policy_snapshot(string $sku,?string $expires,bool $recurring,DateTimeImmutable $now,?array $purchasePolicy=null):array{
+    $policy=$purchasePolicy===null
+        ? software_product_policy_purchase_snapshot(software_product_policy_for_sku($sku))
+        : software_product_policy_purchase_snapshot($purchasePolicy);
     $updatesUntil=null;
     if($recurring){
         if($expires===null)throw new InvalidArgumentException('Recurring software entitlement requires paid-through expiry.');
