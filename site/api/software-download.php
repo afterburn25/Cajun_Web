@@ -5,6 +5,7 @@ define('CWP_BOOT',true);
 require __DIR__.'/../includes/bootstrap.php';
 require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
 boot();
 $client=studio_client();
 if(!$client||support_current()||!software_commerce_ready()){http_response_code(403);exit;}
@@ -13,10 +14,8 @@ if(!is_string($id)||!preg_match('/^[1-9][0-9]{0,18}$/D',$id)){http_response_code
 $asset=one('SELECT a.* FROM '.table('software_assets').' a WHERE a.id=? AND a.is_published=1',[(int)$id]);
 if(!$asset){http_response_code(404);exit;}
 if(!software_asset_customer_authorized((int)$client['id'],(string)$asset['sku'])){http_response_code(404);exit;}
-$storage=realpath(config()['storage']??'');
-$file=realpath($asset['file_path']);
-if(!$storage||!$file||!str_starts_with(str_replace('\\','/',$file),rtrim(str_replace('\\','/',$storage),'/').'/')
-    ||!is_file($file)||filesize($file)!==(int)$asset['byte_size']
+$file=software_asset_resolve_path((string)$asset['file_path']);
+if(!$file||filesize($file)!==(int)$asset['byte_size']
     ||!hash_equals($asset['sha256'],hash_file('sha256',$file))){
     http_response_code(404);exit;
 }
