@@ -7,10 +7,16 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_license_policy.php';
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 
 function software_grant_create(int $clientId, string $sku, string $kind, string $name,
-    ?string $domain, ?string $expires, int $issuer=0, ?int $invoice=null, ?int $unit=null):array {
+    ?string $domain, ?string $expires, int $issuer=0, ?int $invoice=null, ?int $unit=null, string $purpose=''):array {
     if (!software_commerce_ready()) throw new RuntimeException('Software licensing is not prepared.');
     $metadata=SoftwareLicensePolicy::issue($kind,$name,$domain,$expires,$issuer>0,
         new DateTimeImmutable('now',new DateTimeZone('UTC')));
+    $purpose=trim($purpose);
+    if($kind===SoftwareLicensePolicy::MASTER){
+        if(strlen($purpose)<10||strlen($purpose)>200)throw new InvalidArgumentException('Master license purpose is required (10–200 characters).');
+    }elseif($purpose!==''){
+        throw new InvalidArgumentException('Purpose is reserved for internal master licenses.');
+    }
     if (!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$clientId])) {
         throw new InvalidArgumentException('Active customer is required.');
     }
@@ -20,13 +26,14 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     $license=one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$key]);
     if (!$license) throw new RuntimeException('License creation failed.');
     $id=(int)$license['id'];
-    query('INSERT INTO '.table('software_entitlements').' (license_id,license_type,licensee,expires_at,issued_by,invoice_id,unit_number,created_at) VALUES (?,?,?,?,?,?,?,?)',
-        [$id,$kind,$metadata['licensee'],$metadata['expires_at'],$issuer,$invoice,$unit,gmdate('Y-m-d H:i:s')]);
+    query('INSERT INTO '.table('software_entitlements').' (license_id,license_type,licensee,expires_at,issued_by,purpose,invoice_id,unit_number,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+        [$id,$kind,$metadata['licensee'],$metadata['expires_at'],$issuer,$purpose,$invoice,$unit,gmdate('Y-m-d H:i:s')]);
     if ($metadata['domain']!==null) {
         query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at) VALUES (?,?,1,?)',
             [$id,$metadata['domain'],gmdate('Y-m-d H:i:s')]);
     }
-    license_audit($issuer,'software.issue','Software license '.$id.' issued as '.$kind.' for SKU '.$sku);
+    license_audit($issuer,'software.issue','Software license '.$id.' issued as '.$kind.' for SKU '.$sku.
+        ($kind===SoftwareLicensePolicy::MASTER?' purpose: '.$purpose:''));
     return ['id'=>$id,'key'=>$key,'type'=>$kind];
 }
 /** Runtime type and expiration guard for the existing /api/validate.php path. */
