@@ -255,6 +255,10 @@ try{
 
     $orphanKey=license_create(1,'NEXUSCORE',1,false,null);
     $orphan=one('SELECT id,is_active,is_master FROM '.table('website_licenses').' WHERE license_key=?',[$orphanKey]);
+    swok(license_bundle_is_software_entitlement((int)$orphan['id']),
+        'Orphan key for a registered software product still fails closed against legacy bundles');
+    swdenied(fn()=>license_bundle_store((int)$orphan['id'],$zipPath,'Orphan software bundle must fail'),
+        'Orphan registered software key cannot be stored as a legacy website bundle');
     swdenied(fn()=>software_grant_verdict($orphan,'orphan.example.com'),
         'Reduced API license row cannot authorize registered software with missing entitlement history');
     license_register_domain((int)$orphan['id'],'orphan.example.com',1);
