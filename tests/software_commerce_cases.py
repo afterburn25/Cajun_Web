@@ -676,3 +676,35 @@ def run_browser(env, browser):
     check('Software commerce mobile fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     check('Software commerce browser has no uncaught script errors',not errors)
     context.close()
+
+    register=admin.get(licenses,timeout=25)
+    suspend_form=next(
+        form for form in soup(register).select('form')
+        if form.select_one('input[name=action]') is not None
+        and form.select_one('input[name=action]').get('value')=='studio_license_deactivate'
+        and form.select_one('input[name=id]') is not None
+        and form.select_one('input[name=id]').get('value')==str(license_id)
+    )
+    suspended=admin.post(licenses,data=form_data(suspend_form),timeout=25)
+    suspended_client=alice.get(portal,timeout=25)
+    check('Owner suspension is shown distinctly and blocks private software download',
+          suspended.status_code==200
+          and 'Standard · Suspended' in suspended_client.text
+          and alice.get(download,timeout=25).status_code==404
+          and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
+    register=admin.get(licenses,timeout=25)
+    reactivate_form=next(
+        form for form in soup(register).select('form')
+        if form.select_one('input[name=action]') is not None
+        and form.select_one('input[name=action]').get('value')=='studio_license_reactivate'
+        and form.select_one('input[name=id]') is not None
+        and form.select_one('input[name=id]').get('value')==str(license_id)
+    )
+    reactivated=admin.post(licenses,data=form_data(reactivate_form),timeout=25)
+    reactivated_client=alice.get(portal,timeout=25)
+    check('Owner reactivation restores the same software entitlement without repurchase',
+          reactivated.status_code==200
+          and 'Standard · Active' in reactivated_client.text
+          and paid['license_key'] in reactivated_client.text
+          and alice.get(download,timeout=25).status_code==200
+          and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
