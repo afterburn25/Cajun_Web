@@ -35,6 +35,23 @@ check($opaque['subscription']['paymentSchedule']['interval']['length']===1,
     'ARB monthly interval is one month');
 reject(fn()=>software_anet_arb_opaque(12,9900,1,'2000-01-01','COMMON.ACCEPT.INAPP.PAYMENT','synthetic-token'),
     'ARB cannot begin in the past');
+$cancelledProfile=[
+    'messages'=>['resultCode'=>'Ok'],
+    'subscription'=>[
+        'name'=>'CajunWebPro software 12',
+        'status'=>'canceled',
+        'amount'=>'99.00',
+        'paymentSchedule'=>[
+            'interval'=>['length'=>1,'unit'=>'months'],
+            'startDate'=>'2030-12-01',
+            'totalOccurrences'=>9999
+        ],
+        'order'=>['invoiceNumber'=>'CWP-12']
+    ]
+];
+$cancelled=software_anet_subscription_profile_details($cancelledProfile,'555123',12,9900,1,'2030-12-01');
+check($cancelled['status']==='canceled'&&$cancelled['subscription_id']==='555123',
+    'Independent ARB readback accepts exact canceled subscription contract');
 $oneTime=[
     'messages'=>['resultCode'=>'Ok'],
     'transaction'=>[
