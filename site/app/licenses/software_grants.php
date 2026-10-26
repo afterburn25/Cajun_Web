@@ -55,11 +55,7 @@ function software_customer_has_valid_product(int $clientId,string $sku):bool {
         $domains=all('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY id LIMIT 25',
             [$license['id']]);
         foreach($domains as $domain){
-            try{
-                if(is_string($domain['domain']??null)&&software_grant_verdict($license,$domain['domain']))return true;
-            }catch(RuntimeException){
-                throw;
-            }
+            if(is_string($domain['domain']??null)&&software_grant_verdict($license,$domain['domain']))return true;
         }
     }
     return false;
