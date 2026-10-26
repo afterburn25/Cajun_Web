@@ -19,6 +19,8 @@ BASELINE_VERSION='1.25.0'
 BASELINE_URL='https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'
 # Populated from the published GitHub release during CI and bound into the
 # evidence report. Do not hard-code an unverified value here.
+BASELINE_SHA256='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'
+BASELINE_BYTES=15843208
 MAX_BASELINE_BYTES=128*1024*1024
 
 def candidate_version():
@@ -33,14 +35,17 @@ def fetch_baseline(target:Path):
     from urllib.request import urlopen
     with urlopen(BASELINE_URL,timeout=60) as response:
         raw=response.read(MAX_BASELINE_BYTES+1)
+    digest=hashlib.sha256(raw).hexdigest()
     if len(raw)>MAX_BASELINE_BYTES:
         raise RuntimeError('Published v1.25 baseline exceeds bounded fixture size.')
+    if len(raw)!=BASELINE_BYTES or digest!=BASELINE_SHA256:
+        raise RuntimeError('Published v1.25 baseline does not match the pinned GitHub release asset.')
     target.parent.mkdir(parents=True,exist_ok=True)
     target.write_bytes(raw)
     return {
         'url':BASELINE_URL,
         'bytes':len(raw),
-        'sha256':hashlib.sha256(raw).hexdigest(),
+        'sha256':digest,
     }
 
 def inspect_zip(path:Path):
