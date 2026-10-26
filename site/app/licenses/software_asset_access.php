@@ -29,18 +29,3 @@ function software_asset_entitlement_authorized(int $clientId,int $licenseId,arra
     }
     return null;
 }
-
-function software_asset_customer_authorized(int $clientId,string $sku,string $assetReleasedAt):bool{
-    if($clientId<1||!software_commerce_ready()||!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku))return false;
-    if(!preg_match('/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/D',$assetReleasedAt))return false;
-    $licenses=all('SELECT l.*,e.updates_until FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.product_id=? AND l.is_active=1 AND l.is_master=0 LIMIT 100',
-        [$clientId,$sku]);
-    foreach($licenses as $license){
-        if($license['updates_until']!==null&&$assetReleasedAt>$license['updates_until'])continue;
-        $domains=all('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY id LIMIT 25',[$license['id']]);
-        foreach($domains as $domain){
-            if(is_string($domain['domain']??null)&&software_grant_verdict($license,$domain['domain']))return true;
-        }
-    }
-    return false;
-}
