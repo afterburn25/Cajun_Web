@@ -61,4 +61,18 @@ rejects(fn()=>SoftwareLicensePolicy::issue('trial','Buyer', 'bad..site','2026-11
     'Malformed domains are refused');
 rejects(fn()=>SoftwareLicensePolicy::expiry('2026-02-30 00:00:00'),
     'Impossible calendar dates are refused');
+// Regression coverage: never accept a different registered host or a revoked grant.
+expect(!SoftwareLicensePolicy::authorized([
+    'type'=>'standard','active'=>true,'domain'=>'example.com',
+    'expires_at'=>null,'internal_only'=>false], 'example.com.attacker.test', $now),
+    'Domain comparison rejects suffix-spoofed hosts');
+expect(!SoftwareLicensePolicy::authorized([
+    'type'=>'standard','active'=>false,'domain'=>'example.com',
+    'expires_at'=>null,'internal_only'=>false], 'example.com', $now),
+    'Revoked perpetual license is denied');
+rejects(fn()=>SoftwareLicensePolicy::issue('temporary','Buyer','example.com',null,false,$now),
+    'Temporary grant always requires expiry');
+rejects(fn()=>SoftwareLicensePolicy::issue('trial','Buyer','https://example.com/path',
+    '2026-11-01 00:00:00',false,$now),
+    'Installation domain cannot contain URL scheme or path');
 echo 'Software license issue/authorization contract: PASS'.PHP_EOL;
