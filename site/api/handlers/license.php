@@ -74,7 +74,7 @@ try {
 
     // Look up the license key
     $license = one(
-        'SELECT id, license_key, is_active, is_master FROM ' . table('website_licenses') . ' WHERE license_key = ?',
+        'SELECT id, license_key, product_id, is_active, is_master FROM ' . table('website_licenses') . ' WHERE license_key = ?',
         [$licenseKey]
     );
 
