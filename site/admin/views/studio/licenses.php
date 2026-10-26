@@ -29,6 +29,20 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php if(!$softwareReady): ?>
 <section class="workspace-card"><h2>Enable advanced software licensing</h2><p>Add trial, temporary, master and paid software tracking, customer purchases, payment checks and private downloads. Existing licenses and invoices are retained.</p><form method="post"><?php admin_action('software_commerce_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare software commerce</button></form></section>
 <?php endif; ?>
+<?php if($softwareReady): ?>
+<section class="workspace-card">
+<h2>Authorize.net payment configuration</h2>
+<p>Checkout uses the existing encrypted payment credentials. Sandbox transactions can be tested but will not unlock real licenses. Production charging remains disabled until reviewed and approved.</p>
+<p>Current checkout mode: <strong><?=esc((string)setting('software_gateway_mode','disabled'))?></strong></p>
+<form method="post"><?php admin_action('software_gateway_select'); ?>
+<label>Payment mode<select name="gateway_mode">
+<option value="disabled">Disabled — do not take card payments</option>
+<option value="sandbox">Sandbox — test without fulfilling paid orders</option>
+</select></label>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn gold">Save software payment mode</button></form>
+</section>
+<?php endif; ?>
 <div class="workspace-grid">
 <section class="workspace-card">
 <h2>Create a license</h2>
