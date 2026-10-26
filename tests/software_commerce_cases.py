@@ -64,6 +64,12 @@ def run_browser(env, browser):
     # Prepare optional dependencies through their real owner forms so this
     # suite does not depend on another browser module having run first.
     settings=lambda name: db('SELECT value FROM ci_settings WHERE name=?',[name])
+    staff=base+'/existing/admin/index.php?view=staff'
+    if settings('staff_schema_version') != [{'value':'1'}]:
+        response=submit(admin,staff,'staff_migrate',{'owner_id':'1','owner_password':OWNER,'confirm':'1'})
+        check('Software browser prepares owner/staff authority through real admin form',
+              response.status_code==200 and settings('staff_schema_version')==[{'value':'1'}]
+              and 'Administrator access is enabled' in response.text)
     if settings('license_schema_version') != [{'value':'3'}]:
         response=submit(admin,licenses,'studio_license_setup',{'current_password':OWNER})
         check('Software browser prepares website licensing through owner form',
