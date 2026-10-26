@@ -62,6 +62,36 @@ function license_financing_evaluate(array $periods,int $installments,int $graceD
         'overdue_period'=>null,'days_late'=>0];
 }
 
+function license_financing_terms_math(int $cashPrice,int $initialPayment,int $amountFinanced,int $financeCharge,int $installmentAmount,int $installments):array{
+    if($cashPrice<1||$initialPayment<0||$initialPayment>$cashPrice||$amountFinanced<1||$financeCharge<0
+        ||$installmentAmount<1||$installments<1||$installments>360){
+        throw new InvalidArgumentException('Financing amounts are outside supported limits.');
+    }
+    if($cashPrice-$initialPayment!==$amountFinanced){
+        throw new InvalidArgumentException('Cash price minus initial payment must equal amount financed.');
+    }
+    $installmentTotal=$installmentAmount*$installments;
+    if($installmentTotal!==$amountFinanced+$financeCharge){
+        throw new InvalidArgumentException('Installment amount multiplied by installment count must equal amount financed plus finance charge.');
+    }
+    return [
+        'cash_price_cents'=>$cashPrice,'initial_payment_cents'=>$initialPayment,'amount_financed_cents'=>$amountFinanced,
+        'finance_charge_cents'=>$financeCharge,'installment_amount_cents'=>$installmentAmount,'installments'=>$installments,
+        'installment_total_cents'=>$installmentTotal,'total_customer_cost_cents'=>$initialPayment+$installmentTotal
+    ];
+}
+
+function license_financing_cadence_months(string $cadence):int{
+    return match($cadence){'monthly'=>1,'quarterly'=>3,'annually'=>12,default=>throw new InvalidArgumentException('Financing cadence must be monthly, quarterly, or annually.')};
+}
+function license_financing_period_from_pay_num(int $payNum,int $installments):int{
+    if($payNum<1||$installments<1||$installments>360||$payNum>$installments)throw new InvalidArgumentException('Financing subscription payment number is outside the signed installment count.');
+    return $payNum-1;
+}
+function license_financing_recovery_link_allowed(string $subscriptionStatus):bool{
+    return $subscriptionStatus==='billing_suspended';
+}
+
 function license_financing_rights(bool $resale,bool $distribution,bool $exclusiveResale,bool $exclusiveDistribution):array{
     if($exclusiveResale&&!$resale)throw new InvalidArgumentException('Exclusive resale requires resale rights.');
     if($exclusiveDistribution&&!$distribution)throw new InvalidArgumentException('Exclusive distribution requires distribution rights.');

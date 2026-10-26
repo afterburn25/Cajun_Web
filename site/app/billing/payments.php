@@ -144,19 +144,25 @@ function payments_financing_request(int $invoice,int $ownerId,int $days,string $
         $owner=one('SELECT u.id FROM '.table('users').' u JOIN '.table('staff_profiles').' p ON p.user_id=u.id WHERE u.id=? AND p.role=? AND p.enabled=1 AND u.password_hash<>\'\' FOR UPDATE',
             [$ownerId,'owner']);
         if(!$owner)throw new RuntimeException('The finance offer owner is no longer authorized to prepare payment links.');
-        $i=payments_invoice($invoice);
-        $due=ledger_balance($i)['due_cents'];
+        $i=payments_invoice($invoice);$due=ledger_balance($i)['due_cents'];
         if($due<1)throw new RuntimeException('This financing invoice no longer has a payable balance.');
-        $requestKey=hash('sha256','financing|'.$invoice.'|'.$evidenceHash);
-        $requestHash=hash('sha256',json_encode([$invoice,$ownerId,$days,$evidenceHash,$due],JSON_THROW_ON_ERROR));
-        $old=one('SELECT * FROM '.table('payment_requests').' WHERE request_key=? FOR UPDATE',[$requestKey]);
-        if($old){
-            if((int)$old['invoice_id']!==$invoice||(int)$old['actor_id']!==$ownerId||!hash_equals((string)$old['request_hash'],$requestHash)){
+        $latest=one('SELECT * FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=? ORDER BY id DESC LIMIT 1 FOR UPDATE',[$invoice,'financing']);
+        if($latest&&payments_request_state($latest)==='prepared'){
+            if((int)$latest['actor_id']!==$ownerId||(int)$latest['amount_cents']!==$due)throw new RuntimeException('Current financing payment request does not match the retained obligation.');
+            $url=payments_link_url($latest);if($url===null)throw new RuntimeException('Financing payment link could not be recovered.');
+            return ['id'=>(int)$latest['id'],'url'=>$url];
+        }
+        $sequence=(int)query('SELECT COUNT(*) FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=?',[$invoice,'financing'])->fetchColumn()+1;
+        if($sequence>100)throw new RuntimeException('Financing payment-link replacement limit reached. Review this invoice.');
+        $requestKey=hash('sha256','financing|'.$invoice.'|'.$evidenceHash.'|'.$sequence);
+        $requestHash=hash('sha256',json_encode([$invoice,$ownerId,$days,$evidenceHash,$due,$sequence],JSON_THROW_ON_ERROR));
+        $oldByKey=one('SELECT * FROM '.table('payment_requests').' WHERE request_key=? FOR UPDATE',[$requestKey]);
+        if($oldByKey){
+            if((int)$oldByKey['invoice_id']!==$invoice||(int)$oldByKey['actor_id']!==$ownerId||!hash_equals((string)$oldByKey['request_hash'],$requestHash)){
                 throw new RuntimeException('Financing payment request identity was reused with different details.');
             }
-            $url=payments_link_url($old);
-            if($url===null)throw new RuntimeException('Financing payment link could not be recovered.');
-            return ['id'=>(int)$old['id'],'url'=>$url];
+            $url=payments_link_url($oldByKey);if($url===null)throw new RuntimeException('Financing payment link could not be recovered.');
+            return ['id'=>(int)$oldByKey['id'],'url'=>$url];
         }
         attempts_assert_clear($invoice);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
@@ -165,12 +171,11 @@ function payments_financing_request(int $invoice,int $ownerId,int $days,string $
             [$invoice,$i['job_id'],$i['client_id'],$ownerId,$requestKey,$requestHash,$fingerprint,hash('sha256',$token),payments_link_seal($token,$requestKey),
              'financing','prepared',$due,$i['currency'],time()+$days*86400,gmdate('Y-m-d H:i:s')]);
         $row=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[(int)db()->lastInsertId()]);
-        payments_audit($ownerId,'request.financing','Signed finance agreement prepared request '.$row['id'].' invoice '.$invoice);
+        payments_audit($ownerId,'request.financing','Finance payment request '.$row['id'].' invoice '.$invoice.' sequence '.$sequence);
         $url=payments_link_url($row);if($url===null)throw new RuntimeException('Financing payment link was not created.');
         return ['id'=>(int)$row['id'],'url'=>$url];
     }));
 }
-
 function payments_revoke(int $id): void {
     staff_locked(fn()=>staff_transaction(function() use($id): void {
         $actor=payments_require();$r=one('SELECT * FROM '.table('payment_requests').' WHERE id=? FOR UPDATE',[$id]);
@@ -196,14 +201,67 @@ function payments_client_view(array $invoice): void {
 require_once CWP_CODE_ROOT.'/app/billing/payment_link_view.php';
 function payments_link_page(string $token): never {
     header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');header('Cache-Control: no-store, private');
-    $r=null;$error='';
+    $r=null;$error='';$paymentMessage='';$financeGateway=null;
     if(!payments_ready()||!preg_match('/^[a-f0-9]{64}$/D',$token))$error='invalid';
     elseif(!consume_rate(ip_key('pay-link'),40,300))$error='Too many attempts. Wait a few minutes, then try again.';
     elseif(!($r=one('SELECT * FROM '.table('payment_requests').' WHERE link_hash=?',[hash('sha256',$token)])))$error='invalid';
     if($error==='invalid'){http_response_code(404);$error='This payment link is not valid.';}
+    if($error===''&&$r&&$r['purpose']==='financing'){
+        try{
+            require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
+            if(license_finance_gateway_ready()){
+                $financeGateway=license_finance_anet_settings();
+                authorize_net_security_headers($financeGateway['mode']);
+            }
+        }catch(Throwable $gatewayError){$financeGateway=null;}
+        if(($_SERVER['REQUEST_METHOD']??'')==='POST'&&($_POST['action']??null)==='finance_charge'){
+            try{
+                if($financeGateway===null)throw new RuntimeException('Financing card checkout is unavailable.');
+                if(!consume_rate(ip_key('finance-charge'),10,900))throw new RuntimeException('Please wait before another financing payment attempt.');
+                $billing=license_finance_billing_fields($_POST);
+                $status=license_finance_charge_run($r,posted('request_key',64),posted('descriptor',128),posted('payment_token',8192),$billing);
+                if($status==='paid'||$status==='paid_subscription_review'){
+                    $offer=license_finance_offer_for_invoice((int)$r['invoice_id']);
+                    flash($status==='paid'?'Financing payment verified.':'Payment verified. Automatic installment enrollment needs owner review.');
+                    redirect(studio_url(['finance'=>$offer['id']]));
+                }
+                $paymentMessage=match($status){
+                    'sandbox'=>'Sandbox transaction verified only. No real payment was recorded.',
+                    'declined'=>'The gateway declined this payment. You may retry with fresh card details.',
+                    default=>'The payment outcome needs billing review. Do not retry until the studio confirms its status.'
+                };
+            }catch(InvalidArgumentException|RuntimeException $e){
+                $paymentMessage=$e->getMessage();
+            }catch(Throwable $e){
+                report_error($e);$paymentMessage='The financing payment could not be submitted. Contact the studio before retrying.';
+            }
+        }
+    }
     site_head('Invoice payment','pay');
     echo '<section class="section"><div class="container"><span class="eyebrow">SECURE PAYMENT REQUEST</span><h1>Invoice payment</h1>';
     if($error!==''){echo '<div class="notice error">'.esc($error).'</div><p>Contact the studio if you need a current payment link.</p>';}
-    else payments_link_card(payments_link_projection($r));
+    else{
+        $projection=payments_link_projection($r);$online=$financeGateway!==null&&$projection['state']==='prepared'&&$r['purpose']==='financing';
+        payments_link_card($projection,$online);
+        if($paymentMessage!=='')echo '<div class="notice info">'.esc($paymentMessage).'</div>';
+        if($online){
+            echo '<form method="post" data-authorize-net data-login="'.esc($financeGateway['login']).'" data-client-key="'.esc($financeGateway['client_key']).'">';
+            echo '<input type="hidden" name="action" value="finance_charge"><input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
+            echo '<input type="hidden" name="descriptor"><input type="hidden" name="payment_token">';
+            echo '<label>Card number<input data-card-number autocomplete="cc-number" inputmode="numeric" minlength="13" maxlength="23" required></label>';
+            echo '<label>Expiration month (MM)<input data-card-month autocomplete="cc-exp-month" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+            echo '<label>Expiration year (YY)<input data-card-year autocomplete="cc-exp-year" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+            echo '<label>Security code<input data-card-code autocomplete="cc-csc" inputmode="numeric" minlength="3" maxlength="4" required></label>';
+            echo '<h3>Billing address</h3>';
+            foreach([['first_name','First name',50],['last_name','Last name',50],['address','Street address',60],['city','City',40],['state','State / province',40],['zip','Postal code',20],['country','Country',60]] as $field){
+                echo '<label>'.esc($field[1]).'<input name="'.esc($field[0]).'" maxlength="'.$field[2].'" required'.($field[0]==='country'?' value="US"':'').'></label>';
+            }
+            echo '<p class="hint">Your card number, expiration date, and security code are sent directly to Authorize.Net for tokenization. CajunWebPro receives only the one-time payment token and billing address.</p>';
+            if($financeGateway['mode']==='sandbox')echo '<p class="notice info">Sandbox only. This cannot settle the real financing invoice.</p>';
+            echo '<p role="alert" data-payment-error></p><button class="btn gold" type="submit">Pay financing invoice securely</button></form>';
+            $external=$financeGateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';
+            echo '<script nonce="'.nonce().'" defer src="'.esc($external).'"></script><script nonce="'.nonce().'" defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
+        }
+    }
     echo '</div></section>';site_foot(false);exit;
 }

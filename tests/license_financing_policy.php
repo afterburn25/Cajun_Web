@@ -48,6 +48,23 @@ $r=license_financing_evaluate([
 finance_ok($r['state']==='paid_off',
     'Persisted payoff ignores all later billing delinquency');
 
+$math=license_financing_terms_math(650000,65000,585000,15000,25000,24);
+finance_ok($math['installment_total_cents']===600000&&$math['total_customer_cost_cents']===665000,
+    'Tailored finance amounts reconcile cash down payment financed amount charge and installments');
+finance_reject(fn()=>license_financing_terms_math(650000,65000,580000,15000,25000,24),
+    'Mismatched amount financed is rejected');
+finance_reject(fn()=>license_financing_terms_math(650000,65000,585000,14000,25000,24),
+    'Mismatched installment total and finance charge is rejected');
+
+finance_ok(license_financing_cadence_months('monthly')===1&&license_financing_cadence_months('quarterly')===3&&license_financing_cadence_months('annually')===12,
+    'Financing cadence maps exactly to one three or twelve month intervals');
+finance_reject(fn()=>license_financing_cadence_months('weekly'),'Unsupported financing cadence is rejected');
+finance_ok(license_financing_period_from_pay_num(1,24)===0&&license_financing_period_from_pay_num(24,24)===23,
+    'Gateway subscription payment number maps exactly to signed installment index');
+finance_reject(fn()=>license_financing_period_from_pay_num(25,24),'Gateway payment number beyond signed installments is rejected');
+finance_ok(license_financing_recovery_link_allowed('billing_suspended')&&!license_financing_recovery_link_allowed('payment_failed')&&!license_financing_recovery_link_allowed('review'),
+    'Self-service recovery links require confirmed billing suspension');
+
 $rights=license_financing_rights(false,false,false,false);
 finance_ok(!$rights['resale']&&!$rights['distribution'],
     'Default financed-site rights prohibit resale and distribution');

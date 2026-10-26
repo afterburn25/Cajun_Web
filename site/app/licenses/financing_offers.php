@@ -59,15 +59,11 @@ function license_finance_offer_build_terms(array $license,array $schedule,Recurr
     if(strlen($title)<3||strlen($title)>190||strlen($agreementText)<20||strlen($agreementText)>12000||preg_match('//u',$agreementText)!==1){
         throw new InvalidArgumentException('Enter a finance title and agreement terms.');
     }
-    if($cash<1||$initial<0||$initial>$cash||$financed<1||$financeCharge<0||$installments<1||$installments>360
-        ||$graceDays<0||$graceDays>90||$paymentLinkDays<1||$paymentLinkDays>30||$aprBps<0||$aprBps>10000){
+    if($graceDays<0||$graceDays>90||$paymentLinkDays<1||$paymentLinkDays>30||$aprBps<0||$aprBps>10000){
         throw new InvalidArgumentException('Finance terms are outside supported limits.');
     }
-    if($cash-$initial!==$financed)throw new InvalidArgumentException('Cash price minus initial payment must equal the amount financed.');
     $b=$billing->data();$installment=(int)$b['amount_cents'];
-    if($installment<1||$installment*$installments!==$financed+$financeCharge){
-        throw new InvalidArgumentException('The agreed installment amount × installment count must equal amount financed plus finance charge.');
-    }
+    $math=license_financing_terms_math($cash,$initial,$financed,$financeCharge,$installment,$installments);
     $normalizedRights=license_financing_rights(
         (bool)($rights['resale']??false),(bool)($rights['distribution']??false),
         (bool)($rights['exclusive_resale']??false),(bool)($rights['exclusive_distribution']??false)
@@ -77,8 +73,8 @@ function license_finance_offer_build_terms(array $license,array $schedule,Recurr
         'job_id'=>(int)$schedule['job_id'],'schedule_id'=>(string)$schedule['id'],'schedule_revision'=>(int)$schedule['revision'],
         'schedule_sha256'=>(string)$schedule['journal_sha256'],'schedule_terms_sha256'=>$billing->fingerprint(),
         'cash_price_cents'=>$cash,'initial_payment_cents'=>$initial,'amount_financed_cents'=>$financed,
-        'finance_charge_cents'=>$financeCharge,'installment_total_cents'=>$installment*$installments,
-        'total_customer_cost_cents'=>$initial+($installment*$installments),'apr_basis_points'=>$aprBps,
+        'finance_charge_cents'=>$financeCharge,'installment_total_cents'=>$math['installment_total_cents'],
+        'total_customer_cost_cents'=>$math['total_customer_cost_cents'],'apr_basis_points'=>$aprBps,
         'installments'=>$installments,'installment_amount_cents'=>$installment,'cadence'=>$b['cadence'],
         'anchor'=>$b['anchor'],'due_after_days'=>(int)$b['due_after_days'],'timezone'=>$b['timezone'],
         'grace_days'=>$graceDays,'payment_link_days'=>$paymentLinkDays,
@@ -109,11 +105,13 @@ function license_finance_offer_create(int $licenseId,string $scheduleId,string $
         $billing=RecurringBillingTerms::fromArray($doc->data()['terms']);
         $b=$billing->data();
         if((string)$b['currency']!=='USD'||$b['collection']!=='invoice-only')throw new RuntimeException('Financing requires the retained USD invoice-only schedule.');
-        if($b['anchor']<gmdate('Y-m-d'))throw new RuntimeException('The financing installment schedule must begin today or later.');
+        if($b['anchor']<=gmdate('Y-m-d'))throw new RuntimeException('The financing installment schedule must begin on a future date so recurring enrollment can be completed before the first charge.');
         if(one('SELECT id FROM '.table('license_finance_offers').' WHERE schedule_id=?',[$scheduleId]))throw new RuntimeException('This installment schedule already belongs to a finance agreement.');
         $terms=license_finance_offer_build_terms($license,$schedule,$billing,$title,$cash,$initial,$financed,$financeCharge,$aprBps,$installments,$graceDays,$paymentLinkDays,$rights,$agreementText);
         $json=json_encode($terms,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);$hash=hash('sha256',$json);
-        $id=bin2hex(random_bytes(16));$now=time();$expires=min($now+$offerDays*86400,strtotime($b['anchor'].' 23:59:59 UTC'));
+        $id=bin2hex(random_bytes(16));$now=time();$startEpoch=strtotime($b['anchor'].' 00:00:00 UTC');
+        if($startEpoch===false)throw new RuntimeException('Financing schedule start date is invalid.');
+        $expires=min($now+$offerDays*86400,$startEpoch-60);
         if($expires<=$now)throw new RuntimeException('The agreement review window ends before the financing schedule can begin.');
         query('INSERT INTO '.table('license_finance_offers').' (id,license_id,client_id,job_id,schedule_id,schedule_revision,schedule_sha256,status,title,cash_price_cents,initial_payment_cents,amount_financed_cents,finance_charge_cents,apr_basis_points,installments,grace_days,payment_link_days,terms_json,terms_sha256,created_by,expires_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [$id,$licenseId,$license['customer_id'],$schedule['job_id'],$scheduleId,$schedule['revision'],$schedule['journal_sha256'],'offered',$title,$cash,$initial,$financed,$financeCharge,$aprBps,$installments,$graceDays,$paymentLinkDays,$json,$hash,$actor['id'],$expires,gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
@@ -126,8 +124,15 @@ function license_finance_offer_withdraw(string $id,#[\SensitiveParameter]string 
     staff_locked(fn()=>staff_transaction(function()use($id,$password):void{
         $actor=staff_owner($password);$row=license_finance_offer_row($id,null,true);
         if(license_finance_offer_status($row)!=='offered')throw new RuntimeException('Only an unsigned current finance offer can be withdrawn.');
+        $schedule=recurring_billing_row((string)$row['schedule_id']);$doc=recurring_billing_validate($schedule);
+        if($doc->phase()==='offered'){
+            recurring_billing_append($schedule,(int)$schedule['revision'],bin2hex(random_bytes(16)),'withdraw','staff:'.(int)$actor['id'],
+                ['reason'=>'Finance agreement '.$id.' withdrawn before client signature']);
+        }elseif($doc->phase()!=='withdrawn'){
+            throw new RuntimeException('The financing schedule changed. Review it before withdrawing this offer.');
+        }
         query('UPDATE '.table('license_finance_offers').' SET status=?,updated_at=? WHERE id=?',['withdrawn',gmdate('Y-m-d H:i:s'),$id]);
-        license_audit((int)$actor['id'],'financing.offer.withdraw','Finance agreement '.$id.' withdrawn');
+        license_audit((int)$actor['id'],'financing.offer.withdraw','Finance agreement '.$id.' and its offered installment schedule were withdrawn');
     }));
 }
 
@@ -165,8 +170,9 @@ function license_finance_offer_sign(string $id,int $clientId,string $signer,bool
             throw new RuntimeException('This license already has a financing binding.');
         }
         $rights=$terms['rights'];$now=gmdate('Y-m-d H:i:s');
+        $financeState=(int)$row['initial_payment_cents']>0?'pending_initial':'active';
         query('INSERT INTO '.table('license_financing').' (license_id,schedule_id,terms_sha256,installments,grace_days,state,paid_off_at,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution,created_by,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-            [$row['license_id'],$row['schedule_id'],license_financing_terms_hash($running),(int)$row['installments'],(int)$row['grace_days'],'active',null,
+            [$row['license_id'],$row['schedule_id'],license_financing_terms_hash($running),(int)$row['installments'],(int)$row['grace_days'],$financeState,null,
              $rights['resale']?1:0,$rights['distribution']?1:0,$rights['exclusive_resale']?1:0,$rights['exclusive_distribution']?1:0,
              $row['created_by'],$now,$now]);
         $client=one('SELECT email FROM '.table('studio_clients').' WHERE id=?',[$clientId]);
@@ -223,7 +229,10 @@ function license_finance_offer_payment_prepare(string $id,int $clientId):?array{
     $request=payments_financing_request((int)$invoice['id'],(int)$row['created_by'],(int)$row['payment_link_days'],(string)$row['signature_evidence_hash']);
     staff_locked(fn()=>staff_transaction(function()use($id,$request):void{
         $row=license_finance_offer_row($id,null,true);
-        if($row['payment_request_id']!==null&&(int)$row['payment_request_id']!==(int)$request['id'])throw new RuntimeException('Finance payment request identity changed.');
+        if($row['payment_request_id']!==null&&(int)$row['payment_request_id']!==(int)$request['id']){
+            $previous=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$row['payment_request_id']]);
+            if(!$previous||payments_request_state($previous)==='prepared')throw new RuntimeException('A current financing payment request already exists.');
+        }
         query('UPDATE '.table('license_finance_offers').' SET payment_request_id=?,updated_at=? WHERE id=?',
             [$request['id'],gmdate('Y-m-d H:i:s'),$id]);
     }));

@@ -174,6 +174,24 @@ function license_financing_sync(int $licenseId,?string $today=null):?array{
             if((string)$plan['state']!=='paid_off')throw new RuntimeException('Paid-off financing state is inconsistent.');
             $result=$plan;return;
         }
+        if((string)$plan['state']==='pending_initial'){
+            $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+                [config()['db']['prefix'].'license_finance_offers']);
+            if(!$offerTable)throw new RuntimeException('Signed financing offer storage is unavailable.');
+            $offer=one('SELECT activation_invoice_id,initial_payment_cents,status FROM '.table('license_finance_offers').' WHERE license_id=? AND schedule_id=? ORDER BY created_at DESC LIMIT 1',
+                [$licenseId,$plan['schedule_id']]);
+            if(!$offer||(string)$offer['status']!=='signed'||(int)$offer['initial_payment_cents']<1||$offer['activation_invoice_id']===null){
+                throw new RuntimeException('Initial financing payment history is incomplete.');
+            }
+            $initial=ledger_invoice((int)$offer['activation_invoice_id']);$balance=ledger_balance($initial);
+            if($initial['status']!=='paid'||(int)$balance['due_cents']!==0){
+                $result=$plan;return;
+            }
+            query('UPDATE '.table('license_financing').' SET state=?,updated_at=? WHERE license_id=?',
+                ['active',gmdate('Y-m-d H:i:s'),$licenseId]);
+            license_audit(0,'financing.initial.paid','License '.$licenseId.' initial financing payment verified; installment financing activated');
+            $plan['state']='active';
+        }
         if(!in_array((string)$plan['state'],['active','grace','suspended'],true)){
             throw new RuntimeException('Unknown financed-license state.');
         }
@@ -205,7 +223,7 @@ function license_financing_authorized(int $licenseId):?bool{
     $plan=license_financing_sync($licenseId);
     if($plan===null)return null;
     if((string)$plan['state']==='paid_off')return true;
-    if((string)$plan['state']==='suspended')return false;
+    if(in_array((string)$plan['state'],['pending_initial','suspended'],true))return false;
     if(in_array((string)$plan['state'],['active','grace'],true))return true;
     throw new RuntimeException('Financed-license state is not trustworthy.');
 }
@@ -214,5 +232,13 @@ function license_financing_authorized(int $licenseId):?bool{
 function license_financing_sync_by_invoice(int $invoiceId):void{
     if($invoiceId<1||license_financing_feature_state()===null)return;
     $row=one('SELECT f.license_id FROM '.table('recurring_billing_invoices').' r JOIN '.table('license_financing').' f ON f.schedule_id=r.schedule_id WHERE r.invoice_id=?',[$invoiceId]);
+    if(!$row){
+        $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+            [config()['db']['prefix'].'license_finance_offers']);
+        if($offerTable){
+            $row=one('SELECT f.license_id FROM '.table('license_finance_offers').' o JOIN '.table('license_financing').' f ON f.license_id=o.license_id AND f.schedule_id=o.schedule_id WHERE o.activation_invoice_id=? AND o.status=?',
+                [$invoiceId,'signed']);
+        }
+    }
     if($row)license_financing_sync((int)$row['license_id']);
 }

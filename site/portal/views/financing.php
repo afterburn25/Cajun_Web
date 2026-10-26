@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
 
 function license_finance_money(int $cents):string{return '$'.number_format($cents/100,2,'.',',');}
 
@@ -58,17 +59,51 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         echo '<details><summary>Decline this agreement</summary><form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="finance_offer_decline"><input type="hidden" name="finance_id" value="'.esc($row['id']).'"><label>Reason<textarea name="reason" maxlength="500" required></textarea></label><button class="btn outline">Decline agreement</button></form></details>';
     }elseif($state==='signed'){
         echo '<p class="notice info">Signed by '.esc((string)$row['signed_name']).' using '.esc((string)$row['signed_email']).' on '.esc((string)$row['signed_at']).' UTC.</p>';
+        $financeSub=license_finance_gateway_ready()?license_finance_subscription_row((string)$row['id']):null;
+        $financePlan=license_financing_sync((int)$row['license_id']);
+        if($financePlan)echo '<p><strong>License financing:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financePlan['state']))).($financePlan['paid_off_at']!==null?' · permanently paid off '.esc((string)$financePlan['paid_off_at']).' UTC':'').'</p>';
+        if($financeSub)echo '<p><strong>Automatic installments:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financeSub['status']))).($financeSub['gateway_subscription_id']!==null?' · gateway subscription '.esc((string)$financeSub['gateway_subscription_id']):'').'</p>';
+        if($financeSub&&$financeSub['status']==='billing_suspended'){
+            $recovery=one('SELECT p.* FROM '.table('payment_requests').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.purpose=? AND p.status=? ORDER BY r.period_index,p.id DESC LIMIT 1',
+                [$row['schedule_id'],'financing','prepared']);
+            if($recovery){
+                try{$recoveryUrl=payments_link_url($recovery);}catch(Throwable){$recoveryUrl=null;}
+                if($recoveryUrl!==null)echo '<p class="notice warning">Automatic financing billing is suspended. <a href="'.esc($recoveryUrl).'">Pay the overdue installment securely</a> to restore paid status; the automatic payment method may still need review before the next installment.</p>';
+            }
+        }
         if((int)$terms['initial_payment_cents']>0){
             $url=null;
             if($row['payment_request_id']!==null){
                 try{$request=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$row['payment_request_id']]);$url=$request?payments_link_url($request):null;}catch(Throwable){}
             }
-            if($url!==null)echo '<p><a class="btn gold" href="'.esc($url).'">Continue to payment →</a></p>';
-            else echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="finance_offer_payment"><input type="hidden" name="finance_id" value="'.esc($row['id']).'"><button class="btn gold">Prepare current payment page</button></form>';
-        }else echo '<p class="notice info">No initial payment is due. Your signed installment schedule is active.</p>';
+            if($url!==null)echo '<p><a class="btn gold" href="'.esc($url).'">Continue to initial payment →</a></p>';
+            elseif(!$financeSub)echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="finance_offer_payment"><input type="hidden" name="finance_id" value="'.esc($row['id']).'"><button class="btn gold">Prepare initial payment page</button></form>';
+            if($row['activation_invoice_id']!==null){
+                $activation=one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$row['activation_invoice_id']]);
+                if(($activation['status']??'')==='paid'&&!$financeSub)echo '<p class="notice warning">Initial payment is recorded, but automatic installment enrollment still needs billing review.</p>';
+            }
+        }elseif(!$financeSub){
+            if($financeGateway){
+                echo '<h3>Set up automatic installment payments</h3>';
+                echo '<form method="post" data-authorize-net data-login="'.esc($financeGateway['login']).'" data-client-key="'.esc($financeGateway['client_key']).'">'.support_csrf_field();
+                echo '<input type="hidden" name="action" value="finance_subscription_enroll"><input type="hidden" name="finance_id" value="'.esc($row['id']).'">';
+                echo '<input type="hidden" name="descriptor"><input type="hidden" name="payment_token">';
+                echo '<label>Card number<input data-card-number autocomplete="cc-number" inputmode="numeric" minlength="13" maxlength="23" required></label>';
+                echo '<label>Expiration month (MM)<input data-card-month autocomplete="cc-exp-month" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                echo '<label>Expiration year (YY)<input data-card-year autocomplete="cc-exp-year" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                echo '<label>Security code<input data-card-code autocomplete="cc-csc" inputmode="numeric" minlength="3" maxlength="4" required></label>';
+                echo '<p class="hint">This token enrolls the exact signed installment amount, cadence, start date, and finite occurrence count. It does not create a same-day charge.</p>';
+                if($financeGateway['mode']==='sandbox')echo '<p class="notice info">Sandbox only. No real financing payment will be settled.</p>';
+                echo '<p role="alert" data-payment-error></p><button class="btn gold" type="submit">Set up automatic installments</button></form>';
+            }else echo '<p class="notice warning">Automatic installment enrollment is not available yet. Contact the studio before the first scheduled payment date.</p>';
+        }
     }elseif($state==='declined')echo '<p>This agreement was declined. Contact the studio if you want revised terms.</p>';
     elseif($state==='withdrawn')echo '<p>The studio withdrew this agreement. Contact the studio for current terms.</p>';
     elseif($state==='expired')echo '<p>This agreement expired before signature. Contact the studio for a new offer.</p>';
     echo '<p><button class="btn outline" type="button" onclick="window.print()">Print / save agreement</button></p></article>';
+    if($financeGateway){
+        $external=$financeGateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';
+        echo '<script nonce="'.nonce().'" defer src="'.esc($external).'"></script><script nonce="'.nonce().'" defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
+    }
     echo '</div></section>';site_foot(false);exit;
 }

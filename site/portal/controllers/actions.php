@@ -31,6 +31,18 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($payment===null){flash('No initial payment is due on this agreement.');redirect(studio_url(['finance'=>$id]));}
   redirect($payment['url']);
  }
+ elseif($action==='finance_subscription_enroll'){
+  if(!$client)throw new RuntimeException('Sign in to set up financing installments.');
+  require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+  $id=posted('finance_id',32);
+  $status=license_finance_subscription_enroll_opaque($id,(int)$client['id'],posted('descriptor',128),posted('payment_token',8192));
+  flash(match($status){
+      'pending_first_payment'=>'Automatic financing installments are enrolled. Your signed schedule remains the source of each payment obligation.',
+      'sandbox_test'=>'Sandbox financing subscription created for testing only. No real payment obligation was settled.',
+      default=>'Automatic financing enrollment needs billing review. Do not submit another card until the studio confirms its status.'
+  },in_array($status,['pending_first_payment','sandbox_test'],true)?'success':'warning');
+  redirect(studio_url(['finance'=>$id]));
+ }
  elseif($action==='software_subscription_cancel'){
   if(!$client)throw new RuntimeException('Sign in to cancel recurring billing.');
   require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';

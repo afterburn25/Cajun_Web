@@ -61,3 +61,39 @@ When an initial payment is due, signing creates one idempotent invoice and one p
 The owner may prepare an agreement email from the finance-offer record. CajunWebPro creates a real local email draft addressed to the client with the authenticated portal deep link and opens the existing review/send workflow; it does not silently send mail.
 
 The shareable payment-request page uses the preserved hardened bearer-link design: a random 256-bit token, hash-at-rest lookup, encrypted token recovery, no-store/no-referrer/noindex headers, and metadata-free terminal states. On this branch that page is still a payment-request handoff and does not by itself certify production card collection. Unified Authorize.Net checkout remains an integration/release gate.
+
+
+## Unified Authorize.Net financing payments
+
+Financing reuses CajunWebPro's existing protected Authorize.Net credentials, Accept.js tokenization, invoice ledger, webhook signature path, and the same selected gateway environment as software checkout. It does not introduce a second merchant account configuration.
+
+A signed finance agreement may have a separate initial/down payment. When that payment is due, the client is redirected to the private finance payment request. The card number, expiration date, and security code have no form names and are sent directly to Authorize.Net by Accept.js; CajunWebPro receives only the one-use opaque token plus billing-address fields. The server requires an exact invoice amount and invoice-number readback before recording the payment in the existing ledger.
+
+If the initial payment succeeds, CajunWebPro requests/recovers Authorize.Net customer and payment profile identifiers and creates the finite recurring installment subscription from the same card flow. A failure to create the recurring subscription after a successful payment never reverses or hides the payment; the payment remains in the ledger and the subscription moves to review.
+
+Zero-down agreements skip a fake zero-dollar invoice. After signing, the authenticated client portal presents an Accept.js enrollment form that creates the finite recurring installment subscription without a same-day charge.
+
+Monthly, quarterly, and annual finance schedules map to one-, three-, and twelve-month Authorize.Net intervals. The number of occurrences is the exact signed installment count, not an open-ended subscription. Each recurring transaction is bound to one financing period by the gateway subscription payment number; the transaction amount and subscription ID must match the retained contract before its period invoice is settled.
+
+Finance production charging remains independently fail-closed. It requires the normal unified Authorize.Net production gate plus `CWP_FINANCE_PRODUCTION_PAYMENTS === true` and the owner financing-production review setting. Database flags alone cannot enable production financing charges.
+
+## Automatic installment issuance and recovery
+
+The CLI-only shared-host worker is `app/jobs/finance.php`. It accepts no arguments and exposes no customer/payment details in output. A hosting scheduler can run it regularly alongside the existing shared-host jobs.
+
+For each signed, unpaid finance agreement the worker:
+
+1. validates the immutable finance offer, running recurring schedule, website-license binding, and retained invoice history;
+2. issues every financing period that has actually begun, using the canonical recurring-invoice format and original agreed amount;
+3. recomputes grace/suspension/payoff from real invoice-ledger balances;
+4. when Authorize.Net has moved the recurring subscription to `billing_suspended`, prepares an idempotent private recovery payment link for the overdue issued installment.
+
+The public finance recovery link uses the same finance-only charge fence and exact Authorize.Net readback as the initial payment. A verified catch-up payment settles the normal invoice ledger and immediately recomputes the license, so payment-based suspension can clear without replacing the license key.
+
+A failed or suspended gateway subscription event by itself does not disable the site. The site becomes payment-suspended only when an actually issued invoice remains unpaid past its retained due date plus the agreed grace period. This preserves the signed financing contract as the business obligation rather than treating webhook timing as the legal/payment due date.
+
+Authorize.Net reports that suspended subscriptions require a new subscription rather than ordinary editing. Until the replacement-payment-method/re-enrollment workflow is independently implemented and accepted, a successful recovery payment can restore the current license while the automatic subscription may still require owner review before the next installment. Do not silently claim that a suspended ARB schedule has resumed merely because the overdue invoice was paid.
+
+## Acceptance still required
+
+These financing sources are development work on PR #266. The Actions queue is intentionally not retriggered while the branch backlog is saturated. Before merge or production use, regenerate the installer inventory and run PHP syntax, pure policy, native MariaDB/MySQL, authenticated portal, payment-link, sandbox Authorize.Net, webhook, scheduler, suspension/recovery/payoff, upgrade/recovery, package, and exact integrated-`main` acceptance. Review the actual finance agreement and APR/finance-charge disclosures with qualified counsel for the intended transactions and jurisdictions.

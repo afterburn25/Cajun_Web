@@ -45,6 +45,12 @@ function recurring_billing_row(string $id):array {
     service_plans_id($id);$row=one('SELECT * FROM '.table('recurring_billing_schedules').' WHERE id=?',[$id]);
     if(!$row)throw new InvalidArgumentException('Recurring agreement unavailable.');return $row;
 }
+function recurring_billing_finance_managed(string $id):bool{
+    service_plans_id($id);
+    $table=config()['db']['prefix'].'license_finance_offers';
+    if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$table]))return false;
+    return (bool)one('SELECT id FROM '.table('license_finance_offers').' WHERE schedule_id=? AND status IN (?,?) LIMIT 1',[$id,'offered','signed']);
+}
 /** Verify today's source and the exact historical active prefix separately. */
 function recurring_billing_source(RecurringBillingTerms $terms,bool $active=false,bool $latest=false,?ServiceSubscriptionDocument $current=null,?int $createdAt=null):ServiceSubscriptionDocument {
     $t=$terms->data();$pin=$t['source_subscription'];
@@ -155,6 +161,7 @@ function recurring_billing_change(string $id,int $client,int $revision,string $e
     return recurring_billing_locked(function()use($id,$client,$revision,$event,$command,$args):RecurringBillingSchedule{
         $actor=recurring_billing_staff();service_plans_client_row($client,!in_array($command,['withdraw','pause','end'],true));$row=recurring_billing_row($id);
         if((int)$row['client_id']!==$client)throw new RuntimeException('Recurring agreement unavailable.');
+        if(recurring_billing_finance_managed($id))throw new RuntimeException('This schedule is controlled by a customer financing agreement. Manage it from Website Licenses.');
         return recurring_billing_append($row,$revision,$event,$command,$actor,$args);
     });
 }
@@ -163,6 +170,7 @@ function recurring_billing_decide(string $id,int $client,int $revision,string $e
     return recurring_billing_locked(function()use($id,$client,$revision,$event,$command,$args):RecurringBillingSchedule{
         $actor=recurring_billing_client($client);$row=recurring_billing_row($id);
         if((int)$row['client_id']!==$client)throw new RuntimeException('Recurring agreement unavailable.');
+        if(recurring_billing_finance_managed($id))throw new RuntimeException('Review and sign or decline this schedule from your Financing agreement page.');
         return recurring_billing_append($row,$revision,$event,$command,$actor,$args);
     });
 }

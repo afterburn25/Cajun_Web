@@ -267,6 +267,13 @@
       "database/migrations/license_finance_offers_migrate.php",
       "database/schema/license_finance_offers_schema.php"
     ],
+    "app/billing/finance_authorize_net.php": [
+      "database/migrations/license_finance_gateway_migrate.php",
+      "database/schema/license_finance_gateway_schema.php"
+    ],
+    "app/billing/finance_charge.php": [],
+    "app/billing/finance_subscription.php": [],
+    "app/licenses/finance_installments.php": [],
     "app/projects/deliveries.php": [
       "database/migrations/delivery_migrate.php",
       "database/schema/delivery_schema.php"

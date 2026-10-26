@@ -222,6 +222,33 @@ function studio_admin_action(string $action,array $user): never {
         license_finance_offers_prepare(posted('current_password',200));
         flash('Client finance agreements are prepared. Existing licenses, recurring schedules, invoices, and payments were preserved.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_gateway_setup'){
+        require_once CWP_CODE_ROOT.'/database/migrations/license_finance_gateway_migrate.php';
+        license_finance_gateway_prepare(posted('current_password',200));
+        flash('Financing payment gateway state is prepared. Card processing still follows the unified Authorize.Net mode and production gates.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_gateway_review'){
+        staff_require('staff.manage');$owner=staff_owner(posted('current_password',200));
+        $approved=posted('confirm',1)==='1';
+        if($approved&&(!defined('CWP_FINANCE_PRODUCTION_PAYMENTS')||CWP_FINANCE_PRODUCTION_PAYMENTS!==true)){
+            throw new RuntimeException('The code-level financing production-payment gate is still locked.');
+        }
+        save_setting('finance_gateway_production_reviewed',$approved?'1':'0');
+        license_audit((int)$owner['id'],'financing.gateway.production_review',$approved?'Financing production payment review recorded':'Financing production payment review cleared');
+        flash($approved?'Financing production review recorded. Unified checkout still must pass every other production gate.':'Financing production review cleared.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_charge_reconcile'){
+        require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
+        $state=license_finance_charge_reconcile(gint($_POST,'invoice_id',1,2147483647),posted('transaction_id',30),posted('current_password',200));
+        flash('Financing charge reconciliation: '.$state.'.');redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_subscription_reconcile'){
+        require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+        $state=license_finance_subscription_reconcile(posted('finance_id',32),posted('gateway_subscription_id',25),posted('current_password',200));
+        flash('Financing subscription reconciliation: '.$state.'.');redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_subscription_charge_reconcile'){
+        require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+        $state=license_finance_subscription_charge_reconcile(posted('transaction_id',30),posted('current_password',200));
+        flash('Financing recurring transaction reconciliation: '.$state.'.');redirect(admin_url('studio-licenses'));
     }elseif($action==='studio_license_finance_offer_create'){
         require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
         foreach(['cash_price','initial_payment','amount_financed','finance_charge'] as $moneyField){
@@ -256,20 +283,7 @@ function studio_admin_action(string $action,array $user): never {
         flash('Finance-agreement email draft prepared. Review it before sending.');
         redirect(admin_url('mail-send',['draft_id'=>$draft]));
     }elseif($action==='studio_license_financing_bind'){
-        require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
-        $plan=license_financing_bind(
-            gint($_POST,'license_id',1,2147483647),posted('schedule_id',32),
-            gint($_POST,'installments',1,360),gint($_POST,'grace_days',0,90),
-            [
-                'resale'=>isset($_POST['allow_resale']),
-                'distribution'=>isset($_POST['allow_distribution']),
-                'exclusive_resale'=>isset($_POST['exclusive_resale']),
-                'exclusive_distribution'=>isset($_POST['exclusive_distribution'])
-            ],
-            posted('current_password',200)
-        );
-        flash('Financing bound to this website license. Payment-dependent access now follows the retained agreement and grace period.');
-        redirect(admin_url('studio-licenses'));
+        throw new RuntimeException('Direct financing binding is retired. Create a customer finance agreement and have the customer sign it in their portal.');
     }elseif($action==='studio_license_financing_rights'){
         require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
         $plan=license_financing_grant_rights(

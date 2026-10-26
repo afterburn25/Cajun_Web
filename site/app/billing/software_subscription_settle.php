@@ -8,6 +8,8 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
 require_once CWP_CODE_ROOT.'/app/billing/authorize_net_webhooks.php';
 require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
 require_once CWP_CODE_ROOT.'/app/billing/software_subscriptions.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
 
 /** Compatibility wrapper retaining strict amount rejection in recurring settlement. */
 function software_anet_cents(mixed $amount): int {
@@ -224,6 +226,9 @@ function software_webhook_process(string $raw,string $signature):string{
         if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
             if(($event['entity']??'')!=='subscription'||!preg_match('/^[0-9]{1,25}$/D',$event['resource_id']))
                 throw new InvalidArgumentException('Invalid subscription event entity.');
+            if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$event['resource_id']])){
+                return 'sandbox_finance_subscription_event';
+            }
             return 'sandbox_subscription_event';
         }
         if(in_array($event['type'],[
@@ -235,6 +240,15 @@ function software_webhook_process(string $raw,string $signature):string{
             $txId=$event['resource_id'];
             if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
             $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+            if(isset($details['transaction']['subscription']['id'])){
+                $sid=(string)$details['transaction']['subscription']['id'];
+                if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$sid])){
+                    return license_finance_subscription_settle($details,$txId);
+                }
+            }else{
+                $finance=license_finance_charge_webhook_review($details,$txId);
+                if($finance!=='finance_payment_unmatched')return $finance;
+            }
             return software_sandbox_capture_verify($details,$txId);
         }
         return 'sandbox_event';
@@ -253,6 +267,9 @@ function software_webhook_process(string $raw,string $signature):string{
 
     if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
         if(($event['entity']??'')!=='subscription')throw new InvalidArgumentException('Invalid subscription event entity.');
+        if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$event['resource_id']])){
+            return license_finance_subscription_lifecycle_review($event['type'],$event['resource_id']);
+        }
         return software_subscription_lifecycle_review($event['type'],$event['resource_id']);
     }
 
@@ -266,7 +283,13 @@ function software_webhook_process(string $raw,string $signature):string{
     if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
     $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
     if(isset($details['transaction']['subscription']['id'])){
+        $sid=(string)$details['transaction']['subscription']['id'];
+        if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$sid])){
+            return license_finance_subscription_settle($details,$txId);
+        }
         return software_subscription_settle($details,$txId);
     }
+    $finance=license_finance_charge_webhook_review($details,$txId);
+    if($finance!=='finance_payment_unmatched')return $finance;
     return software_charge_capture_webhook_review($details,$txId);
 }

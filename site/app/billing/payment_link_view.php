@@ -21,14 +21,17 @@ function payments_link_projection(array $request):array {
     ]];
 }
 
-function payments_link_card(array $view):void {
+function payments_link_card(array $view,bool $onlineCheckout=false):void {
     $state=$view['state'];
     echo '<article class="workspace-card"><span class="workspace-status">'.esc($state).'</span>';
     if($state==='prepared'){
         $details=$view['details'];
         echo '<h2>'.esc($details['reference'].' · '.$details['title']).'</h2>';
         echo '<p><strong>'.esc($details['purpose']).'</strong> · $'.esc(number_format($details['amount_cents']/100,2,'.','')).' '.esc($details['currency']).' due · request expires '.esc(gmdate('Y-m-d H:i:s',$details['expires_at'])).' UTC</p>';
-        echo '<div class="prose">'.nl2br(esc($details['instructions'])).'</div><p class="hint">Online card payment is being enabled and is not available on this link yet. Viewing this link does not record a payment — pay using the studio’s instructions above, or contact the studio for help. This link is private to this invoice; do not forward it.</p>';
+        echo '<div class="prose">'.nl2br(esc($details['instructions'])).'</div>';
+        echo '<p class="hint">'.($onlineCheckout
+            ?'Use the secure card form below. Card data is tokenized directly by Authorize.Net and is never posted to CajunWebPro.'
+            :'Online card payment is not available on this request yet. Viewing this link does not record a payment — pay using the studio’s instructions above, or contact the studio for help.').' This link is private to this invoice; do not forward it.</p>';
     }elseif($state==='paid')echo '<p>This invoice has already been paid. No further payment is due.</p>';
     elseif($state==='revoked')echo '<p>The studio revoked this payment request. Contact the studio before paying.</p>';
     elseif($state==='superseded')echo '<p>A newer payment request replaced this link. Use the studio’s latest link or contact the studio.</p>';
