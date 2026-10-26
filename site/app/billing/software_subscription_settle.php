@@ -69,6 +69,8 @@ function software_subscription_settle(array $details,string $transactionId): str
             ['paid','Verified gateway receipt '.$entry,gmdate('Y-m-d H:i:s'),$invoiceId]);
         query('INSERT INTO '.table('software_subscription_receipts').' (subscription_invoice_id,gateway_transaction_id,invoice_id,created_at) VALUES (?,?,?,?)',
             [$original['id'],$transactionId,$invoiceId,gmdate('Y-m-d H:i:s')]);
+        query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
+            [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
         if($first){
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['active',$sub['id']]);
             $notifyInvoice=$invoiceId;
@@ -90,8 +92,15 @@ function software_subscription_settle(array $details,string $transactionId): str
         }
         db()->commit();
     }catch(Throwable $error){if(db()->inTransaction())db()->rollBack();throw $error;}
-    if($first && $notifyInvoice!==null){
-        try{license_fulfill_invoice($notifyInvoice);}catch(Throwable $e){report_error($e);}
+    if($notifyInvoice!==null){
+        try{
+            if($first){
+                license_fulfill_invoice($notifyInvoice);
+            }else{
+                require_once CWP_CODE_ROOT.'/app/licenses/software_notices.php';
+                software_delivery_notice_send($notifyInvoice);
+            }
+        }catch(Throwable $e){report_error($e);}
     }
     return $first?'first_payment_recorded':'renewal_recorded';
 }
