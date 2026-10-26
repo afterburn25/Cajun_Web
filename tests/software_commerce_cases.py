@@ -475,6 +475,25 @@ def run_browser(env, browser):
           and 'Add installation domain' in deactivated.text
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
+    single=alice.get(portal,timeout=25)
+    deactivate_last={
+        'csrf':token(single),'action':'license_domain_deactivate',
+        'license_id':str(license_id),'domain':'software-http.example'
+    }
+    pending=alice.post(portal,data=deactivate_last,timeout=25)
+    check('License with no active installation is shown as Pending deployment',
+          'Pending deployment' in pending.text and 'Installations: 0 / 2' in pending.text
+          and db('SELECT COUNT(*) AS n FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])==[{'n':0}])
+    add_again={
+        'csrf':token(pending),'action':'license_domain_add',
+        'license_id':str(license_id),'domain':'software-http.example'
+    }
+    active_again=alice.post(portal,data=add_again,timeout=25)
+    check('Customer can redeploy an owned license without repurchase',
+          'Installation domain registered' in active_again.text
+          and 'Standard · Active' in active_again.text
+          and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':'software-http.example'}])
     check('Another customer cannot see the paid license or asset',
           'Synthetic browser acceptance download' not in bob.get(portal,timeout=25).text)
     owner_register=admin.get(licenses,timeout=25)
