@@ -165,6 +165,13 @@ try{
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['NEXUSCORE','Test software','software','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     $product=(int)db()->lastInsertId();
+    $policy=software_product_policy_save($product,0,'nexus-core','SOFTWARE-TEST',12,1,1);
+    swok($policy['revision']===1&&$policy['module_key']==='nexus-core'
+        &&$policy['dependency_skus']===['SOFTWARE-TEST']
+        &&$policy['update_months']===12&&$policy['max_installations']===1,
+        'Owner software product policy records module dependency updates and install limit');
+    swdenied(fn()=>software_product_policy_save($product,0,'stale-write','',0,2,1),
+        'Stale software product policy revision cannot overwrite current policy');
     $orphanKey=license_create(1,'NEXUSCORE',1,false,null);
     $orphan=one('SELECT id,is_active,is_master FROM '.table('website_licenses').' WHERE license_key=?',[$orphanKey]);
     swdenied(fn()=>software_grant_verdict($orphan,'orphan.example.com'),
