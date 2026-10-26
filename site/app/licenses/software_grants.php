@@ -46,6 +46,56 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     return ['id'=>$id,'key'=>$key,'type'=>$kind,'updates_until'=>$policy['updates_until'],
         'max_installations'=>$policy['max_installations'],'policy_revision'=>$policy['policy_revision']];
 }
+/**
+ * Convert one unlinked trial/temporary grant into a verified paid entitlement.
+ * The original key, issuer, creation timestamp and domain history are retained.
+ * Ambiguous matches stop for owner review instead of choosing a license.
+ */
+function software_grant_upgrade_existing(int $clientId,string $sku,string $domain,string $targetKind,
+    ?string $targetExpires,int $invoice,int $unit,bool $recurring,array $purchasePolicy):?array{
+    if(!db()->inTransaction())throw new LogicException('Paid grant upgrade requires the enclosing fulfillment transaction.');
+    if($invoice<1||$unit<1||!in_array($targetKind,[SoftwareLicensePolicy::STANDARD,SoftwareLicensePolicy::TEMPORARY],true)){
+        throw new InvalidArgumentException('Invalid paid software upgrade target.');
+    }
+    $domain=license_canonical_domain($domain);
+    $candidates=all(
+        'SELECT l.id,l.license_key,e.license_type,e.expires_at,e.issued_by,e.created_at '.
+        'FROM '.table('website_licenses').' l '.
+        'JOIN '.table('software_entitlements').' e ON e.license_id=l.id '.
+        'JOIN '.table('license_domains').' d ON d.license_id=l.id '.
+        'WHERE l.customer_id=? AND l.product_id=? AND l.is_active=1 AND l.is_master=0 '.
+        'AND e.invoice_id IS NULL AND e.license_type IN (?,?) '.
+        'AND d.domain=? AND d.is_active=1 ORDER BY l.id FOR UPDATE',
+        [$clientId,$sku,SoftwareLicensePolicy::TRIAL,SoftwareLicensePolicy::TEMPORARY,$domain]
+    );
+    if(count($candidates)>1)throw new RuntimeException('Multiple trial or temporary licenses match this paid order. Owner review is required.');
+    if(!$candidates)return null;
+    $candidate=$candidates[0];$licenseId=(int)$candidate['id'];
+    $now=new DateTimeImmutable('now',new DateTimeZone('UTC'));
+    $policy=software_entitlement_policy_snapshot($sku,$targetExpires,$recurring,$now,$purchasePolicy);
+    $active=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[$licenseId])->fetchColumn();
+    if($active>(int)$policy['max_installations']){
+        throw new RuntimeException('Existing trial or temporary license exceeds the purchased installation limit. Owner review is required.');
+    }
+    $changed=query(
+        'UPDATE '.table('software_entitlements').' SET license_type=?,expires_at=?,updates_until=?,max_installations=?,policy_revision=?,invoice_id=?,unit_number=? '.
+        'WHERE license_id=? AND invoice_id IS NULL AND license_type IN (?,?)',
+        [$targetKind,$targetExpires,$policy['updates_until'],$policy['max_installations'],$policy['policy_revision'],
+         $invoice,$unit,$licenseId,SoftwareLicensePolicy::TRIAL,SoftwareLicensePolicy::TEMPORARY]
+    )->rowCount();
+    if($changed!==1)throw new RuntimeException('Software upgrade candidate changed during fulfillment.');
+    query('UPDATE '.table('website_licenses').' SET updated_at=? WHERE id=?',[$now->format('Y-m-d H:i:s'),$licenseId]);
+    license_audit(0,'software.upgrade',
+        'Software license '.$licenseId.' converted '.$candidate['license_type'].' -> '.$targetKind.
+        ' via invoice '.$invoice.' unit '.$unit.'; original expiry '.($candidate['expires_at']??'none').
+        '; original issuer '.(int)$candidate['issued_by']);
+    return [
+        'id'=>$licenseId,'key'=>(string)$candidate['license_key'],'type'=>$targetKind,'upgraded'=>true,
+        'updates_until'=>$policy['updates_until'],'max_installations'=>$policy['max_installations'],
+        'policy_revision'=>$policy['policy_revision']
+    ];
+}
+
 /** Whether a client currently holds a valid ordinary entitlement for a product SKU. */
 function software_customer_has_valid_product(int $clientId,string $sku):bool {
     if($clientId<1||!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku))return false;
