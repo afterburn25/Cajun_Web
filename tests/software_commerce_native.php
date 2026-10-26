@@ -40,14 +40,15 @@ try{
     save_setting('software_commerce_version','');
     swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Existing entitlement storage without readiness marker is inconclusive, not authorized');
+    db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_charge_attempts'.chr(96));
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_reversals'.chr(96));
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_disputes'.chr(96));
     db()->exec('ALTER TABLE '.chr(96).config()['db']['prefix'].'software_entitlements'.chr(96).' DROP COLUMN purpose');
     save_setting('software_commerce_version','1');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'Published branch v1 storage upgrades additively to v2');
-    swok(software_commerce_table_present('software_payment_reversals')&&software_commerce_table_present('software_payment_disputes'),
-        'V2 upgrade restores reversal and dispute history tables');
+    swok(software_commerce_table_present('software_charge_attempts')&&software_commerce_table_present('software_payment_reversals')&&software_commerce_table_present('software_payment_disputes'),
+        'V2 upgrade restores charge-attempt, reversal and dispute history tables');
     swok(software_commerce_column_present('software_entitlements','purpose'),
         'V2 upgrade adds master-purpose metadata without rebuilding entitlements');
     software_commerce_prepare($password);
@@ -86,6 +87,18 @@ try{
     $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false);
     swok($invoice===software_order_place($buyer,$product,1,2,'new.example.com',$hash,false),'Order retry reuses invoice');
     swdenied(fn()=>software_order_place($buyer,$product,1,1,'new.example.com',$hash,false),'Changed order cannot reuse request');
+    $attemptOne=hash('sha256','native-declined-charge-1');
+    $attemptTwo=hash('sha256','native-declined-charge-2');
+    swok(software_charge_prepare($invoice,1,$attemptOne)===(int)ledger_invoice($invoice)['amount_cents'],
+        'First one-time card attempt is fenced to the invoice amount');
+    software_charge_mark($invoice,'declined');
+    swok(software_charge_prepare($invoice,1,$attemptTwo)===(int)ledger_invoice($invoice)['amount_cents'],
+        'Conclusive decline permits a fresh card attempt');
+    software_charge_mark($invoice,'sandbox_test','500000001');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_charge_attempts').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,
+        'Declined and retried card attempts are both retained');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_charge_attempts').' WHERE invoice_id=? AND status=?',[$invoice,'declined'])->fetchColumn()===1,
+        'Original declined attempt remains immutable history');
     swdenied(fn()=>software_fulfill_paid_order($invoice),'Unpaid software cannot be licensed');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===0,'No unpaid entitlements minted');
     $payment=ledger_invoice($invoice);
@@ -105,8 +118,8 @@ try{
         [(int)$issued['license_id'],'moved.example.com']),'First customer software domain move succeeds');
     swdenied(fn()=>software_grant_replace_domain((int)$issued['license_id'],'moved.example.com','again.example.com',1),
         'Immediate repeated software domain move is blocked by cooldown');
-    query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
-        [$invoice,1,(int)$payment['amount_cents'],'paid',hash('sha256','native-reversal-request'),'600000001',$now,$now]);
+    query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE invoice_id=?',
+        ['paid','600000001',$now,$invoice]);
     $refund=['kind'=>'refund','transaction_id'=>'700000001','original_transaction_id'=>'600000001','amount_cents'=>500];
     swok(software_payment_reversal_apply($refund)==='one_time_reversal_review',
         'Verified refund moves one-time payment to review');
