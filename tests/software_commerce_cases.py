@@ -224,7 +224,7 @@ def run_browser(env, browser):
         'module_key':'browser-acceptance-v2',
         'dependencies':'',
         'update_months':'6',
-        'max_installations':'1',
+        'max_installations':'2',
         'current_password':OWNER,
     })
     revised=admin.post(licenses,data=revised_policy,timeout=25)
@@ -499,30 +499,36 @@ def run_browser(env, browser):
     restore_form=_action_form(soup,restore_page,'software_asset_visibility',asset_id=asset_id)
     restore=form_data(restore_form);restore['current_password']=OWNER
     restored=admin.post(licenses,data=restore,timeout=25)
-    check('Owner can restore customer visibility without changing immutable release identity',
+    restored_asset=db('SELECT is_published,released_at,created_at FROM ci_software_assets WHERE id=?',[asset_id])[0]
+    check('Owner can restore customer visibility without changing immutable release identity or first release time',
           restored.status_code==200
-          and db('SELECT is_published FROM ci_software_assets WHERE id=?',[asset_id])==[{'is_published':1}]
+          and restored_asset['is_published']==1
+          and restored_asset['released_at']==paid['asset_released_at']
+          and restored_asset['created_at']==paid['asset_created_at']
           and alice.get(download,timeout=25).status_code==200)
 
     entitlement=db('SELECT updates_until FROM ci_software_entitlements WHERE license_id=?',[license_id])[0]
     cutoff=datetime.strptime(entitlement['updates_until'],'%Y-%m-%d %H:%M:%S')
     future_release=(cutoff+timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
-    db('UPDATE ci_software_assets SET created_at=? WHERE id=?',[future_release,asset_id])
+    db('UPDATE ci_software_assets SET released_at=? WHERE id=?',[future_release,asset_id])
+    staged=db('SELECT created_at,released_at FROM ci_software_assets WHERE id=?',[asset_id])[0]
+    check('Test fixture keeps private staging time inside entitlement while moving first release after cutoff',
+          staged['created_at']==paid['asset_created_at'] and staged['released_at']==future_release)
     outside=requests.post(validate,json={
         'license_key':paid['license_key'],
         'domain':'software-http.example',
         'product_id':'SOFTWARE-HTTP-ACCEPT',
         'version':paid['version'],
     },timeout=25)
-    check('Validation denies a known release published after the update entitlement',
+    check('Validation denies a release first made customer-visible after the update entitlement',
           outside.status_code==200 and outside.json()=={
               'authorized':False,
               'error':'Software version is outside this license update entitlement'
           })
-    check('Direct download also denies a release outside the update entitlement',
+    check('Direct download also denies a post-cutoff release even when staged earlier',
           alice.get(download,timeout=25).status_code==404)
-    db('UPDATE ci_software_assets SET created_at=? WHERE id=?',[paid['asset_created_at'],asset_id])
-    check('Restoring original immutable release timestamp restores authorized download',
+    db('UPDATE ci_software_assets SET released_at=? WHERE id=?',[paid['asset_released_at'],asset_id])
+    check('Restoring original first customer-release timestamp restores authorized download',
           alice.get(download,timeout=25).status_code==200)
 
     # Real domain-replacement action and cross-tenant denial.
