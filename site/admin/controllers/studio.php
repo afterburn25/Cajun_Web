@@ -55,6 +55,11 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_license_setup'){
         require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
         license_migrate(posted('current_password',200));flash('Website licensing storage prepared.');redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_commerce_setup'){
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+        software_commerce_prepare(posted('current_password',200));
+        flash('Software license and purchase storage is prepared. Existing licenses were retained.');
+        redirect(admin_url('studio-licenses'));
     }elseif(in_array($action,['studio_license_create','studio_license_deactivate','studio_license_reactivate','studio_domain_add','studio_domain_deactivate','studio_domain_replace','studio_license_bundle'],true)&&!license_ready()){
         throw new RuntimeException('Prepare licensing storage first.');
     }elseif($action==='studio_license_legacy_review'){
@@ -68,7 +73,25 @@ function studio_admin_action(string $action,array $user): never {
         // (it is not a grantable permission), so only an owner mints one.
         if(isset($_POST['master'])&&$_POST['master']==='1')staff_require('staff.manage');
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
-        $key=license_create($customerId,$productId,(int)$user['id'],isset($_POST['master'])&&$_POST['master']==='1');$_SESSION['license_key_created']=$key;$target='studio-licenses';
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+        if(software_commerce_ready()){
+            require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+            $kind=posted('license_type',20);$licensee=posted('licensee_name',190);
+            $master=$kind==='master';
+            if($master){staff_require('staff.manage');staff_owner(posted('current_password',200));}
+            $domain=$master?null:posted('domain',253);
+            $raw=posted('expires_at',19);
+            $expiry=$raw!==''?str_replace('T',' ',$raw).':00':null;
+            if(db()->inTransaction())throw new LogicException('License issuance owns its transaction.');
+            db()->beginTransaction();
+            try{
+                $result=software_grant_create($customerId,strtoupper($productId),$kind,$licensee,$domain,$expiry,(int)$user['id']);
+                db()->commit();$key=$result['key'];
+            }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+        }else{
+            $key=license_create($customerId,$productId,(int)$user['id'],isset($_POST['master'])&&$_POST['master']==='1');
+        }
+        $_SESSION['license_key_created']=$key;$target='studio-licenses';
     }elseif($action==='studio_license_deactivate'){
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
