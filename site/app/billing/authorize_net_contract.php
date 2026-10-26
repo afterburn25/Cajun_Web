@@ -43,6 +43,30 @@ function software_anet_reversal_details(array $details,string $eventTransactionI
 
 
 /** Pure subscription webhook state policy. Review is sticky until an owner resolves it. */
+/** Verify the gateway fields shared by production settlement and sandbox shape checks. */
+function software_anet_subscription_charge_details(array $details,string $transactionId):array{
+    $tx=$details['transaction']??null;
+    if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx)
+        ||(string)($tx['transId']??'')!==$transactionId
+        ||!preg_match('/^[0-9]{5,30}$/D',$transactionId)
+        ||!in_array($tx['transactionStatus']??'', ['capturedPendingSettlement','settledSuccessfully'],true)
+        ||!isset($tx['subscription']['id'])
+        ||!preg_match('/^[0-9]{1,25}$/D',(string)$tx['subscription']['id'])){
+        throw new RuntimeException('Gateway transaction is not a verified captured subscription charge.');
+    }
+    $cents=software_charge_exact_cents($tx['authAmount']??null);
+    $invoice=(string)($tx['order']['invoiceNumber']??'');
+    if($cents===null||$cents<1||$invoice===''||strlen($invoice)>20){
+        throw new RuntimeException('Gateway subscription amount or invoice reference is invalid.');
+    }
+    return [
+        'subscription_id'=>(string)$tx['subscription']['id'],
+        'amount_cents'=>$cents,
+        'invoice_number'=>$invoice,
+        'transaction_status'=>(string)$tx['transactionStatus'],
+    ];
+}
+
 function software_subscription_event_target(string $eventType,string $currentStatus):?string{
     if($currentStatus==='review') return 'review';
     return match($eventType){
