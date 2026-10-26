@@ -11,6 +11,26 @@ function software_subscription_term(string $term): string {
 }
 
 
+
+/**
+ * Classify a verified recurring charge without erasing cancellation/review state.
+ * A captured gateway payment must still be credited even if its webhook races
+ * with cancellation or arrives after a sticky review transition.
+ */
+function software_subscription_settlement_phase(string $status,bool $hasPriorReceipt):?array {
+    if(!in_array($status,['pending_first_payment','active','cancelling','cancelled','review'],true))return null;
+    if($status==='pending_first_payment'&&$hasPriorReceipt){
+        throw new RuntimeException('Pending subscription unexpectedly has paid receipt history.');
+    }
+    if($status==='active'&&!$hasPriorReceipt){
+        throw new RuntimeException('Active subscription is missing its first paid receipt.');
+    }
+    return [
+        'first'=>!$hasPriorReceipt,
+        'preserve_status'=>in_array($status,['cancelling','cancelled','review'],true),
+    ];
+}
+
 /** Extend a paid-through UTC timestamp by calendar months, clamping month-end safely. */
 function software_subscription_extend_expiry(string $expiresAt,int $months,DateTimeImmutable $now):string {
     if(!in_array($months,[1,12],true))throw new InvalidArgumentException('Subscription interval must be one or twelve months.');
