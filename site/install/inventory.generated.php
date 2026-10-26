@@ -382,7 +382,7 @@ function setup_expected_files(): array { return [
     'database/migrations/reviews_migrate.php'=>'fab14a5aca1545e28936d465046b938bf111e5ac536ba365a23574c797b18e7d',
     'database/migrations/service_orders_migrate.php'=>'7d1c42c31aa4bfadc3c5a3ad70adb8741855bef2d9ecfed146f8f365fd68a17c',
     'database/migrations/service_plans_migrate.php'=>'2e222b63839d891c548b4436819d8f7c80dc806fa3d290c67e633a9107d6cb9c',
-    'database/migrations/software_commerce_migrate.php'=>'789a62d03eebc6b8e7ee96ba234d62377e3de4af06a407622059d44a84126314',
+    'database/migrations/software_commerce_migrate.php'=>'bde75d9b4ee23bc2170781ab47bd8c05acf2bc576d450bcdabd1bca94ea272e9',
     'database/migrations/staff_migrate.php'=>'82f168f347443b19c2a687426e680cb7a85c0372b3f3cea48cec20ab589b0a10',
     'database/migrations/support_migrate.php'=>'a5a69c0adcbd879a49ee44ee74eb4e619eab8c48b8c267787b8b9171d6024f8b',
     'database/migrations/workspace.php'=>'f19fa9f84352e918bdb03ac20181b053c2446b2b9c8193c9da4ddff2522f290a',
