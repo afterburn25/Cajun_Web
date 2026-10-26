@@ -285,6 +285,10 @@ def run_browser(env, browser):
           and hashlib.sha256(good.content).hexdigest()==paid['sha256']
           and good.headers.get('Content-Type')=='application/zip'
           and good.headers.get('Cache-Control')=='private, no-store')
+    download_audit=db("SELECT detail FROM ci_audit WHERE action='software.download' ORDER BY id DESC LIMIT 1")
+    check('Software download audit binds asset license invoice and unit',
+          download_audit==[{'detail':'Asset '+str(asset_id)+' license '+str(license_id)
+              +' invoice '+str(invoice)+' unit 1 downloaded'}])
     check('Foreign customer cannot download another tenant software ZIP',
           bob.get(download,timeout=25).status_code==404)
     wrong_entitlement=base+'/existing/api/software-download.php?id='+str(asset_id)+'&license='+str(orphan['license_id'])
