@@ -21,6 +21,11 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
         throw new InvalidArgumentException('Active customer is required.');
     }
     if (!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku)) throw new InvalidArgumentException('Unknown software SKU.');
+    $product=one('SELECT id,family FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
+    $legacy=preg_match('/^(?:WEBSITE|SOFTWARE|APP)-[A-Z0-9_-]+$/D',$sku)===1;
+    if(!$product||(($product['family']??'')!=='software'&&!$legacy)){
+        throw new InvalidArgumentException('Choose a registered software catalog product.');
+    }
     if (!db()->inTransaction()) throw new LogicException('Issue grants in the enclosing locked transaction.');
     $key=license_create($clientId,$sku,$issuer,$kind==='master');
     $license=one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$key]);
