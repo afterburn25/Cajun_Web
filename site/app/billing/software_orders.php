@@ -5,14 +5,23 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_license_policy.php';
 require_once CWP_CODE_ROOT.'/app/billing/catalog.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
 
 function software_order_offer(array $product):bool {
     $legacySku=preg_match('/^(SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)($product['sku']??''))===1;
     return (($product['family']??'')==='software'||$legacySku)
         && in_array($product['term']??'', ['once','month','year'],true);
 }
+function software_order_policy_snapshot(array $order):array {
+    $quote=json_decode((string)($order['snapshot']??''),true,24,JSON_THROW_ON_ERROR);
+    if(!is_array($quote))throw new RuntimeException('Software order snapshot is invalid.');
+    $policy=$quote['software_policy']??software_product_policy_defaults();
+    return software_product_policy_purchase_snapshot($policy);
+}
+
 function software_order_place(array $client,int $productId,int $revision,int $quantity,
-    string $domain,string $key,bool $subscribe):int {
+    string $domain,string $key,bool $subscribe,?int $policyRevision=null):int {
     if(!software_commerce_ready() || !catalog_ready())throw new RuntimeException('Software ordering is unavailable.');
     if(support_current())throw new RuntimeException('Purchases cannot be made in support mode.');
     if($quantity<1||$quantity>25||!preg_match('/^[a-f0-9]{64}$/D',$key)){
@@ -26,7 +35,8 @@ function software_order_place(array $client,int $productId,int $revision,int $qu
     try{
         $account=one('SELECT id,name FROM '.table('studio_clients').' WHERE id=? AND active=1 FOR UPDATE',[$clientId]);
         if(!$account)throw new RuntimeException('Customer account no longer active.');
-        $hash=hash('sha256',json_encode([$clientId,$productId,$revision,$quantity,$domain,$subscribe],JSON_THROW_ON_ERROR));
+        if($policyRevision!==null&&$policyRevision<0)throw new InvalidArgumentException('Invalid software policy revision.');
+        $hash=hash('sha256',json_encode([$clientId,$productId,$revision,$quantity,$domain,$subscribe,$policyRevision],JSON_THROW_ON_ERROR));
         $previous=one('SELECT * FROM '.table('software_orders').' WHERE request_key=? FOR UPDATE',[$key]);
         if($previous){
             if((int)$previous['client_id']!==$clientId||!hash_equals($previous['request_hash'],$hash))
@@ -35,9 +45,17 @@ function software_order_place(array $client,int $productId,int $revision,int $qu
         }
         $quote=catalog_quote($productId,$revision,$quantity,true);
         if(!software_order_offer($quote))throw new InvalidArgumentException('Choose a published software product.');
+        $policy=software_product_policy_purchase_snapshot(software_product_policy($productId));
+        if($policyRevision!==null&&(int)$policy['revision']!==$policyRevision){
+            throw new RuntimeException('This software licensing policy changed. Reload and review the current entitlement terms.');
+        }
+        if(!software_dependencies_satisfied($clientId,$policy['dependency_skus'])){
+            throw new RuntimeException('This software requires another active licensed product. Review the listed dependencies before ordering.');
+        }
         if($quote['term']==='once'&&$subscribe)throw new InvalidArgumentException('One-time software does not use recurring billing consent.');
         if($quote['term']!=='once'&&!$subscribe)throw new InvalidArgumentException('Confirm the subscription period and recurring price.');
         if($quote['term']!=='once'&&(int)$quote['setup_cents']!==0)throw new InvalidArgumentException('Recurring software offers must have no one-time setup fee.');
+        $quote['software_policy']=$policy;
         $job=one('SELECT id FROM '.table('studio_jobs').' WHERE client_id=? AND title=? ORDER BY id LIMIT 1',
             [$clientId,'Software purchases']);
         $now=gmdate('Y-m-d H:i:s');
