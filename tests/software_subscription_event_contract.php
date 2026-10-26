@@ -35,6 +35,25 @@ pass($phase!==null&&$phase['first']===false&&$phase['preserve_status']===true,
 $phase=software_subscription_settlement_phase('active',true);
 pass($phase!==null&&$phase['first']===false&&$phase['preserve_status']===false,
     'Normal active subscription charge remains a renewal');
+
+pass(software_subscription_finalized_reconcile_state('active','active',false)==='same',
+    'Production active local and gateway states remain linked');
+pass(software_subscription_finalized_reconcile_state('pending_first_payment','active',false)==='same',
+    'Production pending-first-payment remains compatible with active ARB profile');
+pass(software_subscription_finalized_reconcile_state('active','canceled',false)==='cancelled',
+    'Gateway cancellation corrects a stale locally-active subscription');
+pass(software_subscription_finalized_reconcile_state('pending_first_payment','expired',false)==='cancelled',
+    'Gateway expiry corrects a pending local subscription without granting access');
+pass(software_subscription_finalized_reconcile_state('cancelled','active',false)==='review',
+    'Locally cancelled but gateway-active subscription requires owner review');
+pass(software_subscription_finalized_reconcile_state('active','suspended',false)==='review',
+    'Gateway suspension moves a finalized local subscription to review');
+pass(software_subscription_finalized_reconcile_state('active','terminated',false)==='review',
+    'Gateway termination moves a finalized local subscription to review');
+pass(software_subscription_finalized_reconcile_state('sandbox_test','active',true)==='same',
+    'Sandbox active profile remains compatible only with sandbox local state');
+pass(software_subscription_finalized_reconcile_state('sandbox_test','active',false)==='review',
+    'Production reconciliation refuses a stale sandbox local state');
 pass(software_subscription_settlement_phase('sandbox_test',false)===null,
     'Non-production subscription state cannot settle a production charge');
 try{
