@@ -44,6 +44,10 @@ function software_subscription_enroll(array $client,int $invoice,string $descrip
         $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,(int)$client['id']]);
         if(!$order||!in_array($order['billing_term'],['month','year'],true))
             throw new RuntimeException('Only your approved monthly or annual software order can create a subscription.');
+        $policy=software_order_policy_snapshot($order);
+        if(!software_dependencies_satisfied((int)$client['id'],$policy['dependency_skus'])){
+            throw new RuntimeException('Required software dependencies are no longer licensed. Review the subscription before enrollment.');
+        }
         $i=ledger_invoice($invoice);$balance=ledger_balance($i);
         if($i['status']!=='issued'||$balance['paid_cents']!==0||$balance['due_cents']!==(int)$i['amount_cents'])
             throw new RuntimeException('Subscription invoice has changed; review it again.');
