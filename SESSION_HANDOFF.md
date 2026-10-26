@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## Port-PR sequencing resolved — 2026-10-26
+
+PRs #257–#260 (vps-uncertainty, ssh-access, provider-catalog, domains ports → `devin/full-site-integration`) each carry a byte-identical copy of the shared `foundation/desk` + `foundation/notifications` layer (sha-verified across all four branches) — merge order is arbitrary and component code never conflicts. The only shared conflicts are the usual docs/config union files (AGENTS, CHANGELOG, STATUS, HANDOFF, SESSION_LOG, ROADMAP, integration queue, `application-tests.yml`, `provider-cloud-sites.yml`) plus each port's own new workflow. Still gated on hosted evidence — proceed 257→260 once runners free.
+
 ## CI queue-hygiene fix — 2026-10-26 (in flight)
 
 Owner directive: audit all workflows, fix queue accumulation, protect release certification — implement, not recommend. Branch `devin/ci-concurrency-hygiene` from main `a331599a`.
