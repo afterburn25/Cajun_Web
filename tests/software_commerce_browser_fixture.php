@@ -13,6 +13,11 @@ $operation=$argv[1];
 $invoice=(int)$argv[2];
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 
+if(in_array($operation,['commerce-marker-off','commerce-marker-on'],true)){
+    save_setting('software_commerce_version',$operation==='commerce-marker-on'?'3':'');
+    echo json_encode(['software_commerce_version'=>(string)setting('software_commerce_version')],JSON_THROW_ON_ERROR);
+    exit;
+}
 if(in_array($operation,['sandbox-on','sandbox-off'],true)){
     require_once CWP_CODE_ROOT.'/app/billing/payments.php';
     if(!software_commerce_ready()||!payments_ready())throw new RuntimeException('Synthetic payment-page fixture requires prepared commerce and payments.');
