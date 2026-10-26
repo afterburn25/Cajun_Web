@@ -33,7 +33,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
       posted('descriptor',128),posted('payment_token',8192));
   if($status==='paid')flash('Payment verified. Your available software and license are in My Software.');
   elseif($status==='sandbox')flash('Sandbox transaction approved for testing only. The real invoice remains unpaid.');
-  elseif($status==='declined')flash('The gateway declined the payment. No license was issued. Contact billing before retrying.');
+  elseif($status==='declined')flash('The gateway declined the payment. No license was issued. You may retry this invoice with fresh card details.');
   else flash('The payment needs gateway reconciliation. Do not try paying again until billing confirms its outcome.');
   redirect(studio_url(['software'=>1]));
  }
