@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 import requests
 from playwright.sync_api import expect
-from release_cases import db
+from release_cases import db, chosen_form
 from staff_cases import OWNER
 
 
@@ -294,6 +294,40 @@ def run_browser(env, browser):
           alice.get(base+'/existing/api/software-download.php?id='+str(asset_id),timeout=25).status_code==404)
     check('Anonymous software ZIP request is refused',
           requests.get(download,timeout=25).status_code==403)
+
+    support_admin=base+'/existing/admin/index.php?view=support'
+    if db("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]:
+        response=submit(admin,support_admin,'support_migrate',{'owner_password':OWNER,'confirm':'1'})
+        check('Software support acceptance prepares support storage when needed',
+              response.status_code==200 and 'Support access is ready' in response.text)
+    allowed=db('SELECT allowed FROM ci_support_clients WHERE client_id=1')
+    if allowed != [{'allowed':1}]:
+        chosen_form(admin,support_admin,'support_policy','client_id',1,{'allowed':'1','owner_password':OWNER})
+    started=chosen_form(admin,support_admin,'support_start','client_id',1,{})
+    support_id=parse_qs(urlparse(started.url).query).get('support',[''])[0]
+    check('Software support acceptance opens audited client context',
+          len(support_id)==32 and 'Support session' in started.text)
+    support_root=base+'/existing/portal/index.php?support='+support_id
+    support_software=support_root+'&software=1'
+    blocked=admin.get(support_software,timeout=25)
+    check('My Software is unavailable during staff support context',
+          blocked.status_code==403 and 'Sign in to your own account to manage software' in blocked.text)
+    support_home=admin.get(support_root,timeout=25)
+    forged_support={
+        'csrf':token(support_home),
+        'action':'license_domain_replace',
+        'license_id':str(license_id),
+        'old_domain':'software-http.example',
+        'new_domain':'support-forged.example'
+    }
+    rejected=admin.post(support_software,data=forged_support,timeout=25)
+    check('Support context cannot mutate customer software domain',
+          'action is blocked during support' in rejected.text.lower()
+          and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':'software-http.example'}])
+    check('Support browser context cannot retrieve customer software ZIP',
+          admin.get(download+'&support='+support_id,timeout=25).status_code!=200)
+    submit(admin,support_root,'support_end')
 
     visibility_page=admin.get(licenses,timeout=25)
     visibility_form=_action_form(soup,visibility_page,'software_asset_visibility',asset_id=asset_id)
