@@ -695,8 +695,8 @@ try{
     query('UPDATE '.table('studio_invoices').' SET status=? WHERE id=?',['issued',$invoice]);
     swdenied(fn()=>software_grant_verdict($usageLicenseRow,'new.example.com'),
         'Purchased entitlement is inconclusive when its originating invoice is no longer trusted paid history');
-    swok(software_asset_entitlement_authorized(1,$usageLicense,$insideAsset)===null,
-        'Private download refuses a purchased entitlement whose originating invoice is not paid');
+    swdenied(fn()=>software_asset_entitlement_authorized(1,$usageLicense,$insideAsset),
+        'Private download treats an untrusted paid-order history as inconclusive and refuses access');
     query('UPDATE '.table('studio_invoices').' SET status=? WHERE id=?',['paid',$invoice]);
     swok(software_grant_version_verdict($usageLicenseRow,'1.0.0')===true,
         'Version-aware validation permits a release inside the update window');
