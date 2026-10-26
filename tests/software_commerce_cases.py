@@ -226,7 +226,10 @@ def run_browser(env, browser):
               'error':'License expired, over its installation limit, or not authorized'
           })
 
+    active_trial=fixture('active-trial',pid)
     page=alice.get(portal,timeout=25)
+    check('Active trial shows remaining days in My Software',
+          'Synthetic Active Trial' in page.text and 'Trial: 5 days remaining' in page.text)
     form=_action_form(soup,page,'software_order_buy',product_id=pid)
     order=form_data(form)
     order.update({'domain':'software-http.example','quantity':'1'})
