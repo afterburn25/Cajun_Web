@@ -55,6 +55,14 @@ function software_charge_capture_webhook_review(array $details,string $transacti
             db()->commit();return 'one_time_unmatched';
         }
         $localTransaction=$charge['transaction_id']===null?null:(string)$charge['transaction_id'];
+        $other=one('SELECT invoice_id FROM '.table('software_charges').' WHERE transaction_id=? AND invoice_id<>? FOR UPDATE',
+            [$transactionId,$invoice]);
+        if($other){
+            license_audit(0,'payment.webhook.conflict',
+                'Gateway transaction '.$transactionId.' was already assigned to software invoice '.(int)$other['invoice_id'].
+                ' when capture webhook referenced invoice '.$invoice);
+            db()->commit();return 'one_time_conflict';
+        }
         if($localTransaction!==null&&!hash_equals($localTransaction,$transactionId)){
             license_audit(0,'payment.webhook.conflict',
                 'Software invoice '.$invoice.' received verified capture '.$transactionId.
