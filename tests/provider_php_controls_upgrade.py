@@ -329,6 +329,11 @@ def main():
         check('Final installed files still match the target build', code_matches(installed, update_files, True, version))
     except BaseException as error:
         failure = {'type': type(error).__name__}  # No raw exception/config/provider values.
+        tb = error.__traceback__
+        while tb is not None and tb.tb_next is not None:
+            tb = tb.tb_next
+        if tb is not None:
+            failure['site'] = Path(tb.tb_frame.f_code.co_filename).name + ':' + str(tb.tb_lineno)
     finally:
         if proc is not None:
             proc.terminate()

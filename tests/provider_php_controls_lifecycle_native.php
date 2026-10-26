@@ -198,7 +198,7 @@ try {
     foreach([1,2,3] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['PHP lifecycle staff '.$id,'php-lifecycle-staff'.$id.'@example.invalid',password_hash(PCL_PASSWORD,PASSWORD_DEFAULT),str_repeat(dechex($id+9),32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,'[]'),(3,'owner',1,'[]')");
     foreach([1,2] as $id)query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['PHP lifecycle client '.$id,'php-lifecycle-client'.$id.'@example.invalid',password_hash(PCL_CLIENT_PASSWORD,PASSWORD_DEFAULT),str_repeat(dechex($id+12),32),gmdate('Y-m-d H:i:s')]);
-    pcl_owner();provider_settings_migrate(PCL_PASSWORD);provider_inventory_migrate(PCL_PASSWORD);provider_php_prepare(PCL_PASSWORD);provider_operations_migrate(PCL_PASSWORD);provider_php_controls_prepare(PCL_PASSWORD);
+    pcl_owner();provider_settings_migrate(PCL_PASSWORD);provider_inventory_migrate(PCL_PASSWORD);if(!studio_ready())studio_migrate();provider_php_prepare(PCL_PASSWORD);provider_operations_migrate(PCL_PASSWORD);provider_php_controls_prepare(PCL_PASSWORD);
     $profile=provider_settings_save('',0,'Synthetic PHP lifecycle',true,PCL_SECRET,PCL_PASSWORD);
     pcl_ok('Synthetic vault uses actual POSIX protected storage',(fileperms($private.'/provider-master.key')&0777)===0600);
     pcl_inventory($profile);provider_inventory_link($profile,701,1,1,PCL_PASSWORD);provider_inventory_link($profile,702,2,1,PCL_PASSWORD);pcl_inventory($profile);

@@ -116,7 +116,7 @@ try {
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,'[]'),(3,'owner',1,'[]')");
     foreach([1,2] as $id)query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',
         ['PHP client '.$id,'php-delegation-client'.$id.'@example.invalid',password_hash(PCD_CLIENT_PASSWORD,PASSWORD_DEFAULT),str_repeat(dechex($id+12),32),gmdate('Y-m-d H:i:s')]);
-    pcd_owner();provider_settings_migrate(PCD_PASSWORD);provider_inventory_migrate(PCD_PASSWORD);provider_php_prepare(PCD_PASSWORD);
+    pcd_owner();provider_settings_migrate(PCD_PASSWORD);provider_inventory_migrate(PCD_PASSWORD);if(!studio_ready())studio_migrate();provider_php_prepare(PCD_PASSWORD);
     $profile=provider_settings_save('',0,'Synthetic PHP delegation',true,PCD_SECRET,PCD_PASSWORD);
     pcd_ok('Production vault retains real POSIX private key permissions',(fileperms($private.'/provider-master.key')&0777)===0600);
     pcd_ok('Unprepared read returns false without creating delegation table',!pcd_ready()&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[PCD_PREFIX.'provider_php_control_delegations']));
