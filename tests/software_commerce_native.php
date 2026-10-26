@@ -35,6 +35,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
+    require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
     swok(!software_commerce_ready(),'Not ready until owner explicitly prepares');
     swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
@@ -58,6 +59,19 @@ try{
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'V2 preparation can be repeated safely');
     swdenied(fn()=>software_commerce_prepare('wrong-password'),'Wrong owner password refused');
+
+    $private=software_asset_private_root();
+    $nonZip=$private.DIRECTORY_SEPARATOR.'synthetic-private.txt';
+    file_put_contents($nonZip,'Private non-ZIP acceptance fixture');
+    swok(software_asset_resolve_path('synthetic-private.txt')===null,
+        'Private asset resolver refuses non-ZIP files even inside storage');
+    $zipPath=$private.DIRECTORY_SEPARATOR.'synthetic-private.zip';
+    $zip=new ZipArchive();
+    if($zip->open($zipPath,ZipArchive::CREATE|ZipArchive::OVERWRITE)!==true)throw new RuntimeException('Native ZIP fixture failed.');
+    $zip->addFromString('README.txt','Synthetic private software archive');
+    $zip->close();
+    swok(software_asset_resolve_path('synthetic-private.zip')===realpath($zipPath),
+        'Private asset resolver accepts a contained ZIP file');
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['SOFTWARE-TEST','Internal test software','software','draft','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     db()->beginTransaction();
