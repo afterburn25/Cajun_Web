@@ -4,6 +4,20 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 
+function software_subscription_cancel_finalize(int $subscriptionId,int $clientId,int $invoice):string{
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=? AND status=?',
+        ['cancelled',$subscriptionId,'cancelling']);
+    $current=one('SELECT status FROM '.table('software_subscriptions').' WHERE id=?',[$subscriptionId]);
+    if(($current['status']??'')!=='cancelled'){
+        license_audit($clientId,'subscription.cancel.review',
+            'Gateway accepted cancellation but subscription '.$subscriptionId.' changed state concurrently; owner review retained');
+        return 'review';
+    }
+    license_audit($clientId,'subscription.cancel',
+        'Cancelled recurring subscription '.$subscriptionId.' for invoice '.$invoice);
+    return 'cancelled';
+}
+
 function software_subscription_cancel(array $client,int $invoice):string{
     if(support_current()||!software_commerce_ready())throw new RuntimeException('Subscription cancellation unavailable.');
     if(db()->inTransaction())throw new LogicException('Subscription cancellation owns its transaction.');
@@ -27,17 +41,7 @@ function software_subscription_cancel(array $client,int $invoice):string{
         $response=software_anet_execute('ARBCancelSubscriptionRequest',
             ['subscriptionId'=>$sub['gateway_subscription_id']]);
         if(($response['messages']['resultCode']??'')==='Ok'){
-            query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=? AND status=?',
-                ['cancelled',$sub['id'],'cancelling']);
-            $current=one('SELECT status FROM '.table('software_subscriptions').' WHERE id=?',[$sub['id']]);
-            if(($current['status']??'')!=='cancelled'){
-                license_audit((int)$client['id'],'subscription.cancel.review',
-                    'Gateway accepted cancellation but subscription '.$sub['id'].' changed state concurrently; owner review retained');
-                return 'review';
-            }
-            license_audit((int)$client['id'],'subscription.cancel',
-                'Cancelled recurring subscription '.$sub['id'].' for invoice '.$invoice);
-            return 'cancelled';
+            return software_subscription_cancel_finalize((int)$sub['id'],(int)$client['id'],$invoice);
         }
         query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',
             ['review',$sub['id']]);
