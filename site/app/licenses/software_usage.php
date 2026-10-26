@@ -11,6 +11,10 @@ function software_usage_record(int $licenseId,string $domain):void{
     try {
         query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,UTC_TIMESTAMP(),UTC_TIMESTAMP(),1) ON DUPLICATE KEY UPDATE check_count=IF(last_seen < UTC_TIMESTAMP() - INTERVAL 60 SECOND,LEAST(check_count+1,4294967295),check_count),last_seen=IF(last_seen < UTC_TIMESTAMP() - INTERVAL 60 SECOND,UTC_TIMESTAMP(),last_seen)',
             [$licenseId,$canonical]);
+        // Retain active-installation observations, but purge old observations
+        // for domains that have been deactivated for at least 180 days.
+        query('DELETE u FROM '.table('software_usage').' u LEFT JOIN '.table('license_domains').' d ON d.license_id=u.license_id AND d.domain=u.domain AND d.is_active=1 WHERE u.license_id=? AND d.id IS NULL AND u.last_seen < UTC_TIMESTAMP() - INTERVAL 180 DAY',
+            [$licenseId]);
     } catch (Throwable $error) {
         report_error($error);
     }
