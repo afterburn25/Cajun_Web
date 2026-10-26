@@ -81,10 +81,10 @@ try {
         license_response(false, 'Licensing storage is not prepared', 500);
     }
 
-    // Log the validation attempt for security audit
-    $auditData = substr((string)json_encode(['license_key' => substr($licenseKey, 0, 8) . '...', 'domain' => $domain, 'ip' => $ip]), 0, 400);
-    query('INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (0, ?, ?, ?)',
-        ['license.validate', $auditData, gmdate('Y-m-d H:i:s')]);
+    // Do not write a permanent audit row for every heartbeat. Successful
+    // validations are recorded below by software_usage_record() as one
+    // minute-bucketed license/domain observation. Security rate limiting uses
+    // the request IP without retaining it in the business audit trail.
 
     // Look up the license key
     $license = one(
