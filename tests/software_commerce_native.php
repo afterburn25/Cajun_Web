@@ -488,7 +488,14 @@ try{
 
     swok(software_asset_customer_authorized(1,'NEXUSCORE'),'Purchasing customer is authorized for matching software assets');
     swok(!software_asset_customer_authorized(2,'NEXUSCORE'),'Different customer cannot use another account software entitlement');
+    query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at,deactivated_at) VALUES (?,?,0,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 190 DAY))',
+        [$usageLicense,'stale-observation.example.com']);
+    query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 181 DAY),7)',
+        [$usageLicense,'stale-observation.example.com']);
     software_usage_record($usageLicense,'new.example.com');
+    swok(!one('SELECT id FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
+        [$usageLicense,'stale-observation.example.com']),
+        'Validation observation retention purges inactive domains older than 180 days');
     software_usage_record($usageLicense,'new.example.com');
     $usage=one('SELECT check_count,last_seen FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
         [$usageLicense,'new.example.com']);
