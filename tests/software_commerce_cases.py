@@ -191,6 +191,13 @@ def run_browser(env, browser):
           and 'software-http.example' in owned.text)
     check('Another customer cannot see the paid license or asset',
           'Synthetic browser acceptance download' not in bob.get(portal,timeout=25).text)
+    owner_register=admin.get(licenses,timeout=25)
+    check('Owner register exposes software issuance source and observed validation evidence',
+          ('Verified invoice #'+str(invoice)) in owner_register.text
+          and '1 active domain' in owner_register.text
+          and 'Last successful validation' in owner_register.text
+          and 'software-http.example' in owner_register.text
+          and 'bucketed check' in owner_register.text)
 
     download=base+'/existing/api/software-download.php?id='+str(asset_id)
     good=alice.get(download,timeout=25)
@@ -222,6 +229,12 @@ def run_browser(env, browser):
           'License not found' in denied.text
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1 ORDER BY domain',[license_id])
               ==[{'domain':'software-moved.example'}])
+    owner_history=admin.get(licenses,timeout=25)
+    check('Owner register retains software domain transfer history',
+          'Registered domain history' in owner_history.text
+          and 'software-http.example' in owner_history.text
+          and 'deactivated' in owner_history.text
+          and 'software-moved.example' in owner_history.text)
 
     # Chromium: real packaged My Software page renders without JS errors or overflow.
     context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
