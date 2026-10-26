@@ -133,6 +133,74 @@ function software_dependencies_satisfied(int $clientId,array $dependencySkus):bo
     return true;
 }
 
+/** Classify a mutable license without letting orphan software rows fall back to legacy behavior. */
+function software_grant_mutation_entitlement(int $licenseId):?array{
+    if($licenseId<1)throw new InvalidArgumentException('License not found.');
+    if(!software_commerce_ready())return null;
+    $entitlement=one('SELECT license_id,max_installations FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
+    if($entitlement)return $entitlement;
+    $legacy=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
+    if(!$legacy)throw new InvalidArgumentException('License not found.');
+    $productId=(string)($legacy['product_id']??'');
+    $softwareProduct=one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND family=?',[$productId,'software']);
+    $issued=one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+        ['license.software.issue','Software license '.$licenseId.' issued as %']);
+    if($softwareProduct||$issued)throw new RuntimeException('Software entitlement history is incomplete.');
+    return null;
+}
+
+/** Whether a recent standalone deactivation makes a different-domain add a cooldown bypass. */
+function software_grant_recent_deactivation_blocks_add(int $licenseId,string $newDomain):bool{
+    $hours=software_domain_change_cooldown_hours();
+    if($hours===0)return false;
+    $last=one('SELECT detail,created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+        ['license.domain.deactivate','License '.$licenseId.' domain %']);
+    if(!$last||!is_string($last['created_at']??null)||!is_string($last['detail']??null))return false;
+    $stamp=strtotime($last['created_at'].' UTC');
+    if($stamp===false||$stamp<=time()-($hours*3600))return false;
+    $prefix='License '.$licenseId.' domain ';
+    $old=str_starts_with($last['detail'],$prefix)?substr($last['detail'],strlen($prefix)):'';
+    if($old!==''&&hash_equals($old,$newDomain))return false; // accidental same-domain reactivation.
+    $replace=one('SELECT created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+        ['license.domain.replace','License '.$licenseId.' %']);
+    if($replace&&is_string($replace['created_at']??null)
+        &&(string)$replace['created_at']>=(string)$last['created_at'])return false;
+    return true;
+}
+
+/** Client-safe add/reactivation path that cannot bypass software replacement cooldown. */
+function software_grant_register_domain(int $licenseId,string $domain,int $actor):bool{
+    $entitlement=software_grant_mutation_entitlement($licenseId);
+    if($entitlement===null){license_register_domain($licenseId,$domain,$actor);return false;}
+    $domain=license_canonical_domain($domain);
+    license_transaction(function()use($licenseId,$domain,$actor):void{
+        license_lock($licenseId);
+        $existing=one('SELECT is_active FROM '.table('license_domains').' WHERE license_id=? AND domain=?',[$licenseId,$domain]);
+        if(!$existing||!(int)$existing['is_active']){
+            if(software_grant_recent_deactivation_blocks_add($licenseId,$domain)){
+                throw new RuntimeException('This license recently changed installations. Try again after the owner-configured cooldown.');
+            }
+        }
+        license_register_domain_tx($licenseId,$domain,$actor);
+    });
+    return true;
+}
+
+/** Client-safe deactivation path that refuses incomplete software entitlement history. */
+function software_grant_deactivate_domain(int $licenseId,string $domain,int $actor):bool{
+    $entitlement=software_grant_mutation_entitlement($licenseId);
+    if($entitlement===null){license_deactivate_domain($licenseId,$domain,$actor);return false;}
+    $domain=license_canonical_domain($domain);
+    license_transaction(function()use($licenseId,$domain,$actor):void{
+        license_lock($licenseId);
+        if(!one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',[$licenseId,$domain])){
+            throw new InvalidArgumentException('Current domain is not active on this license.');
+        }
+        license_deactivate_domain_tx($licenseId,$domain,$actor);
+    });
+    return true;
+}
+
 /** Owner-configured customer domain-move cooldown; zero disables the delay. */
 function software_domain_change_cooldown_hours():int {
     $raw=(string)setting('software_domain_change_cooldown_hours','24');
