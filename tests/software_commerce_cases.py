@@ -381,6 +381,26 @@ def run_browser(env, browser):
     check('Anonymous software ZIP request is refused',
           requests.get(download,timeout=25).status_code==403)
 
+    legacy_bundle=fixture('legacy-bundle',invoice)
+    legacy_url=base+'/existing/api/bundle-download.php?id='+str(legacy_bundle['bundle_id'])
+    check('Stale legacy website bundle record cannot expose software entitlement',
+          alice.get(legacy_url,timeout=25).status_code==404)
+    workspace=alice.get(base+'/existing/portal/index.php',timeout=25)
+    check('Legacy Website licenses panel excludes software entitlements',
+          paid['license_key'] not in workspace.text
+          and 'Stale legacy software bundle' not in workspace.text)
+    admin_register=admin.get(licenses,timeout=25)
+    software_bundle_forms=[
+        form for form in soup(admin_register).select('form')
+        if (form.select_one('input[name=action]') is not None
+            and form.select_one('input[name=action]').get('value')=='studio_license_bundle'
+            and form.select_one('input[name=id]') is not None
+            and form.select_one('input[name=id]').get('value')==str(license_id))
+    ]
+    check('Owner register hides legacy website bundle controls for software entitlement',
+          not software_bundle_forms
+          and 'legacy Website Core bundles are intentionally unavailable for this entitlement' in admin_register.text)
+
     support_admin=base+'/existing/admin/index.php?view=support'
     if db("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]:
         response=submit(admin,support_admin,'support_migrate',{'owner_password':OWNER,'confirm':'1'})
