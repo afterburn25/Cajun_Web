@@ -62,9 +62,8 @@ function software_product_policy_for_sku(string $sku):array{
 }
 
 function software_product_policy_save(int $productId,int $expectedRevision,string $moduleKey,string $dependencies,
-    int $updateMonths,int $maxInstallations,int $actor):array{
+    int $updateMonths,int $maxInstallations,#[\SensitiveParameter] string $password):array{
     if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
-    if($actor<1)throw new InvalidArgumentException('Owner identity is required.');
     if($expectedRevision<0||$updateMonths<0||$updateMonths>120||$maxInstallations<1||$maxInstallations>25){
         throw new InvalidArgumentException('Software policy values are outside supported limits.');
     }
@@ -93,7 +92,8 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
     }
     sort($ids,SORT_NUMERIC);$encoded=json_encode($ids,JSON_THROW_ON_ERROR);$now=gmdate('Y-m-d H:i:s');
 
-    staff_locked(fn()=>staff_transaction(function()use($productId,$expectedRevision,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actor,$now):void{
+    staff_locked(fn()=>staff_transaction(function()use($productId,$expectedRevision,$moduleKey,$encoded,$updateMonths,$maxInstallations,$password,$now):void{
+        $actor=staff_owner($password);
         $current=one('SELECT * FROM '.table('software_product_policies').' WHERE product_id=? FOR UPDATE',[$productId]);
         $revision=(int)($current['revision']??0);
         if($revision!==$expectedRevision)throw new RuntimeException('This software policy changed. Reload before saving.');
