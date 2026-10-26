@@ -342,9 +342,11 @@ def run_browser(env, browser):
     check('Another customer cannot see the paid license or asset',
           'Synthetic browser acceptance download' not in bob.get(portal,timeout=25).text)
     owner_register=admin.get(licenses,timeout=25)
-    check('Owner register exposes software issuance source and observed validation evidence',
+    check('Owner register exposes software issuance source, entitled versions and observed validation evidence',
           ('Verified invoice #'+str(invoice)) in owner_register.text
           and '1 active domain' in owner_register.text
+          and 'Eligible customer releases' in owner_register.text
+          and ('v'+paid['version']) in owner_register.text
           and 'Last successful validation' in owner_register.text
           and 'software-http.example' in owner_register.text
           and 'bucketed check' in owner_register.text)
