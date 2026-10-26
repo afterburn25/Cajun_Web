@@ -193,7 +193,7 @@ $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status
 $domains=license_domains((int)$lic['id']);
 $meta=null;$observations=[];
 if($softwareReady){
-    $meta=one('SELECT license_type,licensee,expires_at,purpose,issued_by,invoice_id,unit_number FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
+    $meta=one('SELECT license_type,licensee,expires_at,updates_until,max_installations,policy_revision,purpose,issued_by,invoice_id,unit_number FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
     if($meta){
         require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
         $observations=all('SELECT domain,first_seen,last_seen,check_count FROM '.table('software_usage').' WHERE license_id=? ORDER BY last_seen DESC LIMIT 10',[$lic['id']]);
@@ -213,6 +213,8 @@ if($softwareReady){
 <?php if($meta): ?>
 <dt><strong>Type / licensee</strong></dt><dd><?=esc($meta['license_type'])?> · <?=esc($meta['licensee'])?></dd>
 <dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd>
+<dt><strong>Update entitlement</strong></dt><dd><?=$meta['updates_until']===null?'Lifetime while license is valid':'Through '.esc($meta['updates_until']).' UTC'?> · policy revision <?=(int)$meta['policy_revision']?></dd>
+<dt><strong>Installation limit</strong></dt><dd><?=(int)$meta['max_installations']?> concurrent installation<?=((int)$meta['max_installations']===1?'':'s')?></dd>
 <dt><strong>Issuance source</strong></dt>
 <dd><?php if((int)$meta['invoice_id']>0): ?>Verified invoice #<?=(int)$meta['invoice_id']?><?=($meta['unit_number']!==null?' · unit '.(int)$meta['unit_number']:'')?><?php else: ?>Owner/staff issued<?php endif; ?> · issuer <?=((int)$meta['issued_by']>0?'staff #'.(int)$meta['issued_by']:'system fulfillment')?></dd>
 <dt><strong>Registered installations</strong></dt><dd><?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))?> active domain<?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))===1?'':'s'?><?php if($observations): ?> · <?=count($observations)?> observed validation domain<?=count($observations)===1?'':'s'?><?php endif; ?></dd>
