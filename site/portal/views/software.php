@@ -110,6 +110,20 @@ function software_portal_render(?array $client,string $error=''):never{
                     echo '</ul>';
                 }
                 $sub=one('SELECT status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]);
+                if($sub){
+                    $subscriptionLabel=match((string)$sub['status']){
+                        'creating'=>'Enrollment pending',
+                        'pending_first_payment'=>'Awaiting first verified payment',
+                        'active'=>'Active recurring billing',
+                        'cancelling'=>'Cancellation pending',
+                        'cancelled'=>'Cancelled · paid-through access remains until license expiry',
+                        'review'=>'Billing review · paid-through access remains until current license expiry',
+                        'sandbox_test'=>'Sandbox test only · no paid access',
+                        'awaiting_gateway_setup'=>'Gateway enrollment pending',
+                        default=>'Billing status: '.(string)$sub['status'],
+                    };
+                    echo '<p class="hint">Subscription: '.esc($subscriptionLabel).'</p>';
+                }
                 if($sub && in_array($sub['status'],['pending_first_payment','active','sandbox_test'],true)){
                     echo '<form method="post">'.support_csrf_field();
                     echo '<input type="hidden" name="action" value="software_subscription_cancel">';
