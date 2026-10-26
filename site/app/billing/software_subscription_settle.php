@@ -76,9 +76,8 @@ function software_subscription_settle(array $details,string $transactionId): str
             $duration=(int)$sub['interval_months'];
             if(!in_array($duration,[1,12],true))throw new RuntimeException('Invalid subscription renewal interval.');
             foreach($grants as $g){
-                if($g['license_type']!=='temporary'||(int)$g['is_master']===1
-                    ||$g['expires_at']===null)throw new RuntimeException('Renewal grant metadata is inconsistent.');
-                if((int)$g['is_active']!==1){
+                $action=software_subscription_renewal_grant_action($g);
+                if($action==='review'){
                     $renewalReview=true;
                     continue;
                 }
