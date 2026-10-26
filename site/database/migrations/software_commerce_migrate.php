@@ -7,14 +7,56 @@ require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 
 function software_commerce_ready(): bool {
     if(setting('software_commerce_version')!=='3')return false;
-    return software_commerce_table_present('software_entitlements')
-        &&software_commerce_table_present('software_assets')
-        &&software_commerce_table_present('software_product_policies')
-        &&software_commerce_column_present('software_entitlements','updates_until')
-        &&software_commerce_column_present('software_entitlements','max_installations')
-        &&software_commerce_column_present('software_entitlements','policy_revision')
-        &&software_commerce_column_present('software_assets','released_at')
-        &&software_commerce_index_present('software_assets','release_lookup');
+    $prefix=config()['db']['prefix'];
+    $required=array_keys(software_commerce_schema($prefix));
+    $physical=array_map(fn(string $name):string=>$prefix.$name,$required);
+    $marks=implode(',',array_fill(0,count($physical),'?'));
+    $present=all(
+        'SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('.$marks.')',
+        $physical
+    );
+    $seen=[];
+    foreach($present as $row)$seen[(string)$row['TABLE_NAME']]=true;
+    foreach($physical as $name)if(!isset($seen[$name]))return false;
+
+    $columns=all(
+        'SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND '.
+        '((table_name=? AND column_name IN (?,?,?,?)) OR (table_name=? AND column_name=?) OR '.
+        '(table_name=? AND column_name IN (?,?,?,?,?,?,?,?)))',
+        [
+            $prefix.'software_entitlements','purpose','updates_until','max_installations','policy_revision',
+            $prefix.'software_assets','released_at',
+            $prefix.'software_product_policies','product_id','module_key','dependencies','update_months',
+            'max_installations','revision','updated_by','updated_at'
+        ]
+    );
+    $have=[];
+    foreach($columns as $row)$have[(string)$row['TABLE_NAME'].'.'.(string)$row['COLUMN_NAME']]=true;
+    foreach([
+        $prefix.'software_entitlements.purpose',
+        $prefix.'software_entitlements.updates_until',
+        $prefix.'software_entitlements.max_installations',
+        $prefix.'software_entitlements.policy_revision',
+        $prefix.'software_assets.released_at',
+        $prefix.'software_product_policies.product_id',
+        $prefix.'software_product_policies.module_key',
+        $prefix.'software_product_policies.dependencies',
+        $prefix.'software_product_policies.update_months',
+        $prefix.'software_product_policies.max_installations',
+        $prefix.'software_product_policies.revision',
+        $prefix.'software_product_policies.updated_by',
+        $prefix.'software_product_policies.updated_at',
+    ] as $key)if(!isset($have[$key]))return false;
+
+    $indexes=all(
+        'SELECT TABLE_NAME,INDEX_NAME FROM information_schema.statistics WHERE table_schema=DATABASE() AND '.
+        '((table_name=? AND index_name=?) OR (table_name=? AND index_name=?))',
+        [$prefix.'software_entitlements','update_lookup',$prefix.'software_assets','release_lookup']
+    );
+    $haveIndex=[];
+    foreach($indexes as $row)$haveIndex[(string)$row['TABLE_NAME'].'.'.(string)$row['INDEX_NAME']]=true;
+    return isset($haveIndex[$prefix.'software_entitlements.update_lookup'])
+        &&isset($haveIndex[$prefix.'software_assets.release_lookup']);
 }
 function software_commerce_table_present(string $name): bool {
     return (bool)one(
