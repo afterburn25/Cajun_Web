@@ -14,6 +14,10 @@ function software_anet_event_details(string $body):array{
     $event=json_decode($body,true,12,JSON_THROW_ON_ERROR);
     if(!is_array($event)||!is_string($event['eventType']??null)||
         !is_array($event['payload']??null))throw new InvalidArgumentException('Invalid gateway event.');
+    $entity=(string)($event['payload']['entityName']??'');
+    $resource=(string)($event['payload']['id']??'');
     return ['type'=>$event['eventType'],'event_id'=>(string)($event['notificationId']??''),
-        'transaction_id'=>(string)($event['payload']['id']??'')];
+        'entity'=>$entity,'resource_id'=>$resource,
+        // Backward-compatible alias used by payment reconciliation.
+        'transaction_id'=>$resource];
 }
