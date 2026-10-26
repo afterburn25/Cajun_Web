@@ -53,6 +53,16 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <h2>Authorize.net payment configuration</h2>
 <p>Checkout uses the existing encrypted payment credentials. Sandbox transactions can be tested but will not unlock real licenses. Production charging remains disabled until reviewed and approved.</p>
 <p>Current checkout mode: <strong><?=esc((string)setting('software_gateway_mode','disabled'))?></strong></p>
+<p>Authorize.net webhook endpoint: <code><?=esc(site_url('api/software-webhook.php'))?></code></p>
+<p class="hint">Handled by this build: verified capture transactions, refund/void reversals, and subscription lifecycle notifications. Configure the merchant account to send only to the HTTPS endpoint shown above.</p>
+<?php
+$productionCodeGate=defined('CWP_SOFTWARE_PRODUCTION_PAYMENTS')&&CWP_SOFTWARE_PRODUCTION_PAYMENTS===true;
+$productionOwnerReview=setting('software_gateway_production_reviewed')==='1';
+?>
+<p>Production activation prerequisites:
+<strong><?=($productionCodeGate?'Code gate enabled':'Code gate locked')?></strong> ·
+<strong><?=($productionOwnerReview?'Owner review recorded':'Owner review not recorded')?></strong>.
+Both must be present before production settings can be read; this page still offers only disabled/sandbox modes.</p>
 <form method="post"><?php admin_action('software_gateway_select'); ?>
 <label>Payment mode<select name="gateway_mode">
 <option value="disabled">Disabled — do not take card payments</option>
