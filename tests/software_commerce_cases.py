@@ -141,7 +141,13 @@ def run_browser(env, browser):
           legacy_created.status_code==200 and len(legacy_rows)==1
           and db('SELECT COUNT(*) AS n FROM ci_software_entitlements WHERE license_id=?',[legacy_rows[0]['id']])==[{'n':0}])
 
-    gateway_form=_action_form(soup,admin.get(licenses,timeout=25),'software_gateway_select')
+    gateway_page=admin.get(licenses,timeout=25)
+    gateway_doc=soup(gateway_page)
+    check('Owner payment panel exposes exact installed webhook URL and keeps production unavailable',
+          (base+'/existing/api/software-webhook.php') in gateway_page.text
+          and 'Code gate locked' in gateway_page.text
+          and gateway_doc.select_one('select[name=gateway_mode] option[value=production]') is None)
+    gateway_form=_action_form(soup,gateway_page,'software_gateway_select')
     forged_gateway=form_data(gateway_form)
     forged_gateway.update({'gateway_mode':'production','current_password':OWNER})
     refused=admin.post(licenses,data=forged_gateway,timeout=25)
