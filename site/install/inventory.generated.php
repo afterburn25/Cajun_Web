@@ -138,7 +138,7 @@ function setup_expected_files(): array { return [
     'api/mail-notices.php'=>'69af9865c7b0ce438f6e4d0d523b02a6f4c2c3fac86c74a493773ae9e5303d63',
     'api/robots.php'=>'a0729c8917b63a5d3db718200b461e4896cc3f47eb2393c515688c67ffab68d8',
     'api/sitemap.php'=>'44a4331d9b43c85a761e8a7a8b4d716e953e7dad0431306f0fd11a3eccd82256',
-    'api/software-download.php'=>'06c301d6922630e6d51320fd5e35ac7a47f10a61057a98a296bba0964be86410',
+    'api/software-download.php'=>'851c1e4fa0d8db327a392681f03b33751739de24281c8207f5777f6ee79222cd',
     'api/software-webhook.php'=>'1619d2408b8fd78504f75ae2d1daa06fbf5baf9a798577c6edd85a7d0f949658',
     'api/validate.php'=>'19aaad32fc70d8c0a49f14dc454e37cb1453239ac1e5b61acfc0658978af407a',
     'app/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
