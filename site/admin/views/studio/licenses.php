@@ -283,7 +283,7 @@ $subscriptionChargeCandidates=all('SELECT s.invoice_id,s.gateway_subscription_id
 <?php endforeach; ?>
 </section>
 <?php endif; ?>
-<h2>Active licenses</h2>
+<h2>License register</h2>
 <div class="workspace-grid">
 <?php foreach($licenses as $lic): ?>
 <?php
