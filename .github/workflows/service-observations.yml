@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: service-observations-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: service-observations-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-history:
     name: Hosting observation history PHP ${{ matrix.php }} and ${{ matrix.database.label }}

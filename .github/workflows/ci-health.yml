@@ -1,0 +1,33 @@
+name: CI queue health
+on:
+  schedule:
+    # Weekly Monday snapshot only — deliberately infrequent so the monitor
+    # cannot itself contribute to queue pressure.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-health
+  cancel-in-progress: true
+jobs:
+  report:
+    name: Queue health snapshot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Collect queue health
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/ci_health.py --pages 8 --out ci-health.md
+          cat ci-health.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload snapshot
+        uses: actions/upload-artifact@bbbca2b1f6e4e2f16a465178e5f59d40b3a1677d
+        with:
+          name: ci-health-${{ github.run_id }}
+          path: ci-health.md
+          retention-days: 30
