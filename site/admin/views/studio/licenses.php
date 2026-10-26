@@ -33,7 +33,7 @@ try {
         }
     }
 } catch (Throwable) {}
-if(!$softwareReady)$products += $legacyProducts;
+if(!$softwareReady)$products = $legacyProducts;
 $softwarePolicyProducts=[];
 if($softwareReady){
     require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
