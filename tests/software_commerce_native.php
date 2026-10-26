@@ -321,6 +321,17 @@ try{
     db()->commit();
     swok(software_customer_has_valid_product(1,'SOFTWARE-TEST'),
         'Customer dependency check recognizes a valid ordinary software entitlement');
+    swdenied(fn()=>software_grant_register_domain((int)$dependencyGrant['id'],'foreign-add.example.com',2),
+        'Foreign customer cannot add a software installation through the service directly');
+    swdenied(fn()=>software_grant_deactivate_domain((int)$dependencyGrant['id'],'dependency.example.com',2),
+        'Foreign customer cannot deactivate a software installation through the service directly');
+    swdenied(fn()=>software_grant_replace_domain((int)$dependencyGrant['id'],'dependency.example.com','foreign-move.example.com',2),
+        'Foreign customer cannot replace a software installation through the service directly');
+    swok(one('SELECT domain,is_active FROM '.table('license_domains').' WHERE license_id=? AND domain=?',
+        [(int)$dependencyGrant['id'],'dependency.example.com'])===['domain'=>'dependency.example.com','is_active'=>1]
+        &&!one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain IN (?,?)',
+            [(int)$dependencyGrant['id'],'foreign-add.example.com','foreign-move.example.com']),
+        'Rejected foreign software-domain mutations leave ownership state unchanged');
     db()->beginTransaction();
     $manualDependent=software_grant_create(1,'NEXUSCORE','trial','Synthetic Buyer','manual-dependent.example.com',
         gmdate('Y-m-d H:i:s',time()+86400),1);
