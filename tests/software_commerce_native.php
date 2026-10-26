@@ -23,11 +23,14 @@ try{
     $_SESSION=['uid'=>1,'auth_version'=>str_repeat('a',32),'login_at'=>time(),'last_activity'=>time()];
     query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',
         ['Synthetic Buyer','sw-buyer@example.invalid','disabled',str_repeat('b',32),$now]);
+    query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',
+        ['Other Buyer','sw-other@example.invalid','disabled',str_repeat('c',32),$now]);
     require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
+    require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
     swok(!software_commerce_ready(),'Not ready until owner explicitly prepares');
     swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Pre-commerce install preserves legacy v3 validation');
@@ -84,6 +87,8 @@ try{
     software_fulfill_paid_order($invoice);
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,'Paid two-unit invoice mints exactly two keys after retry');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice])->fetchColumn()===1,'One delivery email outbox entry');
+    swok(software_asset_customer_authorized(1,'NEXUSCORE'),'Purchasing customer is authorized for matching software assets');
+    swok(!software_asset_customer_authorized(2,'NEXUSCORE'),'Different customer cannot use another account software entitlement');
     $issued=one('SELECT license_id FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number LIMIT 1',[$invoice]);
     software_grant_replace_domain((int)$issued['license_id'],'new.example.com','moved.example.com',1);
     swok((bool)one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
