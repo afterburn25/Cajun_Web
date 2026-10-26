@@ -27,6 +27,10 @@ function software_payment_reversal_apply(array $reversal):string{
             if(one('SELECT id FROM '.table('software_payment_reversals').' WHERE gateway_transaction_id=?',[$event])){
                 db()->commit();return 'replay';
             }
+            if($kind==='refund'){
+                $prior=(int)query('SELECT COALESCE(SUM(amount_cents),0) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=? AND kind=?',[$original,'refund'])->fetchColumn();
+                if($prior+$amount>(int)$charge['amount_cents'])throw new RuntimeException('Refund total exceeds the verified original payment.');
+            }
             query('INSERT INTO '.table('software_payment_reversals').' (gateway_transaction_id,original_transaction_id,kind,amount_cents,invoice_id,subscription_invoice_id,created_at) VALUES (?,?,?,?,?,?,?)',
                 [$event,$original,$kind,$amount,$charge['invoice_id'],null,gmdate('Y-m-d H:i:s')]);
             query('UPDATE '.table('software_charges').' SET status=?,updated_at=? WHERE id=?',
@@ -41,6 +45,11 @@ function software_payment_reversal_apply(array $reversal):string{
             if(!$sub)throw new RuntimeException('Recurring reversal has no subscription record.');
             if(one('SELECT id FROM '.table('software_payment_reversals').' WHERE gateway_transaction_id=?',[$event])){
                 db()->commit();return 'replay';
+            }
+            if($kind==='refund'){
+                $paidInvoice=ledger_invoice((int)$receipt['invoice_id']);
+                $prior=(int)query('SELECT COALESCE(SUM(amount_cents),0) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=? AND kind=?',[$original,'refund'])->fetchColumn();
+                if($prior+$amount>(int)$paidInvoice['amount_cents'])throw new RuntimeException('Refund total exceeds the verified subscription payment.');
             }
             query('INSERT INTO '.table('software_payment_reversals').' (gateway_transaction_id,original_transaction_id,kind,amount_cents,invoice_id,subscription_invoice_id,created_at) VALUES (?,?,?,?,?,?,?)',
                 [$event,$original,$kind,$amount,$receipt['invoice_id'],$receipt['subscription_invoice_id'],gmdate('Y-m-d H:i:s')]);
