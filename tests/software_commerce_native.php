@@ -194,6 +194,9 @@ try{
         'One-time reversal review state is persisted');
     swok(software_payment_reversal_apply($refund)==='replay',
         'Exact repeated refund event is idempotent');
+    swdenied(fn()=>software_payment_reversal_apply([
+        'kind'=>'refund','transaction_id'=>'700000001','original_transaction_id'=>'600000001','amount_cents'=>499
+    ]),'Reused reversal transaction ID with conflicting amount is refused');
     swok(software_payment_reversal_apply(['kind'=>'refund','transaction_id'=>'700000002','original_transaction_id'=>'600000001','amount_cents'=>250])==='one_time_reversal_review',
         'Distinct partial refund against same charge is retained');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=?',['600000001'])->fetchColumn()===2,
@@ -208,6 +211,9 @@ try{
         'Owner can record verified merchant dispute against one-time payment');
     swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',1)==='replay',
         'Repeated merchant dispute case is idempotent');
+    swdenied(fn()=>software_payment_dispute_record('600000001','MSP-CASE-001',
+        'Conflicting merchant dispute evidence must not overwrite retained history',1),
+        'Reused dispute case reference with conflicting evidence is refused');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_disputes').' WHERE case_reference=?',['MSP-CASE-001'])->fetchColumn()===1,
         'Merchant dispute evidence is retained once');
     swok(one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])['status']==='dispute_review',
