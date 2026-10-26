@@ -8,7 +8,12 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
 boot();
 $client=studio_client();
-if(!$client||support_current()||!software_commerce_ready()){http_response_code(403);exit;}
+$activeSupport=false;
+if(function_exists('support_ready')&&function_exists('support_binding')&&support_ready()&&support_binding()!==''){
+    $activeSupport=(bool)one('SELECT id FROM '.table('support_sessions').' WHERE binding_hash=? AND ended_at IS NULL LIMIT 1',
+        [support_binding()]);
+}
+if(!$client||support_current()||$activeSupport||!software_commerce_ready()){http_response_code(403);exit;}
 $id=$_GET['id']??null;$licenseId=$_GET['license']??null;
 if(!is_string($id)||!preg_match('/^[1-9][0-9]{0,18}$/D',$id)
     ||!is_string($licenseId)||!preg_match('/^[1-9][0-9]{0,9}$/D',$licenseId)){http_response_code(404);exit;}
