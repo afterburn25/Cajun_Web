@@ -162,7 +162,7 @@ function setup_expected_files(): array { return [
     'app/billing/software_charge_guard.php'=>'71a4f180ee4ee7d0f92e69adb50c58cfd4e15c3c3d1923fea635d435abe47ce0',
     'app/billing/software_orders.php'=>'f5cc28db4b6aa06752ba04ce35e55ce9e7064d11126cb9e68563592b4932acdf',
     'app/billing/software_payment_review.php'=>'6ba4b7910cb5f4a143c24b71921a24ef7ab9919904071ef9b04a75f3e3416333',
-    'app/billing/software_subscription_cancel.php'=>'3e72f05abc658aab0b2baf8282f56bbae9abd7407e6698cfc2a1d5db9ea406f3',
+    'app/billing/software_subscription_cancel.php'=>'8b63faa369cf699ea6655350f0e183a8d825549c35613c3ac07ae8e465a130d7',
     'app/billing/software_subscription_enroll.php'=>'df5cede850d41087ae8ce338c14e4dfcb621b36c86a6b8bccb6aa3ce5a949005',
     'app/billing/software_subscription_settle.php'=>'c4ab9add13e70296caa99857aef73d0f0d2e40d488cdb472cea5662648b4cc40',
     'app/billing/software_subscriptions.php'=>'6e7a103a216b62adab6a4a13b63685f3bf7d6c6ce5839b54de0bee1160dbc6c6',
