@@ -96,6 +96,14 @@ try {
         license_response(false, 'Domain not registered for this license');
     }
 
+    // Existing v3 keys remain valid; new time-limited grants must also pass
+    // their server-side type/expiration policy before granting authority.
+    require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+    if (!software_grant_verdict($license, $domain)) {
+        license_response(false, 'License expired or not authorized');
+    }
+    require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
+    software_usage_record((int)$license['id'], $domain);
     license_response(true);
 } catch (\Throwable $e) {
     report_error($e);
