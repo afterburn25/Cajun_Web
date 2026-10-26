@@ -46,8 +46,10 @@ try{
     swok(software_commerce_table_present('software_product_policies')
         &&software_commerce_column_present('software_entitlements','updates_until')
         &&software_commerce_column_present('software_entitlements','max_installations')
-        &&software_commerce_column_present('software_entitlements','policy_revision'),
-        'Fresh v3 storage includes product policy and entitlement snapshot metadata');
+        &&software_commerce_column_present('software_entitlements','policy_revision')
+        &&software_commerce_column_present('software_assets','released_at')
+        &&software_commerce_index_present('software_assets','release_lookup'),
+        'Fresh v3 storage includes product policy, entitlement snapshots and immutable release metadata');
     save_setting('software_commerce_version','');
     swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Existing entitlement storage without readiness marker is inconclusive, not authorized');
@@ -57,7 +59,9 @@ try{
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_reversals'.chr(96));
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_disputes'.chr(96));
     $entitlementTable=chr(96).config()['db']['prefix'].'software_entitlements'.chr(96);
+    $assetTable=chr(96).config()['db']['prefix'].'software_assets'.chr(96);
     db()->exec('ALTER TABLE '.$entitlementTable.' DROP COLUMN policy_revision, DROP COLUMN max_installations, DROP COLUMN updates_until, DROP COLUMN purpose');
+    db()->exec('ALTER TABLE '.$assetTable.' DROP INDEX release_lookup, DROP COLUMN released_at');
     save_setting('software_commerce_version','1');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'Published branch v1 storage upgrades additively to v3');
@@ -70,6 +74,9 @@ try{
         swok(software_commerce_column_present('software_entitlements',$column),
             'V1 to v3 upgrade adds entitlement column '.$column);
     }
+    swok(software_commerce_column_present('software_assets','released_at')
+        &&software_commerce_index_present('software_assets','release_lookup'),
+        'V1 to v3 upgrade adds immutable release timestamp metadata');
 
     $migrateKey=license_create(1,'SOFTWARE-MIGRATE',1,false,null);
     $migrateLicense=(int)one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$migrateKey])['id'];
@@ -81,14 +88,17 @@ try{
 
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_product_policies'.chr(96));
     db()->exec('ALTER TABLE '.$entitlementTable.' DROP COLUMN policy_revision, DROP COLUMN max_installations, DROP COLUMN updates_until');
+    db()->exec('ALTER TABLE '.$assetTable.' DROP INDEX release_lookup, DROP COLUMN released_at');
     save_setting('software_commerce_version','2');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'Published branch v2 storage upgrades additively to v3');
     swok(software_commerce_table_present('software_product_policies')
         &&software_commerce_column_present('software_entitlements','updates_until')
         &&software_commerce_column_present('software_entitlements','max_installations')
-        &&software_commerce_column_present('software_entitlements','policy_revision'),
-        'V2 to v3 upgrade adds product policy and entitlement snapshot metadata');
+        &&software_commerce_column_present('software_entitlements','policy_revision')
+        &&software_commerce_column_present('software_assets','released_at')
+        &&software_commerce_index_present('software_assets','release_lookup'),
+        'V2 to v3 upgrade adds product policy, entitlement snapshots and immutable release metadata');
     $migratedRights=one('SELECT updates_until,max_installations,policy_revision FROM '.table('software_entitlements').' WHERE license_id=?',[$migrateLicense]);
     swok(($migratedRights['updates_until']??'')===$migrateExpiry
         &&(int)($migratedRights['max_installations']??0)===2
@@ -114,11 +124,12 @@ try{
         ['SOFTWARE-TEST','Internal test software','software','draft','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
 
     $assetId=software_asset_publish('SOFTWARE-TEST','1.0.0','Native verified software ZIP',$zipPath,$password);
-    $assetRow=one('SELECT sha256,byte_size,file_path FROM '.table('software_assets').' WHERE id=?',[$assetId]);
+    $assetRow=one('SELECT sha256,byte_size,file_path,released_at,created_at FROM '.table('software_assets').' WHERE id=?',[$assetId]);
     swok(is_array($assetRow)&&$assetRow['sha256']===hash_file('sha256',$zipPath)
         &&(int)$assetRow['byte_size']===filesize($zipPath)
-        &&$assetRow['file_path']==='synthetic-private.zip',
-        'Owner publication records immutable relative path, checksum and size');
+        &&$assetRow['file_path']==='synthetic-private.zip'
+        &&$assetRow['released_at']!==null&&$assetRow['released_at']===$assetRow['created_at'],
+        'Customer-visible publication records immutable path, checksum, size and first release time');
     swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.0','Native verified software ZIP',$zipPath,$password),
         'Published software version cannot be overwritten by a repeated publication');
 
@@ -141,19 +152,26 @@ try{
         'Rejected package publications create no extra software asset rows');
 
     $privateAsset=software_asset_publish('SOFTWARE-TEST','1.0.3','Owner-private software ZIP',$zipPath,$password,false);
-    $privateBefore=one('SELECT sku,version,title,file_path,sha256,byte_size,is_published,created_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
-    swok((int)$privateBefore['is_published']===0,'Owner can record a verified software release without exposing it to customers');
+    $privateBefore=one('SELECT sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
+    swok((int)$privateBefore['is_published']===0&&$privateBefore['released_at']===null,
+        'Owner-private software release has no customer release timestamp');
     swdenied(fn()=>software_asset_visibility($privateAsset,true,'wrong-password'),
         'Software release visibility requires serialized owner reauthentication');
     swok((int)one('SELECT is_published FROM '.table('software_assets').' WHERE id=?',[$privateAsset])['is_published']===0,
         'Rejected visibility change leaves owner-private release hidden');
     swok(software_asset_visibility($privateAsset,true,$password),
         'Owner can make a verified private release customer-visible');
-    $privateAfter=one('SELECT sku,version,title,file_path,sha256,byte_size,is_published,created_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
+    $privateAfter=one('SELECT sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
     $immutableBefore=$privateBefore;$immutableAfter=$privateAfter;
-    unset($immutableBefore['is_published'],$immutableAfter['is_published']);
-    swok((int)$privateAfter['is_published']===1&&$immutableBefore===$immutableAfter,
-        'Visibility changes preserve immutable software asset metadata');
+    unset($immutableBefore['is_published'],$immutableBefore['released_at'],$immutableAfter['is_published'],$immutableAfter['released_at']);
+    swok((int)$privateAfter['is_published']===1&&$privateAfter['released_at']!==null&&$immutableBefore===$immutableAfter,
+        'First customer publication stamps release time without changing immutable ZIP identity');
+    $firstRelease=(string)$privateAfter['released_at'];
+    swok(software_asset_visibility($privateAsset,false,$password),'Owner can hide a customer release without erasing release history');
+    swok(software_asset_visibility($privateAsset,true,$password),'Owner can restore a customer release');
+    $privateRestored=one('SELECT is_published,released_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
+    swok((int)$privateRestored['is_published']===1&&$privateRestored['released_at']===$firstRelease,
+        'Hide and restore preserves the immutable first customer release time');
 
     db()->beginTransaction();
     $trial=software_grant_create(1,'SOFTWARE-TEST','trial','Synthetic Buyer','www.example.com',gmdate('Y-m-d H:i:s',time()+86400),1);
@@ -450,10 +468,10 @@ try{
         'Runtime validation denies a software license whose active installations exceed its snapshot limit');
     query('DELETE FROM '.table('license_domains').' WHERE license_id=? AND domain=?',[$usageLicense,'forced-overseat.example.com']);
 
-    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,1,?)',
-        ['NEXUSCORE','1.0.0','Inside update window','synthetic-private.zip',str_repeat('a',64),22,$now]);
-    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,1,?)',
-        ['NEXUSCORE','2.0.0','Outside update window','synthetic-private.zip',str_repeat('b',64),22,$future]);
+    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at) VALUES (?,?,?,?,?,?,1,?,?)',
+        ['NEXUSCORE','1.0.0','Inside update window','synthetic-private.zip',str_repeat('a',64),22,$now,$now]);
+    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at) VALUES (?,?,?,?,?,?,1,?,?)',
+        ['NEXUSCORE','2.0.0','Outside update window','synthetic-private.zip',str_repeat('b',64),22,$future,$now]);
     $insideAsset=one('SELECT * FROM '.table('software_assets').' WHERE sku=? AND version=?',['NEXUSCORE','1.0.0']);
     swok((bool)software_asset_entitlement_authorized(1,(int)$rights[0]['license_id'],$insideAsset),
         'Exact purchased entitlement authorizes its matching release');
