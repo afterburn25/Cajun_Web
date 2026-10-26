@@ -89,6 +89,7 @@
       "https_request",
       "local_request",
       "security_headers",
+      "authorize_net_security_headers",
       "nonce",
       "redirect",
       "fail_page"
