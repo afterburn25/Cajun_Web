@@ -260,8 +260,8 @@ function software_grant_version_verdict(array $license,string $version):?bool {
         $stored=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[(int)$license['id']]);
         $sku=(string)($stored['product_id']??'');
     }
-    $asset=one('SELECT created_at FROM '.table('software_assets').' WHERE sku=? AND version=? AND is_published=1',
+    $asset=one('SELECT released_at FROM '.table('software_assets').' WHERE sku=? AND version=? AND is_published=1 AND released_at IS NOT NULL',
         [$sku,$version]);
     if(!$asset)return null;
-    return $entitlement['updates_until']===null||(string)$asset['created_at']<=(string)$entitlement['updates_until'];
+    return $entitlement['updates_until']===null||(string)$asset['released_at']<=(string)$entitlement['updates_until'];
 }
