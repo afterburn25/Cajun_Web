@@ -120,6 +120,24 @@ $notices=all('SELECT n.*,COALESCE(o.sku,origin.sku) AS sku,c.name FROM '.table('
 <?php endif; ?>
 <?php endforeach; ?>
 </section>
+<?php
+$reversals=all('SELECT r.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_reversals').' r LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=r.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=r.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY r.id DESC LIMIT 30');
+$subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status=? ORDER BY s.id DESC LIMIT 30',['review']);
+?>
+<section class="workspace-card"><h2>Payment reversal review</h2>
+<p>Verified refunds and voids are recorded here for owner review. CajunWebPro does not automatically revoke already-paid access from a reversal notification.</p>
+<?php if(!$reversals): ?><p class="muted">No verified software payment reversals recorded.</p><?php endif; ?>
+<?php foreach($reversals as $r): ?>
+<p><?=esc(($r['name']??'Unknown customer').' · '.($r['sku']??'Unknown software'))?> · <?=esc($r['kind'])?> · event <?=esc($r['gateway_transaction_id'])?> · original <?=esc($r['original_transaction_id'])?><?php if($r['amount_cents']!==null): ?> · $<?=esc(number_format((int)$r['amount_cents']/100,2))?><?php endif; ?></p>
+<?php endforeach; ?>
+</section>
+<section class="workspace-card"><h2>Subscription payment review</h2>
+<p>Failed, suspended, terminated, or reversed recurring payments remain here until an owner resolves the billing state. Paid-through access is not silently revoked.</p>
+<?php if(!$subscriptionReviews): ?><p class="muted">No software subscriptions currently require review.</p><?php endif; ?>
+<?php foreach($subscriptionReviews as $r): ?>
+<p><?=esc($r['name'].' · '.$r['sku'])?> · Original invoice <?=(int)$r['invoice_id']?> · Gateway subscription <?=esc((string)$r['gateway_subscription_id'])?></p>
+<?php endforeach; ?>
+</section>
 <?php endif; ?>
 <h2>Active licenses</h2>
 <div class="workspace-grid">
