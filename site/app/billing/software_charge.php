@@ -102,7 +102,7 @@ function software_charge_reconcile(int $invoice,string $transactionId,#[Sensitiv
         throw new InvalidArgumentException('Enter the software invoice and verified gateway transaction ID.');
     }
     staff_require('staff.manage');
-    $actor=staff_owner($password);
+    staff_owner($password); // authenticate before any gateway lookup
     $charge=one('SELECT amount_cents,status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice]);
     if(!$charge)throw new RuntimeException('Software charge history is missing.');
     if($charge['status']==='paid'){
@@ -123,11 +123,19 @@ function software_charge_reconcile(int $invoice,string $transactionId,#[Sensitiv
         throw new RuntimeException('Gateway transaction does not exactly confirm this invoice and amount.');
     }
     if($gateway['mode']!=='production'){
-        license_audit((int)$actor['id'],'payment.reconcile.sandbox',
-            'Sandbox readback verified for software invoice '.$invoice.' transaction '.$transactionId.'; no paid transition');
+        staff_locked(function()use($password,$invoice,$transactionId):void{
+            $actor=staff_owner($password);
+            license_audit((int)$actor['id'],'payment.reconcile.sandbox',
+                'Sandbox readback verified for software invoice '.$invoice.' transaction '.$transactionId.'; no paid transition');
+        });
         return 'sandbox_verified';
     }
-    return software_charge_reconcile_finalize($invoice,$transactionId,(int)$charge['amount_cents'],(int)$actor['id']);
+    return staff_locked(function()use($password,$invoice,$transactionId,$charge):string{
+        $actor=staff_owner($password);
+        return software_charge_reconcile_finalize(
+            $invoice,$transactionId,(int)$charge['amount_cents'],(int)$actor['id']
+        );
+    });
 }
 
 /** The original Accept.js token is short lived and never stored or logged. */
