@@ -11,6 +11,31 @@ if(config()['db']['name']!=='cwp_test'||config()['db']['prefix']!=='ci_')exit(2)
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/existing/index.php','REQUEST_METHOD'=>'GET'];
 $operation=$argv[1];
 $invoice=(int)$argv[2];
+
+if(in_array($operation,['sandbox-on','sandbox-off'],true)){
+    require_once CWP_CODE_ROOT.'/app/billing/payments.php';
+    if(!software_commerce_ready()||!payments_ready())throw new RuntimeException('Synthetic payment-page fixture requires prepared commerce and payments.');
+    if($operation==='sandbox-off'){
+        save_setting('software_gateway_mode','disabled');
+        echo json_encode(['mode'=>'disabled'],JSON_THROW_ON_ERROR);
+        exit;
+    }
+    $_SERVER['DOCUMENT_ROOT']=$root;
+    start_session();
+    $actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
+    if(!$actor)throw new RuntimeException('Synthetic owner is unavailable.');
+    $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
+    $gateway=payments_gateway('sandbox');
+    payments_save('sandbox',(int)$gateway['revision'],[
+        'api_login_id'=>'SyntheticBrowser',
+        'transaction_key'=>'1234567890ABCDEF',
+        'signature_key'=>str_repeat('ab',64),
+        'public_client_key'=>'Synthetic_Browser_Client_Key_2026',
+    ],'Synthetic owner passphrase 2026');
+    save_setting('software_gateway_mode','sandbox');
+    echo json_encode(['mode'=>'sandbox'],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation!=='fulfill-asset'||$invoice<1)exit(2);
 
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
