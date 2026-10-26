@@ -62,15 +62,15 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
-  $software=software_commerce_ready()&&(bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
-  license_register_domain($licenseId,$domain,(int)$client['id']);flash($software?'Installation domain registered.':'Domain registered.');redirect($software?studio_url(['software'=>1]):studio_url());}
+  $software=software_grant_register_domain($licenseId,$domain,(int)$client['id']);
+  flash($software?'Installation domain registered.':'Domain registered.');redirect($software?studio_url(['software'=>1]):studio_url());}
  elseif($action==='license_domain_deactivate'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
-  $software=software_commerce_ready()&&(bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
-  license_deactivate_domain($licenseId,$domain,(int)$client['id']);flash($software?'Installation deactivated.':'Domain deactivated.');redirect($software?studio_url(['software'=>1]):studio_url());}
+  $software=software_grant_deactivate_domain($licenseId,$domain,(int)$client['id']);
+  flash($software?'Installation deactivated.':'Domain deactivated.');redirect($software?studio_url(['software'=>1]):studio_url());}
  elseif($action==='license_domain_replace'){$licenseId=gint($_POST,'license_id',1,2147483647);$old=posted('old_domain',255);$new=posted('new_domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
