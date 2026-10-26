@@ -173,8 +173,17 @@ function software_grant_recent_deactivation_blocks_add(int $licenseId,string $ne
     return true;
 }
 
+function software_grant_require_client_owner(int $licenseId,int $clientId):void{
+    if($licenseId<1||$clientId<1)throw new InvalidArgumentException('License not found.');
+    $license=one('SELECT customer_id,is_master FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
+    if(!$license||(int)$license['customer_id']!==$clientId||(int)$license['is_master']===1){
+        throw new InvalidArgumentException('License not found.');
+    }
+}
+
 /** Client-safe add/reactivation path that cannot bypass software replacement cooldown. */
 function software_grant_register_domain(int $licenseId,string $domain,int $actor):bool{
+    software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_register_domain($licenseId,$domain,$actor);return false;}
     $domain=license_canonical_domain($domain);
@@ -193,6 +202,7 @@ function software_grant_register_domain(int $licenseId,string $domain,int $actor
 
 /** Client-safe deactivation path that refuses incomplete software entitlement history. */
 function software_grant_deactivate_domain(int $licenseId,string $domain,int $actor):bool{
+    software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_deactivate_domain($licenseId,$domain,$actor);return false;}
     $domain=license_canonical_domain($domain);
@@ -215,6 +225,7 @@ function software_domain_change_cooldown_hours():int {
 
 /** Customer software-domain replacement with a serialized per-license cooldown. */
 function software_grant_replace_domain(int $licenseId,string $oldDomain,string $newDomain,int $actor):void {
+    software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){
         license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
