@@ -191,6 +191,34 @@ try{
         'Stale software product policy revision cannot overwrite current policy');
     swdenied(fn()=>software_product_policy_save($product,1,'bad-password','',0,2,'wrong-password'),
         'Software product policy save reauthenticates the owner inside the serialized mutation');
+
+    foreach([
+        ['SOFTWARE-DEP-A','Dependency graph A'],
+        ['SOFTWARE-DEP-B','Dependency graph B']
+    ] as [$depSku,$depTitle]){
+        query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [$depSku,$depTitle,'software','published','once','USD',1200,0,null,'','Synthetic dependency graph','','Terms',0,1,$now,$now]);
+    }
+    $depA=(int)one('SELECT id FROM '.table('catalog_products').' WHERE sku=?',['SOFTWARE-DEP-A'])['id'];
+    $depB=(int)one('SELECT id FROM '.table('catalog_products').' WHERE sku=?',['SOFTWARE-DEP-B'])['id'];
+    $depPolicy=software_product_policy_save($depA,0,'dep-a','SOFTWARE-DEP-B',0,1,$password);
+    swok($depPolicy['dependency_skus']===['SOFTWARE-DEP-B'],
+        'Acyclic software dependency policy is accepted');
+    swdenied(fn()=>software_product_policy_save($depB,0,'dep-b','SOFTWARE-DEP-A',0,1,$password),
+        'Circular software dependency policy is refused');
+    swok(!one('SELECT product_id FROM '.table('software_product_policies').' WHERE product_id=?',[$depB]),
+        'Rejected circular dependency creates no policy row');
+    $depRename=[
+        'sku'=>'SOFTWARE-DEP-B-RENAMED','title'=>'Dependency graph B','family'=>'software','status'=>'published','term'=>'once',
+        'currency'=>'USD','amount'=>'12.00','setup'=>'0.00','cost'=>'','provider_ref'=>'','summary'=>'Synthetic dependency graph',
+        'features'=>'','terms'=>'Terms','sort_order'=>'0'
+    ];
+    swdenied(fn()=>catalog_save($depB,1,$depRename),
+        'Software SKU referenced by another product dependency policy is immutable');
+    swok(one('SELECT sku,revision FROM '.table('catalog_products').' WHERE id=?',[$depB])===
+        ['sku'=>'SOFTWARE-DEP-B','revision'=>1],
+        'Rejected dependency SKU rename leaves the referenced product unchanged');
+
     $orphanKey=license_create(1,'NEXUSCORE',1,false,null);
     $orphan=one('SELECT id,is_active,is_master FROM '.table('website_licenses').' WHERE license_key=?',[$orphanKey]);
     swdenied(fn()=>software_grant_verdict($orphan,'orphan.example.com'),
