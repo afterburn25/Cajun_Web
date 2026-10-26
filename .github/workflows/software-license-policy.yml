@@ -21,6 +21,9 @@ jobs:
           php -l tests/software_license_policy.php
           php -l tests/software_commerce_contract.php
           php -l site/app/licenses/software_grants.php
+          php -l site/app/licenses/software_asset_access.php
+          php -l site/app/billing/software_payment_review.php
+          php -l site/app/billing/catalog.php
           php -l site/app/licenses/software_usage.php
           php -l site/app/billing/authorize_net_contract.php
           php -l site/app/billing/authorize_net_webhooks.php
