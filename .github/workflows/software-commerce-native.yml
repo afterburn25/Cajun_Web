@@ -11,6 +11,7 @@ on:
       - 'site/app/licenses/software_asset_access.php'
       - 'site/app/licenses/software_notices.php'
       - 'site/app/billing/software_subscription_settle.php'
+      - 'site/app/billing/software_subscriptions.php'
       - 'site/app/billing/software_subscription_enroll.php'
       - 'site/app/billing/software_subscription_cancel.php'
       - 'site/app/billing/software_charge.php'
