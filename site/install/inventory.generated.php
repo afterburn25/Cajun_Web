@@ -158,7 +158,7 @@ function setup_expected_files(): array { return [
     'app/billing/recurring_billing_forms.php'=>'ad51b7dbf354b1badd341e51f8f29b5489a239ba56752125ea228e6d94e4cc62',
     'app/billing/recurring_billing_invoices.php'=>'c5e72a8084ddf8bf423fe2009bf89c1d33acef776de6c438bb35e25e3029e178',
     'app/billing/recurring_billing_views.php'=>'4bd998c237856ec0f70724f2296d406701602744d83a50c27872770610924c55',
-    'app/billing/software_charge.php'=>'115567da73980226d797fd52db4aa1b214c75cbd1ce2daa351b593e0d8c78ede',
+    'app/billing/software_charge.php'=>'ad33166d8f67a0b0e1648cb7333ec7c9cf7de75fc6bc2bd7bdae67e548705206',
     'app/billing/software_charge_guard.php'=>'71a4f180ee4ee7d0f92e69adb50c58cfd4e15c3c3d1923fea635d435abe47ce0',
     'app/billing/software_orders.php'=>'f5cc28db4b6aa06752ba04ce35e55ce9e7064d11126cb9e68563592b4932acdf',
     'app/billing/software_payment_review.php'=>'478344d518ccba0edc30bed6d0a7bc3c595594e9091d5f8f3500d77a5121eed4',
