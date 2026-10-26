@@ -264,9 +264,43 @@ try{
     swok(($notice['status']??'')==='pending'&&(int)($notice['attempts']??0)===1&&($notice['sent_at']??null)===null,
         'Unaccepted software email is not falsely marked sent');
 
+    $rights=all('SELECT license_id,updates_until,max_installations,policy_revision FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number',[$invoice]);
+    swok(count($rights)===2
+        &&array_reduce($rights,fn($ok,$r)=>$ok&&$r['updates_until']!==null
+            &&(int)$r['max_installations']===1&&(int)$r['policy_revision']===1,true),
+        'Paid units snapshot the purchased update window and one-install policy');
+    $cutoff=(string)$rights[0]['updates_until'];
+    $future=(new DateTimeImmutable($cutoff,new DateTimeZone('UTC')))->modify('+1 day')->format('Y-m-d H:i:s');
+    swok(software_asset_customer_authorized(1,'NEXUSCORE',$now),
+        'Purchased software may download releases published inside its update window');
+    swok(!software_asset_customer_authorized(1,'NEXUSCORE',$future),
+        'Purchased software cannot download releases published after its update entitlement');
+    $usageLicense=(int)$rights[0]['license_id'];
+    swdenied(fn()=>license_register_domain($usageLicense,'second-install.example.com',1),
+        'One-install software entitlement rejects a second concurrent installation');
+
+    $policy2=software_product_policy_save($product,1,'nexus-core','SOFTWARE-TEST',0,3,1);
+    swok($policy2['revision']===2&&$policy2['update_months']===0&&$policy2['max_installations']===3,
+        'Owner can publish a later policy revision for future grants');
+    $unchanged=one('SELECT updates_until,max_installations,policy_revision FROM '.table('software_entitlements').' WHERE license_id=?',[$usageLicense]);
+    swok(($unchanged['updates_until']??null)===$cutoff
+        &&(int)$unchanged['max_installations']===1&&(int)$unchanged['policy_revision']===1,
+        'Existing entitlement rights do not change when product policy changes');
+
+    db()->beginTransaction();
+    $futureGrant=software_grant_create(1,'NEXUSCORE','standard','Synthetic Buyer','policy-three.example.com',null,1);
+    db()->commit();
+    $futureRights=one('SELECT updates_until,max_installations,policy_revision FROM '.table('software_entitlements').' WHERE license_id=?',[$futureGrant['id']]);
+    swok($futureRights['updates_until']===null&&(int)$futureRights['max_installations']===3
+        &&(int)$futureRights['policy_revision']===2,
+        'New grant snapshots the latest lifetime-update three-install policy');
+    license_register_domain((int)$futureGrant['id'],'policy-three-b.example.com',1);
+    license_register_domain((int)$futureGrant['id'],'policy-three-c.example.com',1);
+    swdenied(fn()=>license_register_domain((int)$futureGrant['id'],'policy-three-d.example.com',1),
+        'Three-install entitlement rejects a fourth concurrent installation');
+
     swok(software_asset_customer_authorized(1,'NEXUSCORE'),'Purchasing customer is authorized for matching software assets');
     swok(!software_asset_customer_authorized(2,'NEXUSCORE'),'Different customer cannot use another account software entitlement');
-    $usageLicense=(int)one('SELECT license_id FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number LIMIT 1',[$invoice])['license_id'];
     software_usage_record($usageLicense,'new.example.com');
     software_usage_record($usageLicense,'new.example.com');
     $usage=one('SELECT check_count,last_seen FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
