@@ -41,6 +41,11 @@ function catalog_save_in_transaction(int $id,int $expected,array $input): int {
         $actor=catalog_require();$old=$id?one('SELECT * FROM '.table('catalog_products').' WHERE id=? FOR UPDATE',[$id]):null;
         if(provider_catalog_import_ready()&&$id&&provider_catalog_import_record($id)&&($data['family']!=='hosting'||!in_array($data['status'],['draft','retired'],true)))throw new InvalidArgumentException('Imported hosting products must remain hosting drafts or retired products. Changing the family cannot enable publication.');
         if(($id&&!$old)||($old&&(int)$old['revision']!==$expected)||(!$id&&$expected!==0))throw new RuntimeException('This product changed. Reload and review its latest version before saving.');
+        if($old&&(($old['family']??'')==='software'||$data['family']==='software')
+            &&((string)$old['sku']!==$data['sku']||(string)$old['family']!==$data['family'])
+            &&catalog_software_identity_used($id,(string)$old['sku'])){
+            throw new RuntimeException('Software SKU and family are immutable after an order, asset, or license exists. Retire this product and create a new SKU instead.');
+        }
         if(one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND id<>?',[$data['sku'],$id]))throw new InvalidArgumentException('Another product already uses this SKU.');
         $revision=$old?(int)$old['revision']+1:1;$now=gmdate('Y-m-d H:i:s');$columns=array_keys($data);$values=array_values($data);
         if($id)query('UPDATE '.table('catalog_products').' SET '.implode(',',array_map(fn($k)=>$k.'=?',$columns)).',revision=?,updated_at=? WHERE id=?',[...$values,$revision,$now,$id]);
@@ -49,6 +54,19 @@ function catalog_save_in_transaction(int $id,int $expected,array $input): int {
         catalog_audit((int)$actor['id'],'save','Product '.$id.' revision '.$revision.' '.$data['status']);return $id;
 }
 /** Only customer-safe fields may be used in public cards or invoice snapshots. */
+function catalog_table_exists(string $suffix):bool{
+    return (bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+        [config()['db']['prefix'].$suffix]);
+}
+function catalog_software_identity_used(int $productId,string $sku):bool{
+    if(catalog_table_exists('software_orders')
+        &&one('SELECT id FROM '.table('software_orders').' WHERE product_id=? LIMIT 1',[$productId]))return true;
+    if(catalog_table_exists('software_assets')
+        &&one('SELECT id FROM '.table('software_assets').' WHERE sku=? LIMIT 1',[$sku]))return true;
+    if(catalog_table_exists('website_licenses')
+        &&one('SELECT id FROM '.table('website_licenses').' WHERE product_id=? LIMIT 1',[$sku]))return true;
+    return false;
+}
 function catalog_public_fields(): string {return 'id,sku,title,family,term,currency,amount_cents,setup_cents,summary,features,terms,revision';}
 function catalog_public(): array {return catalog_ready()?all('SELECT '.catalog_public_fields().' FROM '.table('catalog_products')." WHERE status='published' AND family IN ('web-design','maintenance','addon','software') ORDER BY sort_order,id LIMIT 200"):[];}
 function catalog_quote(int $productId,int $revision,int $quantity,bool $lock=false): array {
