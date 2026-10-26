@@ -7,7 +7,8 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_license_policy.php';
 require_once CWP_CODE_ROOT.'/app/billing/catalog.php';
 
 function software_order_offer(array $product):bool {
-    return preg_match('/^(SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)($product['sku']??''))===1
+    $legacySku=preg_match('/^(SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)($product['sku']??''))===1;
+    return (($product['family']??'')==='software'||$legacySku)
         && in_array($product['term']??'', ['once','month','year'],true);
 }
 function software_order_place(array $client,int $productId,int $revision,int $quantity,
