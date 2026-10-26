@@ -9,12 +9,23 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif($action==='software_subscription_enroll'){
+  if(!$client)throw new RuntimeException('Sign in to enroll in software billing.');
+  require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
+  $status=software_subscription_enroll($client,gint($_POST,'invoice_id',1,2147483647),
+      posted('descriptor',128),posted('payment_token',8192));
+  if($status==='pending_first_payment')flash('Subscription enrolled. Your software will unlock after the first scheduled charge is verified.');
+  elseif($status==='sandbox_test')flash('Sandbox subscription enrollment recorded. This is not a real payment.');
+  else flash('Subscription enrollment needs gateway review. Do not submit a second payment until reconciled.');
+  redirect(studio_url(['software'=>1]));
+ }
  elseif($action==='software_charge'){
   if(!$client)throw new RuntimeException('Sign in to pay your software invoice.');
   require_once CWP_CODE_ROOT.'/app/billing/software_charge.php';
   $status=software_charge_run($client,gint($_POST,'invoice_id',1,2147483647),posted('request_key',64),
       posted('descriptor',128),posted('payment_token',8192));
   if($status==='paid')flash('Payment verified. Your available software and license are in My Software.');
+  elseif($status==='sandbox')flash('Sandbox transaction approved for testing only. The real invoice remains unpaid.');
   elseif($status==='declined')flash('The gateway declined the payment. No license was issued. Contact billing before retrying.');
   else flash('The payment needs gateway reconciliation. Do not try paying again until billing confirms its outcome.');
   redirect(studio_url(['software'=>1]));
