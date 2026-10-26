@@ -30,6 +30,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
+    require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
@@ -158,6 +159,24 @@ try{
         'Merchant dispute evidence is retained once');
     swok(one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])['status']==='dispute_review',
         'Merchant dispute places one-time charge into review');
+    query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
+        [900001,1,1,2499,'creating',$now,$now]);
+    swok(software_subscription_enroll_finalize(900001,'223456789','pending_first_payment')==='pending_first_payment',
+        'ARB enrollment finalizer stores verified gateway id and pending state');
+    $finalized=one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[900001]);
+    swok(($finalized['gateway_subscription_id']??'')==='223456789'&&($finalized['status']??'')==='pending_first_payment',
+        'ARB enrollment finalizer persists verified gateway identity');
+
+    query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
+        [900002,1,1,2499,'review',$now,$now]);
+    swok(software_subscription_enroll_finalize(900002,'323456789','pending_first_payment')==='review',
+        'Concurrent local review wins over ARB enrollment success');
+    $raced=one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[900002]);
+    swok(($raced['gateway_subscription_id']??'')==='323456789'&&($raced['status']??'')==='review',
+        'Concurrent review still retains external ARB subscription id for reconciliation');
+    swdenied(fn()=>software_subscription_enroll_finalize(900002,'423456789','pending_first_payment'),
+        'Conflicting gateway subscription id is refused instead of overwritten');
+
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
         [$invoice,1,'123456789',1,(int)$payment['amount_cents'],'active',$now,$now]);
     $subscriptionId=(int)one('SELECT id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['id'];
