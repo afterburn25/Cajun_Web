@@ -42,7 +42,9 @@ function software_delivery_notice_send(int $invoiceId):bool{
             'Sign in to view your software licenses, registered domains, invoices and purchased downloads:'."\n".
             site_url('portal/index.php?software=1')."\n\n".
             'For security, your license keys and downloadable files are not attached to this email.'."\n\n".'CajunWebPro';
-        send_message($client['email'],$renewal?'Your CajunWebPro software renewal is confirmed':'Your CajunWebPro software purchase is ready',$body);
+        $delivery=send_message($client['email'],
+            $renewal?'Your CajunWebPro software renewal is confirmed':'Your CajunWebPro software purchase is ready',$body);
+        if($delivery!=='accepted')throw new RuntimeException('Software delivery email was not accepted by the configured mail transport.');
         query('UPDATE '.table('software_notices').' SET status=?,sent_at=?,last_error=? WHERE invoice_id=?',
             ['sent',gmdate('Y-m-d H:i:s'),'',$invoiceId]);
         return true;
