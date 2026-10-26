@@ -61,6 +61,33 @@ if($operation==='legacy-bundle'){
     echo json_encode(['bundle_id'=>(int)db()->lastInsertId(),'license_id'=>(int)$entitlement['license_id']],JSON_THROW_ON_ERROR);
     exit;
 }
+if($operation==='reconcile-review'){
+    if($invoice<1)exit(2);
+    require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
+    $order=one('SELECT client_id,billing_term,created_at FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);
+    $i=ledger_invoice($invoice);
+    if(!$order||$order['billing_term']!=='once'||$i['status']!=='issued')throw new RuntimeException('Synthetic reconcile fixture requires an issued one-time software order.');
+    $now=gmdate('Y-m-d H:i:s');
+    $request=hash('sha256','browser-uncertain-'.$invoice);
+    query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),request_key=VALUES(request_key),transaction_id=VALUES(transaction_id),updated_at=VALUES(updated_at)',
+        [$invoice,(int)$order['client_id'],(int)$i['amount_cents'],'uncertain',$request,'650'.str_pad((string)$invoice,7,'0',STR_PAD_LEFT),$now,$now]);
+    query('INSERT INTO '.table('software_charge_attempts').' (invoice_id,request_key,amount_cents,status,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),transaction_id=VALUES(transaction_id),updated_at=VALUES(updated_at)',
+        [$invoice,$request,(int)$i['amount_cents'],'uncertain','650'.str_pad((string)$invoice,7,'0',STR_PAD_LEFT),$now,$now]);
+    echo json_encode(['transaction_id'=>'650'.str_pad((string)$invoice,7,'0',STR_PAD_LEFT)],JSON_THROW_ON_ERROR);
+    exit;
+}
+if($operation==='subscription-review'){
+    if($invoice<1)exit(2);
+    require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
+    $order=one('SELECT client_id,billing_term,created_at FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);
+    $i=ledger_invoice($invoice);
+    if(!$order||!in_array($order['billing_term'],['month','year'],true)||$i['status']!=='issued')throw new RuntimeException('Synthetic subscription-review fixture requires an issued recurring software order.');
+    $months=$order['billing_term']==='year'?12:1;$now=gmdate('Y-m-d H:i:s');
+    query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),gateway_subscription_id=NULL',
+        [$invoice,(int)$order['client_id'],$months,(int)$i['amount_cents'],'review',$order['created_at'],$now]);
+    echo json_encode(['status'=>'review'],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation==='payment-review'){
     if($invoice<1)exit(2);
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
