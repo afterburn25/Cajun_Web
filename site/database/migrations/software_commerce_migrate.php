@@ -55,6 +55,11 @@ function software_commerce_verify_v3(array $schema): void {
     if(!software_commerce_index_present('software_entitlements','update_lookup')){
         throw new RuntimeException('Software v3 update-entitlement index is incomplete; preserve the database.');
     }
+    foreach(['product_id','module_key','dependencies','update_months','max_installations','revision','updated_by','updated_at'] as $column){
+        if(!software_commerce_column_present('software_product_policies',$column)){
+            throw new RuntimeException('Software v3 product policy metadata is incomplete; preserve the database.');
+        }
+    }
 }
 function software_commerce_prepare(string $password): void {
     if (db()->inTransaction()) throw new LogicException('Prepare outside a transaction.');
