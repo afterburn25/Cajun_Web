@@ -27,6 +27,10 @@ function software_fulfill_paid_order(int $invoiceId):?array{
             ||($quote['term']??null)!==$order['billing_term']){
             throw new RuntimeException('Order does not match the original price and invoice.');
         }
+        $policy=software_order_policy_snapshot($order);
+        if(!software_dependencies_satisfied((int)$order['client_id'],$policy['dependency_skus'])){
+            throw new RuntimeException('Paid software dependency requirements are not currently satisfied. Owner review is required before fulfillment.');
+        }
         $name=one('SELECT name FROM '.table('studio_clients').' WHERE id=?',[$order['client_id']])['name'];
         $first=null;
         $expiry=null;$type='standard';
@@ -44,7 +48,7 @@ function software_fulfill_paid_order(int $invoiceId):?array{
                 [$invoiceId,$unit]);
             if($existing){$first=$first??$existing;continue;}
             $created=software_grant_create((int)$order['client_id'],$order['sku'],$type,
-                $name,$order['domain'],$expiry,0,$invoiceId,$unit,'',$order['billing_term']!=='once');
+                $name,$order['domain'],$expiry,0,$invoiceId,$unit,'',$order['billing_term']!=='once',$policy);
             $first=$first??one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$created['id']]);
         }
         if($order['billing_term']!=='once'){
