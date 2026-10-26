@@ -330,8 +330,8 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
     :all('SELECT version,title,released_at FROM '.table('software_assets').' WHERE sku=? AND is_published=1 AND released_at IS NOT NULL AND (? IS NULL OR released_at<=?) ORDER BY released_at DESC,id DESC LIMIT 5',
         [$lic['product_id'],$releaseCutoff,$releaseCutoff]);
 ?>
-<dt><strong>Eligible customer releases</strong></dt>
-<dd><?php if(!$eligibleReleases): ?>None published within this entitlement<?php else: ?><?php foreach($eligibleReleases as $index=>$release): ?><?=$index?' · ':''?>v<?=esc($release['version'])?><?php endforeach; ?><?php endif; ?></dd>
+<dt><strong><?=(int)($lic['is_master']??0)===1?'Recorded releases':'Eligible customer releases'?></strong></dt>
+<dd><?php if(!$eligibleReleases): ?><?=(int)($lic['is_master']??0)===1?'No recorded releases':'None published within this entitlement'?><?php else: ?><?php foreach($eligibleReleases as $index=>$release): ?><?=$index?' · ':''?>v<?=esc($release['version'])?><?php endforeach; ?><?php endif; ?></dd>
 <dt><strong>Issuance source</strong></dt>
 <dd><?php if((int)$meta['invoice_id']>0): ?>Verified invoice #<?=(int)$meta['invoice_id']?><?=($meta['unit_number']!==null?' · unit '.(int)$meta['unit_number']:'')?><?php else: ?>Owner/staff issued<?php endif; ?> · issuer <?=((int)$meta['issued_by']>0?'staff #'.(int)$meta['issued_by']:'system fulfillment')?></dd>
 <dt><strong>Registered installations</strong></dt><dd><?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))?> active domain<?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))===1?'':'s'?><?php if($observations): ?> · <?=count($observations)?> observed validation domain<?=count($observations)===1?'':'s'?><?php endif; ?></dd>
