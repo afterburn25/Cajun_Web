@@ -38,3 +38,26 @@ This licensing increment binds to the existing recurring-billing invoices and in
 The current generic recurring-billing subsystem does not yet perform automatic card collection itself. Existing verified payment paths and future integrated Authorize.Net/card-on-file collection must settle the same invoice ledger and then call financed-license synchronization after commit. License validation also recomputes the financing state, so a committed payment can restore access even if a payment-notification hook was temporarily unavailable.
 
 Production charging remains separately gated by merchant configuration, customer authorization, PCI/security review, and integrated acceptance.
+
+
+## Client-specific finance offers and signature flow
+
+Finance offers are customer-specific and immutable once published. The owner selects an existing website license and an offered recurring-billing schedule for the same customer, then records the cash price, initial payment, amount financed, finance charge, stated APR, installment count, grace period, payment-link lifetime, commercial-rights scope, and custom agreement language.
+
+CajunWebPro validates the monetary relationship before saving an offer:
+
+- cash price minus initial payment must equal amount financed;
+- the exact retained installment amount multiplied by installment count must equal amount financed plus finance charge;
+- the installment amount/cadence/anchor/due interval come from the retained recurring-billing schedule, not free-form browser values.
+
+If any term changes, withdraw the unsigned offer and issue a new one. The old offer remains retained.
+
+The client receives an authenticated portal deep link such as the financing-agreement route in their client workspace. The link alone grants no authority. If the client is signed out, login returns them to that exact agreement; another client account cannot open or sign it.
+
+Electronic acceptance records the authenticated client id, typed signer name, client-account email, UTC timestamp, exact finance-term SHA-256, and an evidence hash. The same action accepts the pinned recurring schedule and applies the owner-preauthorized activation. A support session cannot sign or decline.
+
+When an initial payment is due, signing creates one idempotent invoice and one private payment-request link, then redirects the client to that payment page. If no initial payment is due, the signed installment schedule becomes active without creating a fake zero-dollar invoice.
+
+The owner may prepare an agreement email from the finance-offer record. CajunWebPro creates a real local email draft addressed to the client with the authenticated portal deep link and opens the existing review/send workflow; it does not silently send mail.
+
+The shareable payment-request page uses the preserved hardened bearer-link design: a random 256-bit token, hash-at-rest lookup, encrypted token recovery, no-store/no-referrer/noindex headers, and metadata-free terminal states. On this branch that page is still a payment-request handoff and does not by itself certify production card collection. Unified Authorize.Net checkout remains an integration/release gate.

@@ -30,7 +30,10 @@ if(array_key_exists('domain_renewals',$_GET)||(is_string($_POST['action']??null)
 if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';
+require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+require_once CWP_CODE_ROOT.'/portal/views/financing.php';
 if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');
+if(array_key_exists('finance',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'finance_offer_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_search')header('Cache-Control: no-store, private');
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
@@ -68,6 +71,7 @@ if(array_key_exists('wp_installed',$_GET))provider_wp_installed_client_render($c
 if(array_key_exists('forwarding',$_GET))provider_forwarding_client_render($client,$error);
 if(array_key_exists('cloud_websites',$_GET))provider_cloud_site_requests_client_render($client,$error);
 if(array_key_exists('recurring',$_GET))recurring_billing_portal_render($client,$error);
+if(array_key_exists('finance',$_GET))license_finance_portal_render($client,is_string($_GET['finance']??null)?$_GET['finance']:'',$error);
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET))service_plans_portal_render($client,$error);
 if($jobId){try{$job=studio_job($jobId,(int)$client['id']);}catch(InvalidArgumentException){if(support_current())support_record('portal.view','project',(string)$jobId,'denied');fail_page('Project not found or access denied.',404);}}
 if(support_current())support_record('portal.view',$jobId?'project':'client',(string)($jobId?:$client['id']));

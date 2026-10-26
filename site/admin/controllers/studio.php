@@ -217,6 +217,44 @@ function studio_admin_action(string $action,array $user): never {
         license_financing_prepare(posted('current_password',200));
         flash('Financed-site license enforcement is prepared. Existing licenses and billing records were preserved.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_offers_setup'){
+        require_once CWP_CODE_ROOT.'/database/migrations/license_finance_offers_migrate.php';
+        license_finance_offers_prepare(posted('current_password',200));
+        flash('Client finance agreements are prepared. Existing licenses, recurring schedules, invoices, and payments were preserved.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_offer_create'){
+        require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+        foreach(['cash_price','initial_payment','amount_financed','finance_charge'] as $moneyField){
+            $money[$moneyField]=gcents(posted($moneyField,20));
+            if($money[$moneyField]===null)throw new InvalidArgumentException('Enter valid USD financing amounts with at most two decimals.');
+        }
+        $offer=license_finance_offer_create(
+            gint($_POST,'license_id',1,2147483647),posted('schedule_id',32),posted('finance_title',190),
+            $money['cash_price'],$money['initial_payment'],$money['amount_financed'],$money['finance_charge'],
+            license_finance_apr_bps(posted('apr_percent',8)),gint($_POST,'installments',1,360),gint($_POST,'grace_days',0,90),
+            gint($_POST,'offer_days',1,30),gint($_POST,'payment_link_days',1,30),
+            [
+                'resale'=>isset($_POST['allow_resale']),
+                'distribution'=>isset($_POST['allow_distribution']),
+                'exclusive_resale'=>isset($_POST['exclusive_resale']),
+                'exclusive_distribution'=>isset($_POST['exclusive_distribution'])
+            ],
+            posted('agreement_text',12000),posted('current_password',200)
+        );
+        flash('Finance agreement created. Portal link: '.license_finance_offer_portal_url($offer['id']));
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_offer_withdraw'){
+        require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+        license_finance_offer_withdraw(posted('finance_id',32),posted('current_password',200));
+        flash('Unsigned finance agreement withdrawn. Its retained history was preserved.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_finance_offer_email'){
+        require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+        $sender=posted('sender',43);
+        if(!preg_match('/^([a-f0-9]{32}):([1-9][0-9]{0,9})$/D',$sender,$senderParts))throw new InvalidArgumentException('Choose a current sending account.');
+        $draft=license_finance_offer_email_draft(posted('finance_id',32),$senderParts[1],(int)$senderParts[2]);
+        flash('Finance-agreement email draft prepared. Review it before sending.');
+        redirect(admin_url('mail-send',['draft_id'=>$draft]));
     }elseif($action==='studio_license_financing_bind'){
         require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
         $plan=license_financing_bind(

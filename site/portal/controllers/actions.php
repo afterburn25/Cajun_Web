@@ -9,6 +9,28 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif($action==='finance_offer_sign'){
+  if(!$client)throw new RuntimeException('Sign in to review financing.');
+  require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+  $result=license_finance_offer_sign(posted('finance_id',32),(int)$client['id'],posted('signer_name',190),
+      isset($_POST['agree_terms'])&&$_POST['agree_terms']==='1',isset($_POST['agree_electronic'])&&$_POST['agree_electronic']==='1');
+  flash('Financing agreement signed. Your exact agreement and signature evidence are retained.');
+  if(is_array($result['payment']??null)&&is_string($result['payment']['url']??null))redirect($result['payment']['url']);
+  redirect(studio_url(['finance'=>posted('finance_id',32)]));
+ }
+ elseif($action==='finance_offer_decline'){
+  if(!$client)throw new RuntimeException('Sign in to review financing.');
+  require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+  $id=posted('finance_id',32);license_finance_offer_decline($id,(int)$client['id'],posted('reason',500));
+  flash('Financing agreement declined. The studio can prepare revised terms if needed.');redirect(studio_url(['finance'=>$id]));
+ }
+ elseif($action==='finance_offer_payment'){
+  if(!$client)throw new RuntimeException('Sign in to continue to financing payment.');
+  require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+  $id=posted('finance_id',32);$payment=license_finance_offer_payment_prepare($id,(int)$client['id']);
+  if($payment===null){flash('No initial payment is due on this agreement.');redirect(studio_url(['finance'=>$id]));}
+  redirect($payment['url']);
+ }
  elseif($action==='software_subscription_cancel'){
   if(!$client)throw new RuntimeException('Sign in to cancel recurring billing.');
   require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
@@ -56,6 +78,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
  elseif($action==='login'){
   studio_login(strtolower(posted('email',190)),posted('password',1000));
+  if(array_key_exists('finance',$_GET)&&is_string($_GET['finance']))redirect(studio_url(['finance'=>$_GET['finance']]));
   redirect(array_key_exists('software',$_GET)?studio_url(['software'=>1]):studio_url());
  }
  elseif($action==='logout'){unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['client_last'],$_SESSION['client_login']);session_regenerate_id(true);redirect(studio_url());}
