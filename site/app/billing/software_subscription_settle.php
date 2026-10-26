@@ -24,7 +24,7 @@ function software_subscription_settle(array $details,string $transactionId): str
     if($gateway['mode']!=='production')return 'sandbox_verified';
     $id=$verified['subscription_id'];
     if(db()->inTransaction())throw new LogicException('Subscription settlement must own the transaction.');
-    $notifyInvoice=null;
+    $notifyInvoice=null;$renewalReview=false;
     db()->beginTransaction();
     try{
         $sub=one('SELECT * FROM '.table('software_subscriptions').' WHERE gateway_subscription_id=? FOR UPDATE',[$id]);
@@ -65,9 +65,9 @@ function software_subscription_settle(array $details,string $transactionId): str
             ['paid','Verified gateway receipt '.$entry,gmdate('Y-m-d H:i:s'),$invoiceId]);
         query('INSERT INTO '.table('software_subscription_receipts').' (subscription_invoice_id,gateway_transaction_id,invoice_id,created_at) VALUES (?,?,?,?)',
             [$original['id'],$transactionId,$invoiceId,gmdate('Y-m-d H:i:s')]);
-        query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
-            [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
         if($first){
+            query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
+                [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
             if(!$phase['preserve_status']){
                 query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['active',$sub['id']]);
             }
@@ -78,13 +78,25 @@ function software_subscription_settle(array $details,string $transactionId): str
             foreach($grants as $g){
                 if($g['license_type']!=='temporary'||(int)$g['is_master']===1
                     ||$g['expires_at']===null)throw new RuntimeException('Renewal grant metadata is inconsistent.');
-                if((int)$g['is_active']!==1)continue;
+                if((int)$g['is_active']!==1){
+                    $renewalReview=true;
+                    continue;
+                }
                 $now=new DateTimeImmutable('now',new DateTimeZone('UTC'));
                 $extended=software_subscription_extend_expiry((string)$g['expires_at'],$duration,$now);
                 query('UPDATE '.table('software_entitlements').' SET expires_at=?,updates_until=? WHERE license_id=?',
                     [$extended,$extended,$g['license_id']]);
             }
-            $notifyInvoice=$invoiceId;
+            if($renewalReview){
+                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
+                license_audit(0,'subscription.renewal.review',
+                    'Verified recurring transaction '.$transactionId.' paid invoice '.$invoiceId.
+                    ' but at least one software license is suspended; entitlement extension requires owner review');
+            }else{
+                query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
+                    [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
+                $notifyInvoice=$invoiceId;
+            }
         }
         db()->commit();
     }catch(Throwable $error){if(db()->inTransaction())db()->rollBack();throw $error;}
@@ -98,7 +110,7 @@ function software_subscription_settle(array $details,string $transactionId): str
             }
         }catch(Throwable $e){report_error($e);}
     }
-    return $first?'first_payment_recorded':'renewal_recorded';
+    return $first?'first_payment_recorded':($renewalReview?'renewal_recorded_review':'renewal_recorded');
 }
 
 /** Owner recovery for a verified recurring transaction whose webhook could not settle locally. */
