@@ -26,7 +26,7 @@ function catalog_product_input(array $input): array {
     $data['sku']=strtoupper($data['sku']);
     if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$data['sku'])||$data['title']===''||!isset(catalog_families()[$data['family']])||!isset(catalog_terms()[$data['term']])||!in_array($data['status'],['draft','published','retired'],true)||$data['currency']!=='USD')throw new InvalidArgumentException('Enter a unique SKU, title, valid family, status, service period and USD currency.');
     $data['amount_cents']=gcents(gtext($input,'amount',20));$data['setup_cents']=gcents(gtext($input,'setup',20))??0;$data['cost_cents']=gcents(gtext($input,'cost',20));$data['sort_order']=gint($input,'sort_order',0,9999);
-    if($data['status']==='published'&&(!in_array($data['family'],['web-design','maintenance','addon','software'],true)||($data['amount_cents']??0)<=0||$data['amount_cents']+$data['setup_cents']>99999999||$data['summary']===''||$data['terms']===''))throw new InvalidArgumentException('Publish only a configured design, care or additional service with a positive price, summary and agreed service terms. Unit price plus setup cannot exceed 999999.99 USD. Provider products remain draft.');
+    if($data['status']==='published'&&(!in_array($data['family'],['web-design','maintenance','addon','software'],true)||($data['amount_cents']??0)<=0||$data['amount_cents']+$data['setup_cents']>99999999||$data['summary']===''||$data['terms']===''))throw new InvalidArgumentException('Publish only a configured design, care, software or additional service with a positive price, summary and agreed terms. Unit price plus setup cannot exceed 999999.99 USD. Provider products remain draft.');
     return $data;
 }
 function catalog_save(int $id,int $expected,array $input): int {
