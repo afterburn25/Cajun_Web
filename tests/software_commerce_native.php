@@ -139,6 +139,21 @@ try{
     swok((int)query('SELECT COUNT(*) FROM '.table('software_assets').' WHERE sku=?',['SOFTWARE-TEST'])->fetchColumn()===1,
         'Rejected package publications create no extra software asset rows');
 
+    $privateAsset=software_asset_publish('SOFTWARE-TEST','1.0.3','Owner-private software ZIP',$zipPath,$password,false);
+    $privateBefore=one('SELECT sku,version,title,file_path,sha256,byte_size,is_published,created_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
+    swok((int)$privateBefore['is_published']===0,'Owner can record a verified software release without exposing it to customers');
+    swdenied(fn()=>software_asset_visibility($privateAsset,true,'wrong-password'),
+        'Software release visibility requires serialized owner reauthentication');
+    swok((int)one('SELECT is_published FROM '.table('software_assets').' WHERE id=?',[$privateAsset])['is_published']===0,
+        'Rejected visibility change leaves owner-private release hidden');
+    swok(software_asset_visibility($privateAsset,true,$password),
+        'Owner can make a verified private release customer-visible');
+    $privateAfter=one('SELECT sku,version,title,file_path,sha256,byte_size,is_published,created_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
+    $immutableBefore=$privateBefore;$immutableAfter=$privateAfter;
+    unset($immutableBefore['is_published'],$immutableAfter['is_published']);
+    swok((int)$privateAfter['is_published']===1&&$immutableBefore===$immutableAfter,
+        'Visibility changes preserve immutable software asset metadata');
+
     db()->beginTransaction();
     $trial=software_grant_create(1,'SOFTWARE-TEST','trial','Synthetic Buyer','www.example.com',gmdate('Y-m-d H:i:s',time()+86400),1);
     db()->commit();
