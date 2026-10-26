@@ -3,6 +3,8 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/mail/transport.php';
+require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 function software_delivery_notice_send(int $invoiceId):bool{
     if(!software_commerce_ready())return false;
     if(db()->inTransaction())throw new LogicException('Send notices after payment transaction commit.');
@@ -57,18 +59,17 @@ function software_delivery_notice_send(int $invoiceId):bool{
 }
 
 /** Owner-reviewed recovery after the bounded delivery retry budget is exhausted. */
-function software_delivery_notice_reset(int $invoiceId):bool{
+function software_delivery_notice_reset(int $invoiceId,#[\SensitiveParameter]string $password):bool{
     if(!software_commerce_ready()||$invoiceId<1)return false;
     if(db()->inTransaction())throw new LogicException('Reset notices outside a transaction.');
-    db()->beginTransaction();
-    try{
+    return staff_locked(fn()=>staff_transaction(function()use($invoiceId,$password):bool{
+        $actor=staff_owner($password);
         $row=one('SELECT id,status,attempts FROM '.table('software_notices').' WHERE invoice_id=? FOR UPDATE',[$invoiceId]);
-        if(!$row||$row['status']==='sent'||(int)$row['attempts']<10){db()->commit();return false;}
+        if(!$row||$row['status']==='sent'||(int)$row['attempts']<10)return false;
         query('UPDATE '.table('software_notices').' SET status=?,attempts=0,last_attempt=NULL,last_error=? WHERE id=?',
             ['pending','Retry budget reset after owner mail-configuration review',$row['id']]);
-        db()->commit();return true;
-    }catch(Throwable $e){
-        if(db()->inTransaction())db()->rollBack();
-        throw $e;
-    }
+        license_audit((int)$actor['id'],'software.notice.reset',
+            'Software delivery retry budget reset for invoice '.$invoiceId);
+        return true;
+    }));
 }
