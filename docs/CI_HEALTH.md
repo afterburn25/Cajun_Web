@@ -25,6 +25,30 @@ run's step summary / `ci-health-*` artifact. The report covers:
 | Many `cancelled` conclusions on superseded runs | Working as intended — obsolete dev runs were superseded | Investigate only if the *newest* run for a branch/PR was also canceled |
 | Long-running legs hold all slots | A large acceptance/native matrix is in flight | Expected during acceptance; confirm the runs are progressing, not stalled |
 
+## Test tiers
+
+CI is organized in three levels; membership is determined by workflow
+cost and purpose, not by file naming.
+
+- **Tier 1 — fast development checks** (~2–8 min): `repository-checks`
+  (documentation/links, always runs), `mail-receiving`, `mail-transport`,
+  and every `*-contract`/`provider-*`/`domain-*`/`hosting-*`/`twentyi-*`
+  native check. These carry the superseding concurrency group and run on
+  relevant pushes and pull requests only (each is path-filtered to its
+  component).
+- **Tier 2 — integration**: the same native checks against the database
+  matrix (MariaDB 10.11 / MySQL 8.4) plus `application-tests` in
+  checkpoint mode when explicitly dispatched. Triggered by relevant pull
+  requests, controlled checkpoints and manual requests.
+- **Tier 3 — release certification**: `application-tests` (full mode),
+  `release-licensing`, `release-upgrade-diagnostic`. These run only for
+  approved release candidates or explicit requests, are never
+  auto-canceled, and are never treated as satisfied by a partial suite.
+
+A pull request whose changes match no workflow's `paths` filter runs only
+`repository-checks` — documentation-only changes therefore never enqueue
+expensive native or acceptance jobs.
+
 ## Concurrency rules in this repository
 
 Every development check workflow must carry:
