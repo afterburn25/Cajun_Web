@@ -129,13 +129,20 @@ function software_subscription_charge_reconcile(int $invoice,string $transaction
         });
         return 'sandbox_verified';
     }
-    $actor=staff_locked(fn()=>staff_owner($password));
-    $state=software_subscription_settle($details,$transactionId);
-    staff_locked(function()use($password,$invoice,$transactionId,$state):void{
+    staff_locked(function()use($password,$invoice,$transactionId):void{
         $actor=staff_owner($password);
-        license_audit((int)$actor['id'],'subscription.charge.reconcile',
-            'Software invoice '.$invoice.' recurring transaction '.$transactionId.' reconciled as '.$state);
+        license_audit((int)$actor['id'],'subscription.charge.reconcile.begin',
+            'Owner authorized recurring transaction reconciliation for software invoice '.$invoice.
+            ' transaction '.$transactionId);
     });
+    $state=software_subscription_settle($details,$transactionId);
+    try{
+        staff_locked(function()use($password,$invoice,$transactionId,$state):void{
+            $actor=staff_owner($password);
+            license_audit((int)$actor['id'],'subscription.charge.reconcile',
+                'Software invoice '.$invoice.' recurring transaction '.$transactionId.' reconciled as '.$state);
+        });
+    }catch(Throwable $auditError){report_error($auditError);}
     return $state;
 }
 
