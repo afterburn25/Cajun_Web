@@ -27,6 +27,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
+    require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
     swok(!software_commerce_ready(),'Not ready until owner explicitly prepares');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'Owner preparation creates new storage');
@@ -64,5 +65,18 @@ try{
     software_fulfill_paid_order($invoice);
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,'Paid two-unit invoice mints exactly two keys after retry');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice])->fetchColumn()===1,'One delivery email outbox entry');
+    query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
+        [$invoice,1,'123456789',1,(int)$payment['amount_cents'],'active',$now,$now]);
+    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.failed','123456789')==='subscription_review',
+        'Failed gateway subscription enters review');
+    swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
+        'Subscription review is persisted');
+    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.cancelled','123456789')==='replay',
+        'Cancellation cannot erase an unresolved review state');
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=?',['active',$invoice]);
+    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.cancelled','123456789')==='subscription_cancelled',
+        'Cancellation stops future renewal when no review is pending');
+    swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='cancelled',
+        'Cancelled subscription state is persisted');
     echo 'Software commerce native: '.$n.' checks passed'.PHP_EOL;
 }catch(Throwable $e){fwrite(STDERR,'FAIL: '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);}
