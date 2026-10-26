@@ -92,12 +92,17 @@ try{
         'Immediate repeated software domain move is blocked by cooldown');
     query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
         [$invoice,1,(int)$payment['amount_cents'],'paid',hash('sha256','native-reversal-request'),'600000001',$now,$now]);
-    swok(software_payment_reversal_apply(['kind'=>'refund','original_transaction_id'=>'600000001'])==='one_time_reversal_review',
+    $refund=['kind'=>'refund','transaction_id'=>'700000001','original_transaction_id'=>'600000001','amount_cents'=>500];
+    swok(software_payment_reversal_apply($refund)==='one_time_reversal_review',
         'Verified refund moves one-time payment to review');
     swok(one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])['status']==='reversal_review',
         'One-time reversal review state is persisted');
-    swok(software_payment_reversal_apply(['kind'=>'refund','original_transaction_id'=>'600000001'])==='replay',
-        'Repeated one-time reversal is idempotent');
+    swok(software_payment_reversal_apply($refund)==='replay',
+        'Exact repeated refund event is idempotent');
+    swok(software_payment_reversal_apply(['kind'=>'refund','transaction_id'=>'700000002','original_transaction_id'=>'600000001','amount_cents'=>250])==='one_time_reversal_review',
+        'Distinct partial refund against same charge is retained');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=?',['600000001'])->fetchColumn()===2,
+        'Both distinct refund transactions are preserved');
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
         [$invoice,1,'123456789',1,(int)$payment['amount_cents'],'active',$now,$now]);
     swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.failed','123456789')==='subscription_review',
@@ -114,7 +119,7 @@ try{
     query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=?',['active',$invoice]);
     query('INSERT INTO '.table('software_subscription_receipts').' (subscription_invoice_id,gateway_transaction_id,invoice_id,created_at) VALUES (?,?,?,?)',
         [$invoice,'600000099',$invoice,$now]);
-    swok(software_payment_reversal_apply(['kind'=>'void','original_transaction_id'=>'600000099'])==='subscription_reversal_review',
+    swok(software_payment_reversal_apply(['kind'=>'void','transaction_id'=>'700000099','original_transaction_id'=>'600000099','amount_cents'=>null])==='subscription_reversal_review',
         'Recurring payment reversal moves subscription to review');
     swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
         'Recurring reversal review state is persisted');
