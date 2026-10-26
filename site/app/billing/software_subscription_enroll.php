@@ -36,6 +36,7 @@ function software_subscription_enroll_finalize(int $invoice,string $gatewayId,st
 function software_subscription_enroll(array $client,int $invoice,string $descriptor,#[\SensitiveParameter]string $nonce):string{
     if(support_current())throw new RuntimeException('Subscription changes are blocked in support mode.');
     if(!software_commerce_ready()||!ledger_ready())throw new RuntimeException('Prepare software payments and billing first.');
+    software_anet_nonce($descriptor,$nonce); // malformed local input must not consume the one allowed enrollment attempt
     $gateway=software_anet_settings();
     if(db()->inTransaction())throw new LogicException('Subscription enrollment must own its transaction.');
     db()->beginTransaction();
