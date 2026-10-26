@@ -47,8 +47,12 @@ function software_fulfill_paid_order(int $invoiceId):?array{
             $existing=one('SELECT l.* FROM '.table('software_entitlements').' e JOIN '.table('website_licenses').' l ON l.id=e.license_id WHERE e.invoice_id=? AND e.unit_number=?',
                 [$invoiceId,$unit]);
             if($existing){$first=$first??$existing;continue;}
-            $created=software_grant_create((int)$order['client_id'],$order['sku'],$type,
-                $name,$order['domain'],$expiry,0,$invoiceId,$unit,'',$order['billing_term']!=='once',$policy);
+            $created=software_grant_upgrade_existing((int)$order['client_id'],$order['sku'],$order['domain'],$type,
+                $expiry,$invoiceId,$unit,$order['billing_term']!=='once',$policy);
+            if($created===null){
+                $created=software_grant_create((int)$order['client_id'],$order['sku'],$type,
+                    $name,$order['domain'],$expiry,0,$invoiceId,$unit,'',$order['billing_term']!=='once',$policy);
+            }
             $first=$first??one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$created['id']]);
         }
         if($order['billing_term']!=='once'){
