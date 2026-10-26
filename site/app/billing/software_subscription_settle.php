@@ -6,6 +6,7 @@ require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
 require_once CWP_CODE_ROOT.'/app/billing/authorize_net_webhooks.php';
 require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
+require_once CWP_CODE_ROOT.'/app/billing/software_subscriptions.php';
 
 /** Compatibility wrapper retaining strict amount rejection in recurring settlement. */
 function software_anet_cents(mixed $amount): int {
@@ -74,10 +75,8 @@ function software_subscription_settle(array $details,string $transactionId): str
                 if($g['license_type']!=='temporary'||(int)$g['is_master']===1
                     ||$g['expires_at']===null)throw new RuntimeException('Renewal grant metadata is inconsistent.');
                 if((int)$g['is_active']!==1)continue;
-                $existing=new DateTimeImmutable($g['expires_at'],new DateTimeZone('UTC'));
                 $now=new DateTimeImmutable('now',new DateTimeZone('UTC'));
-                $base=$existing>$now?$existing:$now;
-                $extended=$base->modify('+'.$duration.' months')->format('Y-m-d H:i:s');
+                $extended=software_subscription_extend_expiry((string)$g['expires_at'],$duration,$now);
                 query('UPDATE '.table('software_entitlements').' SET expires_at=? WHERE license_id=?',
                     [$extended,$g['license_id']]);
             }
