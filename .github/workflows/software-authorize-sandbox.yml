@@ -14,10 +14,6 @@ jobs:
     if: ${{ inputs.confirm_sandbox_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    env:
-      ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
-      ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
-      ANET_SANDBOX_PUBLIC_CLIENT_KEY: ${{ secrets.ANET_SANDBOX_PUBLIC_CLIENT_KEY }}
     steps:
       - uses: actions/checkout@v4
       - name: Enforce sandbox-only source contract
@@ -28,6 +24,10 @@ jobs:
           grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/software_anet_sandbox_acceptance.py
           grep -F 'https://jstest.authorize.net/v1/Accept.js' tests/software_anet_sandbox_acceptance.py
       - name: Require separately stored sandbox credentials
+        env:
+          ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
+          ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
+          ANET_SANDBOX_PUBLIC_CLIENT_KEY: ${{ secrets.ANET_SANDBOX_PUBLIC_CLIENT_KEY }}
         run: |
           test -n "$ANET_SANDBOX_API_LOGIN_ID" || { echo 'Missing ANET_SANDBOX_API_LOGIN_ID'; exit 2; }
           test -n "$ANET_SANDBOX_TRANSACTION_KEY" || { echo 'Missing ANET_SANDBOX_TRANSACTION_KEY'; exit 2; }
@@ -38,6 +38,10 @@ jobs:
           .sandbox-venv/bin/pip install --disable-pip-version-check requests playwright
           .sandbox-venv/bin/python -m playwright install --with-deps chromium
       - name: Exercise real Authorize.net sandbox only
+        env:
+          ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
+          ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
+          ANET_SANDBOX_PUBLIC_CLIENT_KEY: ${{ secrets.ANET_SANDBOX_PUBLIC_CLIENT_KEY }}
         run: .sandbox-venv/bin/python tests/software_anet_sandbox_acceptance.py
       - name: Upload non-secret sandbox evidence
         if: always()
