@@ -42,6 +42,20 @@ if($operation==='mail-off'){
     echo json_encode(['email_mode'=>'disabled'],JSON_THROW_ON_ERROR);
     exit;
 }
+if($operation==='legacy-bundle'){
+    if($invoice<1)exit(2);
+    require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
+    $entitlement=one('SELECT e.license_id,o.sku FROM '.table('software_entitlements').' e JOIN '.table('software_orders').' o ON o.invoice_id=e.invoice_id WHERE e.invoice_id=? ORDER BY e.unit_number LIMIT 1',[$invoice]);
+    if(!$entitlement)throw new RuntimeException('Synthetic legacy-bundle fixture requires fulfilled software.');
+    $asset=one('SELECT file_path,sha256 FROM '.table('software_assets').' WHERE sku=? ORDER BY id DESC LIMIT 1',[$entitlement['sku']]);
+    if(!$asset)throw new RuntimeException('Synthetic legacy-bundle fixture requires a software asset.');
+    $file=software_asset_resolve_path((string)$asset['file_path']);
+    if(!$file)throw new RuntimeException('Synthetic legacy-bundle fixture asset path is unavailable.');
+    query('INSERT INTO '.table('license_bundles').' (license_id,file_path,title,sha256,created_at) VALUES (?,?,?,?,?)',
+        [(int)$entitlement['license_id'],$file,'Stale legacy software bundle',(string)$asset['sha256'],gmdate('Y-m-d H:i:s')]);
+    echo json_encode(['bundle_id'=>(int)db()->lastInsertId(),'license_id'=>(int)$entitlement['license_id']],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation==='payment-review'){
     if($invoice<1)exit(2);
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
