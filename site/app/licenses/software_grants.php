@@ -6,16 +6,21 @@ require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_license_policy.php';
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
+require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 
 function software_grant_create(int $clientId, string $sku, string $kind, string $name,
     ?string $domain, ?string $expires, int $issuer=0, ?int $invoice=null, ?int $unit=null,
-    string $purpose='', bool $recurring=false, ?array $purchasePolicy=null):array {
+    string $purpose='', bool $recurring=false, ?array $purchasePolicy=null,
+    #[\SensitiveParameter] ?string $masterPassword=null):array {
     if (!software_commerce_ready()) throw new RuntimeException('Software licensing is not prepared.');
     $issuedAt=new DateTimeImmutable('now',new DateTimeZone('UTC'));
     $metadata=SoftwareLicensePolicy::issue($kind,$name,$domain,$expires,$issuer>0,$issuedAt);
     $purpose=trim($purpose);
     if($kind===SoftwareLicensePolicy::MASTER){
         if(strlen($purpose)<10||strlen($purpose)>200)throw new InvalidArgumentException('Master license purpose is required (10–200 characters).');
+        if($masterPassword===null||$masterPassword==='')throw new InvalidArgumentException('Owner password is required for a master license.');
+        $owner=staff_owner($masterPassword);
+        if((int)$owner['id']!==$issuer)throw new RuntimeException('Master license issuer must be the reauthenticated owner.');
     }elseif($purpose!==''){
         throw new InvalidArgumentException('Purpose is reserved for internal master licenses.');
     }
