@@ -49,6 +49,18 @@ function software_portal_render(?array $client,string $error=''):never{
                 echo '<input type="hidden" name="old_domain" value="'.esc($domain['domain']).'">';
                 echo '<label>Move this installation<input name="new_domain" maxlength="253" required placeholder="new-domain.com"></label>';
                 echo '<button class="btn outline" type="submit">Replace domain</button></form>';
+                echo '<form method="post">'.support_csrf_field();
+                echo '<input type="hidden" name="action" value="license_domain_deactivate">';
+                echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';
+                echo '<input type="hidden" name="domain" value="'.esc($domain['domain']).'">';
+                echo '<button class="btn outline" type="submit">Deactivate installation</button></form>';
+            }
+            if($activeDomains<(int)$lic['max_installations']){
+                echo '<form method="post">'.support_csrf_field();
+                echo '<input type="hidden" name="action" value="license_domain_add">';
+                echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';
+                echo '<label>Add installation domain<input name="domain" maxlength="253" required placeholder="another-site.com"></label>';
+                echo '<button class="btn outline" type="submit">Add installation</button></form>';
             }
             $cooldown=(string)setting('software_domain_change_cooldown_hours','24');
             echo '<p class="hint">Replacing the domain deauthorizes the previous installation at its next successful license check. ';
