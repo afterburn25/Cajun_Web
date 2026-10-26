@@ -35,6 +35,7 @@ function software_order_place(array $client,int $productId,int $revision,int $qu
         }
         $quote=catalog_quote($productId,$revision,$quantity,true);
         if(!software_order_offer($quote))throw new InvalidArgumentException('Choose a published software product.');
+        if($quote['term']==='once'&&$subscribe)throw new InvalidArgumentException('One-time software does not use recurring billing consent.');
         if($quote['term']!=='once'&&!$subscribe)throw new InvalidArgumentException('Confirm the subscription period and recurring price.');
         if($quote['term']!=='once'&&(int)$quote['setup_cents']!==0)throw new InvalidArgumentException('Recurring software offers must have no one-time setup fee.');
         $job=one('SELECT id FROM '.table('studio_jobs').' WHERE client_id=? AND title=? ORDER BY id LIMIT 1',
