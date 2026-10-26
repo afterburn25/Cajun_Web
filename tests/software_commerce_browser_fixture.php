@@ -55,6 +55,7 @@ if($operation!=='fulfill-asset'||$invoice<1)exit(2);
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
 
 $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);
 if(!$order)throw new RuntimeException('Synthetic browser software order not found.');
@@ -75,6 +76,7 @@ if($i['status']==='issued'){
 $license=software_fulfill_paid_order($invoice);
 if(!$license)$license=one('SELECT l.* FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE e.invoice_id=? ORDER BY e.unit_number LIMIT 1',[$invoice]);
 if(!$license)throw new RuntimeException('Synthetic browser fulfillment produced no entitlement.');
+software_usage_record((int)$license['id'],(string)$order['domain']);
 
 $storage=software_asset_private_root();
 $dir=$storage.DIRECTORY_SEPARATOR.'software-browser';
