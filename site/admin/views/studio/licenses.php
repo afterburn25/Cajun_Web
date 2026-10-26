@@ -212,7 +212,8 @@ $chargeReviews=all('SELECT ch.invoice_id,ch.status,ch.transaction_id,o.sku,c.nam
     ['processing','uncertain','review']);
 $reversals=all('SELECT r.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_reversals').' r LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=r.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=r.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY r.id DESC LIMIT 30');
 $disputes=all('SELECT d.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_disputes').' d LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=d.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=d.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY d.id DESC LIMIT 30');
-$subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status=? ORDER BY s.id DESC LIMIT 30',['review']);
+$subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status IN (?,?) ORDER BY s.id DESC LIMIT 30',
+    ['creating','review']);
 ?>
 <section class="workspace-card"><h2>Uncertain one-time charge reconciliation</h2>
 <p>Use this only after confirming the transaction ID in Authorize.net. CajunWebPro re-fetches the gateway transaction and requires the exact invoice number and amount before any paid transition. Sandbox verification never fulfills software.</p>
@@ -250,10 +251,18 @@ $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status
 <?php endforeach; ?>
 </section>
 <section class="workspace-card"><h2>Subscription payment review</h2>
-<p>Failed, suspended, terminated, or reversed recurring payments remain here until an owner resolves the billing state. Paid-through access is not silently revoked.</p>
+<p>Interrupted enrollment, failed, suspended, terminated, or reversed recurring payments remain here until an owner resolves the billing state. Paid-through access is not silently revoked.</p>
 <?php if(!$subscriptionReviews): ?><p class="muted">No software subscriptions currently require review.</p><?php endif; ?>
 <?php foreach($subscriptionReviews as $r): ?>
-<p><?=esc($r['name'].' · '.$r['sku'])?> · Original invoice <?=(int)$r['invoice_id']?> · Gateway subscription <?=esc((string)$r['gateway_subscription_id'])?></p>
+<div class="workspace-card">
+<p><?=esc($r['name'].' · '.$r['sku'])?> · Original invoice <?=(int)$r['invoice_id']?> · local state <?=esc($r['status'])?><?php if($r['gateway_subscription_id']!==null): ?> · Gateway subscription <?=esc((string)$r['gateway_subscription_id'])?><?php endif; ?></p>
+<form method="post"><?php admin_action('software_subscription_reconcile'); ?>
+<input type="hidden" name="invoice_id" value="<?=(int)$r['invoice_id']?>">
+<?php admin_input('gateway_subscription_id','Verified Authorize.net subscription ID',(string)($r['gateway_subscription_id']??''),'text','required pattern="[0-9]{1,25}" maxlength="25"'); ?>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn gold">Reconcile gateway subscription</button>
+</form>
+</div>
 <?php endforeach; ?>
 </section>
 <?php endif; ?>
