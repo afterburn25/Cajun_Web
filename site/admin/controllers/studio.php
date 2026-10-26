@@ -55,6 +55,20 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_license_setup'){
         require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
         license_migrate(posted('current_password',200));flash('Website licensing storage prepared.');redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_asset_publish'){
+        require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
+        $id=software_asset_publish(posted('sku',60),posted('version',40),posted('title',120),
+            posted('private_path',500),posted('current_password',200));
+        flash('Verified private software ZIP version published as asset '. $id .'.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_notice_retry'){
+        if(support_current())throw new RuntimeException('Delivery is unavailable during support mode.');
+        staff_require('staff.manage');
+        staff_owner(posted('current_password',200));
+        require_once CWP_CODE_ROOT.'/app/licenses/software_notices.php';
+        $sent=software_delivery_notice_send(gint($_POST,'invoice_id',1,2147483647));
+        flash($sent?'Delivery notice sent or already completed.':'Delivery notice was not sent; inspect mail configuration and the retained delivery state.');
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_gateway_select'){
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         require_once CWP_CODE_ROOT.'/app/billing/payments.php';

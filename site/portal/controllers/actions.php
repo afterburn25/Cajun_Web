@@ -9,6 +9,13 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif($action==='software_subscription_cancel'){
+  if(!$client)throw new RuntimeException('Sign in to cancel recurring billing.');
+  require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
+  $state=software_subscription_cancel($client,gint($_POST,'invoice_id',1,2147483647));
+  flash($state==='cancelled'?'The gateway confirmed cancellation. Software paid through the current period remains available.':'Your subscription cancellation needs review; please contact billing.');
+  redirect(studio_url(['software'=>1]));
+ }
  elseif($action==='software_subscription_enroll'){
   if(!$client)throw new RuntimeException('Sign in to enroll in software billing.');
   require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';

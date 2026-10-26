@@ -77,6 +77,31 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 </section>
 </div>
 
+<?php if($softwareReady && staff_can('staff.manage')): ?>
+<section class="workspace-card"><h2>Publish a software download</h2>
+<p>Place a versioned release ZIP in the server's private storage first; never expose a direct public file path or ZIP-inside-ZIP. This form validates the archive and records its SHA-256.</p>
+<form method="post"><?php admin_action('software_asset_publish'); ?>
+<?php admin_input('sku','Registered software product SKU','','text','required maxlength="60"'); ?>
+<?php admin_input('version','Release version','','text','required maxlength="40"'); ?>
+<?php admin_input('title','Download title','','text','required maxlength="120"'); ?>
+<?php admin_input('private_path','Absolute path under private storage','','text','required maxlength="500"'); ?>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn gold">Publish verified ZIP</button></form></section>
+<?php
+$notices=all('SELECT n.*,o.sku,c.name FROM '.table('software_notices').' n JOIN '.table('software_orders').' o ON o.invoice_id=n.invoice_id JOIN '.table('studio_clients').' c ON c.id=n.client_id ORDER BY n.id DESC LIMIT 30');
+?>
+<section class="workspace-card"><h2>Customer software delivery notices</h2>
+<?php foreach($notices as $n): ?>
+<p><?=esc($n['name'].' · '.$n['sku'])?> · Invoice <?=(int)$n['invoice_id']?> · <?=esc($n['status'])?></p>
+<?php if($n['status']!=='sent'): ?>
+<form method="post"><?php admin_action('software_notice_retry'); ?>
+<input type="hidden" name="invoice_id" value="<?=(int)$n['invoice_id']?>">
+<?php admin_input('current_password','Owner password','','password','required'); ?>
+<button class="btn outline">Retry delivery email</button></form>
+<?php endif; ?>
+<?php endforeach; ?>
+</section>
+<?php endif; ?>
 <h2>Active licenses</h2>
 <div class="workspace-grid">
 <?php foreach($licenses as $lic): ?>

@@ -65,6 +65,16 @@ function software_portal_render(?array $client,string $error=''):never{
             echo '<p>Domain: '.esc($order['domain']).' · '.esc($order['status']);
             echo ' · $'.esc(number_format((int)$order['amount_cents']/100,2));
             echo ' · <a href="'.esc(studio_url(['invoice'=>$order['invoice_id']])).'">Invoice</a></p>';
+            if(in_array($order['billing_term'],['month','year'],true)){
+                $sub=one('SELECT status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]);
+                if($sub && in_array($sub['status'],['pending_first_payment','active'],true)){
+                    echo '<form method="post">'.support_csrf_field();
+                    echo '<input type="hidden" name="action" value="software_subscription_cancel">';
+                    echo '<input type="hidden" name="invoice_id" value="'.(int)$order['invoice_id'].'">';
+                    echo '<p class="hint">Cancellation stops future gateway charges; already-paid license access continues through its paid period.</p>';
+                    echo '<button class="btn outline" type="submit">Cancel future renewal payments</button></form>';
+                }
+            }
             if($order['status']==='issued' && $gateway && $gateway['client_key']!==''){
                 $recurring=in_array($order['billing_term'],['month','year'],true);
                 $prior=$recurring?
