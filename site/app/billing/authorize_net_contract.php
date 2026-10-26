@@ -11,9 +11,20 @@ function software_anet_amount(int $cents): string {
 }
 /** Compare gateway currency in exact minor units, rejecting invalid precision and types. */
 function software_charge_exact_cents(mixed $value): ?int {
+    if(is_float($value)){
+        // Authorize.net's API models transaction/subscription amounts as
+        // decimal numeric values. Accept decoded JSON floats only when they
+        // land on a whole cent within binary floating-point tolerance.
+        // Fractional cents are rejected rather than rounded.
+        if(!is_finite($value)||$value<0||$value>9999999.99)return null;
+        $scaled=$value*100;
+        $nearest=round($scaled);
+        if(abs($scaled-$nearest)>0.000001)return null;
+        return (int)$nearest;
+    }
     if (!is_string($value) && !is_int($value)) return null;
     $amount=(string)$value;
-    if (!preg_match('/^(0|[1-9][0-9]{0,6})(?:\.([0-9]{1,2}))?$/D',$amount,$parts)) return null;
+    if (!preg_match('/^(0|[1-9][0-9]{0,6})(?:\\.([0-9]{1,2}))?$/D',$amount,$parts)) return null;
     return ((int)$parts[1])*100+(int)str_pad($parts[2]??'',2,'0');
 }
 
