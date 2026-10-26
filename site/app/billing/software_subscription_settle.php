@@ -100,6 +100,45 @@ function software_subscription_settle(array $details,string $transactionId): str
     return $first?'first_payment_recorded':'renewal_recorded';
 }
 
+/** Owner recovery for a verified recurring transaction whose webhook could not settle locally. */
+function software_subscription_charge_reconcile(int $invoice,string $transactionId,#[\SensitiveParameter]string $password):string{
+    if(support_current())throw new RuntimeException('Recurring payment reconciliation is unavailable during support access.');
+    if(!software_commerce_ready()||!ledger_ready())throw new RuntimeException('Prepare software payments and billing first.');
+    if($invoice<1||!preg_match('/^[0-9]{5,30}$/D',$transactionId)){
+        throw new InvalidArgumentException('Enter the software invoice and verified recurring transaction ID.');
+    }
+    staff_require('staff.manage');
+    staff_owner($password); // authenticate before gateway readback
+    $sub=one('SELECT gateway_subscription_id,amount_cents FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice]);
+    if(!$sub||$sub['gateway_subscription_id']===null){
+        throw new RuntimeException('Reconcile the gateway subscription identity before reconciling its charges.');
+    }
+    $gateway=software_anet_settings();
+    $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$transactionId]);
+    $verified=software_anet_subscription_charge_details($details,$transactionId);
+    if((string)$verified['subscription_id']!==(string)$sub['gateway_subscription_id']
+        ||(int)$verified['amount_cents']!==(int)$sub['amount_cents']
+        ||(string)$verified['invoice_number']!==substr('CWP-'.$invoice,0,20)){
+        throw new RuntimeException('Recurring transaction does not exactly match this software subscription invoice.');
+    }
+    if($gateway['mode']!=='production'){
+        staff_locked(function()use($password,$invoice,$transactionId):void{
+            $actor=staff_owner($password);
+            license_audit((int)$actor['id'],'subscription.charge.reconcile.sandbox',
+                'Sandbox recurring transaction '.$transactionId.' verified for software invoice '.$invoice.'; no paid transition');
+        });
+        return 'sandbox_verified';
+    }
+    $actor=staff_locked(fn()=>staff_owner($password));
+    $state=software_subscription_settle($details,$transactionId);
+    staff_locked(function()use($password,$invoice,$transactionId,$state):void{
+        $actor=staff_owner($password);
+        license_audit((int)$actor['id'],'subscription.charge.reconcile',
+            'Software invoice '.$invoice.' recurring transaction '.$transactionId.' reconciled as '.$state);
+    });
+    return $state;
+}
+
 function software_webhook_process(string $raw,string $signature):string{
     $gateway=software_anet_settings();
     require_once CWP_CODE_ROOT.'/app/billing/payments.php';
