@@ -168,6 +168,19 @@ def run_browser(env, browser):
           and response.headers.get('Content-Type','').startswith('application/json')
           and response.json()=={'authorized':False,'error':'Internal server error'})
 
+    expired=fixture('expired-trial',pid)
+    expired_response=requests.post(validate,json={
+        'license_key':expired['license_key'],
+        'domain':'expired-trial.example',
+        'product_id':expired['sku'],
+    },timeout=25)
+    check('Expired trial is definitively denied by installed validation API',
+          expired_response.status_code==200
+          and expired_response.json()=={
+              'authorized':False,
+              'error':'License expired, over its installation limit, or not authorized'
+          })
+
     page=alice.get(portal,timeout=25)
     form=_action_form(soup,page,'software_order_buy',product_id=pid)
     order=form_data(form)
