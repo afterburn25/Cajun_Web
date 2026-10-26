@@ -91,17 +91,21 @@ if(!is_file($file)){
 $sha=hash_file('sha256',$file);$bytes=filesize($file);
 if(!is_string($sha)||$bytes===false)throw new RuntimeException('Synthetic asset could not be verified.');
 $version='browser-acceptance-1';
-$asset=one('SELECT id FROM '.table('software_assets').' WHERE sku=? AND version=?',[$order['sku'],$version]);
+$asset=one('SELECT id,created_at FROM '.table('software_assets').' WHERE sku=? AND version=?',[$order['sku'],$version]);
 if(!$asset){
+    $created=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,1,?)',
         [$order['sku'],$version,'Synthetic browser acceptance download',
-         software_asset_reference($storage,realpath($file)),$sha,$bytes,gmdate('Y-m-d H:i:s')]);
-    $asset=['id'=>(int)db()->lastInsertId()];
+         software_asset_reference($storage,realpath($file)),$sha,$bytes,$created]);
+    $asset=['id'=>(int)db()->lastInsertId(),'created_at'=>$created];
 }
 echo json_encode([
     'invoice_id'=>$invoice,
     'asset_id'=>(int)$asset['id'],
+    'asset_created_at'=>(string)$asset['created_at'],
+    'version'=>$version,
     'license_id'=>(int)$license['id'],
+    'license_key'=>(string)$license['license_key'],
     'sha256'=>$sha,
     'bytes'=>(int)$bytes,
     'domain'=>$order['domain'],
