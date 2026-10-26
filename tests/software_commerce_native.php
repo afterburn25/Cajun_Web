@@ -458,9 +458,14 @@ try{
     query('UPDATE '.table('software_orders').' SET quantity=1 WHERE invoice_id=?',[$invoice]);
     swok(software_asset_entitlement_authorized(1,$secondLicense,$insideAsset)===null,
         'Detached entitlement unit cannot authorize a download beyond purchased quantity');
+    $secondLicenseRow=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$secondLicense]);
+    swdenied(fn()=>software_grant_verdict($secondLicenseRow,'new.example.com'),
+        'Runtime validation is inconclusive when entitlement unit exceeds purchased quantity');
     query('UPDATE '.table('software_orders').' SET quantity=2,client_id=2 WHERE invoice_id=?',[$invoice]);
     swok(software_asset_entitlement_authorized(1,(int)$rights[0]['license_id'],$insideAsset)===null,
         'Entitlement cannot authorize a download when its purchase ownership is inconsistent');
+    swdenied(fn()=>software_grant_verdict($usageLicenseRow,'new.example.com'),
+        'Runtime validation is inconclusive when entitlement purchase owner is inconsistent');
     query('UPDATE '.table('software_orders').' SET client_id=1 WHERE invoice_id=?',[$invoice]);
     swok(software_grant_version_verdict($usageLicenseRow,'1.0.0')===true,
         'Version-aware validation permits a release inside the update window');
