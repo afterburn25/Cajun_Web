@@ -65,6 +65,14 @@ try{
     software_fulfill_paid_order($invoice);
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,'Paid two-unit invoice mints exactly two keys after retry');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice])->fetchColumn()===1,'One delivery email outbox entry');
+    query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
+        [$invoice,1,(int)$payment['amount_cents'],'paid',hash('sha256','native-reversal-request'),'600000001',$now,$now]);
+    swok(software_payment_reversal_apply(['kind'=>'refund','original_transaction_id'=>'600000001'])==='one_time_reversal_review',
+        'Verified refund moves one-time payment to review');
+    swok(one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])['status']==='reversal_review',
+        'One-time reversal review state is persisted');
+    swok(software_payment_reversal_apply(['kind'=>'refund','original_transaction_id'=>'600000001'])==='replay',
+        'Repeated one-time reversal is idempotent');
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
         [$invoice,1,'123456789',1,(int)$payment['amount_cents'],'active',$now,$now]);
     swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.failed','123456789')==='subscription_review',
@@ -78,5 +86,12 @@ try{
         'Cancellation stops future renewal when no review is pending');
     swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='cancelled',
         'Cancelled subscription state is persisted');
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=?',['active',$invoice]);
+    query('INSERT INTO '.table('software_subscription_receipts').' (subscription_invoice_id,gateway_transaction_id,invoice_id,created_at) VALUES (?,?,?,?)',
+        [$invoice,'600000099',$invoice,$now]);
+    swok(software_payment_reversal_apply(['kind'=>'void','original_transaction_id'=>'600000099'])==='subscription_reversal_review',
+        'Recurring payment reversal moves subscription to review');
+    swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
+        'Recurring reversal review state is persisted');
     echo 'Software commerce native: '.$n.' checks passed'.PHP_EOL;
 }catch(Throwable $e){fwrite(STDERR,'FAIL: '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);}
