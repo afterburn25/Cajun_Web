@@ -8,6 +8,7 @@ on:
       - 'tools/build.py'
       - 'tools/directory-map.json'
       - 'VERSION'
+      - 'tests/software_release_125_delta.py'
       - '.github/workflows/software-package-build.yml'
   workflow_dispatch:
 permissions:
@@ -66,3 +67,21 @@ jobs:
                       z.extractall(tmp)
           print('Candidate package build, extraction and no-nested-ZIP verification: PASS')
           PY
+      - name: Audit candidate UPDATE against published v1.25.0
+        run: |
+          mkdir -p qa
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            --output qa/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip \
+            https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip
+          printf '%s  %s\n' \
+            'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39' \
+            'qa/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip' | sha256sum --check -
+          complete="$(find dist -maxdepth 1 -type f -name 'CajunWebPro-*-COMPLETE-UPLOAD.zip' -print)"
+          update="$(find dist -maxdepth 1 -type f -name 'CajunWebPro-*-UPDATE.zip' -print)"
+          test "$(printf '%s\n' "$complete" | sed '/^$/d' | wc -l)" -eq 1
+          test "$(printf '%s\n' "$update" | sed '/^$/d' | wc -l)" -eq 1
+          python3 tests/software_release_125_delta.py \
+            --baseline qa/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip \
+            --complete "$complete" \
+            --update "$update" \
+            --report qa/software-release-125-delta.json
