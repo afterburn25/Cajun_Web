@@ -28,4 +28,10 @@ try {
 } catch (InvalidArgumentException $expected) {
     // Expected refusal of missing event type.
 }
+try {
+    software_anet_event_details('{"payload":');
+    throw new RuntimeException('Malformed JSON unexpectedly accepted');
+} catch (InvalidArgumentException $expected) {
+    // Permanent malformed JSON is classified as invalid, not transient gateway failure.
+}
 echo 'Signed webhook contract: PASS'.PHP_EOL;
