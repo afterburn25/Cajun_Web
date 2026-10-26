@@ -17,7 +17,7 @@ $details=[
     'transaction'=>[
         'transId'=>'600000123',
         'transactionStatus'=>'settledSuccessfully',
-        'authAmount'=>'49.99',
+        'authAmount'=>49.99,
         'subscription'=>['id'=>'1234567'],
         'order'=>['invoiceNumber'=>'CWP-81']
     ]
@@ -48,7 +48,7 @@ $profile=[
             'startDate'=>'2026-11-01',
             'totalOccurrences'=>'9999',
         ],
-        'amount'=>'49.99',
+        'amount'=>49.99,
         'status'=>'active',
         'order'=>['invoiceNumber'=>'CWP-81'],
     ],
