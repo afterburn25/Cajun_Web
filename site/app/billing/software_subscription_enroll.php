@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
+require_once CWP_CODE_ROOT.'/app/billing/software_subscriptions.php';
 
 function software_subscription_enroll_mark_review(int $invoice,?string $gatewayId=null):void{
     if($invoice<1||($gatewayId!==null&&!preg_match('/^[0-9]{1,25}$/D',$gatewayId))){
@@ -86,15 +87,9 @@ function software_subscription_reconcile_finalize(int $invoice,string $gatewayId
                 throw new RuntimeException('Finalized local subscription is missing its expected gateway identity.');
             }
             $local=(string)$sub['status'];
-            $compatible=match($gatewayStatus){
-                'active'=>$sandbox
-                    ? $local==='sandbox_test'
-                    : in_array($local,['pending_first_payment','active'],true),
-                'expired','canceled'=>$local==='cancelled',
-                'suspended','terminated'=>false,
-            };
-            if($compatible){db()->commit();return 'already_linked';}
-            if(in_array($gatewayStatus,['expired','canceled'],true)){
+            $resolution=software_subscription_finalized_reconcile_state($local,$gatewayStatus,$sandbox);
+            if($resolution==='same'){db()->commit();return 'already_linked';}
+            if($resolution==='cancelled'){
                 query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['cancelled',$sub['id']]);
                 license_audit($actor,'subscription.enroll.reconcile',
                     'Software invoice '.$invoice.' reconciled finalized subscription '.$gatewayId.
