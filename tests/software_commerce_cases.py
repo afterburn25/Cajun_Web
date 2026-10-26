@@ -86,6 +86,14 @@ def run_browser(env, browser):
     else:
         check('Software commerce storage is already prepared for installed acceptance',True)
 
+    gateway_form=_action_form(soup,admin.get(licenses,timeout=25),'software_gateway_select')
+    forged_gateway=form_data(gateway_form)
+    forged_gateway.update({'gateway_mode':'production','current_password':OWNER})
+    refused=admin.post(licenses,data=forged_gateway,timeout=25)
+    check('Forged production software gateway activation is refused server-side',
+          'Live payments remain gated' in refused.text
+          and db("SELECT value FROM ci_settings WHERE name='software_gateway_mode' AND value='production'")==[])
+
     def fixture(operation, value=0):
         result=subprocess.run(
             [php,str(root/'tests/software_commerce_browser_fixture.php'),operation,str(value)],
@@ -122,6 +130,17 @@ def run_browser(env, browser):
           len(product)==1 and product[0]['status']=='published'
           and product[0]['amount_cents']==4999 and product[0]['term']=='once')
     pid=product[0]['id'];revision=product[0]['revision']
+
+    orphan=fixture('orphan-license',pid)
+    validate=base+'/existing/api/validate.php'
+    response=requests.post(validate,json={
+        'license_key':orphan['license_key'],
+        'domain':'orphan-software.example'
+    },timeout=25)
+    check('Inconsistent software entitlement history is inconclusive over public validation API',
+          response.status_code==500
+          and response.headers.get('Content-Type','').startswith('application/json')
+          and response.json()=={'authorized':False,'error':'Internal server error'})
 
     page=alice.get(portal,timeout=25)
     form=_action_form(soup,page,'software_order_buy',product_id=pid)
