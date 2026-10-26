@@ -6053,3 +6053,8 @@ Next: inspect the first exact-successor runtime results, review all 16 actual im
 - Source delta regenerated merged↔preflight directly: 32 delta paths, 56 source pins covering every genuine php-era change (app, foundation, workflows, tests, docs, generated mirrors). `provider-package-php.yml` delta regenerated with non-overlapping anchors; three converged files became identity deltas; the leaf's `240→300` timeout delta dropped (preflight already carries 360).
 - Checks: `acceptance_artifacts_test.py --report` = `{"passed": true, "checks": 1693}` (run twice, once post build-refresh); `tools/build.py --refresh` PASS (2206 runtime files byte-for-byte); `php -l` clean on all 55 touched PHP files; `ast.parse` clean on all touched Python files.
 - Next: commit the merge, push, monitor candidate run `40215025927` (`d9fbca9d` native leg in flight) plus remaining native legs; docroots rerun held for queue drain.
+
+## 2026-10-26 — nameserver approval-form TTL re-arm dispatched; preflight run queued behind licensing flood
+
+- `40240006270` (`935584dd`) classified: native died on `Expected nameserver change form missing` (bare assert, 3232 checks green) — the approval form requires a nameserver observation <900s old (`registered_nameserver_changes_precondition`); the two approval sites re-armed only registrar `domains.list`. Fixed on leaf `13021cdb` (both sites use `read_form` nameserver-refresh first); rerun `40259179523` dispatched.
+- `40249962712` (`dbd92739` — guarded studio migration + sealed upgrade diagnostics) remained queued ~3h; a `feature/software-license-commerce-202610` push queued ~40 check workflows at 02:27Z. Concurrency is fair-queued, not cancelled; no redispatch needed.
