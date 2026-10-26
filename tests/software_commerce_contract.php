@@ -80,6 +80,9 @@ check(str_contains($schema['software_entitlements'],'updates_until DATETIME NULL
     &&str_contains($schema['software_entitlements'],'max_installations SMALLINT UNSIGNED NOT NULL DEFAULT 2')
     &&str_contains($schema['software_entitlements'],'policy_revision INT UNSIGNED NOT NULL DEFAULT 0'),
     'Entitlements snapshot update cutoff, installation limit and policy revision');
+check(str_contains($schema['software_assets'],'released_at DATETIME NULL')
+    &&str_contains($schema['software_assets'],'INDEX release_lookup(sku,is_published,released_at)'),
+    'Software releases retain immutable first customer-visible release time');
 check(isset($schema['software_subscription_receipts']),'Subscription renewals keep unique gateway-transaction receipt history');
 check(isset($schema['software_charge_attempts']),'One-time checkout keeps separate retry records');
 check(isset($schema['software_payment_reversals']),'Refunds and voids keep unique reversal receipts');
