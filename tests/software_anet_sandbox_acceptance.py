@@ -276,6 +276,7 @@ def main() -> None:
 
     # Best-effort cleanup for the one-time transaction while it is unsettled.
     void_result = "not_attempted"
+    void_readback = "not_attempted"
     try:
         void = gateway(
             "createTransactionRequest",
@@ -289,7 +290,18 @@ def main() -> None:
             login,
             transaction_key,
         )
-        void_result = "ok" if result_ok(void) else "not_voidable"
+        if result_ok(void):
+            void_result = "ok"
+            void_details = gateway("getTransactionDetailsRequest", {"transId": trans_id}, login, transaction_key)
+            void_tx = void_details.get("transaction") or {}
+            void_status = str(void_tx.get("transactionStatus") or "")
+            if not result_ok(void_details) or void_status not in {
+                "voided", "declined", "couldNotVoid", "settledSuccessfully"
+            }:
+                raise RuntimeError("Sandbox void readback returned an unrecognized transaction state")
+            void_readback = void_status
+        else:
+            void_result = "not_voidable"
     except Exception:
         void_result = "transport_or_state_error"
 
@@ -310,6 +322,7 @@ def main() -> None:
         "arb_cancelled": True,
         "arb_cancel_readback_passed": True,
         "one_time_cleanup": void_result,
+        "one_time_cleanup_readback": void_readback,
         "credentials_or_nonce_recorded": False,
         "passed": True,
     }
