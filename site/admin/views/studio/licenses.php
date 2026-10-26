@@ -198,13 +198,22 @@ $notices=all('SELECT n.*,COALESCE(o.sku,origin.sku) AS sku,c.name FROM '.table('
 <button class="btn outline">Recheck paid order fulfillment</button></form></section>
 <section class="workspace-card"><h2>Customer software delivery notices</h2>
 <?php foreach($notices as $n): ?>
-<p><?=esc($n['name'].' · '.$n['sku'])?> · Invoice <?=(int)$n['invoice_id']?> · <?=esc($n['status'])?></p>
-<?php if($n['status']!=='sent'): ?>
+<div class="workspace-card">
+<p><?=esc($n['name'].' · '.$n['sku'])?> · Invoice <?=(int)$n['invoice_id']?> · <?=esc($n['status'])?> · attempts <?=(int)$n['attempts']?> / 10</p>
+<?php if($n['last_attempt']!==null): ?><p class="hint">Last attempt <?=esc($n['last_attempt'])?> UTC<?php if($n['last_error']!==''): ?> · <?=esc($n['last_error'])?><?php endif; ?></p><?php endif; ?>
+<?php if($n['status']!=='sent'&&(int)$n['attempts']<10): ?>
 <form method="post"><?php admin_action('software_notice_retry'); ?>
 <input type="hidden" name="invoice_id" value="<?=(int)$n['invoice_id']?>">
-<?php admin_input('current_password','Owner password','','password','required'); ?>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
 <button class="btn outline">Retry delivery email</button></form>
+<?php elseif($n['status']!=='sent'): ?>
+<p class="notice info">Retry budget exhausted. Review mail configuration before resetting the budget.</p>
+<form method="post"><?php admin_action('software_notice_reset'); ?>
+<input type="hidden" name="invoice_id" value="<?=(int)$n['invoice_id']?>">
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn outline">Reset retry budget</button></form>
 <?php endif; ?>
+</div>
 <?php endforeach; ?>
 </section>
 <?php
