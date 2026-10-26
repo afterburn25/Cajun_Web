@@ -382,6 +382,10 @@ def run_browser(env, browser):
     check('Owner UI exposes interrupted ARB enrollment reconciliation without gateway traffic',
           subscription_form.select_one('input[name=gateway_subscription_id]') is not None
           and 'Subscription payment review' in subscription_review.text)
+    recurring_client_review=alice.get(portal,timeout=25)
+    check('Unpaid recurring billing review never implies paid software access',
+          'Subscription: Billing review · software remains locked until payment is reconciled' in recurring_client_review.text
+          and 'SOFTWARE-HTTP-MONTHLY' in recurring_client_review.text)
 
     linked_subscription=fixture('subscription-charge-review',recurring_invoice)
     recurring_charge_review=admin.get(licenses,timeout=25)
@@ -392,6 +396,9 @@ def run_browser(env, browser):
           linked_subscription['gateway_subscription_id'] in recurring_charge_review.text
           and recurring_charge_data.get('transaction_id','')==''
           and 'Recurring transaction reconciliation' in recurring_charge_review.text)
+    recurring_pending=alice.get(portal,timeout=25)
+    check('Pending first recurring payment is clearly locked in client portal',
+          'Subscription: Awaiting first verified payment · software remains locked' in recurring_pending.text)
 
     # Test-only transition to the state *after* an independently verified payment.
     paid=fixture('fulfill-asset',invoice)
