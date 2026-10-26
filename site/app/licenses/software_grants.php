@@ -56,6 +56,13 @@ function software_grant_replace_domain(int $licenseId,string $oldDomain,string $
     }
     $entitlement=one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
     if(!$entitlement){
+        $legacy=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
+        if(!$legacy)throw new InvalidArgumentException('License not found.');
+        $productId=(string)($legacy['product_id']??'');
+        $softwareProduct=one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND family=?',[$productId,'software']);
+        $issued=one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+            ['license.software.issue','Software license '.$licenseId.' issued as %']);
+        if($softwareProduct||$issued)throw new RuntimeException('Software entitlement history is incomplete.');
         license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
         return;
     }
