@@ -167,12 +167,12 @@ try{
     $product=(int)db()->lastInsertId();
     swok(software_policy_add_months(new DateTimeImmutable('2026-01-31 12:34:56',new DateTimeZone('UTC')),1)==='2026-02-28 12:34:56',
         'Software update month arithmetic clamps month-end safely');
-    $policy=software_product_policy_save($product,0,'nexus-core','SOFTWARE-TEST',12,1,1);
+    $policy=software_product_policy_save($product,0,'nexus-core','SOFTWARE-TEST',12,1,$password);
     swok($policy['revision']===1&&$policy['module_key']==='nexus-core'
         &&$policy['dependency_skus']===['SOFTWARE-TEST']
         &&$policy['update_months']===12&&$policy['max_installations']===1,
         'Owner software product policy records module dependency updates and install limit');
-    swdenied(fn()=>software_product_policy_save($product,0,'stale-write','',0,2,1),
+    swdenied(fn()=>software_product_policy_save($product,0,'stale-write','',0,2,$password),
         'Stale software product policy revision cannot overwrite current policy');
     $orphanKey=license_create(1,'NEXUSCORE',1,false,null);
     $orphan=one('SELECT id,is_active,is_master FROM '.table('website_licenses').' WHERE license_key=?',[$orphanKey]);
@@ -298,7 +298,7 @@ try{
     swok(software_grant_version_verdict($usageLicenseRow,'9.9.9')===null,
         'Version-aware validation treats an unknown release as inconclusive');
 
-    $policy2=software_product_policy_save($product,1,'nexus-core','SOFTWARE-TEST',0,3,1);
+    $policy2=software_product_policy_save($product,1,'nexus-core','SOFTWARE-TEST',0,3,$password);
     swok($policy2['revision']===2&&$policy2['update_months']===0&&$policy2['max_installations']===3,
         'Owner can publish a later policy revision for future grants');
     $unchanged=one('SELECT updates_until,max_installations,policy_revision FROM '.table('software_entitlements').' WHERE license_id=?',[$usageLicense]);
