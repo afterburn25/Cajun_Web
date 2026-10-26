@@ -15,6 +15,10 @@ if(!license_storage_ready()){
     echo '<div class="notice warning">Website license storage is unavailable. Preserve the original database and complete its reviewed upgrade before managing licenses.</div>';
     return;
 }
+$softwareEntitlementTable=(bool)one(
+    'SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+    [config()['db']['prefix'].'software_entitlements']
+);
 
 $licenses = $ready ? all('SELECT l.*, c.name as customer_name FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id ORDER BY l.created_at DESC LIMIT 100') : [];
 $customers = $ready ? array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id') : [];
@@ -210,8 +214,10 @@ $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status
 $domains=license_domains((int)$lic['id']);
 $history=all('SELECT action,detail,created_at FROM '.table('audit').' WHERE action LIKE ? AND (detail LIKE ? OR detail LIKE ?) ORDER BY id DESC LIMIT 20',
     ['license.%','License '.(int)$lic['id'].' %','Software license '.(int)$lic['id'].' %']);
+$isSoftwareEntitlement=$softwareEntitlementTable
+    &&(bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
 $meta=null;$observations=[];
-if($softwareReady){
+if($softwareReady&&$isSoftwareEntitlement){
     $meta=one('SELECT license_type,licensee,expires_at,updates_until,max_installations,policy_revision,purpose,issued_by,invoice_id,unit_number FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
     if($meta){
         require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
@@ -229,6 +235,9 @@ if($softwareReady){
 <dd><?= esc($lic['product_id']) ?></dd>
 <dt><strong>Status</strong></dt>
 <dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
+<?php if($isSoftwareEntitlement&&!$softwareReady): ?>
+<dt><strong>Software storage</strong></dt><dd><span style="color:#b8860b">Entitlement detected but software-commerce readiness is incomplete. Preserve the database and complete the reviewed recovery before changing software-specific rights.</span></dd>
+<?php endif; ?>
 <?php if($meta): ?>
 <dt><strong>Type / licensee</strong></dt><dd><?=esc($meta['license_type'])?> · <?=esc($meta['licensee'])?></dd>
 <dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd>
@@ -308,7 +317,7 @@ $eligibleReleases=all('SELECT version,title,created_at FROM '.table('software_as
 <p class="hint">Validation observations are rate-bucketed evidence of successful checks, not live usage analytics.</p>
 <?php endif; ?>
 
-<?php if(!$meta): ?>
+<?php if(!$isSoftwareEntitlement): ?>
 <?php $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[(int)$lic['id']]); ?>
 <?php if($bundles): ?>
 <h3>Generated bundles</h3>
@@ -323,7 +332,7 @@ $eligibleReleases=all('SELECT version,title,created_at FROM '.table('software_as
 <?php endif; ?>
 
 <?php if($lic['is_active']): ?>
-<?php if(!(int)($lic['is_master']??0) && !$meta): ?>
+<?php if(!(int)($lic['is_master']??0) && !$isSoftwareEntitlement): ?>
 <form method="post">
 <?php admin_action('studio_license_bundle'); ?>
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
