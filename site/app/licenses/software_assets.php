@@ -10,11 +10,13 @@ function software_asset_publish(string $sku,string $version,string $title,string
     if(support_current())throw new RuntimeException('Leave support mode before software publication.');
     $actor=staff_owner($password);
     $sku=strtoupper(trim($sku));$version=trim($version);$title=trim($title);
-    if(!preg_match('/^(?:WEBSITE|SOFTWARE|APP)-[A-Z0-9_-]{1,50}$/D',$sku)
+    if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku)
         ||!preg_match('/^[0-9A-Za-z][0-9A-Za-z._-]{0,39}$/D',$version)
         ||$title===''||strlen($title)>120)throw new InvalidArgumentException('Enter approved software SKU, version and title.');
-    $product=one('SELECT id FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
-    if(!$product)throw new InvalidArgumentException('Software SKU is not registered in the catalog.');
+    $product=one('SELECT id,family FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
+    $legacy=preg_match('/^(?:WEBSITE|SOFTWARE|APP)-[A-Z0-9_-]+$/D',$sku)===1;
+    if(!$product||(($product['family']??'')!=='software'&&!$legacy))
+        throw new InvalidArgumentException('Choose a registered software catalog product.');
     $storage=realpath(config()['storage']??'');$file=realpath($path);
     if(!$storage||!$file||!is_file($file)||!str_starts_with($file,rtrim($storage,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR)
         ||strtolower(pathinfo($file,PATHINFO_EXTENSION))!=='zip'){
