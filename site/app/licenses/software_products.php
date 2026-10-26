@@ -2,6 +2,8 @@
 /** Per-product software licensing policy. Existing entitlements snapshot this policy at issue time. */
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 
 function software_product_policy_defaults():array{
     return [
@@ -79,7 +81,8 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
     if(count($tokens)>25)throw new InvalidArgumentException('Use no more than 25 software dependencies.');
     $ids=[];$seen=[];
     foreach($tokens as $sku){
-        if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku)||isset($seen[$sku]))continue;
+        if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku))throw new InvalidArgumentException('Dependency SKU format is invalid.');
+        if(isset($seen[$sku]))continue;
         $seen[$sku]=true;
         $dep=one('SELECT id,sku,family FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
         if(!$dep)throw new InvalidArgumentException('Unknown dependency SKU: '.$sku);
@@ -107,6 +110,17 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
     return software_product_policy($productId);
 }
 
+function software_policy_add_months(DateTimeImmutable $base,int $months):string{
+    if($months<1||$months>120)throw new InvalidArgumentException('Software update period must be between one and 120 months.');
+    $utc=$base->setTimezone(new DateTimeZone('UTC'));
+    $year=(int)$utc->format('Y');$month=(int)$utc->format('n');$day=(int)$utc->format('j');
+    $absolute=$year*12+($month-1)+$months;
+    $targetYear=intdiv($absolute,12);$targetMonth=($absolute%12)+1;
+    $first=$utc->setDate($targetYear,$targetMonth,1);
+    $targetDay=min($day,(int)$first->format('t'));
+    return $first->setDate($targetYear,$targetMonth,$targetDay)->format('Y-m-d H:i:s');
+}
+
 function software_entitlement_policy_snapshot(string $sku,?string $expires,bool $recurring,DateTimeImmutable $now):array{
     $policy=software_product_policy_for_sku($sku);
     $updatesUntil=null;
@@ -114,7 +128,7 @@ function software_entitlement_policy_snapshot(string $sku,?string $expires,bool 
         if($expires===null)throw new InvalidArgumentException('Recurring software entitlement requires paid-through expiry.');
         $updatesUntil=$expires;
     }elseif($policy['update_months']>0){
-        $candidate=$now->modify('+'.(int)$policy['update_months'].' months')->format('Y-m-d H:i:s');
+        $candidate=software_policy_add_months($now,(int)$policy['update_months']);
         $updatesUntil=$expires!==null&&$expires<$candidate?$expires:$candidate;
     }
     return [
