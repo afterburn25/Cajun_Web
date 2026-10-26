@@ -48,6 +48,7 @@ if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
+if(isset($_GET['software'])){require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);}
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
