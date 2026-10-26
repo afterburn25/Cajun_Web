@@ -515,6 +515,12 @@ try{
     swdenied(fn()=>software_grant_verdict($usageLicenseRow,'new.example.com'),
         'Runtime validation is inconclusive when entitlement purchase owner is inconsistent');
     query('UPDATE '.table('software_orders').' SET client_id=1 WHERE invoice_id=?',[$invoice]);
+    query('UPDATE '.table('studio_invoices').' SET status=? WHERE id=?',['issued',$invoice]);
+    swdenied(fn()=>software_grant_verdict($usageLicenseRow,'new.example.com'),
+        'Purchased entitlement is inconclusive when its originating invoice is no longer trusted paid history');
+    swok(software_asset_entitlement_authorized(1,$usageLicense,$insideAsset)===null,
+        'Private download refuses a purchased entitlement whose originating invoice is not paid');
+    query('UPDATE '.table('studio_invoices').' SET status=? WHERE id=?',['paid',$invoice]);
     swok(software_grant_version_verdict($usageLicenseRow,'1.0.0')===true,
         'Version-aware validation permits a release inside the update window');
     swok(software_grant_version_verdict($usageLicenseRow,'2.0.0')===false,
