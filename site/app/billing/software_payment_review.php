@@ -5,17 +5,30 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 
 function software_payment_reversal_apply(array $reversal):string{
+    $event=(string)($reversal['transaction_id']??'');
     $original=(string)($reversal['original_transaction_id']??'');
-    if(!in_array($reversal['kind']??null,['refund','void'],true)
-        ||!preg_match('/^[0-9]{5,30}$/D',$original)){
+    $kind=(string)($reversal['kind']??'');
+    $amount=$reversal['amount_cents']??null;
+    if(!in_array($kind,['refund','void'],true)
+        ||!preg_match('/^[0-9]{5,30}$/D',$event)
+        ||!preg_match('/^[0-9]{5,30}$/D',$original)
+        ||($kind==='refund'&&(!is_int($amount)||$amount<1))
+        ||($kind==='void'&&$amount!==null)){
         throw new InvalidArgumentException('Invalid verified reversal record.');
     }
     if(db()->inTransaction())throw new LogicException('Payment reversal review must own the transaction.');
     db()->beginTransaction();
     try{
+        if(one('SELECT id FROM '.table('software_payment_reversals').' WHERE gateway_transaction_id=? FOR UPDATE',[$event])){
+            db()->commit();return 'replay';
+        }
         $charge=one('SELECT * FROM '.table('software_charges').' WHERE transaction_id=? FOR UPDATE',[$original]);
         if($charge){
-            if($charge['status']==='reversal_review'){db()->commit();return 'replay';}
+            if(one('SELECT id FROM '.table('software_payment_reversals').' WHERE gateway_transaction_id=?',[$event])){
+                db()->commit();return 'replay';
+            }
+            query('INSERT INTO '.table('software_payment_reversals').' (gateway_transaction_id,original_transaction_id,kind,amount_cents,invoice_id,subscription_invoice_id,created_at) VALUES (?,?,?,?,?,?,?)',
+                [$event,$original,$kind,$amount,$charge['invoice_id'],null,gmdate('Y-m-d H:i:s')]);
             query('UPDATE '.table('software_charges').' SET status=?,updated_at=? WHERE id=?',
                 ['reversal_review',gmdate('Y-m-d H:i:s'),$charge['id']]);
             db()->commit();
@@ -26,7 +39,11 @@ function software_payment_reversal_apply(array $reversal):string{
             $sub=one('SELECT * FROM '.table('software_subscriptions').' WHERE invoice_id=? FOR UPDATE',
                 [(int)$receipt['subscription_invoice_id']]);
             if(!$sub)throw new RuntimeException('Recurring reversal has no subscription record.');
-            if($sub['status']==='review'){db()->commit();return 'replay';}
+            if(one('SELECT id FROM '.table('software_payment_reversals').' WHERE gateway_transaction_id=?',[$event])){
+                db()->commit();return 'replay';
+            }
+            query('INSERT INTO '.table('software_payment_reversals').' (gateway_transaction_id,original_transaction_id,kind,amount_cents,invoice_id,subscription_invoice_id,created_at) VALUES (?,?,?,?,?,?,?)',
+                [$event,$original,$kind,$amount,$receipt['invoice_id'],$receipt['subscription_invoice_id'],gmdate('Y-m-d H:i:s')]);
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
             db()->commit();
             return 'subscription_reversal_review';
