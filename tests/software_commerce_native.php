@@ -731,10 +731,17 @@ try{
         [$usageLicense,'stale-observation.example.com']);
     query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 181 DAY),7)',
         [$usageLicense,'stale-observation.example.com']);
+    query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at,deactivated_at) VALUES (?,?,0,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 220 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY))',
+        [$futureGrant['id'],'fully-inactive-stale.example.com']);
+    query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 220 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 190 DAY),9)',
+        [$futureGrant['id'],'fully-inactive-stale.example.com']);
     software_usage_record($usageLicense,'new.example.com');
     swok(!one('SELECT id FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
         [$usageLicense,'stale-observation.example.com']),
         'Validation observation retention purges inactive domains older than 180 days');
+    swok(!one('SELECT id FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
+        [$futureGrant['id'],'fully-inactive-stale.example.com']),
+        'Unrelated successful validation prunes stale observations from a fully inactive license');
     software_usage_record($usageLicense,'new.example.com');
     $usage=one('SELECT check_count,last_seen FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
         [$usageLicense,'new.example.com']);
