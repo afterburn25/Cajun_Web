@@ -472,6 +472,8 @@ try{
         ['NEXUSCORE','1.0.0','Inside update window','synthetic-private.zip',str_repeat('a',64),22,$now,$now]);
     query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at) VALUES (?,?,?,?,?,?,1,?,?)',
         ['NEXUSCORE','2.0.0','Outside update window','synthetic-private.zip',str_repeat('b',64),22,$future,$now]);
+    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at) VALUES (?,?,?,?,?,?,1,?,?)',
+        ['NEXUSCORE','3.0.0','Staged before cutoff, released after','synthetic-private.zip',str_repeat('c',64),22,$future,$now]);
     $insideAsset=one('SELECT * FROM '.table('software_assets').' WHERE sku=? AND version=?',['NEXUSCORE','1.0.0']);
     swok((bool)software_asset_entitlement_authorized(1,(int)$rights[0]['license_id'],$insideAsset),
         'Exact purchased entitlement authorizes its matching release');
@@ -494,6 +496,11 @@ try{
         'Version-aware validation permits a release inside the update window');
     swok(software_grant_version_verdict($usageLicenseRow,'2.0.0')===false,
         'Version-aware validation denies a known release outside the update window');
+    swok(software_grant_version_verdict($usageLicenseRow,'3.0.0')===false,
+        'Private staging date cannot make a post-cutoff customer release eligible');
+    $stagedLate=one('SELECT * FROM '.table('software_assets').' WHERE sku=? AND version=?',['NEXUSCORE','3.0.0']);
+    swok(software_asset_entitlement_authorized(1,$usageLicense,$stagedLate)===null,
+        'Exact download authorization uses first customer release time, not staging time');
     swok(software_grant_version_verdict($usageLicenseRow,'9.9.9')===null,
         'Version-aware validation treats an unknown release as inconclusive');
 
