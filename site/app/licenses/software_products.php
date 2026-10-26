@@ -90,25 +90,20 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
     }
     sort($ids,SORT_NUMERIC);$encoded=json_encode($ids,JSON_THROW_ON_ERROR);$now=gmdate('Y-m-d H:i:s');
 
-    staff_locked(function()use($productId,$expectedRevision,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actor,$now):void{
-        if(db()->inTransaction())throw new LogicException('Software product policy owns its transaction.');
-        db()->beginTransaction();
-        try{
-            $current=one('SELECT * FROM '.table('software_product_policies').' WHERE product_id=? FOR UPDATE',[$productId]);
-            $revision=(int)($current['revision']??0);
-            if($revision!==$expectedRevision)throw new RuntimeException('This software policy changed. Reload before saving.');
-            if($current){
-                query('UPDATE '.table('software_product_policies').' SET module_key=?,dependencies=?,update_months=?,max_installations=?,revision=?,updated_by=?,updated_at=? WHERE product_id=?',
-                    [$moduleKey,$encoded,$updateMonths,$maxInstallations,$revision+1,$actor,$now,$productId]);
-            }else{
-                query('INSERT INTO '.table('software_product_policies').' (product_id,module_key,dependencies,update_months,max_installations,revision,updated_by,updated_at) VALUES (?,?,?,?,?,1,?,?)',
-                    [$productId,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actor,$now]);
-            }
-            license_audit($actor,'software.policy','Software product '.$productId.' policy revision '.($revision+1).
-                '; update months '.$updateMonths.'; max installations '.$maxInstallations);
-            db()->commit();
-        }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
-    });
+    staff_locked(fn()=>staff_transaction(function()use($productId,$expectedRevision,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actor,$now):void{
+        $current=one('SELECT * FROM '.table('software_product_policies').' WHERE product_id=? FOR UPDATE',[$productId]);
+        $revision=(int)($current['revision']??0);
+        if($revision!==$expectedRevision)throw new RuntimeException('This software policy changed. Reload before saving.');
+        if($current){
+            query('UPDATE '.table('software_product_policies').' SET module_key=?,dependencies=?,update_months=?,max_installations=?,revision=?,updated_by=?,updated_at=? WHERE product_id=?',
+                [$moduleKey,$encoded,$updateMonths,$maxInstallations,$revision+1,$actor,$now,$productId]);
+        }else{
+            query('INSERT INTO '.table('software_product_policies').' (product_id,module_key,dependencies,update_months,max_installations,revision,updated_by,updated_at) VALUES (?,?,?,?,?,1,?,?)',
+                [$productId,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actor,$now]);
+        }
+        license_audit($actor,'software.policy','Software product '.$productId.' policy revision '.($revision+1).
+            '; update months '.$updateMonths.'; max installations '.$maxInstallations);
+    }));
     return software_product_policy($productId);
 }
 
