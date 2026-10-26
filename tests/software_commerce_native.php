@@ -29,6 +29,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
+    require_once CWP_CODE_ROOT.'/app/licenses/software_notices.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
@@ -112,6 +113,13 @@ try{
     software_fulfill_paid_order($invoice);
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,'Paid two-unit invoice mints exactly two keys after retry');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice])->fetchColumn()===1,'One delivery email outbox entry');
+    save_setting('email_mode','disabled');
+    swok(!software_delivery_notice_send($invoice),
+        'Disabled mail transport leaves software delivery notice retryable');
+    $notice=one('SELECT status,attempts,sent_at,last_error FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice]);
+    swok(($notice['status']??'')==='pending'&&(int)($notice['attempts']??0)===1&&($notice['sent_at']??null)===null,
+        'Unaccepted software email is not falsely marked sent');
+
     swok(software_asset_customer_authorized(1,'NEXUSCORE'),'Purchasing customer is authorized for matching software assets');
     swok(!software_asset_customer_authorized(2,'NEXUSCORE'),'Different customer cannot use another account software entitlement');
     $usageLicense=(int)one('SELECT license_id FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number LIMIT 1',[$invoice])['license_id'];
