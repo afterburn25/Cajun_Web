@@ -177,6 +177,30 @@ def run_browser(env, browser):
           'does not use recurring billing consent' in denied.text
           and db('SELECT COUNT(*) AS n FROM ci_software_orders')[0]['n']==starting)
 
+    fresh_policy=_action_form(soup,admin.get(licenses,timeout=25),'software_product_policy',product_id=pid)
+    revised_policy=form_data(fresh_policy)
+    revised_policy.update({
+        'module_key':'browser-acceptance-v2',
+        'dependencies':'',
+        'update_months':'6',
+        'max_installations':'1',
+        'current_password':OWNER,
+    })
+    revised=admin.post(licenses,data=revised_policy,timeout=25)
+    check('Owner can revise software policy while an unsubmitted customer form is open',
+          revised.status_code==200
+          and db('SELECT revision FROM ci_software_product_policies WHERE product_id=?',[pid])==[{'revision':2}])
+    stale=alice.post(portal,data=order,timeout=25)
+    check('Customer must reload after disclosed software policy changes',
+          'licensing policy changed' in stale.text
+          and db('SELECT COUNT(*) AS n FROM ci_software_orders')[0]['n']==starting)
+
+    page=alice.get(portal,timeout=25)
+    form=_action_form(soup,page,'software_order_buy',product_id=pid)
+    order=form_data(form)
+    order.update({'domain':'software-http.example','quantity':'1'})
+    check('Reloaded software order form carries the current policy revision',order.get('policy_revision')=='2')
+
     created=alice.post(portal,data=order,timeout=30)
     rows=db("SELECT o.*,i.reference,i.status,i.amount_cents FROM ci_software_orders o JOIN ci_studio_invoices i ON i.id=o.invoice_id WHERE o.product_id=? ORDER BY o.id",[pid])
     check('Software order creates one exact issued invoice through client portal',
