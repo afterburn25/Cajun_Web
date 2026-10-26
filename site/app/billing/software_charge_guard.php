@@ -20,18 +20,38 @@ function software_charge_prepare(int $invoice,int $clientId,string $requestKey):
         if($i['status']!=='issued'||$balance['paid_cents']!==0||$balance['due_cents']!==(int)$i['amount_cents'])
             throw new RuntimeException('Payment amount or invoice state changed. Reload.');
         $existing=one('SELECT * FROM '.table('software_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
-        if($existing)throw new RuntimeException('A gateway attempt already exists. Its outcome must be reconciled before another charge.');
         $now=gmdate('Y-m-d H:i:s');
-        query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',
-            [$invoice,$clientId,$i['amount_cents'],'processing',$requestKey,$now,$now]);
+        if($existing){
+            if(!in_array($existing['status'],['declined','sandbox_test'],true)){
+                throw new RuntimeException('A gateway attempt already exists. Its outcome must be reconciled before another charge.');
+            }
+            query('UPDATE '.table('software_charges').' SET status=?,request_key=?,transaction_id=NULL,updated_at=? WHERE id=?',
+                ['processing',$requestKey,$now,$existing['id']]);
+        }else{
+            query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',
+                [$invoice,$clientId,$i['amount_cents'],'processing',$requestKey,$now,$now]);
+        }
+        query('INSERT INTO '.table('software_charge_attempts').' (invoice_id,request_key,amount_cents,status,created_at,updated_at) VALUES (?,?,?,?,?,?)',
+            [$invoice,$requestKey,$i['amount_cents'],'processing',$now,$now]);
         db()->commit();return (int)$i['amount_cents'];
     }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
 }
 function software_charge_mark(int $invoice,string $state,?string $transactionId=null):void{
     if(!in_array($state,['declined','uncertain','review','sandbox_test'],true))throw new InvalidArgumentException('Unsupported payment outcome.');
-    query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE invoice_id=? AND status=?',
-        [$state,$transactionId,gmdate('Y-m-d H:i:s'),$invoice,'processing']);
+    if(db()->inTransaction())throw new LogicException('Charge outcome marking must own the transaction.');
+    db()->beginTransaction();
+    try{
+        $charge=one('SELECT * FROM '.table('software_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
+        if(!$charge||$charge['status']!=='processing'){db()->commit();return;}
+        $now=gmdate('Y-m-d H:i:s');
+        query('UPDATE '.table('software_charge_attempts').' SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?',
+            [$state,$transactionId,$now,$charge['request_key'],'processing']);
+        query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE id=?',
+            [$state,$transactionId,$now,$charge['id']]);
+        db()->commit();
+    }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
 }
+
 /** Defensive readback: gateway approved response is verified against invoice. */
 function software_charge_confirmed(array $details,string $transactionId,int $invoice,int $cents):bool{
     $tx=$details['transaction']??null;
