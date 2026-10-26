@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
 require_once CWP_CODE_ROOT.'/app/billing/authorize_net_webhooks.php';
+require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
 
 /** Compatibility wrapper retaining strict amount rejection in recurring settlement. */
 function software_anet_cents(mixed $amount): int {
@@ -106,12 +107,30 @@ function software_webhook_process(string $raw,string $signature):string{
     }
     $event=software_anet_event_details($raw);
     if($gateway['mode']!=='production')return 'sandbox_event';
+
+    if(in_array($event['type'],[
+        'net.authorize.payment.refund.created',
+        'net.authorize.payment.void.created'
+    ],true)){
+        if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
+        $txId=$event['resource_id'];
+        if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
+        $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+        return software_payment_reversal_review($details,$txId,$event['type']);
+    }
+
+    if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
+        if(($event['entity']??'')!=='subscription')throw new InvalidArgumentException('Invalid subscription event entity.');
+        return software_subscription_lifecycle_review($event['type'],$event['resource_id']);
+    }
+
     if(!in_array($event['type'],[
         'net.authorize.payment.authcapture.created',
         'net.authorize.payment.priorAuthCapture.created',
         'net.authorize.payment.capture.created'
     ],true))return 'ignored';
-    $txId=$event['transaction_id'];
+    if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
+    $txId=$event['resource_id'];
     if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
     $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
     return software_subscription_settle($details,$txId);
