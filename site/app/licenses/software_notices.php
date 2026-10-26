@@ -55,3 +55,20 @@ function software_delivery_notice_send(int $invoiceId):bool{
         return false;
     }
 }
+
+/** Owner-reviewed recovery after the bounded delivery retry budget is exhausted. */
+function software_delivery_notice_reset(int $invoiceId):bool{
+    if(!software_commerce_ready()||$invoiceId<1)return false;
+    if(db()->inTransaction())throw new LogicException('Reset notices outside a transaction.');
+    db()->beginTransaction();
+    try{
+        $row=one('SELECT id,status,attempts FROM '.table('software_notices').' WHERE invoice_id=? FOR UPDATE',[$invoiceId]);
+        if(!$row||$row['status']==='sent'||(int)$row['attempts']<10){db()->commit();return false;}
+        query('UPDATE '.table('software_notices').' SET status=?,attempts=0,last_attempt=NULL,last_error=? WHERE id=?',
+            ['pending','Retry budget reset after owner mail-configuration review',$row['id']]);
+        db()->commit();return true;
+    }catch(Throwable $e){
+        if(db()->inTransaction())db()->rollBack();
+        throw $e;
+    }
+}
