@@ -4,6 +4,14 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 
+function software_subscription_cancel_mark_review(int $subscriptionId):string{
+    if($subscriptionId<1)throw new InvalidArgumentException('Invalid subscription cancellation identity.');
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=? AND status=?',
+        ['review',$subscriptionId,'cancelling']);
+    $current=one('SELECT status FROM '.table('software_subscriptions').' WHERE id=?',[$subscriptionId]);
+    return ($current['status']??'')==='cancelled'?'cancelled':'review';
+}
+
 function software_subscription_cancel_finalize(int $subscriptionId,int $clientId,int $invoice):string{
     if($subscriptionId<1||$clientId<1||$invoice<1)throw new InvalidArgumentException('Invalid subscription cancellation identity.');
     if(support_current())throw new RuntimeException('Subscription cancellation unavailable during support access.');
@@ -76,19 +84,14 @@ function software_subscription_cancel(array $client,int $invoice):string{
                 (int)$sub['interval_months'],$gatewayStart
             );
             if((string)$profile['status']!=='canceled'){
-                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',
-                    ['review',$sub['id']]);
-                return 'review';
+                return software_subscription_cancel_mark_review((int)$sub['id']);
             }
             return software_subscription_cancel_finalize((int)$sub['id'],(int)$client['id'],$invoice);
         }
-        query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',
-            ['review',$sub['id']]);
-        return 'review';
+        return software_subscription_cancel_mark_review((int)$sub['id']);
     }catch(Throwable $e){
-        query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',
-            ['review',$sub['id']]);
+        $state=software_subscription_cancel_mark_review((int)$sub['id']);
         report_error($e);
-        return 'review';
+        return $state;
     }
 }
