@@ -381,6 +381,13 @@ try{
         hash('sha256','software one-time webhook mismatch order'),false,0);
     $webhookMismatchRequest=hash('sha256','software one-time webhook mismatch attempt');
     software_charge_prepare($webhookMismatchInvoice,1,$webhookMismatchRequest);
+    $crossInvoiceDetails=$webhookDetails;
+    $crossInvoiceDetails['transaction']['order']['invoiceNumber']='CWP-'.$webhookMismatchInvoice;
+    swok(software_charge_capture_webhook_review($crossInvoiceDetails,'650000003')==='one_time_conflict',
+        'Gateway transaction already assigned to another invoice is classified as a permanent webhook conflict');
+    swok(one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$webhookMismatchInvoice])
+        ===['status'=>'processing','transaction_id'=>null],
+        'Cross-invoice webhook conflict does not rewrite the unrelated local charge');
     $mismatchDetails=[
         'messages'=>['resultCode'=>'Ok'],
         'transaction'=>[
