@@ -37,7 +37,8 @@ function software_asset_resolve_path(string $stored):?string{
         $candidate=$root.DIRECTORY_SEPARATOR.str_replace('/',DIRECTORY_SEPARATOR,$stored);
     }
     $file=realpath($candidate);
-    return $file&&is_file($file)&&software_asset_contains($root,$file)?$file:null;
+    return $file&&is_file($file)&&software_asset_contains($root,$file)
+        &&strtolower(pathinfo($file,PATHINFO_EXTENSION))==='zip'?$file:null;
 }
 
 function software_asset_publish(string $sku,string $version,string $title,string $path,#[\SensitiveParameter]string $password):int{
@@ -53,7 +54,7 @@ function software_asset_publish(string $sku,string $version,string $title,string
     if(!$product||(($product['family']??'')!=='software'&&!$legacy))
         throw new InvalidArgumentException('Choose a registered software catalog product.');
     $storage=software_asset_private_root();$file=realpath($path);
-    if(!$storage||!$file||!is_file($file)||!str_starts_with($file,rtrim($storage,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR)
+    if(!$storage||!$file||!is_file($file)||!software_asset_contains($storage,$file)
         ||strtolower(pathinfo($file,PATHINFO_EXTENSION))!=='zip'){
         throw new RuntimeException('Select a ZIP already stored inside the configured private storage root.');
     }
