@@ -231,6 +231,13 @@ try{
         ['2000-01-01 00:00:00',$master['id']]);
     swok(software_grant_version_verdict(license_get($master['key']),'1.0.0')===true,
         'Internal master ignores stale customer update cutoff for published versions');
+    $masterPrivateAsset=software_asset_publish('SOFTWARE-TEST','1.0.4','Internal QA staged ZIP',$zipPath,$password,false);
+    swok(software_grant_version_verdict(license_get($master['key']),'1.0.4')===true,
+        'Internal master validates an owner-private staged release');
+    swok(software_grant_version_verdict($lic,'1.0.4')===null,
+        'Ordinary customer license cannot discover an owner-private staged release');
+    swok((int)one('SELECT is_published FROM '.table('software_assets').' WHERE id=?',[$masterPrivateAsset])['is_published']===0,
+        'Master QA validation does not change staged release visibility');
     query('UPDATE '.table('software_entitlements').' SET updates_until=NULL WHERE license_id=?',[$master['id']]);
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['NEXUSCORE','Test software','software','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
