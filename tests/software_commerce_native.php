@@ -298,6 +298,43 @@ try{
     $otherBuyer=['id'=>2,'name'=>'Other Buyer'];
 
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        ['SOFTWARE-RECONCILE','Charge reconciliation test','software','published','once','USD',4200,0,null,'','Synthetic charge reconciliation','','Terms',0,1,$now,$now]);
+    $reconcileProduct=(int)db()->lastInsertId();
+    $reconcileInvoice=software_order_place($buyer,$reconcileProduct,1,1,'reconcile.example.com',
+        hash('sha256','software reconcile order'),false,0);
+    $reconcileRequest=hash('sha256','software reconcile attempt');
+    $reconcileCents=software_charge_prepare($reconcileInvoice,1,$reconcileRequest);
+    swok($reconcileCents===4200,'Uncertain-charge fixture reserves the exact software invoice amount');
+    software_charge_mark($reconcileInvoice,'uncertain','650000001');
+    swok(software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,1)==='paid',
+        'Owner reconciliation finalizes an independently verified uncertain charge');
+    $reconciledCharge=one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$reconcileInvoice]);
+    $reconciledAttempt=one('SELECT status,transaction_id FROM '.table('software_charge_attempts').' WHERE request_key=?',[$reconcileRequest]);
+    swok($reconciledCharge===['status'=>'paid','transaction_id'=>'650000001']
+        &&$reconciledAttempt===['status'=>'paid','transaction_id'=>'650000001']
+        &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$reconcileInvoice])===['status'=>'paid'],
+        'Reconciliation atomically aligns charge attempt, charge and invoice states');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoice])->fetchColumn()===1,
+        'Reconciled payment safely fulfills exactly one purchased entitlement');
+    swok(software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,1)==='already_paid'
+        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoice])->fetchColumn()===1,
+        'Reconciliation replay is idempotent and does not mint a duplicate license');
+    swok((int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=? AND detail LIKE ?',
+        ['license.payment.reconcile','Software invoice '.$reconcileInvoice.' reconciled to verified Authorize.net transaction 650000001%'])->fetchColumn()===1,
+        'Owner reconciliation records one immutable audit event');
+
+    $reconcileInvoiceTwo=software_order_place($buyer,$reconcileProduct,1,1,'reconcile-two.example.com',
+        hash('sha256','software reconcile second order'),false,0);
+    $reconcileRequestTwo=hash('sha256','software reconcile second attempt');
+    $reconcileCentsTwo=software_charge_prepare($reconcileInvoiceTwo,1,$reconcileRequestTwo);
+    software_charge_mark($reconcileInvoiceTwo,'uncertain');
+    swdenied(fn()=>software_charge_reconcile_finalize($reconcileInvoiceTwo,'650000001',$reconcileCentsTwo,1),
+        'Gateway transaction already assigned to another software invoice cannot be reused');
+    swok(one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$reconcileInvoiceTwo])===['status'=>'issued']
+        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoiceTwo])->fetchColumn()===0,
+        'Rejected reconciliation leaves the second invoice unpaid and unfulfilled');
+
+    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['SOFTWARE-UPGRADE','Paid upgrade test','software','published','once','USD',3500,0,null,'','Synthetic paid upgrade','','Terms',0,1,$now,$now]);
     $upgradeProduct=(int)db()->lastInsertId();
     $upgradePolicy=software_product_policy_save($upgradeProduct,0,'upgrade-test','',6,1,$password);
