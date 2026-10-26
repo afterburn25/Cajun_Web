@@ -10,6 +10,12 @@ Merged current `main` (`a331599a`, audit utf8mb4_bin + detail index fix) into `d
 
 Dedicated component run `40145014173` on `d5dc0b3c`: **success**. Earlier run `40142688666` on pre-merge `ae1bf15d` also green (stale-head evidence). PR base is `devin/full-site-integration`; merge held until the in-flight FSI acceptance run resolves (ports land on FSI before its combined acceptance, per the merge-first order).
 
+## Port merge status — 2026-10-23 (SSH access port, PR #258)
+
+Merged current `main` (`a331599a`, audit utf8mb4_bin + detail index fix) into `devin/ssh-access-port` for exact-head acceptance. Merge commit `b41b961b`. Same union resolution as the parallel ports: routing union, marker-aware `studio_migrate` + additive guarded audit migration, binary audit DDL + lane schema tail, build-area union, re-settled contract predecessor chain, regenerated inventory. `PYTHONUTF8=1` artifact verifier: {"passed": true, "checks": 288}.
+
+Dedicated component runs: `40142690407` on pre-merge `65e10f41` green; merge-head run `40144533735` on `b41b961b`: **success**. PR base `devin/full-site-integration`; merge held until the in-flight FSI acceptance run resolves.
+
 ## Merge-first delivery cycle — 2026-10-22
 
 Owner directive (reaffirmed): completed features reach `main` in small, verified increments — a completed branch is undelivered until its accepted implementation lands on `main` and the resulting main commit verifies. Full standing text: `AGENTS.md` "Standing owner directive - merge-first"; queue: `docs/DEVIN_INTEGRATION_QUEUE.md`.
