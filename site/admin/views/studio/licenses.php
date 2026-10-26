@@ -2,6 +2,8 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+$softwareReady=software_commerce_ready();
 $ready = license_ready() && license_invoice_cutover_ready();
 ?>
 <?php if(!$ready): ?>
@@ -18,12 +20,15 @@ $licenses = $ready ? all('SELECT l.*, c.name as customer_name FROM '.table('webs
 $customers = $ready ? array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id') : [];
 // Catalog products whose SKU follows the WEBSITE-{INDUSTRY} convention, plus manual product keys
 $products = [];
-try { foreach(all('SELECT sku,title FROM '.table('catalog_products')." WHERE sku LIKE 'WEBSITE-%' ORDER BY title") as $p) $products[$p['sku']]=$p['title'].' ('.$p['sku'].')'; } catch (Throwable) {}
+try { foreach(all('SELECT sku,title FROM '.table('catalog_products')." WHERE sku LIKE 'WEBSITE-%' OR sku LIKE 'SOFTWARE-%' OR sku LIKE 'APP-%' ORDER BY title") as $p) $products[$p['sku']]=$p['title'].' ('.$p['sku'].')'; } catch (Throwable) {}
 $products += ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
 
 if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">License key created (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';unset($_SESSION['license_key_created']);}
 ?>
 
+<?php if(!$softwareReady): ?>
+<section class="workspace-card"><h2>Enable advanced software licensing</h2><p>Add trial, temporary, master and paid software tracking, customer purchases, payment checks and private downloads. Existing licenses and invoices are retained.</p><form method="post"><?php admin_action('software_commerce_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare software commerce</button></form></section>
+<?php endif; ?>
 <div class="workspace-grid">
 <section class="workspace-card">
 <h2>Create a license</h2>
@@ -43,8 +48,15 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <option value="<?= esc($key) ?>"><?= esc($name) ?></option>
 <?php endforeach; ?>
 </select>
-<?php if(staff_can('staff.manage')): ?>
-<label><input type="checkbox" name="master" value="1"> Master key — validates on any domain (internal testing only, keep private)</label>
+<?php if($softwareReady): ?>
+<label>Licensee name<input type="text" name="licensee_name" maxlength="190" required placeholder="Customer or organization"></label>
+<label>License type<select name="license_type"><option value="standard">Standard — perpetual</option><option value="trial">Trial — expires</option><option value="temporary">Temporary — expires</option><?php if(staff_can('staff.manage')): ?><option value="master">Master — internal staff only</option><?php endif; ?></select></label>
+<label>Installation domain (required except internal master)<input type="text" name="domain" maxlength="253" placeholder="example.com"></label>
+<label>Expiration in UTC (required for trial and temporary)<input type="datetime-local" name="expires_at"></label>
+<?php if(staff_can('staff.manage')): ?><?php admin_input('current_password','Owner password for master licenses','','password','autocomplete="current-password"'); ?><?php endif; ?>
+<p class="hint">Master keys can authorize any domain and must never be bundled or sent to customers. Normal licenses are bound to an installation domain.</p>
+<?php else: ?>
+<?php if(staff_can('staff.manage')): ?><label><input type="checkbox" name="master" value="1"> Master key — internal testing only</label><?php endif; ?>
 <?php endif; ?>
 <button class="btn gold">Generate license key</button>
 </form>
@@ -64,6 +76,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <dd><?= esc($lic['product_id']) ?></dd>
 <dt><strong>Status</strong></dt>
 <dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
+<?php if($softwareReady):$meta=one('SELECT license_type,licensee,expires_at FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);if($meta): ?><dt><strong>Type / licensee</strong></dt><dd><?=esc($meta['license_type'])?> · <?=esc($meta['licensee'])?></dd><dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd><?php endif; endif; ?>
 <dt><strong>Created</strong></dt>
 <dd><?= esc($lic['created_at']) ?></dd>
 </dl>
