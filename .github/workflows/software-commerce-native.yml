@@ -8,6 +8,7 @@ on:
       - 'site/app/billing/catalog.php'
       - 'site/app/billing/software_orders.php'
       - 'site/app/licenses/software_grants.php'
+      - 'site/app/licenses/software_products.php'
       - 'site/app/licenses/software_asset_access.php'
       - 'site/app/licenses/software_assets.php'
       - 'site/app/licenses/software_notices.php'
