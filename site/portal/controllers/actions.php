@@ -9,6 +9,13 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif($action==='software_order_buy'){
+  if(!$client)throw new RuntimeException('Sign in to order software.');
+  require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
+  $invoiceId=software_order_place($client,gint($_POST,'product_id',1,2147483647),gint($_POST,'revision',1,2147483647),gint($_POST,'quantity',1,25),posted('domain',253),posted('request_key',64),isset($_POST['subscribe'])&&$_POST['subscribe']==='1');
+  flash('Your software invoice was created. Your download and license will be available after payment confirmation.');
+  redirect(studio_url(['software'=>1]));
+ }
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
  elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'cloud_website_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_cloud_site_requests_client_action($action,$client);}
