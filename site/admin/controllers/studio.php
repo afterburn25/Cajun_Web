@@ -205,6 +205,8 @@ function studio_admin_action(string $action,array $user): never {
         $id=gint($_POST,'id',1,2147483647);$license=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$id]);
         if(!$license)throw new InvalidArgumentException('License not found.');
         if((int)$license['is_master']===1)throw new InvalidArgumentException('Master license keys are internal and cannot be bundled for delivery.');
+        require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
+        if(license_bundle_is_software_entitlement($id))throw new InvalidArgumentException('Software entitlements use versioned private releases instead of website bundles.');
         $industry=posted('industry',50);
         require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
         $coreDir=license_core_source_dir();
