@@ -37,6 +37,33 @@ if(in_array($operation,['sandbox-on','sandbox-off'],true)){
     echo json_encode(['mode'=>'sandbox'],JSON_THROW_ON_ERROR);
     exit;
 }
+if($operation==='mail-off'){
+    save_setting('email_mode','disabled');
+    echo json_encode(['email_mode'=>'disabled'],JSON_THROW_ON_ERROR);
+    exit;
+}
+if($operation==='payment-review'){
+    if($invoice<1)exit(2);
+    require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
+    $order=one('SELECT client_id FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);
+    $paid=one('SELECT amount_cents,status FROM '.table('studio_invoices').' WHERE id=?',[$invoice]);
+    if(!$order||!$paid||$paid['status']!=='paid')throw new RuntimeException('Synthetic payment review requires a paid software invoice.');
+    $original='61'.str_pad((string)$invoice,8,'0',STR_PAD_LEFT);
+    $event='71'.str_pad((string)$invoice,8,'0',STR_PAD_LEFT);
+    $charge=one('SELECT id,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice]);
+    if(!$charge){
+        $stamp=gmdate('Y-m-d H:i:s');
+        query('INSERT INTO '.table('software_charges').' (invoice_id,client_id,amount_cents,status,request_key,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
+            [$invoice,(int)$order['client_id'],(int)$paid['amount_cents'],'paid',hash('sha256','browser-review-'.$invoice),$original,$stamp,$stamp]);
+    }elseif((string)($charge['transaction_id']??'')!==$original){
+        throw new RuntimeException('Synthetic payment review found an unexpected transaction identity.');
+    }
+    $state=software_payment_reversal_apply([
+        'kind'=>'refund','transaction_id'=>$event,'original_transaction_id'=>$original,'amount_cents'=>500
+    ]);
+    echo json_encode(['original_transaction_id'=>$original,'reversal_transaction_id'=>$event,'state'=>$state],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation==='orphan-license'){
     if($invoice<1)exit(2);
     require_once CWP_CODE_ROOT.'/app/licenses/service.php';
