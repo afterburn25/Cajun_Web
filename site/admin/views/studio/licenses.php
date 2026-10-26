@@ -131,8 +131,25 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php admin_input('version','Release version','','text','required maxlength="40"'); ?>
 <?php admin_input('title','Download title','','text','required maxlength="120"'); ?>
 <?php admin_input('private_path','Absolute path under private storage','','text','required maxlength="500"'); ?>
+<label><input type="checkbox" name="customer_visible" value="1" checked> Make this version available to entitled customers immediately</label>
+<p class="hint">Uncheck to register and verify the immutable ZIP as owner-private. Visibility can be changed later; the recorded file, checksum, size, SKU and version remain immutable.</p>
 <?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
-<button class="btn gold">Publish verified ZIP</button></form></section>
+<button class="btn gold">Record verified ZIP</button></form>
+<?php $softwareAssets=all('SELECT id,sku,version,title,sha256,byte_size,is_published,created_at FROM '.table('software_assets').' ORDER BY id DESC LIMIT 50'); ?>
+<?php if($softwareAssets): ?><h3>Versioned software releases</h3><?php endif; ?>
+<?php foreach($softwareAssets as $asset): ?>
+<div class="workspace-card">
+<p><strong><?=esc($asset['title'])?></strong> · <?=esc($asset['sku'])?> v<?=esc($asset['version'])?> · <?=number_format((int)$asset['byte_size'])?> bytes</p>
+<p><?=((int)$asset['is_published']===1?'Customer-visible':'Owner-private')?> · SHA-256 <code><?=esc($asset['sha256'])?></code> · recorded <?=esc($asset['created_at'])?> UTC</p>
+<form method="post"><?php admin_action('software_asset_visibility'); ?>
+<input type="hidden" name="asset_id" value="<?=(int)$asset['id']?>">
+<input type="hidden" name="customer_visible" value="<?=((int)$asset['is_published']===1?'0':'1')?>">
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn outline"><?=((int)$asset['is_published']===1?'Make owner-private':'Make customer-visible')?></button>
+</form>
+</div>
+<?php endforeach; ?>
+</section>
 <?php
 $notices=all('SELECT n.*,COALESCE(o.sku,origin.sku) AS sku,c.name FROM '.table('software_notices').' n LEFT JOIN '.table('software_orders').' o ON o.invoice_id=n.invoice_id LEFT JOIN '.table('software_subscription_receipts').' r ON r.invoice_id=n.invoice_id LEFT JOIN '.table('software_orders').' origin ON origin.invoice_id=r.subscription_invoice_id JOIN '.table('studio_clients').' c ON c.id=n.client_id WHERE COALESCE(o.id,origin.id) IS NOT NULL ORDER BY n.id DESC LIMIT 30');
 ?>
