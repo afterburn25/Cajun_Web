@@ -31,7 +31,16 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
 }
 /** Runtime type and expiration guard for the existing /api/validate.php path. */
 function software_grant_verdict(array $license,string $domain):bool {
-    if (!software_commerce_ready()) return true; // legacy license v3 remains compatible
+    if (!software_commerce_ready()) {
+        // A genuine pre-commerce installation has no entitlement table, so
+        // existing v3 keys remain compatible. If the table exists but the
+        // readiness marker disappeared or setup is incomplete, fail
+        // inconclusively through the API rather than silently authorizing.
+        $present=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+            [config()['db']['prefix'].'software_entitlements']);
+        if($present)throw new RuntimeException('Software licensing storage state is inconsistent.');
+        return true;
+    }
     $row=one('SELECT * FROM '.table('software_entitlements').' WHERE license_id=?',[(int)$license['id']]);
     if (!$row) return true; // legacy product licenses are not migrated implicitly
     $bound=one('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 AND domain=?',
