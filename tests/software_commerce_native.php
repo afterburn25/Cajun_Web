@@ -74,6 +74,34 @@ try{
         'Private asset resolver accepts a contained ZIP file');
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['SOFTWARE-TEST','Internal test software','software','draft','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
+
+    $assetId=software_asset_publish('SOFTWARE-TEST','1.0.0','Native verified software ZIP',$zipPath,$password);
+    $assetRow=one('SELECT sha256,byte_size,file_path FROM '.table('software_assets').' WHERE id=?',[$assetId]);
+    swok(is_array($assetRow)&&$assetRow['sha256']===hash_file('sha256',$zipPath)
+        &&(int)$assetRow['byte_size']===filesize($zipPath)
+        &&$assetRow['file_path']==='synthetic-private.zip',
+        'Owner publication records immutable relative path, checksum and size');
+    swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.0','Native verified software ZIP',$zipPath,$password),
+        'Published software version cannot be overwritten by a repeated publication');
+
+    $nestedPath=$private.DIRECTORY_SEPARATOR.'synthetic-nested.zip';
+    $nested=new ZipArchive();
+    if($nested->open($nestedPath,ZipArchive::CREATE|ZipArchive::OVERWRITE)!==true)throw new RuntimeException('Nested ZIP fixture failed.');
+    $nested->addFromString('payload.zip','Synthetic nested archive marker');
+    $nested->close();
+    swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.1','Nested ZIP must fail',$nestedPath,$password),
+        'Software publisher rejects nested ZIP members');
+
+    $unsafePath=$private.DIRECTORY_SEPARATOR.'synthetic-unsafe.zip';
+    $unsafe=new ZipArchive();
+    if($unsafe->open($unsafePath,ZipArchive::CREATE|ZipArchive::OVERWRITE)!==true)throw new RuntimeException('Unsafe ZIP fixture failed.');
+    $unsafe->addFromString('../escape.txt','Synthetic traversal marker');
+    $unsafe->close();
+    swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.2','Traversal ZIP must fail',$unsafePath,$password),
+        'Software publisher rejects parent-directory ZIP paths');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_assets').' WHERE sku=?',['SOFTWARE-TEST'])->fetchColumn()===1,
+        'Rejected package publications create no extra software asset rows');
+
     db()->beginTransaction();
     $trial=software_grant_create(1,'SOFTWARE-TEST','trial','Synthetic Buyer','www.example.com',gmdate('Y-m-d H:i:s',time()+86400),1);
     db()->commit();
