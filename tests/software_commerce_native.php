@@ -733,12 +733,17 @@ try{
     ]),'Cumulative one-time refunds cannot exceed the verified original payment');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=?',['600000001'])->fetchColumn()===2,
         'Rejected over-refund creates no reversal receipt');
-    swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',1)==='one_time_dispute_review',
+    swdenied(fn()=>software_payment_dispute_record('600000001','MSP-CASE-001',
+        'Verified cardholder dispute received from merchant service provider','wrong-password'),
+        'Merchant dispute mutation refuses incorrect owner password inside the service');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_disputes').' WHERE case_reference=?',['MSP-CASE-001'])->fetchColumn()===0,
+        'Rejected owner proof creates no merchant dispute evidence');
+    swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',$password)==='one_time_dispute_review',
         'Owner can record verified merchant dispute against one-time payment');
-    swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',1)==='replay',
+    swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',$password)==='replay',
         'Repeated merchant dispute case is idempotent');
     swdenied(fn()=>software_payment_dispute_record('600000001','MSP-CASE-001',
-        'Conflicting merchant dispute evidence must not overwrite retained history',1),
+        'Conflicting merchant dispute evidence must not overwrite retained history',$password),
         'Reused dispute case reference with conflicting evidence is refused');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_disputes').' WHERE case_reference=?',['MSP-CASE-001'])->fetchColumn()===1,
         'Merchant dispute evidence is retained once');
