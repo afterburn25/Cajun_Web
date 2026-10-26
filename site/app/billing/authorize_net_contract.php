@@ -17,6 +17,31 @@ function software_charge_exact_cents(mixed $value): ?int {
     return ((int)$parts[1])*100+(int)str_pad($parts[2]??'',2,'0');
 }
 
+function software_anet_reversal_details(array $details,string $eventTransactionId,string $eventType):array{
+    $expectedType = match($eventType){
+        'net.authorize.payment.refund.created'=>'refundTransaction',
+        'net.authorize.payment.void.created'=>'voidTransaction',
+        default=>throw new InvalidArgumentException('Unsupported payment reversal event.')
+    };
+    $tx=$details['transaction']??null;
+    if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx)
+        ||(string)($tx['transId']??'')!==$eventTransactionId
+        ||(string)($tx['transactionType']??'')!==$expectedType
+        ||!preg_match('/^[0-9]{5,30}$/D',$eventTransactionId)
+        ||!preg_match('/^[0-9]{5,30}$/D',(string)($tx['refTransId']??''))){
+        throw new RuntimeException('Gateway reversal could not be tied to a verified original transaction.');
+    }
+    return [
+        'kind'=>$expectedType==='refundTransaction'?'refund':'void',
+        'transaction_id'=>$eventTransactionId,
+        'original_transaction_id'=>(string)$tx['refTransId'],
+        'amount_cents'=>$expectedType==='refundTransaction'
+            ? software_charge_exact_cents($tx['authAmount']??null)
+            : null,
+    ];
+}
+
+
 function software_anet_nonce(string $descriptor, string $value): array {
     if ($descriptor !== 'COMMON.ACCEPT.INAPP.PAYMENT' || strlen($value) < 8 || strlen($value) > 8192) {
         throw new InvalidArgumentException('Use a valid Authorize.net Accept.js payment token.');
