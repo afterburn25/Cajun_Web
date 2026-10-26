@@ -321,8 +321,18 @@ def run_browser(env, browser):
     bob_page=bob.get(portal,timeout=25)
     check('Software invoice is tenant-isolated in My Software',
           reference in alice_page.text and reference not in bob_page.text)
-    anonymous=requests.get(portal,timeout=25)
-    check('Anonymous My Software request is refused',anonymous.status_code==403)
+    storefront=requests.get(base+'/existing/index.php?page=products',timeout=25)
+    check('Public software storefront links buyers into authenticated My Software',
+          storefront.status_code==200 and 'portal/index.php?software=1' in storefront.text)
+    guest=requests.Session()
+    anonymous=guest.get(portal,timeout=25)
+    login_form=_action_form(soup,anonymous,'login')
+    login_data=form_data(login_form)
+    login_data.update({'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    signed=guest.post(portal,data=login_data,timeout=25)
+    check('Anonymous software buyer signs in on target and returns directly to My Software',
+          anonymous.status_code==200 and 'Sign in' in anonymous.text
+          and 'Software & Licenses' in signed.text and 'software=1' in signed.url)
 
     uncertain_page=alice.get(portal,timeout=25)
     uncertain_form=_action_form(soup,uncertain_page,'software_order_buy',product_id=pid)
