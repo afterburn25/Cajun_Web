@@ -53,15 +53,18 @@ function software_subscription_finalized_reconcile_state(string $local,string $g
     return 'review';
 }
 
-/** Classify how a verified renewal should treat one existing software grant. */
-function software_subscription_renewal_grant_action(array $grant):string {
+/** Plan how a verified renewal treats one existing software grant. */
+function software_subscription_renewal_grant_plan(array $grant):array {
     if(($grant['license_type']??null)!=='temporary'
         ||(int)($grant['is_master']??0)===1
         ||!is_string($grant['expires_at']??null)
         ||$grant['expires_at']===''){
         throw new RuntimeException('Renewal grant metadata is inconsistent.');
     }
-    return (int)($grant['is_active']??0)===1?'extend':'review';
+    return [
+        'extend'=>true, // verified paid time is never discarded because access is suspended
+        'review'=>(int)($grant['is_active']??0)!==1,
+    ];
 }
 
 /** Extend a paid-through UTC timestamp by calendar months, clamping month-end safely. */
