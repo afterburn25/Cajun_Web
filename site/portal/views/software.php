@@ -38,7 +38,9 @@ function software_portal_render(?array $client,string $error=''):never{
                 echo '<label>Move this installation<input name="new_domain" maxlength="253" required placeholder="new-domain.com"></label>';
                 echo '<button class="btn outline" type="submit">Replace domain</button></form>';
             }
-            echo '<p class="hint">Replacing the domain deauthorizes the previous installation at its next successful license check.</p>';
+            $cooldown=(string)setting('software_domain_change_cooldown_hours','24');
+            echo '<p class="hint">Replacing the domain deauthorizes the previous installation at its next successful license check. ';
+            echo 'Domain moves are subject to the current '.esc($cooldown).'-hour replacement cooldown.</p>';
             require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
             $observations=software_usage_for_customer((int)$lic['id'],$clientId);
             if($observations){
