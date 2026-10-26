@@ -1,0 +1,174 @@
+"""Installed software-commerce HTTP/Chromium acceptance. No external payment or mail traffic."""
+import hashlib
+import json
+import os
+import subprocess
+
+import requests
+from playwright.sync_api import expect
+from release_cases import db
+from staff_cases import OWNER
+
+
+def _product_data():
+    return {
+        'sku':'SOFTWARE-HTTP-ACCEPT',
+        'title':'Software browser acceptance',
+        'family':'software',
+        'status':'published',
+        'term':'once',
+        'currency':'USD',
+        'amount':'49.99',
+        'setup':'0.00',
+        'cost':'0.00',
+        'provider_ref':'',
+        'summary':'Synthetic installed-browser software purchase.',
+        'features':'Private licensed download',
+        'terms':'One-time synthetic acceptance purchase. No live payment is performed.',
+        'sort_order':'0',
+    }
+
+
+def _action_form(soup, response, action, *, product_id=None):
+    for form in soup(response).select('form'):
+        marker=form.select_one('input[name=action]')
+        if not marker or marker.get('value') != action:
+            continue
+        if product_id is not None:
+            product=form.select_one('input[name=product_id]')
+            if not product or product.get('value') != str(product_id):
+                continue
+        return form
+    raise AssertionError('Software form missing '+action)
+
+
+def run_browser(env, browser):
+    root, qa, base, check = (env[k] for k in ['ROOT','QA','BASE','check'])
+    soup, token, form_data, submit = (env[k] for k in ['soup','token','form_data','submit'])
+    admin, alice, bob = (env[k] for k in ['admin','alice','bob'])
+    php=env['php']
+    licenses=base+'/existing/admin/index.php?view=studio-licenses'
+    catalog=base+'/existing/admin/index.php?view=catalog'
+    portal=base+'/existing/portal/index.php?software=1'
+
+    # The normal installed fixture has licensing/catalog ready but software-commerce
+    # is optional and must be explicitly prepared by the owner.
+    before=admin.get(licenses,timeout=25)
+    setup=_action_form(soup,before,'software_commerce_setup')
+    check('Software commerce owner setup is explicit before use',
+          db("SELECT value FROM ci_settings WHERE name='software_commerce_version'")==[])
+    data=form_data(setup);data['current_password']=OWNER
+    response=admin.post(licenses,data=data,timeout=40)
+    check('Software commerce owner preparation succeeds through actual admin form',
+          response.status_code==200
+          and db("SELECT value FROM ci_settings WHERE name='software_commerce_version'")==[{'value':'2'}]
+          and 'Software license and purchase storage is prepared' in response.text)
+
+    # Create a real published software offer through the existing catalog UI.
+    response=submit(admin,catalog,'catalog_save',_product_data())
+    product=db("SELECT id,revision,status,amount_cents,term FROM ci_catalog_products WHERE sku='SOFTWARE-HTTP-ACCEPT'")
+    check('Software catalog offer is published through actual owner form',
+          len(product)==1 and product[0]['status']=='published'
+          and product[0]['amount_cents']==4999 and product[0]['term']=='once')
+    pid=product[0]['id'];revision=product[0]['revision']
+
+    page=alice.get(portal,timeout=25)
+    form=_action_form(soup,page,'software_order_buy',product_id=pid)
+    order=form_data(form)
+    order.update({'domain':'software-http.example','quantity':'1'})
+    starting=db('SELECT COUNT(*) AS n FROM ci_software_orders')[0]['n']
+
+    bad=dict(order,csrf='invalid')
+    denied=alice.post(portal,data=bad,timeout=25)
+    check('Software order rejects bad CSRF without invoice or order',
+          'session expired' in denied.text.lower()
+          and db('SELECT COUNT(*) AS n FROM ci_software_orders')[0]['n']==starting)
+
+    wrong=dict(order,subscribe='1')
+    denied=alice.post(portal,data=wrong,timeout=25)
+    check('One-time software refuses forged recurring consent',
+          'does not use recurring billing consent' in denied.text
+          and db('SELECT COUNT(*) AS n FROM ci_software_orders')[0]['n']==starting)
+
+    created=alice.post(portal,data=order,timeout=30)
+    rows=db("SELECT o.*,i.reference,i.status,i.amount_cents FROM ci_software_orders o JOIN ci_studio_invoices i ON i.id=o.invoice_id WHERE o.product_id=? ORDER BY o.id",[pid])
+    check('Software order creates one exact issued invoice through client portal',
+          len(rows)==1 and rows[0]['status']=='issued' and rows[0]['amount_cents']==4999
+          and rows[0]['domain']=='software-http.example' and rows[0]['quantity']==1
+          and 'Your software invoice was created' in created.text)
+    invoice=rows[0]['invoice_id'];reference=rows[0]['reference']
+
+    replay=alice.post(portal,data=order,timeout=30)
+    check('Exact repeated software order reuses one invoice',
+          replay.status_code==200
+          and db('SELECT COUNT(*) AS n FROM ci_software_orders WHERE product_id=?',[pid])[0]['n']==1)
+
+    alice_page=alice.get(portal,timeout=25)
+    bob_page=bob.get(portal,timeout=25)
+    check('Software invoice is tenant-isolated in My Software',
+          reference in alice_page.text and reference not in bob_page.text)
+    anonymous=requests.get(portal,timeout=25)
+    check('Anonymous My Software request is refused',anonymous.status_code==403)
+
+    # Test-only transition to the state *after* an independently verified payment.
+    result=subprocess.run(
+        [php,str(root/'tests/software_commerce_browser_fixture.php'),'fulfill-asset',str(invoice)],
+        capture_output=True,text=True,timeout=60,
+        env={**os.environ,'CWP_TEST_DATABASE':'cwp_test'})
+    check('Software installed fixture fulfills synthetic verified payment locally',
+          result.returncode==0 and result.stderr=='')
+    fixture=json.loads(result.stdout)
+    asset_id=fixture['asset_id'];license_id=fixture['license_id']
+
+    owned=alice.get(portal,timeout=25)
+    check('Paid software portal exposes owned license and approved download',
+          'SOFTWARE-HTTP-ACCEPT' in owned.text
+          and 'Synthetic browser acceptance download' in owned.text
+          and 'software-http.example' in owned.text)
+    check('Another customer cannot see the paid license or asset',
+          'Synthetic browser acceptance download' not in bob.get(portal,timeout=25).text)
+
+    download=base+'/existing/api/software-download.php?id='+str(asset_id)
+    good=alice.get(download,timeout=25)
+    check('Owned software download returns exact verified private ZIP',
+          good.status_code==200 and len(good.content)==fixture['bytes']
+          and hashlib.sha256(good.content).hexdigest()==fixture['sha256']
+          and good.headers.get('Content-Type')=='application/zip'
+          and good.headers.get('Cache-Control')=='private, no-store')
+    check('Foreign customer cannot download another tenant software ZIP',
+          bob.get(download,timeout=25).status_code==404)
+    check('Anonymous software ZIP request is refused',
+          requests.get(download,timeout=25).status_code==403)
+
+    # Real domain-replacement action and cross-tenant denial.
+    own=alice.get(portal,timeout=25)
+    replace=_action_form(soup,own,'license_domain_replace')
+    replace_data=form_data(replace);replace_data['new_domain']='software-moved.example'
+    moved=alice.post(portal,data=replace_data,timeout=25)
+    active=db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1 ORDER BY domain',[license_id])
+    check('Owner client can move its software installation domain through portal',
+          active==[{'domain':'software-moved.example'}]
+          and 'Domain replaced' in moved.text)
+
+    foreign=bob.get(portal,timeout=25)
+    forged={'csrf':token(foreign),'action':'license_domain_replace','license_id':str(license_id),
+            'old_domain':'software-moved.example','new_domain':'foreign.example'}
+    denied=bob.post(portal,data=forged,timeout=25)
+    check('Foreign customer cannot move another tenant software license',
+          'License not found' in denied.text
+          and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1 ORDER BY domain',[license_id])
+              ==[{'domain':'software-moved.example'}])
+
+    # Chromium: real packaged My Software page renders without JS errors or overflow.
+    context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
+    context.add_cookies([{'name':c.name,'value':c.value,'url':base+'/existing/'} for c in alice.cookies])
+    p=context.new_page();errors=[];p.on('pageerror',lambda e:errors.append(str(e)))
+    p.goto(portal);expect(p.get_by_role('heading',name='Software & Licenses')).to_be_visible()
+    expect(p.get_by_text('SOFTWARE-HTTP-ACCEPT',exact=False).first).to_be_visible()
+    p.screenshot(path=str(qa/'Software-Commerce-Desktop.png'),full_page=True)
+    check('Software commerce desktop fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+    p.set_viewport_size({'width':390,'height':844})
+    p.screenshot(path=str(qa/'Software-Commerce-Mobile.png'),full_page=True)
+    check('Software commerce mobile fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+    check('Software commerce browser has no uncaught script errors',not errors)
+    context.close()
