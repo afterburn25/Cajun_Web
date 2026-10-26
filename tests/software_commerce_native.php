@@ -253,13 +253,31 @@ try{
         'Circular software dependency policy is refused');
     swok(!one('SELECT product_id FROM '.table('software_product_policies').' WHERE product_id=?',[$depB]),
         'Rejected circular dependency creates no policy row');
+
+    $historicSnapshot=json_encode([
+        'sku'=>'SOFTWARE-DEP-A',
+        'software_policy'=>[
+            'module_key'=>'dep-a',
+            'dependency_skus'=>['SOFTWARE-DEP-B'],
+            'update_months'=>0,
+            'max_installations'=>1,
+            'revision'=>1
+        ]
+    ],JSON_THROW_ON_ERROR);
+    query('INSERT INTO '.table('software_orders').' (client_id,invoice_id,product_id,sku,quantity,domain,request_key,request_hash,snapshot,billing_term,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+        [1,980001,$depA,'SOFTWARE-DEP-A',1,'historic-dependency.example',
+         hash('sha256','historic dependency request'),hash('sha256','historic dependency hash'),
+         $historicSnapshot,'once',$now]);
+    $depARevision2=software_product_policy_save($depA,1,'dep-a','',0,1,$password);
+    swok($depARevision2['revision']===2&&$depARevision2['dependency_skus']===[],
+        'Owner may remove a dependency from future software offers');
     $depRename=[
         'sku'=>'SOFTWARE-DEP-B-RENAMED','title'=>'Dependency graph B','family'=>'software','status'=>'published','term'=>'once',
         'currency'=>'USD','amount'=>'12.00','setup'=>'0.00','cost'=>'','provider_ref'=>'','summary'=>'Synthetic dependency graph',
         'features'=>'','terms'=>'Terms','sort_order'=>'0'
     ];
     swdenied(fn()=>catalog_save($depB,1,$depRename),
-        'Software SKU referenced by another product dependency policy is immutable');
+        'Software dependency SKU captured in an immutable purchase snapshot cannot be renamed');
     swok(one('SELECT sku,revision FROM '.table('catalog_products').' WHERE id=?',[$depB])===
         ['sku'=>'SOFTWARE-DEP-B','revision'=>1],
         'Rejected dependency SKU rename leaves the referenced product unchanged');
