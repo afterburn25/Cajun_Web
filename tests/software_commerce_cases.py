@@ -335,6 +335,11 @@ def run_browser(env, browser):
           and 'software-http.example' in owned.text
           and 'Installations: 1 / 1' in owned.text
           and 'Updates: through ' in owned.text)
+    download_links=[a for a in soup(owned).select('a[href*="api/software-download.php"]') if 'Synthetic browser acceptance download' in a.get_text(' ',strip=True)]
+    check('My Software shows one verified release link with exact purchase unit source',
+          len(download_links)==1
+          and ('license='+str(license_id)) in download_links[0].get('href','')
+          and ('purchase #'+str(invoice)+' · unit 1') in download_links[0].parent.get_text(' ',strip=True))
     extra={'csrf':token(owned),'action':'license_domain_add','license_id':str(license_id),'domain':'second-http.example'}
     denied_install=alice.post(portal,data=extra,timeout=25)
     check('Generic client domain action cannot bypass software installation cap',
