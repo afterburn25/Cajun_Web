@@ -49,7 +49,7 @@ function software_subscription_settle(array $details,string $transactionId): str
             }
             $invoiceId=(int)$i['id'];
         }else{
-            $grants=all('SELECT e.license_id,e.license_type,e.expires_at,l.is_active,l.is_master FROM '.table('software_entitlements').' e JOIN '.table('website_licenses').' l ON l.id=e.license_id WHERE e.invoice_id=? FOR UPDATE',[$original['id']]);
+            $grants=all('SELECT e.license_id,e.license_type,e.expires_at,e.updates_until,l.is_active,l.is_master FROM '.table('software_entitlements').' e JOIN '.table('website_licenses').' l ON l.id=e.license_id WHERE e.invoice_id=? FOR UPDATE',[$original['id']]);
             if(!$grants)throw new RuntimeException('Renewal entitlement history is absent.');
             $now=gmdate('Y-m-d H:i:s');$reference='SWR-'.strtoupper(bin2hex(random_bytes(6)));
             query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,currency,instructions,created_at) VALUES (?,?,?,?,?,?,?)',
@@ -80,8 +80,8 @@ function software_subscription_settle(array $details,string $transactionId): str
                 if((int)$g['is_active']!==1)continue;
                 $now=new DateTimeImmutable('now',new DateTimeZone('UTC'));
                 $extended=software_subscription_extend_expiry((string)$g['expires_at'],$duration,$now);
-                query('UPDATE '.table('software_entitlements').' SET expires_at=? WHERE license_id=?',
-                    [$extended,$g['license_id']]);
+                query('UPDATE '.table('software_entitlements').' SET expires_at=?,updates_until=? WHERE license_id=?',
+                    [$extended,$extended,$g['license_id']]);
             }
             $notifyInvoice=$invoiceId;
         }
