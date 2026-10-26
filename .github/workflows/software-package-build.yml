@@ -1,0 +1,68 @@
+name: Software package build verification
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/**'
+      - 'tools/build.py'
+      - 'tools/directory-map.json'
+      - 'VERSION'
+      - '.github/workflows/software-package-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install PHP runtime used by the release builder
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-zip php8.3-curl php8.3-mbstring
+      - name: Build recorded-source candidate packages
+        run: python3 tools/build.py --commit "$GITHUB_SHA"
+      - name: Verify direct-extract archives and no nested ZIPs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import tempfile, zipfile
+
+          dist = Path('dist')
+          zips = sorted(dist.glob('CajunWebPro-*.zip'))
+          if len(zips) != 3:
+              raise SystemExit(f'expected exactly 3 candidate ZIPs, found {len(zips)}')
+          kinds = {p.stem.rsplit('-', 1)[-1] for p in zips}
+          if kinds != {'PROJECT', 'UPLOAD', 'UPDATE'}:
+              # Names end FULL-PROJECT / COMPLETE-UPLOAD / UPDATE; verify explicitly below.
+              pass
+          required = ['FULL-PROJECT', 'COMPLETE-UPLOAD', 'UPDATE']
+          for kind in required:
+              matches = [p for p in zips if p.name.endswith(f'-{kind}.zip')]
+              if len(matches) != 1:
+                  raise SystemExit(f'missing or duplicate {kind} package')
+              path = matches[0]
+              with zipfile.ZipFile(path) as z:
+                  if z.testzip() is not None:
+                      raise SystemExit(f'corrupt ZIP member in {path.name}')
+                  names = z.namelist()
+                  if len(names) != len(set(n.casefold() for n in names)):
+                      raise SystemExit(f'duplicate/case-colliding member in {path.name}')
+                  for name in names:
+                      p = PurePosixPath(name)
+                      if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name:
+                          raise SystemExit(f'unsafe ZIP member {name!r} in {path.name}')
+                      if name.lower().endswith('.zip'):
+                          raise SystemExit(f'nested ZIP {name!r} in {path.name}')
+                  if kind == 'COMPLETE-UPLOAD':
+                      for root_file in ('index.php', 'install.php'):
+                          if root_file not in names:
+                              raise SystemExit(f'{path.name} is not direct-extract: missing {root_file}')
+                  with tempfile.TemporaryDirectory() as tmp:
+                      z.extractall(tmp)
+          print('Candidate package build, extraction and no-nested-ZIP verification: PASS')
+          PY
