@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
 require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
+require_once CWP_CODE_ROOT.'/app/billing/software_subscriptions.php';
 
 function software_fulfill_paid_order(int $invoiceId):?array{
     if(!software_commerce_ready() || !ledger_ready())return null;
@@ -31,8 +32,12 @@ function software_fulfill_paid_order(int $invoiceId):?array{
         $expiry=null;$type='standard';
         if($order['billing_term']!=='once'){
             $type='temporary';
-            $expiry=(new DateTimeImmutable('now',new DateTimeZone('UTC')))
-                ->modify($order['billing_term']==='year'?'+1 year':'+1 month')->format('Y-m-d H:i:s');
+            $now=new DateTimeImmutable('now',new DateTimeZone('UTC'));
+            $expiry=software_subscription_extend_expiry(
+                $now->format('Y-m-d H:i:s'),
+                $order['billing_term']==='year'?12:1,
+                $now
+            );
         }
         for($unit=1;$unit<=(int)$order['quantity'];$unit++){
             $existing=one('SELECT l.* FROM '.table('software_entitlements').' e JOIN '.table('website_licenses').' l ON l.id=e.license_id WHERE e.invoice_id=? AND e.unit_number=?',
