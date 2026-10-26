@@ -44,7 +44,7 @@ function software_fulfill_paid_order(int $invoiceId):?array{
                 [$invoiceId,$unit]);
             if($existing){$first=$first??$existing;continue;}
             $created=software_grant_create((int)$order['client_id'],$order['sku'],$type,
-                $name,$order['domain'],$expiry,0,$invoiceId,$unit);
+                $name,$order['domain'],$expiry,0,$invoiceId,$unit,'',$order['billing_term']!=='once');
             $first=$first??one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$created['id']]);
         }
         if($order['billing_term']!=='once'){
