@@ -3,6 +3,8 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
+require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 require_once CWP_CODE_ROOT.'/app/billing/software_subscriptions.php';
 
 function software_subscription_enroll_mark_review(int $invoice,?string $gatewayId=null):void{
@@ -61,8 +63,8 @@ function software_subscription_enroll_finalize(int $invoice,string $gatewayId,st
     }
 }
 function software_subscription_reconcile_finalize(int $invoice,string $gatewayId,string $gatewayStatus,
-    bool $sandbox,int $actor):string{
-    if($invoice<1||$actor<1||!preg_match('/^[0-9]{1,25}$/D',$gatewayId)
+    bool $sandbox,#[\SensitiveParameter]string $password):string{
+    if($invoice<1||!preg_match('/^[0-9]{1,25}$/D',$gatewayId)
         ||!in_array($gatewayStatus,['active','expired','suspended','canceled','terminated'],true)){
         throw new InvalidArgumentException('Invalid reconciled subscription state.');
     }
@@ -72,8 +74,9 @@ function software_subscription_reconcile_finalize(int $invoice,string $gatewayId
         'suspended','terminated'=>'review',
     };
     if(db()->inTransaction())throw new LogicException('Subscription reconciliation finalization owns its transaction.');
-    db()->beginTransaction();
-    try{
+    return staff_locked(fn()=>staff_transaction(function()use($invoice,$gatewayId,$gatewayStatus,$sandbox,$password,$target):string{
+        $actor=staff_owner($password);
+        $actorId=(int)$actor['id'];
         $sub=one('SELECT * FROM '.table('software_subscriptions').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
         if(!$sub)throw new RuntimeException('Subscription enrollment history is missing.');
         if($sub['gateway_subscription_id']!==null&&(string)$sub['gateway_subscription_id']!==$gatewayId){
@@ -88,19 +91,19 @@ function software_subscription_reconcile_finalize(int $invoice,string $gatewayId
             }
             $local=(string)$sub['status'];
             $resolution=software_subscription_finalized_reconcile_state($local,$gatewayStatus,$sandbox);
-            if($resolution==='same'){db()->commit();return 'already_linked';}
+            if($resolution==='same')return 'already_linked';
             if($resolution==='cancelled'){
                 query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['cancelled',$sub['id']]);
-                license_audit($actor,'subscription.enroll.reconcile',
+                license_audit($actorId,'subscription.enroll.reconcile',
                     'Software invoice '.$invoice.' reconciled finalized subscription '.$gatewayId.
                     ' from local '.$local.' to cancelled after gateway '.$gatewayStatus);
-                db()->commit();return 'cancelled';
+                return 'cancelled';
             }
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
-            license_audit($actor,'subscription.enroll.reconcile.review',
+            license_audit($actorId,'subscription.enroll.reconcile.review',
                 'Software invoice '.$invoice.' finalized local state '.$local.
                 ' disagrees with gateway subscription '.$gatewayId.' status '.$gatewayStatus);
-            db()->commit();return 'review';
+            return 'review';
         }
         if(!in_array((string)$sub['status'],['creating','review'],true)){
             throw new RuntimeException('This subscription state cannot be reconciled from enrollment.');
@@ -116,12 +119,11 @@ function software_subscription_reconcile_finalize(int $invoice,string $gatewayId
         }
         query('UPDATE '.table('software_subscriptions').' SET gateway_subscription_id=?,status=? WHERE id=?',
             [$gatewayId,$target,$sub['id']]);
-        license_audit($actor,'subscription.enroll.reconcile',
+        license_audit($actorId,'subscription.enroll.reconcile',
             'Software invoice '.$invoice.' reconciled to gateway subscription '.$gatewayId.' status '.$gatewayStatus.
             ($sandbox?' (sandbox only)':''));
-        db()->commit();
         return $target;
-    }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+    }));
 }
 
 /** Owner recovery when ARB creation succeeded but the local subscription id/state was not retained. */
@@ -161,12 +163,9 @@ function software_subscription_enroll_reconcile(int $invoice,string $gatewayId,#
     $profile=software_anet_subscription_profile_details(
         $details,$gatewayId,$invoice,(int)$sub['amount_cents'],(int)$sub['interval_months'],$gatewayStart
     );
-    return staff_locked(function()use($password,$invoice,$gatewayId,$profile,$gateway):string{
-        $actor=staff_owner($password);
-        return software_subscription_reconcile_finalize(
-            $invoice,$gatewayId,(string)$profile['status'],$gateway['mode']!=='production',(int)$actor['id']
-        );
-    });
+    return software_subscription_reconcile_finalize(
+        $invoice,$gatewayId,(string)$profile['status'],$gateway['mode']!=='production',$password
+    );
 }
 
 function software_subscription_enroll(array $client,int $invoice,string $descriptor,#[\SensitiveParameter]string $nonce):string{
