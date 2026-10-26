@@ -829,14 +829,19 @@ try{
     $reconcileMonthlyOrder=one('SELECT created_at FROM '.table('software_orders').' WHERE invoice_id=?',[$reconcileMonthly]);
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
         [$reconcileMonthly,1,1,(int)$reconcileMonthlyInvoice['amount_cents'],'review',$reconcileMonthlyOrder['created_at'],$now]);
-    swok(software_subscription_reconcile_finalize($reconcileMonthly,'423456780','active',false,1)==='pending_first_payment',
+    swdenied(fn()=>software_subscription_reconcile_finalize($reconcileMonthly,'423456780','active',false,'wrong-password'),
+        'ARB reconciliation finalizer refuses incorrect owner password inside the mutation boundary');
+    swok(one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$reconcileMonthly])
+        ===['gateway_subscription_id'=>null,'status'=>'review'],
+        'Rejected ARB owner proof leaves local subscription identity and state unchanged');
+    swok(software_subscription_reconcile_finalize($reconcileMonthly,'423456780','active',false,$password)==='pending_first_payment',
         'Owner ARB reconciliation links an exact active gateway subscription without granting paid access');
     swok(one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$reconcileMonthly])
         ===['gateway_subscription_id'=>'423456780','status'=>'pending_first_payment'],
         'ARB reconciliation persists exact gateway identity and pending-first-payment state');
-    swok(software_subscription_reconcile_finalize($reconcileMonthly,'423456780','active',false,1)==='already_linked',
+    swok(software_subscription_reconcile_finalize($reconcileMonthly,'423456780','active',false,$password)==='already_linked',
         'ARB enrollment reconciliation replay is idempotent');
-    swdenied(fn()=>software_subscription_reconcile_finalize($reconcileMonthly,'423456781','active',false,1),
+    swdenied(fn()=>software_subscription_reconcile_finalize($reconcileMonthly,'423456781','active',false,$password),
         'Reconciled local subscription refuses a conflicting gateway id');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileMonthly])->fetchColumn()===0,
         'ARB enrollment reconciliation never fulfills software before the first verified charge');
@@ -847,7 +852,7 @@ try{
     $cancelledOrder=one('SELECT created_at FROM '.table('software_orders').' WHERE invoice_id=?',[$cancelledMonthly]);
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
         [$cancelledMonthly,1,1,(int)$cancelledInvoice['amount_cents'],'review',$cancelledOrder['created_at'],$now]);
-    swok(software_subscription_reconcile_finalize($cancelledMonthly,'423456782','canceled',false,1)==='cancelled',
+    swok(software_subscription_reconcile_finalize($cancelledMonthly,'423456782','canceled',false,$password)==='cancelled',
         'ARB reconciliation records a gateway-cancelled enrollment without granting access');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$cancelledMonthly])->fetchColumn()===0,
         'Cancelled ARB reconciliation mints no entitlement');
@@ -858,9 +863,9 @@ try{
     $suspendedOrder=one('SELECT created_at FROM '.table('software_orders').' WHERE invoice_id=?',[$suspendedMonthly]);
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
         [$suspendedMonthly,1,1,(int)$suspendedInvoice['amount_cents'],'review',$suspendedOrder['created_at'],$now]);
-    swok(software_subscription_reconcile_finalize($suspendedMonthly,'423456783','suspended',false,1)==='review',
+    swok(software_subscription_reconcile_finalize($suspendedMonthly,'423456783','suspended',false,$password)==='review',
         'ARB reconciliation keeps a suspended gateway subscription in owner review');
-    swdenied(fn()=>software_subscription_reconcile_finalize($suspendedMonthly,'423456780','active',false,1),
+    swdenied(fn()=>software_subscription_reconcile_finalize($suspendedMonthly,'423456780','active',false,$password),
         'Gateway subscription id already linked to another invoice cannot be reused');
 
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
