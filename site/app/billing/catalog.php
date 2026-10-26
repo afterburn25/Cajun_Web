@@ -41,7 +41,11 @@ function catalog_save_in_transaction(int $id,int $expected,array $input): int {
         $actor=catalog_require();$old=$id?one('SELECT * FROM '.table('catalog_products').' WHERE id=? FOR UPDATE',[$id]):null;
         if(provider_catalog_import_ready()&&$id&&provider_catalog_import_record($id)&&($data['family']!=='hosting'||!in_array($data['status'],['draft','retired'],true)))throw new InvalidArgumentException('Imported hosting products must remain hosting drafts or retired products. Changing the family cannot enable publication.');
         if(($id&&!$old)||($old&&(int)$old['revision']!==$expected)||(!$id&&$expected!==0))throw new RuntimeException('This product changed. Reload and review its latest version before saving.');
-        if($old&&(($old['family']??'')==='software'||$data['family']==='software')
+        $oldSoftware=$old&&((($old['family']??'')==='software')
+            ||preg_match('/^(?:SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)$old['sku'])===1);
+        $newSoftware=$data['family']==='software'
+            ||preg_match('/^(?:SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',$data['sku'])===1;
+        if($old&&($oldSoftware||$newSoftware)
             &&((string)$old['sku']!==$data['sku']||(string)$old['family']!==$data['family'])
             &&catalog_software_identity_used($id,(string)$old['sku'])){
             throw new RuntimeException('Software SKU and family are immutable after an order, asset, or license exists. Retire this product and create a new SKU instead.');
