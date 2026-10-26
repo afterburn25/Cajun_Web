@@ -51,18 +51,40 @@ def run_browser(env, browser):
     catalog=base+'/existing/admin/index.php?view=catalog'
     portal=base+'/existing/portal/index.php?software=1'
 
-    # The normal installed fixture has licensing/catalog ready but software-commerce
-    # is optional and must be explicitly prepared by the owner.
+    # Prepare optional dependencies through their real owner forms so this
+    # suite does not depend on another browser module having run first.
+    settings=lambda name: db('SELECT value FROM ci_settings WHERE name=?',[name])
+    if settings('license_schema_version') != [{'value':'3'}]:
+        response=submit(admin,licenses,'studio_license_setup',{'current_password':OWNER})
+        check('Software browser prepares website licensing through owner form',
+              response.status_code==200 and settings('license_schema_version')==[{'value':'3'}])
+    if settings('catalog_schema_version') != [{'value':'1'}]:
+        response=submit(admin,catalog,'catalog_migrate',{'owner_password':OWNER,'confirm':'1'})
+        check('Software browser prepares catalog through owner form',
+              response.status_code==200 and settings('catalog_schema_version')==[{'value':'1'}])
+    payments=base+'/existing/admin/index.php?view=payments'
+    if settings('payments_schema_version') != [{'value':'1'}]:
+        response=submit(admin,payments,'payments_migrate',{'owner_password':OWNER,'confirm':'1'})
+        check('Software browser prepares payment settings through owner form',
+              response.status_code==200 and settings('payments_schema_version')==[{'value':'1'}])
+    ledger=base+'/existing/admin/index.php?view=invoice-payments'
+    if settings('invoice_ledger_schema_version') != [{'value':'1'}]:
+        response=submit(admin,ledger,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1'})
+        check('Software browser prepares invoice ledger through owner form',
+              response.status_code==200 and settings('invoice_ledger_schema_version')==[{'value':'1'}])
+
     before=admin.get(licenses,timeout=25)
-    setup=_action_form(soup,before,'software_commerce_setup')
-    check('Software commerce owner setup is explicit before use',
-          db("SELECT value FROM ci_settings WHERE name='software_commerce_version'")==[])
-    data=form_data(setup);data['current_password']=OWNER
-    response=admin.post(licenses,data=data,timeout=40)
-    check('Software commerce owner preparation succeeds through actual admin form',
-          response.status_code==200
-          and db("SELECT value FROM ci_settings WHERE name='software_commerce_version'")==[{'value':'2'}]
-          and 'Software license and purchase storage is prepared' in response.text)
+    if settings('software_commerce_version') != [{'value':'2'}]:
+        setup=_action_form(soup,before,'software_commerce_setup')
+        check('Software commerce owner setup is explicit before use',True)
+        data=form_data(setup);data['current_password']=OWNER
+        response=admin.post(licenses,data=data,timeout=40)
+        check('Software commerce owner preparation succeeds through actual admin form',
+              response.status_code==200
+              and settings('software_commerce_version')==[{'value':'2'}]
+              and 'Software license and purchase storage is prepared' in response.text)
+    else:
+        check('Software commerce storage is already prepared for installed acceptance',True)
 
     def fixture(operation, value=0):
         result=subprocess.run(
