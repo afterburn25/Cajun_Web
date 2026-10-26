@@ -345,6 +345,19 @@ try{
         ['NEXUSCORE','1.0.0','Inside update window','synthetic-private.zip',str_repeat('a',64),22,$now]);
     query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,1,?)',
         ['NEXUSCORE','2.0.0','Outside update window','synthetic-private.zip',str_repeat('b',64),22,$future]);
+    $insideAsset=one('SELECT * FROM '.table('software_assets').' WHERE sku=? AND version=?',['NEXUSCORE','1.0.0']);
+    swok((bool)software_asset_entitlement_authorized(1,(int)$rights[0]['license_id'],$insideAsset),
+        'Exact purchased entitlement authorizes its matching release');
+    $secondLicense=(int)$rights[1]['license_id'];
+    swok((bool)software_asset_entitlement_authorized(1,$secondLicense,$insideAsset),
+        'Second purchased unit independently authorizes its matching release');
+    query('UPDATE '.table('software_orders').' SET quantity=1 WHERE invoice_id=?',[$invoice]);
+    swok(software_asset_entitlement_authorized(1,$secondLicense,$insideAsset)===null,
+        'Detached entitlement unit cannot authorize a download beyond purchased quantity');
+    query('UPDATE '.table('software_orders').' SET quantity=2,client_id=2 WHERE invoice_id=?',[$invoice]);
+    swok(software_asset_entitlement_authorized(1,(int)$rights[0]['license_id'],$insideAsset)===null,
+        'Entitlement cannot authorize a download when its purchase ownership is inconsistent');
+    query('UPDATE '.table('software_orders').' SET client_id=1 WHERE invoice_id=?',[$invoice]);
     swok(software_grant_version_verdict($usageLicenseRow,'1.0.0')===true,
         'Version-aware validation permits a release inside the update window');
     swok(software_grant_version_verdict($usageLicenseRow,'2.0.0')===false,
