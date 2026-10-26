@@ -83,6 +83,32 @@ def run_browser(env, browser):
         check('Software browser prepares invoice ledger through owner form',
               response.status_code==200 and settings('invoice_ledger_schema_version')==[{'value':'1'}])
 
+    if settings('software_commerce_version') != [{'value':'3'}]:
+        pre_v3=_product_data()
+        pre_v3.update({
+            'sku':'SOFTWARE-PRE-V3',
+            'title':'Pre-v3 software issuance guard',
+            'summary':'Synthetic pre-commerce issuance guard.',
+        })
+        created_pre_v3=submit(admin,catalog,'catalog_save',pre_v3)
+        check('Software catalog product may exist before advanced licensing is enabled',
+              created_pre_v3.status_code==200
+              and db("SELECT id FROM ci_catalog_products WHERE sku='SOFTWARE-PRE-V3'")!=[])
+        pre_license_page=admin.get(licenses,timeout=25)
+        check('Pre-v3 software SKU is hidden from the legacy license selector',
+              not any(option.get('value')=='SOFTWARE-PRE-V3'
+                      for option in soup(pre_license_page).select('select[name=product_id] option')))
+        forged_pre_v3={
+            'csrf':token(pre_license_page),
+            'action':'studio_license_create',
+            'customer_id':'1',
+            'product_id':'SOFTWARE-PRE-V3',
+        }
+        refused_pre_v3=admin.post(licenses,data=forged_pre_v3,timeout=25)
+        check('Forged pre-v3 legacy issuance cannot create an orphan software key',
+              'Enable advanced software licensing before issuing this software product' in refused_pre_v3.text
+              and db("SELECT COUNT(*) AS n FROM ci_website_licenses WHERE product_id='SOFTWARE-PRE-V3'")==[{'n':0}])
+
     before=admin.get(licenses,timeout=25)
     if settings('software_commerce_version') != [{'value':'3'}]:
         setup=_action_form(soup,before,'software_commerce_setup')
