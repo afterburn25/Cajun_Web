@@ -108,7 +108,40 @@ function software_webhook_process(string $raw,string $signature):string{
         throw new InvalidArgumentException('Invalid webhook signature.');
     }
     $event=software_anet_event_details($raw);
-    if($gateway['mode']!=='production')return 'sandbox_event';
+    if($gateway['mode']==='sandbox'){
+        if(in_array($event['type'],[
+            'net.authorize.payment.refund.created',
+            'net.authorize.payment.void.created'
+        ],true)){
+            if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
+            $txId=$event['resource_id'];
+            if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
+            $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+            software_anet_reversal_details($details,$txId,$event['type']);
+            return 'sandbox_reversal_verified';
+        }
+        if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
+            if(($event['entity']??'')!=='subscription'||!preg_match('/^[0-9]{1,25}$/D',$event['resource_id']))
+                throw new InvalidArgumentException('Invalid subscription event entity.');
+            return 'sandbox_subscription_event';
+        }
+        if(in_array($event['type'],[
+            'net.authorize.payment.authcapture.created',
+            'net.authorize.payment.priorAuthCapture.created',
+            'net.authorize.payment.capture.created'
+        ],true)){
+            if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
+            $txId=$event['resource_id'];
+            if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
+            $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+            if(isset($details['transaction']['subscription']['id'])){
+                software_anet_subscription_charge_details($details,$txId);
+                return 'sandbox_subscription_verified';
+            }
+            return 'sandbox_payment_event';
+        }
+        return 'sandbox_event';
+    }
 
     if(in_array($event['type'],[
         'net.authorize.payment.refund.created',
