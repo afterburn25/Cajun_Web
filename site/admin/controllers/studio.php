@@ -268,17 +268,18 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_domain_add'){
         $licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);
         if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]))throw new InvalidArgumentException('License not found.');
-        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
-        license_register_domain($licenseId,$domain,(int)$user['id']);$target='studio-licenses';
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+        software_grant_staff_register_domain($licenseId,$domain,(int)$user['id']);$target='studio-licenses';
     }elseif($action==='studio_domain_deactivate'){
         $licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);
-        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
-        license_deactivate_domain($licenseId,$domain,(int)$user['id']);$target='studio-licenses';
+        if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]))throw new InvalidArgumentException('License not found.');
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+        software_grant_staff_deactivate_domain($licenseId,$domain,(int)$user['id']);$target='studio-licenses';
     }elseif($action==='studio_domain_replace'){
         $licenseId=gint($_POST,'license_id',1,2147483647);$old=posted('old_domain',255);$new=posted('new_domain',255);
         if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]))throw new InvalidArgumentException('License not found.');
-        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
-        license_replace_domain($licenseId,$old,$new,(int)$user['id']);flash('Domain replaced — the old site goes offline at its next license check.');$target='studio-licenses';
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+        software_grant_staff_replace_domain($licenseId,$old,$new,(int)$user['id']);flash('Domain replaced — the old site goes offline at its next license check.');$target='studio-licenses';
     }elseif($action==='studio_license_bundle'){
         $id=gint($_POST,'id',1,2147483647);$license=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$id]);
         if(!$license)throw new InvalidArgumentException('License not found.');
