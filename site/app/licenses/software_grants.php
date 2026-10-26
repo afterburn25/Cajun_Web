@@ -64,7 +64,7 @@ function software_grant_upgrade_existing(int $clientId,string $sku,string $domai
         'JOIN '.table('software_entitlements').' e ON e.license_id=l.id '.
         'JOIN '.table('license_domains').' d ON d.license_id=l.id '.
         'WHERE l.customer_id=? AND l.product_id=? AND l.is_active=1 AND l.is_master=0 '.
-        'AND e.invoice_id IS NULL AND e.license_type IN (?,?) '.
+        'AND e.invoice_id IS NULL AND e.unit_number IS NULL AND e.license_type IN (?,?) '.
         'AND d.domain=? AND d.is_active=1 ORDER BY l.id FOR UPDATE',
         [$clientId,$sku,SoftwareLicensePolicy::TRIAL,SoftwareLicensePolicy::TEMPORARY,$domain]
     );
