@@ -145,6 +145,7 @@ function software_charge_run(array $client,int $invoice,string $key,
     software_anet_nonce($descriptor,$nonce); // reject malformed local input before reserving an attempt
     $gateway=software_anet_settings(); // check private credentials before reserving the attempt
     $amount=software_charge_prepare($invoice,(int)$client['id'],$key);
+    $transactionId=null;
     try{
         $response=software_anet_execute('createTransactionRequest',
             software_anet_charge($invoice,$amount,$descriptor,$nonce));
@@ -166,7 +167,8 @@ function software_charge_run(array $client,int $invoice,string $key,
         software_charge_record_paid($invoice,$transactionId,$amount);
         return 'paid';
     }catch(Throwable $e){
-        software_charge_mark($invoice,'uncertain');
+        software_charge_mark($invoice,'uncertain',
+            is_string($transactionId)&&preg_match('/^[0-9]{5,30}$/D',$transactionId)?$transactionId:null);
         report_error($e);
         return 'review';
     }
