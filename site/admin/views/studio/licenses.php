@@ -172,12 +172,12 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <p class="hint">Uncheck to register and verify the immutable ZIP as owner-private. Visibility can be changed later; the recorded file, checksum, size, SKU and version remain immutable.</p>
 <?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Record verified ZIP</button></form>
-<?php $softwareAssets=all('SELECT id,sku,version,title,sha256,byte_size,is_published,created_at FROM '.table('software_assets').' ORDER BY id DESC LIMIT 50'); ?>
+<?php $softwareAssets=all('SELECT id,sku,version,title,sha256,byte_size,is_published,released_at,created_at FROM '.table('software_assets').' ORDER BY id DESC LIMIT 50'); ?>
 <?php if($softwareAssets): ?><h3>Versioned software releases</h3><?php endif; ?>
 <?php foreach($softwareAssets as $asset): ?>
 <div class="workspace-card">
 <p><strong><?=esc($asset['title'])?></strong> · <?=esc($asset['sku'])?> v<?=esc($asset['version'])?> · <?=number_format((int)$asset['byte_size'])?> bytes</p>
-<p><?=((int)$asset['is_published']===1?'Customer-visible':'Owner-private')?> · SHA-256 <code><?=esc($asset['sha256'])?></code> · recorded <?=esc($asset['created_at'])?> UTC</p>
+<p><?=((int)$asset['is_published']===1?'Customer-visible':'Owner-private')?> · SHA-256 <code><?=esc($asset['sha256'])?></code> · recorded <?=esc($asset['created_at'])?> UTC<?php if($asset['released_at']!==null): ?> · first customer release <?=esc($asset['released_at'])?> UTC<?php else: ?> · never customer-released<?php endif; ?></p>
 <form method="post"><?php admin_action('software_asset_visibility'); ?>
 <input type="hidden" name="asset_id" value="<?=(int)$asset['id']?>">
 <input type="hidden" name="customer_visible" value="<?=((int)$asset['is_published']===1?'0':'1')?>">
@@ -277,7 +277,7 @@ if($softwareReady&&$isSoftwareEntitlement){
 <dt><strong>Update entitlement</strong></dt><dd><?=$meta['updates_until']===null?'Lifetime while license is valid':'Through '.esc($meta['updates_until']).' UTC'?> · policy revision <?=(int)$meta['policy_revision']?></dd>
 <dt><strong>Installation limit</strong></dt><dd><?=(int)$meta['max_installations']?> concurrent installation<?=((int)$meta['max_installations']===1?'':'s')?></dd>
 <?php
-$eligibleReleases=all('SELECT version,title,created_at FROM '.table('software_assets').' WHERE sku=? AND is_published=1 AND (? IS NULL OR created_at<=?) ORDER BY created_at DESC,id DESC LIMIT 5',
+$eligibleReleases=all('SELECT version,title,released_at FROM '.table('software_assets').' WHERE sku=? AND is_published=1 AND released_at IS NOT NULL AND (? IS NULL OR released_at<=?) ORDER BY released_at DESC,id DESC LIMIT 5',
     [$lic['product_id'],$meta['updates_until'],$meta['updates_until']]);
 ?>
 <dt><strong>Eligible customer releases</strong></dt>
