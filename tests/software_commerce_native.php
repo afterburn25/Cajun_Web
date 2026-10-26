@@ -72,6 +72,12 @@ try{
     save_setting('software_commerce_version','');
     swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Existing entitlement storage without readiness marker is inconclusive, not authorized');
+    swdenied(fn()=>software_grant_register_domain(999,'blocked-add.example',1),
+        'Incomplete software readiness blocks add-domain mutation instead of falling back to legacy');
+    swdenied(fn()=>software_grant_deactivate_domain(999,'blocked-remove.example',1),
+        'Incomplete software readiness blocks deactivate-domain mutation instead of falling back to legacy');
+    swdenied(fn()=>software_grant_replace_domain(999,'old.example','new.example',1),
+        'Incomplete software readiness blocks replacement mutation instead of falling back to legacy');
 
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_product_policies'.chr(96));
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_charge_attempts'.chr(96));
