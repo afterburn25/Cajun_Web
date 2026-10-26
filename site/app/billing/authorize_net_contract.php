@@ -13,7 +13,7 @@ function software_anet_amount(int $cents): string {
 function software_charge_exact_cents(mixed $value): ?int {
     if (!is_string($value) && !is_int($value)) return null;
     $amount=(string)$value;
-    if (!preg_match('/^(0|[1-9][0-9]{0,6})(?:\\.([0-9]{1,2}))?$/D',$amount,$parts)) return null;
+    if (!preg_match('/^(0|[1-9][0-9]{0,6})(?:\.([0-9]{1,2}))?$/D',$amount,$parts)) return null;
     return ((int)$parts[1])*100+(int)str_pad($parts[2]??'',2,'0');
 }
 
