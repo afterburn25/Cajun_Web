@@ -42,6 +42,19 @@ function software_anet_reversal_details(array $details,string $eventTransactionI
 }
 
 
+/** Pure subscription webhook state policy. Review is sticky until an owner resolves it. */
+function software_subscription_event_target(string $eventType,string $currentStatus):?string{
+    if($currentStatus==='review') return 'review';
+    return match($eventType){
+        'net.authorize.customer.subscription.failed',
+        'net.authorize.customer.subscription.suspended',
+        'net.authorize.customer.subscription.terminated'=>'review',
+        'net.authorize.customer.subscription.cancelled',
+        'net.authorize.customer.subscription.expired'=>'cancelled',
+        default=>null
+    };
+}
+
 function software_anet_nonce(string $descriptor, string $value): array {
     if ($descriptor !== 'COMMON.ACCEPT.INAPP.PAYMENT' || strlen($value) < 8 || strlen($value) > 8192) {
         throw new InvalidArgumentException('Use a valid Authorize.net Accept.js payment token.');
