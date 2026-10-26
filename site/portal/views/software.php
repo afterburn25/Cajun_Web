@@ -138,6 +138,7 @@ function software_portal_render(?array $client,string $error=''):never{
             echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="software_order_buy">';
             echo '<input type="hidden" name="product_id" value="'.(int)$offer['id'].'">';
             echo '<input type="hidden" name="revision" value="'.(int)$offer['revision'].'">';
+            echo '<input type="hidden" name="policy_revision" value="'.(int)$policy['revision'].'">';
             echo '<input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
             echo '<label>Installation domain<input name="domain" maxlength="253" required placeholder="example.com"></label>';
             echo '<label>Licenses<input name="quantity" type="number" min="1" max="25" value="1" required></label>';
