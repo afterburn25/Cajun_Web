@@ -88,7 +88,7 @@ function software_commerce_prepare(string $password): void {
                 $table=chr(96).config()['db']['prefix'].'software_entitlements'.chr(96);
                 db()->exec("ALTER TABLE ".$table." ADD COLUMN purpose VARCHAR(200) NOT NULL DEFAULT '' AFTER issued_by");
             }
-            foreach (['software_payment_reversals','software_payment_disputes'] as $name) {
+            foreach (['software_charge_attempts','software_payment_reversals','software_payment_disputes'] as $name) {
                 if (!software_commerce_table_present($name)) db()->exec($schema[$name]);
             }
             foreach (array_keys($schema) as $name) {
