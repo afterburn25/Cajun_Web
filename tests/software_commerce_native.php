@@ -36,13 +36,22 @@ try{
     swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Pre-commerce install preserves legacy v3 validation');
     software_commerce_prepare($password);
-    swok(software_commerce_ready(),'Owner preparation creates new storage');
+    swok(software_commerce_ready(),'Owner preparation creates new v2 storage');
     save_setting('software_commerce_version','');
     swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Existing entitlement storage without readiness marker is inconclusive, not authorized');
+    db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_reversals'.chr(96));
+    db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_disputes'.chr(96));
+    db()->exec('ALTER TABLE '.chr(96).config()['db']['prefix'].'software_entitlements'.chr(96).' DROP COLUMN purpose');
     save_setting('software_commerce_version','1');
     software_commerce_prepare($password);
-    swok(software_commerce_ready(),'Preparation can be repeated');
+    swok(software_commerce_ready(),'Published branch v1 storage upgrades additively to v2');
+    swok(software_commerce_table_present('software_payment_reversals')&&software_commerce_table_present('software_payment_disputes'),
+        'V2 upgrade restores reversal and dispute history tables');
+    swok(software_commerce_column_present('software_entitlements','purpose'),
+        'V2 upgrade adds master-purpose metadata without rebuilding entitlements');
+    software_commerce_prepare($password);
+    swok(software_commerce_ready(),'V2 preparation can be repeated safely');
     swdenied(fn()=>software_commerce_prepare('wrong-password'),'Wrong owner password refused');
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['SOFTWARE-TEST','Internal test software','software','draft','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
