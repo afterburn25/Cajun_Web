@@ -11,6 +11,7 @@ if(config()['db']['name']!=='cwp_test'||config()['db']['prefix']!=='ci_')exit(2)
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/existing/index.php','REQUEST_METHOD'=>'GET'];
 $operation=$argv[1];
 $invoice=(int)$argv[2];
+require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 
 if(in_array($operation,['sandbox-on','sandbox-off'],true)){
     require_once CWP_CODE_ROOT.'/app/billing/payments.php';
