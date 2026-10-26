@@ -28,9 +28,16 @@ function software_usage_record(int $licenseId,string $domain):void{
         report_error($error);
     }
 }
+function software_usage_recent(int $licenseId,int $limit=20):array{
+    if($licenseId<1||$limit<1||$limit>100||!software_commerce_ready())return [];
+    // Every reader uses the same retention boundary. This prevents an owner
+    // dashboard from bypassing the 180-day cleanup applied by validation and
+    // customer views while retaining observations for still-active domains.
+    software_usage_prune_stale();
+    return all('SELECT domain,first_seen,last_seen,check_count FROM '.table('software_usage').' WHERE license_id=? ORDER BY last_seen DESC LIMIT '.(int)$limit,[$licenseId]);
+}
 function software_usage_for_customer(int $licenseId,int $clientId):array{
     if(!software_commerce_ready())return [];
     if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$clientId]))return [];
-    software_usage_prune_stale();
-    return all('SELECT domain,first_seen,last_seen,check_count FROM '.table('software_usage').' WHERE license_id=? ORDER BY last_seen DESC LIMIT 20',[$licenseId]);
+    return software_usage_recent($licenseId,20);
 }
