@@ -38,8 +38,27 @@ function software_subscription_enroll(array $client,int $invoice,string $descrip
             return 'review';
         }
         $state=$gateway['mode']==='sandbox'?'sandbox_test':'pending_first_payment';
-        query('UPDATE '.table('software_subscriptions').' SET gateway_subscription_id=?,status=? WHERE invoice_id=? AND status=?',
-            [(string)$id,$state,$invoice,'creating']);
+        db()->beginTransaction();
+        try{
+            $stored=one('SELECT id,status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
+            if(!$stored)throw new RuntimeException('Subscription enrollment record disappeared after gateway creation.');
+            if((string)$stored['status']!=='creating'){
+                if(($stored['gateway_subscription_id']??null)===null){
+                    query('UPDATE '.table('software_subscriptions').' SET gateway_subscription_id=? WHERE id=?',
+                        [(string)$id,$stored['id']]);
+                }elseif((string)$stored['gateway_subscription_id']!==(string)$id){
+                    throw new RuntimeException('Local subscription state references a different gateway subscription.');
+                }
+                db()->commit();
+                return 'review';
+            }
+            query('UPDATE '.table('software_subscriptions').' SET gateway_subscription_id=?,status=? WHERE id=?',
+                [(string)$id,$state,$stored['id']]);
+            db()->commit();
+        }catch(Throwable $e){
+            if(db()->inTransaction())db()->rollBack();
+            throw $e;
+        }
         // No invoice payment record, license or download is created at enrollment.
         return $state;
     }catch(Throwable $error){
