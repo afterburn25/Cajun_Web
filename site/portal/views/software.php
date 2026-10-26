@@ -92,9 +92,11 @@ function software_portal_render(?array $client,string $error=''):never{
                 $prior=$recurring?
                     one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]):
                     one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$order['invoice_id']]);
-                if($prior){
+                $retryable=!$recurring&&$prior&&in_array($prior['status'],['declined','sandbox_test'],true);
+                if($prior&&!$retryable){
                     echo '<p class="notice info">Payment status: '.esc($prior['status']).'. Contact billing before attempting another charge.</p>';
                 }else{
+                    if($retryable)echo '<p class="notice info">Previous '.esc($prior['status']).' attempt is closed. You may submit a fresh card token for this invoice.</p>';
                     echo '<form method="post" data-authorize-net data-login="'.esc($gateway['login']).'" data-client-key="'.esc($gateway['client_key']).'">';
                     echo support_csrf_field();
                     echo '<input type="hidden" name="action" value="'.($recurring?'software_subscription_enroll':'software_charge').'">';
