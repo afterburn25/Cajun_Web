@@ -64,6 +64,22 @@ if($operation==='payment-review'){
     echo json_encode(['original_transaction_id'=>$original,'reversal_transaction_id'=>$event,'state'=>$state],JSON_THROW_ON_ERROR);
     exit;
 }
+if($operation==='expired-trial'){
+    if($invoice<1)exit(2);
+    require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+    $product=one('SELECT sku,family FROM '.table('catalog_products').' WHERE id=?',[$invoice]);
+    if(!$product||$product['family']!=='software')throw new RuntimeException('Synthetic expired-trial fixture requires a software product.');
+    db()->beginTransaction();
+    try{
+        $trial=software_grant_create(1,(string)$product['sku'],'trial','Synthetic Expired Trial',
+            'expired-trial.example',gmdate('Y-m-d H:i:s',time()+86400),1);
+        db()->commit();
+    }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+    query('UPDATE '.table('software_entitlements').' SET expires_at=? WHERE license_id=?',
+        [gmdate('Y-m-d H:i:s',time()-86400),(int)$trial['id']]);
+    echo json_encode(['license_key'=>$trial['key'],'license_id'=>(int)$trial['id'],'sku'=>(string)$product['sku']],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation==='orphan-license'){
     if($invoice<1)exit(2);
     require_once CWP_CODE_ROOT.'/app/licenses/service.php';
