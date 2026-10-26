@@ -245,6 +245,8 @@ try{
         'Owner-approved release validation',false,null,$password);
     db()->commit();
     swok(software_grant_verdict(license_get($master['key']),'other.example.com'),'Owner master supports any domain');
+    swdenied(fn()=>software_grant_staff_register_domain((int)$master['id'],'master-should-not-register.example.com',1),
+        'Owner cannot attach installation domains to a software master license');
     $masterMeta=one('SELECT purpose,updates_until,max_installations FROM '.table('software_entitlements').' WHERE license_id=?',[$master['id']]);
     swok(($masterMeta['purpose']??'')==='Owner-approved release validation','Master purpose is persisted for owner review');
     swok($masterMeta['updates_until']===null&&(int)$masterMeta['max_installations']===25,
@@ -338,6 +340,12 @@ try{
     swok((bool)one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
         [(int)$orphan['id'],'orphan.example.com']),
         'Rejected orphan software domain mutation preserves the original active domain');
+    swdenied(fn()=>software_grant_staff_register_domain((int)$orphan['id'],'orphan-owner-add.example.com',1),
+        'Owner domain add also fails closed for orphan software entitlement history');
+    swdenied(fn()=>software_grant_staff_deactivate_domain((int)$orphan['id'],'orphan.example.com',1),
+        'Owner domain deactivation also fails closed for orphan software entitlement history');
+    swdenied(fn()=>software_grant_staff_replace_domain((int)$orphan['id'],'orphan.example.com','orphan-owner-move.example.com',1),
+        'Owner domain replacement also fails closed for orphan software entitlement history');
     db()->beginTransaction();
     $dependencyGrant=software_grant_create(1,'SOFTWARE-TEST','standard','Synthetic Buyer','dependency.example.com',null,1);
     db()->commit();
@@ -758,6 +766,13 @@ try{
         [(int)$issued['license_id'],'moved.example.com']),'First customer software domain move succeeds');
     swdenied(fn()=>software_grant_replace_domain((int)$issued['license_id'],'moved.example.com','again.example.com',1),
         'Immediate repeated software domain move is blocked by cooldown');
+    swok(software_grant_staff_replace_domain((int)$issued['license_id'],'moved.example.com','owner-reviewed.example.com',1),
+        'Owner-reviewed support change may override the customer domain cooldown');
+    swdenied(fn()=>software_grant_staff_register_domain((int)$issued['license_id'],'owner-extra.example.com',1),
+        'Owner-reviewed domain add still cannot exceed the purchased installation cap');
+    swok(one('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[(int)$issued['license_id']])
+        ===['domain'=>'owner-reviewed.example.com'],
+        'Owner cooldown override preserves exactly one active installation');
     query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE invoice_id=?',
         ['paid','600000001',$now,$invoice]);
     $refund=['kind'=>'refund','transaction_id'=>'700000001','original_transaction_id'=>'600000001','amount_cents'=>500];
