@@ -37,6 +37,19 @@ if(in_array($operation,['sandbox-on','sandbox-off'],true)){
     echo json_encode(['mode'=>'sandbox'],JSON_THROW_ON_ERROR);
     exit;
 }
+if($operation==='orphan-license'){
+    if($invoice<1)exit(2);
+    require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+    $product=one('SELECT sku,family FROM '.table('catalog_products').' WHERE id=?',[$invoice]);
+    if(!$product||$product['family']!=='software')throw new RuntimeException('Synthetic orphan fixture requires a software product.');
+    $key=license_create(1,(string)$product['sku'],1,false,null);
+    $license=one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$key]);
+    if(!$license)throw new RuntimeException('Synthetic orphan license was not created.');
+    query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at) VALUES (?,?,1,?)',
+        [(int)$license['id'],'orphan-software.example',gmdate('Y-m-d H:i:s')]);
+    echo json_encode(['license_key'=>$key,'license_id'=>(int)$license['id']],JSON_THROW_ON_ERROR);
+    exit;
+}
 if($operation!=='fulfill-asset'||$invoice<1)exit(2);
 
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
