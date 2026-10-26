@@ -65,8 +65,19 @@ function software_portal_render(?array $client,string $error=''):never{
         foreach($orders as $order){
             echo '<article class="workspace-card"><h3>'.esc($order['sku']).' · '.esc($order['reference']).'</h3>';
             echo '<p>Domain: '.esc($order['domain']).' · '.esc($order['status']);
-            echo ' · 
+            echo ' · $'.esc(number_format((int)$order['amount_cents']/100,2));
+            echo ' · <a href="'.esc(studio_url(['invoice'=>$order['invoice_id']])).'">Invoice</a></p>';
             if(in_array($order['billing_term'],['month','year'],true)){
+                $renewals=all('SELECT i.id,i.reference,i.status,i.amount_cents,i.paid_at FROM '.table('software_subscription_receipts').' r JOIN '.table('studio_invoices').' i ON i.id=r.invoice_id WHERE r.subscription_invoice_id=? AND r.invoice_id<>r.subscription_invoice_id ORDER BY r.id DESC LIMIT 36',[$order['invoice_id']]);
+                if($renewals){
+                    echo '<h4>Renewal invoices</h4><ul>';
+                    foreach($renewals as $renewal){
+                        echo '<li>'.esc($renewal['reference']).' · '.esc($renewal['status']).' · $'.esc(number_format((int)$renewal['amount_cents']/100,2));
+                        if($renewal['paid_at']!==null)echo ' · paid '.esc($renewal['paid_at']).' UTC';
+                        echo ' · <a href="'.esc(studio_url(['invoice'=>$renewal['id']])).'">Invoice</a></li>';
+                    }
+                    echo '</ul>';
+                }
                 $sub=one('SELECT status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]);
                 if($sub && in_array($sub['status'],['pending_first_payment','active','sandbox_test'],true)){
                     echo '<form method="post">'.support_csrf_field();
