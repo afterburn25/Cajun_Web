@@ -32,14 +32,6 @@ function software_charge_mark(int $invoice,string $state,?string $transactionId=
     query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE invoice_id=? AND status=?',
         [$state,$transactionId,gmdate('Y-m-d H:i:s'),$invoice,'processing']);
 }
-/** Compare gateway currency in exact minor units, rejecting invalid precision and types. */
-function software_charge_exact_cents(mixed $value): ?int {
-    if (!is_string($value) && !is_int($value)) return null;
-    $amount=(string)$value;
-    if (!preg_match('/^(0|[1-9][0-9]{0,6})(?:\\.([0-9]{1,2}))?$/D',$amount,$parts)) return null;
-    return ((int)$parts[1])*100+(int)str_pad($parts[2]??'',2,'0');
-}
-
 /** Defensive readback: gateway approved response is verified against invoice. */
 function software_charge_confirmed(array $details,string $transactionId,int $invoice,int $cents):bool{
     $tx=$details['transaction']??null;
