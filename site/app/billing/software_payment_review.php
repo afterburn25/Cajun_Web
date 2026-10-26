@@ -3,6 +3,8 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
+require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
 function software_payment_reversal_apply(array $reversal):string{
     $event=(string)($reversal['transaction_id']??'');
@@ -82,33 +84,34 @@ function software_payment_reversal_review(array $details,string $eventTransactio
     return software_payment_reversal_apply($reversal);
 }
 
-function software_payment_dispute_record(string $originalTransactionId,string $caseReference,string $evidence,int $actor):string{
+function software_payment_dispute_record(string $originalTransactionId,string $caseReference,string $evidence,
+    #[\SensitiveParameter]string $password):string{
     $caseReference=trim($caseReference);$evidence=trim($evidence);
     if(!preg_match('/^[0-9]{5,30}$/D',$originalTransactionId)
         ||strlen($caseReference)<5||strlen($caseReference)>100
-        ||strlen($evidence)<10||strlen($evidence)>500||$actor<1){
+        ||strlen($evidence)<10||strlen($evidence)>500){
         throw new InvalidArgumentException('Record the verified original transaction, dispute case reference and evidence.');
     }
     if(db()->inTransaction())throw new LogicException('Payment dispute review must own the transaction.');
-    db()->beginTransaction();
-    try{
+    return staff_locked(fn()=>staff_transaction(function()use($originalTransactionId,$caseReference,$evidence,$password):string{
+        $actor=staff_owner($password);
+        $actorId=(int)$actor['id'];
         $existing=one('SELECT original_transaction_id,evidence,recorded_by FROM '.table('software_payment_disputes').' WHERE case_reference=? FOR UPDATE',[$caseReference]);
         if($existing){
             if((string)$existing['original_transaction_id']!==$originalTransactionId
                 ||(string)$existing['evidence']!==$evidence
-                ||(int)$existing['recorded_by']!==$actor){
+                ||(int)$existing['recorded_by']!==$actorId){
                 throw new RuntimeException('Merchant dispute case reference was reused with conflicting evidence.');
             }
-            db()->commit();return 'replay';
+            return 'replay';
         }
         $charge=one('SELECT * FROM '.table('software_charges').' WHERE transaction_id=? FOR UPDATE',[$originalTransactionId]);
         if($charge){
             query('INSERT INTO '.table('software_payment_disputes').' (case_reference,original_transaction_id,evidence,invoice_id,subscription_invoice_id,recorded_by,created_at) VALUES (?,?,?,?,?,?,?)',
-                [$caseReference,$originalTransactionId,$evidence,$charge['invoice_id'],null,$actor,gmdate('Y-m-d H:i:s')]);
+                [$caseReference,$originalTransactionId,$evidence,$charge['invoice_id'],null,$actorId,gmdate('Y-m-d H:i:s')]);
             query('UPDATE '.table('software_charges').' SET status=?,updated_at=? WHERE id=?',
                 ['dispute_review',gmdate('Y-m-d H:i:s'),$charge['id']]);
-            license_audit($actor,'payment.dispute','Merchant dispute '.$caseReference.' recorded for transaction '.$originalTransactionId);
-            db()->commit();
+            license_audit($actorId,'payment.dispute','Merchant dispute '.$caseReference.' recorded for transaction '.$originalTransactionId);
             return 'one_time_dispute_review';
         }
         $receipt=one('SELECT * FROM '.table('software_subscription_receipts').' WHERE gateway_transaction_id=? FOR UPDATE',[$originalTransactionId]);
@@ -117,17 +120,13 @@ function software_payment_dispute_record(string $originalTransactionId,string $c
                 [(int)$receipt['subscription_invoice_id']]);
             if(!$sub)throw new RuntimeException('Recurring dispute has no subscription record.');
             query('INSERT INTO '.table('software_payment_disputes').' (case_reference,original_transaction_id,evidence,invoice_id,subscription_invoice_id,recorded_by,created_at) VALUES (?,?,?,?,?,?,?)',
-                [$caseReference,$originalTransactionId,$evidence,$receipt['invoice_id'],$receipt['subscription_invoice_id'],$actor,gmdate('Y-m-d H:i:s')]);
+                [$caseReference,$originalTransactionId,$evidence,$receipt['invoice_id'],$receipt['subscription_invoice_id'],$actorId,gmdate('Y-m-d H:i:s')]);
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
-            license_audit($actor,'payment.dispute','Merchant dispute '.$caseReference.' recorded for recurring transaction '.$originalTransactionId);
-            db()->commit();
+            license_audit($actorId,'payment.dispute','Merchant dispute '.$caseReference.' recorded for recurring transaction '.$originalTransactionId);
             return 'subscription_dispute_review';
         }
         throw new RuntimeException('Original software payment transaction was not found.');
-    }catch(Throwable $e){
-        if(db()->inTransaction())db()->rollBack();
-        throw $e;
-    }
+    }));
 }
 
 function software_subscription_lifecycle_review(string $eventType,string $subscriptionId):string{
