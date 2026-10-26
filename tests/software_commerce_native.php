@@ -142,6 +142,19 @@ try{
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
     $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false);
     swok($invoice===software_order_place($buyer,$product,1,2,'new.example.com',$hash,false),'Order retry reuses invoice');
+    $identityInput=[
+        'sku'=>'NEXUSCORE-RENAMED','title'=>'Test software','family'=>'software','status'=>'published','term'=>'once',
+        'currency'=>'USD','amount'=>'24.99','setup'=>'0.00','cost'=>'','provider_ref'=>'','summary'=>'Synthetic',
+        'features'=>'','terms'=>'Terms','sort_order'=>'0'
+    ];
+    swdenied(fn()=>catalog_save($product,1,$identityInput),
+        'Purchased software SKU cannot be renamed after order creation');
+    $identityInput['sku']='NEXUSCORE';$identityInput['family']='addon';
+    swdenied(fn()=>catalog_save($product,1,$identityInput),
+        'Purchased software product cannot be converted out of software family');
+    $identity=one('SELECT sku,family,revision FROM '.table('catalog_products').' WHERE id=?',[$product]);
+    swok(($identity['sku']??'')==='NEXUSCORE'&&($identity['family']??'')==='software'&&(int)($identity['revision']??0)===1,
+        'Rejected software identity edits leave catalog revision unchanged');
     swdenied(fn()=>software_order_place($buyer,$product,1,1,'new.example.com',
         hash('sha256','synthetic one-time recurring-consent mismatch'),true),
         'One-time software refuses recurring billing consent');
