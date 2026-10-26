@@ -232,6 +232,12 @@ if($softwareReady){
 <dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd>
 <dt><strong>Update entitlement</strong></dt><dd><?=$meta['updates_until']===null?'Lifetime while license is valid':'Through '.esc($meta['updates_until']).' UTC'?> · policy revision <?=(int)$meta['policy_revision']?></dd>
 <dt><strong>Installation limit</strong></dt><dd><?=(int)$meta['max_installations']?> concurrent installation<?=((int)$meta['max_installations']===1?'':'s')?></dd>
+<?php
+$eligibleReleases=all('SELECT version,title,created_at FROM '.table('software_assets').' WHERE sku=? AND is_published=1 AND (? IS NULL OR created_at<=?) ORDER BY created_at DESC,id DESC LIMIT 5',
+    [$lic['product_id'],$meta['updates_until'],$meta['updates_until']]);
+?>
+<dt><strong>Eligible customer releases</strong></dt>
+<dd><?php if(!$eligibleReleases): ?>None published within this entitlement<?php else: ?><?php foreach($eligibleReleases as $index=>$release): ?><?=$index?' · ':''?>v<?=esc($release['version'])?><?php endforeach; ?><?php endif; ?></dd>
 <dt><strong>Issuance source</strong></dt>
 <dd><?php if((int)$meta['invoice_id']>0): ?>Verified invoice #<?=(int)$meta['invoice_id']?><?=($meta['unit_number']!==null?' · unit '.(int)$meta['unit_number']:'')?><?php else: ?>Owner/staff issued<?php endif; ?> · issuer <?=((int)$meta['issued_by']>0?'staff #'.(int)$meta['issued_by']:'system fulfillment')?></dd>
 <dt><strong>Registered installations</strong></dt><dd><?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))?> active domain<?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))===1?'':'s'?><?php if($observations): ?> · <?=count($observations)?> observed validation domain<?=count($observations)===1?'':'s'?><?php endif; ?></dd>
