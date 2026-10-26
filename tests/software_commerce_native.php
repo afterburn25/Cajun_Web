@@ -155,6 +155,20 @@ try{
     $identity=one('SELECT sku,family,revision FROM '.table('catalog_products').' WHERE id=?',[$product]);
     swok(($identity['sku']??'')==='NEXUSCORE'&&($identity['family']??'')==='software'&&(int)($identity['revision']??0)===1,
         'Rejected software identity edits leave catalog revision unchanged');
+
+    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        ['WEBSITE-LEGACY-SW','Legacy prefixed software','addon','published','once','USD',1500,0,null,'','Synthetic legacy','','Terms',0,1,$now,$now]);
+    $legacyProduct=(int)db()->lastInsertId();
+    $legacyInvoice=software_order_place($buyer,$legacyProduct,1,1,'legacy-software.example.com',
+        hash('sha256','legacy prefixed software order'),false);
+    swok($legacyInvoice>0,'Legacy prefixed catalog product remains orderable as software');
+    $legacyIdentity=[
+        'sku'=>'LEGACY-RENAMED','title'=>'Legacy prefixed software','family'=>'addon','status'=>'published','term'=>'once',
+        'currency'=>'USD','amount'=>'15.00','setup'=>'0.00','cost'=>'','provider_ref'=>'','summary'=>'Synthetic legacy',
+        'features'=>'','terms'=>'Terms','sort_order'=>'0'
+    ];
+    swdenied(fn()=>catalog_save($legacyProduct,1,$legacyIdentity),
+        'Purchased legacy-prefixed software SKU cannot be renamed out of compatibility identity');
     swdenied(fn()=>software_order_place($buyer,$product,1,1,'new.example.com',
         hash('sha256','synthetic one-time recurring-consent mismatch'),true),
         'One-time software refuses recurring billing consent');
