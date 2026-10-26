@@ -3,14 +3,23 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function software_anet_settings():array{
-    $cfg=config()['authorize_net']??[];
-    $mode=(string)($cfg['mode']??getenv('CWP_AUTHNET_MODE')?:'disabled');
-    if(!in_array($mode,['sandbox','production'],true))throw new RuntimeException('Online gateway is disabled.');
-    $login=(string)($cfg['login']??getenv('CWP_AUTHNET_LOGIN')?:'');
-    $key=(string)($cfg['transaction_key']??getenv('CWP_AUTHNET_TRANSACTION_KEY')?:'');
-    if($login===''||$key==='')throw new RuntimeException('Authorize.net credentials are missing.');
-    return ['mode'=>$mode,'login'=>$login,'key'=>$key,
-       'client_key'=>(string)($cfg['public_client_key']??getenv('CWP_AUTHNET_PUBLIC_KEY')?:'')];
+    require_once CWP_CODE_ROOT.'/app/billing/payments.php';
+    if(!payments_ready())throw new RuntimeException('Prepare the existing payment gateway settings first.');
+    $mode=(string)setting('software_gateway_mode');
+    if(!in_array($mode,['sandbox','production'],true))throw new RuntimeException('Software checkout is disabled.');
+    if($mode==='production'&&setting('software_gateway_production_reviewed')!=='1'){
+        throw new RuntimeException('Production checkout requires explicit verified activation.');
+    }
+    $record=one('SELECT credentials,validation FROM '.table('payment_gateways').' WHERE environment=?',[$mode]);
+    if(!$record||!is_string($record['credentials'])||$record['credentials']===''){
+        throw new RuntimeException('Save gateway credentials in the existing payment settings.');
+    }
+    $secrets=payments_unseal($mode,$record['credentials']);
+    if($secrets['api_login_id']===''||$secrets['transaction_key']===''){
+        throw new RuntimeException('Gateway configuration is incomplete.');
+    }
+    return ['mode'=>$mode,'login'=>$secrets['api_login_id'],'key'=>$secrets['transaction_key'],
+        'client_key'=>$secrets['public_client_key']];
 }
 function software_anet_execute(string $method,array $request):array{
     $methods=['createTransactionRequest','getTransactionDetailsRequest','ARBCreateSubscriptionRequest',
