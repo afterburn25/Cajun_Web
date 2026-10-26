@@ -316,7 +316,7 @@ if($softwareReady&&$isSoftwareEntitlement){
     $meta=one('SELECT license_type,licensee,expires_at,updates_until,max_installations,policy_revision,purpose,issued_by,invoice_id,unit_number FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
     if($meta){
         require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
-        $observations=all('SELECT domain,first_seen,last_seen,check_count FROM '.table('software_usage').' WHERE license_id=? ORDER BY last_seen DESC LIMIT 10',[$lic['id']]);
+        $observations=software_usage_recent((int)$lic['id'],10);
     }
 }
 ?>
