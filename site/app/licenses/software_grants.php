@@ -9,7 +9,7 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
 
 function software_grant_create(int $clientId, string $sku, string $kind, string $name,
     ?string $domain, ?string $expires, int $issuer=0, ?int $invoice=null, ?int $unit=null,
-    string $purpose='', bool $recurring=false):array {
+    string $purpose='', bool $recurring=false, ?array $purchasePolicy=null):array {
     if (!software_commerce_ready()) throw new RuntimeException('Software licensing is not prepared.');
     $issuedAt=new DateTimeImmutable('now',new DateTimeZone('UTC'));
     $metadata=SoftwareLicensePolicy::issue($kind,$name,$domain,$expires,$issuer>0,$issuedAt);
@@ -28,7 +28,7 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     if(!$product||(($product['family']??'')!=='software'&&!$legacy)){
         throw new InvalidArgumentException('Choose a registered software catalog product.');
     }
-    $policy=software_entitlement_policy_snapshot($sku,$metadata['expires_at'],$recurring,$issuedAt);
+    $policy=software_entitlement_policy_snapshot($sku,$metadata['expires_at'],$recurring,$issuedAt,$purchasePolicy);
     if (!db()->inTransaction()) throw new LogicException('Issue grants in the enclosing locked transaction.');
     $key=license_create($clientId,$sku,$issuer,$kind==='master');
     $license=one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$key]);
@@ -46,6 +46,33 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     return ['id'=>$id,'key'=>$key,'type'=>$kind,'updates_until'=>$policy['updates_until'],
         'max_installations'=>$policy['max_installations'],'policy_revision'=>$policy['policy_revision']];
 }
+/** Whether a client currently holds a valid ordinary entitlement for a product SKU. */
+function software_customer_has_valid_product(int $clientId,string $sku):bool {
+    if($clientId<1||!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku))return false;
+    $licenses=all('SELECT * FROM '.table('website_licenses').' WHERE customer_id=? AND product_id=? AND is_active=1 AND is_master=0 ORDER BY id LIMIT 100',
+        [$clientId,$sku]);
+    foreach($licenses as $license){
+        $domains=all('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY id LIMIT 25',
+            [$license['id']]);
+        foreach($domains as $domain){
+            try{
+                if(is_string($domain['domain']??null)&&software_grant_verdict($license,$domain['domain']))return true;
+            }catch(RuntimeException){
+                throw;
+            }
+        }
+    }
+    return false;
+}
+
+function software_dependencies_satisfied(int $clientId,array $dependencySkus):bool {
+    if(!array_is_list($dependencySkus)||count($dependencySkus)>25)return false;
+    foreach($dependencySkus as $sku){
+        if(!is_string($sku)||!software_customer_has_valid_product($clientId,$sku))return false;
+    }
+    return true;
+}
+
 /** Owner-configured customer domain-move cooldown; zero disables the delay. */
 function software_domain_change_cooldown_hours():int {
     $raw=(string)setting('software_domain_change_cooldown_hours','24');
