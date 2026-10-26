@@ -69,6 +69,14 @@ function catalog_software_identity_used(int $productId,string $sku):bool{
         &&one('SELECT id FROM '.table('software_assets').' WHERE sku=? LIMIT 1',[$sku]))return true;
     if(catalog_table_exists('website_licenses')
         &&one('SELECT id FROM '.table('website_licenses').' WHERE product_id=? LIMIT 1',[$sku]))return true;
+    if(catalog_table_exists('software_product_policies')){
+        foreach(all('SELECT dependencies FROM '.table('software_product_policies')) as $row){
+            try{$ids=json_decode((string)$row['dependencies'],true,32,JSON_THROW_ON_ERROR);}
+            catch(Throwable){throw new RuntimeException('Software dependency policy is invalid; preserve product identity until reviewed.');}
+            if(!is_array($ids)||!array_is_list($ids))throw new RuntimeException('Software dependency policy is invalid; preserve product identity until reviewed.');
+            foreach($ids as $id)if((int)$id===$productId)return true;
+        }
+    }
     return false;
 }
 function catalog_public_fields(): string {return 'id,sku,title,family,term,currency,amount_cents,setup_cents,summary,features,terms,revision';}
