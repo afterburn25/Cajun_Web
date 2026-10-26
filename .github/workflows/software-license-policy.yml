@@ -40,6 +40,7 @@ jobs:
           php -l site/api/software-webhook.php
           php -l site/app/billing/software_subscription_enroll.php
           php -l site/app/billing/software_subscription_settle.php
+          php -l site/app/billing/software_subscriptions.php
           php -l site/app/billing/software_subscription_cancel.php
           php -l site/app/licenses/software_assets.php
           php -l site/api/handlers/license.php
