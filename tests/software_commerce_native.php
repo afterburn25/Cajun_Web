@@ -32,6 +32,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_notices.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
+    require_once CWP_CODE_ROOT.'/app/billing/software_subscription_settle.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
