@@ -68,6 +68,22 @@ function studio_admin_action(string $action,array $user): never {
         $changed=software_asset_visibility(gint($_POST,'asset_id',1,PHP_INT_MAX),$visible,posted('current_password',200));
         flash($changed?'Software release visibility updated.':'Software release visibility was already set that way.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_subscription_reconcile'){
+        require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
+        $state=software_subscription_enroll_reconcile(
+            gint($_POST,'invoice_id',1,2147483647),
+            posted('gateway_subscription_id',25),
+            posted('current_password',200)
+        );
+        flash(match($state){
+            'pending_first_payment'=>'Gateway subscription reconciled. Software remains locked until the first verified recurring charge.',
+            'sandbox_test'=>'Sandbox subscription reconciled for testing only. No paid access was granted.',
+            'cancelled'=>'Gateway subscription is already cancelled/expired; local enrollment was reconciled without granting access.',
+            'review'=>'Gateway subscription is suspended/terminated and remains in owner review.',
+            'already_linked'=>'That gateway subscription is already linked to this software invoice.',
+            default=>'Subscription reconciliation completed with state '.$state.'.',
+        });
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_charge_reconcile'){
         require_once CWP_CODE_ROOT.'/app/billing/software_charge.php';
         $state=software_charge_reconcile(
