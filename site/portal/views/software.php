@@ -4,6 +4,7 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 
 function software_portal_render(?array $client,string $error=''):never{
     if(!$client||support_current())fail_page('Sign in to your own account to manage software.',403);
@@ -62,15 +63,18 @@ function software_portal_render(?array $client,string $error=''):never{
         }
         if(!$licenses)echo '<p>No issued software licenses yet.</p>';
         echo '</div><h2>Purchased downloads</h2>';
-        $assets=all('SELECT a.id,a.sku,a.version,a.title,l.id AS license_id,e.invoice_id,e.unit_number FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.created_at<=e.updates_until) ORDER BY a.sku,a.version DESC,l.id LIMIT 100',[$clientId]);
-        $shown=[];
+        $assets=all('SELECT a.id,a.sku,a.version,a.title,a.created_at,l.id AS license_id,e.invoice_id,e.unit_number FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.created_at<=e.updates_until) ORDER BY a.sku,a.created_at DESC,a.id DESC,l.id LIMIT 250',[$clientId]);
+        $shown=[];$downloadCount=0;
         foreach($assets as $asset){
-            $key=$asset['id'].':'.$asset['license_id'];
-            if(isset($shown[$key]))continue;$shown[$key]=true;
-            $source=(int)($asset['invoice_id']??0)>0?' · purchase #'.(int)$asset['invoice_id']:' · owner-issued license';
+            if(isset($shown[(int)$asset['id']]))continue;
+            if(!software_asset_entitlement_authorized($clientId,(int)$asset['license_id'],$asset))continue;
+            $shown[(int)$asset['id']]=true;$downloadCount++;
+            $source=(int)($asset['invoice_id']??0)>0
+                ?' · purchase #'.(int)$asset['invoice_id'].(($asset['unit_number']??null)!==null?' · unit '.(int)$asset['unit_number']:'')
+                :' · owner-issued license #'.(int)$asset['license_id'];
             echo '<p><a href="'.esc(site_url('api/software-download.php?id='.$asset['id'].'&license='.$asset['license_id'])).'">'.esc($asset['title'].' · v'.$asset['version']).' — Download ZIP</a>'.esc($source).'</p>';
         }
-        if(!$assets)echo '<p>No eligible software downloads yet.</p>';
+        if($downloadCount===0)echo '<p>No eligible software downloads yet.</p>';
         echo '<h2>Software orders and invoices</h2>';
         $orders=all('SELECT o.*,i.status,i.amount_cents,i.reference FROM '.table('software_orders').' o JOIN '.table('studio_invoices').' i ON i.id=o.invoice_id WHERE o.client_id=? ORDER BY o.id DESC LIMIT 100',[$clientId]);
         foreach($orders as $order){
