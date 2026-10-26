@@ -40,6 +40,8 @@ try{
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'Preparation can be repeated');
     swdenied(fn()=>software_commerce_prepare('wrong-password'),'Wrong owner password refused');
+    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        ['SOFTWARE-TEST','Internal test software','software','draft','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     db()->beginTransaction();
     $trial=software_grant_create(1,'SOFTWARE-TEST','trial','Synthetic Buyer','www.example.com',gmdate('Y-m-d H:i:s',time()+86400),1);
     db()->commit();
