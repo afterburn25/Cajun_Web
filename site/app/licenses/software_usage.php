@@ -9,7 +9,7 @@ function software_usage_record(int $licenseId,string $domain):void{
     // Existing request-level limiter still applies; failed telemetry must not
     // turn an otherwise-authorized customer's installation offline.
     try {
-        query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,UTC_TIMESTAMP(),UTC_TIMESTAMP(),1) ON DUPLICATE KEY UPDATE last_seen=UTC_TIMESTAMP(),check_count=LEAST(check_count+1,4294967295)',
+        query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,UTC_TIMESTAMP(),UTC_TIMESTAMP(),1) ON DUPLICATE KEY UPDATE check_count=IF(last_seen < UTC_TIMESTAMP() - INTERVAL 60 SECOND,LEAST(check_count+1,4294967295),check_count),last_seen=IF(last_seen < UTC_TIMESTAMP() - INTERVAL 60 SECOND,UTC_TIMESTAMP(),last_seen)',
             [$licenseId,$canonical]);
     } catch (Throwable $error) {
         report_error($error);
