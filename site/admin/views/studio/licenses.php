@@ -208,6 +208,8 @@ $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status
 <?php foreach($licenses as $lic): ?>
 <?php
 $domains=license_domains((int)$lic['id']);
+$history=all('SELECT action,detail,created_at FROM '.table('audit').' WHERE action LIKE ? AND (detail LIKE ? OR detail LIKE ?) ORDER BY id DESC LIMIT 20',
+    ['license.%','License '.(int)$lic['id'].' %','Software license '.(int)$lic['id'].' %']);
 $meta=null;$observations=[];
 if($softwareReady){
     $meta=one('SELECT license_type,licensee,expires_at,updates_until,max_installations,policy_revision,purpose,issued_by,invoice_id,unit_number FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
@@ -286,6 +288,15 @@ $eligibleReleases=all('SELECT version,title,created_at FROM '.table('software_as
 <input type="text" name="domain" id="domain_<?= esc($lic['id']) ?>" placeholder="example.com" required>
 <button class="btn outline">Add domain</button>
 </form>
+
+<?php if($history): ?>
+<h3>License history</h3>
+<ul>
+<?php foreach($history as $event): ?>
+<li><?=esc($event['created_at'])?> UTC · <?=esc($event['action'])?> · <?=esc($event['detail'])?></li>
+<?php endforeach; ?>
+</ul>
+<?php endif; ?>
 
 <?php if($meta&&$observations): ?>
 <h3>Recent successful validation observations</h3>
