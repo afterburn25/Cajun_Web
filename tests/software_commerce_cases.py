@@ -268,6 +268,55 @@ def run_browser(env, browser):
     anonymous=requests.get(portal,timeout=25)
     check('Anonymous My Software request is refused',anonymous.status_code==403)
 
+    uncertain_page=alice.get(portal,timeout=25)
+    uncertain_form=_action_form(soup,uncertain_page,'software_order_buy',product_id=pid)
+    uncertain_order=form_data(uncertain_form)
+    uncertain_order.update({'domain':'uncertain-http.example','quantity':'1'})
+    uncertain_response=alice.post(portal,data=uncertain_order,timeout=30)
+    uncertain_rows=db('SELECT o.invoice_id,i.status FROM ci_software_orders o JOIN ci_studio_invoices i ON i.id=o.invoice_id WHERE o.product_id=? AND o.domain=?',
+        [pid,'uncertain-http.example'])
+    check('Second one-time software order is available for local reconciliation acceptance',
+          uncertain_response.status_code==200 and len(uncertain_rows)==1 and uncertain_rows[0]['status']=='issued')
+    uncertain_invoice=uncertain_rows[0]['invoice_id']
+    uncertain_fixture=fixture('reconcile-review',uncertain_invoice)
+    charge_review=admin.get(licenses,timeout=25)
+    charge_form=_action_form(soup,charge_review,'software_charge_reconcile',invoice_id=uncertain_invoice)
+    charge_data=form_data(charge_form)
+    check('Owner UI exposes uncertain one-time charge reconciliation without gateway traffic',
+          charge_data.get('transaction_id')==uncertain_fixture['transaction_id']
+          and 'Uncertain one-time charge reconciliation' in charge_review.text)
+
+    recurring_data=_product_data()
+    recurring_data.update({
+        'sku':'SOFTWARE-HTTP-MONTHLY',
+        'title':'Software browser monthly acceptance',
+        'term':'month',
+        'amount':'19.99',
+        'summary':'Synthetic recurring reconciliation acceptance.',
+        'terms':'Monthly synthetic acceptance subscription. No live payment is performed.',
+    })
+    recurring_created=submit(admin,catalog,'catalog_save',recurring_data)
+    recurring_product=db("SELECT id,revision FROM ci_catalog_products WHERE sku='SOFTWARE-HTTP-MONTHLY'")
+    check('Recurring software offer is published through actual owner form',
+          recurring_created.status_code==200 and len(recurring_product)==1)
+    recurring_pid=recurring_product[0]['id']
+    recurring_page=alice.get(portal,timeout=25)
+    recurring_form=_action_form(soup,recurring_page,'software_order_buy',product_id=recurring_pid)
+    recurring_order=form_data(recurring_form)
+    recurring_order.update({'domain':'subscription-review.example','quantity':'1','subscribe':'1'})
+    recurring_response=alice.post(portal,data=recurring_order,timeout=30)
+    recurring_rows=db('SELECT o.invoice_id,i.status FROM ci_software_orders o JOIN ci_studio_invoices i ON i.id=o.invoice_id WHERE o.product_id=? AND o.domain=?',
+        [recurring_pid,'subscription-review.example'])
+    check('Recurring software order is created without external enrollment',
+          recurring_response.status_code==200 and len(recurring_rows)==1 and recurring_rows[0]['status']=='issued')
+    recurring_invoice=recurring_rows[0]['invoice_id']
+    fixture('subscription-review',recurring_invoice)
+    subscription_review=admin.get(licenses,timeout=25)
+    subscription_form=_action_form(soup,subscription_review,'software_subscription_reconcile',invoice_id=recurring_invoice)
+    check('Owner UI exposes interrupted ARB enrollment reconciliation without gateway traffic',
+          subscription_form.select_one('input[name=gateway_subscription_id]') is not None
+          and 'Subscription payment review' in subscription_review.text)
+
     # Test-only transition to the state *after* an independently verified payment.
     paid=fixture('fulfill-asset',invoice)
     asset_id=paid['asset_id'];license_id=paid['license_id']
