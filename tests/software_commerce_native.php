@@ -70,6 +70,14 @@ try{
             'V1 to v3 upgrade adds entitlement column '.$column);
     }
 
+    $migrateKey=license_create(1,'SOFTWARE-MIGRATE',1,false,null);
+    $migrateLicense=(int)one('SELECT id FROM '.table('website_licenses').' WHERE license_key=?',[$migrateKey])['id'];
+    $migrateExpiry=gmdate('Y-m-d H:i:s',time()+86400*20);
+    query('INSERT INTO '.table('software_entitlements').' (license_id,license_type,licensee,expires_at,updates_until,max_installations,policy_revision,issued_by,purpose,invoice_id,unit_number,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        [$migrateLicense,'temporary','Migrated Buyer',$migrateExpiry,null,2,0,1,'',990001,1,$now]);
+    query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,gateway_subscription_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
+        [990001,1,'990001001',1,100,'active',$now,$now]);
+
     db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_product_policies'.chr(96));
     db()->exec('ALTER TABLE '.$entitlementTable.' DROP COLUMN policy_revision, DROP COLUMN max_installations, DROP COLUMN updates_until');
     save_setting('software_commerce_version','2');
@@ -80,6 +88,11 @@ try{
         &&software_commerce_column_present('software_entitlements','max_installations')
         &&software_commerce_column_present('software_entitlements','policy_revision'),
         'V2 to v3 upgrade adds product policy and entitlement snapshot metadata');
+    $migratedRights=one('SELECT updates_until,max_installations,policy_revision FROM '.table('software_entitlements').' WHERE license_id=?',[$migrateLicense]);
+    swok(($migratedRights['updates_until']??'')===$migrateExpiry
+        &&(int)($migratedRights['max_installations']??0)===2
+        &&(int)($migratedRights['policy_revision']??-1)===0,
+        'V2 recurring entitlement keeps paid-through update access and legacy two-install defaults');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'V3 preparation can be repeated safely');
     swdenied(fn()=>software_commerce_prepare('wrong-password'),'Wrong owner password refused');
