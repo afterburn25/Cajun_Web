@@ -165,6 +165,8 @@ try{
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['NEXUSCORE','Test software','software','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     $product=(int)db()->lastInsertId();
+    swok(software_policy_add_months(new DateTimeImmutable('2026-01-31 12:34:56',new DateTimeZone('UTC')),1)==='2026-02-28 12:34:56',
+        'Software update month arithmetic clamps month-end safely');
     $policy=software_product_policy_save($product,0,'nexus-core','SOFTWARE-TEST',12,1,1);
     swok($policy['revision']===1&&$policy['module_key']==='nexus-core'
         &&$policy['dependency_skus']===['SOFTWARE-TEST']
@@ -278,6 +280,23 @@ try{
     $usageLicense=(int)$rights[0]['license_id'];
     swdenied(fn()=>license_register_domain($usageLicense,'second-install.example.com',1),
         'One-install software entitlement rejects a second concurrent installation');
+    query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at) VALUES (?,?,1,?)',
+        [$usageLicense,'forced-overseat.example.com',$now]);
+    $usageLicenseRow=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$usageLicense]);
+    swok(!software_grant_verdict($usageLicenseRow,'new.example.com'),
+        'Runtime validation denies a software license whose active installations exceed its snapshot limit');
+    query('DELETE FROM '.table('license_domains').' WHERE license_id=? AND domain=?',[$usageLicense,'forced-overseat.example.com']);
+
+    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,1,?)',
+        ['NEXUSCORE','1.0.0','Inside update window','synthetic-private.zip',str_repeat('a',64),22,$now]);
+    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,1,?)',
+        ['NEXUSCORE','2.0.0','Outside update window','synthetic-private.zip',str_repeat('b',64),22,$future]);
+    swok(software_grant_version_verdict($usageLicenseRow,'1.0.0')===true,
+        'Version-aware validation permits a release inside the update window');
+    swok(software_grant_version_verdict($usageLicenseRow,'2.0.0')===false,
+        'Version-aware validation denies a known release outside the update window');
+    swok(software_grant_version_verdict($usageLicenseRow,'9.9.9')===null,
+        'Version-aware validation treats an unknown release as inconclusive');
 
     $policy2=software_product_policy_save($product,1,'nexus-core','SOFTWARE-TEST',0,3,1);
     swok($policy2['revision']===2&&$policy2['update_months']===0&&$policy2['max_installations']===3,
