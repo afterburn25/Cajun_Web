@@ -25,7 +25,7 @@ function software_portal_render(?array $client,string $error=''):never{
     }else{
         $clientId=(int)$client['id'];
         echo '<h2>My licenses</h2><div class="workspace-grid">';
-        $licenses=all('SELECT l.*,e.license_type,e.licensee,e.expires_at FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_master=0 ORDER BY l.id DESC LIMIT 100',[$clientId]);
+        $licenses=all('SELECT l.*,e.license_type,e.licensee,e.expires_at,e.updates_until,e.max_installations FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_master=0 ORDER BY l.id DESC LIMIT 100',[$clientId]);
         foreach($licenses as $lic){
             $expired=$lic['expires_at']!==null && $lic['expires_at']<=gmdate('Y-m-d H:i:s');
             $status=!(int)$lic['is_active']?'Inactive':($expired?'Expired':'Active');
@@ -34,6 +34,9 @@ function software_portal_render(?array $client,string $error=''):never{
             echo '<p>Licensed to: '.esc($lic['licensee']).'</p>';
             echo '<p>Key: <code>'.esc($lic['license_key']).'</code></p>';
             if($lic['expires_at']!==null)echo '<p>Expires '.esc($lic['expires_at']).' UTC</p>';
+            echo '<p>Updates: '.($lic['updates_until']===null?'Lifetime while license is valid':'through '.esc($lic['updates_until']).' UTC').'</p>';
+            $activeDomains=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[$lic['id']])->fetchColumn();
+            echo '<p>Installations: '.$activeDomains.' / '.(int)$lic['max_installations'].'</p>';
             echo '<h4>Installation domains</h4>';
             foreach(license_domains((int)$lic['id']) as $domain){
                 if(!(int)$domain['is_active'])continue;
@@ -58,7 +61,7 @@ function software_portal_render(?array $client,string $error=''):never{
         }
         if(!$licenses)echo '<p>No issued software licenses yet.</p>';
         echo '</div><h2>Purchased downloads</h2>';
-        $assets=all('SELECT DISTINCT a.id,a.sku,a.version,a.title FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) ORDER BY a.sku,a.version DESC LIMIT 100',[$clientId]);
+        $assets=all('SELECT DISTINCT a.id,a.sku,a.version,a.title FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.created_at<=e.updates_until) ORDER BY a.sku,a.version DESC LIMIT 100',[$clientId]);
         foreach($assets as $asset){
             echo '<p><a href="'.esc(site_url('api/software-download.php?id='.$asset['id'])).'">'.esc($asset['title'].' · v'.$asset['version']).' — Download ZIP</a></p>';
         }
