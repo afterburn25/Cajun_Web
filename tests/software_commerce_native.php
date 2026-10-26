@@ -32,6 +32,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
+    require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
     swok(!software_commerce_ready(),'Not ready until owner explicitly prepares');
     swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Pre-commerce install preserves legacy v3 validation');
@@ -112,6 +113,18 @@ try{
     swok((int)query('SELECT COUNT(*) FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice])->fetchColumn()===1,'One delivery email outbox entry');
     swok(software_asset_customer_authorized(1,'NEXUSCORE'),'Purchasing customer is authorized for matching software assets');
     swok(!software_asset_customer_authorized(2,'NEXUSCORE'),'Different customer cannot use another account software entitlement');
+    $usageLicense=(int)one('SELECT license_id FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number LIMIT 1',[$invoice])['license_id'];
+    software_usage_record($usageLicense,'new.example.com');
+    software_usage_record($usageLicense,'new.example.com');
+    $usage=one('SELECT check_count,last_seen FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
+        [$usageLicense,'new.example.com']);
+    swok((int)$usage['check_count']===1,'Repeated validation inside one minute is write-bucketed');
+    query('UPDATE '.table('software_usage').' SET last_seen=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 2 MINUTE) WHERE license_id=? AND domain=?',
+        [$usageLicense,'new.example.com']);
+    software_usage_record($usageLicense,'new.example.com');
+    $usage=one('SELECT check_count FROM '.table('software_usage').' WHERE license_id=? AND domain=?',
+        [$usageLicense,'new.example.com']);
+    swok((int)$usage['check_count']===2,'Validation after the one-minute bucket advances observed usage once');
     $issued=one('SELECT license_id FROM '.table('software_entitlements').' WHERE invoice_id=? ORDER BY unit_number LIMIT 1',[$invoice]);
     software_grant_replace_domain((int)$issued['license_id'],'new.example.com','moved.example.com',1);
     swok((bool)one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
