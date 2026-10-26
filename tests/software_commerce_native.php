@@ -28,6 +28,7 @@ try{
     require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
+    require_once CWP_CODE_ROOT.'/app/billing/software_charge.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_notices.php';
     require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
@@ -103,6 +104,23 @@ try{
         hash('sha256','synthetic one-time recurring-consent mismatch'),true),
         'One-time software refuses recurring billing consent');
     swdenied(fn()=>software_order_place($buyer,$product,1,1,'new.example.com',$hash,false),'Changed order cannot reuse request');
+    $invalidAttempt=hash('sha256','native-invalid-local-token');
+    swdenied(fn()=>software_charge_run($buyer,$invoice,$invalidAttempt,'CARD_NUMBER','not-a-token'),
+        'Malformed local one-time token is refused before gateway attempt reservation');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_charge_attempts').' WHERE invoice_id=?',[$invoice])->fetchColumn()===0
+        && !one('SELECT id FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice]),
+        'Malformed one-time token leaves no charge fence or attempt history');
+
+    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        ['SOFTWARE-MONTHLY','Monthly test software','software','published','month','USD',9900,0,null,'','Synthetic recurring','','Terms',0,1,$now,$now]);
+    $monthlyProduct=(int)db()->lastInsertId();
+    $monthlyInvoice=software_order_place($buyer,$monthlyProduct,1,1,'monthly.example.com',
+        hash('sha256','native monthly software order'),true);
+    swdenied(fn()=>software_subscription_enroll($buyer,$monthlyInvoice,'CARD_NUMBER','not-a-token'),
+        'Malformed local subscription token is refused before enrollment reservation');
+    swok(!one('SELECT id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$monthlyInvoice]),
+        'Malformed subscription token leaves no subscription attempt row');
+
     $attemptOne=hash('sha256','native-declined-charge-1');
     $attemptTwo=hash('sha256','native-declined-charge-2');
     swok(software_charge_prepare($invoice,1,$attemptOne)===(int)ledger_invoice($invoice)['amount_cents'],
