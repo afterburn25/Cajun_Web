@@ -36,8 +36,9 @@ check($opaque['subscription']['paymentSchedule']['interval']['length']===1,
 reject(fn()=>software_anet_arb_opaque(12,9900,1,'2000-01-01','COMMON.ACCEPT.INAPP.PAYMENT','synthetic-token'),
     'ARB cannot begin in the past');
 $schema=software_commerce_schema('cwp_');
-check(count($schema)===10,'Ten additive software-commerce tables');
+check(count($schema)===11,'Eleven additive software-commerce tables');
 check(isset($schema['software_subscription_receipts']),'Subscription renewals keep unique gateway-transaction receipt history');
+check(isset($schema['software_charge_attempts']),'One-time checkout keeps separate retry records');
 check(isset($schema['software_payment_reversals']),'Refunds and voids keep unique reversal receipts');
 check(isset($schema['software_payment_disputes']),'Merchant disputes keep durable owner-reviewed evidence');
 check(isset($schema['software_notices']),'Paid-license delivery has a durable email outbox');
