@@ -4,6 +4,7 @@ define('CWP_BOOT',true);
 require dirname(__DIR__).'/site/app/billing/authorize_net_contract.php';
 require dirname(__DIR__).'/site/app/billing/authorize_net_webhooks.php';
 require dirname(__DIR__).'/site/database/schema/software_commerce_schema.php';
+require dirname(__DIR__).'/site/app/billing/software_subscriptions.php';
 
 function check(bool $value,string $name):void{
     if(!$value)throw new RuntimeException('FAILED '.$name);
@@ -111,6 +112,21 @@ check(software_subscription_event_target('net.authorize.customer.subscription.ca
     'Cancellation stops future renewal when no review is pending');
 check(software_subscription_event_target('net.authorize.customer.subscription.updated','active')===null,
     'Non-terminal subscription updates do not mutate local entitlement state');
+check(software_subscription_renewal_grant_action([
+    'license_type'=>'temporary','is_master'=>0,'is_active'=>1,'expires_at'=>'2030-01-01 00:00:00'
+])==='extend','Active paid-term grant is extended by a verified renewal');
+check(software_subscription_renewal_grant_action([
+    'license_type'=>'temporary','is_master'=>0,'is_active'=>0,'expires_at'=>'2030-01-01 00:00:00'
+])==='review','Suspended paid-term grant routes a verified renewal to owner review');
+try{
+    software_subscription_renewal_grant_action([
+        'license_type'=>'standard','is_master'=>0,'is_active'=>1,'expires_at'=>null
+    ]);
+    throw new RuntimeException('FAILED Perpetual grant cannot masquerade as recurring renewal metadata');
+}catch(RuntimeException $expected){
+    if(str_starts_with($expected->getMessage(),'FAILED '))throw $expected;
+    echo 'PASS Perpetual grant cannot masquerade as recurring renewal metadata'.PHP_EOL;
+}
 $schema=software_commerce_schema('cwp_');
 check(count($schema)===12,'Twelve additive software-commerce tables');
 check(isset($schema['software_product_policies']),'Software products have explicit version/update/install policy storage');
