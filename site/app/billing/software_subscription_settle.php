@@ -22,7 +22,8 @@ function software_subscription_settle(array $details,string $transactionId): str
     if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx)
         ||(string)($tx['transId']??'')!==$transactionId
         ||!in_array($tx['transactionStatus']??'', ['capturedPendingSettlement','settledSuccessfully'],true)
-        ||!isset($tx['subscription']['id'])||!preg_match('/^[0-9]{1,25}$/D',(string)$tx['subscription']['id'])){
+        ||!isset($tx['subscription']['id'])||!preg_match('/^[0-9]{1,25}$/D',(string)$tx['subscription']['id'])
+        ||!preg_match('/^[0-9]{5,30}$/D',$transactionId)){
         throw new RuntimeException('Gateway transaction is not a verified captured subscription charge.');
     }
     $id=(string)$tx['subscription']['id'];
