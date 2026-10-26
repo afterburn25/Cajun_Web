@@ -28,7 +28,16 @@ $raw='{"notificationId":"test","eventType":"net.authorize.payment.authcapture.cr
 $signature='sha512='.strtoupper(hash_hmac('sha512',$raw,hex2bin($key)));
 check(software_anet_signature_matches($raw,$signature,$key),'HMAC-SHA512 webhook accepted');
 check(!software_anet_signature_matches($raw.'x',$signature,$key),'Tampered webhook rejected');
+$opaque=software_anet_arb_opaque(12,9900,1,'2030-12-01','COMMON.ACCEPT.INAPP.PAYMENT','synthetic-token');
+check($opaque['subscription']['payment']['opaqueData']['dataDescriptor']==='COMMON.ACCEPT.INAPP.PAYMENT',
+    'ARB uses one-use Accept.js opaque payment data rather than storing card details');
+check($opaque['subscription']['paymentSchedule']['interval']['length']===1,
+    'ARB monthly interval is one month');
+reject(fn()=>software_anet_arb_opaque(12,9900,1,'2000-01-01','COMMON.ACCEPT.INAPP.PAYMENT','synthetic-token'),
+    'ARB cannot begin in the past');
 $schema=software_commerce_schema('cwp_');
 check(count($schema)===8,'Eight additive software-commerce tables');
+check(isset($schema['software_subscription_receipts']),'Subscription renewals keep unique gateway-transaction receipt history');
+check(isset($schema['software_notices']),'Paid-license delivery has a durable email outbox');
 check(!str_contains(implode('',$schema),'DROP TABLE'),'Setup never requests destructive table deletion');
 echo 'Software commerce payment and schema contracts PASS'.PHP_EOL;

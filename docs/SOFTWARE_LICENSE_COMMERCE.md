@@ -68,3 +68,13 @@ Native PHP/MySQL + installed root/subfolder HTTP/Chromium + published-v1.25 UPDA
 - No paid fulfillment before trusted payment confirmation. Do not assume a sandbox receipt is real payment.
 - Existing license domains and historical purchases survive upgrade. Use one portal and one customer identity.
 - Build UPDATE and full/complete packages **without a ZIP inside another ZIP**.
+
+## 2026-10-25/26 feature branch implementation status
+
+Branch PR #266 implements owner-gated software database preparation, standard/trial/temporary/master issuance, expiration-aware license validation, observed checks, private versioned ZIP publishing, on-site Accept.js tokenization, payment attempt fencing, initial charge readback, ARB enrollment and cancellation, signed webhook reconciliation of initial/renewal transactions, subscription receipt idempotency, customer domain changes, license downloads and delivery email retry.
+
+**Shipping/activation gates still open:** No production merchant key was used, no real payment was charged, no external webhook was provisioned, and the repo has not passed a complete hosted database/HTTP/Chromium acceptance or published an updated installer. The software payment selector permits disabled/sandbox modes only; production remains disabled until independently reviewed gateway setup, refund/chargeback reconciliation, live payment tests, retention/privacy/PCI review, owner approval and new release. Do not treat the existence of these sources as authorization to process live payments.
+
+**PCI note:** A merchant-hosted card form that uses Accept.js is a PCI SAQ A-EP integration, not automatically SAQ A. To reduce scope in a later independent hardening pass, consider the Authorize.net AcceptUI hosted-card form while keeping the same branded order/receipt page.
+
+**Outstanding test scope:** native MariaDB/MySQL migration and invoice ledger fixtures, end-to-end sandbox Accept.js script/SRI/CSP path, real gateway transaction detail shapes, ARB webhook replay/race, refund/void/chargeback handling, cancellation during billing, domain movement with active subscriptions, legacy installed licenses, actual old-version UPDATE, unzip safety, and email retry. Do not merge into main or ship while unresolved.

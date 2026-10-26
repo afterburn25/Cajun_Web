@@ -61,6 +61,18 @@ function studio_admin_action(string $action,array $user): never {
             posted('private_path',500),posted('current_password',200));
         flash('Verified private software ZIP version published as asset '. $id .'.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_order_fulfill_retry'){
+        if(support_current())throw new RuntimeException('Leave support mode first.');
+        staff_require('staff.manage');
+        staff_owner(posted('current_password',200));
+        require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
+        $invoice=gint($_POST,'invoice_id',1,2147483647);
+        if(!one('SELECT id FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]))
+            throw new InvalidArgumentException('Software order not found.');
+        $created=license_fulfill_invoice($invoice);
+        if(!$created)throw new RuntimeException('Invoice is not fully paid or licensing has not been prepared.');
+        flash('Paid software entitlement fulfillment checked and retried without minting duplicate units.');
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_notice_retry'){
         if(support_current())throw new RuntimeException('Delivery is unavailable during support mode.');
         staff_require('staff.manage');

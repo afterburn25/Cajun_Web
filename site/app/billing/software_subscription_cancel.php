@@ -13,7 +13,7 @@ function software_subscription_cancel(array $client,int $invoice):string{
         $sub=one('SELECT s.* FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE',
             [$invoice,(int)$client['id'],(int)$client['id']]);
         if(!$sub)throw new RuntimeException('This subscription does not belong to you.');
-        if(!in_array($sub['status'],['active','pending_first_payment'],true)){
+        if(!in_array($sub['status'],['active','pending_first_payment','sandbox_test'],true)){
             db()->commit();return 'not_active';
         }
         if(!is_string($sub['gateway_subscription_id'])||!preg_match('/^[0-9]{1,25}$/D',$sub['gateway_subscription_id'])){

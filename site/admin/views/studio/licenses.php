@@ -90,6 +90,12 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php
 $notices=all('SELECT n.*,o.sku,c.name FROM '.table('software_notices').' n JOIN '.table('software_orders').' o ON o.invoice_id=n.invoice_id JOIN '.table('studio_clients').' c ON c.id=n.client_id ORDER BY n.id DESC LIMIT 30');
 ?>
+<section class="workspace-card"><h2>Reconcile a paid software order</h2>
+<p>Retry only an independently verified fully paid invoice. Duplicate licenses and duplicate email notices are refused or reused by the fulfillment service.</p>
+<form method="post"><?php admin_action('software_order_fulfill_retry'); ?>
+<?php admin_input('invoice_id','Paid software invoice ID','','number','required min="1"'); ?>
+<?php admin_input('current_password','Owner password','','password','required'); ?>
+<button class="btn outline">Recheck paid order fulfillment</button></form></section>
 <section class="workspace-card"><h2>Customer software delivery notices</h2>
 <?php foreach($notices as $n): ?>
 <p><?=esc($n['name'].' · '.$n['sku'])?> · Invoice <?=(int)$n['invoice_id']?> · <?=esc($n['status'])?></p>
