@@ -4,18 +4,15 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 
-function software_payment_reversal_review(array $details,string $eventTransactionId,string $eventType):string{
-    if(!software_commerce_ready()||!ledger_ready())throw new RuntimeException('Payments not prepared.');
-    $gateway=software_anet_settings();
-    if($gateway['mode']!=='production')return 'sandbox_reversal';
-    $reversal=software_anet_reversal_details($details,$eventTransactionId,$eventType);
-    if($reversal['kind']==='refund' && ($reversal['amount_cents']===null || $reversal['amount_cents']<1)){
-        throw new RuntimeException('Refund amount is not trustworthy.');
+function software_payment_reversal_apply(array $reversal):string{
+    $original=(string)($reversal['original_transaction_id']??'');
+    if(!in_array($reversal['kind']??null,['refund','void'],true)
+        ||!preg_match('/^[0-9]{5,30}$/D',$original)){
+        throw new InvalidArgumentException('Invalid verified reversal record.');
     }
     if(db()->inTransaction())throw new LogicException('Payment reversal review must own the transaction.');
     db()->beginTransaction();
     try{
-        $original=$reversal['original_transaction_id'];
         $charge=one('SELECT * FROM '.table('software_charges').' WHERE transaction_id=? FOR UPDATE',[$original]);
         if($charge){
             if($charge['status']==='reversal_review'){db()->commit();return 'replay';}
@@ -40,6 +37,17 @@ function software_payment_reversal_review(array $details,string $eventTransactio
         if(db()->inTransaction())db()->rollBack();
         throw $e;
     }
+}
+
+function software_payment_reversal_review(array $details,string $eventTransactionId,string $eventType):string{
+    if(!software_commerce_ready()||!ledger_ready())throw new RuntimeException('Payments not prepared.');
+    $gateway=software_anet_settings();
+    if($gateway['mode']!=='production')return 'sandbox_reversal';
+    $reversal=software_anet_reversal_details($details,$eventTransactionId,$eventType);
+    if($reversal['kind']==='refund' && ($reversal['amount_cents']===null || $reversal['amount_cents']<1)){
+        throw new RuntimeException('Refund amount is not trustworthy.');
+    }
+    return software_payment_reversal_apply($reversal);
 }
 
 function software_subscription_lifecycle_review(string $eventType,string $subscriptionId):string{
