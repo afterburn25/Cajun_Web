@@ -35,6 +35,7 @@ function software_anet_one_time_charge_confirmed(array $details,string $transact
     if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx))return false;
     if(isset($tx['subscription']))return false; // ARB charges must use the recurring reconciliation path.
     return (string)($tx['transId']??'')===$transactionId
+        &&(string)($tx['transactionType']??'')==='authCaptureTransaction'
         &&(string)($tx['order']['invoiceNumber']??'')===substr('CWP-'.$invoice,0,20)
         &&software_charge_exact_cents($tx['authAmount']??null)===$cents
         &&in_array($tx['transactionStatus']??'',['capturedPendingSettlement','settledSuccessfully'],true);
