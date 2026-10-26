@@ -147,6 +147,37 @@ function software_subscription_charge_reconcile(int $invoice,string $transaction
     return $state;
 }
 
+/** Verify a sandbox capture against local state without mutating payment or entitlement records. */
+function software_sandbox_capture_verify(array $details,string $transactionId):string{
+    if(!preg_match('/^[0-9]{5,30}$/D',$transactionId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
+    $tx=$details['transaction']??null;
+    if(!is_array($tx))throw new RuntimeException('Sandbox transaction readback is invalid.');
+    if(isset($tx['subscription']['id'])){
+        $verified=software_anet_subscription_charge_details($details,$transactionId);
+        $sub=one('SELECT invoice_id,amount_cents,gateway_subscription_id FROM '.table('software_subscriptions').
+            ' WHERE gateway_subscription_id=?',[$verified['subscription_id']]);
+        if(!$sub)return 'sandbox_subscription_unmatched';
+        if((string)$sub['gateway_subscription_id']!==(string)$verified['subscription_id']
+            ||(int)$sub['amount_cents']!==(int)$verified['amount_cents']
+            ||(string)$verified['invoice_number']!==substr('CWP-'.(int)$sub['invoice_id'],0,20)){
+            throw new RuntimeException('Sandbox recurring transaction does not match local subscription state.');
+        }
+        return 'sandbox_subscription_verified';
+    }
+    $invoiceNumber=(string)($tx['order']['invoiceNumber']??'');
+    if(!preg_match('/^CWP-([1-9][0-9]{0,14})$/D',$invoiceNumber,$match))return 'sandbox_payment_unmatched';
+    $invoice=(int)$match[1];
+    $charge=one('SELECT amount_cents,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice]);
+    if(!$charge)return 'sandbox_payment_unmatched';
+    if($charge['transaction_id']!==null&&!hash_equals((string)$charge['transaction_id'],$transactionId)){
+        throw new RuntimeException('Sandbox transaction disagrees with retained local transaction identity.');
+    }
+    if(!software_charge_confirmed($details,$transactionId,$invoice,(int)$charge['amount_cents'])){
+        throw new RuntimeException('Sandbox one-time transaction does not exactly match local invoice and amount.');
+    }
+    return 'sandbox_payment_verified';
+}
+
 function software_webhook_process(string $raw,string $signature):string{
     $gateway=software_anet_settings();
     require_once CWP_CODE_ROOT.'/app/billing/payments.php';
@@ -183,11 +214,7 @@ function software_webhook_process(string $raw,string $signature):string{
             $txId=$event['resource_id'];
             if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
             $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
-            if(isset($details['transaction']['subscription']['id'])){
-                software_anet_subscription_charge_details($details,$txId);
-                return 'sandbox_subscription_verified';
-            }
-            return 'sandbox_payment_event';
+            return software_sandbox_capture_verify($details,$txId);
         }
         return 'sandbox_event';
     }
