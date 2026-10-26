@@ -1,0 +1,78 @@
+name: Software package fast build verification
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/**'
+      - 'tools/build.py'
+      - 'tools/directory-map.json'
+      - 'VERSION'
+      - 'tests/software_release_125_delta.py'
+      - '.github/workflows/software-package-build-fast.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package-fast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install builder runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php-cli php-zip php-curl php-mbstring
+      - name: Build exact candidate packages
+        run: python3 tools/build.py --commit "$GITHUB_SHA"
+      - name: Verify archive safety and direct extraction
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import tempfile, zipfile
+          dist=Path('dist')
+          required=['FULL-PROJECT','COMPLETE-UPLOAD','UPDATE']
+          zips=sorted(dist.glob('CajunWebPro-*.zip'))
+          if len(zips)!=3:
+              raise SystemExit(f'expected exactly 3 candidate ZIPs, found {len(zips)}')
+          for kind in required:
+              matches=[p for p in zips if p.name.endswith(f'-{kind}.zip')]
+              if len(matches)!=1:
+                  raise SystemExit(f'missing or duplicate {kind} package')
+              path=matches[0]
+              with zipfile.ZipFile(path) as z:
+                  if z.testzip() is not None:
+                      raise SystemExit(f'corrupt ZIP member in {path.name}')
+                  names=z.namelist()
+                  if len(names)!=len(set(n.casefold() for n in names)):
+                      raise SystemExit(f'duplicate/case-colliding member in {path.name}')
+                  for name in names:
+                      p=PurePosixPath(name)
+                      if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name:
+                          raise SystemExit(f'unsafe ZIP member {name!r} in {path.name}')
+                      if name.lower().endswith('.zip'):
+                          raise SystemExit(f'nested ZIP {name!r} in {path.name}')
+                  if kind=='COMPLETE-UPLOAD':
+                      for root_file in ('index.php','install.php'):
+                          if root_file not in names:
+                              raise SystemExit(f'{path.name} is not direct-extract: missing {root_file}')
+                  with tempfile.TemporaryDirectory() as tmp:
+                      z.extractall(tmp)
+          print('Fast candidate package extraction/safety: PASS')
+          PY
+      - name: Audit UPDATE against pinned published v1.25.0 baseline
+        run: |
+          mkdir -p qa
+          curl --fail --location --proto '=https' --tlsv1.2             --output qa/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip             https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip
+          printf '%s  %s\n'             'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'             'qa/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip' | sha256sum --check -
+          complete="$(find dist -maxdepth 1 -type f -name 'CajunWebPro-*-COMPLETE-UPLOAD.zip' -print)"
+          update="$(find dist -maxdepth 1 -type f -name 'CajunWebPro-*-UPDATE.zip' -print)"
+          python3 tests/software_release_125_delta.py             --baseline qa/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip             --complete "$complete"             --update "$update"             --report qa/software-release-125-delta.json
+      - name: Source unchanged
+        if: always()
+        run: git diff --exit-code -- site foundation
