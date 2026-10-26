@@ -664,6 +664,24 @@ try{
     swdenied(fn()=>software_subscription_enroll_finalize(900002,'423456789','pending_first_payment'),
         'Conflicting gateway subscription id is refused instead of overwritten');
 
+    query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
+        [900003,1,1,2499,'creating',$now,$now]);
+    software_subscription_enroll_mark_review(900003,'423456790');
+    swok(one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[900003])
+        ===['gateway_subscription_id'=>'423456790','status'=>'review'],
+        'Interrupted ARB finalization retains the known gateway subscription id for owner reconciliation');
+    software_subscription_enroll_mark_review(900003,'423456790');
+    swok(one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[900003])
+        ===['gateway_subscription_id'=>'423456790','status'=>'review'],
+        'Repeated ARB uncertainty marking is idempotent for the same gateway id');
+    swdenied(fn()=>software_subscription_enroll_mark_review(900003,'423456791'),
+        'ARB uncertainty marker refuses to overwrite a different retained gateway id');
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=?',['pending_first_payment',900003]);
+    software_subscription_enroll_mark_review(900003,'423456790');
+    swok(one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[900003])
+        ===['gateway_subscription_id'=>'423456790','status'=>'pending_first_payment'],
+        'Late uncertainty handling does not downgrade an already-finalized subscription');
+
     $reconcileMonthly=software_order_place($buyer,$monthlyProduct,1,1,'monthly-reconcile.example.com',
         hash('sha256','monthly enrollment reconcile'),true);
     $reconcileMonthlyInvoice=ledger_invoice($reconcileMonthly);
