@@ -21,7 +21,9 @@ $customers = $ready ? array_column(all('SELECT id,name FROM '.table('studio_clie
 // First-class software-family products may use any valid SKU; retain legacy prefixed products.
 $products = [];
 try { foreach(all('SELECT sku,title FROM '.table('catalog_products')." WHERE family='software' OR sku LIKE 'WEBSITE-%' OR sku LIKE 'SOFTWARE-%' OR sku LIKE 'APP-%' ORDER BY title") as $p) $products[$p['sku']]=$p['title'].' ('.$p['sku'].')'; } catch (Throwable) {}
-$products += ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
+if(!$softwareReady){
+    $products += ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
+}
 
 if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">License key created (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';unset($_SESSION['license_key_created']);}
 ?>
