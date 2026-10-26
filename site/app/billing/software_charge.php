@@ -32,6 +32,7 @@ function software_charge_record_paid(int $invoice,string $transactionId,int $cen
 function software_charge_run(array $client,int $invoice,string $key,
     string $descriptor,#[SensitiveParameter] string $nonce):string{
     if(support_current())throw new RuntimeException('Payment is unavailable during support access.');
+    software_anet_nonce($descriptor,$nonce); // reject malformed local input before reserving an attempt
     $gateway=software_anet_settings(); // check private credentials before reserving the attempt
     $amount=software_charge_prepare($invoice,(int)$client['id'],$key);
     try{
