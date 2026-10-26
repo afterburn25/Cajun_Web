@@ -317,11 +317,16 @@ if($softwareReady&&$isSoftwareEntitlement){
 <?php if($meta): ?>
 <dt><strong>Type / licensee</strong></dt><dd><?=esc($meta['license_type'])?> · <?=esc($meta['licensee'])?></dd>
 <dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd>
-<dt><strong>Update entitlement</strong></dt><dd><?=$meta['updates_until']===null?'Lifetime while license is valid':'Through '.esc($meta['updates_until']).' UTC'?> · policy revision <?=(int)$meta['policy_revision']?></dd>
-<dt><strong>Installation limit</strong></dt><dd><?=(int)$meta['max_installations']?> concurrent installation<?=((int)$meta['max_installations']===1?'':'s')?></dd>
+<dt><strong>Update entitlement</strong></dt><dd><?=(int)($lic['is_master']??0)===1
+    ?'Internal master · all customer-visible versions'
+    :($meta['updates_until']===null?'Lifetime while license is valid':'Through '.esc($meta['updates_until']).' UTC')?> · policy revision <?=(int)$meta['policy_revision']?></dd>
+<dt><strong>Installation limit</strong></dt><dd><?=(int)($lic['is_master']??0)===1
+    ?'Internal master · seat limit not applied'
+    :(int)$meta['max_installations'].' concurrent installation'.((int)$meta['max_installations']===1?'':'s')?></dd>
 <?php
+$releaseCutoff=(int)($lic['is_master']??0)===1?null:$meta['updates_until'];
 $eligibleReleases=all('SELECT version,title,released_at FROM '.table('software_assets').' WHERE sku=? AND is_published=1 AND released_at IS NOT NULL AND (? IS NULL OR released_at<=?) ORDER BY released_at DESC,id DESC LIMIT 5',
-    [$lic['product_id'],$meta['updates_until'],$meta['updates_until']]);
+    [$lic['product_id'],$releaseCutoff,$releaseCutoff]);
 ?>
 <dt><strong>Eligible customer releases</strong></dt>
 <dd><?php if(!$eligibleReleases): ?>None published within this entitlement<?php else: ?><?php foreach($eligibleReleases as $index=>$release): ?><?=$index?' · ':''?>v<?=esc($release['version'])?><?php endforeach; ?><?php endif; ?></dd>
