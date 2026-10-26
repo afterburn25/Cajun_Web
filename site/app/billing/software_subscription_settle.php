@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
+require_once CWP_CODE_ROOT.'/app/billing/software_charge.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
 require_once CWP_CODE_ROOT.'/app/billing/authorize_net_webhooks.php';
 require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
@@ -216,5 +217,8 @@ function software_webhook_process(string $raw,string $signature):string{
     $txId=$event['resource_id'];
     if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
     $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
-    return software_subscription_settle($details,$txId);
+    if(isset($details['transaction']['subscription']['id'])){
+        return software_subscription_settle($details,$txId);
+    }
+    return software_charge_capture_webhook_review($details,$txId);
 }
