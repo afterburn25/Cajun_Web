@@ -28,7 +28,7 @@ function software_charge_prepare(int $invoice,int $clientId,string $requestKey):
     }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
 }
 function software_charge_mark(int $invoice,string $state,?string $transactionId=null):void{
-    if(!in_array($state,['declined','uncertain','review'],true))throw new InvalidArgumentException('Unsupported payment outcome.');
+    if(!in_array($state,['declined','uncertain','review','sandbox_test'],true))throw new InvalidArgumentException('Unsupported payment outcome.');
     query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE invoice_id=? AND status=?',
         [$state,$transactionId,gmdate('Y-m-d H:i:s'),$invoice,'processing']);
 }
