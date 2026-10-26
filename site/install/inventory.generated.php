@@ -164,7 +164,7 @@ function setup_expected_files(): array { return [
     'app/billing/software_payment_review.php'=>'478344d518ccba0edc30bed6d0a7bc3c595594e9091d5f8f3500d77a5121eed4',
     'app/billing/software_subscription_cancel.php'=>'3e72f05abc658aab0b2baf8282f56bbae9abd7407e6698cfc2a1d5db9ea406f3',
     'app/billing/software_subscription_enroll.php'=>'c5449f5da291f1d509ca596b658e0e8f0541b05b806fc90f802112f5680386a9',
-    'app/billing/software_subscription_settle.php'=>'afaa348646014ac4cb47bd55785df04373d0fd1bd83505194321919468e2a2f3',
+    'app/billing/software_subscription_settle.php'=>'c4ab9add13e70296caa99857aef73d0f0d2e40d488cdb472cea5662648b4cc40',
     'app/billing/software_subscriptions.php'=>'6e7a103a216b62adab6a4a13b63685f3bf7d6c6ce5839b54de0bee1160dbc6c6',
     'app/clients/accounts.php'=>'03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e',
     'app/clients/files.php'=>'240db0d553fa492b677767de7207f7f05e620d5f8a4522a94dc2770c26d26149',
