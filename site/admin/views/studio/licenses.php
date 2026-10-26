@@ -308,6 +308,7 @@ $eligibleReleases=all('SELECT version,title,created_at FROM '.table('software_as
 <p class="hint">Validation observations are rate-bucketed evidence of successful checks, not live usage analytics.</p>
 <?php endif; ?>
 
+<?php if(!$meta): ?>
 <?php $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[(int)$lic['id']]); ?>
 <?php if($bundles): ?>
 <h3>Generated bundles</h3>
@@ -317,9 +318,12 @@ $eligibleReleases=all('SELECT version,title,created_at FROM '.table('software_as
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>
+<?php else: ?>
+<p class="hint">Software releases use the immutable versioned ZIP registry above; legacy Website Core bundles are intentionally unavailable for this entitlement.</p>
+<?php endif; ?>
 
 <?php if($lic['is_active']): ?>
-<?php if(!(int)($lic['is_master']??0)): ?>
+<?php if(!(int)($lic['is_master']??0) && !$meta): ?>
 <form method="post">
 <?php admin_action('studio_license_bundle'); ?>
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
