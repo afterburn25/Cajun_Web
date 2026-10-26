@@ -657,7 +657,7 @@ def run_browser(env, browser):
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     check('Support browser context cannot retrieve customer software ZIP',
-          admin.get(download+'&support='+support_id,timeout=25).status_code!=200)
+          admin.get(download+'&support='+support_id,timeout=25).status_code==403)
     submit(admin,support_root,'support_end')
 
     visibility_page=admin.get(licenses,timeout=25)
