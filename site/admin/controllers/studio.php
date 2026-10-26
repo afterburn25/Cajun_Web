@@ -81,6 +81,17 @@ function studio_admin_action(string $action,array $user): never {
         $sent=software_delivery_notice_send(gint($_POST,'invoice_id',1,2147483647));
         flash($sent?'Delivery notice sent or already completed.':'Delivery notice was not sent; inspect mail configuration and the retained delivery state.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_domain_policy'){
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+        if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
+        if(support_current())throw new RuntimeException('Leave support mode first.');
+        staff_require('staff.manage');
+        staff_owner(posted('current_password',200));
+        $hours=gint($_POST,'domain_cooldown_hours',0,720);
+        save_setting('software_domain_change_cooldown_hours',(string)$hours);
+        license_audit((int)$user['id'],'domain.policy','Customer software domain replacement cooldown set to '.$hours.' hours');
+        flash('Software domain replacement cooldown updated.');
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_gateway_select'){
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         require_once CWP_CODE_ROOT.'/app/billing/payments.php';
