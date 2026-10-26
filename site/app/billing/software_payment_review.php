@@ -19,7 +19,13 @@ function software_payment_reversal_apply(array $reversal):string{
     if(db()->inTransaction())throw new LogicException('Payment reversal review must own the transaction.');
     db()->beginTransaction();
     try{
-        if(one('SELECT id FROM '.table('software_payment_reversals').' WHERE gateway_transaction_id=? FOR UPDATE',[$event])){
+        $existing=one('SELECT original_transaction_id,kind,amount_cents FROM '.table('software_payment_reversals').' WHERE gateway_transaction_id=? FOR UPDATE',[$event]);
+        if($existing){
+            $same=(string)$existing['original_transaction_id']===$original
+                &&(string)$existing['kind']===$kind
+                &&(($existing['amount_cents']===null&&$amount===null)
+                    ||($existing['amount_cents']!==null&&$amount!==null&&(int)$existing['amount_cents']===$amount));
+            if(!$same)throw new RuntimeException('Gateway reversal identifier was reused with conflicting details.');
             db()->commit();return 'replay';
         }
         $charge=one('SELECT * FROM '.table('software_charges').' WHERE transaction_id=? FOR UPDATE',[$original]);
@@ -86,7 +92,13 @@ function software_payment_dispute_record(string $originalTransactionId,string $c
     if(db()->inTransaction())throw new LogicException('Payment dispute review must own the transaction.');
     db()->beginTransaction();
     try{
-        if(one('SELECT id FROM '.table('software_payment_disputes').' WHERE case_reference=? FOR UPDATE',[$caseReference])){
+        $existing=one('SELECT original_transaction_id,evidence,recorded_by FROM '.table('software_payment_disputes').' WHERE case_reference=? FOR UPDATE',[$caseReference]);
+        if($existing){
+            if((string)$existing['original_transaction_id']!==$originalTransactionId
+                ||(string)$existing['evidence']!==$evidence
+                ||(int)$existing['recorded_by']!==$actor){
+                throw new RuntimeException('Merchant dispute case reference was reused with conflicting evidence.');
+            }
             db()->commit();return 'replay';
         }
         $charge=one('SELECT * FROM '.table('software_charges').' WHERE transaction_id=? FOR UPDATE',[$originalTransactionId]);
