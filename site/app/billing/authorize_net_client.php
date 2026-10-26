@@ -2,13 +2,18 @@
 /** Authorize.net JSON API client, server secrets kept outside the repository. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+function software_anet_production_enabled():bool{
+    return defined('CWP_SOFTWARE_PRODUCTION_PAYMENTS')
+        && CWP_SOFTWARE_PRODUCTION_PAYMENTS===true
+        && setting('software_gateway_production_reviewed')==='1';
+}
 function software_anet_settings():array{
     require_once CWP_CODE_ROOT.'/app/billing/payments.php';
     if(!payments_ready())throw new RuntimeException('Prepare the existing payment gateway settings first.');
     $mode=(string)setting('software_gateway_mode');
     if(!in_array($mode,['sandbox','production'],true))throw new RuntimeException('Software checkout is disabled.');
-    if($mode==='production'&&setting('software_gateway_production_reviewed')!=='1'){
-        throw new RuntimeException('Production checkout requires explicit verified activation.');
+    if($mode==='production'&&!software_anet_production_enabled()){
+        throw new RuntimeException('Production checkout is locked until explicit code-level and owner-reviewed activation.');
     }
     $record=one('SELECT credentials,validation FROM '.table('payment_gateways').' WHERE environment=?',[$mode]);
     if(!$record||!is_string($record['credentials'])||$record['credentials']===''){
