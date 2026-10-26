@@ -217,8 +217,15 @@ try{
     $master=software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,'Owner-approved release validation');
     db()->commit();
     swok(software_grant_verdict(license_get($master['key']),'other.example.com'),'Owner master supports any domain');
-    $masterMeta=one('SELECT purpose FROM '.table('software_entitlements').' WHERE license_id=?',[$master['id']]);
+    $masterMeta=one('SELECT purpose,updates_until,max_installations FROM '.table('software_entitlements').' WHERE license_id=?',[$master['id']]);
     swok(($masterMeta['purpose']??'')==='Owner-approved release validation','Master purpose is persisted for owner review');
+    swok($masterMeta['updates_until']===null&&(int)$masterMeta['max_installations']===25,
+        'New internal master snapshots unrestricted version and seat policy');
+    query('UPDATE '.table('software_entitlements').' SET updates_until=? WHERE license_id=?',
+        ['2000-01-01 00:00:00',$master['id']]);
+    swok(software_grant_version_verdict(license_get($master['key']),'1.0.0')===true,
+        'Internal master ignores stale customer update cutoff for published versions');
+    query('UPDATE '.table('software_entitlements').' SET updates_until=NULL WHERE license_id=?',[$master['id']]);
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['NEXUSCORE','Test software','software','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     $product=(int)db()->lastInsertId();
