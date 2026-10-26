@@ -6,7 +6,15 @@ require_once CWP_CODE_ROOT.'/database/schema/software_commerce_schema.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 
 function software_commerce_ready(): bool {
-    return setting('software_commerce_version') === '3';
+    if(setting('software_commerce_version')!=='3')return false;
+    return software_commerce_table_present('software_entitlements')
+        &&software_commerce_table_present('software_assets')
+        &&software_commerce_table_present('software_product_policies')
+        &&software_commerce_column_present('software_entitlements','updates_until')
+        &&software_commerce_column_present('software_entitlements','max_installations')
+        &&software_commerce_column_present('software_entitlements','policy_revision')
+        &&software_commerce_column_present('software_assets','released_at')
+        &&software_commerce_index_present('software_assets','release_lookup');
 }
 function software_commerce_table_present(string $name): bool {
     return (bool)one(
