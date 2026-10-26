@@ -30,7 +30,8 @@ function software_portal_render(?array $client,string $error=''):never{
         $licenses=all('SELECT l.*,e.license_type,e.licensee,e.expires_at,e.updates_until,e.max_installations FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_master=0 ORDER BY l.id DESC LIMIT 100',[$clientId]);
         foreach($licenses as $lic){
             $expired=$lic['expires_at']!==null && $lic['expires_at']<=gmdate('Y-m-d H:i:s');
-            $status=!(int)$lic['is_active']?'Inactive':($expired?'Expired':'Active');
+            $activeDomains=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[$lic['id']])->fetchColumn();
+            $status=!(int)$lic['is_active']?'Suspended':($expired?'Expired':($activeDomains===0?'Pending deployment':'Active'));
             echo '<article class="workspace-card"><h3>'.esc($lic['product_id']).'</h3>';
             echo '<p>'.esc(ucfirst($lic['license_type'])).' · '.esc($status).'</p>';
             echo '<p>Licensed to: '.esc($lic['licensee']).'</p>';
@@ -41,7 +42,6 @@ function software_portal_render(?array $client,string $error=''):never{
                 echo '<p>Trial: '.$remaining.' day'.($remaining===1?'':'s').' remaining</p>';
             }
             echo '<p>Updates: '.($lic['updates_until']===null?'Lifetime while license is valid':'through '.esc($lic['updates_until']).' UTC').'</p>';
-            $activeDomains=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[$lic['id']])->fetchColumn();
             echo '<p>Installations: '.$activeDomains.' / '.(int)$lic['max_installations'].'</p>';
             echo '<h4>Installation domains</h4>';
             foreach(license_domains((int)$lic['id']) as $domain){
