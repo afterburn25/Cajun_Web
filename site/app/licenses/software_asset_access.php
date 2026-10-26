@@ -12,6 +12,15 @@ function software_asset_entitlement_authorized(int $clientId,int $licenseId,arra
     $license=one('SELECT l.*,e.invoice_id,e.unit_number,e.updates_until FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.id=? AND l.customer_id=? AND l.product_id=? AND l.is_active=1 AND l.is_master=0',
         [$licenseId,$clientId,$sku]);
     if(!$license)return null;
+    if($license['invoice_id']!==null){
+        $unit=(int)($license['unit_number']??0);
+        $order=one('SELECT client_id,sku,quantity FROM '.table('software_orders').' WHERE invoice_id=?',
+            [(int)$license['invoice_id']]);
+        if(!$order||(int)$order['client_id']!==$clientId||(string)$order['sku']!==$sku
+            ||$unit<1||$unit>(int)$order['quantity'])return null;
+    }elseif($license['unit_number']!==null){
+        return null;
+    }
     if($license['updates_until']!==null&&$created>(string)$license['updates_until'])return null;
     $domains=all('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY id LIMIT 25',[$licenseId]);
     foreach($domains as $domain){
