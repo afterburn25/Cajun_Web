@@ -11,7 +11,8 @@ function software_anet_signature_matches(string $body,string $header,string $key
 }
 /** The webhook alone never unlocks an entitlement; reconcile a gateway transaction. */
 function software_anet_event_details(string $body):array{
-    $event=json_decode($body,true,12,JSON_THROW_ON_ERROR);
+    try{$event=json_decode($body,true,12,JSON_THROW_ON_ERROR);}
+    catch(JsonException $e){throw new InvalidArgumentException('Invalid gateway event JSON.',0,$e);}
     if(!is_array($event)||!is_string($event['eventType']??null)||
         !is_array($event['payload']??null))throw new InvalidArgumentException('Invalid gateway event.');
     $entity=(string)($event['payload']['entityName']??'');
