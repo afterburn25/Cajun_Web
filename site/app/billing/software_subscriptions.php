@@ -31,6 +31,28 @@ function software_subscription_settlement_phase(string $status,bool $hasPriorRec
     ];
 }
 
+/**
+ * Reconcile an already-finalized local ARB state against an authoritative
+ * subscription-profile readback. Never silently reactivate a locally
+ * cancelled subscription: an active-gateway/cancelled-local mismatch needs review.
+ */
+function software_subscription_finalized_reconcile_state(string $local,string $gateway,bool $sandbox):string {
+    if(!in_array($local,['pending_first_payment','sandbox_test','active','cancelled'],true)
+        ||!in_array($gateway,['active','expired','suspended','canceled','terminated'],true)){
+        throw new InvalidArgumentException('Invalid finalized subscription reconciliation state.');
+    }
+    $compatible=match($gateway){
+        'active'=>$sandbox
+            ? $local==='sandbox_test'
+            : in_array($local,['pending_first_payment','active'],true),
+        'expired','canceled'=>$local==='cancelled',
+        'suspended','terminated'=>false,
+    };
+    if($compatible)return 'same';
+    if(in_array($gateway,['expired','canceled'],true))return 'cancelled';
+    return 'review';
+}
+
 /** Extend a paid-through UTC timestamp by calendar months, clamping month-end safely. */
 function software_subscription_extend_expiry(string $expiresAt,int $months,DateTimeImmutable $now):string {
     if(!in_array($months,[1,12],true))throw new InvalidArgumentException('Subscription interval must be one or twelve months.');
