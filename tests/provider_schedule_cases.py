@@ -187,3 +187,6 @@ def run_browser(env, browser):
         check('Scheduled task internal HTTP denial '+path, requests.get(base+'/existing/'+path).status_code == 404)
     check('Scheduled read browser flow has no script or provider fixture errors', not errors and not provider.errors)
     context.close()
+    # Keep software commerce last so its disposable orders/licenses cannot affect earlier feature checks.
+    from software_commerce_cases import run_browser as software_commerce_browser
+    software_commerce_browser(env,browser)
