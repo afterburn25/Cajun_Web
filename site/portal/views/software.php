@@ -27,11 +27,18 @@ function software_portal_render(?array $client,string $error=''):never{
     }else{
         $clientId=(int)$client['id'];
         echo '<h2>My licenses</h2><div class="workspace-grid">';
-        $licenses=all('SELECT l.*,e.license_type,e.licensee,e.expires_at,e.updates_until,e.max_installations FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_master=0 ORDER BY l.id DESC LIMIT 100',[$clientId]);
+        $licenses=all('SELECT l.*,e.license_type,e.licensee,e.expires_at,e.updates_until,e.max_installations,s.status AS billing_status FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id LEFT JOIN '.table('software_subscriptions').' s ON s.invoice_id=e.invoice_id WHERE l.customer_id=? AND l.is_master=0 ORDER BY l.id DESC LIMIT 100',[$clientId]);
         foreach($licenses as $lic){
             $expired=$lic['expires_at']!==null && $lic['expires_at']<=gmdate('Y-m-d H:i:s');
             $activeDomains=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[$lic['id']])->fetchColumn();
-            $status=!(int)$lic['is_active']?'Suspended':($expired?'Expired':($activeDomains===0?'Pending deployment':'Active'));
+            $lifecycle=software_grant_lifecycle((int)$lic['id']);
+            $billing=(string)($lic['billing_status']??'');
+            $status=match($lifecycle['state']){
+                'revoked'=>'Revoked',
+                'suspended'=>'Suspended',
+                default=>($expired&&$billing==='billing_suspended'?'Payment suspended':($expired?'Expired':($activeDomains===0?'Pending deployment':'Active')))
+            };
+            $canManageInstallations=$lifecycle['state']==='active'&&!$expired;
             echo '<article class="workspace-card"><h3>'.esc($lic['product_id']).'</h3>';
             echo '<p>'.esc(ucfirst($lic['license_type'])).' · '.esc($status).'</p>';
             echo '<p>Licensed to: '.esc($lic['licensee']).'</p>';
@@ -46,20 +53,22 @@ function software_portal_render(?array $client,string $error=''):never{
             echo '<h4>Installation domains</h4>';
             foreach(license_domains((int)$lic['id']) as $domain){
                 if(!(int)$domain['is_active'])continue;
-                echo '<p>'.esc($domain['domain']).' · Active</p>';
-                echo '<form method="post">'.support_csrf_field();
-                echo '<input type="hidden" name="action" value="license_domain_replace">';
-                echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';
-                echo '<input type="hidden" name="old_domain" value="'.esc($domain['domain']).'">';
-                echo '<label>Move this installation<input name="new_domain" maxlength="253" required placeholder="new-domain.com"></label>';
-                echo '<button class="btn outline" type="submit">Replace domain</button></form>';
-                echo '<form method="post">'.support_csrf_field();
-                echo '<input type="hidden" name="action" value="license_domain_deactivate">';
-                echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';
-                echo '<input type="hidden" name="domain" value="'.esc($domain['domain']).'">';
-                echo '<button class="btn outline" type="submit">Deactivate installation</button></form>';
+                echo '<p>'.esc($domain['domain']).' · Active registration'.($canManageInstallations?'':' · changes paused').'</p>';
+                if($canManageInstallations){
+                    echo '<form method="post">'.support_csrf_field();
+                    echo '<input type="hidden" name="action" value="license_domain_replace">';
+                    echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';
+                    echo '<input type="hidden" name="old_domain" value="'.esc($domain['domain']).'">';
+                    echo '<label>Move this installation<input name="new_domain" maxlength="253" required placeholder="new-domain.com"></label>';
+                    echo '<button class="btn outline" type="submit">Replace domain</button></form>';
+                    echo '<form method="post">'.support_csrf_field();
+                    echo '<input type="hidden" name="action" value="license_domain_deactivate">';
+                    echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';
+                    echo '<input type="hidden" name="domain" value="'.esc($domain['domain']).'">';
+                    echo '<button class="btn outline" type="submit">Deactivate installation</button></form>';
+                }
             }
-            if($activeDomains<(int)$lic['max_installations']){
+            if($canManageInstallations&&$activeDomains<(int)$lic['max_installations']){
                 echo '<form method="post">'.support_csrf_field();
                 echo '<input type="hidden" name="action" value="license_domain_add">';
                 echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';
@@ -67,8 +76,18 @@ function software_portal_render(?array $client,string $error=''):never{
                 echo '<button class="btn outline" type="submit">Add installation</button></form>';
             }
             $cooldown=(string)setting('software_domain_change_cooldown_hours','24');
-            echo '<p class="hint">Replacing the domain deauthorizes the previous installation at its next successful license check. ';
-            echo 'Domain moves are subject to the current '.esc($cooldown).'-hour replacement cooldown.</p>';
+            if($canManageInstallations){
+                echo '<p class="hint">Replacing the domain deauthorizes the previous installation at its next successful license check. ';
+                echo 'Domain moves are subject to the current '.esc($cooldown).'-hour replacement cooldown.</p>';
+            }elseif($lifecycle['state']==='revoked'){
+                echo '<p class="notice error">This license was revoked. Contact support if you believe it should be restored.</p>';
+            }elseif($lifecycle['state']==='suspended'){
+                echo '<p class="notice info">This license is temporarily suspended. Installation changes are paused until the owner resumes it.</p>';
+            }elseif($billing==='billing_suspended'){
+                echo '<p class="notice info">Recurring billing is suspended. Access resumes automatically after a verified payment restores the paid-through entitlement.</p>';
+            }elseif($billing==='payment_failed'){
+                echo '<p class="notice info">A recurring payment failed. Current paid-through access remains valid until its expiration; a verified payment clears this billing issue.</p>';
+            }
             require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
             $observations=software_usage_for_customer((int)$lic['id'],$clientId);
             if($observations){
@@ -116,6 +135,12 @@ function software_portal_render(?array $client,string $error=''):never{
                         'creating'=>'Enrollment pending · software remains locked until verified payment',
                         'pending_first_payment'=>'Awaiting first verified payment · software remains locked',
                         'active'=>'Active recurring billing',
+                        'payment_failed'=>$invoicePaid
+                            ?'Payment failed · paid-through access remains until license expiry'
+                            :'Payment failed · software remains locked until payment is verified',
+                        'billing_suspended'=>$invoicePaid
+                            ?'Billing suspended · access resumes automatically after verified payment'
+                            :'Billing suspended · software remains locked until payment is verified',
                         'cancelling'=>$invoicePaid
                             ?'Cancellation pending · paid-through access remains until license expiry'
                             :'Cancellation pending · software remains locked until verified payment',
@@ -133,7 +158,7 @@ function software_portal_render(?array $client,string $error=''):never{
                     };
                     echo '<p class="hint">Subscription: '.esc($subscriptionLabel).'</p>';
                 }
-                if($sub && in_array($sub['status'],['pending_first_payment','active','sandbox_test'],true)){
+                if($sub && in_array($sub['status'],['pending_first_payment','active','payment_failed','billing_suspended','sandbox_test'],true)){
                     echo '<form method="post">'.support_csrf_field();
                     echo '<input type="hidden" name="action" value="software_subscription_cancel">';
                     echo '<input type="hidden" name="invoice_id" value="'.(int)$order['invoice_id'].'">';

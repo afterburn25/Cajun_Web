@@ -3,7 +3,10 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
 $softwareReady=software_commerce_ready();
+$financingState=license_financing_feature_state();
+$financingReady=$financingState===true;
 $ready = license_ready() && license_invoice_cutover_ready();
 ?>
 <?php if(!$ready): ?>
@@ -47,6 +50,14 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 
 <?php if(!$softwareReady): ?>
 <section class="workspace-card"><h2>Enable advanced software licensing</h2><p>Add trial, temporary, master and paid software tracking, customer purchases, payment checks and private downloads. Existing licenses and invoices are retained.</p><form method="post"><?php admin_action('software_commerce_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare software commerce</button></form></section>
+<?php endif; ?>
+<?php if(!$financingReady): ?>
+<section class="workspace-card"><h2>Enable financed-site license enforcement</h2>
+<p>Bind financed website licenses to accepted recurring-billing schedules. Missed issued installments can suspend access only after the agreed grace period; completing all required installments permanently removes the payment lock.</p>
+<?php if(recurring_billing_ready()): ?>
+<form method="post"><?php admin_action('studio_license_financing_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare financed-site licensing</button></form>
+<?php else: ?><p class="notice info">Prepare service agreements, invoice payments, and recurring billing before enabling financed-site licensing.</p><?php endif; ?>
+</section>
 <?php endif; ?>
 <?php if($softwareReady): ?>
 <section class="workspace-card">
@@ -231,10 +242,10 @@ $chargeReviews=all('SELECT ch.invoice_id,ch.status,ch.transaction_id,o.sku,c.nam
     ['processing','uncertain','review']);
 $reversals=all('SELECT r.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_reversals').' r LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=r.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=r.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY r.id DESC LIMIT 30');
 $disputes=all('SELECT d.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_disputes').' d LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=d.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=d.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY d.id DESC LIMIT 30');
-$subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status IN (?,?) ORDER BY s.id DESC LIMIT 30',
-    ['creating','review']);
-$subscriptionChargeCandidates=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.gateway_subscription_id IS NOT NULL AND s.status IN (?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',
-    ['pending_first_payment','active','cancelling','cancelled','review']);
+$subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status IN (?,?,?,?) ORDER BY s.id DESC LIMIT 30',
+    ['creating','payment_failed','billing_suspended','review']);
+$subscriptionChargeCandidates=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.gateway_subscription_id IS NOT NULL AND s.status IN (?,?,?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',
+    ['pending_first_payment','active','payment_failed','billing_suspended','cancelling','cancelled','review']);
 ?>
 <section class="workspace-card"><h2>Uncertain one-time charge reconciliation</h2>
 <p>Use this only after confirming the transaction ID in Authorize.net. CajunWebPro re-fetches the gateway transaction and requires the exact invoice number and amount before any paid transition. Sandbox verification never fulfills software.</p>
@@ -311,12 +322,15 @@ $history=all('SELECT action,detail,created_at FROM '.table('audit').' WHERE acti
     ['license.%','License '.(int)$lic['id'].' %','Software license '.(int)$lic['id'].' %']);
 $isSoftwareEntitlement=$softwareEntitlementTable
     &&(bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
-$meta=null;$observations=[];
+$meta=null;$observations=[];$lifecycle=null;
+$financePlan=$financingReady?license_financing_plan((int)$lic['id']):null;
 if($softwareReady&&$isSoftwareEntitlement){
     $meta=one('SELECT license_type,licensee,expires_at,updates_until,max_installations,policy_revision,purpose,issued_by,invoice_id,unit_number FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);
     if($meta){
         require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
         $observations=software_usage_recent((int)$lic['id'],10);
+        $lifecycle=software_grant_lifecycle((int)$lic['id']);
     }
 }
 ?>
@@ -329,7 +343,12 @@ if($softwareReady&&$isSoftwareEntitlement){
 <dt><strong>Product</strong></dt>
 <dd><?= esc($lic['product_id']) ?></dd>
 <dt><strong>Status</strong></dt>
-<dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
+<?php
+$lifecycleState=$lifecycle['state']??((int)$lic['is_active']===1?'active':'suspended');
+$lifecycleLabel=match($lifecycleState){'active'=>'Active','suspended'=>'Suspended','revoked'=>'Revoked',default=>'Inactive'};
+$lifecycleColor=$lifecycleState==='active'?'green':'red';
+?>
+<dd><span style="color:<?=$lifecycleColor?>"><?=esc($lifecycleLabel)?></span><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
 <?php if($isSoftwareEntitlement&&!$softwareReady): ?>
 <dt><strong>Software storage</strong></dt><dd><span style="color:#b8860b">Entitlement detected but software-commerce readiness is incomplete. Preserve the database and complete the reviewed recovery before changing software-specific rights.</span></dd>
 <?php endif; ?>
@@ -355,7 +374,13 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <dd><?php if((int)$meta['invoice_id']>0): ?>Verified invoice #<?=(int)$meta['invoice_id']?><?=($meta['unit_number']!==null?' · unit '.(int)$meta['unit_number']:'')?><?php else: ?>Owner/staff issued<?php endif; ?> · issuer <?=((int)$meta['issued_by']>0?'staff #'.(int)$meta['issued_by']:'system fulfillment')?></dd>
 <dt><strong>Registered installations</strong></dt><dd><?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))?> active domain<?=count(array_filter($domains,static fn($d)=>(int)$d['is_active']===1))===1?'':'s'?><?php if($observations): ?> · <?=count($observations)?> observed validation domain<?=count($observations)===1?'':'s'?><?php endif; ?></dd>
 <dt><strong>Last successful validation</strong></dt><dd><?=$observations?esc($observations[0]['last_seen']).' UTC':'No successful checks observed'?> <span class="muted">(observed check, not proof software is currently running)</span></dd>
+<?php if($lifecycle&&$lifecycle['state']!=='active'): ?><dt><strong>Lifecycle reason</strong></dt><dd><?=esc($lifecycle['reason']!==''?$lifecycle['reason']:'No retained reason')?></dd><?php endif; ?>
 <?php if($meta['license_type']==='master'&&staff_can('staff.manage')): ?><dt><strong>Internal purpose</strong></dt><dd><?=esc($meta['purpose'])?></dd><?php endif; ?>
+<?php endif; ?>
+<?php if($financePlan): ?>
+<dt><strong>Financing</strong></dt><dd><?=esc(ucwords(str_replace('_',' ',(string)$financePlan['state'])))?> · <?= (int)$financePlan['installments'] ?> installments · <?= (int)$financePlan['grace_days'] ?>-day grace<?= $financePlan['paid_off_at']!==null?' · permanently paid off '.esc($financePlan['paid_off_at']).' UTC':'' ?></dd>
+<dt><strong>Financing schedule</strong></dt><dd><code><?=esc($financePlan['schedule_id'])?></code></dd>
+<dt><strong>Commercial rights</strong></dt><dd><?=esc(license_financing_rights_label($financePlan))?></dd>
 <?php endif; ?>
 <dt><strong>Created</strong></dt>
 <dd><?= esc($lic['created_at']) ?></dd>
@@ -400,6 +425,36 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <button class="btn outline">Add domain</button>
 </form>
 
+<?php if($financingReady&&!$isSoftwareEntitlement&&!(int)($lic['is_master']??0)): ?>
+<?php if(!$financePlan): ?>
+<h3>Finance this website license</h3>
+<form method="post"><?php admin_action('studio_license_financing_bind'); ?>
+<input type="hidden" name="license_id" value="<?=esc($lic['id'])?>">
+<label>Accepted recurring billing schedule ID<input name="schedule_id" maxlength="32" minlength="32" required placeholder="32-character schedule ID"></label>
+<label>Number of installments<input type="number" name="installments" min="1" max="360" required value="24"></label>
+<label>Grace period in days<input type="number" name="grace_days" min="0" max="90" required value="10"></label>
+<label class="check"><input type="checkbox" name="allow_resale" value="1">Resale rights explicitly included</label>
+<label class="check"><input type="checkbox" name="allow_distribution" value="1">Distribution rights explicitly included</label>
+<label class="check"><input type="checkbox" name="exclusive_resale" value="1">Exclusive resale rights</label>
+<label class="check"><input type="checkbox" name="exclusive_distribution" value="1">Exclusive distribution rights</label>
+<label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label>
+<button class="btn gold">Bind financing agreement</button></form>
+<p class="hint">Default rights are site-use only. Paying off financing does not grant resale or distribution rights.</p>
+<?php else: ?>
+<h3>Financing controls</h3>
+<form method="post" style="display:inline"><?php admin_action('studio_license_financing_sync'); ?><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><button class="btn outline">Refresh financing state</button></form>
+<form method="post"><?php admin_action('studio_license_financing_rights'); ?><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>">
+<label class="check"><input type="checkbox" name="allow_resale" value="1" <?=(int)$financePlan['allow_resale']===1?'checked':''?>>Resale rights</label>
+<label class="check"><input type="checkbox" name="allow_distribution" value="1" <?=(int)$financePlan['allow_distribution']===1?'checked':''?>>Distribution rights</label>
+<label class="check"><input type="checkbox" name="exclusive_resale" value="1" <?=(int)$financePlan['exclusive_resale']===1?'checked':''?>>Exclusive resale</label>
+<label class="check"><input type="checkbox" name="exclusive_distribution" value="1" <?=(int)$financePlan['exclusive_distribution']===1?'checked':''?>>Exclusive distribution</label>
+<label>Agreement/payment evidence<input name="evidence" minlength="10" maxlength="200" required placeholder="Signed addendum, invoice, or retained agreement reference"></label>
+<label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label>
+<button class="btn outline">Grant additional commercial rights</button></form>
+<p class="hint">Rights grants are one-way in this workflow. A paid commercial right is never silently removed later.</p>
+<?php endif; ?>
+<?php endif; ?>
+
 <?php if($history): ?>
 <h3>License history</h3>
 <ul>
@@ -433,6 +488,19 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <p class="hint">Software releases use the immutable versioned ZIP registry above; legacy Website Core bundles are intentionally unavailable for this entitlement.</p>
 <?php endif; ?>
 
+<?php if($isSoftwareEntitlement&&$softwareReady&&$lifecycle): ?>
+<h3>Software license lifecycle</h3>
+<?php if($lifecycle['state']==='active'): ?>
+<form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="suspend"><label>Suspension reason<input name="reason" minlength="5" maxlength="200" required placeholder="Temporary administrative hold"></label><button class="btn outline">Suspend temporarily</button></form>
+<form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="revoke"><label>Revocation reason<input name="reason" minlength="5" maxlength="200" required placeholder="Permanent owner revocation"></label><label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label><button class="btn outline">Revoke license</button></form>
+<?php elseif($lifecycle['state']==='suspended'): ?>
+<form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="resume"><label>Resume reason<input name="reason" minlength="5" maxlength="200" required placeholder="Temporary hold cleared"></label><button class="btn gold">Resume license</button></form>
+<form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="revoke"><label>Revocation reason<input name="reason" minlength="5" maxlength="200" required></label><label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label><button class="btn outline">Revoke license</button></form>
+<?php elseif($lifecycle['state']==='revoked'): ?>
+<form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="restore"><label>Restore reason<input name="reason" minlength="5" maxlength="200" required placeholder="Owner-approved restoration"></label><label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label><button class="btn gold">Restore license</button></form>
+<?php endif; ?>
+<p class="hint">Suspension is reversible and preserves the key, domains and history. Revocation is a stronger owner action and requires password reauthentication.</p>
+<?php else: ?>
 <?php if($lic['is_active']): ?>
 <?php if(!(int)($lic['is_master']??0) && !$isSoftwareEntitlement): ?>
 <form method="post">
@@ -459,6 +527,7 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
 <button class="btn outline" type="submit">Reactivate license</button>
 </form>
+<?php endif; ?>
 <?php endif; ?>
 </section>
 <?php endforeach; ?>

@@ -18,7 +18,7 @@ function software_subscription_term(string $term): string {
  * with cancellation or arrives after a sticky review transition.
  */
 function software_subscription_settlement_phase(string $status,bool $hasPriorReceipt):?array {
-    if(!in_array($status,['pending_first_payment','active','cancelling','cancelled','review'],true))return null;
+    if(!in_array($status,['pending_first_payment','active','payment_failed','billing_suspended','cancelling','cancelled','review'],true))return null;
     if($status==='pending_first_payment'&&$hasPriorReceipt){
         throw new RuntimeException('Pending subscription unexpectedly has paid receipt history.');
     }
@@ -37,20 +37,32 @@ function software_subscription_settlement_phase(string $status,bool $hasPriorRec
  * cancelled subscription: an active-gateway/cancelled-local mismatch needs review.
  */
 function software_subscription_finalized_reconcile_state(string $local,string $gateway,bool $sandbox):string {
-    if(!in_array($local,['pending_first_payment','sandbox_test','active','cancelled'],true)
+    if(!in_array($local,['pending_first_payment','sandbox_test','active','payment_failed','billing_suspended','cancelled'],true)
         ||!in_array($gateway,['active','expired','suspended','canceled','terminated'],true)){
         throw new InvalidArgumentException('Invalid finalized subscription reconciliation state.');
     }
     $compatible=match($gateway){
         'active'=>$sandbox
             ? $local==='sandbox_test'
-            : in_array($local,['pending_first_payment','active'],true),
+            : in_array($local,['pending_first_payment','active','payment_failed','billing_suspended'],true),
         'expired','canceled'=>$local==='cancelled',
-        'suspended','terminated'=>false,
+        'suspended'=>$local==='billing_suspended',
+        'terminated'=>false,
     };
     if($compatible)return 'same';
     if(in_array($gateway,['expired','canceled'],true))return 'cancelled';
+    if($gateway==='suspended'&&in_array($local,['pending_first_payment','active','payment_failed'],true)){
+        return 'billing_suspended';
+    }
     return 'review';
+}
+
+/** Decide the durable local subscription state after an exactly verified payment. */
+function software_subscription_post_payment_status(string $current,bool $first,bool $grantReview):string{
+    if($grantReview)return 'review';
+    if($first&&$current==='pending_first_payment')return 'active';
+    if(in_array($current,['payment_failed','billing_suspended'],true))return 'active';
+    return $current;
 }
 
 /** Plan how a verified renewal treats one existing software grant. */

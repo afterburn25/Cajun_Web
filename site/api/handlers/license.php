@@ -99,6 +99,11 @@ try {
     if (!(bool) $license['is_active']) {
         license_response(false, 'License is deactivated');
     }
+    require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+    $financingAllowed=license_financing_authorized((int)$license['id']);
+    if($financingAllowed===false){
+        license_response(false,'Financing payment is past the agreed grace period');
+    }
     if($productId!==null&&!hash_equals((string)$license['product_id'],$productId)){
         license_response(false,'License is not authorized for this product');
     }

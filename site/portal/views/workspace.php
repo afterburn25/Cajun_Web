@@ -8,6 +8,7 @@ if(!support_current()&&support_ready()){ $policy=one('SELECT allowed FROM '.tabl
 if(!$jobId){?><div class="workspace-grid"><?php $jobs=all('SELECT * FROM '.table('studio_jobs').' WHERE client_id=? ORDER BY id DESC LIMIT 100',[$client['id']]);foreach($jobs as $j):?><article class="workspace-card"><span class="workspace-status"><?=esc(studio_stages()[$j['stage']]??$j['stage'])?></span><h2><?=esc($j['title'])?></h2><p><?=nl2br(esc($j['summary']))?></p><a class="btn gold" href="<?=esc(studio_url(['job'=>$j['id']]))?>">Open project →</a></article><?php endforeach;if(!$jobs)echo '<p>Your projects will appear here after the studio adds them.</p>';?></div>
 <?php // License management section
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
 $licenses=[];
 if(!support_current() && license_storage_ready() && license_ready()){
     $softwareEntitlements=(bool)one(
@@ -24,10 +25,21 @@ if(!support_current() && license_storage_ready() && license_ready()){
 if($licenses):?>
 <h2>Website licenses</h2><div class="workspace-grid">
 <?php foreach($licenses as $lic):?>
+<?php
+$financePlan=null;$financeError='';
+try{$financePlan=license_financing_sync((int)$lic['id']);}catch(Throwable $e){$financeError='Financing status needs owner review.';report_error($e);}
+?>
 <article class="workspace-card">
 <h3>License</h3>
 <p>Key: <code><?=esc($lic['license_key'])?></code></p>
 <p>Product: <?=esc($lic['product_id'])?></p>
+<?php if($financePlan): ?>
+<p><strong>Financing:</strong> <?=esc(ucwords(str_replace('_',' ',(string)$financePlan['state'])))?><?php if($financePlan['paid_off_at']!==null): ?> · permanently paid off <?=esc($financePlan['paid_off_at'])?> UTC<?php endif; ?></p>
+<p><strong>License rights:</strong> <?=esc(license_financing_rights_label($financePlan))?></p>
+<?php if($financePlan['state']==='grace'): ?><p class="notice info">An installment is past due but still inside the agreed grace period.</p><?php endif; ?>
+<?php if($financePlan['state']==='suspended'): ?><p class="notice error">This financed site is temporarily payment-suspended. The same license resumes after the overdue issued installment is fully paid.</p><?php endif; ?>
+<?php if($financePlan['state']==='paid_off'): ?><p class="notice info">Financing is complete. Future billing status can no longer disable this license; domain and commercial-rights restrictions still apply.</p><?php endif; ?>
+<?php elseif($financeError!==''): ?><p class="notice warning"><?=esc($financeError)?></p><?php endif; ?>
 <h4>Registered domains</h4>
 <?php $domains=all('SELECT * FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY registered_at DESC',[$lic['id']]);?>
 <?php if($domains):?>
@@ -44,7 +56,7 @@ if($licenses):?>
 <?php foreach($bundles as $b):?><li><a href="<?=esc(site_url('api/bundle-download.php?id='.(int)$b['id']))?>"><?=esc($b['title'])?> ↓</a> <small><?=esc(gmdate('Y-m-d',strtotime($b['created_at'])))?></small></li><?php endforeach;?>
 </ul><?php endif;?>
 <form method="post"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_add"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><label>Register domain<input type="text" name="domain" placeholder="example.com" required></label><button class="btn gold">Add domain</button></form>
-<p class="hint">Up to 2 active domains per license (e.g. your public site and a test site). Registering or moving a domain takes the old site offline at its next license check. <code>www.</code> addresses count as the same site as their base domain.</p>
+<p class="hint">Up to 2 active domains per license (e.g. your public site and a test site). Registering or moving a domain takes the old site offline at its next license check. <code>www.</code> addresses count as the same site as their base domain. Changing the domain does not transfer the license to another customer or grant resale/distribution rights.</p>
 </article>
 <?php endforeach;?>
 </div>

@@ -258,6 +258,11 @@
       "database/migrations/ledger_migrate.php",
       "database/schema/ledger_schema.php"
     ],
+    "app/licenses/financing.php": [
+      "app/licenses/financing_policy.php",
+      "database/migrations/license_financing_migrate.php",
+      "database/schema/license_financing_schema.php"
+    ],
     "app/projects/deliveries.php": [
       "database/migrations/delivery_migrate.php",
       "database/schema/delivery_schema.php"

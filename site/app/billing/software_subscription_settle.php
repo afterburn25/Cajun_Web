@@ -68,8 +68,13 @@ function software_subscription_settle(array $details,string $transactionId): str
         if($first){
             query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
                 [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
-            if(!$phase['preserve_status']){
-                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['active',$sub['id']]);
+            $nextStatus=software_subscription_post_payment_status((string)$sub['status'],true,false);
+            if($nextStatus!==(string)$sub['status']){
+                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',[$nextStatus,$sub['id']]);
+                if($nextStatus==='active'&&in_array((string)$sub['status'],['payment_failed','billing_suspended'],true)){
+                    license_audit(0,'subscription.billing.resume',
+                        'Verified recurring transaction '.$transactionId.' restored billing for software invoice '.$original['id']);
+                }
             }
             $notifyInvoice=$invoiceId;
         }else{
@@ -84,12 +89,19 @@ function software_subscription_settle(array $details,string $transactionId): str
                 query('UPDATE '.table('software_entitlements').' SET expires_at=?,updates_until=? WHERE license_id=?',
                     [$extended,$extended,$g['license_id']]);
             }
+            $nextStatus=software_subscription_post_payment_status((string)$sub['status'],false,$renewalReview);
+            if($nextStatus!==(string)$sub['status']){
+                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',[$nextStatus,$sub['id']]);
+            }
             if($renewalReview){
-                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
                 license_audit(0,'subscription.renewal.review',
                     'Verified recurring transaction '.$transactionId.' paid invoice '.$invoiceId.
-                    ' and extended paid-through entitlement, but at least one software license remains suspended; owner review is required before access can resume');
+                    ' and extended paid-through entitlement, but at least one software license remains manually suspended or revoked; owner review is required before access can resume');
             }else{
+                if($nextStatus==='active'&&in_array((string)$sub['status'],['payment_failed','billing_suspended'],true)){
+                    license_audit(0,'subscription.billing.resume',
+                        'Verified recurring transaction '.$transactionId.' restored billing for software invoice '.$original['id']);
+                }
                 query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
                     [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
                 $notifyInvoice=$invoiceId;

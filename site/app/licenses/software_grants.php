@@ -205,6 +205,79 @@ function software_grant_staff_replace_domain(int $licenseId,string $oldDomain,st
     return $software;
 }
 
+/** Distinguish reversible suspension from owner revocation while reusing the existing active flag for enforcement. */
+function software_grant_lifecycle(int $licenseId):array{
+    $entitlement=software_grant_mutation_entitlement($licenseId);
+    if($entitlement===null)throw new InvalidArgumentException('Software entitlement not found.');
+    $license=one('SELECT is_active FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
+    if(!$license)throw new InvalidArgumentException('License not found.');
+    if((int)$license['is_active']===1)return ['state'=>'active','reason'=>'','changed_at'=>null,'changed_by'=>null];
+    $event=one(
+        'SELECT action,detail,created_at,user_id FROM '.table('audit').
+        ' WHERE action IN (?,?,?) AND (detail LIKE ? OR detail LIKE ?) ORDER BY id DESC LIMIT 1',
+        ['license.software.suspend','license.software.revoke','license.deactivate',
+         'Software license '.$licenseId.' %','License '.$licenseId.' %']
+    );
+    $state=($event['action']??'')==='license.software.revoke'?'revoked':'suspended';
+    return [
+        'state'=>$state,
+        'reason'=>(string)($event['detail']??''),
+        'changed_at'=>$event['created_at']??null,
+        'changed_by'=>isset($event['user_id'])?(int)$event['user_id']:null
+    ];
+}
+
+/** Owner lifecycle control. Revocation/restoration require password reauthentication; suspension/resume preserve key/domain history. */
+function software_grant_lifecycle_transition(int $licenseId,string $action,string $reason,int $actor,
+    #[\SensitiveParameter]?string $ownerPassword=null):array{
+    if(support_current())throw new RuntimeException('Software license lifecycle changes are unavailable during support access.');
+    if(!in_array($action,['suspend','resume','revoke','restore'],true)){
+        throw new InvalidArgumentException('Invalid software license lifecycle action.');
+    }
+    $reason=trim($reason);
+    if(strlen($reason)<5||strlen($reason)>200){
+        throw new InvalidArgumentException('Enter a lifecycle reason between 5 and 200 characters.');
+    }
+    $staff=staff_require('staff.manage');
+    if((int)$staff['id']!==$actor)throw new RuntimeException('Software lifecycle actor does not match the current owner.');
+    if(in_array($action,['revoke','restore'],true)){
+        if($ownerPassword===null||$ownerPassword==='')throw new InvalidArgumentException('Owner password is required for revocation changes.');
+        $owner=staff_owner($ownerPassword);
+        if((int)$owner['id']!==$actor)throw new RuntimeException('Software lifecycle actor does not match the reauthenticated owner.');
+    }
+    $result=[];
+    license_transaction(function()use($licenseId,$action,$reason,$actor,&$result):void{
+        license_lock($licenseId);
+        $current=software_grant_lifecycle($licenseId);
+        $allowed=match($action){
+            'suspend'=>$current['state']==='active',
+            'resume'=>$current['state']==='suspended',
+            'revoke'=>in_array($current['state'],['active','suspended'],true),
+            'restore'=>$current['state']==='revoked',
+            default=>false
+        };
+        if(!$allowed)throw new RuntimeException('Software license cannot transition from '.$current['state'].' using '.$action.'.');
+        $active=in_array($action,['resume','restore'],true)?1:0;
+        query('UPDATE '.table('website_licenses').' SET is_active=?,updated_at=? WHERE id=?',
+            [$active,gmdate('Y-m-d H:i:s'),$licenseId]);
+        $past=match($action){'suspend'=>'suspended','resume'=>'resumed','revoke'=>'revoked','restore'=>'restored'};
+        license_audit($actor,'software.'.$action,'Software license '.$licenseId.' '.$past.': '.$reason);
+        $result=['state'=>match($action){'suspend'=>'suspended','revoke'=>'revoked',default=>'active'},'reason'=>$reason];
+    });
+    return $result;
+}
+
+function software_grant_require_customer_active(int $licenseId):void{
+    $row=one(
+        'SELECT l.is_active,e.expires_at FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.id=?',
+        [$licenseId]
+    );
+    if(!$row||(int)$row['is_active']!==1)throw new RuntimeException('This software license is suspended or revoked.');
+    if($row['expires_at']!==null&&(string)$row['expires_at']<=gmdate('Y-m-d H:i:s')){
+        throw new RuntimeException('This software license has expired.');
+    }
+}
+
 function software_grant_require_client_owner(int $licenseId,int $clientId):void{
     if($licenseId<1||$clientId<1)throw new InvalidArgumentException('License not found.');
     $license=one('SELECT customer_id,is_master FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
@@ -218,6 +291,7 @@ function software_grant_register_domain(int $licenseId,string $domain,int $actor
     software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_register_domain($licenseId,$domain,$actor);return false;}
+    software_grant_require_customer_active($licenseId);
     $domain=license_canonical_domain($domain);
     license_transaction(function()use($licenseId,$domain,$actor):void{
         license_lock($licenseId);
@@ -237,6 +311,7 @@ function software_grant_deactivate_domain(int $licenseId,string $domain,int $act
     software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_deactivate_domain($licenseId,$domain,$actor);return false;}
+    software_grant_require_customer_active($licenseId);
     $domain=license_canonical_domain($domain);
     license_transaction(function()use($licenseId,$domain,$actor):void{
         license_lock($licenseId);
@@ -263,6 +338,7 @@ function software_grant_replace_domain(int $licenseId,string $oldDomain,string $
         license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
         return;
     }
+    software_grant_require_customer_active($licenseId);
     $oldDomain=license_canonical_domain($oldDomain);
     $newDomain=license_canonical_domain($newDomain);
     if($oldDomain===$newDomain)throw new InvalidArgumentException('The new domain is the same as the current one.');

@@ -200,6 +200,59 @@ function studio_admin_action(string $action,array $user): never {
         software_commerce_prepare(posted('current_password',200));
         flash('Software license and purchase storage is prepared. Existing licenses were retained.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_license_lifecycle'){
+        if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
+        if(support_current())throw new RuntimeException('Leave support mode first.');
+        staff_require('staff.manage');
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+        $id=gint($_POST,'id',1,2147483647);
+        $transition=posted('transition',20);
+        $reason=posted('reason',200);
+        $password=array_key_exists('current_password',$_POST)?posted('current_password',200):null;
+        $result=software_grant_lifecycle_transition($id,$transition,$reason,(int)$user['id'],$password);
+        flash('Software license is now '.$result['state'].'. Existing key and domain history were preserved.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_financing_setup'){
+        require_once CWP_CODE_ROOT.'/database/migrations/license_financing_migrate.php';
+        license_financing_prepare(posted('current_password',200));
+        flash('Financed-site license enforcement is prepared. Existing licenses and billing records were preserved.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_financing_bind'){
+        require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+        $plan=license_financing_bind(
+            gint($_POST,'license_id',1,2147483647),posted('schedule_id',32),
+            gint($_POST,'installments',1,360),gint($_POST,'grace_days',0,90),
+            [
+                'resale'=>isset($_POST['allow_resale']),
+                'distribution'=>isset($_POST['allow_distribution']),
+                'exclusive_resale'=>isset($_POST['exclusive_resale']),
+                'exclusive_distribution'=>isset($_POST['exclusive_distribution'])
+            ],
+            posted('current_password',200)
+        );
+        flash('Financing bound to this website license. Payment-dependent access now follows the retained agreement and grace period.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_financing_rights'){
+        require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+        $plan=license_financing_grant_rights(
+            gint($_POST,'license_id',1,2147483647),
+            [
+                'resale'=>isset($_POST['allow_resale']),
+                'distribution'=>isset($_POST['allow_distribution']),
+                'exclusive_resale'=>isset($_POST['exclusive_resale']),
+                'exclusive_distribution'=>isset($_POST['exclusive_distribution'])
+            ],
+            posted('evidence',200),posted('current_password',200)
+        );
+        flash('Commercial rights grant recorded. Financing payoff and distribution rights remain separate.');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='studio_license_financing_sync'){
+        staff_require('staff.manage');
+        require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+        $plan=license_financing_sync(gint($_POST,'license_id',1,2147483647));
+        if($plan===null)throw new InvalidArgumentException('Financing agreement not found.');
+        flash('Financing state refreshed: '.$plan['state'].'.');
+        redirect(admin_url('studio-licenses'));
     }elseif(in_array($action,['studio_license_create','studio_license_deactivate','studio_license_reactivate','studio_domain_add','studio_domain_deactivate','studio_domain_replace','studio_license_bundle'],true)&&!license_ready()){
         throw new RuntimeException('Prepare licensing storage first.');
     }elseif($action==='studio_license_legacy_review'){
@@ -259,10 +312,16 @@ function studio_admin_action(string $action,array $user): never {
         $_SESSION['license_key_created']=$key;$target='studio-licenses';
     }elseif($action==='studio_license_deactivate'){
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
+        if(software_commerce_ready()&&one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$id])){
+            throw new InvalidArgumentException('Use the explicit software suspend/revoke controls for this entitlement.');
+        }
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         license_deactivate($id,(int)$user['id']);$target='studio-licenses';
     }elseif($action==='studio_license_reactivate'){
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
+        if(software_commerce_ready()&&one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$id])){
+            throw new InvalidArgumentException('Use the explicit software resume/restore controls for this entitlement.');
+        }
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         license_reactivate($id,(int)$user['id']);flash('License reactivated — its registered sites come back online at their next validation.');$target='studio-licenses';
     }elseif($action==='studio_domain_add'){

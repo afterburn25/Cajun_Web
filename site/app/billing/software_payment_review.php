@@ -140,9 +140,20 @@ function software_subscription_lifecycle_review(string $eventType,string $subscr
         if($target===null){db()->commit();return 'ignored';}
         if($sub['status']===$target){db()->commit();return 'replay';}
         query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',[$target,$sub['id']]);
+        license_audit(0,'subscription.lifecycle',
+            'Software invoice '.(int)$sub['invoice_id'].' gateway subscription '.$subscriptionId.
+            ' event '.$eventType.' -> '.$target);
         db()->commit();
-        // Paid-through entitlements are deliberately not revoked here.
-        return $target==='review'?'subscription_review':'subscription_cancelled';
+        // Paid-through entitlements are not destroyed here. Their paid-through
+        // expiry remains the access boundary; a later verified payment can
+        // clear payment_failed/billing_suspended without changing the key.
+        return match($target){
+            'payment_failed'=>'subscription_payment_failed',
+            'billing_suspended'=>'subscription_billing_suspended',
+            'review'=>'subscription_review',
+            'cancelled'=>'subscription_cancelled',
+            default=>'subscription_updated'
+        };
     }catch(Throwable $e){
         if(db()->inTransaction())db()->rollBack();
         throw $e;

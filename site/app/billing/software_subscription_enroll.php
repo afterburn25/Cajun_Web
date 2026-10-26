@@ -85,7 +85,7 @@ function software_subscription_reconcile_finalize(int $invoice,string $gatewayId
         $other=one('SELECT invoice_id FROM '.table('software_subscriptions').' WHERE gateway_subscription_id=? AND invoice_id<>? FOR UPDATE',
             [$gatewayId,$invoice]);
         if($other)throw new RuntimeException('Gateway subscription is already assigned to another software invoice.');
-        if(in_array((string)$sub['status'],['pending_first_payment','sandbox_test','active','cancelled'],true)){
+        if(in_array((string)$sub['status'],['pending_first_payment','sandbox_test','active','payment_failed','billing_suspended','cancelled'],true)){
             if((string)($sub['gateway_subscription_id']??'')!==$gatewayId){
                 throw new RuntimeException('Finalized local subscription is missing its expected gateway identity.');
             }
@@ -98,6 +98,13 @@ function software_subscription_reconcile_finalize(int $invoice,string $gatewayId
                     'Software invoice '.$invoice.' reconciled finalized subscription '.$gatewayId.
                     ' from local '.$local.' to cancelled after gateway '.$gatewayStatus);
                 return 'cancelled';
+            }
+            if($resolution==='billing_suspended'){
+                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['billing_suspended',$sub['id']]);
+                license_audit($actorId,'subscription.enroll.reconcile',
+                    'Software invoice '.$invoice.' reconciled finalized subscription '.$gatewayId.
+                    ' from local '.$local.' to billing_suspended after gateway '.$gatewayStatus);
+                return 'billing_suspended';
             }
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
             license_audit($actorId,'subscription.enroll.reconcile.review',
@@ -137,7 +144,7 @@ function software_subscription_enroll_reconcile(int $invoice,string $gatewayId,#
     staff_owner($password); // authenticate before gateway lookup
     $sub=one('SELECT * FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice]);
     if(!$sub)throw new RuntimeException('Subscription enrollment history is missing.');
-    if(!in_array((string)$sub['status'],['creating','review','pending_first_payment','sandbox_test','active','cancelled'],true)){
+    if(!in_array((string)$sub['status'],['creating','review','pending_first_payment','sandbox_test','active','payment_failed','billing_suspended','cancelled'],true)){
         throw new RuntimeException('This subscription state cannot be reconciled from enrollment.');
     }
     if($sub['gateway_subscription_id']!==null&&(string)$sub['gateway_subscription_id']!==$gatewayId){

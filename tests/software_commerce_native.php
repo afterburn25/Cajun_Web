@@ -735,6 +735,28 @@ try{
     swdenied(fn()=>license_register_domain((int)$futureGrant['id'],'policy-three-d.example.com',1),
         'Three-install entitlement rejects a fourth concurrent installation');
 
+    swok(software_grant_lifecycle((int)$futureGrant['id'])['state']==='active',
+        'New software entitlement begins in active lifecycle state');
+    software_grant_lifecycle_transition((int)$futureGrant['id'],'suspend','Temporary owner support hold',1);
+    swok(software_grant_lifecycle((int)$futureGrant['id'])['state']==='suspended'
+        &&(int)one('SELECT is_active FROM '.table('website_licenses').' WHERE id=?',[$futureGrant['id']])['is_active']===0,
+        'Owner can temporarily suspend software without deleting its entitlement');
+    swdenied(fn()=>software_grant_register_domain((int)$futureGrant['id'],'suspended-change.example.com',1),
+        'Suspended customer cannot change software installations');
+    software_grant_lifecycle_transition((int)$futureGrant['id'],'resume','Temporary owner hold cleared',1);
+    swok((int)one('SELECT is_active FROM '.table('website_licenses').' WHERE id=?',[$futureGrant['id']])['is_active']===1,
+        'Owner resume restores the same software entitlement');
+    swdenied(fn()=>software_grant_lifecycle_transition((int)$futureGrant['id'],'revoke','Owner revocation test',1,'wrong-password'),
+        'Software revocation requires correct owner reauthentication');
+    software_grant_lifecycle_transition((int)$futureGrant['id'],'revoke','Owner revocation test',1,$password);
+    swok(software_grant_lifecycle((int)$futureGrant['id'])['state']==='revoked',
+        'Owner can distinctly revoke a software license');
+    swdenied(fn()=>software_grant_register_domain((int)$futureGrant['id'],'revoked-change.example.com',1),
+        'Revoked customer cannot change software installations');
+    software_grant_lifecycle_transition((int)$futureGrant['id'],'restore','Owner-approved restoration',1,$password);
+    swok(software_grant_lifecycle((int)$futureGrant['id'])['state']==='active',
+        'Owner restoration returns the same revoked key to active state');
+
     query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at,deactivated_at) VALUES (?,?,0,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 190 DAY))',
         [$usageLicense,'stale-observation.example.com']);
     query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 181 DAY),7)',
@@ -959,12 +981,18 @@ try{
     swok(software_subscription_cancel_finalize($subscriptionId,1,$invoice)==='review',
         'Cancellation finalizer preserves concurrent review state');
     query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['active',$subscriptionId]);
-    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.failed','123456789')==='subscription_review',
-        'Failed gateway subscription enters review');
-    swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
-        'Subscription review is persisted');
-    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.cancelled','123456789')==='replay',
-        'Cancellation cannot erase an unresolved review state');
+    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.failed','123456789')==='subscription_payment_failed',
+        'Failed gateway subscription records a recoverable payment failure');
+    swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='payment_failed',
+        'Payment-failed subscription state is persisted distinctly from disputes');
+    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.suspended','123456789')==='subscription_billing_suspended',
+        'Gateway suspension records a temporary billing suspension');
+    swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='billing_suspended',
+        'Billing-suspended state is persisted for automatic payment recovery');
+    swok(software_subscription_post_payment_status('billing_suspended',false,false)==='active',
+        'Exactly verified renewal is allowed to resume billing suspension');
+    swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.cancelled','123456789')==='subscription_cancelled',
+        'Cancellation can stop future renewal from a billing-suspended state');
     query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=?',['active',$invoice]);
     swok(software_subscription_lifecycle_review('net.authorize.customer.subscription.cancelled','123456789')==='subscription_cancelled',
         'Cancellation stops future renewal when no review is pending');

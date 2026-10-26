@@ -135,10 +135,14 @@ function software_anet_subscription_profile_details(array $details,string $subsc
 }
 
 function software_subscription_event_target(string $eventType,string $currentStatus):?string{
-    if($currentStatus==='review') return 'review';
+    if($currentStatus==='review')return 'review';
+    if($currentStatus==='cancelled')return 'cancelled';
+    if($currentStatus==='billing_suspended'&&$eventType==='net.authorize.customer.subscription.failed'){
+        return 'billing_suspended';
+    }
     return match($eventType){
-        'net.authorize.customer.subscription.failed',
-        'net.authorize.customer.subscription.suspended',
+        'net.authorize.customer.subscription.failed'=>'payment_failed',
+        'net.authorize.customer.subscription.suspended'=>'billing_suspended',
         'net.authorize.customer.subscription.terminated'=>'review',
         'net.authorize.customer.subscription.cancelled',
         'net.authorize.customer.subscription.expired'=>'cancelled',
