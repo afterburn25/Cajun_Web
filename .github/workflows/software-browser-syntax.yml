@@ -8,6 +8,7 @@ on:
       - 'tests/software_commerce_browser_fixture.php'
       - 'tests/provider_schedule_cases.py'
       - 'tests/browser_acceptance.py'
+      - 'tests/apache_acceptance.py'
       - '.github/workflows/software-browser-syntax.yml'
   workflow_dispatch:
 permissions:
@@ -18,5 +19,5 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - run: python3 -m py_compile tests/software_commerce_cases.py tests/provider_schedule_cases.py tests/browser_acceptance.py
+      - run: python3 -m py_compile tests/software_commerce_cases.py tests/provider_schedule_cases.py tests/browser_acceptance.py tests/apache_acceptance.py
       - run: php -l tests/software_commerce_browser_fixture.php
