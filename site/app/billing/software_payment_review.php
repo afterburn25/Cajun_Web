@@ -44,19 +44,20 @@ function software_payment_reversal_review(array $details,string $eventTransactio
 
 function software_subscription_lifecycle_review(string $eventType,string $subscriptionId):string{
     if(!preg_match('/^[0-9]{1,25}$/D',$subscriptionId))throw new InvalidArgumentException('Invalid subscription identifier.');
-    $map=[
-        'net.authorize.customer.subscription.failed'=>'review',
-        'net.authorize.customer.subscription.suspended'=>'review',
-        'net.authorize.customer.subscription.terminated'=>'review',
-        'net.authorize.customer.subscription.cancelled'=>'cancelled',
-        'net.authorize.customer.subscription.expired'=>'cancelled',
-    ];
-    if(!isset($map[$eventType]))return 'ignored';
-    $sub=one('SELECT * FROM '.table('software_subscriptions').' WHERE gateway_subscription_id=?',[$subscriptionId]);
-    if(!$sub)return 'unknown_subscription';
-    $target=$map[$eventType];
-    if($sub['status']===$target)return 'replay';
-    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',[$target,$sub['id']]);
-    // Paid-through entitlements are deliberately not revoked here.
-    return $target==='review'?'subscription_review':'subscription_cancelled';
+    if(db()->inTransaction())throw new LogicException('Subscription lifecycle review must own the transaction.');
+    db()->beginTransaction();
+    try{
+        $sub=one('SELECT * FROM '.table('software_subscriptions').' WHERE gateway_subscription_id=? FOR UPDATE',[$subscriptionId]);
+        if(!$sub){db()->commit();return 'unknown_subscription';}
+        $target=software_subscription_event_target($eventType,(string)$sub['status']);
+        if($target===null){db()->commit();return 'ignored';}
+        if($sub['status']===$target){db()->commit();return 'replay';}
+        query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',[$target,$sub['id']]);
+        db()->commit();
+        // Paid-through entitlements are deliberately not revoked here.
+        return $target==='review'?'subscription_review':'subscription_cancelled';
+    }catch(Throwable $e){
+        if(db()->inTransaction())db()->rollBack();
+        throw $e;
+    }
 }
