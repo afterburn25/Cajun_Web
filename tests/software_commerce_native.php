@@ -357,7 +357,7 @@ try{
     $manualDependent=software_grant_create(1,'NEXUSCORE','trial','Synthetic Buyer','manual-dependent.example.com',
         gmdate('Y-m-d H:i:s',time()+86400),1);
     db()->commit();
-    swok((bool)one('SELECT id FROM '.table('software_entitlements').' WHERE license_id=? AND license_type=?',
+    swok((bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=? AND license_type=?',
         [$manualDependent['id'],'trial']),
         'Owner-issued dependent software grant succeeds after dependency entitlement is valid');
     swok(!software_customer_has_valid_product(2,'SOFTWARE-TEST'),
