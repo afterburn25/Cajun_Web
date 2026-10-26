@@ -910,6 +910,13 @@ try{
         'Rejected cancellation ownership leaves the local subscription pending finalization');
     swok(software_subscription_cancel_finalize($subscriptionId,1,$invoice)==='cancelled',
         'Cancellation finalizer confirms stored cancelled state');
+    swok(software_subscription_cancel_mark_review($subscriptionId)==='cancelled'
+        &&one('SELECT status FROM '.table('software_subscriptions').' WHERE id=?',[$subscriptionId])===['status'=>'cancelled'],
+        'Late cancellation error handling cannot overwrite a concurrent cancelled state');
+    query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['cancelling',$subscriptionId]);
+    swok(software_subscription_cancel_mark_review($subscriptionId)==='review'
+        &&one('SELECT status FROM '.table('software_subscriptions').' WHERE id=?',[$subscriptionId])===['status'=>'review'],
+        'Cancellation error moves only the still-cancelling state into review');
     query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$subscriptionId]);
     swok(software_subscription_cancel_finalize($subscriptionId,1,$invoice)==='review',
         'Cancellation finalizer preserves concurrent review state');
