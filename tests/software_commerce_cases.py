@@ -322,8 +322,14 @@ def run_browser(env, browser):
     check('Software invoice is tenant-isolated in My Software',
           reference in alice_page.text and reference not in bob_page.text)
     storefront=requests.get(base+'/existing/index.php?page=products',timeout=25)
-    check('Public software storefront links buyers into authenticated My Software',
-          storefront.status_code==200 and 'portal/index.php?software=1' in storefront.text)
+    storefront_doc=soup(storefront)
+    software_card=next((card for card in storefront_doc.select('.catalog-products .growth-card')
+                        if 'Software browser acceptance' in card.get_text(' ',strip=True)),None)
+    software_cta=software_card.select_one('a.btn.gold') if software_card else None
+    check('Published software card links buyers directly into authenticated My Software',
+          storefront.status_code==200 and software_cta is not None
+          and 'portal/index.php?software=1' in software_cta.get('href','')
+          and 'Review & purchase software' in software_cta.get_text(' ',strip=True))
     guest=requests.Session()
     anonymous=guest.get(portal,timeout=25)
     login_form=_action_form(soup,anonymous,'login')
