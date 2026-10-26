@@ -28,18 +28,19 @@ function software_subscription_settle(array $details,string $transactionId): str
     try{
         $sub=one('SELECT * FROM '.table('software_subscriptions').' WHERE gateway_subscription_id=? FOR UPDATE',[$id]);
         if(!$sub) {db()->commit();return 'unknown_subscription';}
-        if(!in_array($sub['status'],['pending_first_payment','active'],true)){
-            db()->commit();return 'subscription_not_active';
-        }
         $previous=one('SELECT invoice_id FROM '.table('software_subscription_receipts').' WHERE gateway_transaction_id=?',[$transactionId]);
         if($previous){db()->commit();return 'replay';}
+        $history=one('SELECT id FROM '.table('software_subscription_receipts').' WHERE subscription_invoice_id=? ORDER BY id LIMIT 1',
+            [(int)$sub['invoice_id']]);
+        $phase=software_subscription_settlement_phase((string)$sub['status'],(bool)$history);
+        if($phase===null){db()->commit();return 'subscription_not_settleable';}
         $original=ledger_invoice((int)$sub['invoice_id']);
         if((int)$sub['client_id']!==(int)$original['client_id']||$original['currency']!=='USD'
             ||$verified['amount_cents']!==(int)$sub['amount_cents']
             ||$verified['invoice_number']!==substr('CWP-'.$original['id'],0,20)){
             throw new RuntimeException('Subscription owner, invoice or payment amount disagrees with gateway.');
         }
-        $first=$sub['status']==='pending_first_payment';
+        $first=(bool)$phase['first'];
         if($first){
             $i=$original;$balance=ledger_balance($i);
             if($i['status']!=='issued'||$balance['paid_cents']!==0
@@ -66,7 +67,9 @@ function software_subscription_settle(array $details,string $transactionId): str
         query('INSERT INTO '.table('software_notices').' (invoice_id,client_id,status,created_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE invoice_id=invoice_id',
             [$invoiceId,$sub['client_id'],'pending',gmdate('Y-m-d H:i:s')]);
         if($first){
-            query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['active',$sub['id']]);
+            if(!$phase['preserve_status']){
+                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['active',$sub['id']]);
+            }
             $notifyInvoice=$invoiceId;
         }else{
             $duration=(int)$sub['interval_months'];
