@@ -89,6 +89,12 @@ try{
     $orphan=one('SELECT id,is_active,is_master FROM '.table('website_licenses').' WHERE license_key=?',[$orphanKey]);
     swdenied(fn()=>software_grant_verdict($orphan,'orphan.example.com'),
         'Reduced API license row cannot authorize registered software with missing entitlement history');
+    license_register_domain((int)$orphan['id'],'orphan.example.com',1);
+    swdenied(fn()=>software_grant_replace_domain((int)$orphan['id'],'orphan.example.com','orphan-moved.example.com',1),
+        'Orphan registered software cannot mutate domains without entitlement history');
+    swok((bool)one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
+        [(int)$orphan['id'],'orphan.example.com']),
+        'Rejected orphan software domain mutation preserves the original active domain');
     $hash=hash('sha256','synthetic software order');
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
     $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false);
