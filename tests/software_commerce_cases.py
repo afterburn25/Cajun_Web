@@ -30,7 +30,7 @@ def _product_data():
     }
 
 
-def _action_form(soup, response, action, *, product_id=None):
+def _action_form(soup, response, action, *, product_id=None, asset_id=None):
     for form in soup(response).select('form'):
         marker=form.select_one('input[name=action]')
         if not marker or marker.get('value') != action:
@@ -38,6 +38,10 @@ def _action_form(soup, response, action, *, product_id=None):
         if product_id is not None:
             product=form.select_one('input[name=product_id]')
             if not product or product.get('value') != str(product_id):
+                continue
+        if asset_id is not None:
+            asset=form.select_one('input[name=asset_id]')
+            if not asset or asset.get('value') != str(asset_id):
                 continue
         return form
     raise AssertionError('Software form missing '+action)
@@ -285,6 +289,34 @@ def run_browser(env, browser):
           bob.get(download,timeout=25).status_code==404)
     check('Anonymous software ZIP request is refused',
           requests.get(download,timeout=25).status_code==403)
+
+    visibility_page=admin.get(licenses,timeout=25)
+    visibility_form=_action_form(soup,visibility_page,'software_asset_visibility',asset_id=asset_id)
+    visibility=form_data(visibility_form);visibility['current_password']=OWNER
+    hidden=admin.post(licenses,data=visibility,timeout=25)
+    check('Owner can make an immutable release owner-private through actual admin form',
+          hidden.status_code==200
+          and db('SELECT is_published FROM ci_software_assets WHERE id=?',[asset_id])==[{'is_published':0}])
+    check('Owner-private release disappears from customer portal and direct download',
+          'Synthetic browser acceptance download' not in alice.get(portal,timeout=25).text
+          and alice.get(download,timeout=25).status_code==404)
+    private_validation=requests.post(validate,json={
+        'license_key':paid['license_key'],
+        'domain':'software-http.example',
+        'product_id':'SOFTWARE-HTTP-ACCEPT',
+        'version':paid['version'],
+    },timeout=25)
+    check('Owner-private release is inconclusive for installed version validation, not a license revocation',
+          private_validation.status_code==400
+          and private_validation.json()=={'authorized':False,'error':'Unknown software version'})
+    restore_page=admin.get(licenses,timeout=25)
+    restore_form=_action_form(soup,restore_page,'software_asset_visibility',asset_id=asset_id)
+    restore=form_data(restore_form);restore['current_password']=OWNER
+    restored=admin.post(licenses,data=restore,timeout=25)
+    check('Owner can restore customer visibility without changing immutable release identity',
+          restored.status_code==200
+          and db('SELECT is_published FROM ci_software_assets WHERE id=?',[asset_id])==[{'is_published':1}]
+          and alice.get(download,timeout=25).status_code==200)
 
     entitlement=db('SELECT updates_until FROM ci_software_entitlements WHERE license_id=?',[license_id])[0]
     cutoff=datetime.strptime(entitlement['updates_until'],'%Y-%m-%d %H:%M:%S')
