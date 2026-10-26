@@ -56,12 +56,7 @@ function software_charge_mark(int $invoice,string $state,?string $transactionId=
     }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
 }
 
-/** Defensive readback: gateway approved response is verified against invoice. */
+/** Defensive readback: gateway approved response is verified against invoice and payment rail. */
 function software_charge_confirmed(array $details,string $transactionId,int $invoice,int $cents):bool{
-    $tx=$details['transaction']??null;
-    if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx))return false;
-    return (string)($tx['transId']??'')===$transactionId
-        && (string)($tx['order']['invoiceNumber']??'')===substr('CWP-'.$invoice,0,20)
-        && software_charge_exact_cents($tx['authAmount']??null)===$cents
-        && in_array($tx['transactionStatus']??'', ['capturedPendingSettlement','settledSuccessfully'],true);
+    return software_anet_one_time_charge_confirmed($details,$transactionId,$invoice,$cents);
 }
