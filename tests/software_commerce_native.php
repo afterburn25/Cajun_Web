@@ -191,6 +191,9 @@ try{
         'Stale software product policy revision cannot overwrite current policy');
     swdenied(fn()=>software_product_policy_save($product,1,'bad-password','',0,2,'wrong-password'),
         'Software product policy save reauthenticates the owner inside the serialized mutation');
+    swdenied(fn()=>software_grant_create(2,'NEXUSCORE','trial','Other Buyer','manual-dependent.example.com',
+        gmdate('Y-m-d H:i:s',time()+86400),1),
+        'Owner-issued ordinary software grant cannot bypass missing dependency entitlement');
 
     foreach([
         ['SOFTWARE-DEP-A','Dependency graph A'],
@@ -234,6 +237,13 @@ try{
     db()->commit();
     swok(software_customer_has_valid_product(1,'SOFTWARE-TEST'),
         'Customer dependency check recognizes a valid ordinary software entitlement');
+    db()->beginTransaction();
+    $manualDependent=software_grant_create(1,'NEXUSCORE','trial','Synthetic Buyer','manual-dependent.example.com',
+        gmdate('Y-m-d H:i:s',time()+86400),1);
+    db()->commit();
+    swok((bool)one('SELECT id FROM '.table('software_entitlements').' WHERE license_id=? AND license_type=?',
+        [$manualDependent['id'],'trial']),
+        'Owner-issued dependent software grant succeeds after dependency entitlement is valid');
     swok(!software_customer_has_valid_product(2,'SOFTWARE-TEST'),
         'Software dependency entitlement is tenant-isolated');
 
