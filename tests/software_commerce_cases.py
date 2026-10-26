@@ -223,6 +223,12 @@ def run_browser(env, browser):
     order.update({'domain':'software-http.example','quantity':'1'})
     check('Reloaded software order form carries the current policy revision',order.get('policy_revision')=='2')
 
+    live_trial=fixture('live-trial',pid)
+    trial_before=db('SELECT l.license_key,l.created_at,e.created_at AS entitlement_created,e.issued_by,e.license_type,e.invoice_id FROM ci_website_licenses l JOIN ci_software_entitlements e ON e.license_id=l.id WHERE l.id=?',[live_trial['license_id']])[0]
+    check('Installed paid-upgrade fixture begins as an unlinked trial',
+          trial_before['license_key']==live_trial['license_key']
+          and trial_before['license_type']=='trial' and trial_before['invoice_id'] is None)
+
     created=alice.post(portal,data=order,timeout=30)
     rows=db("SELECT o.*,i.reference,i.status,i.amount_cents FROM ci_software_orders o JOIN ci_studio_invoices i ON i.id=o.invoice_id WHERE o.product_id=? ORDER BY o.id",[pid])
     check('Software order creates one exact issued invoice through client portal',
@@ -246,6 +252,17 @@ def run_browser(env, browser):
     # Test-only transition to the state *after* an independently verified payment.
     paid=fixture('fulfill-asset',invoice)
     asset_id=paid['asset_id'];license_id=paid['license_id']
+    trial_after=db('SELECT l.license_key,l.created_at,e.created_at AS entitlement_created,e.issued_by,e.license_type,e.invoice_id,e.unit_number FROM ci_website_licenses l JOIN ci_software_entitlements e ON e.license_id=l.id WHERE l.id=?',[live_trial['license_id']])[0]
+    check('Installed verified payment upgrades the existing trial key in place',
+          license_id==live_trial['license_id'] and paid['license_key']==live_trial['license_key']
+          and trial_after['license_key']==trial_before['license_key']
+          and trial_after['created_at']==trial_before['created_at']
+          and trial_after['entitlement_created']==trial_before['entitlement_created']
+          and trial_after['issued_by']==trial_before['issued_by']
+          and trial_after['license_type']=='standard'
+          and trial_after['invoice_id']==invoice and trial_after['unit_number']==1)
+    check('Installed paid-upgrade replay leaves exactly one entitlement on the purchased unit',
+          db('SELECT COUNT(*) AS n FROM ci_software_entitlements WHERE invoice_id=? AND unit_number=1',[invoice])==[{'n':1}])
 
     fixture('mail-off')
     notice_page=admin.get(licenses,timeout=25)
