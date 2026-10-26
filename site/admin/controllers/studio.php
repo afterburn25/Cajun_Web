@@ -55,6 +55,23 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_license_setup'){
         require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
         license_migrate(posted('current_password',200));flash('Website licensing storage prepared.');redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_gateway_select'){
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+        require_once CWP_CODE_ROOT.'/app/billing/payments.php';
+        if(!software_commerce_ready()||!payments_ready())throw new RuntimeException('Prepare software and payment configuration first.');
+        if(support_current())throw new RuntimeException('Leave support mode first.');
+        staff_require('staff.manage');
+        staff_owner(posted('current_password',200));
+        $mode=posted('gateway_mode',20);
+        if(!in_array($mode,['disabled','sandbox'],true))throw new RuntimeException('Live payments remain gated pending integrated acceptance and payment reconciliation review.');
+        if($mode==='sandbox'){
+            $record=one('SELECT credentials FROM '.table('payment_gateways').' WHERE environment=?',['sandbox']);
+            if(!$record||$record['credentials']==='')throw new RuntimeException('Configure encrypted Authorize.net sandbox credentials under payment settings first.');
+        }
+        save_setting('software_gateway_mode',$mode);
+        license_audit((int)$user['id'],'gateway.mode','Software payment mode changed to '.$mode);
+        flash('Software payment mode updated. Sandbox transactions do not count as customer payments.');
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_commerce_setup'){
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         software_commerce_prepare(posted('current_password',200));
