@@ -116,6 +116,7 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
 
     staff_locked(fn()=>staff_transaction(function()use($productId,$expectedRevision,$moduleKey,$encoded,$updateMonths,$maxInstallations,$password,$now):void{
         $actor=staff_owner($password);
+        $actorId=(int)$actor['id'];
         $current=one('SELECT * FROM '.table('software_product_policies').' WHERE product_id=? FOR UPDATE',[$productId]);
         $revision=(int)($current['revision']??0);
         if($revision!==$expectedRevision)throw new RuntimeException('This software policy changed. Reload before saving.');
@@ -123,12 +124,12 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
         software_product_policy_assert_acyclic($productId,$replacement);
         if($current){
             query('UPDATE '.table('software_product_policies').' SET module_key=?,dependencies=?,update_months=?,max_installations=?,revision=?,updated_by=?,updated_at=? WHERE product_id=?',
-                [$moduleKey,$encoded,$updateMonths,$maxInstallations,$revision+1,$actor,$now,$productId]);
+                [$moduleKey,$encoded,$updateMonths,$maxInstallations,$revision+1,$actorId,$now,$productId]);
         }else{
             query('INSERT INTO '.table('software_product_policies').' (product_id,module_key,dependencies,update_months,max_installations,revision,updated_by,updated_at) VALUES (?,?,?,?,?,1,?,?)',
-                [$productId,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actor,$now]);
+                [$productId,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actorId,$now]);
         }
-        license_audit($actor,'software.policy','Software product '.$productId.' policy revision '.($revision+1).
+        license_audit($actorId,'software.policy','Software product '.$productId.' policy revision '.($revision+1).
             '; update months '.$updateMonths.'; max installations '.$maxInstallations);
     }));
     return software_product_policy($productId);
