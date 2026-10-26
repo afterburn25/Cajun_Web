@@ -204,6 +204,33 @@ function software_grant_verdict(array $license,string $domain):bool {
         }
         return true; // genuine pre-commerce v3 licenses are not migrated implicitly
     }
+    $kind=SoftwareLicensePolicy::type((string)($row['license_type']??''));
+    $isMaster=(int)($license['is_master']??0)===1;
+    if(($kind===SoftwareLicensePolicy::MASTER)!==$isMaster){
+        throw new RuntimeException('Software entitlement type and master flag disagree.');
+    }
+    if($kind===SoftwareLicensePolicy::STANDARD&&$row['expires_at']!==null){
+        throw new RuntimeException('Perpetual software entitlement has unexpected expiry metadata.');
+    }
+    if(in_array($kind,[SoftwareLicensePolicy::TRIAL,SoftwareLicensePolicy::TEMPORARY],true)
+        &&$row['expires_at']===null){
+        throw new RuntimeException('Time-limited software entitlement is missing expiry metadata.');
+    }
+    $storedLicense=one('SELECT customer_id,product_id FROM '.table('website_licenses').' WHERE id=?',[(int)$license['id']]);
+    if(!$storedLicense)throw new RuntimeException('Software license identity is missing.');
+    $invoiceId=$row['invoice_id']===null?null:(int)$row['invoice_id'];
+    $unit=$row['unit_number']===null?null:(int)$row['unit_number'];
+    if(($invoiceId===null)!==($unit===null)){
+        throw new RuntimeException('Software entitlement order-line identity is incomplete.');
+    }
+    if($invoiceId!==null){
+        $order=one('SELECT client_id,sku,quantity FROM '.table('software_orders').' WHERE invoice_id=?',[$invoiceId]);
+        if(!$order||(int)$order['client_id']!==(int)$storedLicense['customer_id']
+            ||(string)$order['sku']!==(string)$storedLicense['product_id']
+            ||$unit<1||$unit>(int)$order['quantity']){
+            throw new RuntimeException('Software entitlement does not match its purchased order line.');
+        }
+    }
     if((int)$license['is_master']!==1){
         $limit=(int)($row['max_installations']??0);
         if($limit<1||$limit>25)throw new RuntimeException('Software installation policy is invalid.');
