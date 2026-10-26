@@ -224,11 +224,12 @@ function software_grant_verdict(array $license,string $domain):bool {
         throw new RuntimeException('Software entitlement order-line identity is incomplete.');
     }
     if($invoiceId!==null){
-        $order=one('SELECT client_id,sku,quantity FROM '.table('software_orders').' WHERE invoice_id=?',[$invoiceId]);
+        $order=one('SELECT o.client_id,o.sku,o.quantity,i.status AS invoice_status FROM '.table('software_orders').' o JOIN '.table('studio_invoices').' i ON i.id=o.invoice_id WHERE o.invoice_id=?',[$invoiceId]);
         if(!$order||(int)$order['client_id']!==(int)$storedLicense['customer_id']
             ||(string)$order['sku']!==(string)$storedLicense['product_id']
-            ||$unit<1||$unit>(int)$order['quantity']){
-            throw new RuntimeException('Software entitlement does not match its purchased order line.');
+            ||$unit<1||$unit>(int)$order['quantity']
+            ||(string)$order['invoice_status']!=='paid'){
+            throw new RuntimeException('Software entitlement does not match a verified paid order line.');
         }
     }
     if((int)$license['is_master']!==1){
