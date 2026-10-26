@@ -274,6 +274,8 @@ try:
         license_release_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
+        from software_commerce_cases import run_browser as software_commerce_browser
+        software_commerce_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
