@@ -161,6 +161,24 @@ function license_canonical_domain(string $domain): string {
 }
 
 /**
+ * Resolve the active-installation limit. Legacy website licenses retain the
+ * historical two-domain allowance. Software-commerce v3 entitlements may
+ * snapshot a product-specific limit without changing older license rows.
+ */
+function license_domain_limit(int $licenseId): int {
+    $column=one(
+        'SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',
+        [config()['db']['prefix'].'software_entitlements','max_installations']
+    );
+    if(!$column)return 2;
+    $row=one('SELECT max_installations FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
+    if(!$row)return 2;
+    $limit=(int)$row['max_installations'];
+    if($limit<1||$limit>25)throw new RuntimeException('Software installation policy is invalid.');
+    return $limit;
+}
+
+/**
  * Register a domain for a license.
  */
 function license_register_domain(int $licenseId, string $domain, int $actor = 0): void {
@@ -172,11 +190,9 @@ function license_register_domain(int $licenseId, string $domain, int $actor = 0)
 }
 
 /**
- * Registration guts — caller holds the transaction and the license lock,
- * and $domain is already canonical. A license supports at most 2 active
- * domains (public + test instance); registering or reactivating beyond
- * that requires deactivating one first — the deactivated site's next
- * validation then fails and it goes offline.
+ * Registration guts — caller holds the transaction and the license lock.
+ * Legacy licenses retain two active domains; software v3 entitlements use
+ * their snapshotted product-specific installation limit.
  */
 function license_register_domain_tx(int $licenseId, string $domain, int $actor = 0): void {
     $now = gmdate('Y-m-d H:i:s');
@@ -186,8 +202,9 @@ function license_register_domain_tx(int $licenseId, string $domain, int $actor =
             'SELECT COUNT(*) FROM ' . table('license_domains') . ' WHERE license_id = ? AND is_active = 1',
             [$licenseId]
         )->fetchColumn();
-        if ($active >= 2) {
-            throw new InvalidArgumentException('This license already has 2 active domains (public + test). Deactivate one before registering a new site.');
+        $limit=license_domain_limit($licenseId);
+        if ($active >= $limit) {
+            throw new InvalidArgumentException('This license already has '.$limit.' active installation'.($limit===1?'':'s').'. Deactivate one before registering a new site.');
         }
     }
     query(
