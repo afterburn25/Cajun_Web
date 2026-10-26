@@ -7,12 +7,19 @@ require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
 function software_portal_render(?array $client,string $error=''):never{
     if(!$client||support_current())fail_page('Sign in to your own account to manage software.',403);
     header('Cache-Control: private, no-store');
+    $gateway=null;
+    if(software_commerce_ready()){
+        try{
+            require_once CWP_CODE_ROOT.'/app/billing/authorize_net_client.php';
+            $gateway=software_anet_settings();
+            authorize_net_security_headers($gateway['mode']);
+        }catch(Throwable){$gateway=null;}
+    }
     site_head('My Software & Licenses','portal');support_banner();
     echo '<section class="section"><div class="container">';
     echo '<p><a href="'.esc(studio_url()).'">Client workspace</a> / My Software</p><h1>Software & Licenses</h1>';
     show_flash();
     if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
-    $gateway=null;
     if(!software_commerce_ready()){
         echo '<p>Software purchases have not been enabled. Your existing hosting, domains and project records remain available.</p>';
     }else{
@@ -57,10 +64,6 @@ function software_portal_render(?array $client,string $error=''):never{
         }
         if(!$assets)echo '<p>No eligible software downloads yet.</p>';
         echo '<h2>Software orders and invoices</h2>';
-        try{
-            require_once CWP_CODE_ROOT.'/app/billing/authorize_net_client.php';
-            $gateway=software_anet_settings();
-        }catch(Throwable){$gateway=null;}
         $orders=all('SELECT o.*,i.status,i.amount_cents,i.reference FROM '.table('software_orders').' o JOIN '.table('studio_invoices').' i ON i.id=o.invoice_id WHERE o.client_id=? ORDER BY o.id DESC LIMIT 100',[$clientId]);
         foreach($orders as $order){
             echo '<article class="workspace-card"><h3>'.esc($order['sku']).' · '.esc($order['reference']).'</h3>';
@@ -136,8 +139,8 @@ function software_portal_render(?array $client,string $error=''):never{
     echo '</div></section>';
     if($gateway){
         $external=$gateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';
-        echo '<script defer src="'.esc($external).'"></script>';
-        echo '<script defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
+        echo '<script nonce="'.nonce().'" defer src="'.esc($external).'"></script>';
+        echo '<script nonce="'.nonce().'" defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
     }
     site_foot(false);
     exit;
