@@ -153,14 +153,15 @@ function studio_admin_action(string $action,array $user): never {
         $resolved=license_resolve_legacy_invoice(gint($_POST,'invoice_id',1,2147483647),gint($_POST,'license_id',0,2147483647),posted('confirm',1)==='1',posted('evidence',200),posted('current_password',200));
         flash('Invoice linked to license '.(int)$resolved['id'].'. Existing activation and download settings were preserved; no email was sent.');redirect(admin_url('studio-licenses'));
     }elseif($action==='studio_license_create'){
-        $customerId=gint($_POST,'customer_id',1,2147483647);$productId=posted('product_id',50);
+        $customerId=gint($_POST,'customer_id',1,2147483647);$productId=posted('product_id',60);
         if($productId===''||!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$customerId]))throw new InvalidArgumentException('Choose a client and product.');
         // A master key authorizes every domain — staff.manage is owner-only
         // (it is not a grantable permission), so only an owner mints one.
         if(isset($_POST['master'])&&$_POST['master']==='1')staff_require('staff.manage');
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
-        if(software_commerce_ready()){
+        $advanced=software_commerce_ready()&&array_key_exists('license_type',$_POST);
+        if($advanced){
             require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
             $kind=posted('license_type',20);$licensee=posted('licensee_name',190);
             $master=$kind==='master';
@@ -176,6 +177,16 @@ function studio_admin_action(string $action,array $user): never {
                 db()->commit();$key=$result['key'];
             }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
         }else{
+            if(software_commerce_ready()){
+                $manual=in_array($productId,['restaurant','salon','generic'],true);
+                $catalog=one('SELECT sku,family FROM '.table('catalog_products').' WHERE sku=?',[$productId]);
+                $legacyWebsite=$catalog
+                    &&($catalog['family']??'')!=='software'
+                    &&preg_match('/^WEBSITE-[A-Z0-9_-]+$/D',(string)$catalog['sku'])===1;
+                if(!$manual&&!$legacyWebsite){
+                    throw new InvalidArgumentException('Use the software-license form for registered software products.');
+                }
+            }
             $key=license_create($customerId,$productId,(int)$user['id'],isset($_POST['master'])&&$_POST['master']==='1');
         }
         $_SESSION['license_key_created']=$key;$target='studio-licenses';
