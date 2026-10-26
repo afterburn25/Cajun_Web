@@ -31,7 +31,7 @@ def _product_data():
     }
 
 
-def _action_form(soup, response, action, *, product_id=None, asset_id=None):
+def _action_form(soup, response, action, *, product_id=None, asset_id=None, invoice_id=None):
     for form in soup(response).select('form'):
         marker=form.select_one('input[name=action]')
         if not marker or marker.get('value') != action:
@@ -43,6 +43,10 @@ def _action_form(soup, response, action, *, product_id=None, asset_id=None):
         if asset_id is not None:
             asset=form.select_one('input[name=asset_id]')
             if not asset or asset.get('value') != str(asset_id):
+                continue
+        if invoice_id is not None:
+            invoice=form.select_one('input[name=invoice_id]')
+            if not invoice or invoice.get('value') != str(invoice_id):
                 continue
         return form
     raise AssertionError('Software form missing '+action)
@@ -229,6 +233,42 @@ def run_browser(env, browser):
     # Test-only transition to the state *after* an independently verified payment.
     paid=fixture('fulfill-asset',invoice)
     asset_id=paid['asset_id'];license_id=paid['license_id']
+
+    fixture('mail-off')
+    notice_page=admin.get(licenses,timeout=25)
+    notice_form=_action_form(soup,notice_page,'software_notice_retry',invoice_id=invoice)
+    notice_data=form_data(notice_form);notice_data['current_password']=OWNER
+    notice_response=admin.post(licenses,data=notice_data,timeout=25)
+    notice=db('SELECT status,attempts,sent_at,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
+    check('Owner delivery retry keeps unaccepted disabled-mail notice retryable',
+          'was not sent' in notice_response.text.lower()
+          and notice['status']=='pending' and notice['attempts']==1 and notice['sent_at'] is None
+          and bool(notice['last_error']))
+
+    review=fixture('payment-review',invoice)
+    review_page=admin.get(licenses,timeout=25)
+    check('Verified refund is visible in owner payment reversal review',
+          review['reversal_transaction_id'] in review_page.text
+          and review['original_transaction_id'] in review_page.text
+          and '$5.00' in review_page.text)
+    dispute_form=_action_form(soup,review_page,'software_dispute_record')
+    dispute_data=form_data(dispute_form)
+    dispute_data.update({
+        'original_transaction_id':review['original_transaction_id'],
+        'case_reference':'MSP-BROWSER-001',
+        'evidence':'Verified synthetic browser dispute evidence for owner review',
+        'current_password':OWNER,
+    })
+    dispute_response=admin.post(licenses,data=dispute_data,timeout=25)
+    check('Owner records merchant dispute through actual review form',
+          'Merchant dispute recorded for owner review' in dispute_response.text
+          and db('SELECT original_transaction_id,evidence FROM ci_software_payment_disputes WHERE case_reference=?',
+                 ['MSP-BROWSER-001'])==[{
+                     'original_transaction_id':review['original_transaction_id'],
+                     'evidence':'Verified synthetic browser dispute evidence for owner review'
+                 }])
+    check('Refund and dispute review do not revoke the paid software entitlement',
+          db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
 
     valid=requests.post(validate,json={
         'license_key':paid['license_key'],
