@@ -4,30 +4,6 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 
-function software_anet_reversal_details(array $details,string $eventTransactionId,string $eventType):array{
-    $expectedType = match($eventType){
-        'net.authorize.payment.refund.created'=>'refundTransaction',
-        'net.authorize.payment.void.created'=>'voidTransaction',
-        default=>throw new InvalidArgumentException('Unsupported payment reversal event.')
-    };
-    $tx=$details['transaction']??null;
-    if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx)
-        ||(string)($tx['transId']??'')!==$eventTransactionId
-        ||(string)($tx['transactionType']??'')!==$expectedType
-        ||!preg_match('/^[0-9]{5,30}$/D',$eventTransactionId)
-        ||!preg_match('/^[0-9]{5,30}$/D',(string)($tx['refTransId']??''))){
-        throw new RuntimeException('Gateway reversal could not be tied to a verified original transaction.');
-    }
-    return [
-        'kind'=>$expectedType==='refundTransaction'?'refund':'void',
-        'transaction_id'=>$eventTransactionId,
-        'original_transaction_id'=>(string)$tx['refTransId'],
-        'amount_cents'=>$expectedType==='refundTransaction'
-            ? software_charge_exact_cents($tx['authAmount']??null)
-            : null,
-    ];
-}
-
 function software_payment_reversal_review(array $details,string $eventTransactionId,string $eventType):string{
     if(!software_commerce_ready()||!ledger_ready())throw new RuntimeException('Payments not prepared.');
     $gateway=software_anet_settings();
