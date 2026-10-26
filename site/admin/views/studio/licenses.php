@@ -214,6 +214,8 @@ $reversals=all('SELECT r.*,COALESCE(direct_order.sku,subscription_order.sku) AS 
 $disputes=all('SELECT d.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_disputes').' d LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=d.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=d.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY d.id DESC LIMIT 30');
 $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status IN (?,?) ORDER BY s.id DESC LIMIT 30',
     ['creating','review']);
+$subscriptionChargeCandidates=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.gateway_subscription_id IS NOT NULL AND s.status IN (?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',
+    ['pending_first_payment','active','cancelling','cancelled','review']);
 ?>
 <section class="workspace-card"><h2>Uncertain one-time charge reconciliation</h2>
 <p>Use this only after confirming the transaction ID in Authorize.net. CajunWebPro re-fetches the gateway transaction and requires the exact invoice number and amount before any paid transition. Sandbox verification never fulfills software.</p>
@@ -248,6 +250,21 @@ $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status
 <?php if(!$reversals): ?><p class="muted">No verified software payment reversals recorded.</p><?php endif; ?>
 <?php foreach($reversals as $r): ?>
 <p><?=esc(($r['name']??'Unknown customer').' · '.($r['sku']??'Unknown software'))?> · <?=esc($r['kind'])?> · event <?=esc($r['gateway_transaction_id'])?> · original <?=esc($r['original_transaction_id'])?><?php if($r['amount_cents']!==null): ?> · $<?=esc(number_format((int)$r['amount_cents']/100,2))?><?php endif; ?></p>
+<?php endforeach; ?>
+</section>
+<section class="workspace-card"><h2>Recurring transaction reconciliation</h2>
+<p>If a signed recurring-payment webhook was missed or arrived before the local ARB identity was linked, enter the verified Authorize.net transaction ID here. CajunWebPro re-fetches transaction details and requires the exact subscription ID, original invoice reference, and amount. Sandbox readback never grants paid access.</p>
+<?php if(!$subscriptionChargeCandidates): ?><p class="muted">No linked software subscriptions are available for recurring transaction reconciliation.</p><?php endif; ?>
+<?php foreach($subscriptionChargeCandidates as $r): ?>
+<div class="workspace-card">
+<p><?=esc($r['name'].' · '.$r['sku'])?> · Original invoice <?=(int)$r['invoice_id']?> · local state <?=esc($r['status'])?> · Gateway subscription <?=esc((string)$r['gateway_subscription_id'])?></p>
+<form method="post"><?php admin_action('software_subscription_charge_reconcile'); ?>
+<input type="hidden" name="invoice_id" value="<?=(int)$r['invoice_id']?>">
+<?php admin_input('transaction_id','Verified recurring transaction ID','','text','required pattern="[0-9]{5,30}" maxlength="30"'); ?>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn gold">Reconcile recurring transaction</button>
+</form>
+</div>
 <?php endforeach; ?>
 </section>
 <section class="workspace-card"><h2>Subscription payment review</h2>
