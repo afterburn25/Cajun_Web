@@ -225,6 +225,9 @@ function software_grant_replace_domain(int $licenseId,string $oldDomain,string $
     if($oldDomain===$newDomain)throw new InvalidArgumentException('The new domain is the same as the current one.');
     license_transaction(function()use($licenseId,$oldDomain,$newDomain,$actor):void{
         license_lock($licenseId);
+        if(software_grant_recent_deactivation_blocks_add($licenseId,$newDomain)){
+            throw new RuntimeException('This license recently changed installations. Try again after the owner-configured cooldown.');
+        }
         $hours=software_domain_change_cooldown_hours();
         if($hours>0){
             $last=one('SELECT created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
