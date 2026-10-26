@@ -85,6 +85,10 @@ try{
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['NEXUSCORE','Test software','software','published','once','USD',2499,0,null,'','Synthetic','','Terms',0,1,$now,$now]);
     $product=(int)db()->lastInsertId();
+    $orphanKey=license_create(1,'NEXUSCORE',1,false,null);
+    $orphan=one('SELECT id,is_active,is_master FROM '.table('website_licenses').' WHERE license_key=?',[$orphanKey]);
+    swdenied(fn()=>software_grant_verdict($orphan,'orphan.example.com'),
+        'Reduced API license row cannot authorize registered software with missing entitlement history');
     $hash=hash('sha256','synthetic software order');
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
     $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false);
