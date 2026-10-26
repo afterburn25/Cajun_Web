@@ -61,6 +61,28 @@ function software_product_policy_for_sku(string $sku):array{
     return software_product_policy((int)$product['id']);
 }
 
+function software_product_policy_assert_acyclic(int $productId,array $replacementDependencies):void{
+    if($productId<1||!array_is_list($replacementDependencies))throw new InvalidArgumentException('Invalid software dependency graph.');
+    $graph=[];
+    foreach(all('SELECT product_id,dependencies FROM '.table('software_product_policies').' ORDER BY product_id') as $row){
+        $ids=json_decode((string)$row['dependencies'],true,32,JSON_THROW_ON_ERROR);
+        if(!is_array($ids)||!array_is_list($ids)||count($ids)>25)throw new RuntimeException('Existing software dependency graph is invalid.');
+        $clean=[];
+        foreach($ids as $id){$id=(int)$id;if($id<1)throw new RuntimeException('Existing software dependency graph is invalid.');$clean[$id]=true;}
+        $graph[(int)$row['product_id']]=array_keys($clean);
+    }
+    $graph[$productId]=array_values(array_unique(array_map('intval',$replacementDependencies)));
+    $visiting=[];$done=[];
+    $walk=function(int $node)use(&$walk,&$graph,&$visiting,&$done):void{
+        if(isset($done[$node]))return;
+        if(isset($visiting[$node]))throw new InvalidArgumentException('Software dependency policies cannot contain a circular dependency.');
+        $visiting[$node]=true;
+        foreach($graph[$node]??[] as $dep)$walk((int)$dep);
+        unset($visiting[$node]);$done[$node]=true;
+    };
+    foreach(array_keys($graph) as $node)$walk((int)$node);
+}
+
 function software_product_policy_save(int $productId,int $expectedRevision,string $moduleKey,string $dependencies,
     int $updateMonths,int $maxInstallations,#[\SensitiveParameter] string $password):array{
     if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
@@ -97,6 +119,8 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
         $current=one('SELECT * FROM '.table('software_product_policies').' WHERE product_id=? FOR UPDATE',[$productId]);
         $revision=(int)($current['revision']??0);
         if($revision!==$expectedRevision)throw new RuntimeException('This software policy changed. Reload before saving.');
+        $replacement=json_decode($encoded,true,32,JSON_THROW_ON_ERROR);
+        software_product_policy_assert_acyclic($productId,$replacement);
         if($current){
             query('UPDATE '.table('software_product_policies').' SET module_key=?,dependencies=?,update_months=?,max_installations=?,revision=?,updated_by=?,updated_at=? WHERE product_id=?',
                 [$moduleKey,$encoded,$updateMonths,$maxInstallations,$revision+1,$actor,$now,$productId]);
