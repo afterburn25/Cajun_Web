@@ -68,6 +68,22 @@ function studio_admin_action(string $action,array $user): never {
         $changed=software_asset_visibility(gint($_POST,'asset_id',1,PHP_INT_MAX),$visible,posted('current_password',200));
         flash($changed?'Software release visibility updated.':'Software release visibility was already set that way.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_subscription_charge_reconcile'){
+        require_once CWP_CODE_ROOT.'/app/billing/software_subscription_settle.php';
+        $state=software_subscription_charge_reconcile(
+            gint($_POST,'invoice_id',1,2147483647),
+            posted('transaction_id',30),
+            posted('current_password',200)
+        );
+        flash(match($state){
+            'first_payment_recorded'=>'Verified recurring first payment reconciled and fulfillment retried.',
+            'renewal_recorded'=>'Verified recurring renewal reconciled and paid-through access extended.',
+            'replay'=>'That recurring transaction was already reconciled.',
+            'sandbox_verified'=>'Sandbox recurring transaction verified only; no invoice or entitlement was changed.',
+            'subscription_not_settleable'=>'The gateway transaction is verified, but the local subscription state is not settleable. Keep it in owner review.',
+            default=>'Recurring transaction reconciliation returned '.$state.'.',
+        });
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_subscription_reconcile'){
         require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
         $state=software_subscription_enroll_reconcile(
