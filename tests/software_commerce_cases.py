@@ -96,6 +96,25 @@ def run_browser(env, browser):
     else:
         check('Software commerce storage is already prepared for installed acceptance',True)
 
+    legacy_page=admin.get(licenses,timeout=25)
+    legacy_form=None
+    for form in soup(legacy_page).select('form'):
+        action=form.select_one('input[name=action]')
+        if not action or action.get('value')!='studio_license_create':
+            continue
+        if form.select_one('[name=license_type]') is not None:
+            continue
+        if any(option.get('value')=='restaurant' for option in form.select('select[name=product_id] option')):
+            legacy_form=form;break
+    check('Advanced software setup preserves separate legacy website license form',legacy_form is not None)
+    legacy_data=form_data(legacy_form)
+    legacy_data.update({'customer_id':'1','product_id':'restaurant'})
+    legacy_created=admin.post(licenses,data=legacy_data,timeout=25)
+    legacy_rows=db("SELECT id,product_id FROM ci_website_licenses WHERE customer_id=1 AND product_id='restaurant' ORDER BY id")
+    check('Legacy restaurant website key can still be created after software commerce is enabled',
+          legacy_created.status_code==200 and len(legacy_rows)==1
+          and db('SELECT COUNT(*) AS n FROM ci_software_entitlements WHERE license_id=?',[legacy_rows[0]['id']])==[{'n':0}])
+
     gateway_form=_action_form(soup,admin.get(licenses,timeout=25),'software_gateway_select')
     forged_gateway=form_data(gateway_form)
     forged_gateway.update({'gateway_mode':'production','current_password':OWNER})
