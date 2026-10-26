@@ -85,7 +85,27 @@ function software_subscription_reconcile_finalize(int $invoice,string $gatewayId
             if((string)($sub['gateway_subscription_id']??'')!==$gatewayId){
                 throw new RuntimeException('Finalized local subscription is missing its expected gateway identity.');
             }
-            db()->commit();return 'already_linked';
+            $local=(string)$sub['status'];
+            $compatible=match($gatewayStatus){
+                'active'=>$sandbox
+                    ? $local==='sandbox_test'
+                    : in_array($local,['pending_first_payment','active'],true),
+                'expired','canceled'=>$local==='cancelled',
+                'suspended','terminated'=>false,
+            };
+            if($compatible){db()->commit();return 'already_linked';}
+            if(in_array($gatewayStatus,['expired','canceled'],true)){
+                query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['cancelled',$sub['id']]);
+                license_audit($actor,'subscription.enroll.reconcile',
+                    'Software invoice '.$invoice.' reconciled finalized subscription '.$gatewayId.
+                    ' from local '.$local.' to cancelled after gateway '.$gatewayStatus);
+                db()->commit();return 'cancelled';
+            }
+            query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
+            license_audit($actor,'subscription.enroll.reconcile.review',
+                'Software invoice '.$invoice.' finalized local state '.$local.
+                ' disagrees with gateway subscription '.$gatewayId.' status '.$gatewayStatus);
+            db()->commit();return 'review';
         }
         if(!in_array((string)$sub['status'],['creating','review'],true)){
             throw new RuntimeException('This subscription state cannot be reconciled from enrollment.');
