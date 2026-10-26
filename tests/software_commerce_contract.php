@@ -58,8 +58,13 @@ $voidDetails=[
 $void=software_anet_reversal_details($voidDetails,'700000002','net.authorize.payment.void.created');
 check($void['kind']==='void'&&$void['original_transaction_id']==='600000002'&&$void['amount_cents']===null,
     'Void readback binds the exact original transaction without inventing a refund amount');
-reject(fn()=>software_anet_reversal_details($refundDetails,'700000009','net.authorize.payment.refund.created'),
-    'Reversal readback rejects mismatched gateway transaction id');
+try{
+    software_anet_reversal_details($refundDetails,'700000009','net.authorize.payment.refund.created');
+    throw new RuntimeException('FAILED Reversal readback rejects mismatched gateway transaction id');
+}catch(RuntimeException $expected){
+    if(str_starts_with($expected->getMessage(),'FAILED '))throw $expected;
+    echo 'PASS Reversal readback rejects mismatched gateway transaction id'.PHP_EOL;
+}
 check(software_subscription_event_target('net.authorize.customer.subscription.failed','active')==='review',
     'Failed subscription enters owner review');
 check(software_subscription_event_target('net.authorize.customer.subscription.cancelled','review')==='review',
