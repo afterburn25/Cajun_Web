@@ -63,8 +63,148 @@ function software_portal_render(?array $client,string $error=''):never{
         foreach($orders as $order){
             echo '<article class="workspace-card"><h3>'.esc($order['sku']).' · '.esc($order['reference']).'</h3>';
             echo '<p>Domain: '.esc($order['domain']).' · '.esc($order['status']);
-            echo ' · $'.esc(number_format((int)$order['amount_cents']/100,2));
+            echo ' · 
+            if(in_array($order['billing_term'],['month','year'],true)){
+                $sub=one('SELECT status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]);
+                if($sub && in_array($sub['status'],['pending_first_payment','active','sandbox_test'],true)){
+                    echo '<form method="post">'.support_csrf_field();
+                    echo '<input type="hidden" name="action" value="software_subscription_cancel">';
+                    echo '<input type="hidden" name="invoice_id" value="'.(int)$order['invoice_id'].'">';
+                    echo '<p class="hint">Cancellation stops future gateway charges; already-paid license access continues through its paid period.</p>';
+                    echo '<button class="btn outline" type="submit">Cancel future renewal payments</button></form>';
+                }
+            }
+            if($order['status']==='issued' && $gateway && $gateway['client_key']!==''){
+                $recurring=in_array($order['billing_term'],['month','year'],true);
+                $prior=$recurring?
+                    one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]):
+                    one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$order['invoice_id']]);
+                if($prior){
+                    echo '<p class="notice info">Payment status: '.esc($prior['status']).'. Contact billing before attempting another charge.</p>';
+                }else{
+                    echo '<form method="post" data-authorize-net data-login="'.esc($gateway['login']).'" data-client-key="'.esc($gateway['client_key']).'">';
+                    echo support_csrf_field();
+                    echo '<input type="hidden" name="action" value="'.($recurring?'software_subscription_enroll':'software_charge').'">';
+                    echo '<input type="hidden" name="invoice_id" value="'.(int)$order['invoice_id'].'">';
+                    echo '<input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
+                    echo '<input type="hidden" name="descriptor"><input type="hidden" name="payment_token">';
+                    echo '<label>Card number<input data-card-number autocomplete="cc-number" inputmode="numeric" minlength="13" maxlength="23" required></label>';
+                    echo '<label>Expiration month (MM)<input data-card-month autocomplete="cc-exp-month" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                    echo '<label>Expiration year (YY)<input data-card-year autocomplete="cc-exp-year" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                    echo '<label>Security code<input data-card-code autocomplete="cc-csc" inputmode="numeric" minlength="3" maxlength="4" required></label>';
+                    echo '<p class="hint">Card details are sent directly to Authorize.net for tokenization and are not included in this form submission.</p>';
+                    if($recurring)echo '<p class="hint">Your '.esc($order['billing_term']).' subscription bills on the gateway schedule. Creating a subscription does not authorize software until its first charge succeeds.</p>';
+                    if($gateway['mode']==='sandbox')echo '<p class="notice info">Sandbox test only. This cannot settle a real invoice or issue a paid license.</p>';
+                    echo '<p role="alert" data-payment-error></p>';
+                    echo '<button class="btn gold" type="submit">'.($recurring?'Enroll in recurring billing':'Pay invoice securely').'</button></form>';
+                }
+            }elseif($order['status']==='issued'){
+                echo '<p class="hint">Online card checkout is currently disabled. Your invoice remains available.</p>';
+            }
+            echo '</article>';
+        }
+        echo '<h2>Purchase software</h2>';
+        foreach(catalog_public() as $offer){
+            if(!software_order_offer($offer))continue;
+            echo '<article class="workspace-card"><h3>'.esc($offer['title']).'</h3><p>'.esc($offer['summary']).'</p>';
+            echo '<p>$'.esc(number_format((int)$offer['amount_cents']/100,2)).' · '.esc(catalog_terms()[$offer['term']]).'</p>';
+            echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="software_order_buy">';
+            echo '<input type="hidden" name="product_id" value="'.(int)$offer['id'].'">';
+            echo '<input type="hidden" name="revision" value="'.(int)$offer['revision'].'">';
+            echo '<input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
+            echo '<label>Installation domain<input name="domain" maxlength="253" required placeholder="example.com"></label>';
+            echo '<label>Licenses<input name="quantity" type="number" min="1" max="25" value="1" required></label>';
+            if($offer['term']!=='once')echo '<label><input name="subscribe" type="checkbox" value="1" required> I authorize the '.esc($offer['term']).' subscription and understand recurring charges and cancellation terms.</label>';
+            echo '<button class="btn gold" type="submit">Create invoice</button></form></article>';
+        }
+    }
+    echo '</div></section>';
+    if($gateway){
+        $external=$gateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';
+        echo '<script defer src="'.esc($external).'"></script>';
+        echo '<script defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
+    }
+    site_foot(false);
+    exit;
+}
+.esc(number_format((int)$order['amount_cents']/100,2));
             echo ' · <a href="'.esc(studio_url(['invoice'=>$order['invoice_id']])).'">Invoice</a></p>';
+            if(in_array($order['billing_term'],['month','year'],true)){
+                $renewals=all('SELECT i.id,i.reference,i.status,i.amount_cents,i.paid_at FROM '.table('software_subscription_receipts').' r JOIN '.table('studio_invoices').' i ON i.id=r.invoice_id WHERE r.subscription_invoice_id=? AND r.invoice_id<>r.subscription_invoice_id ORDER BY r.id DESC LIMIT 36',[$order['invoice_id']]);
+                if($renewals){
+                    echo '<h4>Renewal invoices</h4><ul>';
+                    foreach($renewals as $renewal){
+                        echo '<li>'.esc($renewal['reference']).' · '.esc($renewal['status']).' · 
+            if(in_array($order['billing_term'],['month','year'],true)){
+                $sub=one('SELECT status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]);
+                if($sub && in_array($sub['status'],['pending_first_payment','active','sandbox_test'],true)){
+                    echo '<form method="post">'.support_csrf_field();
+                    echo '<input type="hidden" name="action" value="software_subscription_cancel">';
+                    echo '<input type="hidden" name="invoice_id" value="'.(int)$order['invoice_id'].'">';
+                    echo '<p class="hint">Cancellation stops future gateway charges; already-paid license access continues through its paid period.</p>';
+                    echo '<button class="btn outline" type="submit">Cancel future renewal payments</button></form>';
+                }
+            }
+            if($order['status']==='issued' && $gateway && $gateway['client_key']!==''){
+                $recurring=in_array($order['billing_term'],['month','year'],true);
+                $prior=$recurring?
+                    one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]):
+                    one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$order['invoice_id']]);
+                if($prior){
+                    echo '<p class="notice info">Payment status: '.esc($prior['status']).'. Contact billing before attempting another charge.</p>';
+                }else{
+                    echo '<form method="post" data-authorize-net data-login="'.esc($gateway['login']).'" data-client-key="'.esc($gateway['client_key']).'">';
+                    echo support_csrf_field();
+                    echo '<input type="hidden" name="action" value="'.($recurring?'software_subscription_enroll':'software_charge').'">';
+                    echo '<input type="hidden" name="invoice_id" value="'.(int)$order['invoice_id'].'">';
+                    echo '<input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
+                    echo '<input type="hidden" name="descriptor"><input type="hidden" name="payment_token">';
+                    echo '<label>Card number<input data-card-number autocomplete="cc-number" inputmode="numeric" minlength="13" maxlength="23" required></label>';
+                    echo '<label>Expiration month (MM)<input data-card-month autocomplete="cc-exp-month" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                    echo '<label>Expiration year (YY)<input data-card-year autocomplete="cc-exp-year" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                    echo '<label>Security code<input data-card-code autocomplete="cc-csc" inputmode="numeric" minlength="3" maxlength="4" required></label>';
+                    echo '<p class="hint">Card details are sent directly to Authorize.net for tokenization and are not included in this form submission.</p>';
+                    if($recurring)echo '<p class="hint">Your '.esc($order['billing_term']).' subscription bills on the gateway schedule. Creating a subscription does not authorize software until its first charge succeeds.</p>';
+                    if($gateway['mode']==='sandbox')echo '<p class="notice info">Sandbox test only. This cannot settle a real invoice or issue a paid license.</p>';
+                    echo '<p role="alert" data-payment-error></p>';
+                    echo '<button class="btn gold" type="submit">'.($recurring?'Enroll in recurring billing':'Pay invoice securely').'</button></form>';
+                }
+            }elseif($order['status']==='issued'){
+                echo '<p class="hint">Online card checkout is currently disabled. Your invoice remains available.</p>';
+            }
+            echo '</article>';
+        }
+        echo '<h2>Purchase software</h2>';
+        foreach(catalog_public() as $offer){
+            if(!software_order_offer($offer))continue;
+            echo '<article class="workspace-card"><h3>'.esc($offer['title']).'</h3><p>'.esc($offer['summary']).'</p>';
+            echo '<p>$'.esc(number_format((int)$offer['amount_cents']/100,2)).' · '.esc(catalog_terms()[$offer['term']]).'</p>';
+            echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="software_order_buy">';
+            echo '<input type="hidden" name="product_id" value="'.(int)$offer['id'].'">';
+            echo '<input type="hidden" name="revision" value="'.(int)$offer['revision'].'">';
+            echo '<input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
+            echo '<label>Installation domain<input name="domain" maxlength="253" required placeholder="example.com"></label>';
+            echo '<label>Licenses<input name="quantity" type="number" min="1" max="25" value="1" required></label>';
+            if($offer['term']!=='once')echo '<label><input name="subscribe" type="checkbox" value="1" required> I authorize the '.esc($offer['term']).' subscription and understand recurring charges and cancellation terms.</label>';
+            echo '<button class="btn gold" type="submit">Create invoice</button></form></article>';
+        }
+    }
+    echo '</div></section>';
+    if($gateway){
+        $external=$gateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';
+        echo '<script defer src="'.esc($external).'"></script>';
+        echo '<script defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
+    }
+    site_foot(false);
+    exit;
+}
+.esc(number_format((int)$renewal['amount_cents']/100,2));
+                        if($renewal['paid_at']!==null)echo ' · paid '.esc($renewal['paid_at']).' UTC';
+                        echo ' · <a href="'.esc(studio_url(['invoice'=>$renewal['id']])).'">Invoice</a></li>';
+                    }
+                    echo '</ul>';
+                }
+            }
             if(in_array($order['billing_term'],['month','year'],true)){
                 $sub=one('SELECT status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]);
                 if($sub && in_array($sub['status'],['pending_first_payment','active','sandbox_test'],true)){
