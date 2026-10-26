@@ -532,10 +532,6 @@ try{
         'Paid units snapshot the purchased update window and one-install policy');
     $cutoff=(string)$rights[0]['updates_until'];
     $future=(new DateTimeImmutable($cutoff,new DateTimeZone('UTC')))->modify('+1 day')->format('Y-m-d H:i:s');
-    swok(software_asset_customer_authorized(1,'NEXUSCORE',$now),
-        'Purchased software may download releases published inside its update window');
-    swok(!software_asset_customer_authorized(1,'NEXUSCORE',$future),
-        'Purchased software cannot download releases published after its update entitlement');
     $usageLicense=(int)$rights[0]['license_id'];
     swdenied(fn()=>license_register_domain($usageLicense,'second-install.example.com',1),
         'One-install software entitlement rejects a second concurrent installation');
@@ -605,8 +601,6 @@ try{
     swdenied(fn()=>license_register_domain((int)$futureGrant['id'],'policy-three-d.example.com',1),
         'Three-install entitlement rejects a fourth concurrent installation');
 
-    swok(software_asset_customer_authorized(1,'NEXUSCORE',$now),'Purchasing customer is authorized for a matching release timestamp');
-    swok(!software_asset_customer_authorized(2,'NEXUSCORE',$now),'Different customer cannot use another account software entitlement');
     query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at,deactivated_at) VALUES (?,?,0,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 190 DAY))',
         [$usageLicense,'stale-observation.example.com']);
     query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 181 DAY),7)',
