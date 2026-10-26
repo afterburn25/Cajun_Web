@@ -74,7 +74,12 @@ check(software_subscription_event_target('net.authorize.customer.subscription.ca
 check(software_subscription_event_target('net.authorize.customer.subscription.updated','active')===null,
     'Non-terminal subscription updates do not mutate local entitlement state');
 $schema=software_commerce_schema('cwp_');
-check(count($schema)===11,'Eleven additive software-commerce tables');
+check(count($schema)===12,'Twelve additive software-commerce tables');
+check(isset($schema['software_product_policies']),'Software products have explicit version/update/install policy storage');
+check(str_contains($schema['software_entitlements'],'updates_until DATETIME NULL')
+    &&str_contains($schema['software_entitlements'],'max_installations SMALLINT UNSIGNED NOT NULL DEFAULT 2')
+    &&str_contains($schema['software_entitlements'],'policy_revision INT UNSIGNED NOT NULL DEFAULT 0'),
+    'Entitlements snapshot update cutoff, installation limit and policy revision');
 check(isset($schema['software_subscription_receipts']),'Subscription renewals keep unique gateway-transaction receipt history');
 check(isset($schema['software_charge_attempts']),'One-time checkout keeps separate retry records');
 check(isset($schema['software_payment_reversals']),'Refunds and voids keep unique reversal receipts');
