@@ -431,6 +431,21 @@ def run_browser(env, browser):
           'was not sent' in notice_response.text.lower()
           and notice['status']=='pending' and notice['attempts']==1 and notice['sent_at'] is None
           and bool(notice['last_error']))
+    db('UPDATE ci_software_notices SET attempts=10,last_attempt=? WHERE invoice_id=?',
+       [datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),invoice])
+    exhausted_page=admin.get(licenses,timeout=25)
+    reset_form=_action_form(soup,exhausted_page,'software_notice_reset',invoice_id=invoice)
+    reset_data=form_data(reset_form);reset_data['current_password']=OWNER
+    reset_response=admin.post(licenses,data=reset_data,timeout=25)
+    reset_notice=db('SELECT status,attempts,last_attempt,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
+    check('Owner can recover an exhausted software delivery retry budget through UI',
+          'retry budget reset' in reset_response.text.lower()
+          and reset_notice['status']=='pending' and reset_notice['attempts']==0
+          and reset_notice['last_attempt'] is None
+          and 'owner mail-configuration review' in reset_notice['last_error'].lower())
+    check('Delivery retry-budget reset is retained in immutable owner audit',
+          db("SELECT COUNT(*) AS n FROM ci_audit WHERE action='license.software.notice.reset' AND detail LIKE ?",
+             ['Software delivery retry budget reset for invoice '+str(invoice)+'%'])==[{'n':1}])
 
     review=fixture('payment-review',invoice)
     review_page=admin.get(licenses,timeout=25)
