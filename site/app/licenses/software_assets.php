@@ -93,8 +93,9 @@ function software_asset_publish(string $sku,string $version,string $title,string
         $actor=staff_owner($password);
         if(one('SELECT id FROM '.table('software_assets').' WHERE sku=? AND version=?',[$sku,$version]))
             throw new RuntimeException('This version already has an immutable software asset.');
-        query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,?,?)',
-            [$sku,$version,$title,$reference,$sha,$bytes,$customerVisible?1:0,gmdate('Y-m-d H:i:s')]);
+        $now=gmdate('Y-m-d H:i:s');
+        query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+            [$sku,$version,$title,$reference,$sha,$bytes,$customerVisible?1:0,$customerVisible?$now:null,$now]);
         $id=(int)db()->lastInsertId();
         license_audit((int)$actor['id'],'software.asset.publish',
             'Published ZIP '.$id.' for '.$sku.' version '.$version.' as '.($customerVisible?'customer-visible':'owner-private'));
@@ -109,11 +110,16 @@ function software_asset_visibility(int $assetId,bool $customerVisible,#[\Sensiti
     staff_require('staff.manage');
     return staff_locked(fn()=>staff_transaction(function()use($assetId,$customerVisible,$password):bool{
         $actor=staff_owner($password);
-        $asset=one('SELECT id,sku,version,is_published FROM '.table('software_assets').' WHERE id=? FOR UPDATE',[$assetId]);
+        $asset=one('SELECT id,sku,version,is_published,released_at FROM '.table('software_assets').' WHERE id=? FOR UPDATE',[$assetId]);
         if(!$asset)throw new InvalidArgumentException('Software asset not found.');
         $current=(int)$asset['is_published']===1;
         if($current===$customerVisible)return false;
-        query('UPDATE '.table('software_assets').' SET is_published=? WHERE id=?',[$customerVisible?1:0,$assetId]);
+        if($customerVisible){
+            query('UPDATE '.table('software_assets').' SET is_published=1,released_at=COALESCE(released_at,?) WHERE id=?',
+                [gmdate('Y-m-d H:i:s'),$assetId]);
+        }else{
+            query('UPDATE '.table('software_assets').' SET is_published=0 WHERE id=?',[$assetId]);
+        }
         license_audit((int)$actor['id'],'software.asset.visibility',
             'Asset '.$assetId.' '.$asset['sku'].' '.$asset['version'].' changed to '.($customerVisible?'customer-visible':'owner-private'));
         return true;
