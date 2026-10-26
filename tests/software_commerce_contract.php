@@ -112,14 +112,18 @@ check(software_subscription_event_target('net.authorize.customer.subscription.ca
     'Cancellation stops future renewal when no review is pending');
 check(software_subscription_event_target('net.authorize.customer.subscription.updated','active')===null,
     'Non-terminal subscription updates do not mutate local entitlement state');
-check(software_subscription_renewal_grant_action([
+$activeRenewal=software_subscription_renewal_grant_plan([
     'license_type'=>'temporary','is_master'=>0,'is_active'=>1,'expires_at'=>'2030-01-01 00:00:00'
-])==='extend','Active paid-term grant is extended by a verified renewal');
-check(software_subscription_renewal_grant_action([
+]);
+check($activeRenewal===['extend'=>true,'review'=>false],
+    'Active paid-term grant extends without owner review');
+$suspendedRenewal=software_subscription_renewal_grant_plan([
     'license_type'=>'temporary','is_master'=>0,'is_active'=>0,'expires_at'=>'2030-01-01 00:00:00'
-])==='review','Suspended paid-term grant routes a verified renewal to owner review');
+]);
+check($suspendedRenewal===['extend'=>true,'review'=>true],
+    'Suspended paid-term grant preserves paid extension but requires owner review');
 try{
-    software_subscription_renewal_grant_action([
+    software_subscription_renewal_grant_plan([
         'license_type'=>'standard','is_master'=>0,'is_active'=>1,'expires_at'=>null
     ]);
     throw new RuntimeException('FAILED Perpetual grant cannot masquerade as recurring renewal metadata');
