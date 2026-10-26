@@ -26,12 +26,23 @@ function software_delivery_notice_send(int $invoiceId):bool{
     try{
         if(!$client||!filter_var($client['email'],FILTER_VALIDATE_EMAIL))throw new RuntimeException('Client email unavailable.');
         $order=one('SELECT sku FROM '.table('software_orders').' WHERE invoice_id=?',[$invoiceId]);
+        $renewal=false;
+        if(!$order){
+            $receipt=one('SELECT subscription_invoice_id FROM '.table('software_subscription_receipts').' WHERE invoice_id=?',[$invoiceId]);
+            if($receipt){
+                $order=one('SELECT sku FROM '.table('software_orders').' WHERE invoice_id=?',[(int)$receipt['subscription_invoice_id']]);
+                $renewal=true;
+            }
+        }
+        if(!$order)throw new RuntimeException('Software order history unavailable for delivery notice.');
         $body='Hello '.$client['name'].",\n\n".
-            'Your software purchase '.$order['sku'].' has been approved and is available in your CajunWebPro client account.'."\n\n".
+            ($renewal
+                ? 'Your software subscription renewal for '.$order['sku'].' has been verified and your paid-through access has been extended.'
+                : 'Your software purchase '.$order['sku'].' has been approved and is available in your CajunWebPro client account.')."\n\n".
             'Sign in to view your software licenses, registered domains, invoices and purchased downloads:'."\n".
             site_url('portal/index.php?software=1')."\n\n".
             'For security, your license keys and downloadable files are not attached to this email.'."\n\n".'CajunWebPro';
-        send_message($client['email'],'Your CajunWebPro software purchase is ready',$body);
+        send_message($client['email'],$renewal?'Your CajunWebPro software renewal is confirmed':'Your CajunWebPro software purchase is ready',$body);
         query('UPDATE '.table('software_notices').' SET status=?,sent_at=?,last_error=? WHERE invoice_id=?',
             ['sent',gmdate('Y-m-d H:i:s'),'',$invoiceId]);
         return true;
