@@ -18,16 +18,9 @@ function software_anet_cents(mixed $amount): int {
 function software_subscription_settle(array $details,string $transactionId): string {
     if(!software_commerce_ready()||!ledger_ready())throw new RuntimeException('Payments not prepared.');
     $gateway=software_anet_settings();
-    if($gateway['mode']!=='production')return 'sandbox_ignored';
-    $tx=$details['transaction']??null;
-    if(($details['messages']['resultCode']??'')!=='Ok'||!is_array($tx)
-        ||(string)($tx['transId']??'')!==$transactionId
-        ||!in_array($tx['transactionStatus']??'', ['capturedPendingSettlement','settledSuccessfully'],true)
-        ||!isset($tx['subscription']['id'])||!preg_match('/^[0-9]{1,25}$/D',(string)$tx['subscription']['id'])
-        ||!preg_match('/^[0-9]{5,30}$/D',$transactionId)){
-        throw new RuntimeException('Gateway transaction is not a verified captured subscription charge.');
-    }
-    $id=(string)$tx['subscription']['id'];
+    $verified=software_anet_subscription_charge_details($details,$transactionId);
+    if($gateway['mode']!=='production')return 'sandbox_verified';
+    $id=$verified['subscription_id'];
     if(db()->inTransaction())throw new LogicException('Subscription settlement must own the transaction.');
     $notifyInvoice=null;
     db()->beginTransaction();
@@ -41,8 +34,8 @@ function software_subscription_settle(array $details,string $transactionId): str
         if($previous){db()->commit();return 'replay';}
         $original=ledger_invoice((int)$sub['invoice_id']);
         if((int)$sub['client_id']!==(int)$original['client_id']||$original['currency']!=='USD'
-            ||software_anet_cents($tx['authAmount']??null)!==(int)$sub['amount_cents']
-            ||(string)($tx['order']['invoiceNumber']??'')!==substr('CWP-'.$original['id'],0,20)){
+            ||$verified['amount_cents']!==(int)$sub['amount_cents']
+            ||$verified['invoice_number']!==substr('CWP-'.$original['id'],0,20)){
             throw new RuntimeException('Subscription owner, invoice or payment amount disagrees with gateway.');
         }
         $first=$sub['status']==='pending_first_payment';
