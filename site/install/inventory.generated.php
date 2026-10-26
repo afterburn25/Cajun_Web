@@ -147,7 +147,7 @@ function setup_expected_files(): array { return [
     'app/billing/authorize.php'=>'72ae8bd186180f179f2c7d09f3f9248944ff4eab2227bcca79bf0e430a0641c4',
     'app/billing/authorize_net_client.php'=>'6b11f86c6ec2a55847f5e384dd9fef6c0a6427b5cff4d34cf38f75212441171d',
     'app/billing/authorize_net_contract.php'=>'8e0a100c6408812de55a9d696580975bc9008223996c4dda1cc06f05b7ba60ae',
-    'app/billing/authorize_net_webhooks.php'=>'a73fe8e1890bd0cda5a7ebeff4145be568c807dffdbddeda03b392d69322e56a',
+    'app/billing/authorize_net_webhooks.php'=>'15fa2b306517e103a1e9e323f0503ede4ebddf62710d9a21931bbf38a91a243f',
     'app/billing/catalog.php'=>'32cd90b2541dc6994cdb3f3c0c8807e4613d6280d5d50db8e169d6c53ea85ae8',
     'app/billing/ledger.php'=>'1a8545280e50c98ad888c9f79ac4f8f697613bd76a09152a58976ad8ba73b8bf',
     'app/billing/ledger_fulfillment.php'=>'010ae63b8a18100e119283bc6cd534377caeae3d635738713f9359a809e1613c',
