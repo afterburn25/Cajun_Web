@@ -4,6 +4,32 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 
+function software_subscription_enroll_mark_review(int $invoice,?string $gatewayId=null):void{
+    if($invoice<1||($gatewayId!==null&&!preg_match('/^[0-9]{1,25}$/D',$gatewayId))){
+        throw new InvalidArgumentException('Invalid uncertain subscription identity.');
+    }
+    if(db()->inTransaction())throw new LogicException('Subscription enrollment review marker owns its transaction.');
+    db()->beginTransaction();
+    try{
+        $sub=one('SELECT id,status,gateway_subscription_id FROM '.table('software_subscriptions').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
+        if(!$sub){db()->commit();return;}
+        if(!in_array((string)$sub['status'],['creating','review'],true)){db()->commit();return;}
+        if($gatewayId!==null){
+            if($sub['gateway_subscription_id']===null){
+                $other=one('SELECT invoice_id FROM '.table('software_subscriptions').' WHERE gateway_subscription_id=? AND invoice_id<>? FOR UPDATE',
+                    [$gatewayId,$invoice]);
+                if($other)throw new RuntimeException('Gateway subscription id is already assigned to another software invoice.');
+                query('UPDATE '.table('software_subscriptions').' SET gateway_subscription_id=? WHERE id=?',
+                    [$gatewayId,$sub['id']]);
+            }elseif((string)$sub['gateway_subscription_id']!==$gatewayId){
+                throw new RuntimeException('Local subscription already references a different gateway subscription.');
+            }
+        }
+        query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
+        db()->commit();
+    }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+}
+
 function software_subscription_enroll_finalize(int $invoice,string $gatewayId,string $state):string{
     if(!preg_match('/^[0-9]{1,25}$/D',$gatewayId)
         ||!in_array($state,['sandbox_test','pending_first_payment'],true)){
@@ -156,6 +182,7 @@ function software_subscription_enroll(array $client,int $invoice,string $descrip
             [$invoice,(int)$client['id'],$months,(int)$i['amount_cents'],'creating',$order['created_at'],$now]);
         db()->commit();
     }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+    $approvedId=null;
     try{
         // ARB is not an immediate charge: the first payment is scheduled later.
         $start=gmdate('Y-m-d',time()+2*86400);
@@ -167,11 +194,13 @@ function software_subscription_enroll(array $client,int $invoice,string $descrip
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=?',['review',$invoice]);
             return 'review';
         }
+        $approvedId=(string)$id;
         $state=$gateway['mode']==='sandbox'?'sandbox_test':'pending_first_payment';
         // No invoice payment record, license or download is created at enrollment.
-        return software_subscription_enroll_finalize($invoice,(string)$id,$state);
+        return software_subscription_enroll_finalize($invoice,$approvedId,$state);
     }catch(Throwable $error){
-        query('UPDATE '.table('software_subscriptions').' SET status=? WHERE invoice_id=? AND status=?',['review',$invoice,'creating']);
+        try{software_subscription_enroll_mark_review($invoice,$approvedId);}
+        catch(Throwable $reviewError){report_error($reviewError);}
         report_error($error);
         return 'review';
     }
