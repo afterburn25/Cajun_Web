@@ -136,14 +136,11 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='software_notice_reset'){
         if(support_current())throw new RuntimeException('Delivery recovery is unavailable during support mode.');
         staff_require('staff.manage');
-        $actor=staff_owner(posted('current_password',200));
         require_once CWP_CODE_ROOT.'/app/licenses/software_notices.php';
         $invoice=gint($_POST,'invoice_id',1,2147483647);
-        if(!software_delivery_notice_reset($invoice)){
+        if(!software_delivery_notice_reset($invoice,posted('current_password',200))){
             throw new RuntimeException('This notice is not eligible for retry-budget reset.');
         }
-        license_audit((int)$actor['id'],'software.notice.reset',
-            'Software delivery retry budget reset for invoice '.$invoice);
         flash('Delivery retry budget reset after owner review. Retry the notice when mail configuration is ready.');
         redirect(admin_url('studio-licenses'));
     }elseif($action==='software_dispute_record'){
