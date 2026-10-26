@@ -15,6 +15,7 @@ function software_charge_prepare(int $invoice,int $clientId,string $requestKey):
     try{
         $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,$clientId]);
         if(!$order)throw new InvalidArgumentException('Order does not belong to this customer.');
+        if($order['billing_term']!=='once')throw new RuntimeException('Recurring plans must use subscription checkout, not a single-payment charge.');
         $i=ledger_invoice($invoice);$balance=ledger_balance($i);
         if($i['status']!=='issued'||$balance['paid_cents']!==0||$balance['due_cents']!==(int)$i['amount_cents'])
             throw new RuntimeException('Payment amount or invoice state changed. Reload.');
