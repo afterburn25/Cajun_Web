@@ -178,6 +178,33 @@ function software_grant_recent_deactivation_blocks_add(int $licenseId,string $ne
     return true;
 }
 
+/** Staff domain mutation path: preserve legacy behavior, but fail closed for software orphans.
+ * Staff intentionally bypasses the customer cooldown for owner-reviewed support changes.
+ */
+function software_grant_staff_domain_mode(int $licenseId):bool{
+    $entitlement=software_grant_mutation_entitlement($licenseId);
+    if($entitlement===null)return false;
+    $license=one('SELECT is_master FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
+    if(!$license)throw new InvalidArgumentException('License not found.');
+    if((int)$license['is_master']===1)throw new InvalidArgumentException('Master software licenses do not use installation domains.');
+    return true;
+}
+function software_grant_staff_register_domain(int $licenseId,string $domain,int $actor):bool{
+    $software=software_grant_staff_domain_mode($licenseId);
+    license_register_domain($licenseId,$domain,$actor);
+    return $software;
+}
+function software_grant_staff_deactivate_domain(int $licenseId,string $domain,int $actor):bool{
+    $software=software_grant_staff_domain_mode($licenseId);
+    license_deactivate_domain($licenseId,$domain,$actor);
+    return $software;
+}
+function software_grant_staff_replace_domain(int $licenseId,string $oldDomain,string $newDomain,int $actor):bool{
+    $software=software_grant_staff_domain_mode($licenseId);
+    license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
+    return $software;
+}
+
 function software_grant_require_client_owner(int $licenseId,int $clientId):void{
     if($licenseId<1||$clientId<1)throw new InvalidArgumentException('License not found.');
     $license=one('SELECT customer_id,is_master FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
