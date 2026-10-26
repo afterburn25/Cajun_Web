@@ -24,10 +24,16 @@ $licenses = $ready ? all('SELECT l.*, c.name as customer_name FROM '.table('webs
 $customers = $ready ? array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id') : [];
 // First-class software-family products may use any valid SKU; retain legacy prefixed products.
 $products = [];
-try { foreach(all('SELECT sku,title FROM '.table('catalog_products')." WHERE family='software' OR sku LIKE 'WEBSITE-%' OR sku LIKE 'SOFTWARE-%' OR sku LIKE 'APP-%' ORDER BY title") as $p) $products[$p['sku']]=$p['title'].' ('.$p['sku'].')'; } catch (Throwable) {}
-if(!$softwareReady){
-    $products += ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
-}
+$legacyProducts=['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
+try {
+    foreach(all('SELECT sku,title,family FROM '.table('catalog_products')." WHERE family='software' OR sku LIKE 'WEBSITE-%' OR sku LIKE 'SOFTWARE-%' OR sku LIKE 'APP-%' ORDER BY title") as $p){
+        $products[$p['sku']]=$p['title'].' ('.$p['sku'].')';
+        if(($p['family']??'')!=='software'&&preg_match('/^WEBSITE-[A-Z0-9_-]+$/D',(string)$p['sku'])===1){
+            $legacyProducts[$p['sku']]=$p['title'].' ('.$p['sku'].')';
+        }
+    }
+} catch (Throwable) {}
+if(!$softwareReady)$products += $legacyProducts;
 $softwarePolicyProducts=[];
 if($softwareReady){
     require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
@@ -125,6 +131,33 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <button class="btn gold">Generate license key</button>
 </form>
 </section>
+<?php if($softwareReady): ?>
+<section class="workspace-card">
+<h2>Create a legacy website license</h2>
+<p>Use this only for the original Website Core license types. Software-family products use the advanced software form above so update, installation, dependency, and version entitlements are recorded.</p>
+<form method="post">
+<?php admin_action('studio_license_create'); ?>
+<label for="legacy_customer_id">Customer</label>
+<select name="customer_id" id="legacy_customer_id" required>
+<option value="">Choose a customer…</option>
+<?php foreach($customers as $id=>$name): ?>
+<option value="<?= esc($id) ?>"><?= esc($name) ?></option>
+<?php endforeach; ?>
+</select>
+<label for="legacy_product_id">Legacy website product</label>
+<select name="product_id" id="legacy_product_id" required>
+<option value="">Choose a legacy website product…</option>
+<?php foreach($legacyProducts as $key=>$name): ?>
+<option value="<?= esc($key) ?>"><?= esc($name) ?></option>
+<?php endforeach; ?>
+</select>
+<?php if(staff_can('staff.manage')): ?>
+<label><input type="checkbox" name="master" value="1"> Master key — internal testing only</label>
+<?php endif; ?>
+<button class="btn outline">Generate legacy website key</button>
+</form>
+</section>
+<?php endif; ?>
 </div>
 
 <?php if($softwareReady && staff_can('staff.manage')): ?>
