@@ -9,6 +9,7 @@ on:
       - 'site/app/billing/software_orders.php'
       - 'site/app/licenses/software_grants.php'
       - 'site/app/licenses/software_asset_access.php'
+      - 'site/app/licenses/software_assets.php'
       - 'site/app/licenses/software_notices.php'
       - 'site/app/licenses/software_usage.php'
       - 'site/app/licenses/software_fulfill.php'
@@ -56,8 +57,8 @@ jobs:
           sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-zip php8.3-curl php8.3-mbstring
       - name: Write isolated test-only config
         run: |
-          mkdir -p test-runtime qa
-          php8.3 -r '$cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>"","key"=>str_repeat("a",64),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"swci_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");'
+          mkdir -p test-runtime/software-private qa
+          php8.3 -r '$storage=realpath("test-runtime/software-private");$cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>$storage,"key"=>str_repeat("a",64),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"swci_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");'
       - name: Run native licensing and purchase cases
         run: php8.3 tests/software_commerce_native.php
       - name: Source unchanged
