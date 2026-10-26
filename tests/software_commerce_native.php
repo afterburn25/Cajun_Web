@@ -348,6 +348,57 @@ try{
         ['license.payment.reconcile','Software invoice '.$reconcileInvoice.' reconciled to verified Authorize.net transaction 650000001%'])->fetchColumn()===1,
         'Owner reconciliation records one immutable audit event');
 
+    $webhookInvoice=software_order_place($buyer,$reconcileProduct,1,1,'webhook-one-time.example.com',
+        hash('sha256','software one-time webhook review order'),false,0);
+    $webhookRequest=hash('sha256','software one-time webhook review attempt');
+    $webhookCents=software_charge_prepare($webhookInvoice,1,$webhookRequest);
+    $webhookDetails=[
+        'messages'=>['resultCode'=>'Ok'],
+        'transaction'=>[
+            'transId'=>'650000003',
+            'transactionType'=>'authCaptureTransaction',
+            'transactionStatus'=>'capturedPendingSettlement',
+            'authAmount'=>'42.00',
+            'order'=>['invoiceNumber'=>'CWP-'.$webhookInvoice]
+        ]
+    ];
+    swok(software_charge_capture_webhook_review($webhookDetails,'650000003')==='one_time_review',
+        'Signed one-time capture readback is fenced for owner review instead of ARB settlement');
+    $webhookCharge=one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$webhookInvoice]);
+    $webhookAttempt=one('SELECT status,transaction_id FROM '.table('software_charge_attempts').' WHERE request_key=?',[$webhookRequest]);
+    swok($webhookCharge===['status'=>'review','transaction_id'=>'650000003']
+        &&$webhookAttempt===['status'=>'review','transaction_id'=>'650000003']
+        &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$webhookInvoice])===['status'=>'issued']
+        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookInvoice])->fetchColumn()===0,
+        'One-time capture webhook retains transaction identity without paying or fulfilling the invoice');
+    swok(software_charge_reconcile_finalize($webhookInvoice,'650000003',$webhookCents,1)==='paid',
+        'Owner can finalize the exact one-time webhook review after independent reconciliation');
+    swok(software_charge_capture_webhook_review($webhookDetails,'650000003')==='one_time_replay'
+        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookInvoice])->fetchColumn()===1,
+        'Paid one-time capture webhook replay is acknowledged without duplicate fulfillment');
+
+    $webhookMismatchInvoice=software_order_place($buyer,$reconcileProduct,1,1,'webhook-mismatch.example.com',
+        hash('sha256','software one-time webhook mismatch order'),false,0);
+    $webhookMismatchRequest=hash('sha256','software one-time webhook mismatch attempt');
+    software_charge_prepare($webhookMismatchInvoice,1,$webhookMismatchRequest);
+    $mismatchDetails=[
+        'messages'=>['resultCode'=>'Ok'],
+        'transaction'=>[
+            'transId'=>'650000004',
+            'transactionType'=>'authCaptureTransaction',
+            'transactionStatus'=>'capturedPendingSettlement',
+            'authAmount'=>'41.99',
+            'order'=>['invoiceNumber'=>'CWP-'.$webhookMismatchInvoice]
+        ]
+    ];
+    swok(software_charge_capture_webhook_review($mismatchDetails,'650000004')==='one_time_mismatch',
+        'One-time capture amount mismatch is retained for review rather than treated as a subscription');
+    swok(one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$webhookMismatchInvoice])
+        ===['status'=>'review','transaction_id'=>'650000004']
+        &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$webhookMismatchInvoice])===['status'=>'issued']
+        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookMismatchInvoice])->fetchColumn()===0,
+        'Mismatched one-time webhook cannot mark invoice paid or issue software');
+
     $reconcileInvoiceTwo=software_order_place($buyer,$reconcileProduct,1,1,'reconcile-two.example.com',
         hash('sha256','software reconcile second order'),false,0);
     $reconcileRequestTwo=hash('sha256','software reconcile second attempt');
