@@ -136,7 +136,12 @@ function software_dependencies_satisfied(int $clientId,array $dependencySkus):bo
 /** Classify a mutable license without letting orphan software rows fall back to legacy behavior. */
 function software_grant_mutation_entitlement(int $licenseId):?array{
     if($licenseId<1)throw new InvalidArgumentException('License not found.');
-    if(!software_commerce_ready())return null;
+    if(!software_commerce_ready()){
+        $present=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+            [config()['db']['prefix'].'software_entitlements']);
+        if($present)throw new RuntimeException('Software licensing storage state is inconsistent.');
+        return null;
+    }
     $entitlement=one('SELECT license_id,max_installations FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
     if($entitlement)return $entitlement;
     $legacy=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
@@ -210,19 +215,8 @@ function software_domain_change_cooldown_hours():int {
 
 /** Customer software-domain replacement with a serialized per-license cooldown. */
 function software_grant_replace_domain(int $licenseId,string $oldDomain,string $newDomain,int $actor):void {
-    if(!software_commerce_ready()){
-        license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
-        return;
-    }
-    $entitlement=one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
-    if(!$entitlement){
-        $legacy=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
-        if(!$legacy)throw new InvalidArgumentException('License not found.');
-        $productId=(string)($legacy['product_id']??'');
-        $softwareProduct=one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND family=?',[$productId,'software']);
-        $issued=one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
-            ['license.software.issue','Software license '.$licenseId.' issued as %']);
-        if($softwareProduct||$issued)throw new RuntimeException('Software entitlement history is incomplete.');
+    $entitlement=software_grant_mutation_entitlement($licenseId);
+    if($entitlement===null){
         license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
         return;
     }
