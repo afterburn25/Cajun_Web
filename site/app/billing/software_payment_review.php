@@ -86,8 +86,8 @@ function software_payment_dispute_record(string $originalTransactionId,string $c
                 [$caseReference,$originalTransactionId,$evidence,$charge['invoice_id'],null,$actor,gmdate('Y-m-d H:i:s')]);
             query('UPDATE '.table('software_charges').' SET status=?,updated_at=? WHERE id=?',
                 ['dispute_review',gmdate('Y-m-d H:i:s'),$charge['id']]);
-            db()->commit();
             license_audit($actor,'payment.dispute','Merchant dispute '.$caseReference.' recorded for transaction '.$originalTransactionId);
+            db()->commit();
             return 'one_time_dispute_review';
         }
         $receipt=one('SELECT * FROM '.table('software_subscription_receipts').' WHERE gateway_transaction_id=? FOR UPDATE',[$originalTransactionId]);
@@ -98,8 +98,8 @@ function software_payment_dispute_record(string $originalTransactionId,string $c
             query('INSERT INTO '.table('software_payment_disputes').' (case_reference,original_transaction_id,evidence,invoice_id,subscription_invoice_id,recorded_by,created_at) VALUES (?,?,?,?,?,?,?)',
                 [$caseReference,$originalTransactionId,$evidence,$receipt['invoice_id'],$receipt['subscription_invoice_id'],$actor,gmdate('Y-m-d H:i:s')]);
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=?',['review',$sub['id']]);
-            db()->commit();
             license_audit($actor,'payment.dispute','Merchant dispute '.$caseReference.' recorded for recurring transaction '.$originalTransactionId);
+            db()->commit();
             return 'subscription_dispute_review';
         }
         throw new RuntimeException('Original software payment transaction was not found.');
