@@ -88,7 +88,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Publish verified ZIP</button></form></section>
 <?php
-$notices=all('SELECT n.*,o.sku,c.name FROM '.table('software_notices').' n JOIN '.table('software_orders').' o ON o.invoice_id=n.invoice_id JOIN '.table('studio_clients').' c ON c.id=n.client_id ORDER BY n.id DESC LIMIT 30');
+$notices=all('SELECT n.*,COALESCE(o.sku,origin.sku) AS sku,c.name FROM '.table('software_notices').' n LEFT JOIN '.table('software_orders').' o ON o.invoice_id=n.invoice_id LEFT JOIN '.table('software_subscription_receipts').' r ON r.invoice_id=n.invoice_id LEFT JOIN '.table('software_orders').' origin ON origin.invoice_id=r.subscription_invoice_id JOIN '.table('studio_clients').' c ON c.id=n.client_id WHERE COALESCE(o.id,origin.id) IS NOT NULL ORDER BY n.id DESC LIMIT 30');
 ?>
 <section class="workspace-card"><h2>Reconcile a paid software order</h2>
 <p>Retry only an independently verified fully paid invoice. Duplicate licenses and duplicate email notices are refused or reused by the fulfillment service.</p>
