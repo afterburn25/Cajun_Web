@@ -2928,7 +2928,7 @@ function setup_expected_files(): array { return [
     'portal/views/plans.php'=>'d3a86b56b3864b26e5c48a36b6f4e4b108340773bc3c7548ca8769c720395b81',
     'portal/views/registered_domains.php'=>'376929c41321666e0101c20d0b987b22ba9ce401cf7ef1cae6c55f6028335c3b',
     'portal/views/service_observations.php'=>'5916d2451dcaa8b3baa6c701e9c6a4cf683a123e392bdb76a5a17b6e3dac4259',
-    'portal/views/software.php'=>'098bf7ef5f78bf501791a0ba0658b835ce2e7fd87e51ec9220b2b49a0cd09922',
+    'portal/views/software.php'=>'f5991e7d8b706d90454e4bf0ee3bcad54b2d96e710d054999efb85eb2907e957',
     'portal/views/workspace.php'=>'1ef94608ad80fd3a7412cd14fb7ea1828376c3f279e16f9fe3432537b30d0b17',
     'robots.php'=>'643efa6953174e2ccb0f0ca7d282f5d3f67b07f243b1593f47575bfcc960f567',
     'sitemap.php'=>'e73fd55f7d88bc2a4899bdd1305337b6bcf0110aab164d9e9d4cda56f303a3bd',
