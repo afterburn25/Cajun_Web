@@ -57,9 +57,16 @@ function studio_admin_action(string $action,array $user): never {
         license_migrate(posted('current_password',200));flash('Website licensing storage prepared.');redirect(admin_url('studio-licenses'));
     }elseif($action==='software_asset_publish'){
         require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
+        $visible=isset($_POST['customer_visible'])&&$_POST['customer_visible']==='1';
         $id=software_asset_publish(posted('sku',60),posted('version',40),posted('title',120),
-            posted('private_path',500),posted('current_password',200));
-        flash('Verified private software ZIP version published as asset '. $id .'.');
+            posted('private_path',500),posted('current_password',200),$visible);
+        flash('Verified private software ZIP version recorded as asset '.$id.' ('.($visible?'customer-visible':'owner-private').').');
+        redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_asset_visibility'){
+        require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
+        $visible=gint($_POST,'customer_visible',0,1)===1;
+        $changed=software_asset_visibility(gint($_POST,'asset_id',1,PHP_INT_MAX),$visible,posted('current_password',200));
+        flash($changed?'Software release visibility updated.':'Software release visibility was already set that way.');
         redirect(admin_url('studio-licenses'));
     }elseif($action==='software_order_fulfill_retry'){
         if(support_current())throw new RuntimeException('Leave support mode first.');
