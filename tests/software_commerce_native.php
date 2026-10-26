@@ -533,8 +533,8 @@ try{
     swdenied(fn()=>license_register_domain((int)$futureGrant['id'],'policy-three-d.example.com',1),
         'Three-install entitlement rejects a fourth concurrent installation');
 
-    swok(software_asset_customer_authorized(1,'NEXUSCORE'),'Purchasing customer is authorized for matching software assets');
-    swok(!software_asset_customer_authorized(2,'NEXUSCORE'),'Different customer cannot use another account software entitlement');
+    swok(software_asset_customer_authorized(1,'NEXUSCORE',$now),'Purchasing customer is authorized for a matching release timestamp');
+    swok(!software_asset_customer_authorized(2,'NEXUSCORE',$now),'Different customer cannot use another account software entitlement');
     query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at,deactivated_at) VALUES (?,?,0,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 190 DAY))',
         [$usageLicense,'stale-observation.example.com']);
     query('INSERT INTO '.table('software_usage').' (license_id,domain,first_seen,last_seen,check_count) VALUES (?,?,DATE_SUB(UTC_TIMESTAMP(),INTERVAL 200 DAY),DATE_SUB(UTC_TIMESTAMP(),INTERVAL 181 DAY),7)',
