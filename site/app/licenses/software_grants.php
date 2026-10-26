@@ -36,6 +36,49 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
         ($kind===SoftwareLicensePolicy::MASTER?' purpose: '.$purpose:''));
     return ['id'=>$id,'key'=>$key,'type'=>$kind];
 }
+/** Owner-configured customer domain-move cooldown; zero disables the delay. */
+function software_domain_change_cooldown_hours():int {
+    $raw=(string)setting('software_domain_change_cooldown_hours','24');
+    if(!preg_match('/^(?:0|[1-9][0-9]{0,2})$/D',$raw))return 24;
+    return min(720,(int)$raw);
+}
+
+/** Customer software-domain replacement with a serialized per-license cooldown. */
+function software_grant_replace_domain(int $licenseId,string $oldDomain,string $newDomain,int $actor):void {
+    if(!software_commerce_ready()){
+        license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
+        return;
+    }
+    $entitlement=one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
+    if(!$entitlement){
+        license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
+        return;
+    }
+    $oldDomain=license_canonical_domain($oldDomain);
+    $newDomain=license_canonical_domain($newDomain);
+    if($oldDomain===$newDomain)throw new InvalidArgumentException('The new domain is the same as the current one.');
+    license_transaction(function()use($licenseId,$oldDomain,$newDomain,$actor):void{
+        license_lock($licenseId);
+        $hours=software_domain_change_cooldown_hours();
+        if($hours>0){
+            $last=one('SELECT created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+                ['license.domain.replace','License '.$licenseId.' %']);
+            if($last&&is_string($last['created_at']??null)){
+                $stamp=strtotime($last['created_at'].' UTC');
+                if($stamp!==false&&$stamp>time()-($hours*3600)){
+                    throw new RuntimeException('This license recently changed domains. Try again after the owner-configured cooldown.');
+                }
+            }
+        }
+        if(!one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',[$licenseId,$oldDomain])){
+            throw new InvalidArgumentException('Current domain is not active on this license.');
+        }
+        license_deactivate_domain_tx($licenseId,$oldDomain,$actor);
+        license_register_domain_tx($licenseId,$newDomain,$actor);
+        license_audit($actor,'domain.replace','License '.$licenseId.' '.$oldDomain.' -> '.$newDomain);
+    });
+}
+
 /** Runtime type and expiration guard for the existing /api/validate.php path. */
 function software_grant_verdict(array $license,string $domain):bool {
     if (!software_commerce_ready()) {
