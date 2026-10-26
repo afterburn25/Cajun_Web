@@ -41,6 +41,16 @@ function software_commerce_add_v3_entitlement_columns(): void {
         db()->exec('ALTER TABLE '.$table.' ADD INDEX update_lookup (updates_until)');
     }
 }
+function software_commerce_add_v3_asset_columns(): void {
+    $table=chr(96).config()['db']['prefix'].'software_assets'.chr(96);
+    if(!software_commerce_column_present('software_assets','released_at')){
+        db()->exec('ALTER TABLE '.$table.' ADD COLUMN released_at DATETIME NULL AFTER is_published');
+    }
+    if(!software_commerce_index_present('software_assets','release_lookup')){
+        db()->exec('ALTER TABLE '.$table.' ADD INDEX release_lookup (sku,is_published,released_at)');
+    }
+    query('UPDATE '.table('software_assets').' SET released_at=created_at WHERE is_published=1 AND released_at IS NULL');
+}
 function software_commerce_verify_v3(array $schema): void {
     foreach(array_keys($schema) as $name){
         if(!software_commerce_table_present($name)){
@@ -54,6 +64,10 @@ function software_commerce_verify_v3(array $schema): void {
     }
     if(!software_commerce_index_present('software_entitlements','update_lookup')){
         throw new RuntimeException('Software v3 update-entitlement index is incomplete; preserve the database.');
+    }
+    if(!software_commerce_column_present('software_assets','released_at')
+        ||!software_commerce_index_present('software_assets','release_lookup')){
+        throw new RuntimeException('Software v3 release-timestamp metadata is incomplete; preserve the database.');
     }
     foreach(['product_id','module_key','dependencies','update_months','max_installations','revision','updated_by','updated_at'] as $column){
         if(!software_commerce_column_present('software_product_policies',$column)){
@@ -105,6 +119,7 @@ function software_commerce_prepare(string $password): void {
                 }
             }
             software_commerce_add_v3_entitlement_columns();
+            software_commerce_add_v3_asset_columns();
             software_commerce_verify_v3($schema);
             staff_transaction(function() use ($actor): void {
                 save_setting('software_commerce_version','3');
@@ -139,6 +154,7 @@ function software_commerce_prepare(string $password): void {
                 if(!software_commerce_table_present($name))db()->exec($schema[$name]);
             }
             software_commerce_add_v3_entitlement_columns();
+            software_commerce_add_v3_asset_columns();
 
             // Existing v2 rows retain lifetime updates and two installations.
             // Recurring paid-through entitlements are the exception: update access
@@ -159,6 +175,8 @@ function software_commerce_prepare(string $password): void {
             return;
         }
 
+        software_commerce_add_v3_entitlement_columns();
+        software_commerce_add_v3_asset_columns();
         software_commerce_verify_v3($schema);
         if ($pending !== '') {
             staff_transaction(function() use ($actor): void {
