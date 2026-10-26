@@ -1,0 +1,25 @@
+name: Software payment CSP contract
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/includes/security/http.php'
+      - 'site/portal/views/software.php'
+      - 'site/install/bootstrap.generated.php'
+      - 'tests/software_payment_csp_contract.php'
+      - '.github/workflows/software-payment-csp.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  payment-csp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: php -l site/includes/security/http.php
+      - run: php -l site/portal/views/software.php
+      - run: php -l site/install/bootstrap.generated.php
+      - run: php -l tests/software_payment_csp_contract.php
+      - run: php tests/software_payment_csp_contract.php
