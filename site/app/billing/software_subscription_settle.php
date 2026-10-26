@@ -6,13 +6,11 @@ require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
 require_once CWP_CODE_ROOT.'/app/billing/authorize_net_webhooks.php';
 
-/** Avoid using float rounding for monetary equality. */
+/** Compatibility wrapper retaining strict amount rejection in recurring settlement. */
 function software_anet_cents(mixed $amount): int {
-    $value=(string)$amount;
-    if(!preg_match('/^(0|[1-9][0-9]{0,6})(?:\.([0-9]{1,2}))?$/D',$value,$m)){
-        throw new RuntimeException('Unrecognized gateway transaction amount.');
-    }
-    return ((int)$m[1])*100+(int)str_pad($m[2]??'',2,'0');
+    $cents = software_charge_exact_cents($amount);
+    if ($cents === null) throw new RuntimeException('Unrecognized gateway transaction amount.');
+    return $cents;
 }
 
 /** Transaction details are fetched directly from Authorize.net after a signed notification. */
