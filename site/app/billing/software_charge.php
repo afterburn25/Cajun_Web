@@ -19,8 +19,11 @@ function software_charge_record_paid(int $invoice,string $transactionId,int $cen
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
             ['paid','Verified gateway receipt '.$id,gmdate('Y-m-d H:i:s'),$invoice]);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
+        $paidAt=gmdate('Y-m-d H:i:s');
+        query('UPDATE '.table('software_charge_attempts').' SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?',
+            ['paid',$transactionId,$paidAt,$attempt['request_key'],'processing']);
         query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE invoice_id=?',
-            ['paid',$transactionId,gmdate('Y-m-d H:i:s'),$invoice]);
+            ['paid',$transactionId,$paidAt,$invoice]);
         db()->commit();
     }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
     try{license_fulfill_invoice($invoice);}catch(Throwable $e){report_error($e);}
