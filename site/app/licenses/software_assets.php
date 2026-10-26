@@ -5,6 +5,41 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 
+function software_asset_private_root():string{
+    $root=realpath(config()['storage']??'');
+    if(!$root||!is_dir($root))throw new RuntimeException('Private software storage root is unavailable.');
+    return $root;
+}
+function software_asset_contains(string $root,string $path):bool{
+    $rootNorm=rtrim(str_replace('\\','/',$root),'/').'/';
+    $pathNorm=str_replace('\\','/',$path);
+    if(PHP_OS_FAMILY==='Windows'){$rootNorm=strtolower($rootNorm);$pathNorm=strtolower($pathNorm);}
+    return str_starts_with($pathNorm,$rootNorm);
+}
+/** New rows store a path relative to private storage; legacy absolute rows remain readable. */
+function software_asset_reference(string $root,string $file):string{
+    if(!software_asset_contains($root,$file))throw new RuntimeException('Software ZIP is outside private storage.');
+    $rootNorm=rtrim(str_replace('\\','/',$root),'/').'/';
+    $fileNorm=str_replace('\\','/',$file);
+    $relative=substr($fileNorm,strlen($rootNorm));
+    if(!is_string($relative)||$relative===''||str_contains($relative,'\\')||str_contains('/'.$relative.'/','/../')){
+        throw new RuntimeException('Software ZIP storage reference is invalid.');
+    }
+    return $relative;
+}
+function software_asset_resolve_path(string $stored):?string{
+    try{$root=software_asset_private_root();}catch(Throwable){return null;}
+    $absolute=preg_match('~^(?:[A-Za-z]:[\\\\/]|/)~',$stored)===1;
+    if($absolute){
+        $candidate=$stored; // compatibility with earlier branch rows
+    }else{
+        if($stored===''||str_contains($stored,'\\')||str_contains('/'.$stored.'/','/../')||str_starts_with($stored,'/'))return null;
+        $candidate=$root.DIRECTORY_SEPARATOR.str_replace('/',DIRECTORY_SEPARATOR,$stored);
+    }
+    $file=realpath($candidate);
+    return $file&&is_file($file)&&software_asset_contains($root,$file)?$file:null;
+}
+
 function software_asset_publish(string $sku,string $version,string $title,string $path,#[\SensitiveParameter]string $password):int{
     if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
     if(support_current())throw new RuntimeException('Leave support mode before software publication.');
@@ -17,7 +52,7 @@ function software_asset_publish(string $sku,string $version,string $title,string
     $legacy=preg_match('/^(?:WEBSITE|SOFTWARE|APP)-[A-Z0-9_-]+$/D',$sku)===1;
     if(!$product||(($product['family']??'')!=='software'&&!$legacy))
         throw new InvalidArgumentException('Choose a registered software catalog product.');
-    $storage=realpath(config()['storage']??'');$file=realpath($path);
+    $storage=software_asset_private_root();$file=realpath($path);
     if(!$storage||!$file||!is_file($file)||!str_starts_with($file,rtrim($storage,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR)
         ||strtolower(pathinfo($file,PATHINFO_EXTENSION))!=='zip'){
         throw new RuntimeException('Select a ZIP already stored inside the configured private storage root.');
@@ -29,8 +64,15 @@ function software_asset_publish(string $sku,string $version,string $title,string
     if($zip->open($file,ZipArchive::RDONLY)!==true)throw new InvalidArgumentException('Archive is not a readable ZIP.');
     try{
         if($zip->numFiles<1||$zip->numFiles>12000)throw new InvalidArgumentException('Unexpected software ZIP member count.');
+        $expanded=0;
         for($i=0;$i<$zip->numFiles;$i++){
             $entry=$zip->getNameIndex($i);
+            $stat=$zip->statIndex($i);
+            if(!is_array($stat)||!isset($stat['size'])||!is_int($stat['size'])||$stat['size']<0)
+                throw new InvalidArgumentException('ZIP member metadata is invalid.');
+            $expanded+=$stat['size'];
+            if($stat['size']>1024*1024*1024||$expanded>2*1024*1024*1024)
+                throw new InvalidArgumentException('ZIP expands beyond the supported software package limit.');
             if(!is_string($entry)||str_starts_with($entry,'/')||str_contains($entry,'\\')
                 ||preg_match('~(^|/)\.\.(/|$)~',$entry)||preg_match('/\.zip$/i',rtrim($entry,'/'))){
                 throw new InvalidArgumentException('ZIP contains an unsafe path or nested ZIP.');
@@ -42,11 +84,12 @@ function software_asset_publish(string $sku,string $version,string $title,string
     }finally{$zip->close();}
     $sha=hash_file('sha256',$file);
     if(!is_string($sha))throw new RuntimeException('Could not verify ZIP checksum.');
-    return staff_locked(fn()=>staff_transaction(function()use($actor,$sku,$version,$title,$file,$sha,$bytes):int{
+    $reference=software_asset_reference($storage,$file);
+    return staff_locked(fn()=>staff_transaction(function()use($actor,$sku,$version,$title,$reference,$sha,$bytes):int{
         if(one('SELECT id FROM '.table('software_assets').' WHERE sku=? AND version=?',[$sku,$version]))
             throw new RuntimeException('This version already has an immutable published asset.');
         query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,created_at) VALUES (?,?,?,?,?,?,1,?)',
-            [$sku,$version,$title,$file,$sha,$bytes,gmdate('Y-m-d H:i:s')]);
+            [$sku,$version,$title,$reference,$sha,$bytes,gmdate('Y-m-d H:i:s')]);
         $id=(int)db()->lastInsertId();
         license_audit((int)$actor['id'],'software.asset.publish',
             'Published ZIP '.$id.' for '.$sku.' version '.$version);
