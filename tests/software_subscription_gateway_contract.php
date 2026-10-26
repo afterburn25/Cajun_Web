@@ -39,4 +39,39 @@ blocked(fn()=>software_anet_subscription_charge_details($bad,'600000123'),
     'Declined transaction is not a subscription payment');
 blocked(fn()=>software_anet_subscription_charge_details($details,'600000999'),
     'Mismatched transaction id rejected');
+$profile=[
+    'messages'=>['resultCode'=>'Ok'],
+    'subscription'=>[
+        'name'=>'CajunWebPro software 81',
+        'paymentSchedule'=>[
+            'interval'=>['length'=>'1','unit'=>'months'],
+            'startDate'=>'2026-11-01',
+            'totalOccurrences'=>'9999',
+        ],
+        'amount'=>'49.99',
+        'status'=>'active',
+        'order'=>['invoiceNumber'=>'CWP-81'],
+    ],
+];
+$p=software_anet_subscription_profile_details($profile,'1234567',81,4999,1,'2026-11-01');
+good($p['subscription_id']==='1234567'&&$p['status']==='active'&&$p['invoice_number']==='CWP-81',
+    'ARB subscription readback binds exact invoice amount schedule and gateway id');
+$bad=$profile;$bad['subscription']['amount']='50.00';
+blocked(fn()=>software_anet_subscription_profile_details($bad,'1234567',81,4999,1,'2026-11-01'),
+    'ARB subscription readback rejects amount mismatch');
+$bad=$profile;$bad['subscription']['paymentSchedule']['interval']['length']='12';
+blocked(fn()=>software_anet_subscription_profile_details($bad,'1234567',81,4999,1,'2026-11-01'),
+    'ARB subscription readback rejects interval mismatch');
+$bad=$profile;$bad['subscription']['paymentSchedule']['startDate']='2026-11-02';
+blocked(fn()=>software_anet_subscription_profile_details($bad,'1234567',81,4999,1,'2026-11-01'),
+    'ARB subscription readback rejects start-date mismatch');
+$bad=$profile;$bad['subscription']['order']['invoiceNumber']='CWP-82';
+blocked(fn()=>software_anet_subscription_profile_details($bad,'1234567',81,4999,1,'2026-11-01'),
+    'ARB subscription readback rejects invoice mismatch');
+$bad=$profile;$bad['subscription']['name']='Different subscription';
+blocked(fn()=>software_anet_subscription_profile_details($bad,'1234567',81,4999,1,'2026-11-01'),
+    'ARB subscription readback rejects subscription-name mismatch');
+$bad=$profile;$bad['subscription']['status']='paused';
+blocked(fn()=>software_anet_subscription_profile_details($bad,'1234567',81,4999,1,'2026-11-01'),
+    'ARB subscription readback rejects unknown status');
 echo 'Software subscription gateway contract: PASS'.PHP_EOL;
