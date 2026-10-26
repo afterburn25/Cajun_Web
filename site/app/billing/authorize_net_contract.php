@@ -53,3 +53,24 @@ function software_anet_arb_request(string $name, int $cents, string $start, int 
         'profile'=>['customerProfileId'=>$profile,'customerPaymentProfileId'=>$paymentProfile]
     ]];
 }
+
+/** Authorize.net ARB accepts the one-use Accept.js opaque payment token. */
+function software_anet_arb_opaque(int $invoiceId,int $cents,int $intervalMonths,string $startDate,string $descriptor,string $nonce):array{
+    if($invoiceId<1||!in_array($intervalMonths,[1,12],true)
+        ||!preg_match('/^\\d{4}-\\d{2}-\\d{2}$/D',$startDate)
+        ||!checkdate((int)substr($startDate,5,2),(int)substr($startDate,8,2),(int)substr($startDate,0,4))
+        ||$startDate<=gmdate('Y-m-d'))throw new InvalidArgumentException('Invalid subscription schedule.');
+    return [
+        'refId'=>substr('SW'.$invoiceId,0,20),
+        'subscription'=>[
+            'name'=>'CajunWebPro software '.$invoiceId,
+            'paymentSchedule'=>[
+                'interval'=>['length'=>$intervalMonths,'unit'=>'months'],
+                'startDate'=>$startDate,'totalOccurrences'=>9999
+            ],
+            'amount'=>software_anet_amount($cents),
+            'payment'=>software_anet_nonce($descriptor,$nonce),
+            'order'=>['invoiceNumber'=>substr('CWP-'.$invoiceId,0,20)]
+        ]
+    ];
+}
