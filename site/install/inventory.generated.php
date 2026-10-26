@@ -2829,7 +2829,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/webmail/UnifiedInbox.php'=>'8a995a7b28de49b030aec5ff0f6440dd7c9904e71404484774f3bbb3a62d74c9',
     'includes/layout/activity.php'=>'35cc13064079a919310fed20acf4337acf97aa7af926b6fc944adb6406790979',
     'includes/layout/admin.php'=>'799cf93e847b97ed868c40ef829016bae5861752247df2dc176e345474ef1d86',
-    'includes/layout/catalog.php'=>'1fe89aa4dda684a65ac66c0b672debcff21401871ef9a176a7e9f1262728306f',
+    'includes/layout/catalog.php'=>'6b53239075e428d93c3f1e95dec48289ed6da4eae8bdd7b8946472778a47f437',
     'includes/layout/deliveries.php'=>'b6ab761e27e9507b82b3a0320a3d0a2158f5764961683b9b5cc8c00dd26ab662',
     'includes/layout/growth_home.php'=>'2fb80089be9d96ac7eed8a9fcd5590572f80472f87b04d2cf77482b9cdc3d6bd',
     'includes/layout/growth_portfolio_view.php'=>'5d78fcd5158e1774d12752641c087ecac62cc727a5734683ea91c3fdec224af1',
