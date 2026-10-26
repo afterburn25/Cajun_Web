@@ -4,6 +4,7 @@ define('CWP_BOOT',true);
 require __DIR__.'/../includes/bootstrap.php';
 require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
 
 /**
  * Download a license bundle (Website Core + industry module ZIP).
@@ -40,7 +41,7 @@ $bundle = one(
     [(int)$bundleId, $client['id']]
 );
 
-if (!$bundle) {
+if (!$bundle || license_bundle_is_software_entitlement((int)$bundle['license_id'])) {
     http_response_code(404);
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Bundle not found or access denied']);
