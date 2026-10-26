@@ -174,6 +174,8 @@ try{
         'Owner software product policy records module dependency updates and install limit');
     swdenied(fn()=>software_product_policy_save($product,0,'stale-write','',0,2,$password),
         'Stale software product policy revision cannot overwrite current policy');
+    swdenied(fn()=>software_product_policy_save($product,1,'bad-password','',0,2,'wrong-password'),
+        'Software product policy save reauthenticates the owner inside the serialized mutation');
     $orphanKey=license_create(1,'NEXUSCORE',1,false,null);
     $orphan=one('SELECT id,is_active,is_master FROM '.table('website_licenses').' WHERE license_key=?',[$orphanKey]);
     swdenied(fn()=>software_grant_verdict($orphan,'orphan.example.com'),
