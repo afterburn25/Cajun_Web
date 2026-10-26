@@ -78,8 +78,11 @@ function software_asset_publish(string $sku,string $version,string $title,string
                 throw new InvalidArgumentException('ZIP contains an unsafe path or nested ZIP.');
             }
             $ops=0;$attr=0;
-            if($zip->getExternalAttributesIndex($i,$ops,$attr)
-                &&(($attr>>16)&0170000)===0120000)throw new InvalidArgumentException('ZIP contains a symlink.');
+            if($zip->getExternalAttributesIndex($i,$ops,$attr)){
+                $type=(($attr>>16)&0170000);
+                if($type!==0&&$type!==0100000&&$type!==0040000)
+                    throw new InvalidArgumentException('ZIP contains a symlink or unsupported special file.');
+            }
         }
     }finally{$zip->close();}
     $sha=hash_file('sha256',$file);
