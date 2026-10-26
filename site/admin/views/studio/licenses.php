@@ -67,8 +67,11 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <label>License type<select name="license_type"><option value="standard">Standard — perpetual</option><option value="trial">Trial — expires</option><option value="temporary">Temporary — expires</option><?php if(staff_can('staff.manage')): ?><option value="master">Master — internal staff only</option><?php endif; ?></select></label>
 <label>Installation domain (required except internal master)<input type="text" name="domain" maxlength="253" placeholder="example.com"></label>
 <label>Expiration in UTC (required for trial and temporary)<input type="datetime-local" name="expires_at"></label>
-<?php if(staff_can('staff.manage')): ?><?php admin_input('current_password','Owner password for master licenses','','password','autocomplete="current-password"'); ?><?php endif; ?>
-<p class="hint">Master keys can authorize any domain and must never be bundled or sent to customers. Normal licenses are bound to an installation domain.</p>
+<?php if(staff_can('staff.manage')): ?>
+<?php admin_input('master_purpose','Master-license purpose','','text','minlength="10" maxlength="200" placeholder="Internal QA, release validation, or other owner-approved purpose"'); ?>
+<?php admin_input('current_password','Owner password for master licenses','','password','autocomplete="current-password"'); ?>
+<?php endif; ?>
+<p class="hint">Master keys require an owner-reviewed purpose, can authorize any domain, and must never be bundled or sent to customers. Normal licenses are bound to an installation domain.</p>
 <?php else: ?>
 <?php if(staff_can('staff.manage')): ?><label><input type="checkbox" name="master" value="1"> Master key — internal testing only</label><?php endif; ?>
 <?php endif; ?>
@@ -121,7 +124,7 @@ $notices=all('SELECT n.*,COALESCE(o.sku,origin.sku) AS sku,c.name FROM '.table('
 <dd><?= esc($lic['product_id']) ?></dd>
 <dt><strong>Status</strong></dt>
 <dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
-<?php if($softwareReady):$meta=one('SELECT license_type,licensee,expires_at FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);if($meta): ?><dt><strong>Type / licensee</strong></dt><dd><?=esc($meta['license_type'])?> · <?=esc($meta['licensee'])?></dd><dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd><?php endif; endif; ?>
+<?php if($softwareReady):$meta=one('SELECT license_type,licensee,expires_at,purpose FROM '.table('software_entitlements').' WHERE license_id=?',[$lic['id']]);if($meta): ?><dt><strong>Type / licensee</strong></dt><dd><?=esc($meta['license_type'])?> · <?=esc($meta['licensee'])?></dd><dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd><?php if($meta['license_type']==='master'&&staff_can('staff.manage')): ?><dt><strong>Internal purpose</strong></dt><dd><?=esc($meta['purpose'])?></dd><?php endif; ?><?php endif; endif; ?>
 <dt><strong>Created</strong></dt>
 <dd><?= esc($lic['created_at']) ?></dd>
 </dl>
