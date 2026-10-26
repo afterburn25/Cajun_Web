@@ -36,6 +36,10 @@ function software_portal_render(?array $client,string $error=''):never{
             echo '<p>Licensed to: '.esc($lic['licensee']).'</p>';
             echo '<p>Key: <code>'.esc($lic['license_key']).'</code></p>';
             if($lic['expires_at']!==null)echo '<p>Expires '.esc($lic['expires_at']).' UTC</p>';
+            if($lic['license_type']==='trial'&&$lic['expires_at']!==null&&!$expired){
+                $remaining=max(0,(int)ceil((strtotime($lic['expires_at'].' UTC')-time())/86400));
+                echo '<p>Trial: '.$remaining.' day'.($remaining===1?'':'s').' remaining</p>';
+            }
             echo '<p>Updates: '.($lic['updates_until']===null?'Lifetime while license is valid':'through '.esc($lic['updates_until']).' UTC').'</p>';
             $activeDomains=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[$lic['id']])->fetchColumn();
             echo '<p>Installations: '.$activeDomains.' / '.(int)$lic['max_installations'].'</p>';
