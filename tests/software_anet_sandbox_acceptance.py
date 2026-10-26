@@ -6,6 +6,7 @@ sandbox card. Never prints merchant credentials, card data, or opaque nonces.
 from __future__ import annotations
 
 from datetime import date, timedelta
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 import json
 import os
@@ -57,6 +58,16 @@ def gateway(method: str, body: dict, login: str, key: str) -> dict:
 
 def result_ok(reply: dict) -> bool:
     return reply.get("messages", {}).get("resultCode") == "Ok"
+
+
+def exact_amount(value) -> str:
+    try:
+        amount = Decimal(str(value))
+    except (InvalidOperation, ValueError):
+        raise RuntimeError("Authorize.net sandbox returned an invalid decimal amount")
+    if amount.as_tuple().exponent < -2 or amount < 0:
+        raise RuntimeError("Authorize.net sandbox returned unsupported amount precision")
+    return f"{amount:.2f}"
 
 
 def tokenize(login: str, client_key: str) -> dict:
@@ -150,7 +161,7 @@ def main() -> None:
         not result_ok(details)
         or str(tx.get("transId") or "") != trans_id
         or str(tx.get("order", {}).get("invoiceNumber") or "") != invoice
-        or f"{float(tx.get('authAmount')):.2f}" != AMOUNT
+        or exact_amount(tx.get("authAmount")) != AMOUNT
         or str(tx.get("transactionStatus") or "") not in {"capturedPendingSettlement", "settledSuccessfully"}
     ):
         raise RuntimeError("Sandbox transaction readback does not match the created invoice/amount/status")
@@ -195,7 +206,7 @@ def main() -> None:
     if (
         not result_ok(subscription)
         or str(sub.get("name") or "") != subscription_name
-        or f"{float(sub.get('amount')):.2f}" != AMOUNT
+        or exact_amount(sub.get("amount")) != AMOUNT
         or str(interval.get("length") or "") != "1"
         or str(interval.get("unit") or "") != "months"
         or str(schedule.get("startDate") or "") != start_date
@@ -213,6 +224,18 @@ def main() -> None:
     )
     if not result_ok(cancelled):
         raise RuntimeError("Sandbox ARB cleanup cancellation failed")
+    cancelled_readback = gateway(
+        "ARBGetSubscriptionRequest",
+        {"subscriptionId": subscription_id, "includeTransactions": False},
+        login,
+        transaction_key,
+    )
+    cancelled_sub = cancelled_readback.get("subscription") or {}
+    if (
+        not result_ok(cancelled_readback)
+        or str(cancelled_sub.get("status") or "").lower() not in {"canceled", "cancelled", "terminated"}
+    ):
+        raise RuntimeError("Sandbox ARB cancellation was not confirmed by independent readback")
 
     # Best-effort cleanup for the one-time transaction while it is unsettled.
     void_result = "not_attempted"
@@ -245,6 +268,7 @@ def main() -> None:
         "arb_created": True,
         "arb_readback_passed": True,
         "arb_cancelled": True,
+        "arb_cancel_readback_passed": True,
         "one_time_cleanup": void_result,
         "credentials_or_nonce_recorded": False,
         "passed": True,
