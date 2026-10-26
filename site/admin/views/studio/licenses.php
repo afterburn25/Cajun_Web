@@ -24,6 +24,13 @@ try { foreach(all('SELECT sku,title FROM '.table('catalog_products')." WHERE fam
 if(!$softwareReady){
     $products += ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
 }
+$softwarePolicyProducts=[];
+if($softwareReady){
+    require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
+    try{
+        $softwarePolicyProducts=all('SELECT id,sku,title,family FROM '.table('catalog_products')." WHERE family='software' OR sku LIKE 'WEBSITE-%' OR sku LIKE 'SOFTWARE-%' OR sku LIKE 'APP-%' ORDER BY title LIMIT 100");
+    }catch(Throwable){$softwarePolicyProducts=[];}
+}
 
 if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">License key created (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';unset($_SESSION['license_key_created']);}
 ?>
@@ -52,6 +59,32 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Save domain policy</button></form>
 </section>
+<?php if(staff_can('staff.manage')): ?>
+<section class="workspace-card">
+<h2>Software entitlement policies</h2>
+<p>Configure rights that are snapshotted when a new software license is issued. Changing a policy does not rewrite existing customer entitlements. Update months 0 means lifetime updates while the license itself remains valid.</p>
+<?php if(!$softwarePolicyProducts): ?><p class="muted">Create a software catalog product before defining entitlement policy.</p><?php endif; ?>
+<?php foreach($softwarePolicyProducts as $policyProduct): $policy=software_product_policy((int)$policyProduct['id']); ?>
+<form method="post" style="margin-bottom:1.5rem">
+<?php admin_action('software_product_policy'); ?>
+<input type="hidden" name="product_id" value="<?=(int)$policyProduct['id']?>">
+<input type="hidden" name="revision" value="<?=(int)$policy['revision']?>">
+<h3><?=esc($policyProduct['title'].' · '.$policyProduct['sku'])?></h3>
+<?php admin_input('module_key','Module key',(string)$policy['module_key'],'text','maxlength="80" placeholder="optional-module-key"'); ?>
+<?php admin_input('dependencies','Dependency SKUs',implode(', ',$policy['dependency_skus']),'text','maxlength="1200" placeholder="SOFTWARE-BASE, SOFTWARE-ADDON"'); ?>
+<label>Update entitlement months
+<input type="number" name="update_months" min="0" max="120" required value="<?=(int)$policy['update_months']?>">
+</label>
+<label>Maximum concurrent installations
+<input type="number" name="max_installations" min="1" max="25" required value="<?=(int)$policy['max_installations']?>">
+</label>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<p class="hint">Current policy revision <?=(int)$policy['revision']?>. Existing issued licenses retain their prior revision, update cutoff, and installation limit.</p>
+<button class="btn gold">Save software policy</button>
+</form>
+<?php endforeach; ?>
+</section>
+<?php endif; ?>
 <?php endif; ?>
 <div class="workspace-grid">
 <section class="workspace-card">
