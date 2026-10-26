@@ -64,6 +64,35 @@ def run_browser(env, browser):
           and db("SELECT value FROM ci_settings WHERE name='software_commerce_version'")==[{'value':'2'}]
           and 'Software license and purchase storage is prepared' in response.text)
 
+    def fixture(operation, value=0):
+        result=subprocess.run(
+            [php,str(root/'tests/software_commerce_browser_fixture.php'),operation,str(value)],
+            capture_output=True,text=True,timeout=60,
+            env={**os.environ,'CWP_TEST_DATABASE':'cwp_test'})
+        check('Software browser fixture '+operation+' succeeds',result.returncode==0 and result.stderr=='')
+        return json.loads(result.stdout)
+
+    # Synthetic encrypted sandbox credentials render the real payment page only;
+    # requests does not execute Accept.js and the fixture is switched off immediately.
+    fixture('sandbox-on')
+    sandbox=alice.get(portal,timeout=25)
+    policy=sandbox.headers.get('Content-Security-Policy','')
+    doc=soup(sandbox)
+    accept=doc.select_one('script[src="https://jstest.authorize.net/v1/Accept.js"]')
+    local=doc.select_one('script[src$="assets/js/authorize-net-checkout.js"]')
+    check('Sandbox My Software response scopes CSP to exact Authorize.net hosts',
+          sandbox.status_code==200
+          and 'https://jstest.authorize.net' in policy
+          and 'https://apitest.authorize.net' in policy
+          and '*.authorize.net' not in policy)
+    check('Sandbox checkout scripts carry the response nonce',
+          accept is not None and local is not None
+          and bool(accept.get('nonce')) and accept.get('nonce')==local.get('nonce'))
+    fixture('sandbox-off')
+    disabled=alice.get(portal,timeout=25)
+    check('Disabling software gateway removes external checkout script',
+          'jstest.authorize.net/v1/Accept.js' not in disabled.text)
+
     # Create a real published software offer through the existing catalog UI.
     response=submit(admin,catalog,'catalog_save',_product_data())
     product=db("SELECT id,revision,status,amount_cents,term FROM ci_catalog_products WHERE sku='SOFTWARE-HTTP-ACCEPT'")
@@ -111,14 +140,8 @@ def run_browser(env, browser):
     check('Anonymous My Software request is refused',anonymous.status_code==403)
 
     # Test-only transition to the state *after* an independently verified payment.
-    result=subprocess.run(
-        [php,str(root/'tests/software_commerce_browser_fixture.php'),'fulfill-asset',str(invoice)],
-        capture_output=True,text=True,timeout=60,
-        env={**os.environ,'CWP_TEST_DATABASE':'cwp_test'})
-    check('Software installed fixture fulfills synthetic verified payment locally',
-          result.returncode==0 and result.stderr=='')
-    fixture=json.loads(result.stdout)
-    asset_id=fixture['asset_id'];license_id=fixture['license_id']
+    paid=fixture('fulfill-asset',invoice)
+    asset_id=paid['asset_id'];license_id=paid['license_id']
 
     owned=alice.get(portal,timeout=25)
     check('Paid software portal exposes owned license and approved download',
@@ -131,8 +154,8 @@ def run_browser(env, browser):
     download=base+'/existing/api/software-download.php?id='+str(asset_id)
     good=alice.get(download,timeout=25)
     check('Owned software download returns exact verified private ZIP',
-          good.status_code==200 and len(good.content)==fixture['bytes']
-          and hashlib.sha256(good.content).hexdigest()==fixture['sha256']
+          good.status_code==200 and len(good.content)==paid['bytes']
+          and hashlib.sha256(good.content).hexdigest()==paid['sha256']
           and good.headers.get('Content-Type')=='application/zip'
           and good.headers.get('Cache-Control')=='private, no-store')
     check('Foreign customer cannot download another tenant software ZIP',
