@@ -317,6 +317,16 @@ def run_browser(env, browser):
           subscription_form.select_one('input[name=gateway_subscription_id]') is not None
           and 'Subscription payment review' in subscription_review.text)
 
+    linked_subscription=fixture('subscription-charge-review',recurring_invoice)
+    recurring_charge_review=admin.get(licenses,timeout=25)
+    recurring_charge_form=_action_form(
+        soup,recurring_charge_review,'software_subscription_charge_reconcile',invoice_id=recurring_invoice)
+    recurring_charge_data=form_data(recurring_charge_form)
+    check('Owner UI exposes missed recurring transaction reconciliation after ARB identity is linked',
+          linked_subscription['gateway_subscription_id'] in recurring_charge_review.text
+          and recurring_charge_data.get('transaction_id','')==''
+          and 'Recurring transaction reconciliation' in recurring_charge_review.text)
+
     # Test-only transition to the state *after* an independently verified payment.
     paid=fixture('fulfill-asset',invoice)
     asset_id=paid['asset_id'];license_id=paid['license_id']
