@@ -122,8 +122,22 @@ $notices=all('SELECT n.*,COALESCE(o.sku,origin.sku) AS sku,c.name FROM '.table('
 </section>
 <?php
 $reversals=all('SELECT r.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_reversals').' r LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=r.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=r.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY r.id DESC LIMIT 30');
+$disputes=all('SELECT d.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_disputes').' d LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=d.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=d.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY d.id DESC LIMIT 30');
 $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status=? ORDER BY s.id DESC LIMIT 30',['review']);
 ?>
+<section class="workspace-card"><h2>Merchant dispute / chargeback review</h2>
+<p>Credit-card disputes are recorded from independently verified merchant-service-provider evidence. Recording a case places the linked payment or subscription into review; it does not automatically revoke paid-through access.</p>
+<form method="post"><?php admin_action('software_dispute_record'); ?>
+<?php admin_input('original_transaction_id','Original gateway transaction ID','','text','required pattern="[0-9]{5,30}" maxlength="30"'); ?>
+<?php admin_input('case_reference','Merchant dispute case reference','','text','required minlength="5" maxlength="100"'); ?>
+<?php admin_input('evidence','Verified MSP evidence / disposition','','text','required minlength="10" maxlength="500"'); ?>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn gold">Record dispute for review</button></form>
+<?php if(!$disputes): ?><p class="muted">No merchant disputes recorded.</p><?php endif; ?>
+<?php foreach($disputes as $d): ?>
+<p><?=esc(($d['name']??'Unknown customer').' · '.($d['sku']??'Unknown software'))?> · case <?=esc($d['case_reference'])?> · original <?=esc($d['original_transaction_id'])?> · <?=esc($d['evidence'])?></p>
+<?php endforeach; ?>
+</section>
 <section class="workspace-card"><h2>Payment reversal review</h2>
 <p>Verified refunds and voids are recorded here for owner review. CajunWebPro does not automatically revoke already-paid access from a reversal notification.</p>
 <?php if(!$reversals): ?><p class="muted">No verified software payment reversals recorded.</p><?php endif; ?>
