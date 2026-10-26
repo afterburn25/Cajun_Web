@@ -522,6 +522,24 @@ def run_browser(env, browser):
           and 'Standard · Active' in active_again.text
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
+    chained_replace={
+        'csrf':token(active_again),'action':'license_domain_replace',
+        'license_id':str(license_id),'old_domain':'software-http.example',
+        'new_domain':'cooldown-reset-bypass.example'
+    }
+    chained_result=alice.post(portal,data=chained_replace,timeout=25)
+    check('Deactivate-reactivate cannot reset the software replacement cooldown',
+          'recently changed installations' in chained_result.text.lower()
+          and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':'software-http.example'}])
+    cooldown_page=admin.get(licenses,timeout=25)
+    cooldown_form=_action_form(soup,cooldown_page,'software_domain_policy')
+    cooldown_data=form_data(cooldown_form)
+    cooldown_data.update({'domain_cooldown_hours':'0','current_password':OWNER})
+    cooldown_response=admin.post(licenses,data=cooldown_data,timeout=25)
+    check('Owner can disable customer domain-move cooldown through actual policy form',
+          'cooldown updated' in cooldown_response.text.lower()
+          and db("SELECT value FROM ci_settings WHERE name='software_domain_change_cooldown_hours'")==[{'value':'0'}])
     check('Another customer cannot see the paid license or asset',
           'Synthetic browser acceptance download' not in bob.get(portal,timeout=25).text)
     owner_register=admin.get(licenses,timeout=25)
