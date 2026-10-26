@@ -85,6 +85,23 @@ PHPIniDir /etc/php/{PHP_VERSION}/apache2
                 check(label+suffix+' installed internal setup cannot be reused',session.get(url+'/install/actions/deploy.php').status_code in [403,404])
                 for route in ['/','/admin/index.php?view=login','/portal/index.php','/robots.php','/sitemap.php','/api/robots.php']:
                     rr=session.get(url+route);check(label+suffix+' canonical route '+route,rr.status_code==200 and 'We could not complete this request' not in rr.text)
+                software=session.get(url+'/portal/index.php?software=1')
+                check(label+suffix+' My Software route resolves at installed base path',
+                      software.status_code==403 and 'Sign in to your own account to manage software' in software.text)
+                download=session.get(url+'/api/software-download.php?id=1&license=1')
+                check(label+suffix+' anonymous software download endpoint resolves and denies access',
+                      download.status_code==403)
+                validation=session.post(url+'/api/validate.php',json={'license_key':'short','domain':'example.com'})
+                check(label+suffix+' software validation endpoint resolves with bounded input error',
+                      validation.status_code==400 and validation.json()=={'authorized':False,'error':'Invalid license key format'})
+                webhook=session.get(url+'/api/software-webhook.php')
+                check(label+suffix+' software webhook endpoint resolves and requires POST',
+                      webhook.status_code==405)
+                for internal in ['app/licenses/software_products.php','app/licenses/software_grants.php',
+                                 'app/billing/software_orders.php','database/migrations/software_commerce_migrate.php']:
+                    protected=session.get(url+'/'+internal)
+                    check(label+suffix+' software internal route protected '+internal,
+                          protected.status_code in [403,404] and '<?php' not in protected.text)
                 cookies=[c for c in session.cookies if c.name.startswith('cwp_')];check(label+suffix+' shared session cookie uses site scope',len(cookies)==1 and cookies[0].path==(suffix+'/') and cookies[0].has_nonstandard_attr('HttpOnly'))
                 for n in ['images/branding/logo.png','images/icons/favicon.png','favicon.ico','images/backgrounds/hero.webp','images/portfolio/project-restaurant.webp','assets/css/site.css','assets/css/premium.css','assets/js/site.js','assets/js/activity.js']:
                     rr=session.get(url+'/'+n);check(label+suffix+' exact public asset '+n,rr.status_code==200 and rr.content==expected[n])
