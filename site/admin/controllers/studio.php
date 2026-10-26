@@ -222,15 +222,22 @@ function studio_admin_action(string $action,array $user): never {
                 db()->commit();$key=$result['key'];
             }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
         }else{
-            if(software_commerce_ready()){
-                $manual=in_array($productId,['restaurant','salon','generic'],true);
-                $catalog=one('SELECT sku,family FROM '.table('catalog_products').' WHERE sku=?',[$productId]);
-                $legacyWebsite=$catalog
-                    &&($catalog['family']??'')!=='software'
-                    &&preg_match('/^WEBSITE-[A-Z0-9_-]+$/D',(string)$catalog['sku'])===1;
-                if(!$manual&&!$legacyWebsite){
-                    throw new InvalidArgumentException('Use the software-license form for registered software products.');
-                }
+            $manual=in_array($productId,['restaurant','salon','generic'],true);
+            $catalog=one('SELECT sku,family FROM '.table('catalog_products').' WHERE sku=?',[$productId]);
+            $registeredSoftware=$catalog&&(
+                ($catalog['family']??'')==='software'
+                ||preg_match('/^(?:SOFTWARE|APP)-[A-Z0-9_-]+$/D',(string)$catalog['sku'])===1
+            );
+            if($registeredSoftware){
+                throw new InvalidArgumentException(software_commerce_ready()
+                    ?'Use the software-license form for registered software products.'
+                    :'Enable advanced software licensing before issuing this software product.');
+            }
+            $legacyWebsite=$catalog
+                &&($catalog['family']??'')!=='software'
+                &&preg_match('/^WEBSITE-[A-Z0-9_-]+$/D',(string)$catalog['sku'])===1;
+            if(software_commerce_ready()&&!$manual&&!$legacyWebsite){
+                throw new InvalidArgumentException('Use the software-license form for registered software products.');
             }
             $key=license_create($customerId,$productId,(int)$user['id'],isset($_POST['master'])&&$_POST['master']==='1');
         }
