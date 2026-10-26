@@ -723,6 +723,23 @@ try{
         'Merchant dispute evidence is retained once');
     swok(one('SELECT status FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])['status']==='dispute_review',
         'Merchant dispute places one-time charge into review');
+    $lateCapture=[
+        'messages'=>['resultCode'=>'Ok'],
+        'transaction'=>[
+            'transId'=>'600000001',
+            'transactionType'=>'authCaptureTransaction',
+            'transactionStatus'=>'settledSuccessfully',
+            'authAmount'=>software_anet_amount((int)$payment['amount_cents']),
+            'order'=>['invoiceNumber'=>'CWP-'.$invoice]
+        ]
+    ];
+    swok(software_charge_capture_webhook_review($lateCapture,'600000001')==='one_time_review',
+        'Late capture webhook acknowledges sticky dispute review without reopening payment');
+    swok(one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$invoice])
+        ===['status'=>'dispute_review','transaction_id'=>'600000001'],
+        'Late capture webhook cannot downgrade dispute review state');
+    swdenied(fn()=>software_charge_reconcile_finalize($invoice,'600000001',(int)$payment['amount_cents'],1),
+        'Owner paid reconciliation remains blocked after refund or dispute review');
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
         [900001,1,1,2499,'creating',$now,$now]);
     swok(software_subscription_enroll_finalize(900001,'223456789','pending_first_payment')==='pending_first_payment',
