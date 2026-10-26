@@ -212,7 +212,7 @@ try{
         'Software entitlement cannot be stored through legacy website bundle path');
     db()->beginTransaction();
     try{
-        software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1);
+        software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,'',false,null,$password);
         db()->rollBack();
         swok(false,'Master requires recorded purpose');
     }catch(InvalidArgumentException $expected){
@@ -220,7 +220,28 @@ try{
         swok(true,'Master requires recorded purpose');
     }
     db()->beginTransaction();
-    $master=software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,'Owner-approved release validation');
+    try{
+        software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,
+            'Owner-approved release validation',false,null,'wrong-password');
+        db()->rollBack();
+        swok(false,'Master requires owner password inside grant service');
+    }catch(InvalidArgumentException $expected){
+        if(db()->inTransaction())db()->rollBack();
+        swok(true,'Master requires owner password inside grant service');
+    }
+    db()->beginTransaction();
+    try{
+        software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,2,null,null,
+            'Owner-approved release validation',false,null,$password);
+        db()->rollBack();
+        swok(false,'Master issuer must match reauthenticated owner');
+    }catch(RuntimeException $expected){
+        if(db()->inTransaction())db()->rollBack();
+        swok(true,'Master issuer must match reauthenticated owner');
+    }
+    db()->beginTransaction();
+    $master=software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,
+        'Owner-approved release validation',false,null,$password);
     db()->commit();
     swok(software_grant_verdict(license_get($master['key']),'other.example.com'),'Owner master supports any domain');
     $masterMeta=one('SELECT purpose,updates_until,max_installations FROM '.table('software_entitlements').' WHERE license_id=?',[$master['id']]);
