@@ -325,6 +325,8 @@ def run_browser(env, browser):
     },timeout=25)
     check('Unknown client version is inconclusive rather than taking a valid license offline',
           unknown_version.status_code==400 and unknown_version.json()=={'authorized':False,'error':'Unknown software version'})
+    check('License heartbeat requests do not create permanent raw-IP audit analytics',
+          db("SELECT COUNT(*) AS n FROM ci_audit WHERE action='license.validate'")==[{'n':0}])
 
     owned=alice.get(portal,timeout=25)
     check('Paid software portal exposes owned license and approved download',
