@@ -95,7 +95,6 @@ function studio_admin_action(string $action,array $user): never {
         if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
         if(support_current())throw new RuntimeException('Leave support mode first.');
         staff_require('staff.manage');
-        $actor=staff_owner(posted('current_password',200));
         $policy=software_product_policy_save(
             gint($_POST,'product_id',1,2147483647),
             gint($_POST,'revision',0,2147483647),
@@ -103,7 +102,7 @@ function studio_admin_action(string $action,array $user): never {
             posted('dependencies',1200),
             gint($_POST,'update_months',0,120),
             gint($_POST,'max_installations',1,25),
-            (int)$actor['id']
+            posted('current_password',200)
         );
         flash('Software entitlement policy saved as revision '.(int)$policy['revision'].'. Existing issued licenses keep their snapshotted rights.');
         redirect(admin_url('studio-licenses'));
