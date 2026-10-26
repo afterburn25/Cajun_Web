@@ -36,6 +36,7 @@ try{
     require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_assets.php';
+    require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
     swok(!software_commerce_ready(),'Not ready until owner explicitly prepares');
     swok(software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
@@ -162,6 +163,10 @@ try{
     query('UPDATE '.table('software_entitlements').' SET expires_at=? WHERE license_id=?',
         [gmdate('Y-m-d H:i:s',time()-86400),$trial['id']]);
     swok(!software_grant_verdict($lic,'example.com'),'Expired trial denied');
+    swok(license_bundle_is_software_entitlement((int)$trial['id']),
+        'Software entitlement is recognized by legacy-bundle guard');
+    swdenied(fn()=>license_bundle_store((int)$trial['id'],$zipPath,'Legacy software bundle must fail'),
+        'Software entitlement cannot be stored through legacy website bundle path');
     db()->beginTransaction();
     try{
         software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1);
