@@ -76,8 +76,9 @@ function software_subscription_settle(array $details,string $transactionId): str
             $duration=(int)$sub['interval_months'];
             if(!in_array($duration,[1,12],true))throw new RuntimeException('Invalid subscription renewal interval.');
             foreach($grants as $g){
-                $action=software_subscription_renewal_grant_action($g);
-                if($action==='review')$renewalReview=true;
+                $plan=software_subscription_renewal_grant_plan($g);
+                if($plan['review'])$renewalReview=true;
+                if(!$plan['extend'])throw new RuntimeException('Verified renewal plan refused paid-through extension.');
                 $now=new DateTimeImmutable('now',new DateTimeZone('UTC'));
                 $extended=software_subscription_extend_expiry((string)$g['expires_at'],$duration,$now);
                 query('UPDATE '.table('software_entitlements').' SET expires_at=?,updates_until=? WHERE license_id=?',
