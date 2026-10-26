@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import subprocess
+from datetime import datetime, timedelta
 
 import requests
 from playwright.sync_api import expect
@@ -200,6 +201,32 @@ def run_browser(env, browser):
     paid=fixture('fulfill-asset',invoice)
     asset_id=paid['asset_id'];license_id=paid['license_id']
 
+    valid=requests.post(validate,json={
+        'license_key':paid['license_key'],
+        'domain':'software-http.example',
+        'product_id':'SOFTWARE-HTTP-ACCEPT',
+        'version':paid['version'],
+    },timeout=25)
+    check('Version-aware validation authorizes the purchased product and entitled release',
+          valid.status_code==200 and valid.json()=={'authorized':True,'error':None})
+    wrong_product=requests.post(validate,json={
+        'license_key':paid['license_key'],
+        'domain':'software-http.example',
+        'product_id':'SOFTWARE-WRONG',
+        'version':paid['version'],
+    },timeout=25)
+    check('Version-aware validation definitively rejects product mismatch',
+          wrong_product.status_code==200 and wrong_product.json()['authorized'] is False
+          and 'not authorized for this product' in wrong_product.json()['error'])
+    unknown_version=requests.post(validate,json={
+        'license_key':paid['license_key'],
+        'domain':'software-http.example',
+        'product_id':'SOFTWARE-HTTP-ACCEPT',
+        'version':'9.9.9-unknown',
+    },timeout=25)
+    check('Unknown client version is inconclusive rather than taking a valid license offline',
+          unknown_version.status_code==400 and unknown_version.json()=={'authorized':False,'error':'Unknown software version'})
+
     owned=alice.get(portal,timeout=25)
     check('Paid software portal exposes owned license and approved download',
           'SOFTWARE-HTTP-ACCEPT' in owned.text
@@ -234,6 +261,27 @@ def run_browser(env, browser):
           bob.get(download,timeout=25).status_code==404)
     check('Anonymous software ZIP request is refused',
           requests.get(download,timeout=25).status_code==403)
+
+    entitlement=db('SELECT updates_until FROM ci_software_entitlements WHERE license_id=?',[license_id])[0]
+    cutoff=datetime.strptime(entitlement['updates_until'],'%Y-%m-%d %H:%M:%S')
+    future_release=(cutoff+timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
+    db('UPDATE ci_software_assets SET created_at=? WHERE id=?',[future_release,asset_id])
+    outside=requests.post(validate,json={
+        'license_key':paid['license_key'],
+        'domain':'software-http.example',
+        'product_id':'SOFTWARE-HTTP-ACCEPT',
+        'version':paid['version'],
+    },timeout=25)
+    check('Validation denies a known release published after the update entitlement',
+          outside.status_code==200 and outside.json()=={
+              'authorized':False,
+              'error':'Software version is outside this license update entitlement'
+          })
+    check('Direct download also denies a release outside the update entitlement',
+          alice.get(download,timeout=25).status_code==404)
+    db('UPDATE ci_software_assets SET created_at=? WHERE id=?',[paid['asset_created_at'],asset_id])
+    check('Restoring original immutable release timestamp restores authorized download',
+          alice.get(download,timeout=25).status_code==200)
 
     # Real domain-replacement action and cross-tenant denial.
     own=alice.get(portal,timeout=25)
