@@ -3,6 +3,8 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/software_charge_guard.php';
+require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
 function software_charge_record_paid(int $invoice,string $transactionId,int $cents):void{
     db()->beginTransaction();
@@ -108,13 +110,15 @@ function software_charge_capture_webhook_review(array $details,string $transacti
  * transaction readback. This is idempotent for the same paid transaction and
  * refuses declined/sandbox/reversal/dispute states.
  */
-function software_charge_reconcile_finalize(int $invoice,string $transactionId,int $cents,int $actor):string{
-    if($invoice<1||$actor<1||$cents<1||!preg_match('/^[0-9]{5,30}$/D',$transactionId)){
+function software_charge_reconcile_finalize(int $invoice,string $transactionId,int $cents,
+    #[SensitiveParameter]string $password):string{
+    if($invoice<1||$cents<1||!preg_match('/^[0-9]{5,30}$/D',$transactionId)){
         throw new InvalidArgumentException('Invalid reconciled software payment.');
     }
     if(db()->inTransaction())throw new LogicException('Charge reconciliation finalization owns its transaction.');
-    db()->beginTransaction();
-    try{
+    $state=staff_locked(fn()=>staff_transaction(function()use($invoice,$transactionId,$cents,$password):string{
+        $actor=staff_owner($password);
+        $actorId=(int)$actor['id'];
         $charge=one('SELECT * FROM '.table('software_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
         if(!$charge)throw new RuntimeException('Software charge history is missing.');
         if((int)$charge['amount_cents']!==$cents)throw new RuntimeException('Reconciled amount does not match the recorded software charge.');
@@ -124,7 +128,7 @@ function software_charge_reconcile_finalize(int $invoice,string $transactionId,i
             }
             $paid=one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$invoice]);
             if(($paid['status']??'')!=='paid')throw new RuntimeException('Paid software charge and invoice state disagree.');
-            db()->commit();return 'already_paid';
+            return 'already_paid';
         }
         if(!in_array((string)$charge['status'],['processing','uncertain','review'],true)){
             throw new RuntimeException('This software charge state cannot be reconciled as a new paid transaction.');
@@ -161,12 +165,14 @@ function software_charge_reconcile_finalize(int $invoice,string $transactionId,i
             ['paid',$transactionId,$now,$attempt['id']]);
         query('UPDATE '.table('software_charges').' SET status=?,transaction_id=?,updated_at=? WHERE id=?',
             ['paid',$transactionId,$now,$charge['id']]);
-        license_audit($actor,'payment.reconcile',
+        license_audit($actorId,'payment.reconcile',
             'Software invoice '.$invoice.' reconciled to verified Authorize.net transaction '.$transactionId);
-        db()->commit();
-    }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
-    try{license_fulfill_invoice($invoice);}catch(Throwable $e){report_error($e);}
-    return 'paid';
+        return 'paid';
+    }));
+    if($state==='paid'){
+        try{license_fulfill_invoice($invoice);}catch(Throwable $e){report_error($e);}
+    }
+    return $state;
 }
 
 /** Owner recovery for uncertain/processing one-time charges. Sandbox verifies shape only and never settles. */
@@ -205,12 +211,9 @@ function software_charge_reconcile(int $invoice,string $transactionId,#[Sensitiv
         });
         return 'sandbox_verified';
     }
-    return staff_locked(function()use($password,$invoice,$transactionId,$charge):string{
-        $actor=staff_owner($password);
-        return software_charge_reconcile_finalize(
-            $invoice,$transactionId,(int)$charge['amount_cents'],(int)$actor['id']
-        );
-    });
+    return software_charge_reconcile_finalize(
+        $invoice,$transactionId,(int)$charge['amount_cents'],$password
+    );
 }
 
 /** The original Accept.js token is short lived and never stored or logged. */
