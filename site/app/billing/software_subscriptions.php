@@ -53,6 +53,17 @@ function software_subscription_finalized_reconcile_state(string $local,string $g
     return 'review';
 }
 
+/** Classify how a verified renewal should treat one existing software grant. */
+function software_subscription_renewal_grant_action(array $grant):string {
+    if(($grant['license_type']??null)!=='temporary'
+        ||(int)($grant['is_master']??0)===1
+        ||!is_string($grant['expires_at']??null)
+        ||$grant['expires_at']===''){
+        throw new RuntimeException('Renewal grant metadata is inconsistent.');
+    }
+    return (int)($grant['is_active']??0)===1?'extend':'review';
+}
+
 /** Extend a paid-through UTC timestamp by calendar months, clamping month-end safely. */
 function software_subscription_extend_expiry(string $expiresAt,int $months,DateTimeImmutable $now):string {
     if(!in_array($months,[1,12],true))throw new InvalidArgumentException('Subscription interval must be one or twelve months.');
