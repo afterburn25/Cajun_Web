@@ -212,6 +212,72 @@ try{
     $hash=hash('sha256','synthetic software order');
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
     $otherBuyer=['id'=>2,'name'=>'Other Buyer'];
+
+    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        ['SOFTWARE-UPGRADE','Paid upgrade test','software','published','once','USD',3500,0,null,'','Synthetic paid upgrade','','Terms',0,1,$now,$now]);
+    $upgradeProduct=(int)db()->lastInsertId();
+    $upgradePolicy=software_product_policy_save($upgradeProduct,0,'upgrade-test','',6,1,$password);
+    db()->beginTransaction();
+    $upgradeTrial=software_grant_create(1,'SOFTWARE-UPGRADE','trial','Synthetic Buyer','upgrade.example.com',
+        gmdate('Y-m-d H:i:s',time()+86400*7),1);
+    db()->commit();
+    $beforeUpgrade=one('SELECT l.id,l.license_key,l.created_at,e.license_type,e.expires_at,e.issued_by,e.created_at AS entitlement_created,d.id AS domain_id,d.registered_at FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id JOIN '.table('license_domains').' d ON d.license_id=l.id AND d.is_active=1 WHERE l.id=?',[$upgradeTrial['id']]);
+    $upgradeInvoice=software_order_place($buyer,$upgradeProduct,1,1,'upgrade.example.com',
+        hash('sha256','paid trial upgrade order'),false,(int)$upgradePolicy['revision']);
+    $upgradePayment=ledger_invoice($upgradeInvoice);
+    db()->beginTransaction();
+    ledger_insert($upgradePayment,0,'gateway',(int)$upgradePayment['amount_cents'],'authorize_net',
+        'Synthetic verified paid upgrade',gmdate('Y-m-d'));
+    query('UPDATE '.table('studio_invoices').' SET status=?,paid_at=? WHERE id=?',
+        ['paid',gmdate('Y-m-d H:i:s'),$upgradeInvoice]);
+    db()->commit();
+    software_fulfill_paid_order($upgradeInvoice);
+    software_fulfill_paid_order($upgradeInvoice);
+    $afterUpgrade=one('SELECT l.id,l.license_key,l.created_at,e.license_type,e.expires_at,e.updates_until,e.max_installations,e.policy_revision,e.issued_by,e.invoice_id,e.unit_number,e.created_at AS entitlement_created,d.id AS domain_id,d.registered_at FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id JOIN '.table('license_domains').' d ON d.license_id=l.id AND d.is_active=1 WHERE l.id=?',[$upgradeTrial['id']]);
+    swok((int)$afterUpgrade['id']===(int)$beforeUpgrade['id']
+        &&$afterUpgrade['license_key']===$beforeUpgrade['license_key']
+        &&$afterUpgrade['created_at']===$beforeUpgrade['created_at']
+        &&$afterUpgrade['entitlement_created']===$beforeUpgrade['entitlement_created']
+        &&(int)$afterUpgrade['issued_by']===(int)$beforeUpgrade['issued_by']
+        &&(int)$afterUpgrade['domain_id']===(int)$beforeUpgrade['domain_id']
+        &&$afterUpgrade['registered_at']===$beforeUpgrade['registered_at'],
+        'Verified paid upgrade preserves trial key issuer creation and domain history');
+    swok($afterUpgrade['license_type']==='standard'&&$afterUpgrade['expires_at']===null
+        &&$afterUpgrade['updates_until']!==null&&(int)$afterUpgrade['max_installations']===1
+        &&(int)$afterUpgrade['policy_revision']===(int)$upgradePolicy['revision']
+        &&(int)$afterUpgrade['invoice_id']===$upgradeInvoice&&(int)$afterUpgrade['unit_number']===1,
+        'Verified paid upgrade converts trial entitlement to purchased standard rights');
+    swok((int)query('SELECT COUNT(*) FROM '.table('website_licenses').' WHERE customer_id=? AND product_id=?',[1,'SOFTWARE-UPGRADE'])->fetchColumn()===1,
+        'Paid trial upgrade and fulfillment replay do not mint a second key');
+    swok((int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=? AND detail LIKE ?',
+        ['license.software.upgrade','Software license '.(int)$upgradeTrial['id'].' converted trial -> standard%'])->fetchColumn()===1,
+        'Paid trial upgrade retains one immutable conversion audit on replay');
+
+    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        ['SOFTWARE-UPGRADE-AMB','Ambiguous upgrade test','software','published','once','USD',3600,0,null,'','Synthetic ambiguous upgrade','','Terms',0,1,$now,$now]);
+    $ambProduct=(int)db()->lastInsertId();
+    foreach(['Ambiguous Trial A','Ambiguous Trial B'] as $trialName){
+        db()->beginTransaction();
+        software_grant_create(1,'SOFTWARE-UPGRADE-AMB','trial',$trialName,'ambiguous-upgrade.example.com',
+            gmdate('Y-m-d H:i:s',time()+86400*7),1);
+        db()->commit();
+    }
+    $ambInvoice=software_order_place($buyer,$ambProduct,1,1,'ambiguous-upgrade.example.com',
+        hash('sha256','ambiguous paid trial upgrade order'),false,0);
+    $ambPayment=ledger_invoice($ambInvoice);
+    db()->beginTransaction();
+    ledger_insert($ambPayment,0,'gateway',(int)$ambPayment['amount_cents'],'authorize_net',
+        'Synthetic ambiguous paid upgrade',gmdate('Y-m-d'));
+    query('UPDATE '.table('studio_invoices').' SET status=?,paid_at=? WHERE id=?',
+        ['paid',gmdate('Y-m-d H:i:s'),$ambInvoice]);
+    db()->commit();
+    swdenied(fn()=>software_fulfill_paid_order($ambInvoice),
+        'Ambiguous matching trial licenses stop paid fulfillment for owner review');
+    swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' e JOIN '.table('website_licenses').' l ON l.id=e.license_id WHERE l.customer_id=? AND l.product_id=? AND e.invoice_id IS NULL AND e.license_type=?',
+        [1,'SOFTWARE-UPGRADE-AMB','trial'])->fetchColumn()===2
+        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$ambInvoice])->fetchColumn()===0,
+        'Ambiguous paid upgrade leaves both original trials untouched and mints no paid key');
+
     swdenied(fn()=>software_order_place($otherBuyer,$product,1,1,'other.example.com',
         hash('sha256','missing dependency order'),false,1),
         'Customer without required software dependency cannot create the order');
