@@ -16,4 +16,6 @@ jobs:
       - run: php -l site/app/billing/software_payment_review.php
       - run: php -l site/app/billing/software_subscription_settle.php
       - run: php -l tests/software_subscription_event_contract.php
+      - run: php -l tests/software_subscription_gateway_contract.php
       - run: php tests/software_subscription_event_contract.php
+      - run: php tests/software_subscription_gateway_contract.php
