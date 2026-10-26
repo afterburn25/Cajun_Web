@@ -50,6 +50,14 @@ try{
         &&software_commerce_column_present('software_assets','released_at')
         &&software_commerce_index_present('software_assets','release_lookup'),
         'Fresh v3 storage includes product policy, entitlement snapshots and immutable release metadata');
+    $repairAssetTable=chr(96).config()['db']['prefix'].'software_assets'.chr(96);
+    db()->exec('ALTER TABLE '.$repairAssetTable.' DROP INDEX release_lookup, DROP COLUMN released_at');
+    swok(!software_commerce_ready(),'V3 marker alone does not report ready when release metadata is incomplete');
+    software_commerce_prepare($password);
+    swok(software_commerce_ready()
+        &&software_commerce_column_present('software_assets','released_at')
+        &&software_commerce_index_present('software_assets','release_lookup'),
+        'Owner preparation repairs incomplete v3 release metadata additively');
     save_setting('software_commerce_version','');
     swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Existing entitlement storage without readiness marker is inconclusive, not authorized');
