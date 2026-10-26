@@ -166,7 +166,44 @@ def main() -> None:
     ):
         raise RuntimeError("Sandbox transaction readback does not match the created invoice/amount/status")
 
-    # 4) Fresh nonce for ARB because Accept.js opaque data is one-use.
+    # 4) Deterministic sandbox decline using Authorize.net's documented
+    # general bank-decline ZIP trigger (46282). Use a fresh one-use nonce.
+    decline_opaque = tokenize(login, client_key)
+    declined = gateway(
+        "createTransactionRequest",
+        {
+            "refId": ("DECL" + run_id)[-20:],
+            "transactionRequest": {
+                "transactionType": "authCaptureTransaction",
+                "amount": AMOUNT,
+                "payment": {"opaqueData": decline_opaque},
+                "billTo": {
+                    "firstName": "Sandbox",
+                    "lastName": "Decline",
+                    "address": "1 Test Street",
+                    "city": "Test",
+                    "state": "CA",
+                    "zip": "46282",
+                    "country": "US",
+                },
+                "order": {
+                    "invoiceNumber": ("CWP-DECL-" + run_id)[-20:],
+                    "description": "CajunWebPro sandbox decline acceptance",
+                },
+            },
+        },
+        login,
+        transaction_key,
+    )
+    declined_tx = declined.get("transactionResponse") or {}
+    if str(declined_tx.get("responseCode") or "") != "2":
+        raise RuntimeError(
+            "Authorize.net documented sandbox decline trigger did not return response code 2"
+        )
+    if not declined_tx.get("errors") and not declined_tx.get("messages"):
+        raise RuntimeError("Sandbox declined transaction did not include a reason payload")
+
+    # 5) Fresh nonce for ARB because Accept.js opaque data is one-use.
     arb_opaque = tokenize(login, client_key)
     subscription_invoice = ("CWP-ARB-" + run_id)[-20:]
     subscription_name = ("CajunWebPro SBX " + run_id)[-50:]
@@ -265,6 +302,9 @@ def main() -> None:
         "transaction_approved": True,
         "transaction_readback_passed": True,
         "transaction_status": str(tx.get("transactionStatus")),
+        "decline_trigger_zip": "46282",
+        "decline_response_code": str(declined_tx.get("responseCode")),
+        "decline_shape_passed": True,
         "arb_created": True,
         "arb_readback_passed": True,
         "arb_cancelled": True,
