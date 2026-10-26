@@ -90,6 +90,23 @@ function studio_admin_action(string $action,array $user): never {
             posted('evidence',500),(int)$user['id']);
         flash($state==='replay'?'That merchant dispute case is already recorded.':'Merchant dispute recorded for owner review; paid-through software access was not automatically revoked.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_product_policy'){
+        require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
+        if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
+        if(support_current())throw new RuntimeException('Leave support mode first.');
+        staff_require('staff.manage');
+        $actor=staff_owner(posted('current_password',200));
+        $policy=software_product_policy_save(
+            gint($_POST,'product_id',1,2147483647),
+            gint($_POST,'revision',0,2147483647),
+            posted('module_key',80),
+            posted('dependencies',1200),
+            gint($_POST,'update_months',0,120),
+            gint($_POST,'max_installations',1,25),
+            (int)$actor['id']
+        );
+        flash('Software entitlement policy saved as revision '.(int)$policy['revision'].'. Existing issued licenses keep their snapshotted rights.');
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_domain_policy'){
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
