@@ -58,6 +58,17 @@ try{
         &&software_commerce_column_present('software_assets','released_at')
         &&software_commerce_index_present('software_assets','release_lookup'),
         'Owner preparation repairs incomplete v3 release metadata additively');
+
+    $v3Schema=software_commerce_schema(config()['db']['prefix']);
+    db()->exec('DROP TABLE '.chr(96).config()['db']['prefix'].'software_payment_disputes'.chr(96));
+    swok(!software_commerce_ready(),
+        'V3 readiness fails closed when a non-core commerce history table is missing');
+    swdenied(fn()=>software_commerce_prepare($password),
+        'Owner preparation refuses to silently recreate a missing established v3 history table');
+    db()->exec($v3Schema['software_payment_disputes']);
+    swok(software_commerce_ready(),
+        'V3 readiness returns only after the complete commerce table set is restored');
+
     save_setting('software_commerce_version','');
     swdenied(fn()=>software_grant_verdict(['id'=>999,'is_active'=>1,'is_master'=>0],'legacy.example.com'),
         'Existing entitlement storage without readiness marker is inconclusive, not authorized');
