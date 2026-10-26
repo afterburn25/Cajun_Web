@@ -29,6 +29,12 @@ function software_subscription_cancel(array $client,int $invoice):string{
         if(($response['messages']['resultCode']??'')==='Ok'){
             query('UPDATE '.table('software_subscriptions').' SET status=? WHERE id=? AND status=?',
                 ['cancelled',$sub['id'],'cancelling']);
+            $current=one('SELECT status FROM '.table('software_subscriptions').' WHERE id=?',[$sub['id']]);
+            if(($current['status']??'')!=='cancelled'){
+                license_audit((int)$client['id'],'subscription.cancel.review',
+                    'Gateway accepted cancellation but subscription '.$sub['id'].' changed state concurrently; owner review retained');
+                return 'review';
+            }
             license_audit((int)$client['id'],'subscription.cancel',
                 'Cancelled recurring subscription '.$sub['id'].' for invoice '.$invoice);
             return 'cancelled';
