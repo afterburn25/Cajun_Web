@@ -29,6 +29,6 @@ $signature='sha512='.strtoupper(hash_hmac('sha512',$raw,hex2bin($key)));
 check(software_anet_signature_matches($raw,$signature,$key),'HMAC-SHA512 webhook accepted');
 check(!software_anet_signature_matches($raw.'x',$signature,$key),'Tampered webhook rejected');
 $schema=software_commerce_schema('cwp_');
-check(count($schema)===7,'Seven additive software-commerce tables');
+check(count($schema)===8,'Eight additive software-commerce tables');
 check(!str_contains(implode('',$schema),'DROP TABLE'),'Setup never requests destructive table deletion');
 echo 'Software commerce payment and schema contracts PASS'.PHP_EOL;

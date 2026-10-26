@@ -32,6 +32,9 @@ jobs:
           php -l site/app/licenses/software_notices.php
           php -l site/portal/views/software.php
           php -l site/api/software-download.php
+          php -l site/api/software-webhook.php
+          php -l site/app/billing/software_subscription_enroll.php
+          php -l site/app/billing/software_subscription_settle.php
           php -l site/api/handlers/license.php
           php -l site/app/licenses/fulfill.php
           php -l site/portal/controllers/router.php
