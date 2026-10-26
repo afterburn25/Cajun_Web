@@ -68,6 +68,19 @@ function studio_admin_action(string $action,array $user): never {
         $changed=software_asset_visibility(gint($_POST,'asset_id',1,PHP_INT_MAX),$visible,posted('current_password',200));
         flash($changed?'Software release visibility updated.':'Software release visibility was already set that way.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_charge_reconcile'){
+        require_once CWP_CODE_ROOT.'/app/billing/software_charge.php';
+        $state=software_charge_reconcile(
+            gint($_POST,'invoice_id',1,2147483647),
+            posted('transaction_id',30),
+            posted('current_password',200)
+        );
+        flash($state==='paid'
+            ?'Verified Authorize.net transaction reconciled. Paid fulfillment was retried safely.'
+            :($state==='already_paid'
+                ?'That verified Authorize.net transaction is already recorded as paid.'
+                :'Sandbox transaction readback verified only. No invoice was marked paid and no license was released.'));
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_order_fulfill_retry'){
         if(support_current())throw new RuntimeException('Leave support mode first.');
         staff_require('staff.manage');
