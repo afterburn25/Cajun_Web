@@ -208,10 +208,27 @@ $notices=all('SELECT n.*,COALESCE(o.sku,origin.sku) AS sku,c.name FROM '.table('
 <?php endforeach; ?>
 </section>
 <?php
+$chargeReviews=all('SELECT ch.invoice_id,ch.status,ch.transaction_id,o.sku,c.name FROM '.table('software_charges').' ch JOIN '.table('software_orders').' o ON o.invoice_id=ch.invoice_id JOIN '.table('studio_clients').' c ON c.id=ch.client_id WHERE ch.status IN (?,?,?) ORDER BY ch.id DESC LIMIT 30',
+    ['processing','uncertain','review']);
 $reversals=all('SELECT r.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_reversals').' r LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=r.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=r.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY r.id DESC LIMIT 30');
 $disputes=all('SELECT d.*,COALESCE(direct_order.sku,subscription_order.sku) AS sku,c.name FROM '.table('software_payment_disputes').' d LEFT JOIN '.table('software_orders').' direct_order ON direct_order.invoice_id=d.invoice_id LEFT JOIN '.table('software_orders').' subscription_order ON subscription_order.invoice_id=d.subscription_invoice_id LEFT JOIN '.table('studio_clients').' c ON c.id=COALESCE(direct_order.client_id,subscription_order.client_id) ORDER BY d.id DESC LIMIT 30');
 $subscriptionReviews=all('SELECT s.invoice_id,s.gateway_subscription_id,s.status,o.sku,c.name FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id JOIN '.table('studio_clients').' c ON c.id=s.client_id WHERE s.status=? ORDER BY s.id DESC LIMIT 30',['review']);
 ?>
+<section class="workspace-card"><h2>Uncertain one-time charge reconciliation</h2>
+<p>Use this only after confirming the transaction ID in Authorize.net. CajunWebPro re-fetches the gateway transaction and requires the exact invoice number and amount before any paid transition. Sandbox verification never fulfills software.</p>
+<?php if(!$chargeReviews): ?><p class="muted">No one-time software charges currently require reconciliation.</p><?php endif; ?>
+<?php foreach($chargeReviews as $r): ?>
+<div class="workspace-card">
+<p><?=esc($r['name'].' · '.$r['sku'])?> · Invoice <?=(int)$r['invoice_id']?> · local state <?=esc($r['status'])?><?php if($r['transaction_id']!==null): ?> · recorded transaction <?=esc($r['transaction_id'])?><?php endif; ?></p>
+<form method="post"><?php admin_action('software_charge_reconcile'); ?>
+<input type="hidden" name="invoice_id" value="<?=(int)$r['invoice_id']?>">
+<?php admin_input('transaction_id','Verified Authorize.net transaction ID',(string)($r['transaction_id']??''),'text','required pattern="[0-9]{5,30}" maxlength="30"'); ?>
+<?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn gold">Reconcile verified charge</button>
+</form>
+</div>
+<?php endforeach; ?>
+</section>
 <section class="workspace-card"><h2>Merchant dispute / chargeback review</h2>
 <p>Credit-card disputes are recorded from independently verified merchant-service-provider evidence. Recording a case places the linked payment or subscription into review; it does not automatically revoke paid-through access.</p>
 <form method="post"><?php admin_action('software_dispute_record'); ?>
