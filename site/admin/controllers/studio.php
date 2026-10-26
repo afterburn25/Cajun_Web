@@ -81,6 +81,15 @@ function studio_admin_action(string $action,array $user): never {
         $sent=software_delivery_notice_send(gint($_POST,'invoice_id',1,2147483647));
         flash($sent?'Delivery notice sent or already completed.':'Delivery notice was not sent; inspect mail configuration and the retained delivery state.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_dispute_record'){
+        if(support_current())throw new RuntimeException('Payment dispute decisions are unavailable during support mode.');
+        staff_require('staff.manage');
+        staff_owner(posted('current_password',200));
+        require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
+        $state=software_payment_dispute_record(posted('original_transaction_id',30),posted('case_reference',100),
+            posted('evidence',500),(int)$user['id']);
+        flash($state==='replay'?'That merchant dispute case is already recorded.':'Merchant dispute recorded for owner review; paid-through software access was not automatically revoked.');
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_domain_policy'){
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
