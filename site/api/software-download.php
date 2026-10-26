@@ -13,7 +13,7 @@ $id=$_GET['id']??null;
 if(!is_string($id)||!preg_match('/^[1-9][0-9]{0,18}$/D',$id)){http_response_code(404);exit;}
 $asset=one('SELECT a.* FROM '.table('software_assets').' a WHERE a.id=? AND a.is_published=1',[(int)$id]);
 if(!$asset){http_response_code(404);exit;}
-if(!software_asset_customer_authorized((int)$client['id'],(string)$asset['sku'])){http_response_code(404);exit;}
+if(!software_asset_customer_authorized((int)$client['id'],(string)$asset['sku'],(string)$asset['created_at'])){http_response_code(404);exit;}
 $file=software_asset_resolve_path((string)$asset['file_path']);
 if(!$file||filesize($file)!==(int)$asset['byte_size']
     ||!hash_equals($asset['sha256'],hash_file('sha256',$file))){
