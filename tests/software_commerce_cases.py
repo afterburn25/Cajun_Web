@@ -278,7 +278,7 @@ def run_browser(env, browser):
           and 'software-http.example' in owner_register.text
           and 'bucketed check' in owner_register.text)
 
-    download=base+'/existing/api/software-download.php?id='+str(asset_id)
+    download=base+'/existing/api/software-download.php?id='+str(asset_id)+'&license='+str(license_id)
     good=alice.get(download,timeout=25)
     check('Owned software download returns exact verified private ZIP',
           good.status_code==200 and len(good.content)==paid['bytes']
@@ -287,6 +287,11 @@ def run_browser(env, browser):
           and good.headers.get('Cache-Control')=='private, no-store')
     check('Foreign customer cannot download another tenant software ZIP',
           bob.get(download,timeout=25).status_code==404)
+    wrong_entitlement=base+'/existing/api/software-download.php?id='+str(asset_id)+'&license='+str(orphan['license_id'])
+    check('Owned product asset cannot be downloaded through a different incomplete entitlement',
+          alice.get(wrong_entitlement,timeout=25).status_code==404)
+    check('Ambiguous asset-only software download URL is refused',
+          alice.get(base+'/existing/api/software-download.php?id='+str(asset_id),timeout=25).status_code==404)
     check('Anonymous software ZIP request is refused',
           requests.get(download,timeout=25).status_code==403)
 
