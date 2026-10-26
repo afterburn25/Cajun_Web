@@ -35,6 +35,39 @@ check($opaque['subscription']['paymentSchedule']['interval']['length']===1,
     'ARB monthly interval is one month');
 reject(fn()=>software_anet_arb_opaque(12,9900,1,'2000-01-01','COMMON.ACCEPT.INAPP.PAYMENT','synthetic-token'),
     'ARB cannot begin in the past');
+$refundDetails=[
+    'messages'=>['resultCode'=>'Ok'],
+    'transaction'=>[
+        'transId'=>'700000001',
+        'transactionType'=>'refundTransaction',
+        'refTransId'=>'600000001',
+        'authAmount'=>'5.00'
+    ]
+];
+$refund=software_anet_reversal_details($refundDetails,'700000001','net.authorize.payment.refund.created');
+check($refund['kind']==='refund'&&$refund['original_transaction_id']==='600000001'&&$refund['amount_cents']===500,
+    'Refund readback binds follow-on transaction, original transaction and exact amount');
+$voidDetails=[
+    'messages'=>['resultCode'=>'Ok'],
+    'transaction'=>[
+        'transId'=>'700000002',
+        'transactionType'=>'voidTransaction',
+        'refTransId'=>'600000002'
+    ]
+];
+$void=software_anet_reversal_details($voidDetails,'700000002','net.authorize.payment.void.created');
+check($void['kind']==='void'&&$void['original_transaction_id']==='600000002'&&$void['amount_cents']===null,
+    'Void readback binds the exact original transaction without inventing a refund amount');
+reject(fn()=>software_anet_reversal_details($refundDetails,'700000009','net.authorize.payment.refund.created'),
+    'Reversal readback rejects mismatched gateway transaction id');
+check(software_subscription_event_target('net.authorize.customer.subscription.failed','active')==='review',
+    'Failed subscription enters owner review');
+check(software_subscription_event_target('net.authorize.customer.subscription.cancelled','review')==='review',
+    'Owner review is sticky across later cancellation notifications');
+check(software_subscription_event_target('net.authorize.customer.subscription.cancelled','active')==='cancelled',
+    'Cancellation stops future renewal when no review is pending');
+check(software_subscription_event_target('net.authorize.customer.subscription.updated','active')===null,
+    'Non-terminal subscription updates do not mutate local entitlement state');
 $schema=software_commerce_schema('cwp_');
 check(count($schema)===11,'Eleven additive software-commerce tables');
 check(isset($schema['software_subscription_receipts']),'Subscription renewals keep unique gateway-transaction receipt history');
