@@ -73,6 +73,50 @@ rb_ok('Zero-down financing signs and activates even when payment-link storage is
 rb_staff();
 save_setting('payments_schema_version','2');
 
+// A signed agreement with a real down payment is still legally signed even
+// if payment-link infrastructure is temporarily unavailable. The client must
+// see payment setup as pending rather than a false signature failure.
+$downKey=license_create(1,'WEBSITE-FINANCE-DOWN-PENDING',1,false,null);
+$downLicense=(int)license_get($downKey)['id'];
+license_register_domain($downLicense,'finance-down-pending.example',1);
+rb_historical_source(9002,2500);
+$downFields=rb_fields(9102,9002);
+$downFields['anchor']=gmdate('Y-m-d',time()+4*86400);
+$downFields['due_after_days']=0;
+recurring_billing_offer($downFields);
+$downOffer=license_finance_offer_create(
+    $downLicense,rb_id(9102),'Down-payment financing with delayed payment-link setup',
+    10000,2000,8000,2000,0,4,5,1,7,
+    ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+    'Synthetic down-payment agreement verifies that signature evidence survives temporary payment-link unavailability.',
+    $password
+);
+save_setting('payments_schema_version','');
+rb_client();
+$downSigned=license_finance_offer_sign((string)$downOffer['id'],1,'Recurring client 1',true,true);
+rb_ok('Down-payment agreement stays signed when payment-link storage is temporarily unavailable',
+    ($downSigned['offer']['status']??'')==='signed'
+    &&($downSigned['payment']??null)===null
+    &&($downSigned['payment_pending']??false)===true
+    &&one('SELECT status,activation_invoice_id,payment_request_id FROM '.table('license_finance_offers').' WHERE id=?',
+        [$downOffer['id']])===['status'=>'signed','activation_invoice_id'=>null,'payment_request_id'=>null]
+    &&license_financing_access($downLicense)===[
+        'authorized'=>false,'state'=>'pending_initial','reason'=>'Financing initial payment is still required'
+    ]);
+rb_staff();
+save_setting('payments_schema_version','2');
+$downPayment=license_finance_offer_payment_prepare((string)$downOffer['id'],1);
+$downPaymentReplay=license_finance_offer_payment_prepare((string)$downOffer['id'],1);
+$downOfferRow=license_finance_offer_row((string)$downOffer['id']);
+$downInvoice=ledger_invoice((int)$downOfferRow['activation_invoice_id']);
+rb_ok('Delayed down-payment setup creates one exact initial invoice and one reusable current payment link',
+    is_array($downPayment)&&is_array($downPaymentReplay)
+    &&(int)$downPayment['id']===(int)$downPaymentReplay['id']
+    &&(int)$downInvoice['amount_cents']===2000&&$downInvoice['status']==='issued'
+    &&(int)query('SELECT COUNT(*) FROM '.table('studio_invoices').' WHERE id=?',[(int)$downInvoice['id']])->fetchColumn()===1
+    &&(int)query('SELECT COUNT(*) FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=?',
+        [(int)$downInvoice['id'],'financing'])->fetchColumn()===1);
+
 $now=gmdate('Y-m-d H:i:s');
 query('INSERT INTO '.table('license_finance_subscriptions').
     ' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,period_offset,replacement_count,start_date,status,created_at,updated_at)'.
