@@ -51,8 +51,26 @@ fc_ok(str_contains($offers,'signed_terms_sha256')&&str_contains($offers,'signatu
     'Electronic signature binds exact finance terms and evidence hash');
 
 $finance=fc_file('site/app/licenses/financing.php');
-fc_ok(str_contains($finance,"['pending_initial','suspended']"),'Initial-payment and delinquency states both deny payment-dependent authority');
-fc_ok(str_contains($finance,"state='paid_off'")||str_contains($finance,"['paid_off'"),'Paid-off state is retained as a one-way financing boundary');
+fc_ok(str_contains($finance,"'pending_initial'=>['authorized'=>false")
+    &&str_contains($finance,"'suspended'=>['authorized'=>false"),
+    'Initial-payment and delinquency states expose separate definitive payment-lock reasons');
+fc_ok(str_contains($finance,"state='paid_off'")||str_contains($finance,"'paid_off'=>['authorized'=>true"),
+    'Paid-off state is retained as a one-way financing boundary');
+fc_ok(str_contains($finance,'license_financing_rights_grants')
+    &&str_contains($finance,'rightsInvoiceId')
+    &&str_contains($finance,'normal financing installment cannot be reused')===false
+    &&str_contains($finance,'A normal financing installment cannot be reused as payment for commercial rights.')
+    &&str_contains($finance,'This paid commercial-rights invoice has already been consumed'),
+    'Post-sale commercial rights require a separate single-use paid invoice');
+
+$coreFinanceSchema=fc_file('site/database/schema/license_financing_schema.php');
+$coreFinanceMigration=fc_file('site/database/migrations/license_financing_migrate.php');
+fc_ok(str_contains($coreFinanceSchema,'license_financing_rights_grants')
+    &&str_contains($coreFinanceSchema,'UNIQUE KEY invoice_once(invoice_id)'),
+    'Financing v2 stores immutable single-use commercial-rights payment evidence');
+fc_ok(str_contains($coreFinanceMigration,"license_financing_schema_version','2'")
+    &&str_contains($coreFinanceMigration,"['','1','2']"),
+    'Core financed-license storage upgrades v1 additively to v2 rights evidence');
 
 $financeSchema=fc_file('site/database/schema/license_finance_gateway_schema.php');
 $financeMigration=fc_file('site/database/migrations/license_finance_gateway_migrate.php');
