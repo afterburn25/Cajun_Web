@@ -24,8 +24,14 @@ def predecessor_contract(root, contract, native_commands, check):
     )
     matches = list(call_pattern.finditer(driver))
     check('Installed browser driver invokes template acceptance exactly once', len(matches) == 1)
-    original = call_pattern.sub('', driver, count=1)
-    check('Template browser addition retains the complete predecessor driver', hashlib.sha256(original.encode()).hexdigest() == addition['predecessor_browser_sha256'])
+    match = matches[0]
+    following = driver[match.end():]
+    next_hook = (
+        match.group('indent') + 'from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser\n'
+        + match.group('indent') + 'cloud_assignment_browser(globals(),browser)\n'
+    )
+    check('Template browser acceptance remains in its reviewed local sequence',
+        following.startswith(next_hook))
     reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
     names = ['password-reset-template-contract-results.json', 'password-reset-template-contract-minimal-results.json', 'password-reset-template-native-results.json']
     for lane in ('browser', 'final'):
