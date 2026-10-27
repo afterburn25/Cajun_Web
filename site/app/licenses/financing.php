@@ -114,20 +114,39 @@ function license_financing_bind(int $licenseId,string $scheduleId,int $installme
 }
 
 /** Commercial rights are monotonic: an already granted paid right is never silently taken away. */
-function license_financing_grant_rights(int $licenseId,array $requested,string $evidence,
+function license_financing_grant_rights(int $licenseId,array $requested,int $rightsInvoiceId,string $evidence,
     #[\SensitiveParameter]string $password):array{
     $evidence=trim($evidence);
-    if(strlen($evidence)<10||strlen($evidence)>200)throw new InvalidArgumentException('Record the agreement or payment evidence for this rights grant.');
+    if($rightsInvoiceId<1||strlen($evidence)<10||strlen($evidence)>200){
+        throw new InvalidArgumentException('Record the separate paid rights invoice and agreement/payment evidence for this grant.');
+    }
     $next=license_financing_rights(
         (bool)($requested['resale']??false),(bool)($requested['distribution']??false),
         (bool)($requested['exclusive_resale']??false),(bool)($requested['exclusive_distribution']??false)
     );
     if(license_financing_feature_state()!==true)throw new RuntimeException('Enable financed-site licensing first.');
-    return staff_locked(fn()=>staff_transaction(function()use($licenseId,$next,$evidence,$password):array{
+    return staff_locked(fn()=>staff_transaction(function()use($licenseId,$next,$rightsInvoiceId,$evidence,$password):array{
         if(support_current())throw new RuntimeException('Leave support mode before changing license rights.');
         $actor=staff_owner($password);
-        $plan=one('SELECT * FROM '.table('license_financing').' WHERE license_id=? FOR UPDATE',[$licenseId]);
+        $plan=one('SELECT f.*,l.customer_id FROM '.table('license_financing').' f JOIN '.table('website_licenses').' l ON l.id=f.license_id WHERE f.license_id=? FOR UPDATE',[$licenseId]);
         if(!$plan)throw new InvalidArgumentException('Financing agreement not found.');
+        if(!ledger_ready())throw new RuntimeException('Invoice payments must be prepared before granting paid commercial rights.');
+        $invoice=ledger_invoice($rightsInvoiceId);$balance=ledger_balance($invoice);
+        if((int)$invoice['client_id']!==(int)$plan['customer_id']||$invoice['status']!=='paid'
+            ||(int)$invoice['amount_cents']<1||(int)$balance['due_cents']!==0
+            ||(int)$balance['paid_cents']!==(int)$invoice['amount_cents']){
+            throw new RuntimeException('Commercial-rights evidence must be a separate fully paid invoice owned by this license customer.');
+        }
+        if(one('SELECT invoice_id FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND invoice_id=?',
+            [$plan['schedule_id'],$rightsInvoiceId])){
+            throw new RuntimeException('A normal financing installment cannot be reused as payment for commercial rights.');
+        }
+        $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+            [config()['db']['prefix'].'license_finance_offers']);
+        if($offerTable&&one('SELECT id FROM '.table('license_finance_offers').' WHERE license_id=? AND activation_invoice_id=?',
+            [$licenseId,$rightsInvoiceId])){
+            throw new RuntimeException('A financing down payment cannot be reused as payment for commercial rights.');
+        }
         $current=license_financing_rights_from_row($plan);
         foreach(['resale','distribution','exclusive_resale','exclusive_distribution'] as $name){
             if($current[$name]&&!$next[$name])throw new RuntimeException('Previously granted commercial rights cannot be removed by this workflow.');
@@ -137,7 +156,8 @@ function license_financing_grant_rights(int $licenseId,array $requested,string $
              gmdate('Y-m-d H:i:s'),$licenseId]);
         $updated=one('SELECT * FROM '.table('license_financing').' WHERE license_id=?',[$licenseId]);
         license_audit((int)$actor['id'],'financing.rights',
-            'License '.$licenseId.' commercial rights granted from retained evidence: '.$evidence.'; '.license_financing_rights_label($updated));
+            'License '.$licenseId.' commercial rights granted from paid invoice '.$rightsInvoiceId.
+            '; evidence: '.$evidence.'; '.license_financing_rights_label($updated));
         return $updated;
     }));
 }
