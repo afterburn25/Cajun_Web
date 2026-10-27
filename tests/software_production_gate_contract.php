@@ -29,7 +29,7 @@ gatecheck(!software_anet_production_enabled(),
 $controller=file_get_contents(dirname(__DIR__).'/site/admin/controllers/studio.php');
 $view=file_get_contents(dirname(__DIR__).'/site/admin/views/studio/licenses.php');
 if(!is_string($controller)||!is_string($view))throw new RuntimeException('Production gate UI sources unavailable.');
-gatecheck(str_contains($controller,"$action==='software_gateway_production_review'")
+gatecheck(str_contains($controller,"\$action==='software_gateway_production_review'")
     &&str_contains($controller,"CWP_SOFTWARE_PRODUCTION_PAYMENTS")
     &&str_contains($controller,"software_gateway_production_reviewed"),
     'Owner review action is itself protected by the code-level production gate');
