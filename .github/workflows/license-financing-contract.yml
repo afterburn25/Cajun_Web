@@ -13,6 +13,7 @@ on:
       - 'site/app/billing/finance_subscription.php'
       - 'site/app/billing/software_subscription_settle.php'
       - 'site/app/jobs/finance.php'
+      - 'site/app/jobs/run.php'
       - 'site/database/schema/license_financing_schema.php'
       - 'site/database/schema/license_finance_offers_schema.php'
       - 'site/database/schema/license_finance_gateway_schema.php'
@@ -56,6 +57,7 @@ jobs:
           php -l site/app/billing/finance_charge.php
           php -l site/app/billing/finance_subscription.php
           php -l site/app/jobs/finance.php
+          php -l site/app/jobs/run.php
           php -l site/database/schema/license_financing_schema.php
           php -l site/database/schema/license_finance_offers_schema.php
           php -l site/database/schema/license_finance_gateway_schema.php
