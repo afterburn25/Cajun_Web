@@ -9,7 +9,7 @@ function license_finance_money(int $cents):string{return '$'.number_format($cent
 
 function license_finance_portal_render(?array $client,string $id,string $error=''):never{
     if(!$client||support_current())fail_page('Sign in to your own account to review financing.',403);
-    header('Cache-Control: private, no-store');header('Referrer-Policy: no-referrer');
+    header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     $financeGateway=null;
     if(license_finance_gateway_ready()){
         try{
