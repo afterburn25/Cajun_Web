@@ -14,6 +14,7 @@ $password='Synthetic owner passphrase 2026';
 
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
+require_once CWP_CODE_ROOT.'/app/projects/deliveries.php';
 require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
 require_once CWP_CODE_ROOT.'/app/billing/payments.php';
@@ -136,6 +137,41 @@ if(in_array($operation,['setup','setup-initial'],true)){
 }
 if(!preg_match('/^[a-f0-9]{32}$/D',$value))exit(2);
 $offer=license_finance_offer_row($value);$licenseId=(int)$offer['license_id'];
+if($operation==='release'){
+    finance_fixture_owner();
+    if(!delivery_ready())delivery_migrate($password);
+    $version='finance-browser-lock-1.0.0';
+    $release=one('SELECT * FROM '.table('website_releases').' WHERE job_id=? AND version=?',
+        [$offer['job_id'],$version]);
+    if(!$release){
+        $dir=rtrim((string)config()['storage'],DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'finance-browser';
+        if(!is_dir($dir)&&!mkdir($dir,0700,true)&&!is_dir($dir))throw new RuntimeException('Synthetic finance delivery directory unavailable.');
+        $zipPath=$dir.DIRECTORY_SEPARATOR.'financed-project-release.zip';
+        $zip=new ZipArchive();
+        if($zip->open($zipPath,ZipArchive::CREATE|ZipArchive::OVERWRITE)!==true)throw new RuntimeException('Synthetic finance release ZIP creation failed.');
+        $zip->addFromString('HANDOVER.md',"# Handover\nSynthetic financed project release for installed acceptance.\n");
+        $zip->addFromString('LICENSES.md',"# Licenses\nSynthetic acceptance package; no third-party assets.\n");
+        $zip->addFromString('index.html',"<!doctype html><title>Financed delivery acceptance</title>\n");
+        $zip->close();
+        $id=delivery_upload((int)$offer['job_id'],[
+            'version'=>$version,
+            'title'=>'Financed browser project release',
+            'scope'=>'static',
+            'notes'=>'Synthetic financed project release used to verify payment-dependent client delivery access.',
+            'source_revision'=>'',
+        ],$zipPath,hash('sha256','finance-browser-release|'.$offer['id']));
+        $release=delivery_record($id);
+        delivery_publish($id,delivery_review_hash($release),$password);
+        $release=delivery_record($id);
+    }
+    if($release['status']!=='published')throw new RuntimeException('Synthetic financed project release was not published.');
+    echo json_encode([
+        'release_id'=>(string)$release['id'],
+        'sha256'=>(string)$release['sha256'],
+        'bytes'=>(int)$release['bytes'],
+        'version'=>(string)$release['version']
+    ],JSON_THROW_ON_ERROR);exit;
+}
 if($operation==='bundle'){
     $stored=one('SELECT * FROM '.table('license_bundles').' WHERE license_id=? AND title=? ORDER BY id DESC LIMIT 1',
         [$licenseId,'Financed browser website bundle']);
