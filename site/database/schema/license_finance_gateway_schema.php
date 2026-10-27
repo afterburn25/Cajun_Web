@@ -73,6 +73,23 @@ function license_finance_gateway_schema(string $prefix):array{
             'INDEX offer_lookup(offer_id,id),'.
             'FOREIGN KEY (offer_id) REFERENCES '.$t('license_finance_offers').'(id) ON DELETE RESTRICT'.
             ')'.$e,
+        'license_finance_reversals'=>'CREATE TABLE '.$t('license_finance_reversals').' ('.
+            'id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,'.
+            'offer_id CHAR(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,'.
+            'invoice_id INT UNSIGNED NOT NULL,'.
+            'gateway_transaction_id VARCHAR(30) NOT NULL UNIQUE,'.
+            'original_transaction_id VARCHAR(30) NOT NULL,'.
+            'kind VARCHAR(10) NOT NULL,'.
+            'amount_cents INT UNSIGNED NULL,'.
+            'status VARCHAR(20) NOT NULL,'.
+            'ledger_reversal_id BIGINT UNSIGNED NULL UNIQUE,'.
+            'created_at DATETIME NOT NULL,'.
+            'INDEX original_lookup(original_transaction_id,id),'.
+            'INDEX invoice_lookup(invoice_id,id),'.
+            'INDEX offer_lookup(offer_id,id),'.
+            'FOREIGN KEY (offer_id) REFERENCES '.$t('license_finance_offers').'(id) ON DELETE RESTRICT,'.
+            'FOREIGN KEY (invoice_id) REFERENCES '.$t('studio_invoices').'(id) ON DELETE RESTRICT'.
+            ')'.$e,
         'license_finance_subscription_receipts'=>'CREATE TABLE '.$t('license_finance_subscription_receipts').' ('.
             'id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,'.
             'offer_id CHAR(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,'.
