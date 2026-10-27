@@ -420,7 +420,7 @@ function setup_expected_files(): array { return [
     'database/schema/ledger_schema.php'=>'9bcc3c73d6c0b542c76b0e7d1f66670283c97b8f2ec0e0ef387ea5e2ea17c531',
     'database/schema/license_finance_gateway_schema.php'=>'9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25',
     'database/schema/license_finance_offers_schema.php'=>'24d20ddda12ba3203ca50b94adeeb2ff8a379955a84f3cdb9ee016b6a85992a7',
-    'database/schema/license_financing_schema.php'=>'f5a68f5272c0fa8878e2aa8c18b7920b94c90c1415c05b08abb75d9e30cca230',
+    'database/schema/license_financing_schema.php'=>'5a0cfab75cd96686f6dc81ea519182cfce39c0f03ae2b4a5c45ffe482b679e2a',
     'database/schema/license_schema.php'=>'4c486252bc84ebfe64b95a69de945ae97bbc8f9e6cd9c769f3480372123a1f74',
     'database/schema/mail_accounts_schema.php'=>'ad27b98b209775391514cfa4436d0d5f4b339980e844058bf78b06699380dcce',
     'database/schema/mail_connections_schema.php'=>'15e33ab0ce3c777e78666096773031f43ebc8470d9b9c2c3dc35512b85bd0202',
