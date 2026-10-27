@@ -132,6 +132,18 @@ def run_browser(env,browser):
           and hashlib.sha256(active_bundle.content).hexdigest()==bundle['sha256']
           and active_bundle.headers.get('Content-Type')=='application/zip')
 
+    release=fixture('release',offer)
+    release_url=base+'/existing/portal/index.php?download_release='+release['release_id']
+    release_detail=base+'/existing/portal/index.php?release='+release['release_id']
+    active_release=alice.get(release_url,timeout=25)
+    check('Active financing permits the published project release',
+          active_release.status_code==200
+          and len(active_release.content)==release['bytes']
+          and hashlib.sha256(active_release.content).hexdigest()==release['sha256']
+          and active_release.headers.get('Content-Type')=='application/zip')
+    check('Active financing release detail exposes the client download action',
+          'Download website ZIP' in alice.get(release_detail,timeout=25).text)
+
     late=fixture('late',offer)
     check('Issued unpaid installment past grace moves financing to suspended',
           late['state']=='suspended')
@@ -153,6 +165,15 @@ def run_browser(env,browser):
           and blocked_bundle.json()=={'error':'Financing payment is past the agreed grace period'}
           and 'Financed browser website bundle' not in suspended_workspace.text
           and 'Website bundle downloads are paused until financing access is current' in suspended_workspace.text)
+    blocked_release=alice.get(release_url,timeout=25)
+    blocked_release_detail=alice.get(release_detail,timeout=25)
+    admin_release=admin.get(base+'/existing/admin/index.php?view=deliveries&download_release='+release['release_id'],timeout=25)
+    check('Payment suspension blocks client project release bytes but preserves owner review',
+          blocked_release.status_code==404
+          and 'Website release download is paused until financing access is current' in blocked_release_detail.text
+          and 'Download website ZIP' not in blocked_release_detail.text
+          and admin_release.status_code==200
+          and hashlib.sha256(admin_release.content).hexdigest()==release['sha256'])
     suspended_page=alice.get(finance,timeout=25)
     check('Client portal shows financing suspension without revoking the underlying key',
           'License financing:</strong> Suspended' in suspended_page.text
@@ -197,6 +218,9 @@ def run_browser(env,browser):
     },timeout=25)
     check('Staff support session cannot trigger financing payment actions',
           'action is blocked during support' in forged.text.lower())
+    support_release=admin.get(support_root+'&download_release='+release['release_id'],timeout=25)
+    check('Support download permission cannot bypass a financed project release lock',
+          support_release.status_code==404)
     submit(admin,support_root,'support_end')
 
     caught=fixture('catchup',offer)
@@ -209,6 +233,10 @@ def run_browser(env,browser):
     check('Catch-up restores the same financed website bundle without regenerating it',
           restored_bundle.status_code==200
           and hashlib.sha256(restored_bundle.content).hexdigest()==bundle['sha256'])
+    restored_release=alice.get(release_url,timeout=25)
+    check('Catch-up restores the same published project release without republishing it',
+          restored_release.status_code==200
+          and hashlib.sha256(restored_release.content).hexdigest()==release['sha256'])
     replacement_page=alice.get(finance,timeout=25)
     replacement_form=_form(soup,replacement_page,'finance_subscription_reenroll')
     replacement_data=form_data(replacement_form)
@@ -230,6 +258,8 @@ def run_browser(env,browser):
           'Paid Off' in paid_page.text and 'permanently paid off' in paid_page.text)
     check('Paid-off financing leaves website bundle permanently downloadable',
           alice.get(bundle_url,timeout=25).status_code==200)
+    check('Paid-off financing leaves published project release permanently downloadable',
+          alice.get(release_url,timeout=25).status_code==200)
 
     reversed_after=fixture('reverse-after-payoff',offer)
     check('Post-payoff ledger correction cannot restore the financing payment lock',
