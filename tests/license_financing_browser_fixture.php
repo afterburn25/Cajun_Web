@@ -35,22 +35,23 @@ function finance_fixture_client():void{
     unset($GLOBALS['cwp_support']);$_GET=[];
 }
 function finance_fixture_id(string $seed):string{return substr(hash('sha256','finance-browser|'.$seed),0,32);}
-function finance_fixture_source():string{
-    $sid=finance_fixture_id('service-subscription');
+function finance_fixture_source(string $case):string{
+    if(!in_array($case,['initial','standard'],true))throw new InvalidArgumentException('Unknown financing fixture source.');
+    $sid=finance_fixture_id('service-subscription-'.$case);
     if(one('SELECT id FROM '.table('service_subscriptions').' WHERE id=?',[$sid]))return $sid;
-    $at=1570000000;$planId=finance_fixture_id('service-plan');
+    $at=1570000000;$planId=finance_fixture_id('service-plan-'.$case);
     $terms=['name'=>'Finance browser care','cadence'=>'monthly','price'=>2500,'currency'=>'USD',
         'inclusions'=>['Financed website'],'exclusions'=>[],'limits'=>[],'support'=>'Business hours'];
     $p0=ServicePlanDocument::create($planId,1,$at,$terms);
-    $p=$p0->append(finance_fixture_id('plan-activate'),'activate',1,$at+1,[]);
+    $p=$p0->append(finance_fixture_id('plan-activate-'.$case),'activate',1,$at+1,[]);
     query('INSERT INTO '.table('service_plans').' (id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,1,?,?,?,?,1)',
         [$planId,$at,$p0->json(),$p->json(),$p->fingerprint()]);
     $pe=$p->data()['events'][0];
     query('INSERT INTO '.table('service_plan_events').' (id,plan_id,actor_id,revision,recorded_epoch,input_json,before_sha256,after_sha256) VALUES (?,?,1,1,?,?,?,?)',
         [$pe['id'],$planId,$pe['at'],service_plans_json(['revision'=>0,'command'=>'activate','arguments'=>[]]),$p0->fingerprint(),$p->fingerprint()]);
     $s0=ServiceSubscriptionDocument::create($sid,1,1,$at+2,$p);
-    $s1=$s0->append(finance_fixture_id('subscription-consent'),'consent','client:1',$at+3,['terms_hash'=>$p->model()->termsHash()]);
-    $s=$s1->append(finance_fixture_id('subscription-activate'),'activate','staff:1',$at+4,[]);
+    $s1=$s0->append(finance_fixture_id('subscription-consent-'.$case),'consent','client:1',$at+3,['terms_hash'=>$p->model()->termsHash()]);
+    $s=$s1->append(finance_fixture_id('subscription-activate-'.$case),'activate','staff:1',$at+4,[]);
     query('INSERT INTO '.table('service_subscriptions').' (id,plan_id,plan_revision,plan_sha256,client_id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,?,1,?,1,1,?,?,?,?,2)',
         [$sid,$planId,$p->fingerprint(),$at+2,$s0->json(),$s->json(),$s->fingerprint()]);
     foreach([[$s0,$s1,null,1],[$s1,$s,1,null]] as [$before,$after,$staff,$client]){
@@ -117,7 +118,7 @@ if(in_array($operation,['setup','setup-initial'],true)){
         echo json_encode(['offer_id'=>$existing['id'],'license_id'=>(int)$existing['license_id'],
             'license_key'=>$license['license_key'],'domain'=>$domain],JSON_THROW_ON_ERROR);exit;
     }
-    $source=finance_fixture_source();$scheduleId=finance_fixture_id($initialCase?'schedule-initial':'schedule');
+    $source=finance_fixture_source($initialCase?'initial':'standard');$scheduleId=finance_fixture_id($initialCase?'schedule-initial':'schedule');
     $sourceDoc=service_plans_validate(service_plans_row($source,true),true);
     $fields=['format'=>1,'id'=>$scheduleId,'client_id'=>1,'project_id'=>1,
         'source_subscription'=>['id'=>$source,'revision'=>$sourceDoc->revision(),'sha256'=>$sourceDoc->fingerprint()],
