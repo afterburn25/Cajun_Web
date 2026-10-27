@@ -446,12 +446,14 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <?= esc($d['domain']) ?> · registered <?=esc($d['registered_at'])?> UTC<?php if(!(int)$d['is_active']&&$d['deactivated_at']!==null): ?> · deactivated <?=esc($d['deactivated_at'])?> UTC<?php endif; ?>
 <?php if((int)$d['is_active']): ?>
 <span style="color:green">Active</span>
+<?php if(!$financePlan||$financePlan['paid_off_at']===null): ?>
 <form method="post" style="display:inline">
 <?php admin_action('studio_domain_deactivate'); ?>
 <input type="hidden" name="license_id" value="<?= esc($lic['id']) ?>">
 <input type="hidden" name="domain" value="<?= esc($d['domain']) ?>">
 <button class="btn outline" type="submit">Deactivate</button>
 </form>
+<?php endif; ?>
 <form method="post" style="display:inline">
 <?php admin_action('studio_domain_replace'); ?>
 <input type="hidden" name="license_id" value="<?= esc($lic['id']) ?>">
