@@ -9,6 +9,8 @@ require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
 require_once CWP_CODE_ROOT.'/database/migrations/license_financing_migrate.php';
 
+use CajunWebPro\Foundation\RecurringBilling\RecurringBillingSchedule;
+
 function license_financing_table_present():bool{
     return license_financing_storage_table_present('license_financing');
 }
