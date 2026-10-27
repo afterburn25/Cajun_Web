@@ -26,6 +26,16 @@ fc_ok(str_contains($controller,'studio_license_finance_gateway_setup'),'Finance 
 fc_ok(str_contains($controller,'studio_license_finance_charge_reconcile'),'Finance one-time reconciliation is wired');
 fc_ok(str_contains($controller,'studio_license_finance_subscription_reconcile'),'Finance subscription reconciliation is wired');
 
+$bundleDownload=fc_file('site/api/bundle-download.php');
+$workspace=fc_file('site/portal/views/workspace.php');
+fc_ok(str_contains($bundleDownload,'license_financing_access((int)$bundle[\'license_id\'])')
+    &&str_contains($bundleDownload,"http_response_code(503)")
+    &&str_contains($bundleDownload,"!$financing['authorized']"),
+    'Website bundle endpoint follows financed-license payment access and fails closed on unknown state');
+fc_ok(str_contains($workspace,"['active','grace','paid_off']")
+    &&str_contains($workspace,'Website bundle downloads are paused until financing access is current'),
+    'Client workspace hides financed website bundles while payment access is locked');
+
 $payments=fc_file('site/app/billing/payments.php');
 fc_ok(str_contains($payments,"r['purpose']==='financing'"),'Online checkout is scoped to financing payment requests');
 fc_ok(str_contains($payments,'data-card-number')&&str_contains($payments,'data-card-code'),'Financing checkout uses tokenized card fields');
