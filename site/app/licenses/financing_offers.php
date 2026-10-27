@@ -205,6 +205,12 @@ function license_finance_offer_decline(string $id,int $clientId,string $reason):
 }
 
 function license_finance_offer_payment_prepare(string $id,int $clientId):?array{
+    $preview=license_finance_offer_row($id,$clientId,false);
+    if((string)$preview['status']!=='signed')throw new RuntimeException('Sign the finance agreement before preparing payment.');
+    // Zero-down agreements do not need payment-link storage at signature time.
+    // They become active from the signed schedule and can enroll installments
+    // later when gateway/payment infrastructure is available.
+    if((int)$preview['initial_payment_cents']===0)return null;
     if(!payments_ready())throw new RuntimeException('Payment links must be prepared before financing can collect an initial payment.');
     $invoice=staff_locked(fn()=>staff_transaction(function()use($id,$clientId):?array{
         $row=license_finance_offer_row($id,$clientId,true);
