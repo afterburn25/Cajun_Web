@@ -13,8 +13,41 @@ function license_finance_subscription_contract(array $offer):array{
     if($amount<1||$occurrences<1||$occurrences>360||$start<=gmdate('Y-m-d')){
         throw new RuntimeException('Financing recurring schedule is no longer enrollable. Reissue the agreement with a future start date.');
     }
-    return ['months'=>$months,'amount_cents'=>$amount,'occurrences'=>$occurrences,'start_date'=>$start];
+    return ['months'=>$months,'amount_cents'=>$amount,'occurrences'=>$occurrences,'start_date'=>$start,'period_offset'=>0];
 }
+function license_finance_subscription_replacement_contract(array $offer):array{
+    if((string)($offer['status']??'')!=='signed')throw new RuntimeException('Finance agreement must be signed first.');
+    $schedule=recurring_billing_row((string)$offer['schedule_id']);
+    $doc=recurring_billing_validate($schedule);
+    $terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($doc->data()['terms']);
+    $installments=(int)$offer['installments'];
+    if($installments<1||$installments>360)throw new RuntimeException('Signed installment count is invalid.');
+    $offset=null;
+    for($period=0;$period<$installments;$period++){
+        $map=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=?',
+            [$offer['schedule_id'],$period]);
+        if(!$map){$offset=$period;break;}
+        $invoice=recurring_billing_invoice_validate($map,$doc);$balance=ledger_balance($invoice);
+        if($invoice['status']==='paid'&&(int)$balance['due_cents']===0)continue;
+        $offset=$period;break;
+    }
+    if($offset===null)throw new RuntimeException('All signed financing installments are already paid.');
+    $period=$terms->period($offset);$start=(string)$period['start'];
+    if($start<=gmdate('Y-m-d')){
+        throw new RuntimeException('Pay every currently due financing installment before restoring automatic billing.');
+    }
+    $base=license_finance_subscription_contract($offer);
+    $base['occurrences']=$installments-$offset;
+    $base['start_date']=$start;
+    $base['period_offset']=$offset;
+    return $base;
+}
+function license_finance_subscription_history_row(string $gatewayId):?array{
+    if(!preg_match('/^[0-9]{1,25}$/D',$gatewayId))return null;
+    $row=one('SELECT * FROM '.table('license_finance_subscription_history').' WHERE gateway_subscription_id=?',[$gatewayId]);
+    return $row?:null;
+}
+
 function license_finance_subscription_row(string $offerId,bool $lock=false):?array{
     if(!license_finance_gateway_ready())return null;
     $row=one('SELECT * FROM '.table('license_finance_subscriptions').' WHERE offer_id=?'.($lock?' FOR UPDATE':''),[$offerId]);
