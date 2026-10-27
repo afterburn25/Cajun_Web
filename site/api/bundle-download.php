@@ -4,6 +4,7 @@ define('CWP_BOOT',true);
 require __DIR__.'/../includes/bootstrap.php';
 require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
 require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
 
 /**
@@ -45,6 +46,21 @@ if (!$bundle || license_bundle_is_software_entitlement((int)$bundle['license_id'
     http_response_code(404);
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Bundle not found or access denied']);
+    exit;
+}
+try{
+    $financing=license_financing_access((int)$bundle['license_id']);
+}catch(Throwable $e){
+    report_error($e);
+    http_response_code(503);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Financing status is unavailable; retry later']);
+    exit;
+}
+if($financing!==null&&!$financing['authorized']){
+    http_response_code(403);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => (string)$financing['reason']]);
     exit;
 }
 
