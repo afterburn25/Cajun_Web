@@ -99,8 +99,12 @@ function license_finance_portal_render(?array $client,string $id,string $error='
             if($recovery){
                 try{$recoveryUrl=payments_link_url($recovery);}catch(Throwable){$recoveryUrl=null;}
                 if($recoveryUrl!==null){
-                    $label=$financeSub['status']==='cancelled'?'Automatic financing billing is cancelled.':'Automatic financing billing is suspended.';
-                    echo '<p class="notice warning">'.esc($label).' <a href="'.esc($recoveryUrl).'">Pay the overdue installment securely</a> to restore the financed license first.</p>';
+                    $label=match((string)$financeSub['status']){
+                        'cancelled'=>'Automatic financing billing is cancelled.',
+                        'reversal_recovery'=>'A prior financing payment was fully refunded or voided.',
+                        default=>'Automatic financing billing is suspended.'
+                    };
+                    echo '<p class="notice warning">'.esc($label).' <a href="'.esc($recoveryUrl).'">Pay the outstanding installment securely</a> to restore financing access.</p>';
                 }
             }
             if($financeSub['status']==='billing_suspended'&&$recoveryUrl===null&&$financeGateway&&$financePlan&&in_array((string)$financePlan['state'],['active','grace'],true)){
