@@ -72,8 +72,10 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         if($financePlan){
             echo '<p><strong>License financing:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financePlan['state']))).($financePlan['paid_off_at']!==null?' · permanently paid off '.esc((string)$financePlan['paid_off_at']).' UTC':'').'</p>';
             echo '<p><strong>Current commercial rights:</strong> '.esc(license_financing_rights_label($financePlan)).'.</p>';
-            $rightsGrants=all('SELECT invoice_id,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution,created_at FROM '.table('license_financing_rights_grants').' WHERE license_id=? ORDER BY id DESC LIMIT 10',
-                [$financePlan['license_id']]);
+            $rightsGrants=license_financing_rights_grants_table_present()
+                ? all('SELECT invoice_id,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution,created_at FROM '.table('license_financing_rights_grants').' WHERE license_id=? ORDER BY id DESC LIMIT 10',
+                    [$financePlan['license_id']])
+                : [];
             if($rightsGrants){
                 echo '<details><summary>Paid commercial-rights evidence</summary><ul>';
                 foreach($rightsGrants as $grant){
