@@ -183,8 +183,11 @@ function license_finance_offer_sign(string $id,int $clientId,string $signer,bool
         license_audit($clientId,'financing.offer.signed','Finance agreement '.$id.' signed by client '.$clientId.' terms '.$row['terms_sha256']);
         return license_finance_offer_row($id,$clientId,false);
     }));
+    if((int)$signed['initial_payment_cents']>0&&!payments_ready()){
+        return ['offer'=>$signed,'payment'=>null,'payment_pending'=>true];
+    }
     $payment=license_finance_offer_payment_prepare($id,$clientId);
-    return ['offer'=>$signed,'payment'=>$payment];
+    return ['offer'=>$signed,'payment'=>$payment,'payment_pending'=>false];
 }
 
 function license_finance_offer_decline(string $id,int $clientId,string $reason):void{
