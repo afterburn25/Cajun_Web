@@ -147,5 +147,10 @@ function license_finance_scheduler_run(?int $at=null):array{
     }elseif($cursor!==''){
         save_setting('finance_scheduler_cursor','');
     }
+    $observed=time();
+    save_setting('finance_scheduler_last_run',(string)$observed);
+    save_setting('finance_scheduler_last_state',(string)$summary['state']);
+    save_setting('finance_scheduler_last_errors',(string)$summary['errors']);
+    if($summary['state']==='complete')save_setting('finance_scheduler_last_success',(string)$observed);
     return $summary;
 }
