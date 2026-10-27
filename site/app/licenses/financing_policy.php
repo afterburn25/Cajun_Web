@@ -88,6 +88,16 @@ function license_financing_period_from_pay_num(int $payNum,int $installments):in
     if($payNum<1||$installments<1||$installments>360||$payNum>$installments)throw new InvalidArgumentException('Financing subscription payment number is outside the signed installment count.');
     return $payNum-1;
 }
+function license_financing_period_from_replacement_pay_num(int $payNum,int $remainingOccurrences,int $periodOffset,int $signedInstallments):int{
+    if($signedInstallments<1||$signedInstallments>360||$periodOffset<0||$periodOffset>=$signedInstallments
+        ||$remainingOccurrences!==$signedInstallments-$periodOffset){
+        throw new InvalidArgumentException('Replacement financing subscription does not match the remaining signed installment count.');
+    }
+    $relative=license_financing_period_from_pay_num($payNum,$remainingOccurrences);
+    $period=$periodOffset+$relative;
+    if($period<0||$period>=$signedInstallments)throw new InvalidArgumentException('Replacement financing payment maps outside the signed installments.');
+    return $period;
+}
 function license_financing_recovery_link_allowed(string $subscriptionStatus):bool{
     return $subscriptionStatus==='billing_suspended';
 }
