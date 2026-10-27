@@ -183,11 +183,20 @@ function license_finance_offer_sign(string $id,int $clientId,string $signer,bool
         license_audit($clientId,'financing.offer.signed','Finance agreement '.$id.' signed by client '.$clientId.' terms '.$row['terms_sha256']);
         return license_finance_offer_row($id,$clientId,false);
     }));
-    if((int)$signed['initial_payment_cents']>0&&!payments_ready()){
+    if((int)$signed['initial_payment_cents']===0){
+        return ['offer'=>$signed,'payment'=>null,'payment_pending'=>false];
+    }
+    // The electronic signature above is already committed and immutable.
+    // Any failure after that boundary belongs to payment setup, never to the
+    // legal signature itself. Retain the signed agreement and let the client
+    // or studio prepare/recover the current payment request later.
+    try{
+        $payment=license_finance_offer_payment_prepare($id,$clientId);
+        return ['offer'=>$signed,'payment'=>$payment,'payment_pending'=>false];
+    }catch(Throwable $paymentError){
+        report_error($paymentError);
         return ['offer'=>$signed,'payment'=>null,'payment_pending'=>true];
     }
-    $payment=license_finance_offer_payment_prepare($id,$clientId);
-    return ['offer'=>$signed,'payment'=>$payment,'payment_pending'=>false];
 }
 
 function license_finance_offer_decline(string $id,int $clientId,string $reason):void{
