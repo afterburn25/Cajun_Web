@@ -46,6 +46,18 @@ $offer=license_finance_offer_create(
     'Synthetic financed-site agreement retained only for native acceptance. Site use is licensed to this customer; resale and distribution are not granted.',
     $password
 );
+$originalOfferTerms=$offer['terms_json'];$originalOfferHash=$offer['terms_sha256'];
+$legacyOfferTerms=json_decode($originalOfferTerms,true,16,JSON_THROW_ON_ERROR);
+$legacyOfferTerms['rights']['resale']=true;
+$legacyOfferJson=json_encode($legacyOfferTerms,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+query('UPDATE '.table('license_finance_offers').' SET terms_json=?,terms_sha256=? WHERE id=?',
+    [$legacyOfferJson,hash('sha256',$legacyOfferJson),$offer['id']]);
+rb_client();
+rb_deny('Coherently retained pre-patch finance offer with unpaid resale rights cannot be signed',
+    fn()=>license_finance_offer_sign((string)$offer['id'],1,'Recurring client 1',true,true));
+rb_staff();
+query('UPDATE '.table('license_finance_offers').' SET terms_json=?,terms_sha256=? WHERE id=?',
+    [$originalOfferTerms,$originalOfferHash,$offer['id']]);
 rb_client();
 $signed=license_finance_offer_sign((string)$offer['id'],1,'Recurring client 1',true,true);
 rb_ok('Client signature activates financing without an initial payment when zero down',
