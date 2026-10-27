@@ -22,6 +22,12 @@ function finance_fixture_owner():void{
     $_SESSION=['uid'=>1,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];
     unset($GLOBALS['cwp_support']);$_GET=[];
 }
+function finance_fixture_client():void{
+    $c=one('SELECT * FROM '.table('studio_clients').' WHERE id=1');
+    if(!$c)throw new RuntimeException('Synthetic finance client unavailable.');
+    $_SESSION=['client_id'=>1,'client_auth'=>$c['auth_version'],'client_last'=>time(),'client_login'=>time()];
+    unset($GLOBALS['cwp_support']);$_GET=[];
+}
 function finance_fixture_id(string $seed):string{return substr(hash('sha256','finance-browser|'.$seed),0,32);}
 function finance_fixture_source():string{
     $sid=finance_fixture_id('service-subscription');
@@ -71,7 +77,7 @@ function finance_fixture_payment(int $invoice,string $reference):int{
 }
 
 finance_fixture_owner();
-if($operation==='setup'){
+if(in_array($operation,['setup','setup-initial'],true)){
     if(!payments_ready())payments_migrate($password);
     if(!ledger_ready())ledger_migrate($password);
     if(!service_plans_ready())service_plans_migrate($password);
@@ -81,14 +87,17 @@ if($operation==='setup'){
     }
     if(license_financing_feature_state()===null)license_financing_prepare($password);
     if(!license_finance_offers_ready())license_finance_offers_prepare($password);
-    $existing=one('SELECT * FROM '.table('license_finance_offers').' WHERE title=?',['Browser financed website']);
+    $initialCase=$operation==='setup-initial';
+    $title=$initialCase?'Browser financed website with down payment':'Browser financed website';
+    $domain=$initialCase?'finance-initial.example':'finance-browser.example';
+    $existing=one('SELECT * FROM '.table('license_finance_offers').' WHERE title=?',[$title]);
     if($existing){
         $license=one('SELECT license_key FROM '.table('website_licenses').' WHERE id=?',[(int)$existing['license_id']]);
         if(!$license)throw new RuntimeException('Synthetic financed license is missing.');
         echo json_encode(['offer_id'=>$existing['id'],'license_id'=>(int)$existing['license_id'],
-            'license_key'=>$license['license_key'],'domain'=>'finance-browser.example'],JSON_THROW_ON_ERROR);exit;
+            'license_key'=>$license['license_key'],'domain'=>$domain],JSON_THROW_ON_ERROR);exit;
     }
-    $source=finance_fixture_source();$scheduleId=finance_fixture_id('schedule');
+    $source=finance_fixture_source();$scheduleId=finance_fixture_id($initialCase?'schedule-initial':'schedule');
     $sourceDoc=service_plans_validate(service_plans_row($source,true),true);
     $fields=['format'=>1,'id'=>$scheduleId,'client_id'=>1,'project_id'=>1,
         'source_subscription'=>['id'=>$source,'revision'=>$sourceDoc->revision(),'sha256'=>$sourceDoc->fingerprint()],
@@ -96,15 +105,20 @@ if($operation==='setup'){
         'amount_cents'=>2500,'cadence'=>'monthly','anchor'=>gmdate('Y-m-d',time()+4*86400),
         'alignment'=>'day-of-month','timezone'=>'UTC','due_after_days'=>0,'collection'=>'invoice-only'];
     recurring_billing_offer($fields);
-    $key=license_create(1,'WEBSITE-FINANCE-BROWSER',1,false,null);
-    $license=license_get($key);license_register_domain((int)$license['id'],'finance-browser.example',1);
-    $offer=license_finance_offer_create((int)$license['id'],$scheduleId,'Browser financed website',
-        10000,0,10000,0,0,4,5,7,7,
+    $key=license_create(1,$initialCase?'WEBSITE-FINANCE-INITIAL':'WEBSITE-FINANCE-BROWSER',1,false,null);
+    $license=license_get($key);license_register_domain((int)$license['id'],$domain,1);
+    $offer=license_finance_offer_create((int)$license['id'],$scheduleId,$title,
+        $initialCase?12500:10000,$initialCase?2500:0,10000,0,0,4,5,7,7,
         ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
         'Synthetic browser financing agreement. Issued unpaid installments beyond the five-day grace period may suspend this website. Full payoff permanently removes only the payment lock; resale and distribution remain prohibited.',
         $password);
+    if($initialCase){
+        finance_fixture_client();
+        $signed=license_finance_offer_sign((string)$offer['id'],1,'Alice Initial Payment',true,true);
+        $offer=$signed['offer'];
+    }
     echo json_encode(['offer_id'=>$offer['id'],'license_id'=>(int)$license['id'],'license_key'=>$key,
-        'domain'=>'finance-browser.example'],JSON_THROW_ON_ERROR);exit;
+        'domain'=>$domain],JSON_THROW_ON_ERROR);exit;
 }
 if(!preg_match('/^[a-f0-9]{32}$/D',$value))exit(2);
 $offer=license_finance_offer_row($value);$licenseId=(int)$offer['license_id'];
