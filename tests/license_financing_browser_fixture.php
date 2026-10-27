@@ -135,6 +135,10 @@ if(in_array($operation,['setup','setup-initial'],true)){
 }
 if(!preg_match('/^[a-f0-9]{32}$/D',$value))exit(2);
 $offer=license_finance_offer_row($value);$licenseId=(int)$offer['license_id'];
+if($operation==='gateway-off'){
+    save_setting('software_gateway_mode','disabled');
+    echo json_encode(['mode'=>'disabled'],JSON_THROW_ON_ERROR);exit;
+}
 if($operation==='late'){
     $schedule=recurring_billing_row((string)$offer['schedule_id']);$doc=recurring_billing_validate($schedule);
     $terms=RecurringBillingTerms::fromArray($doc->data()['terms']);$p=$terms->period(0);
