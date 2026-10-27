@@ -64,6 +64,16 @@ jobs:
           python3 -m venv /tmp/cwp-finance-http-venv
           /tmp/cwp-finance-http-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
           /tmp/cwp-finance-http-venv/bin/python -m playwright install --with-deps chromium
+      - name: Syntax-check financing acceptance sources without writing bytecode
+        run: |
+          php8.3 -l tests/license_financing_browser_fixture.php
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          for name in ('tests/license_financing_cases.py','tests/browser_acceptance.py'):
+              ast.parse(Path(name).read_text(encoding='utf-8'), filename=name)
+          print('Financing focused acceptance syntax: PASS')
+          PY
       - name: Build exact direct-extract candidate packages
         run: python3 tools/build.py --commit "$GITHUB_SHA"
       - name: Prepare pristine public historical fixtures
