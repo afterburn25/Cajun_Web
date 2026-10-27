@@ -125,7 +125,8 @@ def run_browser(env,browser):
           and recovery_response.headers.get('Referrer-Policy')=='no-referrer')
 
     support_admin=base+'/existing/admin/index.php?view=support'
-    if env['db']("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]:
+    if (env['db']("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]
+        or env['db']("SELECT value FROM ci_settings WHERE name='support_policy_confirmed'") != [{'value':'1'}]):
         support_setup=submit(admin,support_admin,'support_migrate',{'owner_password':'Synthetic owner passphrase 2026','confirm':'1'})
         check('Financing support acceptance prepares support storage when needed',
               support_setup.status_code==200 and 'Support access is ready' in support_setup.text)
