@@ -340,10 +340,14 @@ for($period=1;$period<4;$period++){
 $last=$terms->period(3);
 $afterLast=(new DateTimeImmutable($last['due'].'T00:00:00',new DateTimeZone('UTC')))
     ->modify('+6 days')->format('Y-m-d');
+license_deactivate($licenseId,1);
+rb_ok('Pre-payoff manual deactivation can exist only before permanent unlock',
+    (int)license_get($licenseKey)['is_active']===0);
 $paidOff=license_financing_sync($licenseId,$afterLast);
-rb_ok('All signed installments permanently unlock the financing payment dependency',
+rb_ok('All signed installments permanently unlock and reactivate the financed key',
     ($paidOff['state']??'')==='paid_off'&&is_string($paidOff['paid_off_at'])&&$paidOff['paid_off_at']!==''
-    &&license_financing_authorized($licenseId)===true);
+    &&license_financing_authorized($licenseId)===true
+    &&(int)license_get($licenseKey)['is_active']===1);
 $paidAccess=license_financing_access($licenseId);
 rb_ok('Paid-off financing exposes permanent authorization with no payment denial reason',
     $paidAccess===['authorized'=>true,'state'=>'paid_off','reason'=>null]);
