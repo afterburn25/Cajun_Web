@@ -10,6 +10,7 @@ require_once CWP_CODE_ROOT.'/app/billing/software_payment_review.php';
 require_once CWP_CODE_ROOT.'/app/billing/software_subscriptions.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_payment_review.php';
 
 /** Compatibility wrapper retaining strict amount rejection in recurring settlement. */
 function software_anet_cents(mixed $amount): int {
@@ -220,6 +221,8 @@ function software_webhook_process(string $raw,string $signature):string{
             $txId=$event['resource_id'];
             if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
             $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+            $finance=license_finance_payment_reversal_review($details,$txId,$event['type']);
+            if($finance!=='finance_reversal_unmatched')return $finance;
             software_anet_reversal_details($details,$txId,$event['type']);
             return 'sandbox_reversal_verified';
         }
@@ -262,6 +265,8 @@ function software_webhook_process(string $raw,string $signature):string{
         $txId=$event['resource_id'];
         if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
         $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+        $finance=license_finance_payment_reversal_review($details,$txId,$event['type']);
+        if($finance!=='finance_reversal_unmatched')return $finance;
         return software_payment_reversal_review($details,$txId,$event['type']);
     }
 
