@@ -117,6 +117,49 @@ rb_ok('Delayed down-payment setup creates one exact initial invoice and one reus
     &&(int)query('SELECT COUNT(*) FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=?',
         [(int)$downInvoice['id'],'financing'])->fetchColumn()===1);
 
+// The legal signature commits before payment request preparation. Simulate a
+// transient ledger-readiness outage at that later boundary and prove recovery
+// reuses the one retained initial invoice without a second signature.
+$recoverKey=license_create(1,'WEBSITE-FINANCE-SIGN-RECOVER',1,false,null);
+$recoverLicense=(int)license_get($recoverKey)['id'];
+license_register_domain($recoverLicense,'finance-sign-recover.example',1);
+rb_historical_source(9003,2500);
+$recoverFields=rb_fields(9103,9003);
+$recoverFields['anchor']=gmdate('Y-m-d',time()+5*86400);
+$recoverFields['due_after_days']=0;
+recurring_billing_offer($recoverFields);
+$recoverOffer=license_finance_offer_create(
+    $recoverLicense,rb_id(9103),'Signed agreement with transient payment setup outage',
+    10000,2000,8000,2000,0,4,5,1,7,
+    ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+    'Synthetic agreement proves a transient payment infrastructure failure cannot roll back or misrepresent a committed client signature.',
+    $password
+);
+save_setting('invoice_ledger_schema_version','');
+rb_client();
+$recoverSigned=license_finance_offer_sign((string)$recoverOffer['id'],1,'Recurring client 1',true,true);
+rb_staff();
+$recoverRow=license_finance_offer_row((string)$recoverOffer['id']);
+rb_ok('Committed financing signature survives later payment infrastructure failure',
+    ($recoverSigned['offer']['status']??'')==='signed'
+    &&($recoverSigned['payment']??null)===null
+    &&($recoverSigned['payment_pending']??false)===true
+    &&$recoverRow['status']==='signed'
+    &&$recoverRow['activation_invoice_id']!==null
+    &&$recoverRow['payment_request_id']===null
+    &&license_financing_access($recoverLicense)===[
+        'authorized'=>false,'state'=>'pending_initial','reason'=>'Financing initial payment is still required'
+    ]);
+save_setting('invoice_ledger_schema_version','1');
+$recoverPayment=license_finance_offer_payment_prepare((string)$recoverOffer['id'],1);
+$recoverAfter=license_finance_offer_row((string)$recoverOffer['id']);
+rb_ok('Recovered payment setup reuses the signed agreement and one retained initial invoice',
+    is_array($recoverPayment)
+    &&(int)$recoverAfter['activation_invoice_id']===(int)$recoverRow['activation_invoice_id']
+    &&(int)$recoverAfter['payment_request_id']===(int)$recoverPayment['id']
+    &&(int)query('SELECT COUNT(*) FROM '.table('studio_invoices').' WHERE id=?',
+        [(int)$recoverRow['activation_invoice_id']])->fetchColumn()===1);
+
 $now=gmdate('Y-m-d H:i:s');
 query('INSERT INTO '.table('license_finance_subscriptions').
     ' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,period_offset,replacement_count,start_date,status,created_at,updated_at)'.
