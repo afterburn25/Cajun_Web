@@ -18,8 +18,8 @@ rb_ok('Financing native setup creates v3 gateway replacement and reversal storag
     &&setting('license_finance_gateway_schema_version')==='3'
     &&license_finance_gateway_table_present('license_finance_reversals'));
 
-db()->exec('ALTER TABLE '.table('license_financing_rights_grants').' DROP INDEX license_history, ADD INDEX license_history(id,license_id)');
-rb_deny('Financing setup rejects a reordered nonunique rights-history index',
+db()->exec('ALTER TABLE '.table('license_financing_rights_grants').' DROP INDEX license_history, ADD INDEX license_history(license_id,created_at,id)');
+rb_deny('Financing setup rejects an expanded nonunique rights-history index',
     fn()=>license_financing_prepare($password));
 db()->exec('ALTER TABLE '.table('license_financing_rights_grants').' DROP INDEX license_history, ADD INDEX license_history(license_id,id)');
 license_financing_prepare($password);
