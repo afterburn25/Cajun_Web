@@ -153,12 +153,12 @@ function license_finance_payment_reversal_review(array $details,string $eventTra
     if(!license_finance_gateway_ready()||!ledger_ready())return 'finance_reversal_unmatched';
     $gateway=license_finance_anet_settings();
     $reversal=software_anet_reversal_details($details,$eventTransactionId,$eventType);
+    if(license_finance_reversal_origin((string)$reversal['original_transaction_id'])===null){
+        return 'finance_reversal_unmatched';
+    }
     if($gateway['mode']!=='production')return 'sandbox_finance_reversal_verified';
     if($reversal['kind']==='refund'&&($reversal['amount_cents']===null||$reversal['amount_cents']<1)){
         throw new RuntimeException('Financing refund amount is not trustworthy.');
-    }
-    if(license_finance_reversal_origin((string)$reversal['original_transaction_id'])===null){
-        return 'finance_reversal_unmatched';
     }
     return license_finance_payment_reversal_apply($reversal);
 }
