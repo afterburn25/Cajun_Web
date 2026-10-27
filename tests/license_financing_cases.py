@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 from playwright.sync_api import expect
-from release_cases import chosen_form
+from release_cases import chosen_form, db as release_db
 
 
 def _form(soup,response,action,*,license_id=None):
@@ -24,6 +24,8 @@ def _form(soup,response,action,*,license_id=None):
 
 
 def run_browser(env,browser):
+    env=dict(env)
+    env.setdefault('db',release_db)
     root,qa,base,check=(env[k] for k in ['ROOT','QA','BASE','check'])
     soup,token,form_data,submit=(env[k] for k in ['soup','token','form_data','submit'])
     admin,alice,bob=(env[k] for k in ['admin','alice','bob'])
