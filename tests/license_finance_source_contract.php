@@ -138,7 +138,7 @@ $financeReview=fc_file('site/app/billing/finance_payment_review.php');
 fc_ok(substr_count($sharedWebhook,'license_finance_subscription_known_gateway_id')>=4,
     'Shared Authorize.Net webhook routes active and archived finance subscription IDs through finance history');
 fc_ok(substr_count($sharedWebhook,'license_finance_payment_reversal_review')>=2
-    &&str_contains($sharedWebhook,"if($finance!=='finance_reversal_unmatched')return $finance;"),
+    &&str_contains($sharedWebhook,'if($finance!==\'finance_reversal_unmatched\')return $finance;'),
     'Shared Authorize.Net webhook routes verified refund and void events by original payment ownership');
 fc_ok(str_contains($financeReview,'license_finance_reversals')
     &&str_contains($financeReview,'original_transaction_id')
