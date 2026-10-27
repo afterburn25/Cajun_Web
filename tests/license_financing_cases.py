@@ -213,6 +213,38 @@ def run_browser(env,browser):
     check('Financing payoff does not grant resale or distribution rights',
           rights=={'allow_resale':0,'allow_distribution':0,'exclusive_resale':0,'exclusive_distribution':0})
 
+    rights_invoice=fixture('rights-invoice',offer)
+    licenses=base+'/existing/admin/index.php?view=studio-licenses'
+    rights_page=admin.get(licenses,timeout=25)
+    rights_form=_form(soup,rights_page,'studio_license_financing_rights',license_id=license_id)
+    rights_data=form_data(rights_form)
+    rights_data.update({
+        'allow_resale':'1',
+        'exclusive_resale':'1',
+        'rights_invoice_id':str(rights_invoice['invoice_id']),
+        'evidence':'Paid exclusive resale addendum accepted in browser acceptance',
+        'current_password':'Synthetic owner passphrase 2026',
+    })
+    granted=admin.post(licenses,data=rights_data,timeout=25)
+    current_rights=env['db']('SELECT state,paid_off_at,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution FROM ci_license_financing WHERE license_id=?',[license_id])[0]
+    check('Owner grants paid exclusive resale through actual financing controls',
+          'Commercial rights grant recorded' in granted.text
+          and current_rights['state']=='paid_off' and bool(current_rights['paid_off_at'])
+          and current_rights['allow_resale']==1 and current_rights['exclusive_resale']==1
+          and current_rights['allow_distribution']==0 and current_rights['exclusive_distribution']==0)
+    grant_row=env['db']('SELECT invoice_id,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution FROM ci_license_financing_rights_grants WHERE license_id=? ORDER BY id DESC LIMIT 1',[license_id])
+    check('Commercial rights grant is backed by the separate paid evidence invoice',
+          grant_row==[{
+              'invoice_id':rights_invoice['invoice_id'],
+              'allow_resale':1,'allow_distribution':0,
+              'exclusive_resale':1,'exclusive_distribution':0
+          }])
+    rights_portal=alice.get(finance,timeout=25)
+    check('Client portal distinguishes signed rights from later paid current rights',
+          'Signed agreement rights:</strong> site-use only; resale and distribution are not granted.' in rights_portal.text
+          and 'Current commercial rights:</strong> Exclusive resale rights granted.' in rights_portal.text
+          and ('Invoice #'+str(rights_invoice['invoice_id'])) in rights_portal.text)
+
     context=browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce')
     context.add_cookies([{'name':c.name,'value':c.value,'url':base+'/existing/'} for c in alice.cookies])
     p=context.new_page();errors=[];p.on('pageerror',lambda e:errors.append(str(e)))
