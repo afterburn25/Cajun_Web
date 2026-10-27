@@ -19,19 +19,24 @@ function license_finance_reversal_origin(string $originalTransactionId,bool $loc
     }
     $receipt=one('SELECT invoice_id,offer_id,period_index FROM '.table('license_finance_subscription_receipts').
         ' WHERE gateway_transaction_id=?'.$suffix,[$originalTransactionId]);
-    if(!$receipt)return null;
-    $invoice=ledger_invoice((int)$receipt['invoice_id']);
+    if($receipt){
+        $invoice=ledger_invoice((int)$receipt['invoice_id']);
+        return [
+            'source'=>'subscription','invoice_id'=>(int)$receipt['invoice_id'],'offer_id'=>(string)$receipt['offer_id'],
+            'period_index'=>(int)$receipt['period_index'],'amount_cents'=>(int)$invoice['amount_cents']
+        ];
+    }
+    // A one-time charge row is reused after a verified full reversal and a
+    // later repayment, so preserve delayed webhook/replay ownership through
+    // the immutable reversal history itself.
+    $history=one('SELECT invoice_id,offer_id FROM '.table('license_finance_reversals').
+        ' WHERE original_transaction_id=? ORDER BY id LIMIT 1'.$suffix,[$originalTransactionId]);
+    if(!$history)return null;
+    $invoice=ledger_invoice((int)$history['invoice_id']);
     return [
-        'source'=>'subscription','invoice_id'=>(int)$receipt['invoice_id'],'offer_id'=>(string)$receipt['offer_id'],
-        'period_index'=>(int)$receipt['period_index'],'amount_cents'=>(int)$invoice['amount_cents']
+        'source'=>'history','invoice_id'=>(int)$history['invoice_id'],'offer_id'=>(string)$history['offer_id'],
+        'period_index'=>null,'amount_cents'=>(int)$invoice['amount_cents']
     ];
-}
-
-function license_finance_reversal_request_key(array $reversal):string{
-    return hash('sha256',json_encode([
-        'finance-reversal-v1',(string)$reversal['kind'],(string)$reversal['transaction_id'],
-        (string)$reversal['original_transaction_id'],$reversal['amount_cents']
-    ],JSON_THROW_ON_ERROR));
 }
 
 /**
@@ -61,18 +66,23 @@ function license_finance_payment_reversal_apply(array $reversal):string{
             $invoiceId=(int)$origin['invoice_id'];$originalAmount=(int)$origin['amount_cents'];
             if($originalAmount<1)throw new RuntimeException('Financing reversal original amount is invalid.');
             $eventAmount=$kind==='void'?$originalAmount:(int)$amount;
-            $key=license_finance_reversal_request_key($reversal);
-            $existing=one('SELECT request_key,amount_cents,status FROM '.table('license_finance_charge_attempts').
-                ' WHERE transaction_id=? FOR UPDATE',[$event]);
+            $existing=one('SELECT original_transaction_id,kind,amount_cents,status FROM '.table('license_finance_reversals').
+                ' WHERE gateway_transaction_id=? FOR UPDATE',[$event]);
             if($existing){
-                if(!hash_equals((string)$existing['request_key'],$key)||(int)$existing['amount_cents']!==$eventAmount
-                    ||!in_array((string)$existing['status'],['refund_review','refund_reversed','void_reversed'],true)){
-                    throw new RuntimeException('Gateway financing reversal identifier was reused with conflicting details.');
-                }
+                $same=(string)$existing['original_transaction_id']===$original
+                    &&(string)$existing['kind']===$kind
+                    &&(($existing['amount_cents']===null&&$amount===null)
+                        ||($existing['amount_cents']!==null&&$amount!==null&&(int)$existing['amount_cents']===(int)$amount))
+                    &&in_array((string)$existing['status'],['refund_review','refund_reversed','void_reversed'],true);
+                if(!$same)throw new RuntimeException('Gateway financing reversal identifier was reused with conflicting details.');
                 $result='replay';return;
             }
-            $priorRefund=(int)query('SELECT COALESCE(SUM(amount_cents),0) FROM '.table('license_finance_charge_attempts').
-                " WHERE invoice_id=? AND status IN ('refund_review','refund_reversed')",[$invoiceId])->fetchColumn();
+            if(one('SELECT id FROM '.table('license_finance_reversals').
+                ' WHERE original_transaction_id=? AND kind=? LIMIT 1',[$original,'void'])){
+                throw new RuntimeException('The original financing payment is already voided.');
+            }
+            $priorRefund=(int)query('SELECT COALESCE(SUM(amount_cents),0) FROM '.table('license_finance_reversals').
+                " WHERE original_transaction_id=? AND kind='refund'",[$original])->fetchColumn();
             if($kind==='refund'&&$priorRefund+$eventAmount>$originalAmount){
                 throw new RuntimeException('Verified financing refunds exceed the original payment.');
             }
@@ -82,9 +92,11 @@ function license_finance_payment_reversal_apply(array $reversal):string{
             $full=$kind==='void'||$priorRefund+$eventAmount===$originalAmount;
             $eventStatus=$kind==='void'?'void_reversed':($full?'refund_reversed':'refund_review');
             $now=gmdate('Y-m-d H:i:s');
-            query('INSERT INTO '.table('license_finance_charge_attempts').
-                ' (invoice_id,request_key,amount_cents,status,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',
-                [$invoiceId,$key,$eventAmount,$eventStatus,$event,$now,$now]);
+            query('INSERT INTO '.table('license_finance_reversals').
+                ' (offer_id,invoice_id,gateway_transaction_id,original_transaction_id,kind,amount_cents,status,ledger_reversal_id,created_at) '.
+                'VALUES (?,?,?,?,?,?,?,?,?)',
+                [$origin['offer_id'],$invoiceId,$event,$original,$kind,$kind==='refund'?$eventAmount:null,
+                 $eventStatus,null,$now]);
             if(!$full){
                 if($origin['source']==='charge'){
                     query('UPDATE '.table('license_finance_charges').' SET status=?,updated_at=? WHERE invoice_id=?',
@@ -110,8 +122,11 @@ function license_finance_payment_reversal_apply(array $reversal):string{
                 $invoice=ledger_invoice($invoiceId);
                 $entry=ledger_insert($invoice,0,'reversal',$originalAmount,'authorize_net',
                     'Verified financing '.($kind==='void'?'void':'refund').' transaction '.$event,
-                    gmdate('Y-m-d'),hash('sha256','finance-ledger-reversal|'.$invoiceId),
-                    hash('sha256',$key.'|'.$originalAmount),hash('sha256','authorize-net-reversal|'.$event),(int)$payment['id']);
+                    gmdate('Y-m-d'),hash('sha256','finance-ledger-reversal|'.$invoiceId.'|'.$event),
+                    hash('sha256','finance-ledger-reversal-v1|'.$original.'|'.$event.'|'.$originalAmount),
+                    hash('sha256','authorize-net-reversal|'.$event),(int)$payment['id']);
+                query('UPDATE '.table('license_finance_reversals').' SET ledger_reversal_id=? WHERE gateway_transaction_id=?',
+                    [$entry,$event]);
                 query('UPDATE '.table('studio_invoices')." SET status='issued',paid_note='',paid_at=NULL WHERE id=?",[$invoiceId]);
                 query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoiceId]);
                 license_audit(0,'financing.reversal.applied',
