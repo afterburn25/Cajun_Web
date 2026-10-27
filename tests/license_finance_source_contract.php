@@ -17,8 +17,8 @@ fc_ok(substr_count($admin,'Finance agreement history')===1,'Finance agreement hi
 fc_ok(substr_count($admin,'Authorize.net payment configuration')===1,'Software gateway configuration appears once');
 fc_ok(substr_count($admin,'License register')===1,'License register appears once');
 fc_ok(!str_contains($admin,'.number_format($candidate'),'No corrupted financing splice remains in licensing view');
-fc_ok(str_contains($admin,"'replacing','review','payment_failed','billing_suspended'"),
-    'Owner reconciliation queue includes interrupted financing replacement attempts');
+fc_ok(str_contains($admin,"'replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery'"),
+    'Owner reconciliation queue includes interrupted replacement, lifecycle and verified-reversal recovery states');
 
 $controller=fc_file('site/admin/controllers/studio.php');
 fc_ok(str_contains($controller,'Direct financing binding is retired'),'Unsigned direct financing binding is blocked');
@@ -102,14 +102,19 @@ $financeSubscription=fc_file('site/app/billing/finance_subscription.php');
 $financePortal=fc_file('site/portal/views/financing.php');
 $portalActions=fc_file('site/portal/controllers/actions.php');
 fc_ok(str_contains($financeSchema,'license_finance_subscription_history')
+    &&str_contains($financeSchema,'license_finance_reversals')
+    &&str_contains($financeSchema,'original_transaction_id')
     &&str_contains($financeSchema,'period_offset')&&str_contains($financeSchema,'replacement_count'),
-    'Finance gateway v2 retains replaced subscription identities and period offsets');
-fc_ok(str_contains($financeMigration,"license_finance_gateway_schema_version','2'")
-    &&str_contains($financeMigration,'license_finance_gateway_upgrade_v2'),
-    'Finance gateway storage upgrades existing v1 data additively to v2');
-fc_ok(str_contains($financeMigration,"setting('license_finance_gateway_schema_version')!=='2'")
-    &&str_contains($financeMigration,'replacement_count'),
-    'Finance gateway readiness requires complete v2 replacement metadata');
+    'Finance gateway v3 retains replacement identities and original-transaction reversal history');
+fc_ok(str_contains($financeMigration,"license_finance_gateway_schema_version','3'")
+    &&str_contains($financeMigration,'license_finance_gateway_upgrade_v2')
+    &&str_contains($financeMigration,'license_finance_gateway_upgrade_v3')
+    &&str_contains($financeMigration,"['','1','2','3']"),
+    'Finance gateway storage upgrades existing v1 or v2 data additively to v3');
+fc_ok(str_contains($financeMigration,"setting('license_finance_gateway_schema_version')!=='3'")
+    &&str_contains($financeMigration,'replacement_count')
+    &&str_contains($financeMigration,'license_finance_reversals'),
+    'Finance gateway readiness requires complete v3 replacement and reversal metadata');
 fc_ok(str_contains($financeSubscription,'license_finance_subscription_reenroll_opaque')
     &&str_contains($financeSubscription,'license_finance_subscription_replacement_finalize')
     &&str_contains($financeSubscription,'historical_subscription_transaction')
@@ -129,8 +134,18 @@ fc_ok(str_contains($financePortal,'license_financing_rights_grants_table_present
 fc_ok(str_contains($portalActions,"\$action==='finance_subscription_reenroll'"),
     'Client financing replacement action is wired through authenticated portal handling');
 $sharedWebhook=fc_file('site/app/billing/software_subscription_settle.php');
+$financeReview=fc_file('site/app/billing/finance_payment_review.php');
 fc_ok(substr_count($sharedWebhook,'license_finance_subscription_known_gateway_id')>=4,
     'Shared Authorize.Net webhook routes active and archived finance subscription IDs through finance history');
+fc_ok(substr_count($sharedWebhook,'license_finance_payment_reversal_review')>=2
+    &&str_contains($sharedWebhook,"if($finance!=='finance_reversal_unmatched')return $finance;"),
+    'Shared Authorize.Net webhook routes verified refund and void events by original payment ownership');
+fc_ok(str_contains($financeReview,'license_finance_reversals')
+    &&str_contains($financeReview,'original_transaction_id')
+    &&str_contains($financeReview,'finance_partial_refund_review')
+    &&str_contains($financeReview,'reversal_recovery')
+    &&str_contains($financeReview,"kind='refund'"),
+    'Financing reversal review keeps partial refunds in review and full reversals tied to original gateway payment');
 
 $job=fc_file('site/app/jobs/finance.php');
 fc_ok(str_contains($job,"PHP_SAPI!=='cli'")&&str_contains($job,'takes no arguments'),'Finance worker is CLI-only and argument-free');
