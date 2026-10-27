@@ -159,6 +159,20 @@ rb_ok('Default financed-site commercial rights remain site-use only after payoff
     $rights!==null&&!$rights['resale']&&!$rights['distribution']
     &&!$rights['exclusive_resale']&&!$rights['exclusive_distribution']);
 
+// Recreate the published v1 financing shape around a populated paid-off plan,
+// then prove the explicit v1->v2 migration preserves that plan while adding
+// immutable commercial-rights payment evidence.
+db()->exec('DROP TABLE '.table('license_financing_rights_grants'));
+save_setting('license_financing_schema_version','1');
+license_financing_prepare($password);
+$upgradedPlan=license_financing_plan($licenseId);
+rb_ok('Populated financed-license v1 upgrades additively to v2 rights evidence storage',
+    license_financing_ready()
+    &&setting('license_financing_schema_version')==='2'
+    &&license_financing_rights_grants_table_present()
+    &&($upgradedPlan['state']??'')==='paid_off'
+    &&($upgradedPlan['paid_off_at']??null)===$paidOff['paid_off_at']);
+
 $installmentRejected=false;
 try{
     license_financing_grant_rights(
@@ -193,6 +207,29 @@ $granted=license_financing_grant_rights(
 rb_ok('Separate fully paid same-customer invoice can grant post-sale resale rights',
     (int)$granted['allow_resale']===1&&(int)$granted['allow_distribution']===0
     &&(int)$granted['exclusive_resale']===0&&(int)$granted['exclusive_distribution']===0);
+$grantEvidence=one('SELECT license_id,invoice_id,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution,evidence,granted_by FROM '.
+    table('license_financing_rights_grants').' WHERE invoice_id=?',[$rightsInvoiceId]);
+rb_ok('Paid commercial-rights invoice is retained as immutable single-use grant evidence',
+    $grantEvidence!==null
+    &&(int)$grantEvidence['license_id']===$licenseId
+    &&(int)$grantEvidence['invoice_id']===$rightsInvoiceId
+    &&(int)$grantEvidence['allow_resale']===1
+    &&(int)$grantEvidence['allow_distribution']===0
+    &&(int)$grantEvidence['exclusive_resale']===0
+    &&(int)$grantEvidence['exclusive_distribution']===0
+    &&(int)$grantEvidence['granted_by']===1);
+
+$reuseRejected=false;
+try{
+    license_financing_grant_rights(
+        $licenseId,
+        ['resale'=>true,'distribution'=>true,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+        $rightsInvoiceId,
+        'Attempt to reuse paid resale invoice for later distribution rights',
+        $password
+    );
+}catch(InvalidArgumentException|RuntimeException $expected){$reuseRejected=true;}
+rb_ok('Consumed commercial-rights invoice cannot be reused to add broader rights',$reuseRejected);
 
 $removalRejected=false;
 try{
