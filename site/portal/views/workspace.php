@@ -39,7 +39,7 @@ try{$financePlan=license_financing_sync((int)$lic['id']);}catch(Throwable $e){$f
 <p><strong>License rights:</strong> <?=esc(license_financing_rights_label($financePlan))?></p>
 <?php if($financePlan['state']==='grace'): ?><p class="notice info">An installment is past due but still inside the agreed grace period.</p><?php endif; ?>
 <?php if($financePlan['state']==='suspended'): ?><p class="notice error">This financed site is temporarily payment-suspended. The same license resumes after the overdue issued installment is fully paid.</p><?php endif; ?>
-<?php if($financePlan['state']==='paid_off'): ?><p class="notice info">Financing is complete. Future billing status can no longer disable this license; domain and commercial-rights restrictions still apply.</p><?php endif; ?>
+<?php if($financePlan['state']==='paid_off'): ?><p class="notice info">Financing is complete. This license is permanently unlocked: future billing and whole-license/domain deactivation cannot disable it. You may still replace the approved domain; commercial-rights restrictions remain in force.</p><?php endif; ?>
 <?php elseif($financeError!==''): ?><p class="notice warning"><?=esc($financeError)?></p><?php endif; ?>
 <h4>Registered domains</h4>
 <?php $domains=all('SELECT * FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY registered_at DESC',[$lic['id']]);?>
@@ -47,7 +47,7 @@ try{$financePlan=license_financing_sync((int)$lic['id']);}catch(Throwable $e){$f
 <ul>
 <?php foreach($domains as $d):?>
 <li><?=esc($d['domain'])?> <span style="color:green">Active</span>
-<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form>
+<?php if(!$financePlan||$financePlan['paid_off_at']===null): ?><form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form><?php endif; ?>
 <form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_replace"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="old_domain" value="<?=esc($d['domain'])?>"><input type="text" name="new_domain" placeholder="new-domain.com" style="width:14em" required><button class="btn outline">Replace</button></form></li>
 <?php endforeach;?>
 </ul>
