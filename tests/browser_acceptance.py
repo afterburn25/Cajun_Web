@@ -135,7 +135,9 @@ try:
     check('Installed homepage loads after cleanup',fresh.get(BASE+'/fresh/').status_code==200)
     from release_cases import run_http, run_browser
     software_only=os.environ.get('CWP_SOFTWARE_ACCEPTANCE_ONLY')=='1'
-    release_fixture=None if software_only else run_http(globals())
+    financing_only=os.environ.get('CWP_FINANCING_ACCEPTANCE_ONLY')=='1'
+    focused_only=software_only or financing_only
+    release_fixture=None if focused_only else run_http(globals())
     # Native browser traffic, not offline documents or mocked fetch.
     from playwright.sync_api import sync_playwright, expect
     with sync_playwright() as pw:
@@ -169,6 +171,9 @@ try:
         if software_only:
             from software_commerce_cases import run_browser as software_commerce_browser
             software_commerce_browser(globals(),browser)
+        elif financing_only:
+            from license_financing_cases import run_browser as license_financing_browser
+            license_financing_browser(globals(),browser)
         else:
             run_browser(globals(),browser,release_fixture)
             from staff_cases import run_browser as staff_browser
