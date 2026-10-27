@@ -13,6 +13,7 @@ $operation=$argv[1];$value=$argv[2];
 $password='Synthetic owner passphrase 2026';
 
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
 require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
 require_once CWP_CODE_ROOT.'/app/billing/payments.php';
@@ -135,6 +136,26 @@ if(in_array($operation,['setup','setup-initial'],true)){
 }
 if(!preg_match('/^[a-f0-9]{32}$/D',$value))exit(2);
 $offer=license_finance_offer_row($value);$licenseId=(int)$offer['license_id'];
+if($operation==='bundle'){
+    $stored=one('SELECT * FROM '.table('license_bundles').' WHERE license_id=? AND title=? ORDER BY id DESC LIMIT 1',
+        [$licenseId,'Financed browser website bundle']);
+    if(!$stored){
+        $dir=rtrim((string)config()['storage'],DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'finance-browser';
+        if(!is_dir($dir)&&!mkdir($dir,0700,true)&&!is_dir($dir))throw new RuntimeException('Synthetic finance bundle directory unavailable.');
+        $file=$dir.DIRECTORY_SEPARATOR.'financed-site-'.$licenseId.'.zip';
+        if(!is_file($file)){
+            $zip=new ZipArchive();
+            if($zip->open($file,ZipArchive::CREATE|ZipArchive::EXCL)!==true)throw new RuntimeException('Synthetic finance bundle creation failed.');
+            $zip->addFromString('README.txt',"Synthetic financed website bundle.\n");
+            $zip->close();
+        }
+        license_bundle_store($licenseId,$file,'Financed browser website bundle');
+        $stored=one('SELECT * FROM '.table('license_bundles').' WHERE license_id=? AND title=? ORDER BY id DESC LIMIT 1',
+            [$licenseId,'Financed browser website bundle']);
+    }
+    if(!$stored)throw new RuntimeException('Synthetic finance bundle record unavailable.');
+    echo json_encode(['bundle_id'=>(int)$stored['id'],'sha256'=>(string)$stored['sha256'],'bytes'=>(int)filesize($stored['file_path'])],JSON_THROW_ON_ERROR);exit;
+}
 if($operation==='gateway-off'){
     save_setting('software_gateway_mode','disabled');
     echo json_encode(['mode'=>'disabled'],JSON_THROW_ON_ERROR);exit;
