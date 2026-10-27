@@ -226,7 +226,7 @@ function software_webhook_process(string $raw,string $signature):string{
         if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
             if(($event['entity']??'')!=='subscription'||!preg_match('/^[0-9]{1,25}$/D',$event['resource_id']))
                 throw new InvalidArgumentException('Invalid subscription event entity.');
-            if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$event['resource_id']])){
+            if(license_finance_subscription_known_gateway_id($event['resource_id'])){
                 return 'sandbox_finance_subscription_event';
             }
             return 'sandbox_subscription_event';
@@ -242,7 +242,7 @@ function software_webhook_process(string $raw,string $signature):string{
             $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
             if(isset($details['transaction']['subscription']['id'])){
                 $sid=(string)$details['transaction']['subscription']['id'];
-                if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$sid])){
+                if(license_finance_subscription_known_gateway_id($sid)){
                     return license_finance_subscription_settle($details,$txId);
                 }
             }else{
@@ -267,7 +267,7 @@ function software_webhook_process(string $raw,string $signature):string{
 
     if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
         if(($event['entity']??'')!=='subscription')throw new InvalidArgumentException('Invalid subscription event entity.');
-        if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$event['resource_id']])){
+        if(license_finance_subscription_known_gateway_id($event['resource_id'])){
             return license_finance_subscription_lifecycle_review($event['type'],$event['resource_id']);
         }
         return software_subscription_lifecycle_review($event['type'],$event['resource_id']);
@@ -284,7 +284,7 @@ function software_webhook_process(string $raw,string $signature):string{
     $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
     if(isset($details['transaction']['subscription']['id'])){
         $sid=(string)$details['transaction']['subscription']['id'];
-        if(license_finance_gateway_ready()&&one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$sid])){
+        if(license_finance_subscription_known_gateway_id($sid)){
             return license_finance_subscription_settle($details,$txId);
         }
         return software_subscription_settle($details,$txId);
