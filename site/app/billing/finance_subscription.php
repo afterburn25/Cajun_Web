@@ -363,9 +363,11 @@ function license_finance_subscription_settle(array $details,string $transactionI
         return 'unknown_subscription';
     }
     if($gateway['mode']!=='production')return 'sandbox_finance_subscription_verified';
-    try{$relative=license_financing_period_from_pay_num((int)$verified['pay_num'],(int)$sub['total_occurrences']);}
+    $offer=license_finance_offer_row((string)$sub['offer_id']);
+    try{$period=license_financing_period_from_replacement_pay_num(
+        (int)$verified['pay_num'],(int)$sub['total_occurrences'],(int)$sub['period_offset'],(int)$offer['installments']
+    );}
     catch(InvalidArgumentException $e){throw new RuntimeException('Verified financing subscription charge does not match the retained installment contract.',0,$e);}
-    $period=(int)$sub['period_offset']+$relative;
     if((int)$verified['amount_cents']!==(int)$sub['amount_cents'])throw new RuntimeException('Verified financing subscription charge does not match the retained installment amount.');
     $invoiceId=null;$offerId=(string)$sub['offer_id'];
     staff_locked(function()use($transactionId,$verified,$period,$offerId,&$invoiceId):void{
