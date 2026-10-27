@@ -74,6 +74,17 @@ finance_ok(license_financing_recovery_link_allowed('billing_suspended')
     &&!license_financing_recovery_link_allowed('payment_failed')
     &&!license_financing_recovery_link_allowed('review'),
     'Self-service recovery links are limited to terminal automatic-billing states without an active gateway retry path');
+finance_ok(license_financing_subscription_settlement_status('active')==='active'
+    &&license_financing_subscription_settlement_status('payment_failed')==='active'
+    &&license_financing_subscription_settlement_status('cancelled')==='cancelled',
+    'Verified financing subscription payments preserve cancelled auto-billing while recovering retryable states');
+finance_ok(license_financing_subscription_settlement_status('review')===null
+    &&license_financing_subscription_settlement_status('review',true)==='active'
+    &&license_financing_subscription_settlement_status('replacing')===null
+    &&license_financing_subscription_settlement_status('paid_off')===null,
+    'Financing subscription review is sticky until explicit owner reconciliation and terminal states do not auto-settle');
+finance_reject(fn()=>license_financing_subscription_settlement_status('mystery'),
+    'Unknown financing subscription settlement state is rejected');
 
 $rights=license_financing_rights(false,false,false,false);
 finance_ok(!$rights['resale']&&!$rights['distribution'],
