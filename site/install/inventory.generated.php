@@ -372,7 +372,7 @@ function setup_expected_files(): array { return [
     'database/migrations/hosting_reconciliation_migrate.php'=>'9db169b2f946a8566d76760325e5a340f787416852d89bd52c583430d0970f81',
     'database/migrations/hosting_records_migrate.php'=>'28e1b716875ae3219335994dac54fe2762ea9c29550df828646aacbecf971098',
     'database/migrations/ledger_migrate.php'=>'5a688b960a80f4bbff197610e343f62803be4a60983186b6cc9a68b3b9527978',
-    'database/migrations/license_finance_gateway_migrate.php'=>'9d6b4d59041451a595f6698b053418783d0e8ad673914971cebdf3d0fe308ab5',
+    'database/migrations/license_finance_gateway_migrate.php'=>'fa14e891b027f82934cc765921c74d3c31a0ef7dd1a9b36f630fbfa0bc398e13',
     'database/migrations/license_finance_offers_migrate.php'=>'5898f32e381a565b40eb09f70e2d119244759a73b9c21f6e9e662354bd6afdd2',
     'database/migrations/license_financing_migrate.php'=>'e6baf0fb6a32f88fa537460ac95c7a1932bd6ba084a5c1eb8b87c3669dface87',
     'database/migrations/license_migrate.php'=>'e50f345d20b0bf33e34925142a1a15c94b1d9f112e49bb8ada17362199e1d8e9',
