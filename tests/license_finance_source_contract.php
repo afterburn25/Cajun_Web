@@ -25,6 +25,11 @@ fc_ok(str_contains($admin,'Commercial rights are not included in financing.')
     &&!str_contains($admin,'Grant distribution rights'),
     'Initial finance agreement UI is site-use only and cannot pre-grant commercial rights');
 
+fc_ok(str_contains($admin,'No financing scheduler run has been observed.')
+    &&str_contains($admin,"setting('finance_scheduler_last_run')")
+    &&str_contains($admin,'more than 36 hours old'),
+    'Owner licensing screen exposes missing, stale and recent financing scheduler health');
+
 $controller=fc_file('site/admin/controllers/studio.php');
 fc_ok(str_contains($controller,'Direct financing binding is retired'),'Unsigned direct financing binding is blocked');
 fc_ok(str_contains($controller,'studio_license_finance_gateway_setup'),'Finance gateway setup action is wired');
@@ -169,7 +174,13 @@ fc_ok(str_contains($sharedJob,"require CWP_CODE_ROOT.'/app/licenses/finance_inst
     &&str_contains($sharedJob,'license_finance_scheduler_run()')
     &&str_contains($sharedJob,"if(\$finance['state']!=='not_prepared')"),
     'Existing shared-host cron automatically runs financing after explicit preparation while preserving legacy output before setup');
-fc_ok(str_contains(fc_file('site/app/licenses/finance_installments.php'),'finance_scheduler_cursor'),
+$installments=fc_file('site/app/licenses/finance_installments.php');
+fc_ok(str_contains($installments,'finance_scheduler_cursor'),
     'Finance worker uses a retained cursor instead of starving agreements after a fixed batch');
+fc_ok(str_contains($installments,"save_setting('finance_scheduler_last_run'")
+    &&str_contains($installments,"save_setting('finance_scheduler_last_success'")
+    &&str_contains($installments,"save_setting('finance_scheduler_last_state'")
+    &&str_contains($installments,"save_setting('finance_scheduler_last_errors'"),
+    'Finance worker persists bounded scheduler health evidence for owner review');
 
 echo "License financing source contract: PASS".PHP_EOL;
