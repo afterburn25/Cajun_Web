@@ -164,6 +164,11 @@ fc_ok(str_contains($financeReview,'license_finance_reversals')
 
 $job=fc_file('site/app/jobs/finance.php');
 fc_ok(str_contains($job,"PHP_SAPI!=='cli'")&&str_contains($job,'takes no arguments'),'Finance worker is CLI-only and argument-free');
+$sharedJob=fc_file('site/app/jobs/run.php');
+fc_ok(str_contains($sharedJob,"require CWP_CODE_ROOT.'/app/licenses/finance_installments.php'")
+    &&str_contains($sharedJob,'license_finance_scheduler_run()')
+    &&str_contains($sharedJob,"if(\$finance['state']!=='not_prepared')"),
+    'Existing shared-host cron automatically runs financing after explicit preparation while preserving legacy output before setup');
 fc_ok(str_contains(fc_file('site/app/licenses/finance_installments.php'),'finance_scheduler_cursor'),
     'Finance worker uses a retained cursor instead of starving agreements after a fixed batch');
 
