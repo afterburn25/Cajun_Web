@@ -52,10 +52,14 @@ try{$financePlan=license_financing_sync((int)$lic['id']);}catch(Throwable $e){$f
 <?php endforeach;?>
 </ul>
 <?php else:?><p class="muted">No domains registered yet.</p><?php endif;?>
-<?php $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[$lic['id']]);?>
-<?php if($bundles):?><h4>Downloads</h4><ul>
+<?php
+$bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[$lic['id']]);
+$bundleAccess=$financeError===''&&($financePlan===null||in_array((string)$financePlan['state'],['active','grace','paid_off'],true));
+?>
+<?php if($bundles&&$bundleAccess):?><h4>Downloads</h4><ul>
 <?php foreach($bundles as $b):?><li><a href="<?=esc(site_url('api/bundle-download.php?id='.(int)$b['id']))?>"><?=esc($b['title'])?> ↓</a> <small><?=esc(gmdate('Y-m-d',strtotime($b['created_at'])))?></small></li><?php endforeach;?>
-</ul><?php endif;?>
+</ul>
+<?php elseif($bundles): ?><p class="notice warning">Website bundle downloads are paused until financing access is current. Existing license and domain history are preserved.</p><?php endif;?>
 <form method="post"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_add"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><label>Register domain<input type="text" name="domain" placeholder="example.com" required></label><button class="btn gold">Add domain</button></form>
 <p class="hint">Up to 2 active domains per license (e.g. your public site and a test site). Registering or moving a domain takes the old site offline at its next license check. <code>www.</code> addresses count as the same site as their base domain. Changing the domain does not transfer the license to another customer or grant resale/distribution rights.</p>
 </article>
