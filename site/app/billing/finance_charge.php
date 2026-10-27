@@ -38,7 +38,7 @@ function license_finance_charge_prepare(array $request,string $attemptKey):array
             $existing=one('SELECT * FROM '.table('license_finance_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
             $now=gmdate('Y-m-d H:i:s');
             if($existing){
-                if(!in_array((string)$existing['status'],['declined','sandbox_test'],true)){
+                if(!in_array((string)$existing['status'],['declined','sandbox_test','refunded','voided'],true)){
                     throw new RuntimeException('A financing gateway attempt already exists. Reconcile its outcome before charging again.');
                 }
                 query('UPDATE '.table('license_finance_charges').' SET request_id=?,status=?,request_key=?,transaction_id=NULL,updated_at=? WHERE id=?',
