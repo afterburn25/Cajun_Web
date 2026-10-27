@@ -98,6 +98,16 @@ function license_financing_period_from_replacement_pay_num(int $payNum,int $rema
     if($period<0||$period>=$signedInstallments)throw new InvalidArgumentException('Replacement financing payment maps outside the signed installments.');
     return $period;
 }
+function license_financing_subscription_settlement_status(string $status,bool $ownerReconcile=false):?string{
+    return match($status){
+        'pending_first_payment','active','payment_failed','billing_suspended' => 'active',
+        'cancelled' => 'cancelled',
+        'review' => $ownerReconcile?'active':null,
+        'replacing','paid_off','sandbox_test' => null,
+        default => throw new InvalidArgumentException('Unknown financing subscription state.')
+    };
+}
+
 function license_financing_recovery_link_allowed(string $subscriptionStatus):bool{
     // A suspended or cancelled automatic-billing contract cannot settle the
     // next installment itself, so a private manual catch-up request is safe.
