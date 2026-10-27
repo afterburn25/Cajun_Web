@@ -9,7 +9,7 @@ require_once CWP_CODE_ROOT.'/app/billing/recurring_billing.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 require_once CWP_CODE_ROOT.'/app/support/sessions.php';
 
-function license_financing_table_present(string $name):bool{
+function license_financing_storage_table_present(string $name):bool{
     return (bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
         [config()['db']['prefix'].$name]);
 }
@@ -39,8 +39,8 @@ function license_financing_prepare(#[\SensitiveParameter]string $password):void{
         $version=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['license_financing_schema_version'])['value']??'');
         if(!in_array($version,['','1','2'],true))throw new RuntimeException('Unknown financed-license storage version.');
         $schema=license_financing_schema(config()['db']['prefix']);
-        $present=license_financing_table_present('license_financing');
-        $grantsPresent=license_financing_table_present('license_financing_rights_grants');
+        $present=license_financing_storage_table_present('license_financing');
+        $grantsPresent=license_financing_storage_table_present('license_financing_rights_grants');
         if(in_array($version,['1','2'],true)&&!$present)throw new RuntimeException('Established financed-license storage is missing. Restore the original database.');
         if($version==='2'&&!$grantsPresent)throw new RuntimeException('Established financing rights-grant storage is missing. Restore the original database.');
         if($version===''&&($present||$grantsPresent))throw new RuntimeException('Unrecognized financed-license storage exists. No data was adopted.');
