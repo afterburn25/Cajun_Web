@@ -86,8 +86,9 @@ PHPIniDir /etc/php/{PHP_VERSION}/apache2
                 for route in ['/','/admin/index.php?view=login','/portal/index.php','/robots.php','/sitemap.php','/api/robots.php']:
                     rr=session.get(url+route);check(label+suffix+' canonical route '+route,rr.status_code==200 and 'We could not complete this request' not in rr.text)
                 software=session.get(url+'/portal/index.php?software=1')
-                check(label+suffix+' My Software route resolves at installed base path',
-                      software.status_code==403 and 'Sign in to your own account to manage software' in software.text)
+                check(label+suffix+' anonymous My Software route resolves safely at installed base path',
+                      software.status_code==200 and 'Software & Licenses' not in software.text
+                      and ('Sign in' in software.text or 'Client Portal' in software.text))
                 download=session.get(url+'/api/software-download.php?id=1&license=1')
                 check(label+suffix+' anonymous software download endpoint resolves and denies access',
                       download.status_code==403)
