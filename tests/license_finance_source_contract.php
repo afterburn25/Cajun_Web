@@ -17,6 +17,8 @@ fc_ok(substr_count($admin,'Finance agreement history')===1,'Finance agreement hi
 fc_ok(substr_count($admin,'Authorize.net payment configuration')===1,'Software gateway configuration appears once');
 fc_ok(substr_count($admin,'License register')===1,'License register appears once');
 fc_ok(!str_contains($admin,'.number_format($candidate'),'No corrupted financing splice remains in licensing view');
+fc_ok(str_contains($admin,"'replacing','review','payment_failed','billing_suspended'"),
+    'Owner reconciliation queue includes interrupted financing replacement attempts');
 
 $controller=fc_file('site/admin/controllers/studio.php');
 fc_ok(str_contains($controller,'Direct financing binding is retired'),'Unsigned direct financing binding is blocked');
@@ -63,6 +65,9 @@ fc_ok(str_contains($financeSchema,'license_finance_subscription_history')
 fc_ok(str_contains($financeMigration,"license_finance_gateway_schema_version','2'")
     &&str_contains($financeMigration,'license_finance_gateway_upgrade_v2'),
     'Finance gateway storage upgrades existing v1 data additively to v2');
+fc_ok(str_contains($financeMigration,"setting('license_finance_gateway_schema_version')!=='2'")
+    &&str_contains($financeMigration,'replacement_count'),
+    'Finance gateway readiness requires complete v2 replacement metadata');
 fc_ok(str_contains($financeSubscription,'license_finance_subscription_reenroll_opaque')
     &&str_contains($financeSubscription,'license_finance_subscription_replacement_finalize')
     &&str_contains($financeSubscription,'historical_subscription_transaction')
@@ -72,7 +77,7 @@ fc_ok(str_contains($financePortal,'finance_subscription_reenroll')
     &&str_contains($financePortal,'preserve it in history')
     &&str_contains($financePortal,'authorize_net_security_headers'),
     'Client finance portal exposes caught-up replacement enrollment under payment CSP');
-fc_ok(str_contains($portalActions,"$action==='finance_subscription_reenroll'"),
+fc_ok(str_contains($portalActions,"\$action==='finance_subscription_reenroll'"),
     'Client financing replacement action is wired through authenticated portal handling');
 
 $job=fc_file('site/app/jobs/finance.php');
