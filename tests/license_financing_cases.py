@@ -261,6 +261,18 @@ def run_browser(env,browser):
     check('Paid-off financing leaves published project release permanently downloadable',
           alice.get(release_url,timeout=25).status_code==200)
 
+    fixture('force-inactive-paid-off',offer)
+    check('Synthetic imported paid-off record begins inactive before validation recovery',
+          env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
+    recovered=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
+    check('Validation self-heals an inactive immutable paid-off key on its registered domain',
+          recovered.status_code==200 and recovered.json()=={'authorized':True,'error':None}
+          and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+    wrong_recovery=requests.post(validate,json={'license_key':license_key,'domain':'paid-off-probe.example'},timeout=25)
+    check('Paid-off recovery does not weaken domain binding',
+          wrong_recovery.status_code==200
+          and wrong_recovery.json()=={'authorized':False,'error':'Domain not registered for this license'})
+
     licenses=base+'/existing/admin/index.php?view=studio-licenses'
     owner_paid=admin.get(licenses,timeout=25)
     paid_forms=[form for form in soup(owner_paid).select('form')
