@@ -278,10 +278,10 @@ function studio_admin_action(string $action,array $user): never {
             license_finance_apr_bps(posted('apr_percent',8)),gint($_POST,'installments',1,360),gint($_POST,'grace_days',0,90),
             gint($_POST,'offer_days',1,30),gint($_POST,'payment_link_days',1,30),
             [
-                'resale'=>isset($_POST['allow_resale']),
-                'distribution'=>isset($_POST['allow_distribution']),
-                'exclusive_resale'=>isset($_POST['exclusive_resale']),
-                'exclusive_distribution'=>isset($_POST['exclusive_distribution'])
+                'resale'=>false,
+                'distribution'=>false,
+                'exclusive_resale'=>false,
+                'exclusive_distribution'=>false
             ],
             posted('agreement_text',12000),posted('current_password',200)
         );
