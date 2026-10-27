@@ -14,6 +14,8 @@ $password='Synthetic owner passphrase 2026';
 
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+require_once CWP_CODE_ROOT.'/app/billing/payments.php';
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
 
 function finance_fixture_owner():void{
@@ -55,6 +57,17 @@ function finance_fixture_source():string{
              $before->fingerprint(),$after->fingerprint()]);
     }
     return $sid;
+}
+function finance_fixture_sandbox_gateway(string $password):void{
+    if(!license_finance_gateway_ready())license_finance_gateway_prepare($password);
+    $gateway=payments_gateway('sandbox');
+    payments_save('sandbox',(int)$gateway['revision'],[
+        'api_login_id'=>'SyntheticBrowser',
+        'transaction_key'=>'1234567890ABCDEF',
+        'signature_key'=>str_repeat('ab',64),
+        'public_client_key'=>'Synthetic_Finance_Browser_Key_2026',
+    ],$password);
+    save_setting('software_gateway_mode','sandbox');
 }
 function finance_fixture_payment(int $invoice,string $reference):int{
     $i=ledger_invoice($invoice);$balance=ledger_balance($i);
@@ -131,10 +144,42 @@ if($operation==='late'){
     $plan=license_financing_sync($licenseId,$late);
     echo json_encode(['invoice_id'=>(int)$issued['invoice_id'],'state'=>$plan['state'],'today'=>$late],JSON_THROW_ON_ERROR);exit;
 }
+if($operation==='gateway-suspended'){
+    finance_fixture_sandbox_gateway($password);
+    $schedule=recurring_billing_row((string)$offer['schedule_id']);$doc=recurring_billing_validate($schedule);
+    $terms=RecurringBillingTerms::fromArray($doc->data()['terms']);$p=$terms->period(0);
+    $now=gmdate('Y-m-d H:i:s');
+    $sub=one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE offer_id=?',[$offer['id']]);
+    if(!$sub){
+        query('INSERT INTO '.table('license_finance_subscriptions').
+            ' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,period_offset,replacement_count,start_date,status,created_at,updated_at)'.
+            ' VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [$offer['id'],'830001','930001','940001',1,(int)license_finance_offer_terms($offer)['installment_amount_cents'],
+             (int)$offer['installments'],0,0,$p['start'],'billing_suspended',$now,$now]);
+    }else{
+        query('UPDATE '.table('license_finance_subscriptions').' SET gateway_subscription_id=?,customer_profile_id=?,payment_profile_id=?,status=?,updated_at=? WHERE id=?',
+            ['830001','930001','940001','billing_suspended',$now,$sub['id']]);
+    }
+    $late=(new DateTimeImmutable($p['due'].'T00:00:00',new DateTimeZone('UTC')))->modify('+6 days');
+    save_setting('finance_scheduler_cursor','');
+    $summary=license_finance_scheduler_run($late->getTimestamp());
+    $request=one('SELECT p.id,p.invoice_id,p.status,p.amount_cents FROM '.table('payment_requests').' p '.
+        'JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id '.
+        'WHERE r.schedule_id=? AND r.period_index=0 AND p.purpose=? ORDER BY p.id DESC LIMIT 1',
+        [$offer['schedule_id'],'financing']);
+    if(!$request||$request['status']!=='prepared')throw new RuntimeException('Synthetic finance recovery request was not prepared.');
+    echo json_encode([
+        'subscription_status'=>'billing_suspended','gateway_subscription_id'=>'830001',
+        'request_id'=>(int)$request['id'],'invoice_id'=>(int)$request['invoice_id'],
+        'amount_cents'=>(int)$request['amount_cents'],'scheduler'=>$summary
+    ],JSON_THROW_ON_ERROR);exit;
+}
 if($operation==='catchup'){
     $map=one('SELECT invoice_id FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=0',[$offer['schedule_id']]);
     if(!$map)throw new RuntimeException('Synthetic overdue installment is missing.');
     finance_fixture_payment((int)$map['invoice_id'],'Catch-up browser payment');
+    query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND purpose=? AND status='prepared'",
+        [(int)$map['invoice_id'],'financing']);
     $plan=license_financing_sync($licenseId,gmdate('Y-m-d'));
     echo json_encode(['state'=>$plan['state'],'paid_off_at'=>$plan['paid_off_at']],JSON_THROW_ON_ERROR);exit;
 }
