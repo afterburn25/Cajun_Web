@@ -50,6 +50,11 @@ fc_ok(str_contains($offers,"?'pending_initial':'active'"),'Down-payment agreemen
 fc_ok(str_contains($offers,'signed_terms_sha256')&&str_contains($offers,'signature_evidence_hash'),
     'Electronic signature binds exact finance terms and evidence hash');
 
+$licenseApi=fc_file('site/api/handlers/license.php');
+fc_ok(strpos($licenseApi,'license_domain_authorized($license, $domain)')
+    < strpos($licenseApi,'license_financing_access((int)$license[\'id\'])'),
+    'Public validation checks product/domain authority before evaluating private financing state');
+
 $finance=fc_file('site/app/licenses/financing.php');
 fc_ok(str_contains($finance,"'pending_initial'=>['authorized'=>false")
     &&str_contains($finance,"'suspended'=>['authorized'=>false"),
