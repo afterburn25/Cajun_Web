@@ -291,6 +291,12 @@ save_setting('finance_scheduler_cursor','');
 $cancelledRecovery=license_finance_scheduler_run(
     (new DateTimeImmutable($lateDate.'T12:00:00',new DateTimeZone('UTC')))->getTimestamp()
 );
+rb_ok('Prepared financing scheduler records durable last-run and success health',
+    ctype_digit((string)setting('finance_scheduler_last_run'))
+    &&(int)setting('finance_scheduler_last_run')>0
+    &&setting('finance_scheduler_last_state')==='complete'
+    &&setting('finance_scheduler_last_errors')==='0'
+    &&setting('finance_scheduler_last_success')===setting('finance_scheduler_last_run'));
 $cancelledRequest=one('SELECT p.id,p.invoice_id,p.status,p.amount_cents FROM '.table('payment_requests').' p '.
     'JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id '.
     'WHERE r.schedule_id=? AND r.period_index=0 AND p.purpose=? ORDER BY p.id DESC LIMIT 1',
