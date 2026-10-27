@@ -192,7 +192,7 @@ function setup_expected_files(): array { return [
     'app/licenses/bundle.php'=>'5b5e29fab554eafc19c98659fecb1f15b75fb025d2a267c3eaa6a9e0756510cf',
     'app/licenses/finance_installments.php'=>'3c562705754a4f595795047a3323f9799020a6a9e190ef636a06f81f9761e041',
     'app/licenses/financing.php'=>'dea0da3a866cb9ac38cdbbc470d3b85944f8e94fb0102b2c23cb2a52fc8e0194',
-    'app/licenses/financing_offers.php'=>'d0b03dbc61329e5cf440c577fa2fec50e888cfb66a6cb9e4369c3b3fbcb4fee5',
+    'app/licenses/financing_offers.php'=>'45d3accb1843031c5976d91e0283ee8f887d74ba3799f94495fa4720c34c3731',
     'app/licenses/financing_policy.php'=>'1270d454bf1fa2131e40df6fd709dce53919b9d5012dc8ce3333899e27aa1ccf',
     'app/licenses/fulfill.php'=>'bdfa8e208c01e07281b560c306ac44127068e5df65747dd6dceaa11249b1e978',
     'app/licenses/legacy.php'=>'875542e05b93685659f0be81115b143c5ef224dde1515f4cbf9cf021272ee5dd',
