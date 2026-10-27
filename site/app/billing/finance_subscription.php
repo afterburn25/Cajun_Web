@@ -83,8 +83,9 @@ function license_finance_subscription_finalize(string $offerId,string $gatewayId
         }
         $other=one('SELECT offer_id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=? AND offer_id<>? FOR UPDATE',[$gatewayId,$offerId]);
         if($other)throw new RuntimeException('Gateway financing subscription is already assigned to another agreement.');
-        query('UPDATE '.table('license_finance_subscriptions').' SET gateway_subscription_id=?,customer_profile_id=?,payment_profile_id=?,interval_months=?,amount_cents=?,total_occurrences=?,start_date=?,status=?,updated_at=? WHERE id=?',
-            [$gatewayId,$profiles['customer_profile_id']??'', $profiles['payment_profile_id']??'',$contract['months'],$contract['amount_cents'],$contract['occurrences'],$contract['start_date'],$state,gmdate('Y-m-d H:i:s'),$row['id']]);
+        query('UPDATE '.table('license_finance_subscriptions').' SET gateway_subscription_id=?,customer_profile_id=?,payment_profile_id=?,interval_months=?,amount_cents=?,total_occurrences=?,period_offset=?,start_date=?,status=?,updated_at=? WHERE id=?',
+            [$gatewayId,$profiles['customer_profile_id']??'', $profiles['payment_profile_id']??'',$contract['months'],$contract['amount_cents'],$contract['occurrences'],
+             (int)($contract['period_offset']??0),$contract['start_date'],$state,gmdate('Y-m-d H:i:s'),$row['id']]);
         license_audit(0,'financing.subscription.created','Finance agreement '.$offerId.' gateway subscription '.$gatewayId.' state '.$state);
         return $state;
     }));
@@ -97,8 +98,9 @@ function license_finance_subscription_reserve(array $offer,array $contract,array
             throw new RuntimeException('This finance agreement already has a recurring payment subscription.');
         }
         $now=gmdate('Y-m-d H:i:s');
-        query('INSERT INTO '.table('license_finance_subscriptions').' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,start_date,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-            [$offer['id'],null,$profiles['customer_profile_id']??'',$profiles['payment_profile_id']??'',$contract['months'],$contract['amount_cents'],$contract['occurrences'],$contract['start_date'],'creating',$now,$now]);
+        query('INSERT INTO '.table('license_finance_subscriptions').' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,period_offset,replacement_count,start_date,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [$offer['id'],null,$profiles['customer_profile_id']??'',$profiles['payment_profile_id']??'',$contract['months'],$contract['amount_cents'],$contract['occurrences'],
+             (int)($contract['period_offset']??0),0,$contract['start_date'],'creating',$now,$now]);
     }));
 }
 function license_finance_subscription_create_profile(string $offerId,array $profiles):string{
@@ -249,8 +251,9 @@ function license_finance_subscription_settle(array $details,string $transactionI
     $sub=one('SELECT * FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$verified['subscription_id']]);
     if(!$sub)return 'unknown_subscription';
     if($gateway['mode']!=='production')return 'sandbox_finance_subscription_verified';
-    try{$period=license_financing_period_from_pay_num((int)$verified['pay_num'],(int)$sub['total_occurrences']);}
+    try{$relative=license_financing_period_from_pay_num((int)$verified['pay_num'],(int)$sub['total_occurrences']);}
     catch(InvalidArgumentException $e){throw new RuntimeException('Verified financing subscription charge does not match the retained installment contract.',0,$e);}
+    $period=(int)$sub['period_offset']+$relative;
     if((int)$verified['amount_cents']!==(int)$sub['amount_cents'])throw new RuntimeException('Verified financing subscription charge does not match the retained installment amount.');
     $invoiceId=null;$offerId=(string)$sub['offer_id'];
     staff_locked(function()use($transactionId,$verified,$period,$offerId,&$invoiceId):void{
@@ -262,7 +265,9 @@ function license_finance_subscription_settle(array $details,string $transactionI
                 if((int)$old['period_index']!==$period)throw new RuntimeException('Gateway financing transaction was reused for another installment.');
                 $invoiceId=(int)$old['invoice_id'];return;
             }
-            $offer=license_finance_offer_row($offerId,null,true);$schedule=recurring_billing_row((string)$offer['schedule_id']);$doc=recurring_billing_validate($schedule);
+            $offer=license_finance_offer_row($offerId,null,true);
+            if($period<0||$period>=(int)$offer['installments'])throw new RuntimeException('Replacement financing subscription maps outside the signed installment count.');
+            $schedule=recurring_billing_row((string)$offer['schedule_id']);$doc=recurring_billing_validate($schedule);
             $issued=license_finance_issue_period_tx($offer,$doc,$period,time());
             if((int)($issued['invoice_id']??0)<1)throw new RuntimeException('Financing installment invoice is unavailable.');
             $invoiceId=(int)$issued['invoice_id'];$invoice=ledger_invoice($invoiceId);$balance=ledger_balance($invoice);
