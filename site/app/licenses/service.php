@@ -247,6 +247,9 @@ function license_deactivate_domain(int $licenseId, string $domain, int $actor = 
     $domain = license_canonical_domain($domain);
     license_transaction(function() use ($licenseId, $domain, $actor): void {
         license_lock($licenseId);
+        if (license_paid_off_lock($licenseId)) {
+            throw new RuntimeException('A fully paid financed license must remain bound to an active domain. Replace the domain instead of deactivating it.');
+        }
         license_deactivate_domain_tx($licenseId, $domain, $actor);
     });
 }
