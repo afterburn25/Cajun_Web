@@ -49,7 +49,7 @@ if($softwareReady){
 $financeCandidates=$financeOffersReady?license_finance_offer_candidates():[];
 $financeOffers=$financeOffersReady?license_finance_offer_list_admin():[];
 $financeChargeReviews=$financeGatewayReady?all('SELECT ch.invoice_id,ch.status,ch.transaction_id,o.title,c.name FROM '.table('license_finance_charges').' ch JOIN '.table('license_finance_offers').' o ON o.id=ch.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE ch.status IN (?,?,?) ORDER BY ch.id DESC LIMIT 30',['processing','uncertain','review']):[];
-$financeSubscriptionReviews=$financeGatewayReady?all('SELECT s.offer_id,s.gateway_subscription_id,s.status,o.title,c.name FROM '.table('license_finance_subscriptions').' s JOIN '.table('license_finance_offers').' o ON o.id=s.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE s.status IN (?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',['creating','review','payment_failed','billing_suspended','cancelled']):[];
+$financeSubscriptionReviews=$financeGatewayReady?all('SELECT s.offer_id,s.gateway_subscription_id,s.status,o.title,c.name FROM '.table('license_finance_subscriptions').' s JOIN '.table('license_finance_offers').' o ON o.id=s.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE s.status IN (?,?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',['creating','replacing','review','payment_failed','billing_suspended','cancelled']):[];
 $financeMailAccounts=[];
 try{
     if(mail_accounts_ready()&&mail_drafts_ready())foreach(array_slice(mail_accounts_assigned(1),0,20) as $a)if($a['can_send'])$financeMailAccounts[]=$mail_drafts_account($a['id']);
