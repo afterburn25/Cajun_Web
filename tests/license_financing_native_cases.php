@@ -351,6 +351,12 @@ $paidDeactivateBlocked=false;
 try{license_deactivate($licenseId,1);}catch(RuntimeException $expected){$paidDeactivateBlocked=true;}
 rb_ok('Paid-off financed license cannot be disabled after the customer completes payment',
     $paidDeactivateBlocked&&(int)license_get($licenseKey)['is_active']===1);
+$paidDomainDeactivateBlocked=false;
+try{license_deactivate_domain($licenseId,'finance-native.example',1);}catch(RuntimeException $expected){$paidDomainDeactivateBlocked=true;}
+rb_ok('Paid-off financed license cannot be disabled by removing its active domain',
+    $paidDomainDeactivateBlocked
+    &&one('SELECT domain FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',
+        [$licenseId,'finance-native.example'])!==null);
 
 query('DELETE FROM '.table('invoice_payments').' WHERE invoice_id=?',[$paidInvoices[3]]);
 query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=NULL WHERE id=?',
