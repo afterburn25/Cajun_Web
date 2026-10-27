@@ -79,6 +79,9 @@ fc_ok(str_contains($financePortal,'finance_subscription_reenroll')
     'Client finance portal exposes caught-up replacement enrollment under payment CSP');
 fc_ok(str_contains($portalActions,"\$action==='finance_subscription_reenroll'"),
     'Client financing replacement action is wired through authenticated portal handling');
+$sharedWebhook=fc_file('site/app/billing/software_subscription_settle.php');
+fc_ok(substr_count($sharedWebhook,'license_finance_subscription_known_gateway_id')>=4,
+    'Shared Authorize.Net webhook routes active and archived finance subscription IDs through finance history');
 
 $job=fc_file('site/app/jobs/finance.php');
 fc_ok(str_contains($job,"PHP_SAPI!=='cli'")&&str_contains($job,'takes no arguments'),'Finance worker is CLI-only and argument-free');
