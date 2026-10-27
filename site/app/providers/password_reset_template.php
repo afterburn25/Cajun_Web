@@ -90,7 +90,7 @@ function provider_password_reset_template_graph():?array {
             if(!hash_equals(provider_password_reset_template_hmac('review',provider_password_reset_template_json($review)),$v['review_sha256'])||$a['data']['observed_epoch']<$d['at']-PROVIDER_RESET_TEMPLATE_FRESH_SECONDS||$a['data']['observed_epoch']>$d['at']+30)$fail();
             $g=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$id]);$scope=provider_password_reset_template_scope($v);$scopeJson=provider_password_reset_template_json($scope);
             if(!$g||$g['operation']!==PROVIDER_RESET_TEMPLATE_OPERATION||$g['profile_id']!==$d['profile_id']||(int)$g['profile_revision']!==$v['context']['revision']||(int)$g['granted_by']!==$d['actor_id']||$g['granted_at']!==gmdate('Y-m-d H:i:s',$d['at'])||$g['consumed_at']!==$g['granted_at']||(int)$g['expires_epoch']!==$d['at']+900||$g['consumed_key']!=='reset-template:'.$id||$g['scope_params']!==$scopeJson||!hash_equals(provider_operations_scope(PROVIDER_RESET_TEMPLATE_OPERATION,$scope),$g['scope_fingerprint'])||!hash_equals(provider_password_reset_template_grant_digest($g),$v['grant_sha256']))$fail();
-            $l=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',[$g['consumed_key']]);$r=$e+['grant'=>$g,'ledger'=>$l,'terminal'=>null,'checks'=>[]];
+            $l=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',[$g['consumed_key']]);$r=$e+['grant'=>$g,'ledger'=>$l,'terminal'=>null,'checks'=>[],'dismissal'=>null];
             if($l){$c=$v['context'];$fingerprint=ProviderGateway::requestFingerprint('twenty-i',$c['profile_id'].':'.$c['revision'].':'.$c['credential_sha256'],provider_password_reset_template_operation($r));if(!hash_equals($fingerprint,$l['fingerprint'])||($l['operation']!==null&&$l['operation']!==PROVIDER_RESET_TEMPLATE_OPERATION))$fail();}
             $requests[$id]=$r;$last[$d['profile_id']]=$id;$seenGrant[$id]=true;continue;
         }
@@ -99,6 +99,9 @@ function provider_password_reset_template_graph():?array {
         if($d['kind']==='terminal'){
             if($r['terminal']!==null||!provider_password_reset_template_keys($v,['phase','request_sha256','ledger_sha256'])||!in_array($v['phase'],['not_sent','attempted'],true)||$v['request_sha256']!==$r['row']['document_sha256']||$v['ledger_sha256']!==provider_password_reset_template_ledger_digest($r['ledger'])||($v['phase']==='not_sent'&&$r['ledger']!==null))$fail();
             $r['terminal']=$e;
+        }elseif($d['kind']==='dismissal'){
+            if($r['dismissal']!==null||!provider_password_reset_template_keys($v,['request_sha256','disposition'])||$v['disposition']!=='dismissed'||$v['request_sha256']!==$r['row']['document_sha256'])fail();
+            $r['dismissal']=$e;
         }else{
             if(!provider_password_reset_template_keys($v,['receipt_id','disposition','request_sha256','ledger_sha256'])||!is_string($v['receipt_id'])||!isset($events[$v['receipt_id']])||$events[$v['receipt_id']]['document']['kind']!=='read_end'||!in_array($v['disposition'],['observed','different','unavailable'],true)||$v['request_sha256']!==$r['row']['document_sha256']||!$r['terminal']||$r['terminal']['document']['data']['phase']!=='attempted'||$v['ledger_sha256']!==provider_password_reset_template_finished($r))$fail();
             $receipt=$events[$v['receipt_id']];$rd=$receipt['document'];$start=$starts[$rd['data']['start_id']]??null;
@@ -130,6 +133,7 @@ function provider_password_reset_template_pending(array $graph,string $profile):
     foreach(array_reverse($graph['requests'],true) as $r){
         if($r['document']['profile_id']!==$profile)continue;
         if($r['terminal']&&$r['terminal']['document']['data']['phase']==='not_sent')continue;
+        if($r['dismissal'])continue;
         $observed=false;foreach($r['checks'] as $c)if($c['document']['data']['disposition']==='observed')$observed=true;
         if(!$observed)return $r;
     }return null;
@@ -283,13 +287,25 @@ function provider_password_reset_template_recover_finished(string $requestId,str
         provider_password_reset_template_terminal($r,'attempted');return provider_password_reset_template_summary(provider_password_reset_template_request($requestId));
     }));
 }
+function provider_password_reset_template_dismiss(string $requestId,#[SensitiveParameter] string $password):array {
+    provider_password_reset_template_id($requestId);if(db()->inTransaction())throw new LogicException('Template dismissal cannot inherit a transaction.');
+    return staff_locked(fn()=>staff_transaction(function()use($requestId,$password):array{
+        $actor=provider_password_reset_template_actor($password);$r=provider_password_reset_template_request($requestId);
+        if($r['dismissal']!==null)throw new RuntimeException('This request is already closed.');
+        $observed=false;foreach($r['checks'] as $c)if($c['document']['data']['disposition']==='observed')$observed=true;
+        if($observed||($r['terminal']&&$r['terminal']['document']['data']['phase']==='not_sent'))throw new RuntimeException('This request is already resolved.');
+        provider_password_reset_template_append('dismissal',bin2hex(random_bytes(16)),$r['document']['profile_id'],$requestId,(int)$actor['id'],['request_sha256'=>$r['row']['document_sha256'],'disposition'=>'dismissed']);
+        return provider_password_reset_template_summary(provider_password_reset_template_request($requestId));
+    }));
+}
 function provider_password_reset_template_summary(array $r):array {
     $current=false;try{provider_password_reset_template_authority($r['document']['data']['context']);$current=$r['grant']['revoked_at']===null;}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;}
     $digest=null;try{$digest=provider_password_reset_template_finished($r);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;}
     $status='interrupted';$last=null;
     if($r['terminal'])$status=$r['terminal']['document']['data']['phase']==='not_sent'?'not_sent':(($r['ledger']['status']??null)==='accepted_pending'?'accepted_pending':'unknown');
     foreach($r['checks'] as $c){$last=['disposition'=>$c['document']['data']['disposition'],'recorded_epoch'=>$c['document']['at']];$status=$last['disposition']==='observed'?'observed':($last['disposition']==='different'?'different':'unknown');}
-    return ['id'=>$r['document']['id'],'status'=>$status,'requested_epoch'=>$r['document']['at'],'content_sha256'=>$r['document']['data']['content_sha256'],'content_bytes'=>$r['document']['data']['content_bytes'],'current_context'=>$current,'can_verify'=>$current&&$digest!==null&&$r['terminal']!==null&&$r['terminal']['document']['data']['phase']==='attempted','can_recover'=>$current&&$digest!==null&&$r['terminal']===null,'recovery_digest'=>$current&&$r['terminal']===null?$digest:null,'last_check'=>$last];
+    $dismissed=$r['dismissal']!==null;if($dismissed&&$status!=='observed')$status='dismissed';
+    return ['id'=>$r['document']['id'],'status'=>$status,'requested_epoch'=>$r['document']['at'],'content_sha256'=>$r['document']['data']['content_sha256'],'content_bytes'=>$r['document']['data']['content_bytes'],'current_context'=>$current,'dismissed'=>$dismissed,'dismissed_epoch'=>$dismissed?$r['dismissal']['document']['at']:null,'can_verify'=>!$dismissed&&$current&&$digest!==null&&$r['terminal']!==null&&$r['terminal']['document']['data']['phase']==='attempted','can_recover'=>!$dismissed&&$current&&$digest!==null&&$r['terminal']===null,'can_dismiss'=>!$dismissed&&!in_array($status,['observed','not_sent'],true),'recovery_digest'=>!$dismissed&&$current&&$r['terminal']===null?$digest:null,'last_check'=>$last];
 }
 function provider_password_reset_template_screen(string $profileId,int $page=1):array {
     if($page<1||$page>10000)throw new InvalidArgumentException('Choose a valid template history page.');

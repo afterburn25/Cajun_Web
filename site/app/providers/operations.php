@@ -181,7 +181,7 @@ function provider_operation_revoke(string $grantId,#[\SensitiveParameter] string
     staff_locked(function()use($grantId,$password):void {
         $actor=provider_settings_owner($password);
         staff_transaction(function()use($grantId,$actor):void {
-            $statement=query('UPDATE '.table('provider_operation_grants').' SET revoked_at=?,revoked_by=? WHERE id=? AND revoked_at IS NULL',[gmdate('Y-m-d H:i:s'),(int)$actor['id'],$grantId]);
+            $statement=query('UPDATE '.table('provider_operation_grants').' SET revoked_at=?,revoked_by=? WHERE id=? AND revoked_at IS NULL AND consumed_key IS NULL',[gmdate('Y-m-d H:i:s'),(int)$actor['id'],$grantId]);
             if ($statement->rowCount()!==1) throw new InvalidArgumentException('Grant unavailable.');
             provider_settings_audit((int)$actor['id'],'operation_revoke','Revoked operation grant '.$grantId);
         });

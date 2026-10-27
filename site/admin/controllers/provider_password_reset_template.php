@@ -34,6 +34,10 @@ function provider_password_reset_template_admin_action(string $action):void {
         if(posted('reviewed',1)!=='1')throw new InvalidArgumentException('Review the saved request before restoring its history.');
         provider_password_reset_template_recover_finished(posted('request_id',32),posted('recovery_digest',64),$password);
         flash('Saved request history restored. Check the current template separately to confirm what 20i reports.');
+    }elseif($action==='provider_reset_template_dismiss'){
+        if(posted('reviewed',1)!=='1')throw new InvalidArgumentException('Review the saved request before closing it.');
+        provider_password_reset_template_dismiss(posted('request_id',32),$password);
+        flash('Unresolved request closed. The saved history remains available and the change is never sent again.');
     }else throw new InvalidArgumentException('Unknown password-reset template action.');
     redirect(admin_url('provider-settings').'#password-reset-template');
 }

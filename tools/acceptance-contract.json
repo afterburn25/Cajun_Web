@@ -879,7 +879,7 @@
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
       "site/app/providers/document_roots.php": "56f02eff5e74f30babaea4fd4ee838f90dcbb1b1b58870631fccb080ae71cb15",
       "site/app/providers/inventory.php": "5278dd5262dd2cf0f400521b83db70b5583bb8a244201f3c3adf94deb3efd0f6",
-      "site/app/providers/operations.php": "d6b3237c87ccdc5f73390266e8c12a6387978626af807f8302d59e0cf36c07ca",
+      "site/app/providers/operations.php": "27a26f05af0c837a811a52953006b8ddc4a9b57132d0441987b06a95a939c9c1",
       "foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
@@ -1091,7 +1091,7 @@
       "Subdomain-Requests-Client-Observed-Desktop.png",
       "Subdomain-Requests-Client-Observed-Mobile.png"
     ],
-    "predecessor_contract_sha256": "6edfb7f82e1189a2fc2fc78d7eb3fd93b7f0d9a03020cee021729b984246d0be",
+    "predecessor_contract_sha256": "541044b513d4b141658ab614ebaba90cf7623610531138df685269f83aaa5886",
     "predecessor_reports_sha256": "e4c311d5349b1d2876ea8ed1745fd67fb9d1cdaa746cde0a08cd92e98ffb491e",
     "source_sha256": {
       "site/app/providers/subdomain_requests.php": "ed7ce083ad87ace05964491f4611125bc44c37c2472bf1e00756c4e0d3d156dc",
@@ -1124,7 +1124,7 @@
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
       "site/app/providers/document_roots.php": "56f02eff5e74f30babaea4fd4ee838f90dcbb1b1b58870631fccb080ae71cb15",
       "site/app/providers/inventory.php": "5278dd5262dd2cf0f400521b83db70b5583bb8a244201f3c3adf94deb3efd0f6",
-      "site/app/providers/operations.php": "d6b3237c87ccdc5f73390266e8c12a6387978626af807f8302d59e0cf36c07ca",
+      "site/app/providers/operations.php": "27a26f05af0c837a811a52953006b8ddc4a9b57132d0441987b06a95a939c9c1",
       "foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
@@ -1219,7 +1219,7 @@
       "activity-provider-merge-minimal-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "764d284933f6913b8f057a092df69862e36a555999c0bee9cf5a1b69ced2512d",
+    "predecessor_contract_sha256": "e9fff406bca07869703196d44a5f5a304928c3c2592d44f14e59c469dd303590",
     "predecessor_reports_sha256": "fcecd58efba032e7cfdbc4a566e9fe15eb406fc64b401c89d1d60ba554e30eca",
     "source_sha256": {
       "site/app/providers/subdomain_requests.php": "ed7ce083ad87ace05964491f4611125bc44c37c2472bf1e00756c4e0d3d156dc",
@@ -1252,7 +1252,7 @@
       "tests/subdomain_add_views.php": "5b2dfcf36e446d6b870eee938907eb8e1d87a42aa6ff2e49f7b725fdf6928669",
       "site/app/providers/document_roots.php": "56f02eff5e74f30babaea4fd4ee838f90dcbb1b1b58870631fccb080ae71cb15",
       "site/app/providers/inventory.php": "5278dd5262dd2cf0f400521b83db70b5583bb8a244201f3c3adf94deb3efd0f6",
-      "site/app/providers/operations.php": "d6b3237c87ccdc5f73390266e8c12a6387978626af807f8302d59e0cf36c07ca",
+      "site/app/providers/operations.php": "27a26f05af0c837a811a52953006b8ddc4a9b57132d0441987b06a95a939c9c1",
       "foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",

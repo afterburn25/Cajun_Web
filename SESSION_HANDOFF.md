@@ -1,3 +1,14 @@
+## 2026-10-27 — PR261 follow-ups: stale-request dismissal + consumed-grant revoke guard
+
+Addressed the two tracked review findings on the reset-template lane, on `devin/full-site-integration` (post leaf-merge `27410953`):
+
+1. **Stale pending-request fencing** — a routine settings revision bump invalidated a pending request's context, killing `can_verify`/`can_recover` while `provider_password_reset_template_pending()` still fenced new reviews permanently. Fix: bounded append-only `dismissal` event (`disposition:'dismissed'` + `request_sha256` binding; graph validates exactly one per request). `provider_password_reset_template_dismiss()` requires the current owner password but intentionally bypasses `authorize_request` — its context-authority check IS the wedge. Dismissal refuses already-closed/observed/not_sent requests, performs zero provider I/O, never resends or confirms, and releases the `pending()` fence. UI gains a "Close unresolved request" form (reviewed-checkbox + owner password) and a 'dismissed' status label; `can_verify`/`can_recover`/`recovery_digest` gate on `!dismissed`.
+2. **`provider_operation_revoke`** — UPDATE now requires `consumed_key IS NULL` in addition to `revoked_at IS NULL`; template grants are born-consumed (`consumed_key='reset-template:<id>'` at INSERT) so revoking them post-issuance was meaningless and misrepresented audit state.
+
+Native regression stage 'bounded dismissal' in `tests/provider_password_reset_template_native.php`: wrong-password refusal, zero-I/O close of the revision-staled `$last` request, fence release (review offered again), double-dismiss + confirmed-request dismiss refusals, consumed-grant revoke refusal, and a fresh reviewed change actually dispatching post-dismissal (writes now 4, wire bodies updated).
+
+Verification: `php -l` clean on all six touched PHP files; repin script re-settled era pins for `operations.php`; artifact verifier **683/683 green** (`qa/acceptance-check.json` scratch); `tools/build.py --refresh` exact (40 pkgs/2,188 deps/2,206 runtime bytes; inventory regenerated). Hosted acceptance on the combined head remains the gate for FSI→main.
+
 ## 2026-10-27 — client-subdomain leaf chain merged into FSI; contract era-chain repaired; verifier 683/683
 
 Merged `7757c64c` (subdomain_add → client_subdomain_requests → client_subdomain_browser → subdomain_notifications leaf eras) into `devin/full-site-integration`. Resolution pattern: PHP unions port leaf's provider-activity/subdomain features onto FSI's evolved projections (`events.php`, `layout/activity.php`, `api/handlers/activity.php`, `admin/router.php`, `TwentyIOperationRegister`, `FixedHttpTransport` canonical+mirror); docs prepend-style; contract unions both era sets.

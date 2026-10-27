@@ -9,7 +9,7 @@ function provider_password_reset_template_source(string $label,string $content):
     echo '<div class="workspace-card"><h4>'.esc($label).'</h4><pre class="prose" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:28rem;overflow:auto">'."\n".esc($content).'</pre></div>';
 }
 function provider_password_reset_template_status(string $state):string {
-    return match($state){'observed'=>'Requested template reported by 20i','not_sent'=>'Request was not sent','accepted_pending'=>'20i acknowledged the request; confirmation pending','different'=>'20i reports a different template','interrupted'=>'Request interrupted; review required',default=>'Result not yet confirmed'};
+    return match($state){'observed'=>'Requested template reported by 20i','not_sent'=>'Request was not sent','accepted_pending'=>'20i acknowledged the request; confirmation pending','different'=>'20i reports a different template','interrupted'=>'Request interrupted; review required','dismissed'=>'Request closed without confirming the result',default=>'Result not yet confirmed'};
 }
 function provider_password_reset_template_admin_render():void {
     provider_settings_manager();
@@ -62,6 +62,7 @@ function provider_password_reset_template_admin_render():void {
                 echo '<p>The saved attempt permits restoration of the missing history. This will not resend the change or confirm its result.</p><label class="check"><input type="checkbox" name="reviewed" value="1" required> I reviewed this request and want to restore its saved history.</label>';provider_password_reset_template_password();echo '<button class="btn outline">Restore saved request history</button></form>';
             }
             if(!empty($item['can_verify'])){echo '<form method="post" data-reset-template-verify>';admin_action('provider_reset_template_verify');provider_password_reset_template_hidden('request_id',$item['id']);provider_password_reset_template_password();echo '<button class="btn outline">Check current template</button><p class="hint">Reads the template once without resending the change.</p></form>';}
+            if(!empty($item['can_dismiss'])){echo '<form method="post" data-reset-template-dismiss>';admin_action('provider_reset_template_dismiss');provider_password_reset_template_hidden('request_id',$item['id']);echo '<p>This request remains unresolved. Closing it records that you stopped tracking its result; the change is never sent again and the saved history is kept.</p><label class="check"><input type="checkbox" name="reviewed" value="1" required> I reviewed this request and want to close it without confirming its result.</label>';provider_password_reset_template_password();echo '<button class="btn outline">Close unresolved request</button></form>';}
             if($item['status']==='observed')echo '<p>A later read reported the requested text. This does not confirm how the email renders or whether an email was delivered.</p>';
             else echo '<p>The saved history remains available. An uncertain request is never automatically sent again.</p>';
             echo '</article>';
