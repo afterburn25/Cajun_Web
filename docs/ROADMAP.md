@@ -1,3 +1,7 @@
+## 2026-10-26 — development-check superseding concurrency
+
+PR267 `devin/ci-concurrency-hygiene`: 32 development-check workflows regrouped from per-`github.sha` concurrency groups (which made `cancel-in-progress` a no-op and produced the ~1000-run backlog) to per-PR/per-branch groups with `main`-exempt cancellation; `mail-receiving`/`mail-transport` gained the same block. Release certification, acceptance and diagnostic workflows remain non-canceling. `tools/ci_health.py`, a weekly `ci-health` snapshot and `docs/CI_HEALTH.md` document queue diagnosis. Live evidence: two consecutive pushes each canceled 31 superseded queued runs while protected acceptance stayed queued. This scheduling correction completes no product feature and does not run or replace any acceptance gate; merge follows the normal green-check process.
+
 ## 2026-10-19 — StackCP reset email template increment
 
 [Owner template controls](TWENTYI_PASSWORD_RESET_TEMPLATE.md) are implemented on a separate branch with explicit read/review/save/readback and encrypted history. Offline checks and installed acceptance are distinguished; the source is unreleased. This does not complete StackCP login, general webmail or the full20i catalog/registrar scope.

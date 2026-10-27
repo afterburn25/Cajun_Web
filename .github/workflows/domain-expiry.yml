@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: domain-expiry-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  group: domain-expiry-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-expiry:
     name: Domain expiry observations PHP ${{ matrix.php }} and ${{ matrix.database.label }}

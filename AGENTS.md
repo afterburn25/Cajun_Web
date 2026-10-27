@@ -55,6 +55,14 @@ This handoff authorizes development, reviewed GitHub integration and verified pu
 
 Use retained owner API material and current official provider references. Missing contracts are explicit unfinished engineering/evidence work. Continue independent implementation and isolated tests while recording exact missing live inputs. Do not turn unsupported or simulated behavior into a working marketing claim.
 
+## CI queue management - 2026-10-26
+
+Every development check workflow must scope `concurrency.group` to the pull request or branch (for example `<workflow-key>-${{ github.event.pull_request.number || github.ref }}`) and set `cancel-in-progress` so a newer push or PR sync supersedes obsolete queued and running runs of that workflow for that ref only. Never include `github.sha`, `run_id` or `run_attempt` in a development workflow's group — a per-commit group makes cancellation a no-op and is what produced the ~1000-run backlog. `main` pushes are exempt from cancellation so each main commit keeps its evidence.
+
+Never convert protected runs to newest-wins cancellation: `application-tests.yml` (sealed acceptance), `release-licensing.yml`, `release-upgrade-diagnostic.yml`, `stackcp-access-read-diagnostic.yml`, and the explicit `import-preserved-source` / `twentyi-catalog-schema` / `twentyi-cloud-root` ops workflows keep non-canceling or fixed serialization groups. Do not redispatch queued runs and do not dispatch a duplicate run for a commit whose run is pending. Poll the Actions API at no faster than ~10-minute intervals — the REST limit is shared account-wide.
+
+Diagnose backlog with `python tools/ci_health.py`; the `CI queue health` workflow writes a weekly snapshot. See `docs/CI_HEALTH.md` for the full rules and diagnosis table.
+
 ## Document and hand off every session
 
 Maintain PROJECT_STATUS.md, SESSION_HANDOFF.md, CHANGELOG.md, docs/ROADMAP.md, docs/DECISIONS.md, docs/SESSION_LOG.md, docs/RELEASES.md, the integration queue and stable completion tracker as applicable. Record the owner request, parent/current source, changed paths, exact tests/evidence, failures, remaining gates, real merge/release state and next action. The enclosing Git commit can identify a record that cannot know its own SHA in advance.

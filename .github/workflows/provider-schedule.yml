@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: provider-schedule-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: provider-schedule-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-schedule:
     name: Scheduled inventory PHP ${{ matrix.php }} and ${{ matrix.database.label }}

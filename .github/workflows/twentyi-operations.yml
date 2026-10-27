@@ -12,8 +12,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: twentyi-operations-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: twentyi-operations-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   operations:
