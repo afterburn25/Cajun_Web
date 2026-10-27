@@ -43,6 +43,19 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   },in_array($status,['pending_first_payment','sandbox_test'],true)?'success':'warning');
   redirect(studio_url(['finance'=>$id]));
  }
+ elseif($action==='finance_subscription_reenroll'){
+  if(!$client)throw new RuntimeException('Sign in to restore financing installments.');
+  require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+  $id=posted('finance_id',32);
+  $status=license_finance_subscription_reenroll_opaque($id,(int)$client['id'],posted('descriptor',128),posted('payment_token',8192));
+  flash(match($status){
+      'pending_first_payment'=>'Automatic financing installments were restored for the remaining signed periods. The prior suspended subscription remains in history.',
+      'sandbox_test'=>'Sandbox replacement subscription created for testing only. The prior suspended subscription remains in history and no real payment was settled.',
+      'billing_suspended'=>'The replacement subscription was not created. Your caught-up license remains active, but automatic billing is still suspended; you may retry with fresh payment details.',
+      default=>'Automatic financing replacement needs billing review. Do not submit another card until the studio confirms its status.'
+  },in_array($status,['pending_first_payment','sandbox_test'],true)?'success':'warning');
+  redirect(studio_url(['finance'=>$id]));
+ }
  elseif($action==='software_subscription_cancel'){
   if(!$client)throw new RuntimeException('Sign in to cancel recurring billing.');
   require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
