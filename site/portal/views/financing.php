@@ -10,6 +10,14 @@ function license_finance_money(int $cents):string{return '$'.number_format($cent
 function license_finance_portal_render(?array $client,string $id,string $error=''):never{
     if(!$client||support_current())fail_page('Sign in to your own account to review financing.',403);
     header('Cache-Control: private, no-store');header('Referrer-Policy: no-referrer');
+    $financeGateway=null;
+    if(license_finance_gateway_ready()){
+        try{
+            require_once CWP_CODE_ROOT.'/app/billing/finance_authorize_net.php';
+            $financeGateway=license_finance_anet_settings();
+            authorize_net_security_headers($financeGateway['mode']);
+        }catch(Throwable){$financeGateway=null;}
+    }
     site_head('Financing Agreement','portal');support_banner();
     echo '<section class="section"><div class="container"><p><a href="'.esc(studio_url()).'">Client workspace</a> / Financing</p><h1>Financing agreement</h1>';
     show_flash();if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
