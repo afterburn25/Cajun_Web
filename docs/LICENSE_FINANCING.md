@@ -42,7 +42,7 @@ Production charging remains separately gated by merchant configuration, customer
 
 ## Client-specific finance offers and signature flow
 
-Finance offers are customer-specific and immutable once published. The owner selects an existing website license and an offered recurring-billing schedule for the same customer, then records the cash price, initial payment, amount financed, finance charge, stated APR, installment count, grace period, payment-link lifetime, commercial-rights scope, and custom agreement language.
+Finance offers are customer-specific and immutable once published. The owner selects an existing website license and an offered recurring-billing schedule for the same customer, then records the cash price, initial payment, amount financed, finance charge, stated APR, installment count, grace period, payment-link lifetime, and custom agreement language. Initial financing agreements are always site-use only; resale/distribution rights are deliberately excluded from the financing offer and can be granted later only through the separate fully paid commercial-rights invoice workflow.
 
 CajunWebPro validates the monetary relationship before saving an offer:
 
