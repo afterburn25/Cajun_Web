@@ -159,6 +159,110 @@ function license_finance_subscription_enroll_opaque(string $offerId,int $clientI
         report_error($e);return 'review';
     }
 }
+function license_finance_subscription_replacement_reserve(string $offerId):array{
+    return staff_locked(fn()=>staff_transaction(function()use($offerId):array{
+        $row=license_finance_subscription_row($offerId,true);
+        if(!$row||$row['gateway_subscription_id']===null)throw new RuntimeException('Suspended financing subscription is unavailable.');
+        if((string)$row['status']!=='billing_suspended')throw new RuntimeException('Automatic financing replacement is available only after confirmed billing suspension.');
+        query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=?',
+            ['replacing',gmdate('Y-m-d H:i:s'),$row['id']]);
+        $row['status']='replacing';
+        return $row;
+    }));
+}
+function license_finance_subscription_replacement_review(string $offerId,string $oldGatewayId):void{
+    try{
+        staff_locked(fn()=>staff_transaction(function()use($offerId,$oldGatewayId):void{
+            $row=license_finance_subscription_row($offerId,true);
+            if(!$row||!hash_equals((string)($row['gateway_subscription_id']??''),$oldGatewayId))return;
+            if((string)$row['status']==='replacing'){
+                query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=?',
+                    ['review',gmdate('Y-m-d H:i:s'),$row['id']]);
+            }
+        }));
+    }catch(Throwable $reviewError){report_error($reviewError);}
+}
+function license_finance_subscription_replacement_declined(string $offerId,string $oldGatewayId):void{
+    staff_locked(fn()=>staff_transaction(function()use($offerId,$oldGatewayId):void{
+        $row=license_finance_subscription_row($offerId,true);
+        if(!$row||!hash_equals((string)($row['gateway_subscription_id']??''),$oldGatewayId)
+            ||(string)$row['status']!=='replacing')throw new RuntimeException('Financing replacement state changed.');
+        query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=?',
+            ['billing_suspended',gmdate('Y-m-d H:i:s'),$row['id']]);
+    }));
+}
+function license_finance_subscription_replacement_finalize(string $offerId,string $oldGatewayId,string $newGatewayId,
+    array $contract,array $profiles,string $state):string{
+    if(!preg_match('/^[0-9]{1,25}$/D',$oldGatewayId)||!preg_match('/^[0-9]{1,25}$/D',$newGatewayId)
+        ||hash_equals($oldGatewayId,$newGatewayId)||!in_array($state,['pending_first_payment','sandbox_test'],true)){
+        throw new InvalidArgumentException('Invalid financing replacement subscription identity.');
+    }
+    return staff_locked(fn()=>staff_transaction(function()use($offerId,$oldGatewayId,$newGatewayId,$contract,$profiles,$state):string{
+        $row=license_finance_subscription_row($offerId,true);
+        if(!$row||!hash_equals((string)($row['gateway_subscription_id']??''),$oldGatewayId)
+            ||!in_array((string)$row['status'],['replacing','review'],true)){
+            throw new RuntimeException('Financing replacement reservation changed.');
+        }
+        if(one('SELECT offer_id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=? AND offer_id<>? FOR UPDATE',
+            [$newGatewayId,$offerId])
+            ||one('SELECT offer_id FROM '.table('license_finance_subscription_history').' WHERE gateway_subscription_id=? FOR UPDATE',[$newGatewayId])){
+            throw new RuntimeException('Replacement gateway subscription is already assigned.');
+        }
+        $now=gmdate('Y-m-d H:i:s');
+        query('INSERT INTO '.table('license_finance_subscription_history').' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,period_offset,start_date,terminal_status,replaced_by_gateway_subscription_id,replaced_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+            [$offerId,$oldGatewayId,(string)$row['customer_profile_id'],(string)$row['payment_profile_id'],
+             (int)$row['interval_months'],(int)$row['amount_cents'],(int)$row['total_occurrences'],(int)$row['period_offset'],
+             (string)$row['start_date'],'billing_suspended',$newGatewayId,$now]);
+        query('UPDATE '.table('license_finance_subscriptions').' SET gateway_subscription_id=?,customer_profile_id=?,payment_profile_id=?,interval_months=?,amount_cents=?,total_occurrences=?,period_offset=?,replacement_count=replacement_count+1,start_date=?,status=?,updated_at=? WHERE id=?',
+            [$newGatewayId,$profiles['customer_profile_id']??'', $profiles['payment_profile_id']??'',
+             $contract['months'],$contract['amount_cents'],$contract['occurrences'],$contract['period_offset'],
+             $contract['start_date'],$state,$now,$row['id']]);
+        license_audit(0,'financing.subscription.replaced',
+            'Finance agreement '.$offerId.' replaced suspended gateway subscription '.$oldGatewayId.' with '.$newGatewayId.
+            '; remaining period offset '.(int)$contract['period_offset'].'; occurrences '.(int)$contract['occurrences']);
+        return $state;
+    }));
+}
+function license_finance_subscription_reenroll_opaque(string $offerId,int $clientId,string $descriptor,#[\SensitiveParameter]string $nonce):string{
+    if(support_current())throw new RuntimeException('Financing re-enrollment is unavailable during support access.');
+    if(!license_finance_gateway_ready())throw new RuntimeException('Prepare financing gateway storage first.');
+    software_anet_nonce($descriptor,$nonce);
+    $offer=license_finance_offer_row($offerId,$clientId);
+    if((string)$offer['status']!=='signed')throw new RuntimeException('Finance agreement must be signed first.');
+    $plan=license_financing_sync((int)$offer['license_id']);
+    if(!$plan||!in_array((string)$plan['state'],['active','grace'],true)){
+        throw new RuntimeException('Catch up the financing obligation before restoring automatic payments.');
+    }
+    $contract=license_finance_subscription_replacement_contract($offer);
+    $old=license_finance_subscription_replacement_reserve($offerId);
+    $oldGatewayId=(string)$old['gateway_subscription_id'];$newGatewayId=null;
+    $profiles=['customer_profile_id'=>'','payment_profile_id'=>''];
+    try{
+        $reply=license_finance_anet_execute('ARBCreateSubscriptionRequest',
+            license_finance_anet_arb_opaque_request($offerId,$contract['amount_cents'],$contract['start_date'],$contract['months'],$contract['occurrences'],$descriptor,$nonce));
+        $id=$reply['subscriptionId']??null;
+        if(($reply['messages']['resultCode']??'')!=='Ok'||(!is_string($id)&&!is_int($id))||!preg_match('/^[0-9]{1,25}$/D',(string)$id)){
+            license_finance_subscription_replacement_declined($offerId,$oldGatewayId);
+            return 'billing_suspended';
+        }
+        $newGatewayId=(string)$id;
+        $details=license_finance_anet_execute('ARBGetSubscriptionRequest',['subscriptionId'=>$newGatewayId,'includeTransactions'=>false]);
+        license_finance_anet_subscription_readback($details,$offerId,$newGatewayId,$contract['amount_cents'],$contract['months'],$contract['occurrences'],$contract['start_date']);
+        $profile=$details['subscription']['profile']??[];
+        if(is_array($profile)&&preg_match('/^[0-9]{1,20}$/D',(string)($profile['customerProfileId']??''))
+            &&preg_match('/^[0-9]{1,20}$/D',(string)($profile['customerPaymentProfileId']??''))){
+            $profiles=['customer_profile_id'=>(string)$profile['customerProfileId'],'payment_profile_id'=>(string)$profile['customerPaymentProfileId']];
+        }
+        $mode=license_finance_anet_settings()['mode'];
+        return license_finance_subscription_replacement_finalize($offerId,$oldGatewayId,$newGatewayId,$contract,$profiles,
+            $mode==='sandbox'?'sandbox_test':'pending_first_payment');
+    }catch(Throwable $e){
+        license_finance_subscription_replacement_review($offerId,$oldGatewayId);
+        report_error($e);
+        return 'review';
+    }
+}
+
 function license_finance_subscription_reconcile(string $offerId,string $gatewayId,#[\SensitiveParameter]string $password):string{
     if(support_current())throw new RuntimeException('Financing subscription reconciliation is unavailable during support access.');
     if(!license_finance_gateway_ready())throw new RuntimeException('Prepare financing gateway storage first.');
