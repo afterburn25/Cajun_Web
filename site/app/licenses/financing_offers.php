@@ -68,6 +68,10 @@ function license_finance_offer_build_terms(array $license,array $schedule,Recurr
         (bool)($rights['resale']??false),(bool)($rights['distribution']??false),
         (bool)($rights['exclusive_resale']??false),(bool)($rights['exclusive_distribution']??false)
     );
+    if($normalizedRights['resale']||$normalizedRights['distribution']
+        ||$normalizedRights['exclusive_resale']||$normalizedRights['exclusive_distribution']){
+        throw new InvalidArgumentException('Initial financing agreements are site-use only. Grant commercial rights only from a separate fully paid rights invoice.');
+    }
     $terms=[
         'format'=>1,'title'=>$title,'license_id'=>(int)$license['id'],'client_id'=>(int)$license['customer_id'],
         'job_id'=>(int)$schedule['job_id'],'schedule_id'=>(string)$schedule['id'],'schedule_revision'=>(int)$schedule['revision'],
