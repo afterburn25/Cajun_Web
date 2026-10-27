@@ -416,7 +416,7 @@ function license_finance_subscription_charge_reconcile(string $transactionId,#[\
     if(!one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$verified['subscription_id']])){
         throw new RuntimeException('Verified recurring transaction is not linked to a financing agreement.');
     }
-    $state=license_finance_subscription_settle($details,$transactionId);
+    $state=license_finance_subscription_settle($details,$transactionId,true);
     license_audit((int)$actor['id'],'financing.subscription.charge.reconcile','Financing recurring transaction '.$transactionId.' reconciled as '.$state);
     return $state;
 }
@@ -448,7 +448,7 @@ function license_finance_subscription_lifecycle_review(string $eventType,string 
         return 'finance_subscription_'.$target;
     }));
 }
-function license_finance_subscription_settle(array $details,string $transactionId):string{
+function license_finance_subscription_settle(array $details,string $transactionId,bool $ownerReconcile=false):string{
     if(!license_finance_gateway_ready()||!ledger_ready())throw new RuntimeException('Financing settlement is not prepared.');
     $verified=license_finance_anet_subscription_details($details,$transactionId);
     $gateway=license_finance_anet_settings();
@@ -458,6 +458,8 @@ function license_finance_subscription_settle(array $details,string $transactionI
         return 'unknown_subscription';
     }
     if($gateway['mode']!=='production')return 'sandbox_finance_subscription_verified';
+    $targetStatus=license_financing_subscription_settlement_status((string)$sub['status'],$ownerReconcile);
+    if($targetStatus===null)return 'finance_subscription_review_required';
     $offer=license_finance_offer_row((string)$sub['offer_id']);
     try{$period=license_financing_period_from_replacement_pay_num(
         (int)$verified['pay_num'],(int)$sub['total_occurrences'],(int)$sub['period_offset'],(int)$offer['installments']
@@ -465,10 +467,12 @@ function license_finance_subscription_settle(array $details,string $transactionI
     catch(InvalidArgumentException $e){throw new RuntimeException('Verified financing subscription charge does not match the retained installment contract.',0,$e);}
     if((int)$verified['amount_cents']!==(int)$sub['amount_cents'])throw new RuntimeException('Verified financing subscription charge does not match the retained installment amount.');
     $invoiceId=null;$offerId=(string)$sub['offer_id'];
-    staff_locked(function()use($transactionId,$verified,$period,$offerId,&$invoiceId):void{
-        staff_transaction(function()use($transactionId,$verified,$period,$offerId,&$invoiceId):void{
+    staff_locked(function()use($transactionId,$verified,$period,$offerId,$ownerReconcile,&$invoiceId):void{
+        staff_transaction(function()use($transactionId,$verified,$period,$offerId,$ownerReconcile,&$invoiceId):void{
             $sub=one('SELECT * FROM '.table('license_finance_subscriptions').' WHERE offer_id=? FOR UPDATE',[$offerId]);
             if(!$sub||!hash_equals((string)$sub['gateway_subscription_id'],(string)$verified['subscription_id']))throw new RuntimeException('Financing subscription identity changed.');
+            $targetStatus=license_financing_subscription_settlement_status((string)$sub['status'],$ownerReconcile);
+            if($targetStatus===null)throw new RuntimeException('Financing subscription requires owner reconciliation before settlement.');
             $old=one('SELECT invoice_id,period_index FROM '.table('license_finance_subscription_receipts').' WHERE gateway_transaction_id=? FOR UPDATE',[$transactionId]);
             if($old){
                 if((int)$old['period_index']!==$period)throw new RuntimeException('Gateway financing transaction was reused for another installment.');
@@ -492,7 +496,7 @@ function license_finance_subscription_settle(array $details,string $transactionI
             query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoiceId]);
             query('INSERT INTO '.table('license_finance_subscription_receipts').' (offer_id,gateway_transaction_id,period_index,invoice_id,created_at) VALUES (?,?,?,?,?)',
                 [$offerId,$transactionId,$period,$invoiceId,$now]);
-            query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=?',['active',$now,$sub['id']]);
+            query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=?',[$targetStatus,$now,$sub['id']]);
             license_audit(0,'financing.subscription.payment','Finance agreement '.$offerId.' period '.$period.' paid by gateway transaction '.$transactionId);
         });
     });
