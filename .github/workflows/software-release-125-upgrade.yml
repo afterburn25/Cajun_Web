@@ -74,8 +74,11 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y apache2 libapache2-mod-php8.3 php8.3-cli php8.3-mysql php8.3-zip php8.3-curl php8.3-mbstring php8.3-gd php8.3-xml
-          python3 -m venv .release125-venv
-          .release125-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4
+          python3 -m venv /tmp/cwp-release125-venv
+          /tmp/cwp-release125-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4
+      - name: Build candidate UPDATE from exact commit
+        if: steps.version.outputs.run_gate == 'true'
+        run: python3 tools/build.py --commit "$GITHUB_SHA"
       - name: Materialize immutable published v1.25 baseline
         if: steps.version.outputs.run_gate == 'true'
         run: |
@@ -101,15 +104,12 @@ jobs:
           if not (target/'install.php').is_file():
               raise SystemExit('Published v1.25 COMPLETE package is not direct-extract')
           PY
-      - name: Build candidate UPDATE from exact commit
-        if: steps.version.outputs.run_gate == 'true'
-        run: python3 tools/build.py --commit "$GITHUB_SHA"
       - name: Exercise published v1.25 update and recovery
         if: steps.version.outputs.run_gate == 'true'
         env:
           CWP_TEST_PORT: ${{ job.services.mariadb.ports[3306] }}
           PYTHONPATH: tests
-        run: .release125-venv/bin/python tests/software_release_125_upgrade.py
+        run: /tmp/cwp-release125-venv/bin/python tests/software_release_125_upgrade.py
       - name: Upload non-secret release-gate evidence
         if: always() && steps.version.outputs.run_gate == 'true'
         uses: actions/upload-artifact@v4
