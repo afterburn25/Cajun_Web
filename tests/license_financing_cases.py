@@ -34,8 +34,13 @@ def run_browser(env,browser):
             [php,str(root/'tests/license_financing_browser_fixture.php'),operation,str(value)],
             capture_output=True,text=True,timeout=90,
             env={**os.environ,'CWP_TEST_DATABASE':'cwp_test'})
-        check('Financing fixture '+operation+' succeeds',
-              result.returncode==0 and result.stderr=='')
+        if result.returncode!=0 or result.stderr!='':
+            diagnostic=(result.stderr or result.stdout or 'no subprocess diagnostic').strip()
+            for secret in ('Synthetic owner passphrase 2026','local-ci-only'):
+                diagnostic=diagnostic.replace(secret,'[redacted]')
+            diagnostic=' '.join(diagnostic.split())[:900]
+            check('Financing fixture '+operation+' succeeds · subprocess: '+diagnostic,False)
+        check('Financing fixture '+operation+' succeeds',True)
         return json.loads(result.stdout)
 
     initial=fixture('setup-initial','0')
