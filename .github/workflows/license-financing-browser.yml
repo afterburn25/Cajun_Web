@@ -1,0 +1,82 @@
+name: License financing focused installed acceptance
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/license_financing_browser_fixture.php'
+      - 'tests/license_financing_cases.py'
+      - 'tests/browser_acceptance.py'
+      - 'site/app/licenses/financing*.php'
+      - 'site/app/licenses/finance_installments.php'
+      - 'site/app/billing/finance_*.php'
+      - 'site/app/billing/recurring_billing*.php'
+      - 'site/app/billing/ledger.php'
+      - 'site/portal/views/financing.php'
+      - 'site/portal/controllers/actions.php'
+      - 'site/api/handlers/license.php'
+      - 'site/database/schema/license_financ*.php'
+      - 'site/database/migrations/license_financ*.php'
+      - '.github/workflows/license-financing-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: financing-focused-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  financing-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: 3306
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_FINANCING_ACCEPTANCE_ONLY: '1'
+      PHP_BINARY: /usr/bin/php8.3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install isolated PHP and browser runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
+          python3 -m venv .finance-http-venv
+          .finance-http-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          .finance-http-venv/bin/python -m playwright install --with-deps chromium
+      - name: Build exact direct-extract candidate packages
+        run: python3 tools/build.py --commit "$GITHUB_SHA"
+      - name: Seed real installed-site fixture
+        run: php8.3 tests/native.php
+      - name: Run financed-license real HTTP and Chromium acceptance
+        env:
+          PYTHONPATH: tests
+        run: .finance-http-venv/bin/python tests/browser_acceptance.py
+      - name: Upload non-secret financing evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: financing-focused-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qa/http-results.json
+            qa/php-diagnostics.json
+            qa/Financing-Agreement-Mobile.png
+            qa/fresh-install-result.json
+          retention-days: 14
+          if-no-files-found: warn
