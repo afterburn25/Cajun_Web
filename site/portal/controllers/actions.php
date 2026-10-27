@@ -13,6 +13,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
  elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'cloud_website_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_cloud_site_requests_client_action($action,$client);}
+ elseif(str_starts_with($action,'subdomain_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_subdomain_requests_client_action($action,$client);}
  elseif(str_starts_with($action,'domain_renewal_')){if(!$client)throw new RuntimeException('Sign in to continue.');domain_renewals_client_action($action,$client);}
  elseif($action==='client_mailbox_create'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_mailbox_client_action($client);}
  elseif($action==='client_domain_search'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_domain_client_action($client);}

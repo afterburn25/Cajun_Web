@@ -3,6 +3,9 @@
 The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).
 
 Never replay an ambiguous cancellation. A preflight-only failure may be reconsidered in a new reviewed plan only when durable evidence proves no request occurred; absence of a request file alone is insufficient. Stop on observation failure and preserve uncertainty. Current runs, recorded originals, full application/capture/release/diagnostic work, and assigned/executed/artifact-bearing candidates stay excluded. No acceptance or production gate changes.
+## 2026-10-18 — independent additive subdomain requests
+
+Use the documented subdomain-specific endpoint with one `add` name and an empty removal list. Retain the attached parent as local authority and reuse existing website-folder observations for independent readback. No provider acknowledgement or DNS/HTTPS success is invented. Unknown outcomes fence the same hostname on the same package across authority changes; they do not prevent a distinct hostname from receiving its own fresh approval. Shared operation-ledger semantics and original history are retained. [Implementation boundary](TWENTYI_SUBDOMAIN_ADDITIONS.md).
 
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 

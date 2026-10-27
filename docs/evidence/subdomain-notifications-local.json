@@ -1,0 +1,3344 @@
+{
+  "parent": "d1493f77f4c32d49b62256df1645dc60b9768cb9",
+  "branch": "codex/twentyi-subdomain-notifications",
+  "enclosing_commit_subject": "feat: add authorized subdomain request activity",
+  "recorded_utc": "2026-10-19T06:08:10.544237+00:00",
+  "source_sha256": {
+    ".github/workflows/application-tests.yml": "7b1273db0ca8079c3a0195635008f984d2f8b2cc7df8b11b1b60447f00b4c520",
+    "site/api/handlers/activity.php": "d34d1c27db7e80ee39caa0ebc2e319b3f4613d2ee9040cdecc12930791c9e727",
+    "site/app/activity/events.php": "432193c5df790d71b5854bbe1a4097d19365c41dfc3330f80b33b4222e9803c4",
+    "site/includes/layout/activity.php": "34d07ce005e6a57e3bc5119db98f7105df007c9b02114aed77f7512c1de0485e",
+    "site/install/inventory.generated.php": "83715dd4f7876d3062eadbd46f419182e5ca7024f107937df8ce64c3433ef398",
+    "tests/acceptance_artifacts_test.py": "3fb9d66a134b96ba011045fc7db6276e0735d244bf085d7da29102eaf8b840b5",
+    "tests/provider_subdomain_requests_cases.py": "b33c6813a6493f417304c34b55a01dae4f744018fd24db87e19aaf57f3d20234",
+    "tests/provider_subdomain_requests_native.php": "e50c8c12100db42ccabd8f7fbb99a6788b07dee211dab305efb1f3ff695f3023",
+    "tools/acceptance-contract.json": "97724957df5d0c265d0405c03e0465c531a27166c6fdd7bd9e8033615cef4e3e",
+    "tools/acceptance-reports.json": "dd94f9e277ed7f0e8ffeff9080dd946baf0711354baf324ba3c99a93c6a3c995",
+    "site/app/activity/provider_sources.php": "55aa3f7b98ff80c9f38609f05e2718cdfc617487590656e0d3894e678404957d",
+    "site/app/providers/subdomain_activity.php": "38e3484f0c54facb4cbd0b20bb694180d4ad3a8897d8d488701dea2a57f35fdd",
+    "tests/activity_provider_merge.php": "df1b81911243951f15d4cc06c5dc916a913d1cc5d5511f15c995b939467e81ce",
+    "tests/subdomain_activity.php": "a353e0e1a6f0b74cda1f94480698728f114ea087450986d10154c42a42b1b79f"
+  },
+  "tests": [
+    {
+      "source": "tests/subdomain_activity.php",
+      "source_sha256": "a353e0e1a6f0b74cda1f94480698728f114ea087450986d10154c42a42b1b79f",
+      "report": "subdomain-notifications-projection-checks/default-final.json",
+      "report_sha256": "0b755fac1918d08feefdef4bf4102a4219ec378968dcd621126b3b5cc3254d56",
+      "passed": true,
+      "scope": "Actual projection, pure event documents and actor/current-source functions with modeled SQL/history prerequisites; no native SQL or installed acceptance.",
+      "checks": [
+        {
+          "name": "Snapshot refuses missing owning mutex",
+          "passed": true
+        },
+        {
+          "name": "Snapshot refuses missing SQL transaction",
+          "passed": true
+        },
+        {
+          "name": "Snapshot refuses mismatched audience descriptor",
+          "passed": true
+        },
+        {
+          "name": "Snapshot requires captured boolean provenance",
+          "passed": true
+        },
+        {
+          "name": "Null contact_id provenance excludes before authority/history",
+          "passed": true
+        },
+        {
+          "name": "Null contact_auth provenance excludes before authority/history",
+          "passed": true
+        },
+        {
+          "name": "Captured contact presence survives session normalization",
+          "passed": true
+        },
+        {
+          "name": "Support session excludes provider subset before history",
+          "passed": true
+        },
+        {
+          "name": "Support query excludes provider subset before history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes administrator without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes disabled without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes no_permission without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes wrong_actor without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes anonymous without history",
+          "passed": true
+        },
+        {
+          "name": "Client snapshot repeats actual login authority",
+          "passed": true
+        },
+        {
+          "name": "Posted actor ID cannot select another client",
+          "passed": true
+        },
+        {
+          "name": "Inactive client has no provider snapshot",
+          "passed": true
+        },
+        {
+          "name": "Clean never-used families are absent",
+          "passed": true
+        },
+        {
+          "name": "Clean absence still checks surviving owner evidence",
+          "passed": true
+        },
+        {
+          "name": "Lost intake cannot hide orphaned owner history",
+          "passed": true
+        },
+        {
+          "name": "Prepared intake with missing owner history is unavailable",
+          "passed": true
+        },
+        {
+          "name": "Prepared empty history is a genuine empty snapshot",
+          "passed": true
+        },
+        {
+          "name": "Owner receives initial request from the separate request node",
+          "passed": true
+        },
+        {
+          "name": "Client does not receive own intake as a studio decision",
+          "passed": true
+        },
+        {
+          "name": "Withdrawal and intake have independent stable keys",
+          "passed": true
+        },
+        {
+          "name": "Client does not receive own withdrawal",
+          "passed": true
+        },
+        {
+          "name": "Decline points to exact client request",
+          "passed": true
+        },
+        {
+          "name": "Decline text stays on authorized request detail",
+          "passed": true
+        },
+        {
+          "name": "Durable dispatch is only a reviewed unconfirmed notice",
+          "passed": true
+        },
+        {
+          "name": "Missing terminal does not invent failure or interruption event",
+          "passed": true
+        },
+        {
+          "name": "Attempted terminal stays uncertain",
+          "passed": true
+        },
+        {
+          "name": "Every independent readback retains its own truthful result",
+          "passed": true
+        },
+        {
+          "name": "Matching hostname never promises DNS or website readiness",
+          "passed": true
+        },
+        {
+          "name": "Equal-second results use deterministic descending ASCII event keys",
+          "passed": true
+        },
+        {
+          "name": "Rows expose only the closed activity DTO",
+          "passed": true
+        },
+        {
+          "name": "Paths credentials proof and private response data cannot enter activity",
+          "passed": true
+        },
+        {
+          "name": "Source timestamps are retained without current-time replacement",
+          "passed": true
+        },
+        {
+          "name": "Replays preserve notice identity and rows",
+          "passed": true
+        },
+        {
+          "name": "Local terminal recovery cannot duplicate the stable terminal event",
+          "passed": true
+        },
+        {
+          "name": "Only explicit not-sent terminal gets not-sent wording",
+          "passed": true
+        },
+        {
+          "name": "Different primary client cannot see original request notices",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after client_auth change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after client_auth change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after assignment change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after assignment change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after credential change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after credential change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after assigning_owner change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after assigning_owner change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after unlinked change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after unlinked change",
+          "passed": true
+        },
+        {
+          "name": "A different current owner can review historical client requests",
+          "passed": true
+        },
+        {
+          "name": "Damaged retained original observation is not eligibility absence",
+          "passed": true
+        },
+        {
+          "name": "Event integrity failures propagate instead of empty success",
+          "passed": true
+        },
+        {
+          "name": "PDO failures retain their exact class for outer 503 handling",
+          "passed": true
+        },
+        {
+          "name": "Missing reciprocal owner approval refuses notification projection",
+          "passed": true
+        },
+        {
+          "name": "Wrong original request commitment cannot become a notice",
+          "passed": true
+        },
+        {
+          "name": "Terminal integrity failure is not not-sent",
+          "passed": true
+        },
+        {
+          "name": "Readback integrity failure is not a different observation",
+          "passed": true
+        },
+        {
+          "name": "Duplicate source event cannot fabricate duplicate notices",
+          "passed": true
+        },
+        {
+          "name": "Closed row builder rejects outcome-family confusion",
+          "passed": true
+        },
+        {
+          "name": "Closed row builder rejects invented out-of-range timestamp",
+          "passed": true
+        },
+        {
+          "name": "Projection leaves all modeled source business state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Top-level readiness executes once per snapshot",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "source": "tests/subdomain_activity.php",
+      "source_sha256": "a353e0e1a6f0b74cda1f94480698728f114ea087450986d10154c42a42b1b79f",
+      "report": "subdomain-notifications-projection-checks/minimal-final.json",
+      "report_sha256": "0b755fac1918d08feefdef4bf4102a4219ec378968dcd621126b3b5cc3254d56",
+      "passed": true,
+      "scope": "Actual projection, pure event documents and actor/current-source functions with modeled SQL/history prerequisites; no native SQL or installed acceptance.",
+      "checks": [
+        {
+          "name": "Snapshot refuses missing owning mutex",
+          "passed": true
+        },
+        {
+          "name": "Snapshot refuses missing SQL transaction",
+          "passed": true
+        },
+        {
+          "name": "Snapshot refuses mismatched audience descriptor",
+          "passed": true
+        },
+        {
+          "name": "Snapshot requires captured boolean provenance",
+          "passed": true
+        },
+        {
+          "name": "Null contact_id provenance excludes before authority/history",
+          "passed": true
+        },
+        {
+          "name": "Null contact_auth provenance excludes before authority/history",
+          "passed": true
+        },
+        {
+          "name": "Captured contact presence survives session normalization",
+          "passed": true
+        },
+        {
+          "name": "Support session excludes provider subset before history",
+          "passed": true
+        },
+        {
+          "name": "Support query excludes provider subset before history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes administrator without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes disabled without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes no_permission without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes wrong_actor without history",
+          "passed": true
+        },
+        {
+          "name": "Owner subset excludes anonymous without history",
+          "passed": true
+        },
+        {
+          "name": "Client snapshot repeats actual login authority",
+          "passed": true
+        },
+        {
+          "name": "Posted actor ID cannot select another client",
+          "passed": true
+        },
+        {
+          "name": "Inactive client has no provider snapshot",
+          "passed": true
+        },
+        {
+          "name": "Clean never-used families are absent",
+          "passed": true
+        },
+        {
+          "name": "Clean absence still checks surviving owner evidence",
+          "passed": true
+        },
+        {
+          "name": "Lost intake cannot hide orphaned owner history",
+          "passed": true
+        },
+        {
+          "name": "Prepared intake with missing owner history is unavailable",
+          "passed": true
+        },
+        {
+          "name": "Prepared empty history is a genuine empty snapshot",
+          "passed": true
+        },
+        {
+          "name": "Owner receives initial request from the separate request node",
+          "passed": true
+        },
+        {
+          "name": "Client does not receive own intake as a studio decision",
+          "passed": true
+        },
+        {
+          "name": "Withdrawal and intake have independent stable keys",
+          "passed": true
+        },
+        {
+          "name": "Client does not receive own withdrawal",
+          "passed": true
+        },
+        {
+          "name": "Decline points to exact client request",
+          "passed": true
+        },
+        {
+          "name": "Decline text stays on authorized request detail",
+          "passed": true
+        },
+        {
+          "name": "Durable dispatch is only a reviewed unconfirmed notice",
+          "passed": true
+        },
+        {
+          "name": "Missing terminal does not invent failure or interruption event",
+          "passed": true
+        },
+        {
+          "name": "Attempted terminal stays uncertain",
+          "passed": true
+        },
+        {
+          "name": "Every independent readback retains its own truthful result",
+          "passed": true
+        },
+        {
+          "name": "Matching hostname never promises DNS or website readiness",
+          "passed": true
+        },
+        {
+          "name": "Equal-second results use deterministic descending ASCII event keys",
+          "passed": true
+        },
+        {
+          "name": "Rows expose only the closed activity DTO",
+          "passed": true
+        },
+        {
+          "name": "Paths credentials proof and private response data cannot enter activity",
+          "passed": true
+        },
+        {
+          "name": "Source timestamps are retained without current-time replacement",
+          "passed": true
+        },
+        {
+          "name": "Replays preserve notice identity and rows",
+          "passed": true
+        },
+        {
+          "name": "Local terminal recovery cannot duplicate the stable terminal event",
+          "passed": true
+        },
+        {
+          "name": "Only explicit not-sent terminal gets not-sent wording",
+          "passed": true
+        },
+        {
+          "name": "Different primary client cannot see original request notices",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after client_auth change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after client_auth change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after assignment change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after assignment change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after credential change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after credential change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after assigning_owner change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after assigning_owner change",
+          "passed": true
+        },
+        {
+          "name": "Client notices disappear after unlinked change",
+          "passed": true
+        },
+        {
+          "name": "Current owner retains stale request notice after unlinked change",
+          "passed": true
+        },
+        {
+          "name": "A different current owner can review historical client requests",
+          "passed": true
+        },
+        {
+          "name": "Damaged retained original observation is not eligibility absence",
+          "passed": true
+        },
+        {
+          "name": "Event integrity failures propagate instead of empty success",
+          "passed": true
+        },
+        {
+          "name": "PDO failures retain their exact class for outer 503 handling",
+          "passed": true
+        },
+        {
+          "name": "Missing reciprocal owner approval refuses notification projection",
+          "passed": true
+        },
+        {
+          "name": "Wrong original request commitment cannot become a notice",
+          "passed": true
+        },
+        {
+          "name": "Terminal integrity failure is not not-sent",
+          "passed": true
+        },
+        {
+          "name": "Readback integrity failure is not a different observation",
+          "passed": true
+        },
+        {
+          "name": "Duplicate source event cannot fabricate duplicate notices",
+          "passed": true
+        },
+        {
+          "name": "Closed row builder rejects outcome-family confusion",
+          "passed": true
+        },
+        {
+          "name": "Closed row builder rejects invented out-of-range timestamp",
+          "passed": true
+        },
+        {
+          "name": "Projection leaves all modeled source business state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Top-level readiness executes once per snapshot",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "source": "tests/activity_provider_merge.php",
+      "source_sha256": "df1b81911243951f15d4cc06c5dc916a913d1cc5d5511f15c995b939467e81ce",
+      "report": "subdomain-notifications-root-checks/merge-default.json",
+      "report_sha256": "eacd4e0a89899830da9d50098b6ddeae0f784a1e913bef8907750670591bae2f",
+      "passed": true,
+      "scope": "Actual pure key, merge, cursor and anonymous preflight functions; no SQL, provider, HTTP or browser execution.",
+      "checks": [
+        {
+          "name": "Stable request key accepted",
+          "passed": true
+        },
+        {
+          "name": "Stable terminal key accepted",
+          "passed": true
+        },
+        {
+          "name": "Stable check key accepted",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 0",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 1",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 2",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 3",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 4",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 5",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 6",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 7",
+          "passed": true
+        },
+        {
+          "name": "Equal timestamps order provider and project keys strictly descending",
+          "passed": true
+        },
+        {
+          "name": "Short mixed page has no next cursor",
+          "passed": true
+        },
+        {
+          "name": "Equal-time cursor excludes itself and retains lower keys",
+          "passed": true
+        },
+        {
+          "name": "Time precedes key and cursor excludes newer provider records",
+          "passed": true
+        },
+        {
+          "name": "Unread view hides a read provider update",
+          "passed": true
+        },
+        {
+          "name": "All view retains provider read status",
+          "passed": true
+        },
+        {
+          "name": "Empty combined feed is stable",
+          "passed": true
+        },
+        {
+          "name": "All page 1 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "All page 2 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "All page 3 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "All pagination retains every mixed source once in order",
+          "passed": true
+        },
+        {
+          "name": "Unread page 1 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "Unread page 2 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "Unread pagination retains every mixed source once in order",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 0",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 1",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 2",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 3",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 4",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "source": "tests/activity_provider_merge.php",
+      "source_sha256": "df1b81911243951f15d4cc06c5dc916a913d1cc5d5511f15c995b939467e81ce",
+      "report": "subdomain-notifications-root-checks/merge-minimal.json",
+      "report_sha256": "eacd4e0a89899830da9d50098b6ddeae0f784a1e913bef8907750670591bae2f",
+      "passed": true,
+      "scope": "Actual pure key, merge, cursor and anonymous preflight functions; no SQL, provider, HTTP or browser execution.",
+      "checks": [
+        {
+          "name": "Stable request key accepted",
+          "passed": true
+        },
+        {
+          "name": "Stable terminal key accepted",
+          "passed": true
+        },
+        {
+          "name": "Stable check key accepted",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 0",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 1",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 2",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 3",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 4",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 5",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 6",
+          "passed": true
+        },
+        {
+          "name": "Malformed or other-family provider key refused 7",
+          "passed": true
+        },
+        {
+          "name": "Equal timestamps order provider and project keys strictly descending",
+          "passed": true
+        },
+        {
+          "name": "Short mixed page has no next cursor",
+          "passed": true
+        },
+        {
+          "name": "Equal-time cursor excludes itself and retains lower keys",
+          "passed": true
+        },
+        {
+          "name": "Time precedes key and cursor excludes newer provider records",
+          "passed": true
+        },
+        {
+          "name": "Unread view hides a read provider update",
+          "passed": true
+        },
+        {
+          "name": "All view retains provider read status",
+          "passed": true
+        },
+        {
+          "name": "Empty combined feed is stable",
+          "passed": true
+        },
+        {
+          "name": "All page 1 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "All page 2 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "All page 3 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "All pagination retains every mixed source once in order",
+          "passed": true
+        },
+        {
+          "name": "Unread page 1 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "Unread page 2 exposes the exact thirtieth cursor",
+          "passed": true
+        },
+        {
+          "name": "Unread pagination retains every mixed source once in order",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 0",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 1",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 2",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 3",
+          "passed": true
+        },
+        {
+          "name": "Invalid or anonymous polling refuses before database and callback 4",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "source": "tests/acceptance_artifacts_test.py",
+      "source_sha256": "3fb9d66a134b96ba011045fc7db6276e0735d244bf085d7da29102eaf8b840b5",
+      "report": "subdomain-notifications-wiring-checks/helper-02.json",
+      "report_sha256": "c59333de8db82fcf8c60cee15a788a3b73dac2dd36fea456566b144fccdabe8d",
+      "passed": true,
+      "scope": "Offline synthetic temporary files and exact transfer helpers; no application, provider, database or CI execution.",
+      "checks": [
+        {
+          "name": "Actual pack-inputs entry point writes its sha256 manifest digest to GitHub output",
+          "passed": true
+        },
+        {
+          "name": "Actual seal entry point appends its sha256 manifest digest to GitHub output",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses empty name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses digit prefix name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses line break name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses assignment name",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses line feed injection",
+          "passed": true
+        },
+        {
+          "name": "Job output refuses carriage return injection",
+          "passed": true
+        },
+        {
+          "name": "Rejected output fields never append to the GitHub output file",
+          "passed": true
+        },
+        {
+          "name": "Input binds all27 public fixture trees plus exact package/checksum files",
+          "passed": true
+        },
+        {
+          "name": "Exact input materializes safely for native-browser",
+          "passed": true
+        },
+        {
+          "name": "Only native/browser inherits build QA native-browser",
+          "passed": true
+        },
+        {
+          "name": "Each child saves same-attempt immutable input receipt native-browser",
+          "passed": true
+        },
+        {
+          "name": "Input materialization never overwrites an earlier child native-browser",
+          "passed": true
+        },
+        {
+          "name": "Exact input materializes safely for recovery",
+          "passed": true
+        },
+        {
+          "name": "Only native/browser inherits build QA recovery",
+          "passed": true
+        },
+        {
+          "name": "Each child saves same-attempt immutable input receipt recovery",
+          "passed": true
+        },
+        {
+          "name": "Input materialization never overwrites an earlier child recovery",
+          "passed": true
+        },
+        {
+          "name": "Exact input materializes safely for apache",
+          "passed": true
+        },
+        {
+          "name": "Only native/browser inherits build QA apache",
+          "passed": true
+        },
+        {
+          "name": "Each child saves same-attempt immutable input receipt apache",
+          "passed": true
+        },
+        {
+          "name": "Input materialization never overwrites an earlier child apache",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched attempt",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched run_id",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched ci_sha",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched source_sha",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched tree",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched repository",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched workflow_sha256",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched reports_sha256",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched runtime {\"database\": \"mariadb-10.11\", \"php\": \"8.2\"}",
+          "passed": true
+        },
+        {
+          "name": "Input refuses mismatched runtime {\"database\": \"mysql-8.4\", \"php\": \"8.3\"}",
+          "passed": true
+        },
+        {
+          "name": "Input refuses missing expected digest",
+          "passed": true
+        },
+        {
+          "name": "Input refuses changed manifest bytes",
+          "passed": true
+        },
+        {
+          "name": "Input refuses corrupt outer bytes before extraction",
+          "passed": true
+        },
+        {
+          "name": "Duplicate JSON keys cannot hide competing identities",
+          "passed": true
+        },
+        {
+          "name": "Actual input packing rejects private configuration inside public tree",
+          "passed": true
+        },
+        {
+          "name": "Rehashed outer ZIP still refuses member content mismatch",
+          "passed": true
+        },
+        {
+          "name": "Rehashed ZIP still refuses missing member",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused '../escaped'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused '/absolute'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a/../b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a\\\\b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'C:/outside'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a//b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused './a'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a/./b'",
+          "passed": true
+        },
+        {
+          "name": "Noncanonical member refused 'a\\x00b'",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/private/key.txt",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/config-fixture.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/legacy/config.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/legacy/.installed.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/legacy/server.key",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused qa/session.php",
+          "passed": true
+        },
+        {
+          "name": "Private/unapproved input refused test-runtime/build-guards-private/fake.php",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses duplicate independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses case collision independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses traversal independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "ZIP refuses symlink independently of envelope hash",
+          "passed": true
+        },
+        {
+          "name": "Complete exact four-partition run assembles all named reports",
+          "passed": true
+        },
+        {
+          "name": "Final carries exact browser screenshot bytes",
+          "passed": true
+        },
+        {
+          "name": "Checkpoint is the same immutable QA snapshot used by final",
+          "passed": true
+        },
+        {
+          "name": "Final packages remain exact original build",
+          "passed": true
+        },
+        {
+          "name": "Final records every immutable partition ID and digest",
+          "passed": true
+        },
+        {
+          "name": "Deliberate checkpoint has complete limited evidence, never full acceptance",
+          "passed": true
+        },
+        {
+          "name": "Checkpoint does not disguise cancellation as intentional skip",
+          "passed": true
+        },
+        {
+          "name": "Non-successful build failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful build cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful build skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing build artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Non-successful native-browser failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful native-browser cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful native-browser skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing native-browser artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Non-successful recovery failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful recovery cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful recovery skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing recovery artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Non-successful apache failure remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful apache cancelled remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-successful apache skipped remains incomplete with partial evidence",
+          "passed": true
+        },
+        {
+          "name": "Missing apache artifact cannot become success",
+          "passed": true
+        },
+        {
+          "name": "Corrupt partition digest is refused while other evidence survives",
+          "passed": true
+        },
+        {
+          "name": "Different input generation cannot mix into final",
+          "passed": true
+        },
+        {
+          "name": "Duplicate artifact IDs never masquerade as independent jobs",
+          "passed": true
+        },
+        {
+          "name": "Missing checkpoint upload cannot pass final acceptance",
+          "passed": true
+        },
+        {
+          "name": "Internally hashed cross-attempt partition is refused",
+          "passed": true
+        },
+        {
+          "name": "Internally hashed missing steps partition is refused",
+          "passed": true
+        },
+        {
+          "name": "Internally hashed wrong lane partition is refused",
+          "passed": true
+        },
+        {
+          "name": "Named failure beats successful job labels and remains available",
+          "passed": true
+        },
+        {
+          "name": "Missing expected named report cannot pass",
+          "passed": true
+        },
+        {
+          "name": "Unexpected named report forces expectation review",
+          "passed": true
+        },
+        {
+          "name": "Changed duplicate build evidence cannot silently overwrite",
+          "passed": true
+        },
+        {
+          "name": "Cross-partition case alias is refused by explicit global ownership before extraction",
+          "passed": true
+        },
+        {
+          "name": "Existing integer aggregate report accepts exact passing execution count",
+          "passed": true
+        },
+        {
+          "name": "Incorrect integer aggregate count cannot mask named outcomes",
+          "passed": true
+        },
+        {
+          "name": "Integer aggregate with failure detail remains failed",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses apache qa/http-results.json",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses recovery qa/apache-results.json",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses native-browser qa/structure-results.json",
+          "passed": true
+        },
+        {
+          "name": "Evidence ownership refuses build test-runtime/private/key.txt",
+          "passed": true
+        },
+        {
+          "name": "Finite access snapshot seed stays diagnostic metadata beside its required report",
+          "passed": true
+        },
+        {
+          "name": "Successful seed cannot mask a failed access snapshot native report",
+          "passed": true
+        },
+        {
+          "name": "Delivery evidence uses one actual synthetic archive generator",
+          "passed": true
+        },
+        {
+          "name": "Actual synthetic delivery has exactly three public regular members",
+          "passed": true
+        },
+        {
+          "name": "Native/browser admits exact synthetic delivery member qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Synthetic delivery evidence cannot become pristine input qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser build qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser recovery qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser apache qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser unknown qa/client-website-extracted/index.html",
+          "passed": true
+        },
+        {
+          "name": "Native/browser admits exact synthetic delivery member qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Synthetic delivery evidence cannot become pristine input qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser build qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser recovery qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser apache qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser unknown qa/client-website-extracted/HANDOVER.md",
+          "passed": true
+        },
+        {
+          "name": "Native/browser admits exact synthetic delivery member qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Synthetic delivery evidence cannot become pristine input qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser build qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser recovery qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser apache qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery member belongs only to native/browser unknown qa/client-website-extracted/LICENSES.md",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/extra.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.php'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/config.php'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/.installed.php'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/.env'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/provider-master.key'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/secret.pem'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/database.sql'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/sub/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/other-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/INDEX.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/Client-website-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'QA/client-website-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.html/'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted//index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/../index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted\\\\index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member '/qa/client-website-extracted/index.html'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.html:stream'",
+          "passed": true
+        },
+        {
+          "name": "Delivery allowlist rejects extra/private/noncanonical member 'qa/client-website-extracted/index.html\\x00'",
+          "passed": true
+        },
+        {
+          "name": "Exact delivery allowlist cannot bypass the original private-name guard",
+          "passed": true
+        },
+        {
+          "name": "Actual seal records all three exact member digests",
+          "passed": true
+        },
+        {
+          "name": "Immutable browser checkpoint preserves actual extracted public bytes",
+          "passed": true
+        },
+        {
+          "name": "Actual four-lane aggregation retains exact public delivery bytes and named reports",
+          "passed": true
+        },
+        {
+          "name": "Final retains native/browser ownership for every public delivery member",
+          "passed": true
+        },
+        {
+          "name": "Actual seal rejects public delivery extraction in build",
+          "passed": true
+        },
+        {
+          "name": "Actual seal rejects public delivery extraction in recovery",
+          "passed": true
+        },
+        {
+          "name": "Actual seal rejects public delivery extraction in apache",
+          "passed": true
+        },
+        {
+          "name": "Actual native seal refuses a fourth file beside the allowlisted members",
+          "passed": true
+        },
+        {
+          "name": "Rehashed outer archive cannot hide changed allowlisted delivery bytes",
+          "passed": true
+        },
+        {
+          "name": "Allowlisted delivery pathname does not admit a ZIP symlink",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.2/mariadb-10.11",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.2/mysql-8.4",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.3/mariadb-10.11",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.3/mysql-8.4",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.4/mariadb-10.11",
+          "passed": true
+        },
+        {
+          "name": "Runtime validator accepts exact supported pair 8.4/mysql-8.4",
+          "passed": true
+        },
+        {
+          "name": "Unsupported PHP selector is refused",
+          "passed": true
+        },
+        {
+          "name": "Unsupported database selector is refused",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses wrong version",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses prefix version",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses web SAPI",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses missing extension",
+          "passed": true
+        },
+        {
+          "name": "CLI evidence refuses relative binary",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses wrong version",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses missing PDO",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses missing tokenizer",
+          "passed": true
+        },
+        {
+          "name": "Minimal evidence refuses unexpected PDO driver",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server 10.11.15-MariaDB",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server 8.3.1",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server 8.40.1",
+          "passed": true
+        },
+        {
+          "name": "Database evidence refuses mismatched server None",
+          "passed": true
+        },
+        {
+          "name": "Database-free lane refuses invented database connection",
+          "passed": true
+        },
+        {
+          "name": "Runtime report has exact partition owner native-browser",
+          "passed": true
+        },
+        {
+          "name": "Runtime report has exact partition owner recovery",
+          "passed": true
+        },
+        {
+          "name": "Runtime report has exact partition owner apache",
+          "passed": true
+        },
+        {
+          "name": "Actual HTTP evidence refuses wrong module or shape {\"sapi\": \"apache2handler\", \"version\": \"8.3.99\"}",
+          "passed": true
+        },
+        {
+          "name": "Actual HTTP evidence refuses wrong module or shape {\"sapi\": \"cli\", \"version\": \"8.4.8\"}",
+          "passed": true
+        },
+        {
+          "name": "Actual HTTP evidence refuses wrong module or shape {\"extra\": true, \"sapi\": \"apache2handler\", \"version\": \"8.4.8\"}",
+          "passed": true
+        },
+        {
+          "name": "One Apache mode remains incomplete",
+          "passed": true
+        },
+        {
+          "name": "Duplicate Apache mode refuses evidence reuse",
+          "passed": true
+        },
+        {
+          "name": "Both exact Apache HTTP modes complete runtime report",
+          "passed": true
+        },
+        {
+          "name": "Changed selected runtime cannot reuse Apache report",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/structure_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/apache_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/prepare_legacy.py",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/stackcp_access_read_snapshot_native.php",
+          "passed": true
+        },
+        {
+          "name": "Original test source retained tests/fixtures/stackcp_access_read_original.json",
+          "passed": true
+        },
+        {
+          "name": "Import additions retain the complete selected-runtime recipe",
+          "passed": true
+        },
+        {
+          "name": "Three import commands occur once after the existing catalog native fixture",
+          "passed": true
+        },
+        {
+          "name": "Import additions preserve the exact149 predecessor commands",
+          "passed": true
+        },
+        {
+          "name": "Import fixture source retained tests/provider_catalog_import.php",
+          "passed": true
+        },
+        {
+          "name": "Import fixture source retained tests/provider_catalog_import_native.php",
+          "passed": true
+        },
+        {
+          "name": "Import fixture source retained tests/provider_catalog_import_cases.py",
+          "passed": true
+        },
+        {
+          "name": "All149 native commands equal the exact current selected-runtime recipe",
+          "passed": true
+        },
+        {
+          "name": "Access snapshot comparison occurs exactly once after prerequisite snapshot",
+          "passed": true
+        },
+        {
+          "name": "Access snapshot addition retains exact148 source-bound commands",
+          "passed": true
+        },
+        {
+          "name": "All148 native commands retain exact selected-runtime order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Only explicit executable selection changes all148 predecessor commands",
+          "passed": true
+        },
+        {
+          "name": "Snapshot native comparison is inserted exactly once after StackCP access",
+          "passed": true
+        },
+        {
+          "name": "Snapshot addition retains all147 predecessor native commands exactly",
+          "passed": true
+        },
+        {
+          "name": "All139 pre-cloud-assignment native commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Eight cloud assignment commands occur once immediately after cloud confirmation",
+          "passed": true
+        },
+        {
+          "name": "All131 pre-StackCP-access commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Eight StackCP access commands occur once after prerequisite native checks",
+          "passed": true
+        },
+        {
+          "name": "All126 pre-registration-draft commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Five registration contract draft pure and native commands occur once after renewal dispatch",
+          "passed": true
+        },
+        {
+          "name": "All119 pre-StackCP native commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Seven StackCP reports cover pure handoff prerequisites views and native once",
+          "passed": true
+        },
+        {
+          "name": "All105 predecessor native commands retain exact order and arguments",
+          "passed": true
+        },
+        {
+          "name": "Six renewal native commands occur once immediately after agreement checks",
+          "passed": true
+        },
+        {
+          "name": "Eight directory control commands occur once immediately after Force SSL controls",
+          "passed": true
+        },
+        {
+          "name": "Public fixture preparation runs only once in the build job",
+          "passed": true
+        },
+        {
+          "name": "Only one exact source package build remains",
+          "passed": true
+        },
+        {
+          "name": "Assigned ports use permitted step context and GITHUB_ENV in both DB jobs",
+          "passed": true
+        },
+        {
+          "name": "Original invalid job-level service context is rejected for native-and-browser",
+          "passed": true
+        },
+        {
+          "name": "Original invalid job-level service context is rejected for apache",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add retains exact152 original commands before seven additions",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound foundation/twentyi-operations/TwentyIOperationRegister.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound foundation/twentyi-operations/TwentyIRequestBuilder.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound foundation/twentyi/FixedHttpTransport.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/app/providers/subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/app/providers/subdomain_add_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/database/schema/provider_subdomain_add_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/app/providers/subdomain_add_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/admin/controllers/provider_subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/admin/controllers/providers.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/admin/views/providers.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/app/providers/document_roots.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound tests/twentyi-operations/subdomains.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound tests/twentyi-operations/run.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound tests/subdomain_add_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound tests/subdomain_add_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound tests/provider_subdomain_add_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound tests/invitations/Dockerfile",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/includes/foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/includes/foundation/twentyi-operations/TwentyIOperationRegister.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/includes/foundation/twentyi-operations/TwentyIRequestBuilder.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add current source bound site/includes/foundation/twentyi/FixedHttpTransport.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add has seven unique separately produced reports",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add browser exact required report inventory",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add browser preserves every predecessor report",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add final exact required report inventory",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add final preserves every predecessor report",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report inverse is exact whole predecessor",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add native explicitly opts in without changing selected database environment",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add preserves exact original focused workflow by finite inverse",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add reuses four existing PHP/database matrix jobs",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused exact producer php tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused exact producer php -n tests/twentyi-operations/subdomains.php > qa/subdomain-add-contract-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused exact producer php tests/subdomain_add_contract.php > qa/subdomain-add-service-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused exact producer php -n tests/subdomain_add_contract.php > qa/subdomain-add-service-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused exact producer php tests/subdomain_add_views.php qa/subdomain-add-views-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused exact producer php -n tests/subdomain_add_views.php qa/subdomain-add-views-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused exact producer CWP_TEST_SUBDOMAIN_ADD=1 php tests/provider_subdomain_add_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused always retains exact named output subdomain-add-contract-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused always retains exact named output subdomain-add-contract-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused always retains exact named output subdomain-add-service-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused always retains exact named output subdomain-add-service-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused always retains exact named output subdomain-add-views-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused always retains exact named output subdomain-add-views-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add focused always retains exact named output provider-subdomain-add-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add workflow inverse refuses missing addition",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add workflow inverse refuses extra command",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add workflow inverse refuses changed original recipe",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add real aggregation requires all215 named reports",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add missing report cannot pass subdomain-add-contract-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add failed report cannot pass subdomain-add-contract-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add missing report cannot pass subdomain-add-contract-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add failed report cannot pass subdomain-add-contract-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add missing report cannot pass subdomain-add-service-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add failed report cannot pass subdomain-add-service-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add missing report cannot pass subdomain-add-service-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add failed report cannot pass subdomain-add-service-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add missing report cannot pass subdomain-add-views-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add failed report cannot pass subdomain-add-views-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add missing report cannot pass subdomain-add-views-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add failed report cannot pass subdomain-add-views-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add missing report cannot pass provider-subdomain-add-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add failed report cannot pass provider-subdomain-add-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add unexpected report cannot pass",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report belongs only to native-browser subdomain-add-contract-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report belongs only to native-browser subdomain-add-contract-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report belongs only to native-browser subdomain-add-service-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report belongs only to native-browser subdomain-add-service-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report belongs only to native-browser subdomain-add-views-default.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report belongs only to native-browser subdomain-add-views-minimal.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add report belongs only to native-browser provider-subdomain-add-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain add private state remains excluded",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain preserves all159 prior native commands before nine additions",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/subdomain_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/subdomain_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/database/schema/provider_subdomain_requests_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/database/migrations/provider_subdomain_requests_migrate.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/subdomain_add_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/subdomain_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/admin/controllers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/admin/views/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/portal/controllers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/portal/views/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/admin/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/portal/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/portal/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/includes/layout/provider_services.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/includes/layout/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/assets/css/growth.css",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/subdomain_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/subdomain_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/subdomain_requests_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/subdomain_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/provider_subdomain_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/provider_subdomain_add_native.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/subdomain_add_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/subdomain_add_views.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/document_roots.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/inventory.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/app/providers/operations.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound site/includes/foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/invitations/Dockerfile",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain current source bound tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/app/providers/subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/app/providers/subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/app/providers/subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/app/providers/subdomain_add_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/app/providers/subdomain_add_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/app/providers/subdomain_add_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/admin/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/admin/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/admin/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/portal/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/portal/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/portal/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/portal/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/portal/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/portal/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/includes/layout/provider_services.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/includes/layout/provider_services.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/includes/layout/provider_services.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/includes/layout/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/includes/layout/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/includes/layout/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain complete source inverse site/assets/css/growth.css",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses current bytes site/assets/css/growth.css",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain inverse refuses predecessor hash site/assets/css/growth.css",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain has nine separate mandatory reports and no captures",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain browser retains every original report in order",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain final retains every original report in order",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain preserves all branch triggers and concurrency .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain preserves all branch triggers and concurrency .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain retains focused four combinations timeout and no cancellation",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain retains mapped-port context and explicit isolated opt-in",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php tests/subdomain_requests_document.php > qa/subdomain-requests-document-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php -n tests/subdomain_requests_document.php > qa/subdomain-requests-document-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php tests/subdomain_requests_storage.php > qa/subdomain-requests-storage-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php -n tests/subdomain_requests_storage.php > qa/subdomain-requests-storage-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php tests/subdomain_requests_contract.php > qa/subdomain-requests-service-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php -n tests/subdomain_requests_contract.php > qa/subdomain-requests-service-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php tests/subdomain_requests_views.php > qa/subdomain-requests-views-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer php -n tests/subdomain_requests_views.php > qa/subdomain-requests-views-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused exact producer CWP_TEST_SUBDOMAIN_REQUESTS=1 php tests/provider_subdomain_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-document-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-document-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-storage-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-storage-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-service-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-service-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-views-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output subdomain-requests-views-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain focused preserves named output provider-subdomain-requests-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain actual aggregate requires all224 named reports",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-document-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-document-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-document-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-document-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-document-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-document-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-storage-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-storage-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-storage-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-storage-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-storage-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-storage-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-service-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-service-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-service-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-service-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-service-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-service-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-views-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-views-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-views-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses subdomain-requests-views-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses subdomain-requests-views-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser subdomain-requests-views-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain missing report refuses provider-subdomain-requests-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain failed report refuses provider-subdomain-requests-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain evidence owns only native-browser provider-subdomain-requests-native-results.json",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain unexpected report cannot pass",
+          "passed": true
+        },
+        {
+          "name": "Client subdomain private fixture state is never exported",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser retains168 recipes and adds one offline handler",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/subdomain_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/subdomain_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/database/schema/provider_subdomain_requests_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/database/migrations/provider_subdomain_requests_migrate.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/subdomain_add_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/subdomain_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/admin/controllers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/admin/views/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/portal/controllers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/portal/views/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/admin/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/portal/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/portal/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/includes/layout/provider_services.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/includes/layout/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/assets/css/growth.css",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/subdomain_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/subdomain_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/subdomain_requests_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/subdomain_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/provider_subdomain_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/provider_subdomain_add_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/subdomain_add_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/subdomain_add_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/document_roots.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/inventory.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/app/providers/operations.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound site/includes/foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/invitations/Dockerfile",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/provider_http_server.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/subdomain_requests_http_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser current source bound tests/provider_subdomain_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser exact complete inverse .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed current bytes refuse .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed prior hash refuses .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser exact complete inverse tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed current bytes refuse tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed prior hash refuses tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser exact complete inverse tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed current bytes refuse tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed prior hash refuses tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser exact complete inverse tests/provider_http_server.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed current bytes refuse tests/provider_http_server.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser changed prior hash refuses tests/provider_http_server.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser preserves every prior browser report in order",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser preserves every prior final report in order",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser preserves full workflow triggers permissions concurrency and environments",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser offline handler command is exact and once",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser keeps two distinct required reports",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser has exact six declared captures",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser callback declares the exact required capture filenames",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser callback declares the exact required report",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller has one final result predicate",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller accepts complete typed result",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses missing result",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses truthy passed",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses empty checks",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses failed check",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses blank name",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses missing capture",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses duplicate capture",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses foreign capture",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses absent file",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses empty file",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses non-PNG",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses signature only",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser actual caller refuses symlink predicate",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser aggregate requires all226 reports",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser transfer preserves exact synthetic bytes Subdomain-Requests-Client-Pending-Desktop.png",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser transfer preserves exact synthetic bytes Subdomain-Requests-Client-Pending-Mobile.png",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser transfer preserves exact synthetic bytes Subdomain-Requests-Owner-Review-Desktop.png",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser transfer preserves exact synthetic bytes Subdomain-Requests-Owner-Review-Mobile.png",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser transfer preserves exact synthetic bytes Subdomain-Requests-Client-Observed-Desktop.png",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser transfer preserves exact synthetic bytes Subdomain-Requests-Client-Observed-Mobile.png",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser missing named report refuses subdomain-requests-http-contract-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser failed named report refuses subdomain-requests-http-contract-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser report belongs only to native-browser subdomain-requests-http-contract-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser missing named report refuses subdomain-requests-http-browser-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser failed named report refuses subdomain-requests-http-browser-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser report belongs only to native-browser subdomain-requests-http-browser-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser unexpected report cannot complete",
+          "passed": true
+        },
+        {
+          "name": "Subdomain browser private TLS key remains excluded",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications retain all169 recipes in order and add exactly four",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications execute the selected PHP and required minimal modules",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications preserve every other full workflow byte",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications preserve full triggers concurrency jobs matrices and artifacts",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications add no capture or new installed producer",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/subdomain_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/subdomain_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/database/schema/provider_subdomain_requests_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/database/migrations/provider_subdomain_requests_migrate.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/subdomain_add.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/subdomain_add_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/subdomain_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/admin/controllers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/admin/views/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/portal/controllers/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/portal/views/subdomain_requests.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/admin/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/admin/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/staff/accounts.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/portal/controllers/router.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/portal/controllers/actions.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/includes/layout/provider_services.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/includes/layout/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/assets/css/growth.css",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_requests_document.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_requests_storage.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_requests_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_requests_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/provider_subdomain_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/provider_subdomain_add_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_add_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_add_views.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/document_roots.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/inventory.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/operations.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/includes/foundation/twentyi-operations/SubdomainAdd.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/invitations/Dockerfile",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source .github/workflows/provider-document-roots.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/browser_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/provider_http_server.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_requests_http_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/provider_subdomain_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/providers/subdomain_activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/activity/events.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/activity/provider_sources.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/includes/layout/activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/api/handlers/activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/subdomain_activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source tests/activity_provider_merge.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/database/schema/activity_schema.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/database/migrations/activity_migrate.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/app/clients/identity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications bind current source site/includes/auth/admin.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications exact full predecessor inverse .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications altered current source refuses .github/workflows/application-tests.yml",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications exact full predecessor inverse tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications altered current source refuses tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications exact full predecessor inverse tests/provider_subdomain_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications altered current source refuses tests/provider_subdomain_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications exact full predecessor inverse tests/provider_subdomain_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications altered current source refuses tests/provider_subdomain_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications exact full predecessor inverse site/app/activity/events.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications altered current source refuses site/app/activity/events.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications exact full predecessor inverse site/includes/layout/activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications altered current source refuses site/includes/layout/activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications exact full predecessor inverse site/api/handlers/activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications altered current source refuses site/api/handlers/activity.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications retain every original runtime producer line tests/provider_subdomain_requests_native.php",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications retain every original runtime producer line tests/provider_subdomain_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications preserve all original browser reports and add four uniquely",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications preserve all original final reports and add four uniquely",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications aggregate requires all230 reports",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications missing actual report refuses subdomain-activity-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications failed actual report refuses subdomain-activity-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications report belongs only to native-browser subdomain-activity-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications missing actual report refuses subdomain-activity-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications failed actual report refuses subdomain-activity-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications report belongs only to native-browser subdomain-activity-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications missing actual report refuses activity-provider-merge-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications failed actual report refuses activity-provider-merge-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications report belongs only to native-browser activity-provider-merge-default-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications missing actual report refuses activity-provider-merge-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications failed actual report refuses activity-provider-merge-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications report belongs only to native-browser activity-provider-merge-minimal-results.json",
+          "passed": true
+        },
+        {
+          "name": "Subdomain notifications unexpected report cannot complete",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "path": "subdomain-notifications-projection-checks/source-review.json",
+      "sha256": "c92f8d77a72721f5df0917d5fd03adca002349f91edeb1766e6571f803c5da11"
+    },
+    {
+      "path": "subdomain-notifications-acceptance-proposal/source-review.json",
+      "sha256": "83abec5c9c2fe2d056ded4f7000fe83969c579b180e8d813429a1ea14b007cff"
+    },
+    {
+      "path": "subdomain-notifications-authority-review/shared-corrected-review/review.json",
+      "sha256": "3bf7b5c1b44e23333630b4f4def90a21f82808dcb74dd768f07c2501a8dc8ae3"
+    },
+    {
+      "path": "subdomain-notifications-wiring-checks/source-review.json",
+      "sha256": "8ec0947208016b9c4dc457754d77584fbabc7693d139d240557cbb57629cd854"
+    },
+    {
+      "path": "subdomain-notifications-root-checks/acceptance-bindings.json",
+      "sha256": "e18e9500ee7d2903b43a270570f6d76e856f10c681d4df582f9297b5b50afd89"
+    },
+    {
+      "path": "subdomain-notifications-root-checks/test-syntax.json",
+      "sha256": "2cd30dc13a7b032b9a01e9f0e27bb161a1e57d13e98e8f6b5ba38757b0e9f14f"
+    },
+    {
+      "path": "subdomain-notifications-root-checks/installer-refresh.json",
+      "sha256": "a6fcf2442e8c4238cad1c05d681c25a2b135f2e84df0e2e5ba5459951475f6b5"
+    },
+    {
+      "path": "subdomain-notifications-authority-review/wiring-review/review.json",
+      "sha256": "df977109d879c55f33f79d5ad718d108f0bea59e2162b1ff4bef6dd3cb104524"
+    },
+    {
+      "path": "subdomain-notifications-authority-review/wiring-review/producer-evidence-addendum.json",
+      "sha256": "d2085c51dba9a185647b2836628fc9e9e4f438e628e7a74a9548ce34d0cd3701"
+    }
+  ],
+  "installer_refresh": {
+    "command": "python -X utf8 -B tools/build.py --refresh",
+    "exit_code": 0,
+    "scope": "Canonical installer inventory refresh, all shipping PHP syntax, JavaScript parsing and pinned dependency mirrors; no release archive built.",
+    "output": [
+      "PASS: 40 locked packages; 2188 exact dependency/license files; no drift.",
+      "PASS: 2201 receiving runtime files match the canonical bundle byte-for-byte.",
+      "PASS:6 pinned original PHPMailer7.1.1 source/license/metadata files match recorded hashes",
+      "PASS:15 submission runtime files match the canonical bundle byte-for-byte",
+      "Refreshed and checked canonical installer; no release built from uncommitted files."
+    ]
+  },
+  "acceptance": {
+    "native_commands": 173,
+    "required_browser_reports": 186,
+    "required_final_reports": 230,
+    "current_pins": 52,
+    "whole_source_inverses": 7,
+    "prior_outcomes_preserved": 521,
+    "original_native_browser_lines_preserved": true
+  },
+  "resolved_finding": "Validate provider history before applying the unread cap; partial feed count is null even with more than100 project events.",
+  "preserved_failures": [
+    "Projection first minimal invocation tried a dynamic PDO extension already built into Windows PHP; warning-contaminated minimal-01.json retained, accepted plain -n report separate.",
+    "Acceptance helper first launch incorrectly used Python -P, excluding the tests import directory; helper-01.json retained and normal script invocation passed without source repair."
+  ],
+  "limits": [
+    "No local native SQL, installed HTTP/Chromium or screenshot execution.",
+    "Existing full-history revalidation under the shared mutex still needs native timing and larger-history performance acceptance.",
+    "Candidate, combined integration, exact-main and release/download gates remain required.",
+    "No live provider, payment, mail, SSH, deployment or published asset changes."
+  ],
+  "documentation_check": {
+    "passed": true,
+    "scope": "Local Markdown links and pinned dependency consistency only.",
+    "required_documents": 12,
+    "markdown_files": 275,
+    "local_links": 1903,
+    "heading_links": 36
+  }
+}

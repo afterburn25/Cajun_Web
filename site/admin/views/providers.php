@@ -157,6 +157,7 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php require CWP_CODE_ROOT.'/admin/views/service_observations.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_package_php.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_document_roots.php'; ?>
+<?php provider_subdomain_add_admin_render(); ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_package_force_ssl.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_directory_listing.php'; ?>
 <?php provider_force_ssl_controls_admin_render(); ?>

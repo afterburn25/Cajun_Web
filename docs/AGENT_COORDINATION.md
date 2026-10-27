@@ -38,5 +38,16 @@ Root owns `codex/contacts-native-fixture` from PR203/cefb08d6. VPS traced three 
 ## Shared payment-link correction — 2026-10-19
 
 Root owns `codex/payment-link-view-isolation` from exact Devin PR202 source `750f1ab8`, the two view/runtime files, additive native coverage, installer inventory and delivery. Catalog independently reproduces and reviews the privacy/display correction; VPS prepares only additive `tests/payments_cases.py` evidence externally. Original PR202 and renewal PR252 source `632362f6` remain untouched. Devin retains non-20i feature ownership. Root integrates this small correction through the affected branch only after its actual acceptance. [Scope and evidence](PAYMENT_LINK_VIEW_REVIEW.md).
+## Installed subdomain workflow acceptance — 2026-10-18
+
+Root owns `codex/twentyi-client-subdomain-browser` from PR236 source `af956844690b1ed3be93a9a83574f06127fa8763`, the browser caller, documentation and Git integration. Catalog owns the installed owner/client callback, Domains the opt-in synthetic provider endpoint and offline Handler contract, and VPS the additive workflow/report bindings. Agents prepare proposals outside the shared checkout; root verifies and applies the frozen files. This increment changes tests and documentation only.
+
+Keep every predecessor test, original queued run, published 1.25.0 asset and Devin non-20i branch intact. [Acceptance scope](TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md) separates actual offline checks from the installed Linux SQL/HTTP/Chromium execution still required. All six new captured views require visual review before browser acceptance is credited.
+
+## Client subdomain requests — 2026-10-18
+
+Root owns `codex/twentyi-client-subdomain-requests`, parent `b8c316b6fd138167b11c251d5db24a6d31f2bd88` from PR234, and shared routing, navigation, CSS, installer inventory, documentation and Git integration. Domains supplied the authenticated request history and owner-operation integration; Catalog supplied dedicated owner/client views and controller checks; VPS supplied the independent native fixture and additive acceptance wiring. Their proposals were prepared outside the shared checkout and applied by root after source/hash review. No agent changed another lane's checkout.
+
+This is an unreleased stacked candidate. Its [scope and verification](TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) do not establish native SQL or installed browser acceptance. Keep PR234 and the other original queued runs, immutable 1.25.0 and Devin's separate non-20i branches intact. The first focused PR run and a single exact-head full application dispatch provide the next runtime evidence; do not duplicate queued work.
 
 ## Post-publication coordination — 2026-10-18

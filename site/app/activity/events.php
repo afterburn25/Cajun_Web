@@ -10,7 +10,10 @@ require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_activity.php';
 function activity_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['activity_schema_version'])['value']??'')==='1';}
 function activity_audit(array $actor,string $action,string $detail): void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor['type']==='admin'?$actor['id']:0,'activity.'.$action,$actor['type'].' '.$actor['id'].'; '.$detail,gmdate('Y-m-d H:i:s')]);}
 require_once CWP_CODE_ROOT.'/database/migrations/activity_migrate.php';
+require_once CWP_CODE_ROOT.'/app/activity/provider_sources.php';
 function activity_actor(string $audience): array {
+    // Preserve contact provenance before studio_client() can normalize the session.
+    $providerExcluded=array_key_exists('contact_id',$_SESSION)||array_key_exists('contact_auth',$_SESSION);
     if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Leave support to view your own activity.');
     if($audience==='admin'){$u=admin_user();if(!$u||!staff_can('clients.manage',$u))throw new RuntimeException('Activity access unavailable.');$actor=['type'=>'admin','id'=>(int)$u['id'],'client_id'=>0,'perms'=>null];}
     elseif($audience==='client'){
@@ -20,7 +23,7 @@ function activity_actor(string $audience): array {
     }
     else throw new InvalidArgumentException('Invalid activity audience.');
     if(!studio_ready()||!activity_ready())throw new RuntimeException('Workspace activity has not been enabled.');
-    return $actor;
+    $actor['provider_excluded']=$providerExcluded;return $actor;
 }
 /** Preference storage is additive; older installs get it by re-running workspace-activity setup. */
 function activity_prefs_ready(): bool {
@@ -90,7 +93,7 @@ function activity_projection(array $actor): array {
     if(!$parts&&!$recurring)return ["SELECT '' AS event_key,'none' AS kind,'' AS source_id,0 AS target_id,0 AS job_id,0 AS client_id,'' AS project_title,'' AS item_title,'1970-01-01 00:00:00' AS occurred_at,'' AS author_type,0 AS sort_sequence WHERE 1=0",[]];
     return [implode(' UNION ALL ',[...$parts,...$recurring]),[...$args,...$recurringArgs]];
 }
-function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision|stage):[1-9][0-9]{0,19}|(?:recurring-offer|recurring-event|file|release|progress|planning|financial):[a-f0-9]{32}|milestone:[1-9][0-9]{0,19}(?::[a-f0-9]{16})?)$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
+function activity_key(string $key): void {if(!activity_provider_key($key)&&!preg_match('/^(?:(?:message|review|invoice|payment|decision|stage):[1-9][0-9]{0,19}|(?:recurring-offer|recurring-event|file|release|progress|planning|financial):[a-f0-9]{32}|milestone:[1-9][0-9]{0,19}(?::[a-f0-9]{16})?)$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
 /** Keep projection, personal reads and current identity in the same shared transaction. */
 function activity_read_locked(callable $work):mixed {
     static $depth=0;
@@ -100,15 +103,21 @@ function activity_read_locked(callable $work):mixed {
     });
 }
 function activity_source(string $audience,string $key): array {
-    return activity_read_locked(function()use($audience,$key):array {
-    activity_key($key);[$sql,$args]=activity_projection(activity_actor($audience));
+    activity_key($key);
+    if(activity_provider_key($key))return activity_read_locked(function()use($audience,$key):array {
+    $rows=activity_provider_rows_locked($audience,activity_actor($audience));
+    if(!isset($rows[$key]))throw new InvalidArgumentException('Activity item unavailable.');return $rows[$key];
+    });
+    return activity_read_locked(function()use($audience,$key):array {[$sql,$args]=activity_projection(activity_actor($audience));
     $row=one('SELECT * FROM ('.$sql.') events WHERE event_key=?',[...$args,$key]);if(!$row)throw new InvalidArgumentException('Activity item unavailable.');project_progress_activity_validate($audience,[$row]);project_planning_activity_validate($audience,[$row]);design_payment_activity_validate($audience,[$row]);recurring_activity_validate($audience,[$row]);return $row;
     });
 }
 function activity_count(string $audience): int {
     return activity_read_locked(function()use($audience):int {
     $actor=activity_actor($audience);[$sql,$args]=activity_projection($actor);
-    $rows=all('SELECT e.* FROM ('.$sql.') e LEFT JOIN '.table('activity_reads').' r ON r.actor_type=? AND r.actor_id=? AND r.event_key=e.event_key WHERE r.id IS NULL LIMIT 100',[...$args,$actor['type'],$actor['id']]);project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);recurring_activity_validate($audience,$rows);return count($rows);
+    $rows=all('SELECT e.* FROM ('.$sql.') e LEFT JOIN '.table('activity_reads').' r ON r.actor_type=? AND r.actor_id=? AND r.event_key=e.event_key WHERE r.id IS NULL LIMIT 100',[...$args,$actor['type'],$actor['id']]);project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);recurring_activity_validate($audience,$rows);
+    $count=count($rows);if($count<100){$provider=activity_provider_rows_locked($audience,$actor);foreach($provider as $row)if($row['read_at']===null&&++$count>=100)break;}
+    return min(100,$count);
     });
 }
 function activity_passive_count(string $audience): int {
@@ -118,22 +127,36 @@ function activity_passive_count(string $audience): int {
 }
 function activity_feed(string $audience,bool $unread=false,string $before=''): array {
     return activity_read_locked(function()use($audience,$unread,$before):array {
-    $actor=activity_actor($audience);[$sql,$args]=activity_projection($actor);$where=$unread?'r.id IS NULL':'1=1';$params=[...$args,$actor['type'],$actor['id']];
-    if($before!==''){$cursor=activity_source($audience,$before);$where.=' AND (e.occurred_at<? OR (e.occurred_at=? AND (e.sort_sequence<? OR (e.sort_sequence=? AND e.event_key<?))))';array_push($params,$cursor['occurred_at'],$cursor['occurred_at'],$cursor['sort_sequence'],$cursor['sort_sequence'],$before);}
+    $notices=[];$provider=[];$providerUnavailable=false;$cursor=null;
+    $actor=activity_actor($audience);
+    try{$provider=activity_provider_rows_locked($audience,$actor);}
+    catch(ActivityProviderUnavailable){$providerUnavailable=true;$notices[]='Subdomain updates are temporarily unavailable. Only project updates are shown. Your read status is unchanged.';}
+    if($before!==''){
+        if(activity_provider_key($before)){
+            if($providerUnavailable)throw new ActivityProviderUnavailable('Subdomain updates are temporarily unavailable.');
+            if(!isset($provider[$before]))throw new InvalidArgumentException('Activity item unavailable.');$cursor=$provider[$before];
+        }else $cursor=activity_source($audience,$before);
+    }
+    [$sql,$args]=activity_projection($actor);$where=$unread?'r.id IS NULL':'1=1';$params=[...$args,$actor['type'],$actor['id']];
+    if($cursor!==null){$where.=' AND (e.occurred_at<? OR (e.occurred_at=? AND (e.sort_sequence<? OR (e.sort_sequence=? AND e.event_key<?))))';array_push($params,$cursor['occurred_at'],$cursor['occurred_at'],$cursor['sort_sequence']??0,$cursor['sort_sequence']??0,$before);}
     $rows=all('SELECT e.*,r.read_at FROM ('.$sql.') e LEFT JOIN '.table('activity_reads').' r ON r.actor_type=? AND r.actor_id=? AND r.event_key=e.event_key WHERE '.$where.' ORDER BY e.occurred_at DESC,e.sort_sequence DESC,e.event_key DESC LIMIT 31',$params);
-    project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);recurring_activity_validate($audience,$rows);$more=count($rows)>30;if($more)array_pop($rows);return ['rows'=>$rows,'next'=>$more?$rows[count($rows)-1]['event_key']:''];
-    });
+    project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);recurring_activity_validate($audience,$rows);
+    $count=null;
+    if(!$providerUnavailable){$count=count(all('SELECT e.event_key FROM ('.$sql.') e LEFT JOIN '.table('activity_reads').' r ON r.actor_type=? AND r.actor_id=? AND r.event_key=e.event_key WHERE r.id IS NULL LIMIT 100',[...$args,$actor['type'],$actor['id']]));foreach($provider as $row)if($row['read_at']===null&&++$count>=100)break;$count=min(100,$count);}
+    return activity_merge_rows($rows,array_values($provider),$unread,$cursor)+['count'=>$count,'notices'=>$notices];    });
 }
 /** Only the reviewed keys are changed. A new arrival cannot be silently marked read. */
 function activity_mark(string $audience,array $keys,bool $read): void {
     if(!array_is_list($keys)||count($keys)<1||count($keys)>30||count(array_unique($keys,SORT_REGULAR))!==count($keys))throw new InvalidArgumentException('Choose between 1 and 30 distinct activity items.');
     foreach($keys as $key){if(!is_string($key))throw new InvalidArgumentException('Invalid activity item.');activity_key($key);}
     staff_locked(fn()=>staff_transaction(function() use($audience,$keys,$read): void {
-        $actor=activity_actor($audience);[$sql,$args]=activity_projection($actor);$marks=implode(',',array_fill(0,count($keys),'?'));
-        $rows=all('SELECT * FROM ('.$sql.') e WHERE event_key IN ('.$marks.')',[...$args,...$keys]);
-        if(count($rows)!==count($keys))throw new RuntimeException('Activity changed or is unavailable. Refresh before trying again.');
-        project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);recurring_activity_validate($audience,$rows);foreach($keys as $key){
-            if($read)query('INSERT INTO '.table('activity_reads').' (actor_type,actor_id,event_key,read_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE read_at=read_at',[$actor['type'],$actor['id'],$key,gmdate('Y-m-d H:i:s')]);
+        $actor=activity_actor($audience);$projectKeys=array_values(array_filter($keys,static fn($key)=>!activity_provider_key($key)));$providerKeys=array_values(array_filter($keys,'activity_provider_key'));
+        if($projectKeys!==[]){[$sql,$args]=activity_projection($actor);$marks=implode(',',array_fill(0,count($projectKeys),'?'));
+        $rows=all('SELECT * FROM ('.$sql.') e WHERE event_key IN ('.$marks.')',[...$args,...$projectKeys]);
+        if(count($rows)!==count($projectKeys))throw new RuntimeException('Activity changed or is unavailable. Refresh before trying again.');
+        project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);recurring_activity_validate($audience,$rows);}
+        if($providerKeys!==[]){$provider=activity_provider_rows_locked($audience,$actor);foreach($providerKeys as $key)if(!isset($provider[$key]))throw new RuntimeException('Activity changed or is unavailable. Refresh before trying again.');}
+        foreach($keys as $key){            if($read)query('INSERT INTO '.table('activity_reads').' (actor_type,actor_id,event_key,read_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE read_at=read_at',[$actor['type'],$actor['id'],$key,gmdate('Y-m-d H:i:s')]);
             else query('DELETE FROM '.table('activity_reads').' WHERE actor_type=? AND actor_id=? AND event_key=?',[$actor['type'],$actor['id'],$key]);
         }
         activity_audit($actor,$read?'read':'unread',count($keys).' reviewed items');
@@ -142,6 +165,7 @@ function activity_mark(string $audience,array $keys,bool $read): void {
 function activity_url(string $audience,array $params=[]): string {return $audience==='admin'?admin_url('activity',$params):site_url('portal/index.php').'?'.http_build_query(['activity'=>1]+$params);}
 function activity_destination(string $audience,string $key): string {
     $r=activity_source($audience,$key);$kind=$r['kind'];$id=$r['source_id'];
+    if(activity_provider_key($key))return $audience==='admin'?admin_url('subdomain-requests',['request_id'=>$r['target_id']]):studio_url(['subdomain_requests'=>1,'request_id'=>$r['target_id']]);
     if($kind==='recurring'){
         $offer=str_starts_with($key,'recurring-offer:');$params=['job'=>$r['job_id'],'schedule'=>$r['target_id']];if(!$offer)$params['focus_event']=$id;
         return ($audience==='admin'?admin_url('recurring-billing',$params):studio_url(['recurring'=>1]+$params)).'#recurring-'.($offer?'offer':'event').'-'.$id;

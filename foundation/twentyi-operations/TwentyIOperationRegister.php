@@ -29,6 +29,11 @@ final class TwentyIOperationRegister
                 ['resellerId'], ['content'=>'string'], ['content'], shapeComplete: true,
             ),
             new TwentyIOperation(
+                'packages.subdomainadd', 'POST', '/package/{packageId}/web/subdomains',
+                ['packageId'], ['parentDomain'=>'hostname','subdomain'=>'hostname'],
+                ['parentDomain','subdomain'], shapeComplete: true, // Local parent context; dedicated typed builder emits only add/rem.
+            ),
+            new TwentyIOperation(
                 'packages.directoryindexing', 'POST', '/package/{packageId}/web/directoryIndexing',
                 ['packageId'], ['value'=>'bool'], ['value'], shapeComplete: true,
             ),
