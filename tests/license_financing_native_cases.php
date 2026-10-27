@@ -347,6 +347,10 @@ rb_ok('All signed installments permanently unlock the financing payment dependen
 $paidAccess=license_financing_access($licenseId);
 rb_ok('Paid-off financing exposes permanent authorization with no payment denial reason',
     $paidAccess===['authorized'=>true,'state'=>'paid_off','reason'=>null]);
+$paidDeactivateBlocked=false;
+try{license_deactivate($licenseId,1);}catch(RuntimeException $expected){$paidDeactivateBlocked=true;}
+rb_ok('Paid-off financed license cannot be disabled after the customer completes payment',
+    $paidDeactivateBlocked&&(int)license_get($licenseKey)['is_active']===1);
 
 query('DELETE FROM '.table('invoice_payments').' WHERE invoice_id=?',[$paidInvoices[3]]);
 query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=NULL WHERE id=?',
