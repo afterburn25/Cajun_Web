@@ -2,9 +2,11 @@
 import json
 import os
 import subprocess
+from urllib.parse import parse_qs, urlparse
 
 import requests
 from playwright.sync_api import expect
+from release_cases import chosen_form
 
 
 def _form(soup,response,action):
@@ -17,7 +19,7 @@ def _form(soup,response,action):
 
 def run_browser(env,browser):
     root,qa,base,check=(env[k] for k in ['ROOT','QA','BASE','check'])
-    soup,token,form_data=(env[k] for k in ['soup','token','form_data'])
+    soup,token,form_data,submit=(env[k] for k in ['soup','token','form_data','submit'])
     admin,alice,bob=(env[k] for k in ['admin','alice','bob'])
     php=env['php']
 
@@ -108,12 +110,63 @@ def run_browser(env,browser):
           and env['db']('SELECT is_active,license_key FROM ci_website_licenses WHERE id=?',[license_id])
               ==[{'is_active':1,'license_key':license_key}])
 
+    suspended_gateway=fixture('gateway-suspended',offer)
+    recovery_page=alice.get(finance,timeout=25)
+    recovery_link=soup(recovery_page).find('a',string=lambda value: value and 'Pay the overdue installment securely' in value)
+    check('Suspended financing scheduler prepares the overdue recovery handoff',
+          suspended_gateway['subscription_status']=='billing_suspended'
+          and suspended_gateway['amount_cents']==2500
+          and recovery_link is not None)
+    recovery_url=recovery_link.get('href') if recovery_link else ''
+    recovery_response=requests.get(recovery_url,timeout=25) if recovery_url else None
+    check('Financing recovery link opens the hardened private payment request',
+          recovery_response is not None and recovery_response.status_code==200
+          and 'no-store' in recovery_response.headers.get('Cache-Control','')
+          and recovery_response.headers.get('Referrer-Policy')=='no-referrer')
+
+    support_admin=base+'/existing/admin/index.php?view=support'
+    if env['db']("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]:
+        support_setup=submit(admin,support_admin,'support_migrate',{'owner_password':'Synthetic owner passphrase 2026','confirm':'1'})
+        check('Financing support acceptance prepares support storage when needed',
+              support_setup.status_code==200 and 'Support access is ready' in support_setup.text)
+    if env['db']('SELECT allowed FROM ci_support_clients WHERE client_id=1') != [{'allowed':1}]:
+        chosen_form(admin,support_admin,'support_policy','client_id',1,
+                    {'allowed':'1','owner_password':'Synthetic owner passphrase 2026'})
+    started=chosen_form(admin,support_admin,'support_start','client_id',1,{})
+    support_id=parse_qs(urlparse(started.url).query).get('support',[''])[0]
+    support_root=base+'/existing/portal/index.php?support='+support_id
+    blocked=admin.get(support_root+'&finance='+offer,timeout=25)
+    check('Staff support session cannot open the customer financing agreement',
+          len(support_id)==32 and blocked.status_code==403
+          and 'Sign in to your own account to review financing' in blocked.text)
+    support_home=admin.get(support_root,timeout=25)
+    forged=admin.post(support_root+'&finance='+offer,data={
+        'csrf':token(support_home),
+        'action':'finance_offer_payment',
+        'finance_id':offer
+    },timeout=25)
+    check('Staff support session cannot trigger financing payment actions',
+          'action is blocked during support' in forged.text.lower())
+    submit(admin,support_root,'support_end')
+
     caught=fixture('catchup',offer)
     check('Verified catch-up payment clears financing suspension on the same key',
           caught['state'] in ['active','grace'] and caught['paid_off_at'] is None)
     resumed=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
     check('Catch-up payment immediately restores financed license authorization',
           resumed.status_code==200 and resumed.json()=={'authorized':True,'error':None})
+    replacement_page=alice.get(finance,timeout=25)
+    replacement_form=_form(soup,replacement_page,'finance_subscription_reenroll')
+    replacement_data=form_data(replacement_form)
+    check('Caught-up suspended subscription exposes replacement only for remaining installments',
+          'Pay the overdue installment securely' not in replacement_page.text
+          and 'Restore automatic installment payments' in replacement_page.text
+          and '3 remaining installments' in replacement_page.text
+          and replacement_data.get('finance_id')==offer)
+    check('Recovery request is terminal after synthetic verified catch-up',
+          env['db']("SELECT status FROM ci_payment_requests WHERE invoice_id=? AND purpose='financing' ORDER BY id DESC LIMIT 1",
+                    [suspended_gateway['invoice_id']])==[{'status':'superseded'}])
+    fixture('gateway-off',offer)
 
     payoff=fixture('payoff',offer)
     check('All signed installments reach permanent financing payoff',
