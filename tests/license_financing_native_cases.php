@@ -68,7 +68,7 @@ query('UPDATE '.table('license_finance_offers').' SET terms_json=?,terms_sha256=
 rb_client();
 $signed=license_finance_offer_sign((string)$offer['id'],1,'Recurring client 1',true,true);
 rb_ok('Client signature activates financing without an initial payment when zero down',
-    ($signed['offer']['status']??'')==='signed'&&($signed['payment']??'sentinel')===null);
+    ($signed['offer']['status']??'')==='signed'&&array_key_exists('payment',$signed)&&$signed['payment']===null);
 rb_staff();
 $plan=license_financing_sync($licenseId);
 rb_ok('Signed zero-down financing begins active on the same website license',
@@ -95,7 +95,7 @@ save_setting('payments_schema_version','');
 rb_client();
 $zeroSigned=license_finance_offer_sign((string)$zeroOffer['id'],1,'Recurring client 1',true,true);
 rb_ok('Zero-down financing signs and activates even when payment-link storage is unavailable',
-    ($zeroSigned['offer']['status']??'')==='signed'&&($zeroSigned['payment']??'sentinel')===null
+    ($zeroSigned['offer']['status']??'')==='signed'&&array_key_exists('payment',$zeroSigned)&&$zeroSigned['payment']===null
     &&license_financing_authorized($zeroLicense)===true
     &&one('SELECT activation_invoice_id,payment_request_id FROM '.table('license_finance_offers').' WHERE id=?',
         [$zeroOffer['id']])===['activation_invoice_id'=>null,'payment_request_id'=>null]);
