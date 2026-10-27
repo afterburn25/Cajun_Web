@@ -129,6 +129,13 @@ def run_browser(env,browser):
     check('Past-due financed license is definitively payment-suspended',
           denied.status_code==200
           and denied.json()=={'authorized':False,'error':'Financing payment is past the agreed grace period'})
+    foreign_probe=requests.post(validate,json={
+        'license_key':license_key,
+        'domain':'not-authorized-finance.example'
+    },timeout=25)
+    check('Foreign domain cannot probe a financed customer billing state',
+          foreign_probe.status_code==200
+          and foreign_probe.json()=={'authorized':False,'error':'Domain not registered for this license'})
     suspended_page=alice.get(finance,timeout=25)
     check('Client portal shows financing suspension without revoking the underlying key',
           'License financing:</strong> Suspended' in suspended_page.text
