@@ -69,8 +69,11 @@ finance_reject(fn()=>license_financing_period_from_replacement_pay_num(1,18,7,24
     'Replacement occurrence count must equal the remaining signed installments');
 finance_reject(fn()=>license_financing_period_from_replacement_pay_num(1,17,24,24),
     'Replacement period offset cannot start beyond the signed agreement');
-finance_ok(license_financing_recovery_link_allowed('billing_suspended')&&!license_financing_recovery_link_allowed('payment_failed')&&!license_financing_recovery_link_allowed('review'),
-    'Self-service recovery links require confirmed billing suspension');
+finance_ok(license_financing_recovery_link_allowed('billing_suspended')
+    &&license_financing_recovery_link_allowed('cancelled')
+    &&!license_financing_recovery_link_allowed('payment_failed')
+    &&!license_financing_recovery_link_allowed('review'),
+    'Self-service recovery links are limited to terminal automatic-billing states without an active gateway retry path');
 
 $rights=license_financing_rights(false,false,false,false);
 finance_ok(!$rights['resale']&&!$rights['distribution'],
