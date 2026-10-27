@@ -261,6 +261,39 @@ def run_browser(env,browser):
     check('Paid-off financing leaves published project release permanently downloadable',
           alice.get(release_url,timeout=25).status_code==200)
 
+    licenses=base+'/existing/admin/index.php?view=studio-licenses'
+    owner_paid=admin.get(licenses,timeout=25)
+    paid_forms=[form for form in soup(owner_paid).select('form')
+                if (form.select_one('[name=action]') is not None
+                    and form.select_one('[name=action]').get('value')=='studio_license_deactivate'
+                    and form.select_one('[name=id]') is not None
+                    and form.select_one('[name=id]').get('value')==str(license_id))]
+    check('Paid-off financed license owner UI removes whole-license deactivation',
+          not paid_forms and 'Permanently unlocked' in owner_paid.text)
+    forged_disable=admin.post(licenses,data={
+        'csrf':token(owner_paid),'action':'studio_license_deactivate','id':str(license_id)
+    },timeout=25)
+    check('Forged owner deactivation cannot disable a fully paid financed key',
+          'permanently unlocked' in forged_disable.text.lower()
+          and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+
+    paid_workspace=alice.get(base+'/existing/portal/index.php',timeout=25)
+    paid_move=_form(soup,paid_workspace,'license_domain_replace',license_id=license_id)
+    paid_move_data=form_data(paid_move);paid_move_data['new_domain']='finance-paid-moved.example'
+    moved_after_payoff=alice.post(base+'/existing/portal/index.php',data=paid_move_data,timeout=25)
+    old_paid_domain=domain;domain='finance-paid-moved.example'
+    check('Permanent payoff still allows client-owned domain replacement on the same key',
+          moved_after_payoff.status_code==200
+          and env['db']('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':domain}]
+          and env['db']('SELECT license_key,is_active FROM ci_website_licenses WHERE id=?',[license_id])
+              ==[{'license_key':license_key,'is_active':1}])
+    old_paid_probe=requests.post(validate,json={'license_key':license_key,'domain':old_paid_domain},timeout=25)
+    new_paid_probe=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
+    check('Post-payoff domain move deauthorizes only the old domain, not the paid-off key',
+          old_paid_probe.status_code==200 and old_paid_probe.json()['authorized'] is False
+          and new_paid_probe.status_code==200 and new_paid_probe.json()=={'authorized':True,'error':None})
+
     reversed_after=fixture('reverse-after-payoff',offer)
     check('Post-payoff ledger correction cannot restore the financing payment lock',
           reversed_after['state']=='paid_off'
@@ -274,7 +307,6 @@ def run_browser(env,browser):
           rights=={'allow_resale':0,'allow_distribution':0,'exclusive_resale':0,'exclusive_distribution':0})
 
     rights_invoice=fixture('rights-invoice',offer)
-    licenses=base+'/existing/admin/index.php?view=studio-licenses'
     rights_page=admin.get(licenses,timeout=25)
     rights_form=_form(soup,rights_page,'studio_license_financing_rights',license_id=license_id)
     rights_data=form_data(rights_form)
