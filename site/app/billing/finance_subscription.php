@@ -203,6 +203,13 @@ function license_finance_subscription_replacement_finalize(string $offerId,strin
             ||!in_array((string)$row['status'],['replacing','review'],true)){
             throw new RuntimeException('Financing replacement reservation changed.');
         }
+        $lockedOffer=license_finance_offer_row($offerId,null,true);
+        $currentContract=license_finance_subscription_replacement_contract($lockedOffer);
+        foreach(['months','amount_cents','occurrences','start_date','period_offset'] as $field){
+            if(($currentContract[$field]??null)!==($contract[$field]??null)){
+                throw new RuntimeException('Remaining financing periods changed during replacement enrollment. Reconcile the gateway result before continuing.');
+            }
+        }
         if(one('SELECT offer_id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=? AND offer_id<>? FOR UPDATE',
             [$newGatewayId,$offerId])
             ||one('SELECT offer_id FROM '.table('license_finance_subscription_history').' WHERE gateway_subscription_id=? FOR UPDATE',[$newGatewayId])){
@@ -258,6 +265,12 @@ function license_finance_subscription_reenroll_opaque(string $offerId,int $clien
             $mode==='sandbox'?'sandbox_test':'pending_first_payment');
     }catch(Throwable $e){
         license_finance_subscription_replacement_review($offerId,$oldGatewayId);
+        if($newGatewayId!==null){
+            try{license_audit(0,'financing.subscription.replacement.review',
+                'Finance agreement '.$offerId.' replacement candidate '.$newGatewayId.
+                ' for suspended subscription '.$oldGatewayId.' requires reconciliation');}
+            catch(Throwable $auditError){report_error($auditError);}
+        }
         report_error($e);
         return 'review';
     }
