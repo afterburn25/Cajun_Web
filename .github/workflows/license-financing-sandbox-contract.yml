@@ -1,0 +1,36 @@
+name: License financing Authorize.net sandbox source contract
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/finance_anet_sandbox_acceptance.py'
+      - '.github/workflows/license-financing-authorize-sandbox.yml'
+      - '.github/workflows/license-financing-sandbox-contract.yml'
+  pull_request:
+    paths:
+      - 'tests/finance_anet_sandbox_acceptance.py'
+      - '.github/workflows/license-financing-authorize-sandbox.yml'
+      - '.github/workflows/license-financing-sandbox-contract.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify financing sandbox-only source
+        run: |
+          python3 -m py_compile tests/finance_anet_sandbox_acceptance.py
+          grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/finance_anet_sandbox_acceptance.py
+          grep -F 'https://jstest.authorize.net/v1/Accept.js' tests/finance_anet_sandbox_acceptance.py
+          grep -F 'original_installments": 4' tests/finance_anet_sandbox_acceptance.py
+          grep -F 'replacement_installments": 3' tests/finance_anet_sandbox_acceptance.py
+          grep -F 'credentials_or_nonce_recorded": False' tests/finance_anet_sandbox_acceptance.py
+          ! grep -F 'https://api.authorize.net' tests/finance_anet_sandbox_acceptance.py
+          ! grep -F 'https://js.authorize.net' tests/finance_anet_sandbox_acceptance.py
+          ! grep -E 'ANET_(PRODUCTION|LIVE)_' tests/finance_anet_sandbox_acceptance.py
