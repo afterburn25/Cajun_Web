@@ -294,6 +294,7 @@ function studio_admin_action(string $action,array $user): never {
                 'exclusive_resale'=>isset($_POST['exclusive_resale']),
                 'exclusive_distribution'=>isset($_POST['exclusive_distribution'])
             ],
+            gint($_POST,'rights_invoice_id',1,2147483647),
             posted('evidence',200),posted('current_password',200)
         );
         flash('Commercial rights grant recorded. Financing payoff and distribution rights remain separate.');
