@@ -9,11 +9,16 @@ from playwright.sync_api import expect
 from release_cases import chosen_form
 
 
-def _form(soup,response,action):
+def _form(soup,response,action,*,license_id=None):
     for form in soup(response).select('form'):
         marker=form.select_one('[name=action]')
-        if marker and marker.get('value')==action:
-            return form
+        if not marker or marker.get('value')!=action:
+            continue
+        if license_id is not None:
+            hidden=form.select_one('[name=license_id]')
+            if not hidden or hidden.get('value')!=str(license_id):
+                continue
+        return form
     raise AssertionError('Missing financing form '+action)
 
 
@@ -96,6 +101,26 @@ def run_browser(env,browser):
     authorized=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
     check('Active financed license validates on its retained key',
           authorized.status_code==200 and authorized.json()=={'authorized':True,'error':None})
+
+    workspace=alice.get(base+'/existing/portal/index.php',timeout=25)
+    move_form=_form(soup,workspace,'license_domain_replace',license_id=license_id)
+    move=form_data(move_form);move['new_domain']='finance-browser-moved.example'
+    before_binding=env['db']('SELECT schedule_id,terms_sha256,installments,grace_days FROM ci_license_financing WHERE license_id=?',[license_id])[0]
+    moved=alice.post(base+'/existing/portal/index.php',data=move,timeout=25)
+    after_binding=env['db']('SELECT schedule_id,terms_sha256,installments,grace_days FROM ci_license_financing WHERE license_id=?',[license_id])[0]
+    check('Financed customer can move its approved domain without repurchase',
+          moved.status_code==200
+          and env['db']('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':'finance-browser-moved.example'}]
+          and before_binding==after_binding
+          and env['db']('SELECT license_key FROM ci_website_licenses WHERE id=?',[license_id])
+              ==[{'license_key':license_key}])
+    old_domain=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
+    domain='finance-browser-moved.example'
+    new_domain=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
+    check('Financed domain move deauthorizes old site and authorizes new site on same key',
+          old_domain.status_code==200 and old_domain.json()['authorized'] is False
+          and new_domain.status_code==200 and new_domain.json()=={'authorized':True,'error':None})
 
     late=fixture('late',offer)
     check('Issued unpaid installment past grace moves financing to suspended',
