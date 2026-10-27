@@ -130,7 +130,7 @@ function setup_expected_files(): array { return [
     'api/handlers/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'api/handlers/activity.php'=>'d06746037aecd445fb81e3c8ab6e9bb12501f35da24c7b08c8329c19a0b5e56e',
     'api/handlers/inquiry.php'=>'ba1be86ef471996456f169262bde298c73a086d4eba2bd0fba8252ae637443e9',
-    'api/handlers/license.php'=>'f4d36dfa35b0a473cc07c5ea6c60b4e50ee7e4a3724c83fdabf78c57ff4484cd',
+    'api/handlers/license.php'=>'d97569971e76c12913b70cdb31615b197243a53347a0d757bc84f251e5ada0d3',
     'api/handlers/mail_notices.php'=>'dade2984e4ee86ca725d5e99b6d3d94e2ba7f9e8516e735020458a1e793e0d84',
     'api/handlers/robots.php'=>'14accc4f9c4b3fa2365665d5930155f9fb1b428da3ce3e0bbc4bf90aca20a87c',
     'api/handlers/sitemap.php'=>'e6bbe7c5e38d07f81a5a1e5a5570350211649ff19edd0601af2fe12f7511ce7a',
