@@ -62,6 +62,13 @@ finance_reject(fn()=>license_financing_cadence_months('weekly'),'Unsupported fin
 finance_ok(license_financing_period_from_pay_num(1,24)===0&&license_financing_period_from_pay_num(24,24)===23,
     'Gateway subscription payment number maps exactly to signed installment index');
 finance_reject(fn()=>license_financing_period_from_pay_num(25,24),'Gateway payment number beyond signed installments is rejected');
+finance_ok(license_financing_period_from_replacement_pay_num(1,17,7,24)===7
+    &&license_financing_period_from_replacement_pay_num(17,17,7,24)===23,
+    'Replacement subscription payment numbers map onto the exact remaining signed periods');
+finance_reject(fn()=>license_financing_period_from_replacement_pay_num(1,18,7,24),
+    'Replacement occurrence count must equal the remaining signed installments');
+finance_reject(fn()=>license_financing_period_from_replacement_pay_num(1,17,24,24),
+    'Replacement period offset cannot start beyond the signed agreement');
 finance_ok(license_financing_recovery_link_allowed('billing_suspended')&&!license_financing_recovery_link_allowed('payment_failed')&&!license_financing_recovery_link_allowed('review'),
     'Self-service recovery links require confirmed billing suspension');
 
