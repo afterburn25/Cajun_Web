@@ -264,11 +264,35 @@ function license_deactivate_domain_tx(int $licenseId, string $domain, int $actor
 }
 
 /**
+ * A fully paid financed-site license is permanently unlocked from future
+ * whole-license deactivation. Domain binding remains mutable separately.
+ */
+function license_paid_off_lock(int $licenseId): bool {
+    if ($licenseId < 1) return false;
+    $table = one(
+        'SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+        [config()['db']['prefix'].'license_financing']
+    );
+    if (!$table) return false;
+    $row = one('SELECT state,paid_off_at FROM '.table('license_financing').' WHERE license_id=?',[$licenseId]);
+    if (!$row) return false;
+    $paid = $row['paid_off_at'] !== null;
+    $state = (string)($row['state'] ?? '');
+    if ($paid !== ($state === 'paid_off')) {
+        throw new RuntimeException('Financed license payoff state is inconsistent. Preserve the license for owner review.');
+    }
+    return $paid;
+}
+
+/**
  * Deactivate an entire license.
  */
 function license_deactivate(int $licenseId, int $actor = 0): void {
     license_transaction(function() use ($licenseId, $actor): void {
         license_lock($licenseId);
+        if (license_paid_off_lock($licenseId)) {
+            throw new RuntimeException('A fully paid financed license is permanently unlocked and cannot be deactivated.');
+        }
         query('UPDATE ' . table('website_licenses') . ' SET is_active = 0, updated_at = ? WHERE id = ?',
             [gmdate('Y-m-d H:i:s'), $licenseId]);
         license_audit($actor, 'deactivate', 'License ' . $licenseId . ' deactivated');
