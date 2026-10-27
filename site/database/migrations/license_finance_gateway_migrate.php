@@ -22,6 +22,18 @@ function license_finance_gateway_ready():bool{
     return license_finance_gateway_column_present('license_finance_subscriptions','period_offset')
         &&license_finance_gateway_column_present('license_finance_subscriptions','replacement_count');
 }
+function license_finance_gateway_validate_index(string $table,string $key,array $fields,bool $unique=false):void{
+    $actual=[];
+    foreach(all('SHOW INDEX FROM '.table($table)) as $index){
+        if((string)$index['Key_name']!==$key)continue;
+        if(((int)$index['Non_unique']===0)!==$unique||$index['Sub_part']!==null||$index['Index_type']!=='BTREE'){
+            throw new RuntimeException('Incompatible financing gateway index. Preserve the database for recovery.');
+        }
+        $actual[(int)$index['Seq_in_index']]=$index['Column_name'];
+    }
+    ksort($actual);
+    if(array_values($actual)!==$fields)throw new RuntimeException('Incompatible financing gateway index. Preserve the database for recovery.');
+}
 function license_finance_gateway_validate_schema():void{
     $schema=license_finance_gateway_schema(config()['db']['prefix']);
     catalog_validate_schema('license_finance_charges',$schema['license_finance_charges'],[
@@ -34,17 +46,18 @@ function license_finance_gateway_validate_schema():void{
         'offer_id'=>['offer_id'],'gateway_subscription_id'=>['gateway_subscription_id']
     ]);
     catalog_validate_schema('license_finance_subscription_history',$schema['license_finance_subscription_history'],[
-        'gateway_subscription_id'=>['gateway_subscription_id'],'offer_lookup'=>['offer_id','id']
+        'gateway_subscription_id'=>['gateway_subscription_id']
     ]);
+    license_finance_gateway_validate_index('license_finance_subscription_history','offer_lookup',['offer_id','id']);
     catalog_validate_schema('license_finance_subscription_receipts',$schema['license_finance_subscription_receipts'],[
         'gateway_transaction_id'=>['gateway_transaction_id'],'invoice_id'=>['invoice_id'],'offer_period'=>['offer_id','period_index']
     ]);
     catalog_validate_schema('license_finance_reversals',$schema['license_finance_reversals'],[
-        'gateway_transaction_id'=>['gateway_transaction_id'],
-        'original_lookup'=>['original_transaction_id','id'],
-        'invoice_lookup'=>['invoice_id','id'],
-        'offer_lookup'=>['offer_id','id']
+        'gateway_transaction_id'=>['gateway_transaction_id']
     ]);
+    license_finance_gateway_validate_index('license_finance_reversals','original_lookup',['original_transaction_id','id']);
+    license_finance_gateway_validate_index('license_finance_reversals','invoice_lookup',['invoice_id','id']);
+    license_finance_gateway_validate_index('license_finance_reversals','offer_lookup',['offer_id','id']);
 }
 function license_finance_gateway_upgrade_v2(array $schema):void{
     if(!license_finance_gateway_table_present('license_finance_subscription_history')){
