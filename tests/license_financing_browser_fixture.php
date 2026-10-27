@@ -93,6 +93,8 @@ function finance_fixture_payment(int $invoice,string $reference):int{
 
 finance_fixture_owner();
 if(in_array($operation,['setup','setup-initial'],true)){
+    if(!staff_ready())staff_migrate(1,$password);
+    finance_fixture_owner();
     if(!payments_ready())payments_migrate($password);
     if(!ledger_ready())ledger_migrate($password);
     if(!service_plans_ready())service_plans_migrate($password);
