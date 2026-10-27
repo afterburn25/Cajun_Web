@@ -66,6 +66,8 @@ jobs:
           /tmp/cwp-finance-http-venv/bin/python -m playwright install --with-deps chromium
       - name: Build exact direct-extract candidate packages
         run: python3 tools/build.py --commit "$GITHUB_SHA"
+      - name: Prepare pristine public historical fixtures
+        run: python3 tests/prepare_legacy.py
       - name: Seed real installed-site fixture
         run: php8.3 tests/native.php
       - name: Run financed-license real HTTP and Chromium acceptance
