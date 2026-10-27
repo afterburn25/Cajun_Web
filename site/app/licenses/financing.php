@@ -207,10 +207,17 @@ function license_financing_sync(int $licenseId,?string $today=null):?array{
     $result=null;
     license_transaction(function()use($licenseId,$today,&$result):void{
         license_lock($licenseId);
-        $plan=one('SELECT f.*,l.customer_id AS client_id FROM '.table('license_financing').' f JOIN '.table('website_licenses').' l ON l.id=f.license_id WHERE f.license_id=? FOR UPDATE',[$licenseId]);
+        $plan=one('SELECT f.*,l.customer_id AS client_id,l.is_active AS license_active FROM '.table('license_financing').' f JOIN '.table('website_licenses').' l ON l.id=f.license_id WHERE f.license_id=? FOR UPDATE',[$licenseId]);
         if(!$plan){$result=null;return;}
         if($plan['paid_off_at']!==null){
             if((string)$plan['state']!=='paid_off')throw new RuntimeException('Paid-off financing state is inconsistent.');
+            if((int)$plan['license_active']!==1){
+                $now=gmdate('Y-m-d H:i:s');
+                query('UPDATE '.table('website_licenses').' SET is_active=1,updated_at=? WHERE id=?',[$now,$licenseId]);
+                license_audit(0,'financing.unlock',
+                    'License '.$licenseId.' permanently reactivated from retained paid-off financing state');
+                $plan['license_active']=1;
+            }
             $result=$plan;return;
         }
         $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
@@ -260,8 +267,10 @@ function license_financing_sync(int $licenseId,?string $today=null):?array{
         if($next==='paid_off'){
             query('UPDATE '.table('license_financing').' SET state=?,paid_off_at=?,updated_at=? WHERE license_id=? AND paid_off_at IS NULL',
                 ['paid_off',$now,$now,$licenseId]);
+            query('UPDATE '.table('website_licenses').' SET is_active=1,updated_at=? WHERE id=?',[$now,$licenseId]);
             license_audit(0,'financing.paid_off',
-                'License '.$licenseId.' completed all '.(int)$plan['installments'].' financing installments; payment lock permanently removed');
+                'License '.$licenseId.' completed all '.(int)$plan['installments'].
+                ' financing installments; key permanently activated and payment lock permanently removed');
         }elseif($next!==$old){
             query('UPDATE '.table('license_financing').' SET state=?,updated_at=? WHERE license_id=?',
                 [$next,$now,$licenseId]);
