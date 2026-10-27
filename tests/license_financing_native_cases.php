@@ -13,9 +13,10 @@ save_setting('license_invoice_cutover','0');
 license_financing_prepare($password);
 license_finance_offers_prepare($password);
 license_finance_gateway_prepare($password);
-rb_ok('Financing native setup creates v2 gateway replacement storage',
+rb_ok('Financing native setup creates v3 gateway replacement and reversal storage',
     license_financing_feature_state()===true&&license_finance_offers_ready()&&license_finance_gateway_ready()
-    &&setting('license_finance_gateway_schema_version')==='2');
+    &&setting('license_finance_gateway_schema_version')==='3'
+    &&license_finance_gateway_table_present('license_finance_reversals'));
 
 $licenseKey=license_create(1,'WEBSITE-FINANCE-NATIVE',1,false,null);
 $license=license_get($licenseKey);$licenseId=(int)$license['id'];
@@ -206,18 +207,32 @@ query('INSERT INTO '.table('license_finance_subscriptions').
     [$offer['id'],'810001','910001','920001',1,2500,4,0,0,$fields['anchor'],'active',$now,$now]);
 
 // Recreate the published v1 finance-gateway shape with one retained subscription,
-// then prove the explicit owner migration adds replacement metadata without losing it.
+// then prove the explicit owner migration adds replacement and reversal metadata without losing it.
+db()->exec('DROP TABLE '.table('license_finance_reversals'));
 db()->exec('DROP TABLE '.table('license_finance_subscription_history'));
 db()->exec('ALTER TABLE '.table('license_finance_subscriptions').' DROP COLUMN replacement_count, DROP COLUMN period_offset');
 save_setting('license_finance_gateway_schema_version','1');
 license_finance_gateway_prepare($password);
 $migratedSub=license_finance_subscription_row((string)$offer['id']);
-rb_ok('Finance gateway v1 to v2 migration preserves existing ARB identity and defaults offset metadata',
+rb_ok('Finance gateway v1 to v3 migration preserves ARB identity and adds replacement/reversal metadata',
     license_finance_gateway_ready()
+    &&setting('license_finance_gateway_schema_version')==='3'
     &&($migratedSub['gateway_subscription_id']??'')==='810001'
     &&(int)($migratedSub['period_offset']??-1)===0
     &&(int)($migratedSub['replacement_count']??-1)===0
-    &&license_finance_gateway_table_present('license_finance_subscription_history'));
+    &&license_finance_gateway_table_present('license_finance_subscription_history')
+    &&license_finance_gateway_table_present('license_finance_reversals'));
+
+// Recreate populated v2 around the same retained subscription and prove the
+// v2->v3 step adds only reversal history.
+db()->exec('DROP TABLE '.table('license_finance_reversals'));
+save_setting('license_finance_gateway_schema_version','2');
+license_finance_gateway_prepare($password);
+rb_ok('Finance gateway v2 to v3 migration adds reversal history without replacing active subscription',
+    license_finance_gateway_ready()
+    &&setting('license_finance_gateway_schema_version')==='3'
+    &&license_finance_gateway_table_present('license_finance_reversals')
+    &&(license_finance_subscription_row((string)$offer['id'])['gateway_subscription_id']??'')==='810001');
 
 $schedule=recurring_billing_row((string)$offer['schedule_id']);
 $doc=recurring_billing_validate($schedule);
