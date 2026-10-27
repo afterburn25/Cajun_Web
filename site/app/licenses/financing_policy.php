@@ -99,7 +99,11 @@ function license_financing_period_from_replacement_pay_num(int $payNum,int $rema
     return $period;
 }
 function license_financing_recovery_link_allowed(string $subscriptionStatus):bool{
-    return $subscriptionStatus==='billing_suspended';
+    // A suspended or cancelled automatic-billing contract cannot settle the
+    // next installment itself, so a private manual catch-up request is safe.
+    // payment_failed may still be retried by the gateway, and review is
+    // intentionally ambiguous; neither may create a parallel collection path.
+    return in_array($subscriptionStatus,['billing_suspended','cancelled'],true);
 }
 
 function license_financing_rights(bool $resale,bool $distribution,bool $exclusiveResale,bool $exclusiveDistribution):array{
