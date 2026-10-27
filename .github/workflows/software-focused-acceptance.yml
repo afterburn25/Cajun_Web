@@ -60,9 +60,9 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
-          python3 -m venv .software-http-venv
-          .software-http-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
-          .software-http-venv/bin/python -m playwright install --with-deps chromium
+          python3 -m venv /tmp/cwp-software-http-venv
+          /tmp/cwp-software-http-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          /tmp/cwp-software-http-venv/bin/python -m playwright install --with-deps chromium
       - name: Build exact direct-extract candidate packages
         run: python3 tools/build.py --commit "$GITHUB_SHA"
       - name: Seed the real installed-site browser fixture
@@ -70,7 +70,7 @@ jobs:
       - name: Run focused real HTTP and Chromium software acceptance
         env:
           PYTHONPATH: tests
-        run: .software-http-venv/bin/python tests/browser_acceptance.py
+        run: /tmp/cwp-software-http-venv/bin/python tests/browser_acceptance.py
       - name: Upload focused non-secret evidence
         if: always()
         uses: actions/upload-artifact@v4
