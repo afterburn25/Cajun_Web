@@ -268,14 +268,37 @@ def run_browser(env,browser):
                     and form.select_one('[name=action]').get('value')=='studio_license_deactivate'
                     and form.select_one('[name=id]') is not None
                     and form.select_one('[name=id]').get('value')==str(license_id))]
-    check('Paid-off financed license owner UI removes whole-license deactivation',
-          not paid_forms and 'Permanently unlocked' in owner_paid.text)
+    paid_domain_forms=[form for form in soup(owner_paid).select('form')
+                       if (form.select_one('[name=action]') is not None
+                           and form.select_one('[name=action]').get('value')=='studio_domain_deactivate'
+                           and form.select_one('[name=license_id]') is not None
+                           and form.select_one('[name=license_id]').get('value')==str(license_id))]
+    check('Paid-off financed license owner UI removes whole-license and standalone-domain deactivation',
+          not paid_forms and not paid_domain_forms and 'Permanently unlocked' in owner_paid.text)
     forged_disable=admin.post(licenses,data={
         'csrf':token(owner_paid),'action':'studio_license_deactivate','id':str(license_id)
     },timeout=25)
     check('Forged owner deactivation cannot disable a fully paid financed key',
           'permanently unlocked' in forged_disable.text.lower()
           and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+
+    paid_workspace=alice.get(base+'/existing/portal/index.php',timeout=25)
+    client_domain_deactivate=[form for form in soup(paid_workspace).select('form')
+                              if (form.select_one('[name=action]') is not None
+                                  and form.select_one('[name=action]').get('value')=='license_domain_deactivate'
+                                  and form.select_one('[name=license_id]') is not None
+                                  and form.select_one('[name=license_id]').get('value')==str(license_id))]
+    check('Paid-off client workspace removes standalone domain deactivation but retains replacement',
+          not client_domain_deactivate
+          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)
+    forged_domain=alice.post(base+'/existing/portal/index.php',data={
+        'csrf':token(paid_workspace),'action':'license_domain_deactivate',
+        'license_id':str(license_id),'domain':domain
+    },timeout=25)
+    check('Forged client domain deactivation cannot disable a paid-off financed site',
+          'must remain bound to an active domain' in forged_domain.text.lower()
+          and env['db']('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
+              ==[{'domain':domain}])
 
     paid_workspace=alice.get(base+'/existing/portal/index.php',timeout=25)
     paid_move=_form(soup,paid_workspace,'license_domain_replace',license_id=license_id)
