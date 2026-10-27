@@ -1,0 +1,153 @@
+<?php
+/** Focused financed-license cases executed inside recurring_billing_native.php's disposable MariaDB fixture. */
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||!defined('CWP_BOOT')||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+
+require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+
+rb_staff();
+save_setting('license_schema_version','3');
+save_setting('license_invoice_cutover','0');
+license_financing_prepare($password);
+license_finance_offers_prepare($password);
+license_finance_gateway_prepare($password);
+rb_ok('Financing native setup creates v2 gateway replacement storage',
+    license_financing_feature_state()===true&&license_finance_offers_ready()&&license_finance_gateway_ready()
+    &&setting('license_finance_gateway_schema_version')==='2');
+
+$licenseKey=license_create(1,'WEBSITE-FINANCE-NATIVE',1,false,null);
+$license=license_get($licenseKey);$licenseId=(int)$license['id'];
+license_register_domain($licenseId,'finance-native.example',1);
+
+rb_historical_source(9000,2500);
+$fields=rb_fields(9100,9000);
+$fields['anchor']=gmdate('Y-m-d',time()+2*86400);
+$fields['due_after_days']=0;
+$offeredSchedule=recurring_billing_offer($fields);
+rb_ok('Financing native schedule begins as exact future offered terms',
+    $offeredSchedule->phase()==='offered'&&$offeredSchedule->data()['terms']['anchor']===$fields['anchor']);
+
+$offer=license_finance_offer_create(
+    $licenseId,rb_id(9100),'Synthetic financed website',
+    10000,0,10000,0,0,4,5,1,7,
+    ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+    'Synthetic financed-site agreement retained only for native acceptance. Site use is licensed to this customer; resale and distribution are not granted.',
+    $password
+);
+rb_client();
+$signed=license_finance_offer_sign((string)$offer['id'],1,'Recurring client 1',true,true);
+rb_ok('Client signature activates financing without an initial payment when zero down',
+    ($signed['offer']['status']??'')==='signed'&&($signed['payment']??'sentinel')===null);
+rb_staff();
+$plan=license_financing_sync($licenseId);
+rb_ok('Signed zero-down financing begins active on the same website license',
+    ($plan['state']??'')==='active'&&(int)license_get($licenseKey)['id']===$licenseId);
+
+$now=gmdate('Y-m-d H:i:s');
+query('INSERT INTO '.table('license_finance_subscriptions').
+    ' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,period_offset,replacement_count,start_date,status,created_at,updated_at)'.
+    ' VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    [$offer['id'],'810001','910001','920001',1,2500,4,0,0,$fields['anchor'],'active',$now,$now]);
+
+// Recreate the published v1 finance-gateway shape with one retained subscription,
+// then prove the explicit owner migration adds replacement metadata without losing it.
+db()->exec('DROP TABLE '.table('license_finance_subscription_history'));
+db()->exec('ALTER TABLE '.table('license_finance_subscriptions').' DROP COLUMN replacement_count, DROP COLUMN period_offset');
+save_setting('license_finance_gateway_schema_version','1');
+license_finance_gateway_prepare($password);
+$migratedSub=license_finance_subscription_row((string)$offer['id']);
+rb_ok('Finance gateway v1 to v2 migration preserves existing ARB identity and defaults offset metadata',
+    license_finance_gateway_ready()
+    &&($migratedSub['gateway_subscription_id']??'')==='810001'
+    &&(int)($migratedSub['period_offset']??-1)===0
+    &&(int)($migratedSub['replacement_count']??-1)===0
+    &&license_finance_gateway_table_present('license_finance_subscription_history'));
+
+$schedule=recurring_billing_row((string)$offer['schedule_id']);
+$doc=recurring_billing_validate($schedule);
+$terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($doc->data()['terms']);
+$p0=$terms->period(0);
+$period0At=strtotime($p0['start'].' 12:00:00 UTC');
+if($period0At===false)throw new RuntimeException('Synthetic financing period timestamp unavailable.');
+$issued0=license_finance_issue_period((string)$offer['id'],0,$period0At);
+$invoice0=ledger_invoice((int)$issued0['invoice_id']);
+rb_ok('Begun signed financing period issues the exact real ledger invoice',
+    (int)$invoice0['amount_cents']===2500&&$invoice0['status']==='issued');
+
+$lateDate=(new DateTimeImmutable($p0['due'].'T00:00:00',new DateTimeZone('UTC')))
+    ->modify('+6 days')->format('Y-m-d');
+$suspended=license_financing_sync($licenseId,$lateDate);
+rb_ok('Issued unpaid installment past the five-day grace suspends payment-dependent financing access',
+    ($suspended['state']??'')==='suspended'
+    &&(int)license_get($licenseKey)['is_active']===1
+    &&($suspended['evaluation']['overdue_period']??null)===0);
+
+query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=?',
+    ['billing_suspended',gmdate('Y-m-d H:i:s'),$offer['id']]);
+$entry0=ledger_insert($invoice0,0,'gateway',2500,'authorize_net','Synthetic catch-up financing receipt',$lateDate,
+    null,null,hash('sha256','finance-native-period-0'));
+query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
+    ['paid','Synthetic financing catch-up receipt '.$entry0,gmdate('Y-m-d H:i:s'),$invoice0['id']]);
+$restored=license_financing_sync($licenseId,$lateDate);
+rb_ok('Catch-up payment restores the same financed license after suspension',
+    ($restored['state']??'')==='active'&&license_get($licenseKey)['license_key']===$licenseKey);
+
+$replacement=license_finance_subscription_replacement_contract(license_finance_offer_row((string)$offer['id']));
+$p1=$terms->period(1);
+rb_ok('Replacement ARB contract begins at the first future unpaid signed installment',
+    $replacement['period_offset']===1&&$replacement['occurrences']===3
+    &&$replacement['start_date']===$p1['start']&&$replacement['amount_cents']===2500);
+
+$reserved=license_finance_subscription_replacement_reserve((string)$offer['id']);
+rb_ok('Suspended ARB identity is retained while replacement enrollment is reserved',
+    ($reserved['gateway_subscription_id']??'')==='810001'&&($reserved['status']??'')==='replacing');
+$replacementState=license_finance_subscription_replacement_finalize(
+    (string)$offer['id'],'810001','810002',$replacement,
+    ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment'
+);
+$currentSub=license_finance_subscription_row((string)$offer['id']);
+$oldSub=license_finance_subscription_history_row('810001');
+rb_ok('Replacement ARB archives the suspended identity and activates only remaining periods',
+    $replacementState==='pending_first_payment'
+    &&($currentSub['gateway_subscription_id']??'')==='810002'
+    &&(int)$currentSub['period_offset']===1&&(int)$currentSub['total_occurrences']===3
+    &&(int)$currentSub['replacement_count']===1
+    &&($oldSub['terminal_status']??'')==='billing_suspended'
+    &&($oldSub['replaced_by_gateway_subscription_id']??'')==='810002');
+rb_ok('Delayed lifecycle event from retired ARB identity is historical and cannot mutate current billing',
+    license_finance_subscription_lifecycle_review('net.authorize.customer.subscription.suspended','810001')==='historical_subscription');
+
+$paidInvoices=[(int)$invoice0['id']];
+for($period=1;$period<4;$period++){
+    $facts=$terms->period($period);$at=strtotime($facts['start'].' 12:00:00 UTC');
+    if($at===false)throw new RuntimeException('Synthetic financing period timestamp unavailable.');
+    $issued=license_finance_issue_period((string)$offer['id'],$period,$at);
+    $invoice=ledger_invoice((int)$issued['invoice_id']);
+    $entry=ledger_insert($invoice,0,'gateway',2500,'authorize_net','Synthetic financing payoff period '.$period,
+        $facts['due'],null,null,hash('sha256','finance-native-period-'.$period));
+    query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
+        ['paid','Synthetic financing payoff receipt '.$entry,gmdate('Y-m-d H:i:s'),$invoice['id']]);
+    $paidInvoices[$period]=(int)$invoice['id'];
+}
+$last=$terms->period(3);
+$afterLast=(new DateTimeImmutable($last['due'].'T00:00:00',new DateTimeZone('UTC')))
+    ->modify('+6 days')->format('Y-m-d');
+$paidOff=license_financing_sync($licenseId,$afterLast);
+rb_ok('All signed installments permanently unlock the financing payment dependency',
+    ($paidOff['state']??'')==='paid_off'&&is_string($paidOff['paid_off_at'])&&$paidOff['paid_off_at']!==''
+    &&license_financing_authorized($licenseId)===true);
+
+query('DELETE FROM '.table('invoice_payments').' WHERE invoice_id=?',[$paidInvoices[3]]);
+query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=NULL WHERE id=?',
+    ['issued','Synthetic post-payoff correction',$paidInvoices[3]]);
+$afterCorrection=license_financing_sync($licenseId,$afterLast);
+rb_ok('Paid-off financing boundary ignores later billing correction and can never reapply the payment lock',
+    ($afterCorrection['state']??'')==='paid_off'&&$afterCorrection['paid_off_at']===$paidOff['paid_off_at']
+    &&license_financing_authorized($licenseId)===true);
+
+$rights=license_financing_rights_for_license($licenseId);
+rb_ok('Default financed-site commercial rights remain site-use only after payoff',
+    $rights!==null&&!$rights['resale']&&!$rights['distribution']
+    &&!$rights['exclusive_resale']&&!$rights['exclusive_distribution']);
