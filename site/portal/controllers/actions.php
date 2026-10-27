@@ -15,6 +15,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   $result=license_finance_offer_sign(posted('finance_id',32),(int)$client['id'],posted('signer_name',190),
       isset($_POST['agree_terms'])&&$_POST['agree_terms']==='1',isset($_POST['agree_electronic'])&&$_POST['agree_electronic']==='1');
   flash('Financing agreement signed. Your exact agreement and signature evidence are retained.');
+  if(($result['payment_pending']??false)===true){
+      flash('Your signature is complete. The studio still needs to prepare secure payment-link infrastructure before the initial payment can be collected.','warning');
+  }
   if(is_array($result['payment']??null)&&is_string($result['payment']['url']??null))redirect($result['payment']['url']);
   redirect(studio_url(['finance'=>posted('finance_id',32)]));
  }
