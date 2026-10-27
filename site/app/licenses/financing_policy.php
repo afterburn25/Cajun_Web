@@ -103,7 +103,7 @@ function license_financing_subscription_settlement_status(string $status,bool $o
         'pending_first_payment','active','payment_failed','billing_suspended' => 'active',
         'cancelled' => 'cancelled',
         'review' => $ownerReconcile?'active':null,
-        'replacing','paid_off','sandbox_test' => null,
+        'replacing','reversal_recovery','paid_off','sandbox_test' => null,
         default => throw new InvalidArgumentException('Unknown financing subscription state.')
     };
 }
@@ -113,7 +113,7 @@ function license_financing_recovery_link_allowed(string $subscriptionStatus):boo
     // next installment itself, so a private manual catch-up request is safe.
     // payment_failed may still be retried by the gateway, and review is
     // intentionally ambiguous; neither may create a parallel collection path.
-    return in_array($subscriptionStatus,['billing_suspended','cancelled'],true);
+    return in_array($subscriptionStatus,['billing_suspended','cancelled','reversal_recovery'],true);
 }
 
 function license_financing_rights(bool $resale,bool $distribution,bool $exclusiveResale,bool $exclusiveDistribution):array{
