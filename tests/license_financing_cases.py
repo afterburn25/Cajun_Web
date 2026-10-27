@@ -30,11 +30,27 @@ def run_browser(env,browser):
               result.returncode==0 and result.stderr=='')
         return json.loads(result.stdout)
 
+    initial=fixture('setup-initial','0')
+    validate=base+'/existing/api/validate.php'
+    initial_denied=requests.post(validate,json={
+        'license_key':initial['license_key'],
+        'domain':initial['domain']
+    },timeout=25)
+    check('Signed financing with unpaid initial payment has its own definitive lock reason',
+          initial_denied.status_code==200
+          and initial_denied.json()=={
+              'authorized':False,
+              'error':'Financing initial payment is still required'
+          })
+    initial_page=alice.get(base+'/existing/portal/index.php?finance='+initial['offer_id'],timeout=25)
+    check('Client portal shows signed down-payment agreement and initial payment handoff',
+          'Signed by Alice Initial Payment' in initial_page.text
+          and ('Continue to initial payment' in initial_page.text or 'Prepare initial payment page' in initial_page.text))
+
     setup=fixture('setup','0')
     offer=setup['offer_id'];license_id=setup['license_id'];license_key=setup['license_key']
     domain=setup['domain']
     finance=base+'/existing/portal/index.php?finance='+offer
-    validate=base+'/existing/api/validate.php'
 
     page=alice.get(finance,timeout=25)
     check('Financing agreement is private and non-referring',
