@@ -262,10 +262,28 @@ function license_financing_sync(int $licenseId,?string $today=null):?array{
             throw new RuntimeException('Unknown financed-license state.');
         }
         [, $doc]=license_financing_schedule($plan);
+        $periods=license_financing_periods($plan,$doc);
         $evaluation=license_financing_evaluate(
-            license_financing_periods($plan,$doc),(int)$plan['installments'],(int)$plan['grace_days'],$today,false
+            $periods,(int)$plan['installments'],(int)$plan['grace_days'],$today,false
         );
-        $old=(string)$plan['state'];$next=$evaluation['state'];$now=gmdate('Y-m-d H:i:s');
+        $old=(string)$plan['state'];$next=$evaluation['state'];
+
+        // Suspension is cleared by payment, never merely by a wall-clock move
+        // backwards. Once an issued installment actually crossed its retained
+        // grace boundary, keep payment access locked while any issued financing
+        // invoice remains unpaid. A verified catch-up marks that invoice paid,
+        // allowing the same key to return to active/grace on the next sync.
+        if($old==='suspended'&&!in_array($next,['suspended','paid_off'],true)){
+            foreach($periods as $period){
+                if(!$period['paid']){
+                    $next='suspended';
+                    $evaluation['state']='suspended';
+                    break;
+                }
+            }
+        }
+
+        $now=gmdate('Y-m-d H:i:s');
         if($next==='paid_off'){
             query('UPDATE '.table('license_financing').' SET state=?,paid_off_at=?,updated_at=? WHERE license_id=? AND paid_off_at IS NULL',
                 ['paid_off',$now,$now,$licenseId]);
