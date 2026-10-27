@@ -31,5 +31,22 @@ function license_financing_schema(string $prefix):array{
             'FOREIGN KEY (schedule_id) REFERENCES '.$t('recurring_billing_schedules').'(id) ON DELETE RESTRICT,'.
             'FOREIGN KEY (created_by) REFERENCES '.$t('users').'(id) ON DELETE RESTRICT'.
             ')'.$engine,
+        'license_financing_rights_grants'=>'CREATE TABLE '.$t('license_financing_rights_grants').' ('.
+            'id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,'.
+            'license_id INT UNSIGNED NOT NULL,'.
+            'invoice_id INT UNSIGNED NOT NULL,'.
+            'allow_resale TINYINT NOT NULL DEFAULT 0,'.
+            'allow_distribution TINYINT NOT NULL DEFAULT 0,'.
+            'exclusive_resale TINYINT NOT NULL DEFAULT 0,'.
+            'exclusive_distribution TINYINT NOT NULL DEFAULT 0,'.
+            'evidence VARCHAR(200) NOT NULL,'.
+            'granted_by INT UNSIGNED NOT NULL,'.
+            'created_at DATETIME NOT NULL,'.
+            'UNIQUE KEY invoice_once(invoice_id),'.
+            'INDEX license_history(license_id,id),'.
+            'FOREIGN KEY (license_id) REFERENCES '.$t('website_licenses').'(id) ON DELETE RESTRICT,'.
+            'FOREIGN KEY (invoice_id) REFERENCES '.$t('studio_invoices').'(id) ON DELETE RESTRICT,'.
+            'FOREIGN KEY (granted_by) REFERENCES '.$t('users').'(id) ON DELETE RESTRICT'.
+            ')'.$engine,
     ];
 }
