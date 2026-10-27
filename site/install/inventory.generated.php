@@ -374,7 +374,7 @@ function setup_expected_files(): array { return [
     'database/migrations/ledger_migrate.php'=>'5a688b960a80f4bbff197610e343f62803be4a60983186b6cc9a68b3b9527978',
     'database/migrations/license_finance_gateway_migrate.php'=>'9d6b4d59041451a595f6698b053418783d0e8ad673914971cebdf3d0fe308ab5',
     'database/migrations/license_finance_offers_migrate.php'=>'5898f32e381a565b40eb09f70e2d119244759a73b9c21f6e9e662354bd6afdd2',
-    'database/migrations/license_financing_migrate.php'=>'7c35709661f7880a028a95863a5660124ab14fc6ac4197e4d10fc56a8a7a2b3c',
+    'database/migrations/license_financing_migrate.php'=>'632d0fbac7ea58a8ed3a22aad20356e6b89b21e3c6fd7ce7a067307abf3d77b3',
     'database/migrations/license_migrate.php'=>'e50f345d20b0bf33e34925142a1a15c94b1d9f112e49bb8ada17362199e1d8e9',
     'database/migrations/mail_accounts_migrate.php'=>'2734d3c86c213da8da4f7c3cae659a3945cf04e0db724e66dd147c7a6d6b1e31',
     'database/migrations/mail_connections_migrate.php'=>'95e251346117567755caf4e6c4dbf169ba0d87b1c173779d4551163931f4b20d',
