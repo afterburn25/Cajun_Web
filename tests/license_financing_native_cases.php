@@ -117,6 +117,45 @@ rb_ok('Delayed down-payment setup creates one exact initial invoice and one reus
     &&(int)query('SELECT COUNT(*) FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=?',
         [(int)$downInvoice['id'],'financing'])->fetchColumn()===1);
 
+$downReceipt=ledger_insert($downInvoice,1,'manual',2000,'synthetic',
+    'Synthetic verified financing down payment',gmdate('Y-m-d'),null,null,
+    hash('sha256','finance-native-down-payment-'.$downInvoice['id']));
+query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
+    ['paid','Synthetic down-payment receipt '.$downReceipt,gmdate('Y-m-d H:i:s'),$downInvoice['id']]);
+query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",
+    [$downInvoice['id']]);
+$downActive=license_financing_sync($downLicense);
+rb_ok('Verified initial financing payment activates the retained financed license',
+    ($downActive['state']??'')==='active'&&license_financing_authorized($downLicense)===true);
+
+$downPaidInvoice=ledger_invoice((int)$downInvoice['id']);
+$downReversal=ledger_reverse(
+    $downReceipt,
+    'Synthetic financing down-payment correction before payoff',
+    hash('sha256','finance-native-down-reversal-'.$downReceipt),
+    ledger_review_hash($downPaidInvoice),
+    $password
+);
+$downReopened=license_financing_plan($downLicense);
+rb_ok('Reversing the initial payment before payoff immediately restores the initial-payment lock',
+    $downReversal>0
+    &&($downReopened['state']??'')==='pending_initial'
+    &&license_financing_access($downLicense)===[
+        'authorized'=>false,'state'=>'pending_initial','reason'=>'Financing initial payment is still required'
+    ]);
+
+$downInvoiceAgain=ledger_invoice((int)$downInvoice['id']);
+$downRepayment=ledger_insert($downInvoiceAgain,1,'manual',2000,'synthetic',
+    'Synthetic replacement financing down payment',gmdate('Y-m-d'),null,null,
+    hash('sha256','finance-native-down-repayment-'.$downInvoice['id']));
+query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
+    ['paid','Synthetic replacement down-payment receipt '.$downRepayment,gmdate('Y-m-d H:i:s'),$downInvoice['id']]);
+$downRestored=license_financing_sync($downLicense);
+rb_ok('Replacement initial payment restores the same financed license and key',
+    ($downRestored['state']??'')==='active'
+    &&license_financing_authorized($downLicense)===true
+    &&license_get($downKey)['license_key']===$downKey);
+
 // The legal signature commits before payment request preparation. Simulate a
 // transient ledger-readiness outage at that later boundary and prove recovery
 // reuses the one retained initial invoice without a second signature.
