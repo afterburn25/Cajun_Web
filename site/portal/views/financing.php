@@ -92,15 +92,18 @@ function license_finance_portal_render(?array $client,string $id,string $error='
             }
         }
         if($financeSub)echo '<p><strong>Automatic installments:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financeSub['status']))).($financeSub['gateway_subscription_id']!==null?' · gateway subscription '.esc((string)$financeSub['gateway_subscription_id']):'').'</p>';
-        if($financeSub&&$financeSub['status']==='billing_suspended'){
+        if($financeSub&&license_financing_recovery_link_allowed((string)$financeSub['status'])){
             $recovery=one('SELECT p.* FROM '.table('payment_requests').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.purpose=? AND p.status=? ORDER BY r.period_index,p.id DESC LIMIT 1',
                 [$row['schedule_id'],'financing','prepared']);
             $recoveryUrl=null;
             if($recovery){
                 try{$recoveryUrl=payments_link_url($recovery);}catch(Throwable){$recoveryUrl=null;}
-                if($recoveryUrl!==null)echo '<p class="notice warning">Automatic financing billing is suspended. <a href="'.esc($recoveryUrl).'">Pay the overdue installment securely</a> to restore the financed license first.</p>';
+                if($recoveryUrl!==null){
+                    $label=$financeSub['status']==='cancelled'?'Automatic financing billing is cancelled.':'Automatic financing billing is suspended.';
+                    echo '<p class="notice warning">'.esc($label).' <a href="'.esc($recoveryUrl).'">Pay the overdue installment securely</a> to restore the financed license first.</p>';
+                }
             }
-            if($recoveryUrl===null&&$financeGateway&&$financePlan&&in_array((string)$financePlan['state'],['active','grace'],true)){
+            if($financeSub['status']==='billing_suspended'&&$recoveryUrl===null&&$financeGateway&&$financePlan&&in_array((string)$financePlan['state'],['active','grace'],true)){
                 try{$replacement=license_finance_subscription_replacement_contract($row);}catch(Throwable){$replacement=null;}
                 if($replacement){
                     echo '<h3>Restore automatic installment payments</h3>';
