@@ -48,6 +48,10 @@ if($softwareReady){
 }
 $financeCandidates=$financeOffersReady?license_finance_offer_candidates():[];
 $financeOffers=$financeOffersReady?license_finance_offer_list_admin():[];
+$financeSchedulerLastRun=$financeOffersReady?(int)setting('finance_scheduler_last_run'):0;
+$financeSchedulerLastSuccess=$financeOffersReady?(int)setting('finance_scheduler_last_success'):0;
+$financeSchedulerLastState=$financeOffersReady?(string)setting('finance_scheduler_last_state'):'';
+$financeSchedulerLastErrors=$financeOffersReady?(int)setting('finance_scheduler_last_errors'):0;
 $financeChargeReviews=$financeGatewayReady?all('SELECT ch.invoice_id,ch.status,ch.transaction_id,o.title,c.name FROM '.table('license_finance_charges').' ch JOIN '.table('license_finance_offers').' o ON o.id=ch.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE ch.status IN (?,?,?) ORDER BY ch.id DESC LIMIT 30',['processing','uncertain','review']):[];
 $financeSubscriptionReviews=$financeGatewayReady?all('SELECT s.offer_id,s.gateway_subscription_id,s.status,o.title,c.name FROM '.table('license_finance_subscriptions').' s JOIN '.table('license_finance_offers').' o ON o.id=s.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE s.status IN (?,?,?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',['creating','replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery']):[];
 $financeMailAccounts=[];
@@ -101,6 +105,21 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php if($os==='offered'): ?><form method="post"><?php admin_action('studio_license_finance_offer_withdraw'); ?><input type="hidden" name="finance_id" value="<?=esc($o['id'])?>"><?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Withdraw unsigned offer</button></form><?php endif; ?>
 <?php if(in_array($os,['offered','signed'],true)&&$financeMailAccounts): ?><form method="post"><?php admin_action('studio_license_finance_offer_email'); ?><input type="hidden" name="finance_id" value="<?=esc($o['id'])?>"><label>Send from<select name="sender" required><?php foreach($financeMailAccounts as $m): ?><option value="<?=esc($m['id'].':'.$m['revision'])?>"><?=esc($m['label'].' · '.$m['address'])?></option><?php endforeach; ?></select></label><button class="btn outline">Prepare agreement email</button></form><?php endif; ?>
 </article><?php endforeach; ?></section>
+
+<section class="workspace-card"><h2>Financing automation</h2>
+<p>Preferred shared-host scheduler: <code><?=esc(CWP_CODE_ROOT.'/app/jobs/run.php')?></code>. Run it at least daily; the existing combined worker automatically includes financing after this feature is prepared. Use <code><?=esc(CWP_CODE_ROOT.'/app/jobs/finance.php')?></code> only as a dedicated fallback and do not schedule both.</p>
+<?php if($financeSchedulerLastRun<1): ?>
+<p class="notice warning"><strong>No financing scheduler run has been observed.</strong> Configure the shared-host cron before relying on automatic installment issuance, grace-period suspension, recovery links, or payoff completion.</p>
+<?php else: $financeSchedulerAge=max(0,time()-$financeSchedulerLastRun); ?>
+<p>Last scheduler run: <strong><?=esc(gmdate('Y-m-d H:i:s',$financeSchedulerLastRun))?> UTC</strong> · state <strong><?=esc($financeSchedulerLastState?:'unknown')?></strong> · errors <strong><?=$financeSchedulerLastErrors?></strong><?php if($financeSchedulerLastSuccess>0): ?> · last success <strong><?=esc(gmdate('Y-m-d H:i:s',$financeSchedulerLastSuccess))?> UTC</strong><?php endif; ?></p>
+<?php if($financeSchedulerLastState==='partial'||$financeSchedulerLastErrors>0): ?>
+<p class="notice error">The latest financing scheduler run needs owner review. Automatic financing state may be incomplete until the underlying error is resolved and the worker succeeds.</p>
+<?php elseif($financeSchedulerAge>129600): ?>
+<p class="notice warning">The last observed financing scheduler run is more than 36 hours old. Check the hosting cron before relying on payment suspension or payoff automation.</p>
+<?php else: ?>
+<p class="notice info">Financing scheduler activity has been observed recently.</p>
+<?php endif; endif; ?>
+</section>
 <?php endif; ?>
 
 <?php if($financeOffersReady&&!$financeGatewayReady): ?>
@@ -109,7 +128,6 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <section class="workspace-card"><h2>Financing payment status</h2><p>Unified Authorize.Net mode: <strong><?=esc((string)setting('software_gateway_mode','disabled'))?></strong>.</p>
 <?php $fCode=defined('CWP_FINANCE_PRODUCTION_PAYMENTS')&&CWP_FINANCE_PRODUCTION_PAYMENTS===true;$fReview=setting('finance_gateway_production_reviewed')==='1'; ?>
 <p><strong><?=$fCode?'Finance code gate enabled':'Finance code gate locked'?></strong> · <strong><?=$fReview?'Owner review recorded':'Owner review not recorded'?></strong>.</p>
-<p>Shared-host scheduler: <code><?=esc(CWP_CODE_ROOT.'/app/jobs/run.php')?></code>. The existing combined worker automatically includes financing after this feature is prepared, so installments, grace, suspension, and payoff continue without an interactive session. Use <code><?=esc(CWP_CODE_ROOT.'/app/jobs/finance.php')?></code> only as a dedicated fallback; do not schedule both.</p>
 <form method="post"><?php admin_action('studio_license_finance_gateway_review'); ?><label class="check"><input type="checkbox" name="confirm" value="1" <?=$fReview?'checked':''?>>Financing-production review completed; I understand this alone does not enable live charging.</label><?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Save financing production review</button></form></section>
 <?php endif; ?>
 <?php if($financeGatewayReady): ?>
