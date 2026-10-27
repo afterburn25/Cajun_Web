@@ -79,7 +79,7 @@ Finance production charging remains independently fail-closed. It requires the n
 
 ## Automatic installment issuance and recovery
 
-The preferred CLI-only shared-host worker is the existing `app/jobs/run.php`. It now invokes financing automatically after financed-site licensing is explicitly prepared, while preserving its historical provider-only output on installations where financing is not prepared. This avoids a second required cron entry. `app/jobs/finance.php` remains an argument-free dedicated fallback for hosts that need a separate job; configure one path or the other, not both. Neither worker prints customer/payment details.
+The preferred CLI-only shared-host worker is the existing `app/jobs/run.php`. It now invokes financing automatically after financed-site licensing is explicitly prepared, while preserving its historical provider-only output on installations where financing is not prepared. This avoids a second required cron entry. `app/jobs/finance.php` remains an argument-free dedicated fallback for hosts that need a separate job; configure one path or the other, not both. Neither worker prints customer/payment details. Each prepared financing run stores only bounded operational health (`last_run`, `last_success`, state, and error count); the owner licensing screen warns when no run has ever been observed, when the latest run is partial, or when scheduler evidence is more than 36 hours old.
 
 For each signed, unpaid finance agreement the worker:
 
