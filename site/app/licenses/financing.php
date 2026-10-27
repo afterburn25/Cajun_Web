@@ -213,23 +213,41 @@ function license_financing_sync(int $licenseId,?string $today=null):?array{
             if((string)$plan['state']!=='paid_off')throw new RuntimeException('Paid-off financing state is inconsistent.');
             $result=$plan;return;
         }
-        if((string)$plan['state']==='pending_initial'){
-            $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
-                [config()['db']['prefix'].'license_finance_offers']);
-            if(!$offerTable)throw new RuntimeException('Signed financing offer storage is unavailable.');
-            $offer=one('SELECT activation_invoice_id,initial_payment_cents,status FROM '.table('license_finance_offers').' WHERE license_id=? AND schedule_id=? ORDER BY created_at DESC LIMIT 1',
-                [$licenseId,$plan['schedule_id']]);
-            if(!$offer||(string)$offer['status']!=='signed'||(int)$offer['initial_payment_cents']<1||$offer['activation_invoice_id']===null){
-                throw new RuntimeException('Initial financing payment history is incomplete.');
-            }
-            $initial=ledger_invoice((int)$offer['activation_invoice_id']);$balance=ledger_balance($initial);
-            if($initial['status']!=='paid'||(int)$balance['due_cents']!==0){
+        $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+            [config()['db']['prefix'].'license_finance_offers']);
+        $signedOffer=$offerTable?one(
+            'SELECT activation_invoice_id,initial_payment_cents,status FROM '.table('license_finance_offers').
+            ' WHERE license_id=? AND schedule_id=? ORDER BY created_at DESC LIMIT 1',
+            [$licenseId,$plan['schedule_id']]
+        ):null;
+        if($signedOffer&&(string)$signedOffer['status']==='signed'&&(int)$signedOffer['initial_payment_cents']>0){
+            if($signedOffer['activation_invoice_id']===null){
+                if((string)$plan['state']!=='pending_initial')throw new RuntimeException('Initial financing invoice history is incomplete.');
                 $result=$plan;return;
             }
-            query('UPDATE '.table('license_financing').' SET state=?,updated_at=? WHERE license_id=?',
-                ['active',gmdate('Y-m-d H:i:s'),$licenseId]);
-            license_audit(0,'financing.initial.paid','License '.$licenseId.' initial financing payment verified; installment financing activated');
-            $plan['state']='active';
+            $initial=ledger_invoice((int)$signedOffer['activation_invoice_id']);$initialBalance=ledger_balance($initial);
+            $initialPaid=$initial['status']==='paid'&&(int)$initialBalance['due_cents']===0
+                &&(int)$initialBalance['paid_cents']===(int)$initial['amount_cents'];
+            if(!$initialPaid){
+                if((string)$plan['state']!=='pending_initial'){
+                    $now=gmdate('Y-m-d H:i:s');
+                    query('UPDATE '.table('license_financing').' SET state=?,updated_at=? WHERE license_id=?',
+                        ['pending_initial',$now,$licenseId]);
+                    license_audit(0,'financing.initial.reopened',
+                        'License '.$licenseId.' initial financing payment is no longer fully paid; payment lock restored');
+                    $plan['state']='pending_initial';$plan['updated_at']=$now;
+                }
+                $result=$plan;return;
+            }
+            if((string)$plan['state']==='pending_initial'){
+                $now=gmdate('Y-m-d H:i:s');
+                query('UPDATE '.table('license_financing').' SET state=?,updated_at=? WHERE license_id=?',
+                    ['active',$now,$licenseId]);
+                license_audit(0,'financing.initial.paid','License '.$licenseId.' initial financing payment verified; installment financing activated');
+                $plan['state']='active';$plan['updated_at']=$now;
+            }
+        }elseif((string)$plan['state']==='pending_initial'){
+            throw new RuntimeException('Initial financing payment history is incomplete.');
         }
         if(!in_array((string)$plan['state'],['active','grace','suspended'],true)){
             throw new RuntimeException('Unknown financed-license state.');
