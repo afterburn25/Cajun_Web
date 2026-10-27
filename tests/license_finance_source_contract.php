@@ -20,11 +20,22 @@ fc_ok(!str_contains($admin,'.number_format($candidate'),'No corrupted financing 
 fc_ok(str_contains($admin,"'replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery'"),
     'Owner reconciliation queue includes interrupted replacement, lifecycle and verified-reversal recovery states');
 
+fc_ok(str_contains($admin,'Commercial rights are not included in financing.')
+    &&!str_contains($admin,'Grant resale rights')
+    &&!str_contains($admin,'Grant distribution rights'),
+    'Initial finance agreement UI is site-use only and cannot pre-grant commercial rights');
+
 $controller=fc_file('site/admin/controllers/studio.php');
 fc_ok(str_contains($controller,'Direct financing binding is retired'),'Unsigned direct financing binding is blocked');
 fc_ok(str_contains($controller,'studio_license_finance_gateway_setup'),'Finance gateway setup action is wired');
 fc_ok(str_contains($controller,'studio_license_finance_charge_reconcile'),'Finance one-time reconciliation is wired');
 fc_ok(str_contains($controller,'studio_license_finance_subscription_reconcile'),'Finance subscription reconciliation is wired');
+
+fc_ok(substr_count($controller,"'resale'=>false")===1
+    &&substr_count($controller,"'distribution'=>false")===1
+    &&substr_count($controller,"'exclusive_resale'=>false")===1
+    &&substr_count($controller,"'exclusive_distribution'=>false")===1,
+    'Finance-offer controller always creates site-use-only agreements');
 
 $bundleDownload=fc_file('site/api/bundle-download.php');
 $workspace=fc_file('site/portal/views/workspace.php');
@@ -68,6 +79,10 @@ $offers=fc_file('site/app/licenses/financing_offers.php');
 fc_ok(str_contains($offers,"?'pending_initial':'active'"),'Down-payment agreements begin payment-locked');
 fc_ok(str_contains($offers,'signed_terms_sha256')&&str_contains($offers,'signature_evidence_hash'),
     'Electronic signature binds exact finance terms and evidence hash');
+
+fc_ok(str_contains($offers,'Initial financing agreements are site-use only.')
+    &&str_contains($offers,'This finance agreement contains legacy commercial rights.'),
+    'Service boundary and signature path refuse unpaid commercial rights in finance offers');
 
 $licenseApi=fc_file('site/api/handlers/license.php');
 fc_ok(strpos($licenseApi,'license_domain_authorized($license, $domain)')
