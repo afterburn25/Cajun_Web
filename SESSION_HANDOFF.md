@@ -317,3 +317,9 @@ The final licensing recovery correction also checks surviving audit history when
 
 - Audit fix ported: `64a481f8` (binary collations + detail index) + `96851fc2` (link_events); `cb8d2b91` subsumed. Also re-anchored the `inventory.generated.php` contract pin (`50c1a3f0`) — this branch's contract pins it in source_sha256. Contract 360/360, canonical refresh clean.
 - Rerun dispatched: `40137290812` on `50c1a3f0` (earlier `40137144539` cancelled — it would have failed the stale pin).
+
+### 2026-10-26 — native failure classified: transient read timeout, not a defect
+
+Run `40188491299` (head `edcd8483`) failed its `native-and-browser` leg after ~5.7h. Log inspection: the full PASS dump flushed at step end; exactly one entry is `ConnectionError(ReadTimeoutError("HTTPConnectionPool(host='127.0.0.1', port=8091): Read timed out."))`, positioned between the adjacent `provider_settings_cases.py` checks "Provider fixture stays clean after cloud reads" (line 271) and "Cloud inventory owner uses exactly five retained reads" (line 273) — an HTTP request in the cloud-relink/unlink block (lines 264–270: `alice.get`/`bob.get`/`inv_post`) stalled once against the PHP dev server.
+
+The test sessions are bare `requests.Session()` with no configured timeout/retry — a single stalled read against a single-process dev server under account-wide runner saturation. Classification: **infrastructure flake, not an application or fixture defect.** No code fix ported; adding retries would mask real hangs. Implication: rerun under a drained queue is materially more likely to pass; held for capacity, not for correction. All other checks in the leg passed.
