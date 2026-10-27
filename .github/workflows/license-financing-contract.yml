@@ -27,6 +27,9 @@ on:
       - 'tests/license_financing_policy.php'
       - 'tests/license_financing_native_cases.php'
       - 'tests/license_finance_source_contract.php'
+      - 'tests/license_financing_browser_fixture.php'
+      - 'tests/license_financing_cases.py'
+      - 'tests/browser_acceptance.py'
       - '.github/workflows/license-financing-contract.yml'
   workflow_dispatch:
 permissions:
@@ -61,6 +64,8 @@ jobs:
           php -l tests/license_financing_policy.php
           php -l tests/license_financing_native_cases.php
           php -l tests/license_finance_source_contract.php
+          php -l tests/license_financing_browser_fixture.php
+          python3 -m py_compile tests/license_financing_cases.py tests/browser_acceptance.py
       - name: Run pure financing state policy
         run: php tests/license_financing_policy.php
       - name: Run financing integration source contract
