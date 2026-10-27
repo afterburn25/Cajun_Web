@@ -47,11 +47,30 @@ function license_finance_gateway_schema(string $prefix):array{
             'interval_months INT UNSIGNED NOT NULL,'.
             'amount_cents INT UNSIGNED NOT NULL,'.
             'total_occurrences INT UNSIGNED NOT NULL,'.
+            'period_offset INT UNSIGNED NOT NULL DEFAULT 0,'.
+            'replacement_count INT UNSIGNED NOT NULL DEFAULT 0,'.
             'start_date VARCHAR(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,'.
             'status VARCHAR(25) NOT NULL,'.
             'created_at DATETIME NOT NULL,'.
             'updated_at DATETIME NOT NULL,'.
             'INDEX status_lookup(status),'.
+            'FOREIGN KEY (offer_id) REFERENCES '.$t('license_finance_offers').'(id) ON DELETE RESTRICT'.
+            ')'.$e,
+        'license_finance_subscription_history'=>'CREATE TABLE '.$t('license_finance_subscription_history').' ('.
+            'id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,'.
+            'offer_id CHAR(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,'.
+            'gateway_subscription_id VARCHAR(25) NOT NULL UNIQUE,'.
+            'customer_profile_id VARCHAR(20) NOT NULL,'.
+            'payment_profile_id VARCHAR(20) NOT NULL,'.
+            'interval_months INT UNSIGNED NOT NULL,'.
+            'amount_cents INT UNSIGNED NOT NULL,'.
+            'total_occurrences INT UNSIGNED NOT NULL,'.
+            'period_offset INT UNSIGNED NOT NULL,'.
+            'start_date VARCHAR(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,'.
+            'terminal_status VARCHAR(25) NOT NULL,'.
+            'replaced_by_gateway_subscription_id VARCHAR(25) NULL,'.
+            'replaced_at DATETIME NOT NULL,'.
+            'INDEX offer_lookup(offer_id,id),'.
             'FOREIGN KEY (offer_id) REFERENCES '.$t('license_finance_offers').'(id) ON DELETE RESTRICT'.
             ')'.$e,
         'license_finance_subscription_receipts'=>'CREATE TABLE '.$t('license_finance_subscription_receipts').' ('.
