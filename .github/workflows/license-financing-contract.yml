@@ -24,6 +24,7 @@ on:
       - 'site/portal/controllers/actions.php'
       - 'site/api/handlers/license.php'
       - 'tests/license_financing_policy.php'
+      - 'tests/license_financing_native_cases.php'
       - 'tests/license_finance_source_contract.php'
       - '.github/workflows/license-financing-contract.yml'
   workflow_dispatch:
@@ -57,6 +58,7 @@ jobs:
           php -l site/portal/views/financing.php
           php -l site/api/handlers/license.php
           php -l tests/license_financing_policy.php
+          php -l tests/license_financing_native_cases.php
           php -l tests/license_finance_source_contract.php
       - name: Run pure financing state policy
         run: php tests/license_financing_policy.php
