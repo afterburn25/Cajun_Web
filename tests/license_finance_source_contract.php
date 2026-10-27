@@ -52,6 +52,29 @@ $finance=fc_file('site/app/licenses/financing.php');
 fc_ok(str_contains($finance,"['pending_initial','suspended']"),'Initial-payment and delinquency states both deny payment-dependent authority');
 fc_ok(str_contains($finance,"state='paid_off'")||str_contains($finance,"['paid_off'"),'Paid-off state is retained as a one-way financing boundary');
 
+$financeSchema=fc_file('site/database/schema/license_finance_gateway_schema.php');
+$financeMigration=fc_file('site/database/migrations/license_finance_gateway_migrate.php');
+$financeSubscription=fc_file('site/app/billing/finance_subscription.php');
+$financePortal=fc_file('site/portal/views/financing.php');
+$portalActions=fc_file('site/portal/controllers/actions.php');
+fc_ok(str_contains($financeSchema,'license_finance_subscription_history')
+    &&str_contains($financeSchema,'period_offset')&&str_contains($financeSchema,'replacement_count'),
+    'Finance gateway v2 retains replaced subscription identities and period offsets');
+fc_ok(str_contains($financeMigration,"license_finance_gateway_schema_version','2'")
+    &&str_contains($financeMigration,'license_finance_gateway_upgrade_v2'),
+    'Finance gateway storage upgrades existing v1 data additively to v2');
+fc_ok(str_contains($financeSubscription,'license_finance_subscription_reenroll_opaque')
+    &&str_contains($financeSubscription,'license_finance_subscription_replacement_finalize')
+    &&str_contains($financeSubscription,'historical_subscription_transaction')
+    &&str_contains($financeSubscription,'period_offset'),
+    'Suspended financing subscriptions can be replaced without replaying earlier installments');
+fc_ok(str_contains($financePortal,'finance_subscription_reenroll')
+    &&str_contains($financePortal,'preserve it in history')
+    &&str_contains($financePortal,'authorize_net_security_headers'),
+    'Client finance portal exposes caught-up replacement enrollment under payment CSP');
+fc_ok(str_contains($portalActions,"$action==='finance_subscription_reenroll'"),
+    'Client financing replacement action is wired through authenticated portal handling');
+
 $job=fc_file('site/app/jobs/finance.php');
 fc_ok(str_contains($job,"PHP_SAPI!=='cli'")&&str_contains($job,'takes no arguments'),'Finance worker is CLI-only and argument-free');
 fc_ok(str_contains(fc_file('site/app/licenses/finance_installments.php'),'finance_scheduler_cursor'),
