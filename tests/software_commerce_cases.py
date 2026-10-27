@@ -161,6 +161,15 @@ def run_browser(env, browser):
           'Live payments remain gated' in refused.text
           and db("SELECT value FROM ci_settings WHERE name='software_gateway_mode' AND value='production'")==[])
 
+    review_page=admin.get(licenses,timeout=25)
+    review_form=_action_form(soup,review_page,'software_gateway_production_review')
+    review_data=form_data(review_form)
+    review_data.update({'confirm':'1','current_password':OWNER})
+    review_refused=admin.post(licenses,data=review_data,timeout=25)
+    check('Software production review cannot be recorded while the code gate is locked',
+          'code-level software production-payment gate is still locked' in review_refused.text
+          and db("SELECT value FROM ci_settings WHERE name='software_gateway_production_reviewed' AND value='1'")==[])
+
     def fixture(operation, value=0):
         result=subprocess.run(
             [php,str(root/'tests/software_commerce_browser_fixture.php'),operation,str(value)],
