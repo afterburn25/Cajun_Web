@@ -82,8 +82,8 @@ fc_ok(str_contains($finance,"state='paid_off'")||str_contains($finance,"'paid_of
     'Paid-off state is retained as a one-way financing boundary');
 fc_ok(str_contains($finance,'license_financing_rights_grants')
     &&str_contains($finance,'rightsInvoiceId')
-    &&str_contains($finance,'normal financing installment cannot be reused')===false
     &&str_contains($finance,'A normal financing installment cannot be reused as payment for commercial rights.')
+    &&str_contains($finance,'A financing down payment cannot be reused as payment for commercial rights.')
     &&str_contains($finance,'This paid commercial-rights invoice has already been consumed'),
     'Post-sale commercial rights require a separate single-use paid invoice');
 
