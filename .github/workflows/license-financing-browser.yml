@@ -13,6 +13,8 @@ on:
       - 'site/app/billing/recurring_billing*.php'
       - 'site/app/billing/ledger.php'
       - 'site/portal/views/financing.php'
+      - 'site/includes/layout/deliveries.php'
+      - 'site/app/projects/deliveries.php'
       - 'site/portal/controllers/actions.php'
       - 'site/api/handlers/license.php'
       - 'site/database/schema/license_financ*.php'

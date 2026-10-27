@@ -20,6 +20,8 @@ on:
       - 'site/database/migrations/license_finance_offers_migrate.php'
       - 'site/database/migrations/license_finance_gateway_migrate.php'
       - 'site/portal/views/financing.php'
+      - 'site/includes/layout/deliveries.php'
+      - 'site/app/projects/deliveries.php'
       - 'site/admin/controllers/studio.php'
       - 'site/admin/views/studio/licenses.php'
       - 'site/portal/controllers/actions.php'

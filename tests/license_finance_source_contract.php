@@ -28,6 +28,8 @@ fc_ok(str_contains($controller,'studio_license_finance_subscription_reconcile'),
 
 $bundleDownload=fc_file('site/api/bundle-download.php');
 $workspace=fc_file('site/portal/views/workspace.php');
+$deliveries=fc_file('site/app/projects/deliveries.php');
+$deliveryLayout=fc_file('site/includes/layout/deliveries.php');
 fc_ok(str_contains($bundleDownload,'license_financing_access((int)$bundle[\'license_id\'])')
     &&str_contains($bundleDownload,"http_response_code(503)")
     &&str_contains($bundleDownload,"!$financing['authorized']"),
@@ -35,6 +37,13 @@ fc_ok(str_contains($bundleDownload,'license_financing_access((int)$bundle[\'lice
 fc_ok(str_contains($workspace,"['active','grace','paid_off']")
     &&str_contains($workspace,'Website bundle downloads are paused until financing access is current'),
     'Client workspace hides financed website bundles while payment access is locked');
+fc_ok(str_contains($deliveries,'function delivery_financing_access')
+    &&substr_count($deliveries,'delivery_financing_access(')>=3
+    &&str_contains($deliveries,'Financing access is locked.'),
+    'Published project release streaming rechecks financed-license access before file delivery');
+fc_ok(str_contains($deliveryLayout,'Website release download is paused until financing access is current')
+    &&str_contains($deliveryLayout,'Website release download is paused while financing status is reviewed'),
+    'Project release UI hides financed downloads while payment access is locked or uncertain');
 
 $payments=fc_file('site/app/billing/payments.php');
 fc_ok(str_contains($payments,"r['purpose']==='financing'"),'Online checkout is scoped to financing payment requests');
