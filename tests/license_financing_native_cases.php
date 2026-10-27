@@ -30,6 +30,15 @@ $offeredSchedule=recurring_billing_offer($fields);
 rb_ok('Financing native schedule begins as exact future offered terms',
     $offeredSchedule->phase()==='offered'&&$offeredSchedule->data()['terms']['anchor']===$fields['anchor']);
 
+rb_deny('Initial financing agreement cannot grant resale or distribution rights before separate paid evidence',
+    fn()=>license_finance_offer_create(
+        $licenseId,rb_id(9100),'Synthetic financed website with premature resale',
+        10000,0,10000,0,0,4,5,1,7,
+        ['resale'=>true,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+        'Synthetic financed-site agreement that must remain site-use only until separate commercial-rights payment is verified.',
+        $password
+    ));
+
 $offer=license_finance_offer_create(
     $licenseId,rb_id(9100),'Synthetic financed website',
     10000,0,10000,0,0,4,5,1,7,
