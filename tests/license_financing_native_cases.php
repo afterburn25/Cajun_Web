@@ -79,8 +79,8 @@ rb_ok('Signed zero-down financing begins active on the same website license',
 $zeroKey=license_create(1,'WEBSITE-FINANCE-ZERO-NOPAY',1,false,null);
 $zeroLicense=(int)license_get($zeroKey)['id'];
 license_register_domain($zeroLicense,'finance-zero-nopay.example',1);
-rb_historical_source(9001,2500);
-$zeroFields=rb_fields(9101,9001);
+rb_historical_source(9010,2500);
+$zeroFields=rb_fields(9101,9010);
 $zeroFields['anchor']=gmdate('Y-m-d',time()+3*86400);
 $zeroFields['due_after_days']=0;
 recurring_billing_offer($zeroFields);
