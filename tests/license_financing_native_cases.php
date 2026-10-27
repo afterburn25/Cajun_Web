@@ -158,3 +158,50 @@ $rights=license_financing_rights_for_license($licenseId);
 rb_ok('Default financed-site commercial rights remain site-use only after payoff',
     $rights!==null&&!$rights['resale']&&!$rights['distribution']
     &&!$rights['exclusive_resale']&&!$rights['exclusive_distribution']);
+
+$installmentRejected=false;
+try{
+    license_financing_grant_rights(
+        $licenseId,
+        ['resale'=>true,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+        $paidInvoices[0],
+        'Synthetic financing installment must not buy resale rights',
+        $password
+    );
+}catch(InvalidArgumentException|RuntimeException $expected){$installmentRejected=true;}
+rb_ok('Normal financing installment cannot be reused as commercial-rights payment',$installmentRejected);
+
+$rightsInvoiceNow=gmdate('Y-m-d H:i:s');
+query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,currency,instructions,created_at) VALUES (?,?,?,?,?,?,?)',
+    [(int)$offer['job_id'],'RIGHTS-'.strtoupper(bin2hex(random_bytes(5))),
+     'Commercial resale rights for financed license',5000,'USD',
+     'Separate paid commercial-rights addendum for financed license '.$licenseId,$rightsInvoiceNow]);
+$rightsInvoiceId=(int)db()->lastInsertId();
+$rightsInvoice=ledger_invoice($rightsInvoiceId);
+$rightsPayment=ledger_insert($rightsInvoice,1,'manual',5000,'synthetic',
+    'Synthetic paid commercial-rights invoice',gmdate('Y-m-d'),
+    null,null,hash('sha256','finance-native-rights-'.$rightsInvoiceId));
+query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
+    ['paid','Synthetic commercial-rights receipt '.$rightsPayment,gmdate('Y-m-d H:i:s'),$rightsInvoiceId]);
+$granted=license_financing_grant_rights(
+    $licenseId,
+    ['resale'=>true,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+    $rightsInvoiceId,
+    'Paid resale-rights addendum retained in the same customer invoice ledger',
+    $password
+);
+rb_ok('Separate fully paid same-customer invoice can grant post-sale resale rights',
+    (int)$granted['allow_resale']===1&&(int)$granted['allow_distribution']===0
+    &&(int)$granted['exclusive_resale']===0&&(int)$granted['exclusive_distribution']===0);
+
+$removalRejected=false;
+try{
+    license_financing_grant_rights(
+        $licenseId,
+        ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+        $rightsInvoiceId,
+        'Attempt to remove an already paid commercial right',
+        $password
+    );
+}catch(InvalidArgumentException|RuntimeException $expected){$removalRejected=true;}
+rb_ok('Paid commercial rights remain monotonic and cannot be silently removed',$removalRejected);
