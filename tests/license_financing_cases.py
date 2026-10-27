@@ -1,4 +1,5 @@
 """Installed financed-license acceptance using the real client portal and validation API."""
+import hashlib
 import json
 import os
 import subprocess
@@ -122,6 +123,15 @@ def run_browser(env,browser):
           old_domain.status_code==200 and old_domain.json()['authorized'] is False
           and new_domain.status_code==200 and new_domain.json()=={'authorized':True,'error':None})
 
+    bundle=fixture('bundle',offer)
+    bundle_url=base+'/existing/api/bundle-download.php?id='+str(bundle['bundle_id'])
+    active_bundle=alice.get(bundle_url,timeout=25)
+    check('Active financing permits the owned website bundle',
+          active_bundle.status_code==200
+          and len(active_bundle.content)==bundle['bytes']
+          and hashlib.sha256(active_bundle.content).hexdigest()==bundle['sha256']
+          and active_bundle.headers.get('Content-Type')=='application/zip')
+
     late=fixture('late',offer)
     check('Issued unpaid installment past grace moves financing to suspended',
           late['state']=='suspended')
@@ -136,6 +146,13 @@ def run_browser(env,browser):
     check('Foreign domain cannot probe a financed customer billing state',
           foreign_probe.status_code==200
           and foreign_probe.json()=={'authorized':False,'error':'Domain not registered for this license'})
+    blocked_bundle=alice.get(bundle_url,timeout=25)
+    suspended_workspace=alice.get(base+'/existing/portal/index.php',timeout=25)
+    check('Payment suspension blocks financed website bundle delivery at UI and endpoint',
+          blocked_bundle.status_code==403
+          and blocked_bundle.json()=={'error':'Financing payment is past the agreed grace period'}
+          and 'Financed browser website bundle' not in suspended_workspace.text
+          and 'Website bundle downloads are paused until financing access is current' in suspended_workspace.text)
     suspended_page=alice.get(finance,timeout=25)
     check('Client portal shows financing suspension without revoking the underlying key',
           'License financing:</strong> Suspended' in suspended_page.text
@@ -188,6 +205,10 @@ def run_browser(env,browser):
     resumed=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
     check('Catch-up payment immediately restores financed license authorization',
           resumed.status_code==200 and resumed.json()=={'authorized':True,'error':None})
+    restored_bundle=alice.get(bundle_url,timeout=25)
+    check('Catch-up restores the same financed website bundle without regenerating it',
+          restored_bundle.status_code==200
+          and hashlib.sha256(restored_bundle.content).hexdigest()==bundle['sha256'])
     replacement_page=alice.get(finance,timeout=25)
     replacement_form=_form(soup,replacement_page,'finance_subscription_reenroll')
     replacement_data=form_data(replacement_form)
@@ -207,6 +228,8 @@ def run_browser(env,browser):
     paid_page=alice.get(finance,timeout=25)
     check('Client portal clearly shows permanent financing payoff',
           'Paid Off' in paid_page.text and 'permanently paid off' in paid_page.text)
+    check('Paid-off financing leaves website bundle permanently downloadable',
+          alice.get(bundle_url,timeout=25).status_code==200)
 
     reversed_after=fixture('reverse-after-payoff',offer)
     check('Post-payoff ledger correction cannot restore the financing payment lock',
