@@ -155,6 +155,17 @@ function license_financing_grant_rights(int $licenseId,array $requested,int $rig
         foreach(['resale','distribution','exclusive_resale','exclusive_distribution'] as $name){
             if($current[$name]&&!$next[$name])throw new RuntimeException('Previously granted commercial rights cannot be removed by this workflow.');
         }
+        $adds=false;
+        foreach(['resale','distribution','exclusive_resale','exclusive_distribution'] as $name){
+            if(!$current[$name]&&$next[$name]){$adds=true;break;}
+        }
+        if(!$adds)throw new RuntimeException('Select at least one new commercial right to grant.');
+        if(one('SELECT id FROM '.table('license_financing_rights_grants').' WHERE invoice_id=? FOR UPDATE',[$rightsInvoiceId])){
+            throw new RuntimeException('This paid commercial-rights invoice has already been consumed by a rights grant.');
+        }
+        query('INSERT INTO '.table('license_financing_rights_grants').' (license_id,invoice_id,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution,evidence,granted_by,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+            [$licenseId,$rightsInvoiceId,$next['resale']?1:0,$next['distribution']?1:0,
+             $next['exclusive_resale']?1:0,$next['exclusive_distribution']?1:0,$evidence,(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
         query('UPDATE '.table('license_financing').' SET allow_resale=?,allow_distribution=?,exclusive_resale=?,exclusive_distribution=?,updated_at=? WHERE license_id=?',
             [$next['resale']?1:0,$next['distribution']?1:0,$next['exclusive_resale']?1:0,$next['exclusive_distribution']?1:0,
              gmdate('Y-m-d H:i:s'),$licenseId]);
