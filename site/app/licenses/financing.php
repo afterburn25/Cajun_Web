@@ -10,18 +10,22 @@ require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
 require_once CWP_CODE_ROOT.'/database/migrations/license_financing_migrate.php';
 
 function license_financing_table_present():bool{
-    return (bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
-        [config()['db']['prefix'].'license_financing']);
+    return license_financing_storage_table_present('license_financing');
+}
+function license_financing_rights_grants_table_present():bool{
+    return license_financing_storage_table_present('license_financing_rights_grants');
 }
 function license_financing_ready():bool{
-    return setting('license_financing_schema_version')==='1'&&license_financing_table_present();
+    return setting('license_financing_schema_version')==='2'
+        &&license_financing_table_present()&&license_financing_rights_grants_table_present();
 }
 /** Null means the feature has never been enabled. Any partial established state is an error. */
 function license_financing_feature_state():?bool{
     $version=(string)(setting('license_financing_schema_version')??'');
     $present=license_financing_table_present();
-    if($version===''&&!$present)return null;
-    if($version!=='1'||!$present)throw new RuntimeException('Financed-license storage is inconsistent. Restore the original database.');
+    $grants=license_financing_rights_grants_table_present();
+    if($version===''&&!$present&&!$grants)return null;
+    if($version!=='2'||!$present||!$grants)throw new RuntimeException('Financed-license storage is inconsistent. Restore or explicitly upgrade the database.');
     return true;
 }
 function license_financing_plan(int $licenseId):?array{
