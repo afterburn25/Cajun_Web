@@ -83,6 +83,10 @@ rb_ok('Issued unpaid installment past the five-day grace suspends payment-depend
     ($suspended['state']??'')==='suspended'
     &&(int)license_get($licenseKey)['is_active']===1
     &&($suspended['evaluation']['overdue_period']??null)===0);
+$access=license_financing_access($licenseId);
+rb_ok('Suspended financing exposes the stable delinquency denial reason',
+    $access===['authorized'=>false,'state'=>'suspended',
+        'reason'=>'Financing payment is past the agreed grace period']);
 
 query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=?',
     ['billing_suspended',gmdate('Y-m-d H:i:s'),$offer['id']]);
@@ -138,6 +142,9 @@ $paidOff=license_financing_sync($licenseId,$afterLast);
 rb_ok('All signed installments permanently unlock the financing payment dependency',
     ($paidOff['state']??'')==='paid_off'&&is_string($paidOff['paid_off_at'])&&$paidOff['paid_off_at']!==''
     &&license_financing_authorized($licenseId)===true);
+$paidAccess=license_financing_access($licenseId);
+rb_ok('Paid-off financing exposes permanent authorization with no payment denial reason',
+    $paidAccess===['authorized'=>true,'state'=>'paid_off','reason'=>null]);
 
 query('DELETE FROM '.table('invoice_payments').' WHERE invoice_id=?',[$paidInvoices[3]]);
 query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=NULL WHERE id=?',
