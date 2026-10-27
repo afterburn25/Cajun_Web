@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: package-php-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: package-php-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-history:
     name: Assigned package PHP version ${{ matrix.php }} and ${{ matrix.database.label }}

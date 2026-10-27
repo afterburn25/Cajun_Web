@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: provider-domain-search-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: provider-domain-search-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-domain-search:
     name: Domain search PHP ${{ matrix.php }} and ${{ matrix.database.label }}

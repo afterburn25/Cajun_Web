@@ -760,8 +760,8 @@
       ]
     },
     "focused_delta": {
-      "before_sha256": "bbc728b36b201b1fcc1715a907338e3f7cc60df4fb182afd9986b201b53ff8de",
-      "after_sha256": "c3376e25b04ffa3a3ade25bf0bfa5ca4a2ed5d1b33109cbb8065bc418cca7029",
+      "before_sha256": "6f94a0c4c2df77f521151efffae2c496d512507b130a75d54df358f4a3877a31",
+      "after_sha256": "2f1a03c0302c46d8ddb7364689c1b60dd2530f96fa0f9749d10e6fa336526dc1",
       "replacements": [
         {
           "before": "  push:\n    branches: [main, codex/twentyi-document-roots-observations]\n    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml']",
@@ -807,7 +807,7 @@
       "tests/subdomain_add_contract.php": "a94f5caf2d8225dc88f7265f0e49ed8f9854604dbdc9485acbc347c9b9ee8a10",
       "tests/provider_subdomain_add_native.php": "fa01543ffcd78b9cda986e6d35e290ceb9b29ab975d6b3ecb056b8a7c1d1c26e",
       "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
-      ".github/workflows/provider-document-roots.yml": "c3376e25b04ffa3a3ade25bf0bfa5ca4a2ed5d1b33109cbb8065bc418cca7029",
+      ".github/workflows/provider-document-roots.yml": "2f1a03c0302c46d8ddb7364689c1b60dd2530f96fa0f9749d10e6fa336526dc1",
       "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "site/includes/foundation/twentyi-operations/TwentyIOperationRegister.php": "33bed73aca7ce7b090bf12e3efa34adea270444d775dc1843f0966248a0dacbe",
       "site/includes/foundation/twentyi-operations/TwentyIRequestBuilder.php": "0702be07c06bffa303e3334071853a4f1506af1f3bef033e932e7744e0767ecd",
@@ -845,7 +845,7 @@
       "provider-subdomain-requests-native-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "df20b1ebe4d671164e44ee70e1d2571df87bbf9fb691890e5bbe6aff9a0daf08",
+    "predecessor_contract_sha256": "62c60d45ffec1872483dc811e831fae9f2be08576037668beeb6c2f52a2d6241",
     "predecessor_reports_sha256": "e419e9341f042c84b8cdcaf250c1bd1ffcfcc504569c1ba86e1bf2832860983e",
     "focused_path": ".github/workflows/provider-document-roots.yml",
     "source_sha256": {
@@ -884,8 +884,8 @@
       "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
       ".github/workflows/application-tests.yml": "a08e7352bb35a7b122e75ab2c27b6f623ee6240edea24d2021d30e966f625a97",
-      ".github/workflows/provider-document-roots.yml": "234e183faf3113cbf2cf50519a6a7494fb101a0140cfbc92996647797ee3f485",
-      "tests/acceptance_artifacts_test.py": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29"
+      ".github/workflows/provider-document-roots.yml": "4aa35ba9b7578c330dd1ec37a5dafdbce3e993b9c584e93b0e27553ea09e6a11",
+      "tests/acceptance_artifacts_test.py": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c"
     },
     "source_deltas": {
       ".github/workflows/application-tests.yml": {
@@ -899,8 +899,8 @@
         ]
       },
       ".github/workflows/provider-document-roots.yml": {
-        "before_sha256": "c3376e25b04ffa3a3ade25bf0bfa5ca4a2ed5d1b33109cbb8065bc418cca7029",
-        "after_sha256": "234e183faf3113cbf2cf50519a6a7494fb101a0140cfbc92996647797ee3f485",
+        "before_sha256": "2f1a03c0302c46d8ddb7364689c1b60dd2530f96fa0f9749d10e6fa336526dc1",
+        "after_sha256": "4aa35ba9b7578c330dd1ec37a5dafdbce3e993b9c584e93b0e27553ea09e6a11",
         "replacements": [
           {
             "before": "  push:\n    branches: [main, codex/twentyi-document-roots-observations]\n    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-document-roots/**', 'site/includes/foundation/twentyi-document-roots/**', 'tests/document_roots_contract.php', 'tests/document_roots_transport.php', 'tests/provider_document_roots_native.php', 'tests/provider_document_roots_cases.py', '.github/workflows/provider-document-roots.yml', 'foundation/**', 'site/app/**', 'site/includes/**', 'site/config/**', 'tests/subdomain_add_views.php', 'tests/subdomain_add_contract.php', 'tests/provider_subdomain_add_native.php', 'tests/twentyi-operations/**', 'tests/invitations/Dockerfile']",
@@ -921,8 +921,8 @@
         ]
       },
       "tests/acceptance_artifacts_test.py": {
-        "before_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-        "after_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+        "before_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+        "after_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
         "replacements": []
       },
       "site/app/providers/subdomain_add.php": {
@@ -1069,8 +1069,8 @@
           "source_sha256",
           ".github/workflows/provider-document-roots.yml"
         ],
-        "before": "c3376e25b04ffa3a3ade25bf0bfa5ca4a2ed5d1b33109cbb8065bc418cca7029",
-        "after": "c3376e25b04ffa3a3ade25bf0bfa5ca4a2ed5d1b33109cbb8065bc418cca7029"
+        "before": "2f1a03c0302c46d8ddb7364689c1b60dd2530f96fa0f9749d10e6fa336526dc1",
+        "after": "2f1a03c0302c46d8ddb7364689c1b60dd2530f96fa0f9749d10e6fa336526dc1"
       }
     ]
   },
@@ -1091,7 +1091,7 @@
       "Subdomain-Requests-Client-Observed-Desktop.png",
       "Subdomain-Requests-Client-Observed-Mobile.png"
     ],
-    "predecessor_contract_sha256": "541044b513d4b141658ab614ebaba90cf7623610531138df685269f83aaa5886",
+    "predecessor_contract_sha256": "a02380983775a02f7b49579236dd7909293657715e53a805b396528488fe074c",
     "predecessor_reports_sha256": "e4c311d5349b1d2876ea8ed1745fd67fb9d1cdaa746cde0a08cd92e98ffb491e",
     "source_sha256": {
       "site/app/providers/subdomain_requests.php": "ed7ce083ad87ace05964491f4611125bc44c37c2472bf1e00756c4e0d3d156dc",
@@ -1129,8 +1129,8 @@
       "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
       ".github/workflows/application-tests.yml": "8865953f10edc8c8f62f26ec0fc8be4760d65ba973e4b833bee55b1f99326ca7",
-      ".github/workflows/provider-document-roots.yml": "234e183faf3113cbf2cf50519a6a7494fb101a0140cfbc92996647797ee3f485",
-      "tests/acceptance_artifacts_test.py": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+      ".github/workflows/provider-document-roots.yml": "4aa35ba9b7578c330dd1ec37a5dafdbce3e993b9c584e93b0e27553ea09e6a11",
+      "tests/acceptance_artifacts_test.py": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
       "tests/browser_acceptance.py": "acb49a33cf0608fe200e1c9adba68154c83f56bcab574abcfe01be57129cbb12",
       "tests/provider_http_server.py": "bcd14a3e2336593afaf3a0c5010ccf854b88d6d98a09f043e47e0428cfbbce45",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
@@ -1148,8 +1148,8 @@
         ]
       },
       "tests/acceptance_artifacts_test.py": {
-        "before_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-        "after_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+        "before_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+        "after_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
         "replacements": []
       },
       "tests/browser_acceptance.py": {
@@ -1197,8 +1197,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-        "after": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29"
+        "before": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+        "after": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c"
       }
     ]
   },
@@ -1219,7 +1219,7 @@
       "activity-provider-merge-minimal-results.json"
     ],
     "screenshots": [],
-    "predecessor_contract_sha256": "e9fff406bca07869703196d44a5f5a304928c3c2592d44f14e59c469dd303590",
+    "predecessor_contract_sha256": "255dca9041735a7a9839acd3566f9d92d3a77cd5f91c5445a68dd2217f5f380e",
     "predecessor_reports_sha256": "fcecd58efba032e7cfdbc4a566e9fe15eb406fc64b401c89d1d60ba554e30eca",
     "source_sha256": {
       "site/app/providers/subdomain_requests.php": "ed7ce083ad87ace05964491f4611125bc44c37c2472bf1e00756c4e0d3d156dc",
@@ -1257,8 +1257,8 @@
       "site/includes/foundation/twentyi-operations/SubdomainAdd.php": "ec8f84ff098fdf4dbde3413ff8cfa6f534aa81658d7c38dc58aa868452f1cf4a",
       "tests/invitations/Dockerfile": "2f1da1742d41104cb5bf90f4c8e5df17c6261d590990805e1bc05345863cb286",
       ".github/workflows/application-tests.yml": "c22f7acadeee94b2b3f45e1222c8a885b3bdb49e27d72312b6dc7fa76b76cdd5",
-      ".github/workflows/provider-document-roots.yml": "234e183faf3113cbf2cf50519a6a7494fb101a0140cfbc92996647797ee3f485",
-      "tests/acceptance_artifacts_test.py": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+      ".github/workflows/provider-document-roots.yml": "4aa35ba9b7578c330dd1ec37a5dafdbce3e993b9c584e93b0e27553ea09e6a11",
+      "tests/acceptance_artifacts_test.py": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
       "tests/browser_acceptance.py": "acb49a33cf0608fe200e1c9adba68154c83f56bcab574abcfe01be57129cbb12",
       "tests/provider_http_server.py": "bcd14a3e2336593afaf3a0c5010ccf854b88d6d98a09f043e47e0428cfbbce45",
       "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
@@ -1287,8 +1287,8 @@
         ]
       },
       "tests/acceptance_artifacts_test.py": {
-        "before_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-        "after_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+        "before_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+        "after_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
         "replacements": []
       },
       "tests/provider_subdomain_requests_native.php": {
@@ -1467,8 +1467,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-        "after": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29"
+        "before": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+        "after": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c"
       },
       {
         "keys": [
@@ -1494,8 +1494,8 @@
           "source_sha256",
           "tests/acceptance_artifacts_test.py"
         ],
-        "before": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-        "after": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29"
+        "before": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+        "after": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c"
       },
       {
         "keys": [
@@ -1540,13 +1540,13 @@
           "tests/acceptance_artifacts_test.py"
         ],
         "before": {
-          "before_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-          "after_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+          "before_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+          "after_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
           "replacements": []
         },
         "after": {
-          "before_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-          "after_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+          "before_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+          "after_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
           "replacements": []
         }
       },
@@ -1584,13 +1584,13 @@
           "tests/acceptance_artifacts_test.py"
         ],
         "before": {
-          "before_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-          "after_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+          "before_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+          "after_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
           "replacements": []
         },
         "after": {
-          "before_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
-          "after_sha256": "9d182d697fc25909cd4ae8f49a8c70c487d3320b87b2d2fe2587e1805d661c29",
+          "before_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
+          "after_sha256": "38fc26b8784c46204fec7341e77bdc5e552c23090e1beb1f1666e159642c388c",
           "replacements": []
         }
       }

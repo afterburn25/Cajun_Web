@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: provider-cloud-sites-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: provider-cloud-sites-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-cloud-sites:
     name: Cloud websites PHP ${{ matrix.php }} and ${{ matrix.database.label }}

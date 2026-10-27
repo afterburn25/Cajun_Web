@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: document-roots-contract-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  group: document-roots-contract-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   pure-contract:

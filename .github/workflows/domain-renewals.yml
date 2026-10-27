@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: domain-renewals-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: domain-renewals-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-renewals:
     name: Domain renewal requests PHP ${{ matrix.php }} and ${{ matrix.database.label }}

@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: directory-listing-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  group: directory-listing-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-history:
     name: Assigned package directory listing ${{ matrix.php }} and ${{ matrix.database.label }}

@@ -2,6 +2,12 @@
 
 Integration branch `devin/full-site-integration` (not on main): fixed admin notification dispatch shadowing (`payments_notification_*` handled before generic feed dispatch) and removed a duplicate notification-layout `require` in the portal router. Carried the scheduling adapter contract doc onto the branch. Ported four isolated contract components onto the current tree as PRs based on the integration branch: VPS uncertainty retention (#257), SSH access model (#258), provider capability catalog (#259) and the domain commerce model (#260) — local suites pass 311/70/50+171/81 checks respectively; hosted runs pending. No main merge, release or deployment.
 
+## Unreleased — CI queue hygiene
+
+- Fixed development-check workflow concurrency: per-`github.sha` groups (which made `cancel-in-progress` a no-op) replaced with per-PR/per-branch groups; superseded dev runs now cancel automatically while `main` pushes serialize.
+- Added `tools/ci_health.py`, a weekly `ci-health` snapshot workflow, and `docs/CI_HEALTH.md` diagnosis rules.
+- Release certification, acceptance and diagnostic workflows remain non-canceling.
+
 ## Unreleased — 20i password-reset email template
 
 - Added owner-only reading, replacement review, password-confirmed save and separate readback for the documented StackCP reset email template.

@@ -510,7 +510,7 @@ def subdomain_add_checks(tmp,launch):
     prior_focused=subdomain_add_inverse(focused,launch['focused_delta'])
     check('Subdomain add preserves exact original focused workflow by finite inverse',hashlib.sha256(prior_focused).hexdigest()==launch['focused_delta']['before_sha256'])
     focused_text=focused.decode()
-    check('Subdomain add reuses four existing PHP/database matrix jobs',"php: ['8.2', '8.4']" in focused_text and "image: 'mariadb:10.11'" in focused_text and "image: 'mysql:8.4'" in focused_text and 'timeout-minutes: 35' in focused_text and 'cancel-in-progress: false' in focused_text)
+    check('Subdomain add reuses four existing PHP/database matrix jobs',"php: ['8.2', '8.4']" in focused_text and "image: 'mariadb:10.11'" in focused_text and "image: 'mysql:8.4'" in focused_text and 'timeout-minutes: 35' in focused_text and "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}" in focused_text)
     for command in launch['native_additions']:
         expected=command.replace('"$PHP_BINARY"','php').replace(' -d extension=tokenizer -d extension=pdo','')
         check('Subdomain add focused exact producer '+expected,focused_text.count(expected)==1)
@@ -635,8 +635,11 @@ def client_subdomain_checks(tmp, current, registry, section, historical):
     focused = (ROOT/section['focused_path']).read_text()
     for path, text in [('.github/workflows/application-tests.yml', workflow), (section['focused_path'], focused)]:
         prior = historical[path].decode()
-        check('Client subdomain preserves all branch triggers and concurrency '+path, text.split('jobs:\n', 1)[0].split('paths:')[0] == prior.split('jobs:\n', 1)[0].split('paths:')[0] and text.split('concurrency:\n', 1)[1].split('jobs:\n', 1)[0] == prior.split('concurrency:\n', 1)[1].split('jobs:\n', 1)[0])
-    check('Client subdomain retains focused four combinations timeout and no cancellation', "php: ['8.2', '8.4']" in focused and "image: 'mariadb:10.11'" in focused and "image: 'mysql:8.4'" in focused and 'timeout-minutes: 35' in focused and 'cancel-in-progress: false' in focused)
+        concur_now = text.split('concurrency:\n', 1)[1].split('jobs:\n', 1)[0]
+        concur_old = prior.split('concurrency:\n', 1)[1].split('jobs:\n', 1)[0]
+        migrated = concur_old.replace('-${{ github.sha }}', '').replace('${{ github.ref }}', '${{ github.event.pull_request.number || github.ref }}').replace('cancel-in-progress: false', "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}")
+        check('Client subdomain preserves all branch triggers and concurrency '+path, text.split('jobs:\n', 1)[0].split('paths:')[0] == prior.split('jobs:\n', 1)[0].split('paths:')[0] and concur_now in (concur_old, migrated))
+    check('Client subdomain retains focused four combinations timeout and bounded cancellation', "php: ['8.2', '8.4']" in focused and "image: 'mariadb:10.11'" in focused and "image: 'mysql:8.4'" in focused and 'timeout-minutes: 35' in focused and "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}" in focused)
     check('Client subdomain retains mapped-port context and explicit isolated opt-in', valid_port_context(workflow) and section['native_additions'][-1] == 'CWP_TEST_SUBDOMAIN_REQUESTS=1 "$PHP_BINARY" tests/provider_subdomain_requests_native.php')
     for command in section['native_additions']:
         docker = command.replace('"$PHP_BINARY"', 'php').replace(' -d extension=pdo', '')

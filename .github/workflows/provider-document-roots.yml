@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: document-roots-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  group: document-roots-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-history:
     name: Assigned package document roots ${{ matrix.php }} and ${{ matrix.database.label }}

@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: registration-drafts-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  group: registration-drafts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-drafts:
     name: Private drafts ${{ matrix.php }} and ${{ matrix.database.label }}
