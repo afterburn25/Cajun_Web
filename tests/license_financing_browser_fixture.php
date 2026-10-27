@@ -8,7 +8,7 @@ define('CWP_BOOT',true);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test'||config()['db']['prefix']!=='ci_')exit(2);
-$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/existing/index.php','REQUEST_METHOD'=>'GET'];
+$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/existing/index.php','REQUEST_METHOD'=>'GET','DOCUMENT_ROOT'=>realpath(dirname($root))];
 $operation=$argv[1];$value=$argv[2];
 $password='Synthetic owner passphrase 2026';
 
