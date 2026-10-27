@@ -152,6 +152,14 @@ function license_finance_offer_sign(string $id,int $clientId,string $signer,bool
         if($status==='signed')return $row;
         if($status!=='offered')throw new RuntimeException('This finance agreement is no longer available for signature.');
         $terms=license_finance_offer_terms($row);
+        $offerRights=license_financing_rights(
+            (bool)($terms['rights']['resale']??false),(bool)($terms['rights']['distribution']??false),
+            (bool)($terms['rights']['exclusive_resale']??false),(bool)($terms['rights']['exclusive_distribution']??false)
+        );
+        if($offerRights['resale']||$offerRights['distribution']
+            ||$offerRights['exclusive_resale']||$offerRights['exclusive_distribution']){
+            throw new RuntimeException('This finance agreement contains legacy commercial rights. Reissue it as site-use only and grant paid commercial rights separately.');
+        }
         if((int)$terms['client_id']!==$clientId||(int)$terms['license_id']!==(int)$row['license_id'])throw new RuntimeException('Finance agreement ownership is inconsistent.');
         $creator=one('SELECT u.id FROM '.table('users').' u JOIN '.table('staff_profiles').' p ON p.user_id=u.id WHERE u.id=? AND p.role=? AND p.enabled=1 AND u.password_hash<>\'\' FOR UPDATE',
             [$row['created_by'],'owner']);
