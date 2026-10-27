@@ -160,8 +160,41 @@ rb_ok('Suspended financing exposes the stable delinquency denial reason',
     $access===['authorized'=>false,'state'=>'suspended',
         'reason'=>'Financing payment is past the agreed grace period']);
 
+rb_ok('Cancelled automatic billing is recorded without itself changing retained financing debt',
+    license_finance_subscription_lifecycle_review('net.authorize.customer.subscription.cancelled','810001')
+        ==='finance_subscription_cancelled'
+    &&one('SELECT status FROM '.table('license_finance_subscriptions').' WHERE offer_id=?',[$offer['id']])
+        ===['status'=>'cancelled']
+    &&license_financing_access($licenseId)===[
+        'authorized'=>false,'state'=>'suspended',
+        'reason'=>'Financing payment is past the agreed grace period'
+    ]);
+save_setting('finance_scheduler_cursor','');
+$cancelledRecovery=license_finance_scheduler_run(
+    (new DateTimeImmutable($lateDate.'T12:00:00',new DateTimeZone('UTC')))->getTimestamp()
+);
+$cancelledRequest=one('SELECT p.id,p.invoice_id,p.status,p.amount_cents FROM '.table('payment_requests').' p '.
+    'JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id '.
+    'WHERE r.schedule_id=? AND r.period_index=0 AND p.purpose=? ORDER BY p.id DESC LIMIT 1',
+    [$offer['schedule_id'],'financing']);
+rb_ok('Cancelled automatic billing prepares one secure manual catch-up for the real overdue installment',
+    ($cancelledRecovery['errors']??-1)===0
+    &&$cancelledRequest!==null&&$cancelledRequest['status']==='prepared'
+    &&(int)$cancelledRequest['invoice_id']===(int)$invoice0['id']
+    &&(int)$cancelledRequest['amount_cents']===2500);
+$cancelledRequestId=(int)$cancelledRequest['id'];
+
 query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=?',
     ['billing_suspended',gmdate('Y-m-d H:i:s'),$offer['id']]);
+save_setting('finance_scheduler_cursor','');
+license_finance_scheduler_run(
+    (new DateTimeImmutable($lateDate.'T12:00:00',new DateTimeZone('UTC')))->getTimestamp()
+);
+rb_ok('Changing cancelled automatic billing to suspended reuses the same overdue payment request',
+    (int)query('SELECT COUNT(*) FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=?',
+        [$invoice0['id'],'financing'])->fetchColumn()===1
+    &&(int)one('SELECT id FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=? ORDER BY id DESC LIMIT 1',
+        [$invoice0['id'],'financing'])['id']===$cancelledRequestId);
 $entry0=ledger_insert($invoice0,0,'gateway',2500,'authorize_net','Synthetic catch-up financing receipt',$lateDate,
     null,null,hash('sha256','finance-native-period-0'));
 query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
