@@ -330,7 +330,12 @@ function license_finance_subscription_lifecycle_review(string $eventType,string 
     if(!license_finance_gateway_ready()||!preg_match('/^[0-9]{1,25}$/D',$gatewayId))return 'unknown_subscription';
     return staff_locked(fn()=>staff_transaction(function()use($eventType,$gatewayId):string{
         $sub=one('SELECT * FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=? FOR UPDATE',[$gatewayId]);
-        if(!$sub)return 'unknown_subscription';
+        if(!$sub){
+            if(one('SELECT id FROM '.table('license_finance_subscription_history').' WHERE gateway_subscription_id=?',[$gatewayId])){
+                return 'historical_subscription';
+            }
+            return 'unknown_subscription';
+        }
         $current=(string)$sub['status'];
         if(in_array($current,['review','paid_off'],true))return 'replay';
         $target=match($eventType){
@@ -353,7 +358,10 @@ function license_finance_subscription_settle(array $details,string $transactionI
     $verified=license_finance_anet_subscription_details($details,$transactionId);
     $gateway=license_finance_anet_settings();
     $sub=one('SELECT * FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$verified['subscription_id']]);
-    if(!$sub)return 'unknown_subscription';
+    if(!$sub){
+        if(license_finance_subscription_history_row((string)$verified['subscription_id']))return 'historical_subscription_transaction';
+        return 'unknown_subscription';
+    }
     if($gateway['mode']!=='production')return 'sandbox_finance_subscription_verified';
     try{$relative=license_financing_period_from_pay_num((int)$verified['pay_num'],(int)$sub['total_occurrences']);}
     catch(InvalidArgumentException $e){throw new RuntimeException('Verified financing subscription charge does not match the retained installment contract.',0,$e);}
