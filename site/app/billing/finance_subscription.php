@@ -47,6 +47,11 @@ function license_finance_subscription_history_row(string $gatewayId):?array{
     $row=one('SELECT * FROM '.table('license_finance_subscription_history').' WHERE gateway_subscription_id=?',[$gatewayId]);
     return $row?:null;
 }
+function license_finance_subscription_known_gateway_id(string $gatewayId):bool{
+    if(!license_finance_gateway_ready()||!preg_match('/^[0-9]{1,25}$/D',$gatewayId))return false;
+    return (bool)one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$gatewayId])
+        ||(bool)one('SELECT id FROM '.table('license_finance_subscription_history').' WHERE gateway_subscription_id=?',[$gatewayId]);
+}
 
 function license_finance_subscription_row(string $offerId,bool $lock=false):?array{
     if(!license_finance_gateway_ready())return null;
