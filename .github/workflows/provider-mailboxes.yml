@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: provider-mailboxes-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: provider-mailboxes-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-mailboxes:
     name: Mailbox creation PHP ${{ matrix.php }} and ${{ matrix.database.label }}

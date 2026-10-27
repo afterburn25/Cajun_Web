@@ -1,5 +1,15 @@
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
+## 2026-10-26 — CI queue-hygiene: sha-scoped concurrency groups caused the ~1000-run backlog
+
+- Request: owner directive — audit all workflows, fix queue accumulation, protect release certification; implement on a dedicated branch.
+- Audit: 75 workflow files on `main`. 32 development checks carried `concurrency.group` containing `github.sha` — every push produced a new size-1 group so `cancel-in-progress` could never supersede an obsolete run; 16 of those additionally set `cancel-in-progress: false`, and two dev checks (`mail-receiving`, `mail-transport`) had no concurrency block. ~35 path-filtered workflows fire per licensing-lane push; effective account runner ceiling observed at ~4-5 concurrent native legs. Backlog peaked at ~1000 queued runs (repo-reported ~2500). GitHub status page green throughout — backlog was legitimate queue depth, not an outage and not a generic GitHub queue limit.
+- Fix on `devin/ci-concurrency-hygiene` (from main `a331599a`): the 32 workflows regrouped to `<key>-${{ github.event.pull_request.number || github.ref }}` with `cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}`; `mail-receiving`/`mail-transport` gained the same block. All 76 files parse under PyYAML; no `pull_request_target`/`workflow_run` triggers exist; every workflow keeps a least-privilege `permissions:` block.
+- Protected runs deliberately unchanged: `application-tests` (preserves every dispatched run — evidence semantics), `release-licensing`, `release-upgrade-diagnostic`, `stackcp-access-read-diagnostic`, `import-preserved-source`, `twentyi-catalog-schema`, `twentyi-cloud-root`, and the six inert `codex/finish-1.1.0`-scoped recovery workflows. PR #266's lanes were not touched; they inherit the fix when their branch merges updated `main`.
+- Added: `tools/ci_health.py` queue-report tool, weekly `ci-health.yml` snapshot workflow (Monday 06:00Z — cannot self-flood), `docs/CI_HEALTH.md` diagnosis rules, permanent AGENTS.md CI-management section.
+- Live validation on PR #267: pushing `39c7f850` superseded `fe0874bc` — 31 queued runs canceled, `Repository checks` had already completed, and `Application acceptance` (protected group) remained queued untouched. A second push (`15a80352`) superseded `39c7f850` identically: 31 canceled, protected acceptance preserved. Both required behaviors verified twice against the real API.
+- Follow-up documented, not implemented: cross-run docker layer caching for the 42 `tests/invitations/Dockerfile` builds (needs buildx+gha-cache evaluation). `main` has no branch protection configured (404) — required-check preservation was not applicable.
+
 ## 2026-10-22 — merge-first cycle: PR261 landed; cloud website requests candidate
 
 PR261 merged to `main` via `aeb713c6` (accepted source `467ec1bd` through candidate `e334678e`, green run 39761594725); the held merge-first docs lane landed via PR262, resulting main `bc5777f5`.

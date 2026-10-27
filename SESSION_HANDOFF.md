@@ -1,5 +1,21 @@
 # Session handoff - Devin sole-owner continuation
 
+## Port-PR sequencing resolved — 2026-10-26
+
+PRs #257–#260 (vps-uncertainty, ssh-access, provider-catalog, domains ports → `devin/full-site-integration`) each carry a byte-identical copy of the shared `foundation/desk` + `foundation/notifications` layer (sha-verified across all four branches) — merge order is arbitrary and component code never conflicts. The only shared conflicts are the usual docs/config union files (AGENTS, CHANGELOG, STATUS, HANDOFF, SESSION_LOG, ROADMAP, integration queue, `application-tests.yml`, `provider-cloud-sites.yml`) plus each port's own new workflow. Still gated on hosted evidence — proceed 257→260 once runners free.
+
+## CI queue-hygiene fix — 2026-10-26 (in flight)
+
+Owner directive: audit all workflows, fix queue accumulation, protect release certification — implement, not recommend. Branch `devin/ci-concurrency-hygiene` from main `a331599a`.
+
+**Root cause** (documented in `docs/CI_HEALTH.md`): 32 development-check workflows used concurrency groups containing `github.sha` — each push created a new size-1 group, so `cancel-in-progress` could never supersede an obsolete run; 16 of them additionally set `cancel-in-progress: false`. Two dev checks had no concurrency at all. Combined with ~35 workflows firing per licensing-lane push and a ~4-5-slot effective account runner ceiling, the backlog reached ~1000 queued runs (repo-reported ~2500). Not a GitHub outage — status page green; the accumulated runs were legitimate queue depth.
+
+**Fix**: all 32 sha-scoped dev checks regrouped to `<key>-${{ github.event.pull_request.number || github.ref }}` with `cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}` — superseded dev runs cancel per-PR/per-branch; main pushes serialize for evidence. `mail-receiving`/`mail-transport` gained the same block. Protected non-canceling runs untouched: `application-tests` (per-ref+sha+mode+matrix, deliberate evidence preservation), `release-licensing`, `release-upgrade-diagnostic`, `stackcp-access-read-diagnostic`, `import-preserved-source`, `twentyi-catalog-schema`, `twentyi-cloud-root`, and the inert `codex/finish-1.1.0`-scoped recovery workflows. All 76 workflow files parse.
+
+**New**: `tools/ci_health.py` (queued/running counts, oldest pending age, per-branch/per-workflow backlog, long legs, cancellation stats) + weekly `ci-health.yml` (Monday 06:00Z, step-summary report, cannot self-flood) + `docs/CI_HEALTH.md` diagnosis table + permanent rules in `AGENTS.md`.
+
+**Not done / limits**: docker layer caching across runs (42 workflows rebuild `tests/invitations/Dockerfile` per leg) is a documented follow-up, not implemented — needs buildx+gha-cache evaluation first. `main` branch protection returned 404 — no required checks exist to preserve or break. PR #266 coverage untouched; its lanes keep their own workflow copies until they merge main.
+
 ## Merge-first delivery cycle — 2026-10-22
 
 Owner directive (reaffirmed): completed features reach `main` in small, verified increments — a completed branch is undelivered until its accepted implementation lands on `main` and the resulting main commit verifies. Full standing text: `AGENTS.md` "Standing owner directive - merge-first"; queue: `docs/DEVIN_INTEGRATION_QUEUE.md`.

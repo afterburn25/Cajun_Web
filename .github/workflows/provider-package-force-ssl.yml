@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: package-force-ssl-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  group: package-force-ssl-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-history:
     name: Assigned package Force SSL ${{ matrix.php }} and ${{ matrix.database.label }}

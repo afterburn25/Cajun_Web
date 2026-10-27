@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: domain-contracts-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: domain-contracts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   native-contracts:
     name: Domain renewal date observations PHP ${{ matrix.php }} and ${{ matrix.database.label }}
