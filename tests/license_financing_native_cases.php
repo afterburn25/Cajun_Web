@@ -45,6 +45,34 @@ $plan=license_financing_sync($licenseId);
 rb_ok('Signed zero-down financing begins active on the same website license',
     ($plan['state']??'')==='active'&&(int)license_get($licenseKey)['id']===$licenseId);
 
+// A zero-down agreement has no initial invoice to collect. Signing it must
+// not depend on payment-link storage being enabled.
+$zeroKey=license_create(1,'WEBSITE-FINANCE-ZERO-NOPAY',1,false,null);
+$zeroLicense=(int)license_get($zeroKey)['id'];
+license_register_domain($zeroLicense,'finance-zero-nopay.example',1);
+rb_historical_source(9001,2500);
+$zeroFields=rb_fields(9101,9001);
+$zeroFields['anchor']=gmdate('Y-m-d',time()+3*86400);
+$zeroFields['due_after_days']=0;
+recurring_billing_offer($zeroFields);
+$zeroOffer=license_finance_offer_create(
+    $zeroLicense,rb_id(9101),'Zero-down financing without payment-link storage',
+    10000,0,10000,0,0,4,5,1,7,
+    ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
+    'Synthetic zero-down agreement verifies that no initial invoice or payment link is required merely to sign financing.',
+    $password
+);
+save_setting('payments_schema_version','');
+rb_client();
+$zeroSigned=license_finance_offer_sign((string)$zeroOffer['id'],1,'Recurring client 1',true,true);
+rb_ok('Zero-down financing signs and activates even when payment-link storage is unavailable',
+    ($zeroSigned['offer']['status']??'')==='signed'&&($zeroSigned['payment']??'sentinel')===null
+    &&license_financing_authorized($zeroLicense)===true
+    &&one('SELECT activation_invoice_id,payment_request_id FROM '.table('license_finance_offers').' WHERE id=?',
+        [$zeroOffer['id']])===['activation_invoice_id'=>null,'payment_request_id'=>null]);
+rb_staff();
+save_setting('payments_schema_version','2');
+
 $now=gmdate('Y-m-d H:i:s');
 query('INSERT INTO '.table('license_finance_subscriptions').
     ' (offer_id,gateway_subscription_id,customer_profile_id,payment_profile_id,interval_months,amount_cents,total_occurrences,period_offset,replacement_count,start_date,status,created_at,updated_at)'.
