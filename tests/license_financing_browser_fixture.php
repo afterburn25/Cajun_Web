@@ -79,7 +79,8 @@ if($operation==='setup'){
     if(!license_finance_offers_ready())license_finance_offers_prepare($password);
     $existing=one('SELECT * FROM '.table('license_finance_offers').' WHERE title=?',['Browser financed website']);
     if($existing){
-        $license=license_get_by_id((int)$existing['license_id']);
+        $license=one('SELECT license_key FROM '.table('website_licenses').' WHERE id=?',[(int)$existing['license_id']]);
+        if(!$license)throw new RuntimeException('Synthetic financed license is missing.');
         echo json_encode(['offer_id'=>$existing['id'],'license_id'=>(int)$existing['license_id'],
             'license_key'=>$license['license_key'],'domain'=>'finance-browser.example'],JSON_THROW_ON_ERROR);exit;
     }
