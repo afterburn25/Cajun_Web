@@ -8,6 +8,7 @@ on:
       - 'tests/license_financing_cases.py'
       - 'tests/browser_acceptance.py'
       - 'site/app/licenses/financing*.php'
+      - 'site/app/licenses/service.php'
       - 'site/app/licenses/finance_installments.php'
       - 'site/app/billing/finance_*.php'
       - 'site/app/billing/recurring_billing*.php'
