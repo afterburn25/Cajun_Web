@@ -10,9 +10,10 @@ Merge-first rule (AGENTS.md, standing): prefer the smallest independently-verifi
 
 | Order | Candidate | Head | Base | Scope | Disposition |
 |---|---|---|---|---|---|
-| 1 | PR261 `devin/reset-email-template-main` | merge `e334678e` of accepted `467ec1bd` into main `1067757d` | main | 20i reset email template: read/review/save-once/readback for StackCP password-reset template; encrypted history; no mail sent | IN-ACCEPTANCE — original source green at [run 39422487199](https://github.com/afterburn25/Cajun_Web/actions/runs/39422487199); merged-candidate acceptance running; independent review pending |
-| 2 | Cloud website requests — PR226 `codex/twentyi-client-cloud-websites` `e2c88d9d` (targeting main, CONFLICTING) | `e2c88d9d` | main | Client cloud site requests with owner review/package confirmation; +5833 lines, mostly new files; merge-tree vs main conflicts only in 5 prepend docs | BLOCKED on fresh acceptance — its only full run at `e2c88d9d` (39303433534) was cancelled; code merges clean vs main. Next action: build small candidate off post-PR261 main, dispatch full acceptance, review. PR227 intake (`8fe2787a`) stacks on PR226 |
-| 3 | Directory-listing controls — PR246 `codex/twentyi-client-directory-listing` `b0fe332f` | `b0fe332f` | `codex/twentyi-client-force-ssl` | Client directory listing requests | BLOCKED — depends on force-SSL client lane landing first; force-ssl leaf run 39746898847 completed **success** at `7757c64c` — prerequisite's leaf evidence is now green |
+| — | PR261 `devin/reset-email-template-main` | `e334678e` | main | 20i reset email template | **INTEGRATED** — merge `aeb713c6` is ancestor of main (verified 2026-10-26); all PR checks SUCCESS |
+| — | Cloud website requests — PR226 `codex/twentyi-client-cloud-websites` | `7b11f9f3` (moved from `e2c88d9d` — ctype_digit fix `7b11f9f3` added) | main | Client cloud site requests | **INTEGRATED** — merge `d36d2b8d` is ancestor of main |
+| 1 | Cloud intake — PR227 `codex/twentyi-client-cloud-intake` `8fe2787a` | `8fe2787a` | `codex/twentyi-client-cloud-websites` (now merged) | Client cloud intake retention between refreshes | PENDING — base branch merged; needs retarget to main + fresh acceptance + review |
+| 2 | Directory-listing controls — PR246 `codex/twentyi-client-directory-listing` `b0fe332f` | `b0fe332f` | `codex/twentyi-client-force-ssl` | Client directory listing requests | BLOCKED — depends on force-SSL client lane landing first; force-ssl leaf run 39746898847 completed **success** at `7757c64c` — prerequisite's leaf evidence is now green |
 
 ## Staging lanes (not main)
 
@@ -30,7 +31,7 @@ Each needs its own hosted green at exact head before any merge; contract re-anch
 | PHP controls minimal timeout fix | `devin/fix-php-controls-minimal` `d10b2520` | 39775103325 | Prior run hit a 45s direct-POST read timeout with all 86 checks green; `d10b2520` raises remaining direct POST bounds to 120s (shared-helper fix precedent) |
 | Docroots worker retry (WP cooldown evidence order) | `devin/fix-docroots-worker-retry` `424a86c5` | 39794557286 | `5deeb932` twin-session approach failed in run 39769970280: the repeat serialized behind the global staff mutex and was admitted at +61s (second real read, calls+2). `424a86c5` restores the sibling convention — immediate same-session repost of the recorded POST body (PHP/document-roots/force-SSL repeat checks all passed that run) |
 | Nameserver fixture getattr (browser TimeoutError redispatch) | `devin/fix-nameserver-fixture-getattr` `5a262898` | 39779736188 | Run 39745221647 classified: uncaught Playwright `TimeoutError` in the Chromium nameserver-refresh block after 3137 green checks; `5a262898` gives every nameserver navigation/expectation a finite 60s bound and re-anchors the requests section |
-| Reviewed merge-prep leaf tips | docroots `fe314730`, phpctl `e95bdf2e`, nameserver `18f0cf08`, forcessl `eb8dcd50` | — | Hold for small-PR evaluation or staging merge after leaf runs report |
+| Reviewed merge-prep leaf tips | docroots `fe314730`, phpctl `e95bdf2e`, nameserver `18f0cf08`, forcessl `eb8dcd50` | — | Hold for small-PR evaluation or staging merge after leaf runs report. 2026-10-26 audit: green force-ssl fix `7757c64c` is **not** an ancestor of mergeprep `eb8dcd50` — the prep is stale relative to the fix and must be rebuilt or the fix branch evaluated directly; docroots native failure `40188491299` classified transient read-timeout (infra flake, see `-lf-03` handoff) |
 
 ## Larger pending families (from takeover inventory; not for blind merge)
 
