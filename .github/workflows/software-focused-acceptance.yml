@@ -65,6 +65,8 @@ jobs:
           /tmp/cwp-software-http-venv/bin/python -m playwright install --with-deps chromium
       - name: Build exact direct-extract candidate packages
         run: python3 tools/build.py --commit "$GITHUB_SHA"
+      - name: Prepare pristine public historical fixtures
+        run: python3 tests/prepare_legacy.py
       - name: Seed the real installed-site browser fixture
         run: php8.3 tests/native.php
       - name: Run focused real HTTP and Chromium software acceptance
