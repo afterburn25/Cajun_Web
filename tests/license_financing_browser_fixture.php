@@ -12,6 +12,7 @@ $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME
 $operation=$argv[1];$value=$argv[2];
 $password='Synthetic owner passphrase 2026';
 
+require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
 require_once CWP_CODE_ROOT.'/app/projects/deliveries.php';
@@ -99,6 +100,7 @@ if(in_array($operation,['setup','setup-initial'],true)){
     if(!ledger_ready())ledger_migrate($password);
     if(!service_plans_ready())service_plans_migrate($password);
     if(!recurring_billing_ready())recurring_billing_migrate($password);
+    if(!license_ready())license_migrate($password);
     if(!recurring_billing_ready()||!service_plans_ready()||!ledger_ready()||!payments_ready()){
         throw new RuntimeException('Financing browser fixture could not prepare recurring billing prerequisites.');
     }
