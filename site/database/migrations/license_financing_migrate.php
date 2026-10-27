@@ -13,16 +13,30 @@ function license_financing_storage_table_present(string $name):bool{
     return (bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
         [config()['db']['prefix'].$name]);
 }
+function license_financing_validate_index(string $table,string $key,array $fields,bool $unique=false):void{
+    $actual=[];
+    foreach(all('SHOW INDEX FROM '.table($table)) as $index){
+        if((string)$index['Key_name']!==$key)continue;
+        if(((int)$index['Non_unique']===0)!==$unique||$index['Sub_part']!==null||$index['Index_type']!=='BTREE'){
+            throw new RuntimeException('Incompatible financed-license index. Preserve the database for recovery.');
+        }
+        $actual[(int)$index['Seq_in_index']]=$index['Column_name'];
+    }
+    ksort($actual);
+    if(array_values($actual)!==$fields)throw new RuntimeException('Incompatible financed-license index. Preserve the database for recovery.');
+}
 function license_financing_validate_schema():void{
     $schema=license_financing_schema(config()['db']['prefix']);
     catalog_validate_schema('license_financing',$schema['license_financing'],
         ['license_lookup'=>['license_id'],'schedule_lookup'=>['schedule_id']]);
+    license_financing_validate_index('license_financing','state_lookup',['state']);
     $columns=array_column(all('SHOW FULL COLUMNS FROM '.table('license_financing')),'Field');
     $expected=['id','license_id','schedule_id','terms_sha256','installments','grace_days','state','paid_off_at',
         'allow_resale','allow_distribution','exclusive_resale','exclusive_distribution','created_by','created_at','updated_at'];
     if($columns!==$expected)throw new RuntimeException('Incompatible financed-license columns. Preserve the database for recovery.');
     catalog_validate_schema('license_financing_rights_grants',$schema['license_financing_rights_grants'],
-        ['invoice_once'=>['invoice_id'],'license_history'=>['license_id','id']]);
+        ['invoice_once'=>['invoice_id']]);
+    license_financing_validate_index('license_financing_rights_grants','license_history',['license_id','id']);
     $grantColumns=array_column(all('SHOW FULL COLUMNS FROM '.table('license_financing_rights_grants')),'Field');
     $grantExpected=['id','license_id','invoice_id','allow_resale','allow_distribution','exclusive_resale',
         'exclusive_distribution','evidence','granted_by','created_at'];
