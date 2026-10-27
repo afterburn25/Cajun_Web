@@ -11,7 +11,7 @@ This feature binds an existing **website license** to an accepted CajunWebPro re
 - Once an issued installment is beyond grace, license validation returns a definitive payment suspension for that financed license. The key, customer, domains, invoice history, and agreement are preserved.
 - After a verified catch-up payment is committed, financing is recomputed and the same key resumes. No replacement license is minted.
 - When every required installment has been issued and fully paid, the financing record receives a one-way `paid_off_at` timestamp and state `paid_off`. From that point forward payment history is no longer consulted for authorization, so ordinary later billing failures or corrections cannot payment-lock the site again.
-- Paid-off does **not** bypass manual license revocation, domain binding, security enforcement, or commercial-rights restrictions. It means only that the financing obligation can no longer disable the site.
+- Paid-off is a permanent commercial unlock: the normal whole-license deactivation path is refused after payoff. The key remains bound to the customer and approved domain(s), and domain replacement plus anti-resale/distribution restrictions still apply.
 
 ## Domain and customer binding
 
