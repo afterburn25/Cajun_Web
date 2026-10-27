@@ -104,8 +104,12 @@ try{
     if(str_starts_with($expected->getMessage(),'FAILED '))throw $expected;
     echo 'PASS Reversal readback rejects mismatched gateway transaction id'.PHP_EOL;
 }
-check(software_subscription_event_target('net.authorize.customer.subscription.failed','active')==='review',
-    'Failed subscription enters owner review');
+check(software_subscription_event_target('net.authorize.customer.subscription.failed','active')==='payment_failed',
+    'Failed subscription records recoverable payment failure without discarding paid-through access');
+check(software_subscription_event_target('net.authorize.customer.subscription.suspended','payment_failed')==='billing_suspended',
+    'Gateway suspension advances failed billing into durable billing suspension');
+check(software_subscription_event_target('net.authorize.customer.subscription.terminated','active')==='review',
+    'Gateway termination requires owner review');
 check(software_subscription_event_target('net.authorize.customer.subscription.cancelled','review')==='review',
     'Owner review is sticky across later cancellation notifications');
 check(software_subscription_event_target('net.authorize.customer.subscription.cancelled','active')==='cancelled',
