@@ -256,6 +256,15 @@ if($operation==='payoff'){
     $plan=license_financing_sync($licenseId,gmdate('Y-m-d',$at+86400));
     echo json_encode(['state'=>$plan['state'],'paid_off_at'=>$plan['paid_off_at'],'last_payment'=>$lastPayment,'last_invoice'=>$lastInvoice],JSON_THROW_ON_ERROR);exit;
 }
+if($operation==='force-inactive-paid-off'){
+    $plan=license_financing_plan($licenseId);
+    if(!$plan||$plan['state']!=='paid_off'||$plan['paid_off_at']===null){
+        throw new RuntimeException('Synthetic inactive-payoff fixture requires a paid-off plan.');
+    }
+    query('UPDATE '.table('website_licenses').' SET is_active=0,updated_at=? WHERE id=?',
+        [gmdate('Y-m-d H:i:s'),$licenseId]);
+    echo json_encode(['license_id'=>$licenseId,'is_active'=>0],JSON_THROW_ON_ERROR);exit;
+}
 if($operation==='rights-invoice'){
     $title='Browser commercial rights addendum';
     $invoice=one('SELECT id,status FROM '.table('studio_invoices').' WHERE job_id=? AND title=? ORDER BY id DESC LIMIT 1',
