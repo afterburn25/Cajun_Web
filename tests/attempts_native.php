@@ -30,7 +30,7 @@ if(($argv[1]??'')==='duplicate-worker'){trial_actor();echo attempts_submit((int)
 try{
     foreach(schema_statements('trialci_') as $name=>$sql)if(!in_array($name,['payment_attempts','payment_attempt_events'],true))db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);
-    foreach(['staff','support','catalog','payments'] as $module)save_setting($module.'_schema_version','1');
+    foreach(['staff','support','catalog'] as $module)save_setting($module.'_schema_version','1');save_setting('payments_schema_version','2');
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Trial owner','trial-owner@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('a',32),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);trial_actor();
     query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Trial client','trial-client@example.invalid',str_repeat('b',32),gmdate('Y-m-d H:i:s')]);
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (1,?,?,?,?,?)',['Trial project','Retain summary','Retain milestones',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
