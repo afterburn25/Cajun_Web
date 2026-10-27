@@ -79,10 +79,10 @@ def run_browser(env, browser):
         check('Software browser prepares catalog through owner form',
               response.status_code==200 and settings('catalog_schema_version')==[{'value':'1'}])
     payments=base+'/existing/admin/index.php?view=payments'
-    if settings('payments_schema_version') != [{'value':'1'}]:
+    if settings('payments_schema_version') != [{'value':'2'}]:
         response=submit(admin,payments,'payments_migrate',{'owner_password':OWNER,'confirm':'1'})
         check('Software browser prepares payment settings through owner form',
-              response.status_code==200 and settings('payments_schema_version')==[{'value':'1'}])
+              response.status_code==200 and settings('payments_schema_version')==[{'value':'2'}])
     ledger=base+'/existing/admin/index.php?view=invoice-payments'
     if settings('invoice_ledger_schema_version') != [{'value':'1'}]:
         response=submit(admin,ledger,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1'})
