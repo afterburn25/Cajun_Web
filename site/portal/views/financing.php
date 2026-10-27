@@ -74,10 +74,31 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         if($financeSub&&$financeSub['status']==='billing_suspended'){
             $recovery=one('SELECT p.* FROM '.table('payment_requests').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.purpose=? AND p.status=? ORDER BY r.period_index,p.id DESC LIMIT 1',
                 [$row['schedule_id'],'financing','prepared']);
+            $recoveryUrl=null;
             if($recovery){
                 try{$recoveryUrl=payments_link_url($recovery);}catch(Throwable){$recoveryUrl=null;}
-                if($recoveryUrl!==null)echo '<p class="notice warning">Automatic financing billing is suspended. <a href="'.esc($recoveryUrl).'">Pay the overdue installment securely</a> to restore paid status; the automatic payment method may still need review before the next installment.</p>';
+                if($recoveryUrl!==null)echo '<p class="notice warning">Automatic financing billing is suspended. <a href="'.esc($recoveryUrl).'">Pay the overdue installment securely</a> to restore the financed license first.</p>';
             }
+            if($recoveryUrl===null&&$financeGateway&&$financePlan&&in_array((string)$financePlan['state'],['active','grace'],true)){
+                try{$replacement=license_finance_subscription_replacement_contract($row);}catch(Throwable){$replacement=null;}
+                if($replacement){
+                    echo '<h3>Restore automatic installment payments</h3>';
+                    echo '<p class="notice info">Your overdue issued installment is caught up. Authorize.Net cannot resume the old suspended subscription, so CajunWebPro will preserve it in history and create a replacement only for the remaining signed installments.</p>';
+                    echo '<p class="hint">Replacement begins '.esc($replacement['start_date']).' and covers '.(int)$replacement['occurrences'].' remaining installment'.((int)$replacement['occurrences']===1?'':'s').'. The signed financing agreement, amount, cadence, license key, and customer remain unchanged.</p>';
+                    echo '<form method="post" data-authorize-net data-login="'.esc($financeGateway['login']).'" data-client-key="'.esc($financeGateway['client_key']).'">'.support_csrf_field();
+                    echo '<input type="hidden" name="action" value="finance_subscription_reenroll"><input type="hidden" name="finance_id" value="'.esc($row['id']).'">';
+                    echo '<input type="hidden" name="descriptor"><input type="hidden" name="payment_token">';
+                    echo '<label>Card number<input data-card-number autocomplete="cc-number" inputmode="numeric" minlength="13" maxlength="23" required></label>';
+                    echo '<label>Expiration month (MM)<input data-card-month autocomplete="cc-exp-month" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                    echo '<label>Expiration year (YY)<input data-card-year autocomplete="cc-exp-year" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+                    echo '<label>Security code<input data-card-code autocomplete="cc-csc" inputmode="numeric" minlength="3" maxlength="4" required></label>';
+                    echo '<p class="hint">No same-day installment is charged by this form. The replacement starts at the first future unpaid period retained in your signed schedule.</p>';
+                    if($financeGateway['mode']==='sandbox')echo '<p class="notice info">Sandbox only. No real financing payment will be settled.</p>';
+                    echo '<p role="alert" data-payment-error></p><button class="btn gold" type="submit">Restore automatic installments</button></form>';
+                }
+            }
+        }elseif($financeSub&&in_array((string)$financeSub['status'],['replacing','review'],true)){
+            echo '<p class="notice warning">Automatic financing enrollment is being reconciled. Do not submit another card until billing review is complete.</p>';
         }
         if((int)$terms['initial_payment_cents']>0){
             $url=null;
