@@ -11,6 +11,7 @@ on:
       - 'site/app/billing/finance_authorize_net.php'
       - 'site/app/billing/finance_charge.php'
       - 'site/app/billing/finance_subscription.php'
+      - 'site/app/billing/software_subscription_settle.php'
       - 'site/app/jobs/finance.php'
       - 'site/database/schema/license_financing_schema.php'
       - 'site/database/schema/license_finance_offers_schema.php'
