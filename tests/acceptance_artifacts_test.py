@@ -357,6 +357,20 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    software_native=contract['software_commerce_native_command']
+    software_additions=software_native['additions']
+    software_position=native_commands.index(software_native['additions_after'])+1
+    check('Software commerce native acceptance command is additive and ordered',
+          software_additions==['"$PHP_BINARY" tests/software_commerce_native.php']
+          and native_commands[software_position:software_position+1]==software_additions
+          and native_commands.count(software_additions[0])==1)
+    retained_native=[command for command in native_commands if command not in software_additions]
+    check('Software commerce native acceptance preserves the exact160-command predecessor recipe',
+          len(retained_native)==software_native['predecessor_count']==160
+          and hashlib.sha256(json.dumps(retained_native,separators=(',',':')).encode()).hexdigest()
+              ==software_native['predecessor_sha256'])
+    native_commands=retained_native
+    contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
     native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
     contract={**contract,'native_commands':native_commands}
