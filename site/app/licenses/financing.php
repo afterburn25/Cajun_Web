@@ -327,11 +327,18 @@ function license_financing_sync_by_invoice(int $invoiceId):void{
         'JOIN '.table('license_finance_subscriptions').' s ON s.offer_id=o.id '.
         'WHERE r.invoice_id=?',[$invoiceId]);
     if(!$recovery||(string)$recovery['status']!=='reversal_recovery')return;
-    $invoice=ledger_invoice($invoiceId);$balance=ledger_balance($invoice);
-    if($invoice['status']!=='paid'||(int)$balance['due_cents']!==0)return;
     $next=(string)$plan['state']==='paid_off'?'paid_off':'active';
+    if($next!=='paid_off'){
+        $invoice=ledger_invoice($invoiceId);$balance=ledger_balance($invoice);
+        if($invoice['status']!=='paid'||(int)$balance['due_cents']!==0)return;
+    }
+    // paid_off is a one-way payment-unlock boundary: a later verified refund
+    // remains in accounting history but cannot resurrect payment-dependent
+    // authorization or a recovery demand.
     query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=? AND status=?',
         [$next,gmdate('Y-m-d H:i:s'),$recovery['id'],'reversal_recovery']);
     license_audit(0,'financing.reversal.recovered',
-        'License '.(int)$row['license_id'].' financing invoice '.$invoiceId.' repaid after verified reversal; gateway state '.$next);
+        'License '.(int)$row['license_id'].' financing invoice '.$invoiceId.
+        ($next==='paid_off'?' retained permanent payoff after verified reversal':' repaid after verified reversal').
+        '; gateway state '.$next);
 }
