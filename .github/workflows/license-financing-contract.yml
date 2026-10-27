@@ -48,6 +48,7 @@ jobs:
       - name: Validate financing PHP syntax
         run: |
           php -l site/app/licenses/financing.php
+          php -l site/app/licenses/service.php
           php -l site/app/licenses/financing_policy.php
           php -l site/app/licenses/financing_offers.php
           php -l site/app/licenses/finance_installments.php
