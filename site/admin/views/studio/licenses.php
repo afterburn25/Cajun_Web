@@ -109,7 +109,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <section class="workspace-card"><h2>Financing payment status</h2><p>Unified Authorize.Net mode: <strong><?=esc((string)setting('software_gateway_mode','disabled'))?></strong>.</p>
 <?php $fCode=defined('CWP_FINANCE_PRODUCTION_PAYMENTS')&&CWP_FINANCE_PRODUCTION_PAYMENTS===true;$fReview=setting('finance_gateway_production_reviewed')==='1'; ?>
 <p><strong><?=$fCode?'Finance code gate enabled':'Finance code gate locked'?></strong> · <strong><?=$fReview?'Owner review recorded':'Owner review not recorded'?></strong>.</p>
-<p>Shared-host scheduler: <code><?=esc(CWP_CODE_ROOT.'/app/jobs/finance.php')?></code>. Run it regularly so installments, grace, suspension, and payoff continue without an interactive session.</p>
+<p>Shared-host scheduler: <code><?=esc(CWP_CODE_ROOT.'/app/jobs/run.php')?></code>. The existing combined worker automatically includes financing after this feature is prepared, so installments, grace, suspension, and payoff continue without an interactive session. Use <code><?=esc(CWP_CODE_ROOT.'/app/jobs/finance.php')?></code> only as a dedicated fallback; do not schedule both.</p>
 <form method="post"><?php admin_action('studio_license_finance_gateway_review'); ?><label class="check"><input type="checkbox" name="confirm" value="1" <?=$fReview?'checked':''?>>Financing-production review completed; I understand this alone does not enable live charging.</label><?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Save financing production review</button></form></section>
 <?php endif; ?>
 <?php if($financeGatewayReady): ?>
