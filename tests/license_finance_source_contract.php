@@ -95,6 +95,13 @@ fc_ok(str_contains($financePortal,'finance_subscription_reenroll')
     &&str_contains($financePortal,'preserve it in history')
     &&str_contains($financePortal,'authorize_net_security_headers'),
     'Client finance portal exposes caught-up replacement enrollment under payment CSP');
+fc_ok(str_contains($financePortal,'Signed agreement rights:')
+    &&str_contains($financePortal,'Current commercial rights:')
+    &&str_contains($financePortal,'Paid commercial-rights evidence'),
+    'Client finance portal separates immutable signed rights from later paid current rights');
+fc_ok(str_contains($financePortal,'license_financing_rights_grants_table_present()')
+    &&str_contains($financePortal,"? all('SELECT invoice_id,allow_resale"),
+    'Client paid-rights evidence remains compatible with readable financing v1 storage');
 fc_ok(str_contains($portalActions,"\$action==='finance_subscription_reenroll'"),
     'Client financing replacement action is wired through authenticated portal handling');
 $sharedWebhook=fc_file('site/app/billing/software_subscription_settle.php');
