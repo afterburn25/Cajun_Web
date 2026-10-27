@@ -151,6 +151,14 @@ Both must be present before production settings can be read; this page still off
 </select></label>
 <?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Save software payment mode</button></form>
+<?php if(staff_can('staff.manage')): ?>
+<form method="post"><?php admin_action('software_gateway_production_review'); ?>
+<input type="hidden" name="confirm" value="<?=($productionOwnerReview?'0':'1')?>">
+<?php admin_input('current_password','Owner password for production review','','password','required autocomplete="current-password"'); ?>
+<p class="hint">This records review only. It never adds production to the checkout-mode selector. Approval is refused unless the code-level production-payment gate is intentionally enabled in a reviewed release.</p>
+<button class="btn outline"><?=($productionOwnerReview?'Clear production review':'Record production review')?></button>
+</form>
+<?php endif; ?>
 </section>
 <section class="workspace-card">
 <h2>Customer domain replacement policy</h2>
