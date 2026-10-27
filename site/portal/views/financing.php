@@ -55,7 +55,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
     $rightsText=[];
     if($rights['resale'])$rightsText[]=$rights['exclusive_resale']?'exclusive resale':'resale';
     if($rights['distribution'])$rightsText[]=$rights['exclusive_distribution']?'exclusive distribution':'distribution';
-    echo '<p><strong>Commercial rights:</strong> '.esc($rightsText?implode(' + ',$rightsText).' rights expressly granted':'site-use only; resale and distribution are not granted').'.</p>';
+    echo '<p><strong>Signed agreement rights:</strong> '.esc($rightsText?implode(' + ',$rightsText).' rights expressly granted':'site-use only; resale and distribution are not granted').'.</p>';
     echo '<h3>Agreement terms</h3><div class="prose">'.nl2br(esc($terms['agreement_text'])).'</div>';
     echo '<p class="hint">Agreement fingerprint: <code>'.esc($row['terms_sha256']).'</code>. Signing records your authenticated client account, typed signer name, account email, this exact fingerprint and the UTC signing time.</p>';
     if($state==='offered'){
@@ -69,7 +69,26 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         echo '<p class="notice info">Signed by '.esc((string)$row['signed_name']).' using '.esc((string)$row['signed_email']).' on '.esc((string)$row['signed_at']).' UTC.</p>';
         $financeSub=license_finance_gateway_ready()?license_finance_subscription_row((string)$row['id']):null;
         $financePlan=license_financing_sync((int)$row['license_id']);
-        if($financePlan)echo '<p><strong>License financing:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financePlan['state']))).($financePlan['paid_off_at']!==null?' · permanently paid off '.esc((string)$financePlan['paid_off_at']).' UTC':'').'</p>';
+        if($financePlan){
+            echo '<p><strong>License financing:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financePlan['state']))).($financePlan['paid_off_at']!==null?' · permanently paid off '.esc((string)$financePlan['paid_off_at']).' UTC':'').'</p>';
+            echo '<p><strong>Current commercial rights:</strong> '.esc(license_financing_rights_label($financePlan)).'.</p>';
+            $rightsGrants=all('SELECT invoice_id,allow_resale,allow_distribution,exclusive_resale,exclusive_distribution,created_at FROM '.table('license_financing_rights_grants').' WHERE license_id=? ORDER BY id DESC LIMIT 10',
+                [$financePlan['license_id']]);
+            if($rightsGrants){
+                echo '<details><summary>Paid commercial-rights evidence</summary><ul>';
+                foreach($rightsGrants as $grant){
+                    $grantRights=license_financing_rights(
+                        (int)$grant['allow_resale']===1,(int)$grant['allow_distribution']===1,
+                        (int)$grant['exclusive_resale']===1,(int)$grant['exclusive_distribution']===1
+                    );
+                    $parts=[];
+                    if($grantRights['resale'])$parts[]=$grantRights['exclusive_resale']?'exclusive resale':'resale';
+                    if($grantRights['distribution'])$parts[]=$grantRights['exclusive_distribution']?'exclusive distribution':'distribution';
+                    echo '<li>Invoice #'.(int)$grant['invoice_id'].' · '.esc($parts?implode(' + ',$parts):'no additional rights').' · '.esc((string)$grant['created_at']).' UTC</li>';
+                }
+                echo '</ul></details>';
+            }
+        }
         if($financeSub)echo '<p><strong>Automatic installments:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financeSub['status']))).($financeSub['gateway_subscription_id']!==null?' · gateway subscription '.esc((string)$financeSub['gateway_subscription_id']):'').'</p>';
         if($financeSub&&$financeSub['status']==='billing_suspended'){
             $recovery=one('SELECT p.* FROM '.table('payment_requests').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.purpose=? AND p.status=? ORDER BY r.period_index,p.id DESC LIMIT 1',
