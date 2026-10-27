@@ -72,8 +72,12 @@ function finance_fixture_payment(int $invoice,string $reference):int{
 
 finance_fixture_owner();
 if($operation==='setup'){
+    if(!payments_ready())payments_migrate($password);
+    if(!ledger_ready())ledger_migrate($password);
+    if(!service_plans_ready())service_plans_migrate($password);
+    if(!recurring_billing_ready())recurring_billing_migrate($password);
     if(!recurring_billing_ready()||!service_plans_ready()||!ledger_ready()||!payments_ready()){
-        throw new RuntimeException('Financing browser fixture requires recurring billing, service plans, payments and ledger.');
+        throw new RuntimeException('Financing browser fixture could not prepare recurring billing prerequisites.');
     }
     if(license_financing_feature_state()===null)license_financing_prepare($password);
     if(!license_finance_offers_ready())license_finance_offers_prepare($password);
