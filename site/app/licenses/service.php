@@ -288,6 +288,30 @@ function license_paid_off_lock(int $licenseId): bool {
 }
 
 /**
+ * Recover an inactive key only when financing already reached the immutable
+ * paid-off boundary. Used by validation/migration recovery; never authorizes
+ * an unpaid or merely active financing plan.
+ */
+function license_restore_paid_off_active(int $licenseId): bool {
+    if ($licenseId < 1) return false;
+    $restored = false;
+    license_transaction(function() use ($licenseId, &$restored): void {
+        license_lock($licenseId);
+        if (!license_paid_off_lock($licenseId)) return;
+        $row = one('SELECT is_active FROM '.table('website_licenses').' WHERE id=? FOR UPDATE',[$licenseId]);
+        if (!$row) throw new InvalidArgumentException('License not found.');
+        if ((int)$row['is_active'] !== 1) {
+            $now = gmdate('Y-m-d H:i:s');
+            query('UPDATE '.table('website_licenses').' SET is_active=1,updated_at=? WHERE id=?',[$now,$licenseId]);
+            license_audit(0,'financing.unlock',
+                'License '.$licenseId.' restored active from immutable paid-off financing state');
+        }
+        $restored = true;
+    });
+    return $restored;
+}
+
+/**
  * Deactivate an entire license.
  */
 function license_deactivate(int $licenseId, int $actor = 0): void {
