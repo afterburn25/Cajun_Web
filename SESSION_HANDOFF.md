@@ -1,3 +1,11 @@
+## 2026-10-27 — main (fdf40a25, PR #267 concurrency rules) merged into FSI as 2837b928
+
+Merged `origin/main` into `devin/full-site-integration` so the branch carries its own dev-check concurrency rules before the FSI→main fast-forward. Only doc conflicts (CHANGELOG/SESSION_HANDOFF, prepend-style unions). `provider-document-roots.yml` unioned correctly: FSI's expanded subdomain path filters + #267's `document-roots-${{ github.event.pull_request.number || github.ref }}` group with conditional cancel.
+
+Contract/test re-settlement: era pins re-anchored by the fixpoint script; three text assertions in `tests/acceptance_artifacts_test.py` updated for the post-#267 shape — the two `'cancel-in-progress: false'` literals now assert the conditional expression, and the `client_subdomain_requests` concurrency-preservation check accepts preserved-or-migrated (`-${{ github.sha }}`→per-PR/ref, `false`→conditional). Artifact verifier **683/683 green**, `build.py --refresh` exact.
+
+Queue state: acceptance run `40460622941` queued on `2837b928` (contains all prior heads). Obsolete queued runs `40458403146`/`40382265323` — cancel API accepted twice but GitHub still reports `queued` under saturation; not harmful if they flush or run as stale evidence. Run `40459839262` (d084ed78, PR261 fixes head) retained for incremental evidence.
+
 ## 2026-10-27 — PR261 follow-ups: stale-request dismissal + consumed-grant revoke guard
 
 Addressed the two tracked review findings on the reset-template lane, on `devin/full-site-integration` (post leaf-merge `27410953`):
