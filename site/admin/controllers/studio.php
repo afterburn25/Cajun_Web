@@ -195,6 +195,23 @@ function studio_admin_action(string $action,array $user): never {
         license_audit((int)$user['id'],'gateway.mode','Software payment mode changed to '.$mode);
         flash('Software payment mode updated. Sandbox transactions do not count as customer payments.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_gateway_production_review'){
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+        if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
+        if(support_current())throw new RuntimeException('Leave support mode first.');
+        staff_require('staff.manage');
+        $owner=staff_owner(posted('current_password',200));
+        $approved=posted('confirm',1)==='1';
+        if($approved&&(!defined('CWP_SOFTWARE_PRODUCTION_PAYMENTS')||CWP_SOFTWARE_PRODUCTION_PAYMENTS!==true)){
+            throw new RuntimeException('The code-level software production-payment gate is still locked.');
+        }
+        save_setting('software_gateway_production_reviewed',$approved?'1':'0');
+        license_audit((int)$owner['id'],'software.gateway.production_review',
+            $approved?'Software production payment review recorded':'Software production payment review cleared');
+        flash($approved
+            ?'Software production review recorded. Production checkout still remains unavailable until the separate mode-selection release work is explicitly completed.'
+            :'Software production review cleared.');
+        redirect(admin_url('studio-licenses'));
     }elseif($action==='software_commerce_setup'){
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         software_commerce_prepare(posted('current_password',200));
