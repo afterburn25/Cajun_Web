@@ -18,6 +18,7 @@ on:
       - 'site/app/projects/deliveries.php'
       - 'site/portal/controllers/actions.php'
       - 'site/api/handlers/license.php'
+      - 'site/install/inventory.generated.php'
       - 'site/database/schema/license_financ*.php'
       - 'site/database/migrations/license_financ*.php'
       - '.github/workflows/license-financing-browser.yml'
