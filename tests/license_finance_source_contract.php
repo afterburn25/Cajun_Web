@@ -32,7 +32,7 @@ $deliveries=fc_file('site/app/projects/deliveries.php');
 $deliveryLayout=fc_file('site/includes/layout/deliveries.php');
 fc_ok(str_contains($bundleDownload,'license_financing_access((int)$bundle[\'license_id\'])')
     &&str_contains($bundleDownload,"http_response_code(503)")
-    &&str_contains($bundleDownload,"!$financing['authorized']"),
+    &&str_contains($bundleDownload,'!$financing[\'authorized\']'),
     'Website bundle endpoint follows financed-license payment access and fails closed on unknown state');
 fc_ok(str_contains($workspace,"['active','grace','paid_off']")
     &&str_contains($workspace,'Website bundle downloads are paused until financing access is current'),
