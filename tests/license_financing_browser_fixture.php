@@ -199,6 +199,20 @@ if($operation==='payoff'){
     $plan=license_financing_sync($licenseId,gmdate('Y-m-d',$at+86400));
     echo json_encode(['state'=>$plan['state'],'paid_off_at'=>$plan['paid_off_at'],'last_payment'=>$lastPayment,'last_invoice'=>$lastInvoice],JSON_THROW_ON_ERROR);exit;
 }
+if($operation==='rights-invoice'){
+    $title='Browser commercial rights addendum';
+    $invoice=one('SELECT id,status FROM '.table('studio_invoices').' WHERE job_id=? AND title=? ORDER BY id DESC LIMIT 1',
+        [$offer['job_id'],$title]);
+    if(!$invoice){
+        $now=gmdate('Y-m-d H:i:s');
+        query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,currency,instructions,created_at) VALUES (?,?,?,?,?,?,?)',
+            [$offer['job_id'],'RIGHTS-'.strtoupper(substr($offer['id'],0,10)),$title,5000,'USD',
+             'Separate paid commercial-rights addendum for browser acceptance.',$now]);
+        $invoice=['id'=>(int)db()->lastInsertId(),'status'=>'issued'];
+    }
+    $payment=finance_fixture_payment((int)$invoice['id'],'Commercial rights browser payment');
+    echo json_encode(['invoice_id'=>(int)$invoice['id'],'payment_id'=>$payment],JSON_THROW_ON_ERROR);exit;
+}
 if($operation==='reverse-after-payoff'){
     $p=one('SELECT p.* FROM '.table('invoice_payments').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.kind=? ORDER BY r.period_index DESC,p.id DESC LIMIT 1',
         [$offer['schedule_id'],'manual']);
