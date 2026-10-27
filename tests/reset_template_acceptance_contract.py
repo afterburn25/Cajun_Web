@@ -17,9 +17,14 @@ def predecessor_contract(root, contract, native_commands, check):
     fingerprint = hashlib.sha256(json.dumps(predecessor, separators=(',', ':')).encode()).hexdigest()
     check('Template additions retain the exact 152 predecessor commands', len(predecessor) == addition['predecessor_count'] == 152 and fingerprint == addition['predecessor_sha256'])
     driver = (root / 'tests/browser_acceptance.py').read_text()
-    call = '        from provider_password_reset_template_cases import run_browser as reset_template_browser\n        reset_template_browser(globals(),browser)\n'
-    check('Installed browser driver invokes template acceptance exactly once', driver.count(call) == 1)
-    original = driver.replace(call, '')
+    import re
+    call_pattern = re.compile(
+        r'(?m)^(?P<indent>[ \t]+)from provider_password_reset_template_cases import run_browser as reset_template_browser\n'
+        r'(?P=indent)reset_template_browser\(globals\(\),browser\)\n'
+    )
+    matches = list(call_pattern.finditer(driver))
+    check('Installed browser driver invokes template acceptance exactly once', len(matches) == 1)
+    original = call_pattern.sub('', driver, count=1)
     check('Template browser addition retains the complete predecessor driver', hashlib.sha256(original.encode()).hexdigest() == addition['predecessor_browser_sha256'])
     reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
     names = ['password-reset-template-contract-results.json', 'password-reset-template-contract-minimal-results.json', 'password-reset-template-native-results.json']
