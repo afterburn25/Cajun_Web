@@ -25,8 +25,11 @@ function license_financing_feature_state():?bool{
     $present=license_financing_table_present();
     $grants=license_financing_rights_grants_table_present();
     if($version===''&&!$present&&!$grants)return null;
-    if($version!=='2'||!$present||!$grants)throw new RuntimeException('Financed-license storage is inconsistent. Restore or explicitly upgrade the database.');
-    return true;
+    // Published v1 financing remains readable and enforceable until the owner
+    // explicitly performs the additive v2 rights-evidence upgrade.
+    if($version==='1'&&$present&&!$grants)return true;
+    if($version==='2'&&$present&&$grants)return true;
+    throw new RuntimeException('Financed-license storage is inconsistent. Restore or explicitly upgrade the database.');
 }
 function license_financing_plan(int $licenseId):?array{
     if($licenseId<1)throw new InvalidArgumentException('License not found.');
@@ -129,6 +132,7 @@ function license_financing_grant_rights(int $licenseId,array $requested,int $rig
         (bool)($requested['exclusive_resale']??false),(bool)($requested['exclusive_distribution']??false)
     );
     if(license_financing_feature_state()!==true)throw new RuntimeException('Enable financed-site licensing first.');
+    if(!license_financing_ready())throw new RuntimeException('Upgrade financed-site licensing before granting paid commercial rights.');
     return staff_locked(fn()=>staff_transaction(function()use($licenseId,$next,$rightsInvoiceId,$evidence,$password):array{
         if(support_current())throw new RuntimeException('Leave support mode before changing license rights.');
         $actor=staff_owner($password);
