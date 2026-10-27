@@ -99,11 +99,6 @@ try {
     if (!(bool) $license['is_active']) {
         license_response(false, 'License is deactivated');
     }
-    require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
-    $financing=license_financing_access((int)$license['id']);
-    if($financing!==null&&!$financing['authorized']){
-        license_response(false,(string)$financing['reason']);
-    }
     if($productId!==null&&!hash_equals((string)$license['product_id'],$productId)){
         license_response(false,'License is not authorized for this product');
     }
@@ -116,6 +111,15 @@ try {
     require_once CWP_CODE_ROOT . '/app/licenses/service.php';
     if (!license_domain_authorized($license, $domain)) {
         license_response(false, 'Domain not registered for this license');
+    }
+
+    // Billing state is private to an otherwise-authorized installation. Do
+    // not reveal or mutate financing state for a leaked key used from a
+    // different product/domain.
+    require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+    $financing=license_financing_access((int)$license['id']);
+    if($financing!==null&&!$financing['authorized']){
+        license_response(false,(string)$financing['reason']);
     }
 
     // Existing v3 keys remain valid; new time-limited grants must also pass
