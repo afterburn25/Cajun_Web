@@ -218,14 +218,26 @@ function license_financing_sync(int $licenseId,?string $today=null):?array{
     return $result;
 }
 
-/** Null = no financing plan; true = authorized by financing; false = definitively beyond grace. */
-function license_financing_authorized(int $licenseId):?bool{
+/** Payment-dependent access verdict with a stable customer/support reason. */
+function license_financing_access(int $licenseId):?array{
     $plan=license_financing_sync($licenseId);
     if($plan===null)return null;
-    if((string)$plan['state']==='paid_off')return true;
-    if(in_array((string)$plan['state'],['pending_initial','suspended'],true))return false;
-    if(in_array((string)$plan['state'],['active','grace'],true))return true;
-    throw new RuntimeException('Financed-license state is not trustworthy.');
+    return match((string)$plan['state']){
+        'paid_off'=>['authorized'=>true,'state'=>'paid_off','reason'=>null],
+        'active'=>['authorized'=>true,'state'=>'active','reason'=>null],
+        'grace'=>['authorized'=>true,'state'=>'grace','reason'=>null],
+        'pending_initial'=>['authorized'=>false,'state'=>'pending_initial',
+            'reason'=>'Financing initial payment is still required'],
+        'suspended'=>['authorized'=>false,'state'=>'suspended',
+            'reason'=>'Financing payment is past the agreed grace period'],
+        default=>throw new RuntimeException('Financed-license state is not trustworthy.')
+    };
+}
+
+/** Null = no financing plan; otherwise whether financing permits use. */
+function license_financing_authorized(int $licenseId):?bool{
+    $verdict=license_financing_access($licenseId);
+    return $verdict===null?null:(bool)$verdict['authorized'];
 }
 
 /** Called after a committed invoice payment/correction; never changes the recorded payment itself. */
