@@ -309,5 +309,29 @@ function license_financing_sync_by_invoice(int $invoiceId):void{
                 [$invoiceId,'signed']);
         }
     }
-    if($row)license_financing_sync((int)$row['license_id']);
+    if(!$row)return;
+    $plan=license_financing_sync((int)$row['license_id']);
+    if(!$plan||!in_array((string)$plan['state'],['active','grace','paid_off'],true))return;
+
+    // A fully repaid installment that was reopened by a verified refund/void
+    // can clear only the dedicated reversal-recovery gateway state. Review,
+    // cancelled and ordinary suspension states keep their own owner/gateway
+    // lifecycle semantics.
+    $gatewayTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+        [config()['db']['prefix'].'license_finance_subscriptions']);
+    $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+        [config()['db']['prefix'].'license_finance_offers']);
+    if(!$gatewayTable||!$offerTable)return;
+    $recovery=one('SELECT s.id,s.status FROM '.table('recurring_billing_invoices').' r '.
+        'JOIN '.table('license_finance_offers').' o ON o.schedule_id=r.schedule_id '.
+        'JOIN '.table('license_finance_subscriptions').' s ON s.offer_id=o.id '.
+        'WHERE r.invoice_id=?',[$invoiceId]);
+    if(!$recovery||(string)$recovery['status']!=='reversal_recovery')return;
+    $invoice=ledger_invoice($invoiceId);$balance=ledger_balance($invoice);
+    if($invoice['status']!=='paid'||(int)$balance['due_cents']!==0)return;
+    $next=(string)$plan['state']==='paid_off'?'paid_off':'active';
+    query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=? AND status=?',
+        [$next,gmdate('Y-m-d H:i:s'),$recovery['id'],'reversal_recovery']);
+    license_audit(0,'financing.reversal.recovered',
+        'License '.(int)$row['license_id'].' financing invoice '.$invoiceId.' repaid after verified reversal; gateway state '.$next);
 }
