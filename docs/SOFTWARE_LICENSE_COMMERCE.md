@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Independent seat controls — 2026-10-28
+
+Each owned eligible license retains its own installation controls. A full purchased license must not hide another trial or temporary license's spare-seat/redeployment form, and an invoice-null grant must not lose authorized recovery merely to satisfy a page-wide assertion. Installed acceptance now scopes seat, pending-deployment and domain-move forms to the exact displayed license, while service-level ownership, CSRF, cooldown and installation caps remain authoritative.
+
 ## Installed lifecycle acceptance contract — 2026-10-28
 
 Software entitlements use the explicit `software_license_lifecycle` controls, not the legacy whole-website deactivate/reactivate forms. Installed acceptance selects the exact license plus `suspend` or `resume`, supplies a retained reason, verifies customer state and download denial/recovery, and confirms the legacy action is rejected without changing the license. This is test correction only; it does not broaden owner authority or alter payment/financing state.

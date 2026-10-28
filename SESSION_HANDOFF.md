@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — reject feature UI regression; integrate #274–#276
+
+Refresh the integration ancestry to exact feature `af377c89e35ffd0e10d02bead4c9d9c3698b5a31`, but retain the pre-`a0d21c1c` portal renderer because invoice-null gating hides valid trial/temporary/owner-issued redeployment controls. The invalid whole-page assertion is replaced by exact-license card/form selection from PR #274 (`8a24b10e`). Also integrate dynamic provider-settings service ports from #275 (`76dbfa3a`) and explicit retained payment preparation from #276 (`59255c8d`). No shipping payment or licensing authority is weakened; Devin's branch remains unchanged.
+
 ## 2026-10-28 — integrate PR #273 test continuation
 
 Incorporate exact focused correction head `b2ec170c4df75879789a5f7caa7ae770d542db8a` as a second parent of the integration lane. Its shipping renderer change is already byte-identical to Devin feature `94d24cea`; the remaining material change updates `tests/software_commerce_cases.py` to select the real reasoned software suspend/resume forms and assert forged legacy deactivation is refused. Preserve `docs/CODEX_SOFTWARE_DOWNLOAD_SOURCE_REVIEW.md` as the focused evidence record. No shipping lifecycle behavior changed. Fresh combined-head installed acceptance is mandatory.

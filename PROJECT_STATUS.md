@@ -1,5 +1,11 @@
 # CajunWebPro current status
 
+## 2026-10-28 — feature `af377c89` reviewed; regression excluded
+
+PR #266 advanced to `af377c89` after installed run `40676646028` passed the notice, purchased-download and second-installation assertions, then failed a page-wide seat-control assertion. The feature attempted to hide add-install controls from every invoice-unbound trial, temporary and owner-issued standard grant. Independent real HTTP/SQL review showed that change prevents a customer from redeploying an otherwise valid license after deactivating its last domain. The integration history records Devin's exact head but retains the prior authorized renderer; Devin's branch is untouched.
+
+Focused PR #274 scopes the installed assertions and domain-move selector to the exact license while proving an independent trial keeps its own authorized control. PR #275 replaces a colliding fixed provider-settings CI port with the Actions-assigned service port. PR #276 explicitly prepares published-1.24 payment schema1→2 through the real owner form before creating current recurring fixtures, retaining original records/private files and disabled checkout. These corrections change tests/workflow only; fresh combined hosted evidence is required.
+
 ## 2026-10-28 — installed lifecycle acceptance corrected
 
 Focused PR #273 showed that the final installed software block searched for legacy website deactivate/reactivate forms that are intentionally absent for software entitlements. The integration candidate now uses the real `software_license_lifecycle` suspend/resume forms, supplies their required reasons, and proves a forged legacy action cannot bypass the explicit lifecycle controls. Shipping lifecycle code is unchanged. The correction retains the existing portal state, download denial/recovery, SQL state and key-preservation assertions. Independent focused execution reports 48 passing HTTP/SQL checks across PHP 8.2/8.4 × MariaDB/MySQL; full exact-candidate hosted execution remains required.

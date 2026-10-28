@@ -1,3 +1,9 @@
+## Unreleased — licensing integration acceptance repairs
+
+- Scope multi-license installation controls and domain-move acceptance to the intended license without hiding valid trial/temporary redeployment controls.
+- Allocate provider-settings CI database ports dynamically.
+- Prepare retained payment schema explicitly before current recurring upgrade fixtures.
+
 ## Unreleased — software lifecycle acceptance continuation
 
 - Exercise the explicit reasoned software suspend/resume controls in installed acceptance.

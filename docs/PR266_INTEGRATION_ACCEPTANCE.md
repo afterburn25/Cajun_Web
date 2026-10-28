@@ -1,5 +1,12 @@
 # PR266 licensing integration acceptance
 
+## 2026-10-28 seat scope, CI port and upgrade readiness corrections
+
+- Run `40676646028` passes the prior notice/download fixes and fails only because the seat-limit assertion scans another valid trial's controls. Feature `a0d21c1c` suppresses those controls and regresses redeployment; integration retains the prior renderer and uses PR #274's exact-license selectors.
+- Provider-settings PHP8.4 run `40675211436` failed before checkout because host port33306 was occupied; PR #275 uses the assigned service port without changing assertions.
+- Application run `40667110008` passes 2,747 Apache checks, then its published-1.24 later-record fixture reaches payment schema1 where recurring requires schema2. PR #276 submits the real owner `payments_migrate` preparation, verifies only marker1→2 changes, retains all original data/private files and leaves checkout disabled.
+- Fresh exact-combined installed, provider-settings and protected Application execution remains required. These are not sandbox transactions or a published-v1.25-to-next-version release upgrade.
+
 ## 2026-10-28 lifecycle-tail continuation correction
 
 Focused PR #273 exact head `b2ec170c4df75879789a5f7caa7ae770d542db8a` corrects an unreached test-harness defect: the final software block selected legacy `studio_license_deactivate` / `studio_license_reactivate` forms that software entitlements deliberately do not render. The combined test selects `software_license_lifecycle` by exact license and transition, supplies mandatory reasons, retains the state/download/key assertions, and adds a forged legacy-action refusal. Shipping lifecycle bytes are unchanged. Focused real HTTP/SQL execution reports 48 passing checks across all four PHP/database combinations; full combined hosted acceptance remains the gate.
