@@ -88,10 +88,51 @@ function delivery_download(string $id,bool $admin=false): never {
     });}catch(InvalidArgumentException|RuntimeException){if(support_current())support_record('release.download','release',preg_match('/^[a-f0-9]{32}$/D',$id)?$id:'','denied');fail_page('Website release unavailable. Contact the studio.',404);}
     $size=(int)$r['bytes'];$etag='"'.$r['sha256'].'"';$range=$_SERVER['HTTP_RANGE']??'';if($_SERVER['REQUEST_METHOD']==='HEAD'||isset($_SERVER['HTTP_IF_RANGE'])&&$_SERVER['HTTP_IF_RANGE']!==$etag)$range='';
     try{[$start,$end,$status]=delivery_range($range,$size);}catch(InvalidArgumentException){fclose($fh);header('Content-Range: bytes */'.$size);fail_page('Requested range is unavailable.',416);}
-    try{staff_locked(fn()=>staff_transaction(function() use($id,$admin,$r,$actorType,$actorId,$start,$end): void {
-        if($admin)delivery_require();else{if($ctx=support_current()){$fresh=support_check($ctx['session']['id']);if(!$fresh||!staff_can('support.download',$fresh['actor']))throw new RuntimeException('Support access ended.');$GLOBALS['cwp_support']=$fresh;}$freshRelease=delivery_client_record($id);$finance=delivery_financing_access($freshRelease);if($finance!==null&&!$finance['authorized'])throw new RuntimeException('Financing access is locked.');}
-        $action=$_SERVER['REQUEST_METHOD']==='HEAD'?'inspect':'download.started';delivery_event($r,$actorType,$actorId,$action,'bytes '.$start.'-'.$end);if(support_current())support_record('release.download','release',$id);elseif($admin)delivery_audit($actorId,$action,'Release '.$id);
-    }));}catch(Throwable){fclose($fh);fail_page('Download could not be recorded. Try again or contact the studio.',503);}
+    try{
+        staff_locked(function() use($id,$admin,$r,$actorType,$actorId,$start,$end): void {
+            $supportId=null;
+            if(!$admin){
+                // Financing sync owns the license transaction. Keep it outside the
+                // delivery-event transaction so a valid financed release download
+                // never fails only because nested transactions are forbidden.
+                if($ctx=support_current()){
+                    $supportId=(string)$ctx['session']['id'];
+                    $fresh=staff_transaction(fn()=>support_check($supportId));
+                    if(!$fresh||!staff_can('support.download',$fresh['actor']))throw new RuntimeException('Support access ended.');
+                    $GLOBALS['cwp_support']=$fresh;
+                }
+                $freshRelease=delivery_client_record($id);
+                $finance=delivery_financing_access($freshRelease);
+                if($finance!==null&&!$finance['authorized'])throw new RuntimeException('Financing access is locked.');
+            }
+            staff_transaction(function() use($id,$admin,$r,$actorType,$actorId,$start,$end,$supportId): void {
+                if($admin){
+                    delivery_require();
+                }else{
+                    if($supportId!==null){
+                        $fresh=support_check($supportId,false);
+                        if(!$fresh||!staff_can('support.download',$fresh['actor']))throw new RuntimeException('Support access ended.');
+                        $GLOBALS['cwp_support']=$fresh;
+                    }
+                    // Recheck customer/release ownership at attribution time. The
+                    // financing verdict was refreshed immediately before this
+                    // transaction under the same staff mutex.
+                    $freshRelease=delivery_client_record($id);
+                    if((string)$freshRelease['id']!==(string)$r['id']
+                        ||(int)$freshRelease['client_id']!==(int)$r['client_id']
+                        ||(string)$freshRelease['status']!=='published'){
+                        throw new RuntimeException('Release access changed.');
+                    }
+                }
+                $action=$_SERVER['REQUEST_METHOD']==='HEAD'?'inspect':'download.started';
+                delivery_event($r,$actorType,$actorId,$action,'bytes '.$start.'-'.$end);
+                if(support_current())support_record('release.download','release',$id);
+                elseif($admin)delivery_audit($actorId,$action,'Release '.$id);
+            });
+        });
+    }catch(Throwable){
+        fclose($fh);fail_page('Download could not be recorded. Try again or contact the studio.',503);
+    }
     http_response_code($status);header('Content-Type: application/zip');header('Content-Disposition: attachment; filename="website-'.$r['job_id'].'-'.$r['version'].'.zip"');header('Cache-Control: private, no-store');header('X-Content-Type-Options: nosniff');header('ETag: '.$etag);header('Accept-Ranges: bytes');header('Content-Length: '.($end-$start+1));if($status===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.$size);
     if(session_status()===PHP_SESSION_ACTIVE)session_write_close();if($_SERVER['REQUEST_METHOD']==='GET'){fseek($fh,strlen(CWP_GUARD)+$start);$left=$end-$start+1;while($left>0&&!feof($fh)){ $chunk=fread($fh,min(65536,$left));if($chunk===false||$chunk==='')break;echo $chunk;$left-=strlen($chunk);}}fclose($fh);exit;
 }
