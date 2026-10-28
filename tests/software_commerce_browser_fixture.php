@@ -12,6 +12,7 @@ $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME
 $operation=$argv[1];
 $invoice=(int)$argv[2];
 require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
 
 if(in_array($operation,['commerce-marker-off','commerce-marker-on'],true)){
     save_setting('software_commerce_version',$operation==='commerce-marker-on'?'3':'');
