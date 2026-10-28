@@ -190,7 +190,7 @@ function setup_expected_files(): array { return [
     'app/index.php'=>'696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
     'app/jobs/finance.php'=>'7e3950e4a4d5c33414c46a9f9444c24785db97dac4c565dfff7d4b19a25e8895',
     'app/jobs/run.php'=>'7605cabae3933f59ae1a4da298c617573fa315ad81797f876a8fdf34cfdf5b52',
-    'app/licenses/bundle.php'=>'5b5e29fab554eafc19c98659fecb1f15b75fb025d2a267c3eaa6a9e0756510cf',
+    'app/licenses/bundle.php'=>'2a6f62734654d42230918f98bfdf3c05a010f0b839ee1e003364f328aa305ce7',
     'app/licenses/finance_installments.php'=>'1f699ba8ec380de8a0ed736fe5ed3a5357d0e2a640b4a7168462e71a794f40a8',
     'app/licenses/financing.php'=>'57670f8c23933f30e9ecb0af8278af9151872fd8fc166ffd8a1e78cad63b7d69',
     'app/licenses/financing_offers.php'=>'94394e3975bce5f8432cd7b637accbb7c84ddbf815c70b60f08ab7af6af97bc0',
