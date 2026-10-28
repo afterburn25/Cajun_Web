@@ -33,9 +33,10 @@ foreach(['software_license_lifecycle','studio_license_deactivate','studio_licens
     routing_ok($start!==false,$action.' branch exists');
     $next=strpos($studio,"}elseif(\$action===",$start+1);
     $branch=substr($studio,$start,$next===false?null:$next-$start);
+    $requirePos=strpos($branch,"require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';");
+    $readyPos=strpos($branch,'software_commerce_ready()');
     routing_ok(
-        strpos($branch,"require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';")
-            < strpos($branch,'software_commerce_ready()'),
+        $requirePos!==false&&$readyPos!==false&&$requirePos<$readyPos,
         $action.' loads the commerce readiness boundary before calling it'
     );
 }
