@@ -5,6 +5,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/mail/transport.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 function software_delivery_notice_send(int $invoiceId):bool{
     if(!software_commerce_ready())return false;
     if(db()->inTransaction())throw new LogicException('Send notices after payment transaction commit.');
