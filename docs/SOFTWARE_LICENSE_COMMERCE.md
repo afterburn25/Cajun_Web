@@ -2,7 +2,7 @@
 
 ## Current integration refresh — 2026-10-28
 
-The independent integration lane now includes exact PR #266 feature head `726fc7db`. Its unavailable-agreement path resolves the customer-owned finance row before emitting the portal layout, so foreign or missing agreement identifiers return the intended private HTTP 404 without a headers-already-sent warning. The generated installer inventory is refreshed for the combined bytes. This refresh still requires exact-head installed and package acceptance.
+The independent integration lane now includes exact PR #266 feature head `726fc7db`. Its unavailable-agreement path resolves the customer-owned finance row before emitting the portal layout, so foreign or missing agreement identifiers return the intended private HTTP 404 without a headers-already-sent warning. Installed tenant-isolation acceptance requires that 404 together with `Cache-Control: no-store, private` and `Referrer-Policy: no-referrer`. The generated installer inventory is refreshed for the combined bytes. This refresh still requires exact-head installed and package acceptance.
 
 ## Interrupted financing setup recovery — 2026-10-28
 

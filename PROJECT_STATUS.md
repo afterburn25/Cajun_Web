@@ -2,7 +2,7 @@
 
 ## 2026-10-28 — refreshed to Devin financing 404 repair
 
-PR #266 advanced from `36721397` to `726fc7db` with a focused customer-financing error-path correction and its generated inventory hash. The separate integration lane normal-merges that exact feature head: an unavailable or foreign finance agreement now resolves before layout output and returns the intended HTTP 404 without a headers-already-sent warning. Devin's branch remains untouched. Combined exact-head hosted acceptance is required; no prior parent run certifies this refresh.
+PR #266 advanced from `36721397` to `726fc7db` with a focused customer-financing error-path correction and its generated inventory hash. The separate integration lane normal-merges that exact feature head: an unavailable or foreign finance agreement now resolves before layout output and returns the intended HTTP 404 without a headers-already-sent warning. Installed tenant-isolation acceptance now requires that 404 plus the existing private no-store/no-referrer headers, rather than passing on absence of agreement text alone. Devin's branch remains untouched. Combined exact-head hosted acceptance is required; no prior parent run certifies this refresh.
 
 ## 2026-10-28 — interrupted financing setup recovery
 

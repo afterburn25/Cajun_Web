@@ -2,7 +2,7 @@
 
 - Merge feature head `726fc7db` into the separate integration lane without changing Devin's branch.
 - Resolve missing or foreign customer financing agreements before layout output so the intended HTTP 404 is retained without a headers-already-sent warning.
-- Regenerate the combined installer inventory and require fresh exact-head acceptance.
+- Require installed tenant-isolation acceptance to observe the private 404, no-store cache policy and no-referrer policy; regenerate the combined installer inventory and require fresh exact-head acceptance.
 
 ## Unreleased — recover interrupted financing setup
 

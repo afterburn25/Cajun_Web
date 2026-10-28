@@ -96,7 +96,10 @@ def run_browser(env,browser):
           and 'site-use only; resale and distribution are not granted' in page.text.lower())
     foreign=bob.get(finance,timeout=25)
     check('Another client cannot inspect a financing agreement',
-          'Browser financed website' not in foreign.text)
+          foreign.status_code==404
+          and foreign.headers.get('Cache-Control')=='no-store, private'
+          and foreign.headers.get('Referrer-Policy')=='no-referrer'
+          and 'Browser financed website' not in foreign.text)
 
     sign=_form(soup,page,'finance_offer_sign')
     signed=form_data(sign)

@@ -2,7 +2,7 @@
 
 ## 2026-10-28 — feature head refreshed without overwriting Devin
 
-PR #266 advanced by two commits to `726fc7db`. `codex/licensing-integration-review` normal-merges that exact head, preserving Devin's 404-before-layout correction for unavailable or foreign finance agreements and regenerating the combined installer inventory. Earlier exact-parent runs do not certify this merge. Continue only the new combined-head workflows; do not duplicate pending CI. The financing owner-reactivation browser diagnostic, complete PHP/database/browser/package matrices, independent review, real sandbox, next-version upgrade and merged-main gates remain open.
+PR #266 advanced by two commits to `726fc7db`. `codex/licensing-integration-review` normal-merges that exact head, preserving Devin's 404-before-layout correction for unavailable or foreign finance agreements and regenerating the combined installer inventory. The installed foreign-customer regression now requires HTTP404 plus `no-store, private` and `no-referrer`, not merely absent agreement text. Earlier exact-parent runs do not certify this merge. Continue only the new combined-head workflows; do not duplicate pending CI. The financing owner-reactivation browser diagnostic, complete PHP/database/browser/package matrices, independent review, real sandbox, next-version upgrade and merged-main gates remain open.
 
 ## 2026-10-28 — recover interrupted financing setup
 
