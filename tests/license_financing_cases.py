@@ -235,6 +235,9 @@ def run_browser(env,browser):
         'action':'finance_offer_payment',
         'finance_id':offer
     },timeout=25)
+    if 'action is blocked during support' not in forged.text.lower():
+        print('support-forge diagnostic: status=%s url=%s body=%s'
+              % (forged.status_code,forged.url,' '.join(forged.text.split())[:300]))
     check('Staff support session cannot trigger financing payment actions',
           'action is blocked during support' in forged.text.lower())
     support_release=admin.get(support_root+'&download_release='+release['release_id'],timeout=25)
