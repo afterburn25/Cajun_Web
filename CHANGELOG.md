@@ -16,6 +16,12 @@
 - Replace the document-roots native CI fixed host database port with its assigned mapping, retaining the complete runtime/database matrix.
 - Add narrowly filtered financing acceptance for companion PRs targeting the licensing feature branch.
 
+## Unreleased — optional financing webhook isolation
+
+- Keep software captures usable before optional financing storage is prepared.
+- Route unrelated software refunds/voids without requiring financing production activation; preserve the finance gate for matched transactions.
+- Add actual-service isolated regression coverage and a focused PHP 8.2/8.4 workflow. Full integration/release acceptance remains pending.
+
 ## Unreleased — CI queue hygiene
 
 - Fixed development-check workflow concurrency: per-`github.sha` groups (which made `cancel-in-progress` a no-op) replaced with per-PR/per-branch groups; superseded dev runs now cancel automatically while `main` pushes serialize.

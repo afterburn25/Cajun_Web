@@ -1,0 +1,48 @@
+name: Software and financing webhook isolation
+on:
+  pull_request:
+    paths:
+      - 'site/app/billing/finance_charge.php'
+      - 'site/app/billing/finance_payment_review.php'
+      - 'site/app/billing/software_subscription_settle.php'
+      - 'tests/finance_webhook_isolation.php'
+      - '.github/workflows/finance-webhook-isolation.yml'
+  push:
+    branches: [main, feature/software-license-commerce-20261025]
+    paths:
+      - 'site/app/billing/finance_charge.php'
+      - 'site/app/billing/finance_payment_review.php'
+      - 'site/app/billing/software_subscription_settle.php'
+      - 'tests/finance_webhook_isolation.php'
+      - '.github/workflows/finance-webhook-isolation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: finance-webhook-isolation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  routing:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Exercise actual routing services with isolated database reads
+        shell: bash
+        run: |
+          mkdir -p qa
+          docker run --rm --network none -v "$PWD:/app:ro" -w /app php:${{ matrix.php }}-cli php -n tests/finance_webhook_isolation.php | tee qa/finance-webhook-isolation.json
+      - name: Preserve scoped regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: finance-webhook-isolation-php${{ matrix.php }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qa/finance-webhook-isolation.json
+          retention-days: 14
+          if-no-files-found: error

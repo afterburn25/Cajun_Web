@@ -8,6 +8,10 @@ Codex correction branch refreshed from `73d4c37b` to Devin’s `6045b801`; main 
 
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
+## 2026-10-28 — independent licensing routing corrections
+
+Owner requested independent PR #266 integration/QA/security work, then retained the existing **Complete Licensing Integration** chat as integration writer and scoped this chat to review/tested corrections. Frozen source `6045b801`; refreshed feature `5ba2a37d`; main `fdf40a25`. Reproduced and corrected two optional-financing routing failures, with 10 actual-service cases passing in PHP 8.4.25 normal/no-INI modes. Twelve existing contract suites and the frozen-source three-package build/extraction audit pass. All full acceptance, real sandbox, newly versioned populated upgrade and release gates remain separate. [Detailed report](CODEX_LICENSING_REVIEW_2026_10_28.md). Separate correction branch only; no modification to the other writer's branch, main merge, release or live operation.
+
 ## 2026-10-26 — CI queue-hygiene: sha-scoped concurrency groups caused the ~1000-run backlog
 
 - Request: owner directive — audit all workflows, fix queue accumulation, protect release certification; implement on a dedicated branch.

@@ -12,6 +12,10 @@ The Codex companion now also repairs replacement enrollment after the original s
 
 Continue `codex/licensing-integration-review` from `6045b801`, preserving Devin’s feature branch. [Evidence and remaining gates](docs/PR266_INTEGRATION_ACCEPTANCE.md). Next: inspect original companion-PR financing/browser and document-roots matrix results; fix actual next failures, complete security review and source-bound release acceptance. Do not redispatch pending checks or treat local contracts as installed acceptance. Production payments/deployment remain owner gated.
 
+## 2026-10-28 — independent correction for the licensing integration writer
+
+The owner explicitly retained the **Complete Licensing Integration** chat as writer of `codex/licensing-integration-review`; this local reviewer prepares the separate `codex/licensing-webhook-isolation` correction. Frozen parent `6045b801`, refreshed feature `5ba2a37d`, main `fdf40a25`. Review/integrate the two optional-financing webhook routing fixes and regenerated hashes, then test the combined candidate. [Review report](docs/CODEX_LICENSING_REVIEW_2026_10_28.md) records 10 passing local regression cases, 12 existing suite passes, baseline package hashes, historical failure causes, unavailable sandbox secrets and remaining release gates. No approval, merge, release, live charging or deployment is claimed.
+
 ## Port-PR sequencing resolved — 2026-10-26
 
 PRs #257–#260 (vps-uncertainty, ssh-access, provider-catalog, domains ports → `devin/full-site-integration`) each carry a byte-identical copy of the shared `foundation/desk` + `foundation/notifications` layer (sha-verified across all four branches) — merge order is arbitrary and component code never conflicts. The only shared conflicts are the usual docs/config union files (AGENTS, CHANGELOG, STATUS, HANDOFF, SESSION_LOG, ROADMAP, integration queue, `application-tests.yml`, `provider-cloud-sites.yml`) plus each port's own new workflow. Still gated on hosted evidence — proceed 257→260 once runners free.
