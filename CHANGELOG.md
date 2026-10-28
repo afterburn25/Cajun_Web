@@ -1,3 +1,9 @@
+## Unreleased — delayed financing lifecycle events
+
+- Preserve cancellation, reversal recovery and replacement reservations against delayed subscription events.
+- Keep confirmed suspension and its catch-up option when a delayed payment-failure event arrives.
+- Add 45 actual-service lifecycle regressions to the focused PHP 8.2/8.4 CI lane.
+
 ## Unreleased — optional financing webhook isolation
 
 - Keep software captures usable before optional financing storage is prepared.

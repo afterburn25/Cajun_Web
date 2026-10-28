@@ -1,5 +1,9 @@
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
+## 2026-10-28 — delayed financing lifecycle preservation
+
+Independent service probes reproduced cancellation/suspension regression and reversal/replacement fence loss. A separate follow-up branch stacked on #269 adds monotonic handling and 45 actual-service cases (17 fail before, all pass after, PHP 8.4.25 normal/no-INI). The #269 exact commit `f6d49812` also passed a full three-package build and manifest/member/extraction audit; see the [review report](CODEX_LICENSING_REVIEW_2026_10_28.md). Finance browser run 40649494078 at `5ba2a37d` now fails at the overdue scheduler recovery-handoff assertion; handed to the existing fixture writer without editing their files. No live gateway or production operation.
+
 ## 2026-10-28 — independent licensing routing corrections
 
 Owner requested independent PR #266 integration/QA/security work, then retained the existing **Complete Licensing Integration** chat as integration writer and scoped this chat to review/tested corrections. Frozen source `6045b801`; refreshed feature `5ba2a37d`; main `fdf40a25`. Reproduced and corrected two optional-financing routing failures, with 10 actual-service cases passing in PHP 8.4.25 normal/no-INI modes. Twelve existing contract suites and the frozen-source three-package build/extraction audit pass. All full acceptance, real sandbox, newly versioned populated upgrade and release gates remain separate. [Detailed report](CODEX_LICENSING_REVIEW_2026_10_28.md). Separate correction branch only; no modification to the other writer's branch, main merge, release or live operation.

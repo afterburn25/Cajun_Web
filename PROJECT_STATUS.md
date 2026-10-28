@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — independent delayed-financing-event correction
+
+Branch `codex/licensing-lifecycle-ordering`, stacked on [routing correction #269](https://github.com/afterburn25/Cajun_Web/pull/269), preserves cancelled, reversal-recovery and replacement states under delayed gateway lifecycle events, and retains confirmed suspension after a delayed failure. The real-service regression has 45 passing isolated cases (17 failed before the fix). Both corrections remain proposed for the existing integration writer; native/gateway/installed acceptance is still required. [Review and evidence](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
+
 ## 2026-10-28 — independent licensing webhook correction
 
 Branch `codex/licensing-webhook-isolation` prepares two focused fixes for PR #266: optional financing no longer queries absent finance tables for software captures or requires financing production activation for unrelated software refunds/voids. Ten actual-service regression cases pass locally; broader acceptance, sandbox and release gates remain open. The owner retained the separate **Complete Licensing Integration** chat as integration writer. [Exact source, findings, evidence and handoff](docs/CODEX_LICENSING_REVIEW_2026_10_28.md). Not merged, released or deployed.
