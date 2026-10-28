@@ -29,6 +29,8 @@ jobs:
     # reviewed default branch. Never pass merchant secrets to code selected
     # from an arbitrary workflow-dispatch ref.
     needs: sandbox-dispatch-boundary
+    # Server-side branch policy and environment-only secrets enforce access.
+    environment: authorize-net-sandbox
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:

@@ -1,18 +1,19 @@
 # Authorize.Net sandbox workflow security review
 
-## Finding and correction
+## Correction and enforcement boundary
 
-**High severity before correction.** The original PR271 workflows used the workflow-dispatch ref as their checkout source and then exposed the three Authorize.Net sandbox secrets to Python from that ref. The provider probes are standalone and do not load candidate application PHP, so branch selection added no integration assurance. A modified selected branch could instead receive the sandbox credentials.
+The manual-dispatch ref supplies both the workflow and checked-out source. Shell guards, driver hashes and source contracts are editable on that ref. They can detect accidental regression in reviewed source, but cannot independently authorize access to repository or organization secrets.
 
-The correction registers exact reviewed copies of both provider probes on `main`. A separate no-secret boundary job requires explicit confirmation and `github.ref` equal to `refs/heads/main`; a wrong ref fails rather than appearing as a skipped success. Secret-bearing jobs depend on that guard. Checkout is pinned to the event SHA with credential persistence disabled. Both workflows use non-overlapping concurrency groups. SHA-256 checks pin the provider-probe bytes before secret availability is checked, and `tests/sandbox_workflow_contract.py` preserves these boundaries.
+Both credential-bearing jobs now reference `authorize-net-sandbox`. Before any credentials or real run, the repository administrator must configure this environment with a selected deployment **branch** rule for exactly `main` and store all three `ANET_SANDBOX_*` values only in that environment. Do not configure an equivalent tag rule, and do not leave repository/organization-scoped copies accessible to this repository. The environment policy is the server-side restriction; the YAML declaration alone does not create it. A newly auto-created environment is not evidence of protection.
 
-## Verified scope
+Retain explicit sandbox confirmation, the no-secret main-ref guard, exact event-SHA checkout without persisted credentials, read-only permissions, non-canceling per-workflow concurrency and pinned sandbox-only provider probes. The source contract pins complete reviewed workflow and driver bytes so commenting out a dependency, guard or environment fails regression verification. This does not prevent a branch author from changing the contract too; external environment policy remains required.
 
-- Both workflow YAML files parse successfully.
-- The workflow contract passes.
-- Both Python drivers compile.
-- Driver SHA-256 values match integration candidate `03c4f606b5e536c7173ebf35200a40715228e527` byte-for-byte.
-- The source contracts allow only the Authorize.Net sandbox API and Accept.js hosts and reject the production hosts.
-- Repository documentation/dependency checks and whitespace validation pass.
+## Evidence and remaining gates
 
-No Authorize.Net request was sent, no secret value was read, and no production switch, release, merge to `main` or deployment is included. The manual runs remain provider-contract evidence only; installed application, ledger, webhook and release acceptance remain separate gates.
+Independent review of PR279 head `25dfe346d2c0bb27643d6ee2ede4916ca98b2fb5` verified both provider probes byte-for-byte against integration `03c4f606b5e536c7173ebf35200a40715228e527`. The original substring contract passed four offline negative fixtures with dependency or ref guards commented out. No changed workflow was executed. A read-only repository query during the 28 October 2026 review found zero environments. Credentials are unavailable; no environment configuration, secret access or hosted enforcement is claimed.
+
+For this correction, parse both workflows and compare their semantics to the reviewed source: only the environment binding should differ. Run the contract on unchanged files, then verify that removing either environment, commenting either dependency/guard, or modifying either provider probe is rejected. These are offline regression checks, not sandbox payment evidence.
+
+Before running, verify the actual environment branch policy and credential scope through GitHub settings/API, then complete independent source review and normal main integration. A denied non-main test using non-sensitive fixtures may validate platform policy separately; never expose real merchant credentials for a negative test. Provider contracts remain separate from installed application, ledger, webhook, failure/reversal and release acceptance.
+
+References: [dispatch ref semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch), [environment branch rules and secret access](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments).

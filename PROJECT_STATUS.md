@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 - Sandbox secret boundary correction pending integration
+
+Independent review of PR279 head `25dfe346d2c0bb27643d6ee2ede4916ca98b2fb5` found that branch-editable guards cannot restrict repository secrets against a modified dispatch ref. This focused follow-up binds both provider jobs to `authorize-net-sandbox`, pins complete reviewed workflow/driver bytes and documents the required server-side main-branch policy and environment-only credentials. Both workflows parse with only the environment binding changed; the corrected contract passes and rejects all eight negative fixtures. The original contract passed four unsafe guard/dependency mutations. Documentation/dependency checks pass. No environment is configured and credentials remain unavailable; no gateway request, hosted enforcement, main merge or release is claimed. See [the security review](docs/CODEX_SANDBOX_WORKFLOW_SECURITY_REVIEW.md). The designated integration writer retains the licensing branch.
+
 ## 2026-10-26 - CI queue-hygiene repair (in flight)
 
 Branch `devin/ci-concurrency-hygiene`: all 34 superseded-run-blocking workflows audited; 32 development checks regrouped from per-`github.sha` concurrency (which made `cancel-in-progress` a no-op) to per-PR/per-branch groups with main-exempt cancellation; two unguarded checks gained the same block. `tools/ci_health.py` + weekly `ci-health.yml` + `docs/CI_HEALTH.md` added. Protected release/acceptance workflows unchanged. Backlog root cause was sha-scoped groups + a ~35-workflow-per-push lane against a ~4-5-slot account runner ceiling, not a GitHub outage. Not merged; no release or deployment implied.

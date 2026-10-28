@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 - Review sandbox environment binding before credentials
+
+Focused follow-up to PR279/PR271: both manual provider jobs reference `authorize-net-sandbox`; complete workflow/driver hash pins replace substring checks that accepted commented-out guards. Two unchanged-source contracts pass and eight offline negative fixtures reject source drift; YAML semantic comparison permits only the added environment binding. Read-only GitHub inspection found zero environments. Before execution, configure and verify an explicit environment deployment **branch** rule for exactly `main` and keep the three sandbox credentials only in that environment, without repository/organization fallback. Branch-local source checks do not enforce this policy. Credentials remain unavailable; keep that gate open without requesting them again. Required independent review and normal integration remain pending. No provider request, policy mutation, main write or deployment occurred. [Scope and evidence](docs/CODEX_SANDBOX_WORKFLOW_SECURITY_REVIEW.md).
+
 ## Port-PR sequencing resolved — 2026-10-26
 
 PRs #257–#260 (vps-uncertainty, ssh-access, provider-catalog, domains ports → `devin/full-site-integration`) each carry a byte-identical copy of the shared `foundation/desk` + `foundation/notifications` layer (sha-verified across all four branches) — merge order is arbitrary and component code never conflicts. The only shared conflicts are the usual docs/config union files (AGENTS, CHANGELOG, STATUS, HANDOFF, SESSION_LOG, ROADMAP, integration queue, `application-tests.yml`, `provider-cloud-sites.yml`) plus each port's own new workflow. Still gated on hosted evidence — proceed 257→260 once runners free.
