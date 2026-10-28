@@ -1,0 +1,11 @@
+# Published-upgrade recurring prerequisite
+
+28 October 2026. Focused test correction based on integration `0bf2c5d543b77bf333f4315a663f5bab5b45c850`.
+
+Application [run40667110008](https://github.com/afterburn25/Cajun_Web/actions/runs/40667110008), source `0495e2e7` / identical checkout `fe0aa4ba`, passes 2,747 Apache protection/root/subfolder/installer checks, then the separate published1.24 continuation stops after 101 passing checks. Its first failure is `('Form response status', 'recurring_setup', 403)` in candidate-only later-record preparation. The sealed original-retention artifact proves `payments_schema_version` is `1` by its canonical hashed value. Current recurring authority correctly requires payment schema2. The fixture never submitted the existing explicit owner payment-preparation form.
+
+The correction submits `payments_migrate` with the actual owner password and backup confirmation before creating the candidate's later records. It verifies the original schema1 marker becomes schema2, the response still states checkout is disabled, and every original row/column/private file survives with only that exact marker value allowed to change. Subsequent comparisons begin at the explicitly prepared snapshot. No published baseline data is fabricated, no shipping authorization/readiness check changes, and no gateway credentials are configured.
+
+Targeted execution passes ten checks on each PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combination (40 total). It uses the exact new AST section and canonical upgrade form/retention helpers with actual owner HTTP/session/CSRF/PDO. It reproduces the original GET403 and exact form exception, submits real migration, restores recurring access, retains all rows/private files, keeps gateway/request tables empty and confirms repeated migration is business-idempotent. These prepared synthetic schemas isolate the readiness marker transition; this is not local execution of the complete published-package upgrade or Apache. Fresh combined hosted upgrade continuation remains required.
+
+The distinct requested published-v1.25-to-next-version gate, full installed runtime matrix, independent approval, main/postmerge and correctly versioned release remain open. Sandbox credentials are unavailable. No live payment or deployment occurred.
