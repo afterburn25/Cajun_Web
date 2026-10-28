@@ -305,10 +305,10 @@ function software_grant_register_domain(int $licenseId,string $domain,int $actor
     software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_register_domain($licenseId,$domain,$actor);return false;}
-    software_grant_require_customer_active($licenseId);
     $domain=license_canonical_domain($domain);
     license_transaction(function()use($licenseId,$domain,$actor):void{
         license_lock($licenseId);
+        software_grant_require_customer_active($licenseId);
         $existing=one('SELECT is_active FROM '.table('license_domains').' WHERE license_id=? AND domain=?',[$licenseId,$domain]);
         if(!$existing||!(int)$existing['is_active']){
             if(software_grant_recent_deactivation_blocks_add($licenseId,$domain)){
@@ -325,10 +325,10 @@ function software_grant_deactivate_domain(int $licenseId,string $domain,int $act
     software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_deactivate_domain($licenseId,$domain,$actor);return false;}
-    software_grant_require_customer_active($licenseId);
     $domain=license_canonical_domain($domain);
     license_transaction(function()use($licenseId,$domain,$actor):void{
         license_lock($licenseId);
+        software_grant_require_customer_active($licenseId);
         if(!one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',[$licenseId,$domain])){
             throw new InvalidArgumentException('Current domain is not active on this license.');
         }
@@ -352,12 +352,12 @@ function software_grant_replace_domain(int $licenseId,string $oldDomain,string $
         license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
         return;
     }
-    software_grant_require_customer_active($licenseId);
     $oldDomain=license_canonical_domain($oldDomain);
     $newDomain=license_canonical_domain($newDomain);
     if($oldDomain===$newDomain)throw new InvalidArgumentException('The new domain is the same as the current one.');
     license_transaction(function()use($licenseId,$oldDomain,$newDomain,$actor):void{
         license_lock($licenseId);
+        software_grant_require_customer_active($licenseId);
         if(software_grant_recent_deactivation_blocks_add($licenseId,$newDomain)){
             throw new RuntimeException('This license recently changed installations. Try again after the owner-configured cooldown.');
         }
