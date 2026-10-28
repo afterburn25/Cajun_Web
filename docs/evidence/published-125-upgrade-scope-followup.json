@@ -1,0 +1,99 @@
+{
+  "head": "23b2df9b19094e061fba0f65f6e852dad5dce69c",
+  "ci_checkout": "d7c5cd2f66d1e708af6611b463d43bd42bdadd6c",
+  "tree": "6195257ed6ff064b4b0a181ed3695be53ca1cbd5",
+  "run": 40782764921,
+  "job": 123148318903,
+  "artifact_id": 12856753591,
+  "artifact_sha256": "06fa1ab76b949f4b02ebcb45122d400c31beade97d5eba0f7a8a90f47356a63a",
+  "artifact_members": [
+    {
+      "name": "organized-software-1.25 root-rewrite 1.25.0-install.json",
+      "sha256": "fcade1e337ab6244e6fa6e6a5b6901ca9e3ab301faf24c520ebd4233dbc43a94"
+    },
+    {
+      "name": "software-release125-root-rewrite-launcher.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "software-release125-progress.json",
+      "sha256": "de024bb44c39da46ce386206d1422bd530e76d4902479575565935955bb80f27"
+    },
+    {
+      "name": "software-release125-root-rewrite.log",
+      "sha256": "43fb673f7b3ae662e3f960b9cfc8262d801c532817abe69c7592b2fbef0aa1ca"
+    },
+    {
+      "name": "software-release125-upgrade.json",
+      "sha256": "8dae5bde676d115b1c5cb7c968cdcdb8933f6b6708e413a5dc1e915b0eb70e92"
+    }
+  ],
+  "retained_report": {
+    "passed": false,
+    "complete": false,
+    "baseline": "published v1.25.0 COMPLETE-UPLOAD",
+    "candidate_version": "1.26.0",
+    "scope": "Published baseline update/recovery with synthetic local data; no live provider, mail or payment transport",
+    "scopes": [],
+    "checks": [
+      {
+        "name": "root-rewrite Apache started",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 actual retained release installs through Apache",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 owner signs in before saving original provider settings",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 authenticated original provider save succeeds before history seeding",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 original 1.20 installation holds encrypted provider profile and nonempty check history",
+        "passed": true
+      }
+    ]
+  },
+  "first_error": "Original inventory fixture failed.",
+  "cause": "The synthetic reader returned InventoryProjector.packagesList with its default empty scope. Published v1.25 requires twenty-i|<profile_id>|packages.list; its real application guard refuses the unbound result.",
+  "repair": "Bind the v1.25 synthetic observation to the exact supplied profile and packages.list operation. Keep the v1.24 snapshot scope and the actual production guard unchanged. Include the finite state in a failed fixture message.",
+  "published_projection_files_identical_to_executed_files": {
+    "includes/foundation/provider/TransportException.php": "05778aef7df8dea1b204b56624b53739561a27a2bd5b897aa64cbb2140c3fb4d",
+    "includes/foundation/provider/TransportResponse.php": "f1eb6e3dd95a5161a07afa1b716081258e2a2f9a427997f9880c4ea7d63f6c76",
+    "includes/foundation/twentyi-inventory/InventoryPackage.php": "05904c63c7ee000fa98de6e4dcbdcd65bb6c9967a4ac337d867947249b36ec1e",
+    "includes/foundation/twentyi-inventory/InventorySnapshot.php": "57f39c7b9116810aeec65dca1635895c932a719f5a8f90c23c4ea89b28ec4395",
+    "includes/foundation/twentyi-inventory/InventoryProjector.php": "c3dde831e7a56bf9f607b5a5253537742e3cad1dea8842c4e6b678f14f18422d"
+  },
+  "local_contracts": {
+    "original": {
+      "test_methods": 12,
+      "failures": 2,
+      "failed_accounts": [
+        "original-profile",
+        "second-profile"
+      ]
+    },
+    "corrected": {
+      "php": [
+        "8.2.35",
+        "8.4.25"
+      ],
+      "test_methods_per_runtime": 12,
+      "failures": 0
+    }
+  },
+  "scope": "Actual fixture closure and immutable published projection classes; no provider network or actual upgrade claim. Hosted full upgrade remains required.",
+  "local_native_inventory_attempt": {
+    "passed": false,
+    "database": "Disposable MariaDB, fresh in125_ schema",
+    "first_failure": "Published provider credential creation correctly refused Windows inability to retain private 0600 file permissions.",
+    "security_guard_bypassed": false,
+    "fixture_reached": false,
+    "server_gracefully_stopped": true,
+    "data_and_logs_retained": true
+  }
+}
