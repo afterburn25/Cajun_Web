@@ -99,6 +99,10 @@ try {
     if (!(bool) $license['is_active']) {
         license_response(false, 'License is deactivated');
     }
+    require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+    if($productId===null&&software_grant_requires_product_identity($license)){
+        license_response(false,'Product identifier is required for this software license');
+    }
     if($productId!==null&&!hash_equals((string)$license['product_id'],$productId)){
         license_response(false,'License is not authorized for this product');
     }
@@ -124,7 +128,6 @@ try {
 
     // Existing v3 keys remain valid; new time-limited grants must also pass
     // their server-side type/expiration policy before granting authority.
-    require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
     if (!software_grant_verdict($license, $domain)) {
         license_response(false, 'License expired, over its installation limit, or not authorized');
     }

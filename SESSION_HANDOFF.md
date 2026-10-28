@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — require product identity for software validation
+
+Integrate the focused correction based on `03c4f606`: the public validator previously authorized a valid software key/domain when `product_id` was omitted, permitting cross-product reuse on the same site. `software_grant_requires_product_identity()` now distinguishes new software-entitlement rows from genuine legacy website keys. The handler definitively denies missing identity only for the former, retains the existing mismatch denial, and preserves legacy `{license_key, domain}` callers. The installed suite proves the omission path and native coverage proves both classification directions. Generated inventory, 69 build guards, 283 artifact checks, Python/docs/whitespace pass; hosted PHP8.2/8.4 database and HTTP execution remains required. [Evidence](docs/CODEX_SOFTWARE_PRODUCT_VALIDATION_REVIEW.md).
+
 ## 2026-10-28 — PR #274 support follow-up
 
 Integrate exact #274 head `617e67cb0da2bc3037a566142dc69e09c2bcd037` after its earlier seat-scoping commit. The follow-up corrects only installed acceptance/review documentation: forged support mutations use the ordinary support portal to expose the refusal while requiring one attributed denied event; the private software view and ZIP remain separately HTTP403. No shipping authority change.

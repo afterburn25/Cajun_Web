@@ -1,3 +1,9 @@
+## Unreleased — product-bound software validation
+
+- Require new software entitlements to identify their exact product during public validation, closing cross-product key reuse on an otherwise valid licensed domain.
+- Preserve the legacy website-license request contract for keys without a software-entitlement row.
+- Add native compatibility coverage and installed HTTP regression evidence; refresh the generated installer inventory.
+
 ## Unreleased — support-denial acceptance attribution
 
 - Verify forged support-context software mutations produce exactly one attributed denial without weakening private-view or download 403 boundaries.

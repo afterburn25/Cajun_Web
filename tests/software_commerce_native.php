@@ -220,6 +220,8 @@ try{
     $trial=software_grant_create(1,'SOFTWARE-TEST','trial','Synthetic Buyer','www.example.com',gmdate('Y-m-d H:i:s',time()+86400),1);
     db()->commit();
     $lic=license_get($trial['key']);
+    swok(software_grant_requires_product_identity($lic),
+        'Software entitlement requires product-bound runtime validation');
     swok(software_grant_verdict($lic,'example.com'),'Trial authorizes its registered domain');
     query('UPDATE '.table('software_entitlements').' SET expires_at=? WHERE license_id=?',
         [gmdate('Y-m-d H:i:s',time()-86400),$trial['id']]);
@@ -228,6 +230,9 @@ try{
         'Software entitlement is recognized by legacy-bundle guard');
     swdenied(fn()=>license_bundle_store((int)$trial['id'],$zipPath,'Legacy software bundle must fail'),
         'Software entitlement cannot be stored through legacy website bundle path');
+    $legacyCompatibilityKey=license_create(1,'restaurant',1,false,null);
+    swok(!software_grant_requires_product_identity(license_get($legacyCompatibilityKey)),
+        'Legacy website key preserves validation without a product field');
     db()->beginTransaction();
     try{
         software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,'',false,null,$password);
@@ -261,6 +266,8 @@ try{
     $master=software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,
         'Owner-approved release validation',false,null,$password);
     db()->commit();
+    swok(software_grant_requires_product_identity(license_get($master['key'])),
+        'Internal master remains product-bound despite its any-domain authority');
     swok(software_grant_verdict(license_get($master['key']),'other.example.com'),'Owner master supports any domain');
     swdenied(fn()=>software_grant_staff_register_domain((int)$master['id'],'master-should-not-register.example.com',1),
         'Owner cannot attach installation domains to a software master license');
