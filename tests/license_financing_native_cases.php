@@ -346,7 +346,7 @@ rb_ok('Suspended ARB identity is retained while replacement enrollment is reserv
     ($reserved['gateway_subscription_id']??'')==='810001'&&($reserved['status']??'')==='replacing');
 $replacementState=license_finance_subscription_replacement_finalize(
     (string)$offer['id'],'810001','810002',$replacement,
-    ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment'
+    ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment','canceled'
 );
 $currentSub=license_finance_subscription_row((string)$offer['id']);
 $oldSub=license_finance_subscription_history_row('810001');
@@ -355,7 +355,7 @@ rb_ok('Replacement ARB archives the suspended identity and activates only remain
     &&($currentSub['gateway_subscription_id']??'')==='810002'
     &&(int)$currentSub['period_offset']===1&&(int)$currentSub['total_occurrences']===3
     &&(int)$currentSub['replacement_count']===1
-    &&($oldSub['terminal_status']??'')==='billing_suspended'
+    &&($oldSub['terminal_status']??'')==='canceled'
     &&($oldSub['replaced_by_gateway_subscription_id']??'')==='810002');
 rb_ok('Delayed lifecycle event from retired ARB identity is historical and cannot mutate current billing',
     license_finance_subscription_lifecycle_review('net.authorize.customer.subscription.suspended','810001')==='historical_subscription');

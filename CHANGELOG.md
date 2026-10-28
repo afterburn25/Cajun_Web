@@ -1,3 +1,9 @@
+## Unreleased — financed billing replacement corrections
+
+- Allow caught-up replacement enrollment after the original agreement start while retaining exact future remaining periods.
+- Require verified permanent retirement of the prior ARB before replacement billing, preserving its terminal state in history.
+- Align installed acceptance with the current outstanding-installment link and preserve Devin’s fixture class fix.
+
 ## Unreleased — PR266 integration acceptance corrections
 
 - Preserve Devin’s separate-project financing fixture repair and verify independent paid/unpaid project access through installed endpoints.

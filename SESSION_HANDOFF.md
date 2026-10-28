@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — financed replacement recovery hardening
+
+The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).
+
 ## 2026-10-28 — PR266 Codex correction lane
 
 Continue `codex/licensing-integration-review` from `6045b801`, preserving Devin’s feature branch. [Evidence and remaining gates](docs/PR266_INTEGRATION_ACCEPTANCE.md). Next: inspect original companion-PR financing/browser and document-roots matrix results; fix actual next failures, complete security review and source-bound release acceptance. Do not redispatch pending checks or treat local contracts as installed acceptance. Production payments/deployment remain owner gated.

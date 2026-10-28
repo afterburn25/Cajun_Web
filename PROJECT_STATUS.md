@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — financed replacement recovery hardening
+
+The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).
+
 ## 2026-10-28 — PR266 independent correction candidate
 
 Owner assigned Codex a separate licensing/financing integration pass on `codex/licensing-integration-review`, refreshed to Devin parent `6045b801`. Preserves Devin’s project-isolation fix; adds installed independence assertions, a dynamic document-roots CI port, and narrowly filtered companion-PR acceptance. Local checks pass; hosted candidate acceptance and security/release gates remain pending. [Exact failures, evidence and remaining gates](docs/PR266_INTEGRATION_ACCEPTANCE.md). No production activation or deployment.

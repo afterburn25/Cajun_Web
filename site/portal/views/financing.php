@@ -111,7 +111,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
                 try{$replacement=license_finance_subscription_replacement_contract($row);}catch(Throwable){$replacement=null;}
                 if($replacement){
                     echo '<h3>Restore automatic installment payments</h3>';
-                    echo '<p class="notice info">Your overdue issued installment is caught up. Authorize.Net cannot resume the old suspended subscription, so CajunWebPro will preserve it in history and create a replacement only for the remaining signed installments.</p>';
+                    echo '<p class="notice info">Your issued installment is caught up. CajunWebPro will confirm that the prior subscription is permanently retired, preserve it in history, and create a replacement only for the remaining signed installments.</p>';
                     echo '<p class="hint">Replacement begins '.esc($replacement['start_date']).' and covers '.(int)$replacement['occurrences'].' remaining installment'.((int)$replacement['occurrences']===1?'':'s').'. The signed financing agreement, amount, cadence, license key, and customer remain unchanged.</p>';
                     echo '<form method="post" data-authorize-net data-login="'.esc($financeGateway['login']).'" data-client-key="'.esc($financeGateway['client_key']).'">'.support_csrf_field();
                     echo '<input type="hidden" name="action" value="finance_subscription_reenroll"><input type="hidden" name="finance_id" value="'.esc($row['id']).'">';

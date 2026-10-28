@@ -1,7 +1,6 @@
 <?php
 /** Disposable financed-license installed-browser fixture. Never contacts a gateway. */
 declare(strict_types=1);
-use CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms;
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||count($argv)!==3)exit(2);
 $root=realpath(__DIR__.'/../test-runtime/web/existing');
 if(!$root||!is_file($root.'/includes/bootstrap.php')||!is_file($root.'/config.php'))exit(2);
@@ -225,7 +224,7 @@ if($operation==='gateway-off'){
 }
 if($operation==='late'){
     $schedule=recurring_billing_row((string)$offer['schedule_id']);$doc=recurring_billing_validate($schedule);
-    $terms=RecurringBillingTerms::fromArray($doc->data()['terms']);$p=$terms->period(0);
+    $terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($doc->data()['terms']);$p=$terms->period(0);
     $at=strtotime($p['start'].' 12:00:00 UTC');if($at===false)throw new RuntimeException('Synthetic period timestamp invalid.');
     $issued=license_finance_issue_period($value,0,$at);
     $late=(new DateTimeImmutable($p['due'].'T00:00:00',new DateTimeZone('UTC')))->modify('+6 days')->format('Y-m-d');
@@ -235,7 +234,7 @@ if($operation==='late'){
 if($operation==='gateway-suspended'){
     finance_fixture_sandbox_gateway($password);
     $schedule=recurring_billing_row((string)$offer['schedule_id']);$doc=recurring_billing_validate($schedule);
-    $terms=RecurringBillingTerms::fromArray($doc->data()['terms']);$p=$terms->period(0);
+    $terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($doc->data()['terms']);$p=$terms->period(0);
     $now=gmdate('Y-m-d H:i:s');
     $sub=one('SELECT id FROM '.table('license_finance_subscriptions').' WHERE offer_id=?',[$offer['id']]);
     if(!$sub){
@@ -273,7 +272,7 @@ if($operation==='catchup'){
 }
 if($operation==='payoff'){
     $schedule=recurring_billing_row((string)$offer['schedule_id']);$doc=recurring_billing_validate($schedule);
-    $terms=RecurringBillingTerms::fromArray($doc->data()['terms']);$last=$terms->period(3);
+    $terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($doc->data()['terms']);$last=$terms->period(3);
     $at=strtotime($last['start'].' 12:00:00 UTC');if($at===false)throw new RuntimeException('Synthetic payoff timestamp invalid.');
     license_finance_issue_due($value,$at);
     $lastPayment=0;$lastInvoice=0;

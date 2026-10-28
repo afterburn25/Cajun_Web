@@ -2,7 +2,7 @@
 
 ## 2026-10-28 correction candidate
 
-Owner assigned Codex a separate integration, QA and security pass for PR #266. Work is on `codex/licensing-integration-review`; Devin retains the feature branch and final integration/release coordination. Main observed at `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`; refreshed feature parent is `6045b801fc7653125da5d11c0a8cd956ce58a26c`. Latest published release remains [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0), source `b79c67110829126916e3a65e616191542448bccc`.
+Owner assigned Codex a separate integration, QA and security pass for PR #266. Work is on `codex/licensing-integration-review`; Devin retains the feature branch and final integration/release coordination. Main observed at `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`; refreshed feature parent is `5ba2a37d` (its full identity is retained by the merge parent). Latest published release remains [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0), source `b79c67110829126916e3a65e616191542448bccc`.
 
 ### Original failures and compatible repairs
 
@@ -14,6 +14,16 @@ Owner assigned Codex a separate integration, QA and security pass for PR #266. W
 ### Next executed blocker
 
 [Financing run40648391263](https://github.com/afterburn25/Cajun_Web/actions/runs/40648391263) on Devin parent `6045b801` confirms the active project-release download and detail now pass. Its next failure is the CLI fixture's late-installment operation: unqualified `RecurringBillingTerms` resolves in the global namespace, while the class lives in `CajunWebPro\Foundation\RecurringBilling`. The fixture now imports that class explicitly, as the maintained recurring-browser fixture already does. No application authorization change is needed for this harness failure. Subsequent installed checks remain unexecuted until the corrected candidate runs.
+
+### Replacement billing repairs from self-review
+
+- The replacement contract previously called the original-enrollment contract before replacing its start date. Once the original anchor passed, legitimate catch-up recovery was refused. Both callers now use a pure finite-contract policy; replacement validates the next unpaid signed period and remaining count, while initial enrollment still requires its original future start. Five policy regressions cover historical/due/invalid starts and exhausted installments.
+- Prior local suspension alone did not prove the old ARB could never charge again. Replacement now reads its exact retained gateway terms, cancels a suspended ARB, and independently requires a canceled/expired/terminated readback before creating a new subscription. An active old ARB, a mismatched contract, refusal or uncertain response cannot admit parallel billing. Owner replacement reconciliation follows the same retirement guard. Immutable history now retains the verified terminal status.
+- Nine isolated synthetic-gateway tests exercise the actual retirement orchestrator. Native finalization coverage expects the retained terminal status. These synthetic checks do not certify real Authorize.Net behavior.
+- [Companion financing run40649280800](https://github.com/afterburn25/Cajun_Web/actions/runs/40649280800), source `a16c0e7e`, passes independent active/unpaid project access, domain movement and grace/suspension checks, then fails to locate the recovery link. The product says “Pay the outstanding installment securely”; acceptance still expected “overdue.” The selector and its disappearance assertion now use the current label without changing payment/access assertions.
+- Adopted Devin’s `5ba2a37d` fully qualified fixture class references, replacing the equivalent local import repair.
+
+Official provider references checked 2026-10-28: [legacy recurring API](https://developer.authorize.net/api/reference/features/recurring-billing.html), [current subscription editor](https://developer.authorize.net/docs/anet/en-us/merchant/user/all/anet/anet-olh-merchant/payments-intro/subscriptions-intro/subscription-edit.html), and [Accept.js](https://developer.authorize.net/api/reference/features/acceptjs.html). Suspended status is not permanent retirement; provider interfaces document different recovery operations. The replacement path therefore requires terminal readback. The merchant-hosted card form remains SAQ A-EP scope and is not certified by these source checks. All review here is self-review; required independent approval remains open.
 
 ### Verification and limits
 
