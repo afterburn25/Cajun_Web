@@ -5,6 +5,7 @@
 - Load software-commerce readiness before lifecycle and whole-license deactivate/reactivate checks; add a fast routing contract and PR policy execution.
 - Run the existing full Application and Software focused installed acceptance suites for PRs targeting the licensing feature branch; include dispatcher/permission changes in the focused trigger.
 - Run source-integrity, fast and full candidate package verification for the licensing integration PR without treating unchanged VERSION `1.25.0` as a completed next-version upgrade.
+- Run the remaining software syntax, native commerce, amount, CSP, reversal, subscription-lifecycle and webhook contract gates on the exact licensing integration candidate.
 
 ## Unreleased — customer domain cooldown event ordering
 

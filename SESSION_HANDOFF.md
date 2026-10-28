@@ -8,6 +8,8 @@ The licensing integration PR base is now included in the existing full Applicati
 
 The existing software package source, fast and full workflows also now admit the integration PR base. Require their exact-head results for generated-source integrity, all three direct-extract archives, checksum/member safety, no nested ZIPs and the pinned v1.25 delta audit. VERSION is still `1.25.0`, so this is candidate packaging evidence—not the real populated v1.25-to-next-version upgrade gate.
 
+All remaining software-only gates now admit the same PR base: browser-source syntax, fast/native commerce databases, exact gateway amount, payment CSP, refund/void reversal, subscription lifecycle and signed webhook contracts. These are distinct from the real Authorize.Net sandbox workflows and must not be described as provider transactions.
+
 ## 2026-10-28 — integrate focused domain-cooldown correction
 
 The integration lane now includes exact PR #272 head `9eecf573`, stacked after #269/#270. `software_grant_recent_deactivation_blocks_add()` compares serialized audit IDs so equal-second replacement and later standalone deactivation events cannot be confused. The correction retains same-domain recovery, owner override, disabled/expired cooldown and the installation cap; 12 native service cases and a dynamic-port PHP8.2/8.4 × MariaDB/MySQL workflow are included. Run the new exact combined head rather than accepting #272's isolated evidence as combined acceptance.

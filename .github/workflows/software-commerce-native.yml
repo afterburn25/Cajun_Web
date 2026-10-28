@@ -25,6 +25,31 @@ on:
       - 'site/database/schema/software_commerce_schema.php'
       - 'site/database/migrations/software_commerce_migrate.php'
       - '.github/workflows/software-commerce-native.yml'
+  pull_request:
+    branches: [feature/software-license-commerce-20261025]
+    paths:
+      - 'tests/software_commerce_native.php'
+      - 'site/app/billing/software_payment_review.php'
+      - 'site/app/billing/catalog.php'
+      - 'site/app/billing/software_orders.php'
+      - 'site/app/licenses/software_grants.php'
+      - 'site/app/licenses/software_products.php'
+      - 'site/app/licenses/software_asset_access.php'
+      - 'site/app/licenses/software_assets.php'
+      - 'site/app/licenses/software_notices.php'
+      - 'site/app/licenses/software_usage.php'
+      - 'site/app/licenses/software_fulfill.php'
+      - 'site/app/billing/software_subscription_settle.php'
+      - 'site/app/billing/software_subscriptions.php'
+      - 'site/app/billing/software_subscription_enroll.php'
+      - 'site/app/billing/software_subscription_cancel.php'
+      - 'site/app/billing/software_charge.php'
+      - 'site/app/billing/software_charge_guard.php'
+      - 'site/app/billing/authorize_net_contract.php'
+      - 'site/app/billing/authorize_net_webhooks.php'
+      - 'site/database/schema/software_commerce_schema.php'
+      - 'site/database/migrations/software_commerce_migrate.php'
+      - '.github/workflows/software-commerce-native.yml'
   workflow_dispatch:
 permissions:
   contents: read

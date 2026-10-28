@@ -8,6 +8,8 @@ CI review found that PRs targeting the licensing feature branch did not start th
 
 The three maintained package workflows had the same integration-base gap. Source integrity, fast direct-extraction/UPDATE audit, and full FULL-PROJECT/COMPLETE-UPLOAD/UPDATE verification now run for the licensing integration PR. These candidate checks do not replace the still-deferred populated published-v1.25-to-next-version gate while VERSION remains `1.25.0`.
 
+The remaining software-only syntax, native commerce, amount, CSP, reversal, subscription-lifecycle and webhook contract workflows were also push-only and are not all subsumed by Application acceptance. They now admit the licensing integration PR so exact-candidate evidence does not depend on older Devin-branch results.
+
 ## 2026-10-28 — customer domain cooldown bypass correction integrated
 
 Focused PR #272 reproduced a customer restriction bypass: with a one-install entitlement and 24-hour cooldown, replace A with B, deactivate B and register C could succeed when the replacement and standalone deactivation shared the same second-resolution timestamp. The combined integration candidate now uses audit IDs already serialized by the license lock to distinguish event order while retaining timestamp-based cooldown expiry, same-domain recovery and owner overrides. The exact #272 source, 12 native cases and focused four-lane workflow are merged into the review lane; fresh combined-head execution remains required.
