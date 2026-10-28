@@ -37,7 +37,7 @@ function finance_fixture_client():void{
 function finance_fixture_id(string $seed):string{return substr(hash('sha256','finance-browser|'.$seed),0,32);}
 function finance_fixture_private_storage(string $root):void{
     $private=__DIR__.'/../test-runtime/finance-private';
-    if(!is_dir($private)&&!mkdir($private,0700,true)&&!is_dir($private)){
+    if(!is_dir($private)&&!mkdir($private,0755,true)&&!is_dir($private)){
         throw new RuntimeException('Synthetic finance private storage could not be created.');
     }
     $private=realpath($private);
@@ -170,7 +170,7 @@ if($operation==='release'){
         [$offer['job_id'],$version]);
     if(!$release){
         $dir=rtrim((string)config()['storage'],DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'finance-browser';
-        if(!is_dir($dir)&&!mkdir($dir,0700,true)&&!is_dir($dir))throw new RuntimeException('Synthetic finance delivery directory unavailable.');
+        if(!is_dir($dir)&&!mkdir($dir,0755,true)&&!is_dir($dir))throw new RuntimeException('Synthetic finance delivery directory unavailable.');
         $zipPath=$dir.DIRECTORY_SEPARATOR.'financed-project-release.zip';
         $zip=new ZipArchive();
         if($zip->open($zipPath,ZipArchive::CREATE|ZipArchive::OVERWRITE)!==true)throw new RuntimeException('Synthetic finance release ZIP creation failed.');
@@ -202,7 +202,7 @@ if($operation==='bundle'){
         [$licenseId,'Financed browser website bundle']);
     if(!$stored){
         $dir=rtrim((string)config()['storage'],DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'finance-browser';
-        if(!is_dir($dir)&&!mkdir($dir,0700,true)&&!is_dir($dir))throw new RuntimeException('Synthetic finance bundle directory unavailable.');
+        if(!is_dir($dir)&&!mkdir($dir,0755,true)&&!is_dir($dir))throw new RuntimeException('Synthetic finance bundle directory unavailable.');
         $file=$dir.DIRECTORY_SEPARATOR.'financed-site-'.$licenseId.'.zip';
         if(!is_file($file)){
             $zip=new ZipArchive();
