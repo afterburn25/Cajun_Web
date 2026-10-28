@@ -8,7 +8,7 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 
 function software_portal_render(?array $client,string $error=''):never{
     if(!$client||support_current()){
-        if($error!==''){site_head('My Software & Licenses','portal');echo '<p class="notice error" role="alert">'.esc($error).'</p>';site_foot(false);exit;}
+        if($error!=='')fail_page($error,403);
         fail_page('Sign in to your own account to manage software.',403);
     }
     header('Cache-Control: private, no-store');
