@@ -1,4 +1,4 @@
-# Prefer an eligible purchase when deduplicating software downloads
+# Software download source and lifecycle acceptance corrections
 
 28 October 2026. Focused correction based on integration source `0495e2e78a5a66b2c3c98aefbdb196444e01d12e`. Integration ownership remains with the owner-designated integration writer; this branch does not merge or modify that branch, PR #266, or main.
 
@@ -25,3 +25,11 @@ The exact original renderer reproduces the problem on PHP 8.2/8.4 with MariaDB 1
 The fixture uses isolated local synthetic SQL records and ledger entries; no payment gateway is contacted. The server is PHP's local HTTP server, not Apache or a browser. Initial corrected-copy runs failed a fixture ZIP hash check because independently recreating the ZIP changed its timestamp. The original failures are retained; rerunning with the exact same ZIP bytes passes without modifying production checks.
 
 Both PHP versions lint the changed renderer. The canonical build refresh regenerates its installer inventory. Exact combined hosted software/browser acceptance, full installed runtime coverage, sandbox transactions, populated published-version upgrade, independent review and main/release acceptance remain required. Owner confirmation that sandbox credentials are currently unavailable does not certify gateway behavior.
+
+## Exercise the explicit software lifecycle forms
+
+The later installed software acceptance tail still selects `studio_license_deactivate` and `studio_license_reactivate` forms for the paid software license. Those legacy website controls are deliberately absent for software entitlements. Its actual owner register exposes `software_license_lifecycle` with `suspend` and `resume` transitions and mandatory reasons. The legacy handlers also reject a forged software-license request.
+
+The corrected test selects the exact license and transition in the real form, supplies the required reason, and retains the existing suspended/active portal, download denial/recovery, SQL state and original-key assertions. It adds an actual owner POST asserting that the legacy action remains refused. Shipping lifecycle behavior is unchanged.
+
+Independent execution extracts the exact original and corrected tail with Python AST and uses the canonical BeautifulSoup, CSRF and form-data helpers against real owner/customer HTTP sessions and SQL. All four PHP/database combinations pass 12 checks each (48 total), including reproduction of the original `StopIteration` without mutation, the corrected tail, exact suspension/resumption reason audits, preserved key/domain/entitlement history and the restored ZIP checksum. This is a focused tail execution against synthetic local fixtures; it does not claim the preceding full browser suite or Chromium/Apache execution passed. The executed shipping source is `220cab22ca299f114e486983a098554072d271ce`; this follow-up changes tests and this review note only.
