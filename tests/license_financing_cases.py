@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import re
 import subprocess
 from urllib.parse import parse_qs, urlparse
 
