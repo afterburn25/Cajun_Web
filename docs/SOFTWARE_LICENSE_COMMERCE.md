@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Finance agreement sender upgrade correction — 2026-10-28
+
+The owner finance-agreement screen reads eligible sender accounts through the maintained `mail_drafts_account()` service. A variable-function typo previously left the list empty and emitted PHP warnings when populated v1.25 data had both mail-account and draft storage prepared. The correction changes no authorization or send operation; it restores the intended read-only sender choice and is covered by the populated Apache upgrade plus a focused source contract. [Failure evidence](CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
+
 ## Independent seat controls — 2026-10-28
 
 Each owned eligible license retains its own installation controls. A full purchased license must not hide another trial or temporary license's spare-seat/redeployment form, and an invoice-null grant must not lose authorized recovery merely to satisfy a page-wide assertion. Installed acceptance now scopes seat, pending-deployment and domain-move forms to the exact displayed license, while service-level ownership, CSRF, cooldown and installation caps remain authoritative.

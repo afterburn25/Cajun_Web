@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — Apache populated-upgrade mail sender warning
+
+Integrate the focused one-character shipping fix from exact integration base `03c4f606`: `site/admin/views/studio/licenses.php` must call `mail_drafts_account($a['id'])`, not the undefined variable function `$mail_drafts_account(...)`. Protected run `40684017215`, Apache job `122816732929`, passed 2,747 protection/root/subfolder checks and 158 populated root-rewrite upgrade checks before five warnings failed the final log gate. The source contract now fixes this spelling. Regenerate/verify inventory and rerun exact combined Apache/Application acceptance; no mail is sent by this path. [Evidence](docs/CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
+
 ## 2026-10-28 — PR #274 support follow-up
 
 Integrate exact #274 head `617e67cb0da2bc3037a566142dc69e09c2bcd037` after its earlier seat-scoping commit. The follow-up corrects only installed acceptance/review documentation: forged support mutations use the ordinary support portal to expose the refusal while requiring one attributed denied event; the private software view and ZIP remain separately HTTP403. No shipping authority change.

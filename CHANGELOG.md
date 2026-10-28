@@ -1,3 +1,9 @@
+## Unreleased — finance mail sender upgrade warning
+
+- Call the retained mail-draft account reader directly when building finance-agreement sender choices.
+- Eliminate the populated Apache upgrade warning and preserve the existing no-send behavior.
+- Add a source contract that rejects the former undefined variable-function spelling.
+
 ## Unreleased — support-denial acceptance attribution
 
 - Verify forged support-context software mutations produce exactly one attributed denial without weakening private-view or download 403 boundaries.
