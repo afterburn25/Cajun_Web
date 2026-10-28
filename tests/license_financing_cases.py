@@ -4,6 +4,7 @@ import json
 import os
 import re
 import subprocess
+import time
 from urllib.parse import parse_qs, urlparse
 
 import requests
@@ -345,6 +346,9 @@ def run_browser(env,browser):
               ==[{'domain':domain}]
           and env['db']('SELECT license_key,is_active FROM ci_website_licenses WHERE id=?',[license_id])
               ==[{'license_key':license_key,'is_active':1}])
+    # api/validate.php allows 10 requests per minute per IP; the flow has
+    # already used its budget, so wait for a fresh window before probing.
+    time.sleep(61)
     old_paid_probe=requests.post(validate,json={'license_key':license_key,'domain':old_paid_domain},timeout=25)
     new_paid_probe=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
     check('Post-payoff domain move deauthorizes only the old domain, not the paid-off key',
