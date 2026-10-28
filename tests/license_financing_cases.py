@@ -230,7 +230,7 @@ def run_browser(env,browser):
           len(support_id)==32 and blocked.status_code==403
           and 'Sign in to your own account to review financing' in blocked.text)
     support_home=admin.get(support_root,timeout=25)
-    forged=admin.post(support_root+'&finance='+offer,data={
+    forged=admin.post(support_root,data={
         'csrf':token(support_home),
         'action':'finance_offer_payment',
         'finance_id':offer
