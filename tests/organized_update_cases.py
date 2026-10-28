@@ -70,7 +70,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
         check(label+' original 1.20 installation holds encrypted provider profile and nonempty check history','20i settings saved' in r.text and len(prior_provider['profiles'])==1 and len(prior_provider['history'])==1 and len(prior_provider['checks'])==2 and len(prior_provider['results'])==1 and secret not in prior_provider['profiles'][0]['credentials'] and secret not in r.text and len(prior_provider_key)==32 and prior_provider_key!=prior_key and (private/'provider-master.key').stat().st_mode&0o777==0o600)
     original_inventory = None
     def inventory_records(mode='snapshot'):
-        result = subprocess.run([php, str(ROOT/'tests/inventory_retention_124_fixture.php'), str(root), mode], capture_output=True, text=True)
+        result = subprocess.run([php, str(ROOT/'tests/inventory_retention_124_fixture.php'), str(root), mode, *([version] if version=='1.25.0' else [])], capture_output=True, text=True)
         assert result.returncode==0, result.stderr
         return json.loads(result.stdout)
     if version in ['1.24.0','1.25.0']:

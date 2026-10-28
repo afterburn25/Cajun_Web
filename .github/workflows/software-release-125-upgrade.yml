@@ -10,6 +10,7 @@ on:
       - 'tests/software_release_125_upgrade.py'
       - 'tests/software_release_125_harness_tests.py'
       - 'tests/organized_update_cases.py'
+      - 'tests/inventory_retention_124_fixture.php'
       - '.github/workflows/software-release-125-upgrade.yml'
   pull_request:
     paths:
@@ -19,6 +20,7 @@ on:
       - 'tests/software_release_125_upgrade.py'
       - 'tests/software_release_125_harness_tests.py'
       - 'tests/organized_update_cases.py'
+      - 'tests/inventory_retention_124_fixture.php'
       - '.github/workflows/software-release-125-upgrade.yml'
   workflow_dispatch:
 permissions:

@@ -177,6 +177,57 @@ class UpgradeHarness(unittest.TestCase):
                 expected.append(str(web))
             self.assertEqual(runner.call_args.args[0], expected)
 
+    def test_inventory_fixture_receives_the_published_baseline_version(self):
+        tree = ast.parse((ROOT / 'tests/organized_update_cases.py').read_text(encoding='utf-8'))
+        run = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'run')
+        helper = next(node for node in ast.walk(run) if isinstance(node, ast.FunctionDef) and node.name == 'inventory_records')
+        for version in ('1.24.0', '1.25.0'):
+            runner = Mock(return_value=SimpleNamespace(returncode=0, stdout='{}', stderr=''))
+            namespace = {'subprocess': SimpleNamespace(run=runner), 'php': 'fixture-php',
+                         'ROOT': ROOT, 'root': self.root, 'version': version, 'json': json}
+            exec(compile(ast.Module(body=[helper], type_ignores=[]), '<actual-inventory-helper>', 'exec'), namespace)
+            namespace['inventory_records']('seed')
+            expected = ['fixture-php', str(ROOT / 'tests/inventory_retention_124_fixture.php'), str(self.root), 'seed']
+            if version == '1.25.0':
+                expected.append(version)
+            self.assertEqual(runner.call_args.args[0], expected)
+
+    def php_fragment(self, code):
+        php = os.environ.get('PHP_BINARY') or shutil.which('php')
+        self.assertIsNotNone(php, 'PHP is required for actual inventory-fixture contracts')
+        return subprocess.run([php, '-r', code], capture_output=True, text=True)
+
+    def test_inventory_seed_checks_the_exact_published_schema(self):
+        source = (ROOT / 'tests/inventory_retention_124_fixture.php').read_text(encoding='utf-8')
+        guard = source.split("if($argv[2]==='seed'){", 1)[1].split('    $read=', 1)[0]
+        for baseline, actual, schema, accepted in [
+                ('1.24.0', '1.24.0', '3', True), ('1.25.0', '1.25.0', '5', True),
+                ('1.25.0', '1.25.0', '3', False), ('1.24.0', '1.24.0', '5', False),
+                ('1.25.0', '1.26.0', '5', False), ('1.24.0', '1.25.0', '3', False)]:
+            with self.subTest(baseline=baseline, actual=actual, schema=schema):
+                prefix = ('$baseline=' + json.dumps(baseline) + ';define("CWP_VERSION",' + json.dumps(actual)
+                          + ');function setting($name){return ' + json.dumps(schema) + ';}')
+                result = self.php_fragment(prefix + 'try{' + guard + '}catch(Throwable $e){exit(3);}')
+                self.assertEqual(result.returncode, 0 if accepted else 3, result.stderr)
+
+    def test_inventory_snapshot_keeps_v125_operation_context(self):
+        source = (ROOT / 'tests/inventory_retention_124_fixture.php').read_text(encoding='utf-8')
+        fragment = source.split("$rows=all('SELECT * FROM '.table($name).' ORDER BY id');", 1)[1].split('$out[$name]=$rows;', 1)[0]
+        for baseline, row, expected, accepted in [
+                ('1.24.0', {'id': 'original'}, {'id': 'original'}, True),
+                ('1.24.0', {'id': 'original', 'operation': None}, {'id': 'original'}, True),
+                ('1.24.0', {'id': 'original', 'operation': 'packages.list'}, None, False),
+                ('1.25.0', {'id': 'original', 'operation': 'packages.list'}, {'id': 'original', 'operation': 'packages.list'}, True),
+                ('1.25.0', {'id': 'original', 'operation': 'cloudServers.list'}, {'id': 'original', 'operation': 'cloudServers.list'}, True),
+                ('1.25.0', {'id': 'original', 'operation': None}, {'id': 'original', 'operation': None}, True)]:
+            with self.subTest(baseline=baseline, row=row):
+                prefix = ('$baseline=' + json.dumps(baseline) + ';$name="provider_refreshes";$rows=json_decode('
+                          + json.dumps(json.dumps([row])) + ',true);')
+                result = self.php_fragment(prefix + 'try{' + fragment + '}catch(Throwable $e){exit(3);}echo json_encode($rows);')
+                self.assertEqual(result.returncode, 0 if accepted else 3, result.stderr)
+                if accepted:
+                    self.assertEqual(json.loads(result.stdout), [expected])
+
 
 if __name__ == '__main__':
     unittest.main()
