@@ -7,7 +7,10 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 
 function software_portal_render(?array $client,string $error=''):never{
-    if(!$client||support_current())fail_page('Sign in to your own account to manage software.',403);
+    if(!$client||support_current()){
+        if($error!==''){site_head('My Software & Licenses','portal');echo '<p class="notice error" role="alert">'.esc($error).'</p>';site_foot(false);exit;}
+        fail_page('Sign in to your own account to manage software.',403);
+    }
     header('Cache-Control: private, no-store');
     $gateway=null;
     if(software_commerce_ready()){
