@@ -35,6 +35,8 @@ def upgrade():
     check('Actual 1.8 retains all prior billing notifications and client records',all(db('SELECT * FROM deliveryup_'+t)==rows for t,rows in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings))
     check('Actual 1.8 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM deliveryup_users'),users)))
+    r=up.get(root+'?view=payments')
+    if 'Enable payment preparation' in r.text:r=submit(up,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Actual 1.8 retained manual receipt and balance still render','$375.00' in up.get(root+'?view=invoice-payments&invoice_id=3').text)
     r=upload(up,url,'retained-upgrade');rid=db('SELECT id FROM deliveryup_website_releases')[0]['id'];r=publish(up,url+'&release='+rid,{'owner_password':'Synthetic upgrade passphrase 2026'});check('Upgraded 1.8 accepts and publishes new ZIP','Website release published' in r.text)
     client=requests.Session();portal=BASE+'/delivery-upgrade/portal/index.php';submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'});check('Retained client can download exact newly delivered ZIP',client.get(portal+'?download_release='+rid).content==archive())

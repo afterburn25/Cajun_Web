@@ -30,6 +30,8 @@ def upgrade():
     check('Retained client downloads identical website ZIP after portfolio update',client.get(portal+'?download_release='+published['id']).content==(ROOT/'test-runtime/portfolio-upgrade.zip').read_bytes())
     owner=requests.Session();admin=BASE+'/portfolio-upgrade/admin/index.php'
     submit(owner,admin+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    r=owner.get(admin+'?view=payments')
+    if 'Enable payment preparation' in r.text:r=submit(owner,admin+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Retained invoice balance survives portfolio update','$375.00' in owner.get(admin+'?view=invoice-payments&invoice_id=3').text)
     r=submit(owner,admin+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'})
     check('Retained encrypted credentials still decrypt after portfolio update','Credentials protected and saved' in r.text)
