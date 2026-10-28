@@ -405,7 +405,8 @@ rb_ok('Paid-off financing boundary ignores later billing correction and can neve
     ($afterCorrection['state']??'')==='paid_off'&&$afterCorrection['paid_off_at']===$paidOff['paid_off_at']
     &&license_financing_authorized($licenseId)===true);
 
-$rights=license_financing_rights_for_license($licenseId);
+$rightsPlan=license_financing_plan($licenseId);
+$rights=$rightsPlan===null?null:license_financing_rights_from_row($rightsPlan);
 rb_ok('Default financed-site commercial rights remain site-use only after payoff',
     $rights!==null&&!$rights['resale']&&!$rights['distribution']
     &&!$rights['exclusive_resale']&&!$rights['exclusive_distribution']);
