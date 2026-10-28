@@ -260,8 +260,27 @@ function license_finance_subscription_reenroll_opaque(string $offerId,int $clien
             license_finance_anet_arb_opaque_request($offerId,$contract['amount_cents'],$contract['start_date'],$contract['months'],$contract['occurrences'],$descriptor,$nonce));
         $id=$reply['subscriptionId']??null;
         if(($reply['messages']['resultCode']??'')!=='Ok'||(!is_string($id)&&!is_int($id))||!preg_match('/^[0-9]{1,25}$/D',(string)$id)){
-            license_finance_subscription_replacement_declined($offerId,$oldGatewayId);
-            return 'billing_suspended';
+            // Only explicit request-validation rejections establish that no new
+            // subscription was created. Unknown, duplicate and internal errors
+            // still require reconciliation, even when resultCode is Error.
+            $messages=$reply['messages']['message']??null;
+            $rejected=($reply['messages']['resultCode']??'')==='Error'
+                &&!array_key_exists('subscriptionId',$reply)&&is_array($messages)
+                &&array_is_list($messages)&&count($messages)>0;
+            if($rejected)foreach($messages as $message){
+                if(!is_array($message)||!in_array($message['code']??null,
+                    ['E00003','E00013','E00014','E00015','E00016','E00017','E00018','E00019'],true)){
+                    $rejected=false;break;
+                }
+            }
+            if($rejected){
+                license_finance_subscription_replacement_declined($offerId,$oldGatewayId);
+                return 'billing_suspended';
+            }
+            // No verified new identity means the create result needs reconciliation.
+            // Do not permit another create while a prior subscription may exist.
+            license_finance_subscription_replacement_review($offerId,$oldGatewayId);
+            return 'review';
         }
         $newGatewayId=(string)$id;
         $details=license_finance_anet_execute('ARBGetSubscriptionRequest',['subscriptionId'=>$newGatewayId,'includeTransactions'=>false]);
