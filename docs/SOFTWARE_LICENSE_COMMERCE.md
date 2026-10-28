@@ -1,5 +1,11 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Current integration checkpoint — 2026-10-28
+
+The independent integration lane now includes exact PR #266 head `cb916c07`. Exact-head installed run `40667109804` demonstrated the real owner setup, customer checkout, tenant isolation, sandbox CSP, trial upgrade and fulfillment paths before exposing a direct-dependency defect in the owner delivery retry. The feature now imports the software-commerce migration contract in `software_notices.php`, keeping a disabled/unaccepted mail attempt in the durable retryable state. Purchased-download ordering also prefers the verified invoice/unit entitlement when one customer has multiple eligible licenses for the same release; the installed suite binds the rendered link to the paid license and its purchase source.
+
+These are application/test results, not Authorize.Net sandbox transactions. Fresh combined-head hosted acceptance is required. Real sandbox execution still depends on approved default-branch registration of the manual-only workflows, separately stored sandbox credentials and an explicit sandbox-only dispatch; production charging remains disabled and unauthorized.
+
 ## Owner administration dispatcher correction — 2026-10-28
 
 Every `software_*` owner form is now routed through the existing studio administration controller instead of falling through to the generic unknown-action response. The central staff-action boundary classifies the full prefix as owner-only `staff.manage`; individual password reauthentication and transaction checks remain in place. Whole-license lifecycle, deactivate and reactivate branches also load the software-commerce readiness definition before calling it. The fast routing contract complements the existing installed tests that submit the real owner setup and paid-off deactivate/reactivate forms.

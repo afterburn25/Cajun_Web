@@ -1,5 +1,15 @@
 # PR266 licensing integration acceptance
 
+## 2026-10-28 exact installed failure and feature refresh
+
+- Failing evidence: software-focused installed run `40667109804`, job `122744268918`.
+- First cause: owner `software_notice_retry` loaded `software_notices.php` directly; that file called `software_commerce_ready()` without importing `database/migrations/software_commerce_migrate.php`.
+- Existing regression: `tests/software_commerce_cases.py` requires a disabled-mail retry to remain `pending`, increment exactly one attempt, retain no `sent_at` and record a diagnostic error. The same suite later requires one purchased download link bound to the exact invoice/unit license.
+- Resolution: Devin feature commits `62a1b601` (direct readiness dependency), `94d24cea` (invoice-bound download preference), inventory refreshes through exact head `cb916c07`.
+- Integration: normal merge only; Devin's branch was not modified. Generated inventory was reconciled from exact combined file hashes.
+- Local available checks: 283 artifact-helper cases and 69 build rejection cases pass; whitespace passes. No local PHP executable exists, so PHP/native/installed execution is not claimed.
+- Required next evidence: fresh combined-head software-focused installed acceptance, complete protected Application acceptance, PHP/database matrix, packages, approval, sandbox, next-version upgrade and merged-main verification.
+
 ## 2026-10-28 correction candidate
 
 Owner assigned Codex a separate integration, QA and security pass for PR #266. Work is on `codex/licensing-integration-review`; Devin retains the feature branch and final integration/release coordination. Main observed at `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`; the combined lane includes current feature head `9a1e9451f5e39a7ba7c64a45bb81f2a43e10206b`, prior review evidence head `25e2d34fcf8f8f453545748f3f0894e053dceca2`, routing correction #269 and lifecycle correction #270. Latest published release remains [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0), source `b79c67110829126916e3a65e616191542448bccc`.

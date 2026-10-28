@@ -1,3 +1,9 @@
+## Unreleased — PR266 integration refresh
+
+- Normal-merged Devin's exact licensing head `cb916c07` after installed acceptance exposed the missing direct software-commerce readiness import in delivery retries.
+- Prefer invoice/unit-bound entitlements when rendering a purchased software asset shared by multiple eligible licenses.
+- Refreshed the exact combined installer inventory; no main merge, release, live payment or deployment.
+
 ## Unreleased — owner software administration routing
 
 - Route all existing `software_*` owner forms through the studio administration controller instead of the generic unknown-action fallback.

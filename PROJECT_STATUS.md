@@ -1,5 +1,11 @@
 # CajunWebPro current status
 
+## 2026-10-28 — refreshed to Devin feature head `cb916c07`
+
+Exact integration run `40667109804` passed the installed software flow through setup, checkout, tenant isolation, CSP, trial-to-paid upgrade and fulfillment, then failed at the first owner delivery retry because `software_notices.php` called `software_commerce_ready()` without declaring its migration dependency. Devin repaired that first cause at `62a1b601`, refreshed the generated inventory, and also corrected purchased-download ordering so an invoice-bound entitlement is selected ahead of an owner-issued entitlement for the same asset. The existing installed assertion requires one link bound to the exact paid license plus `purchase #<invoice> · unit 1`.
+
+`codex/licensing-integration-review` now normal-merges exact feature head `cb916c07`; Devin's branch remains untouched. The merge conflict was limited to generated inventory and was resolved from the exact combined shipping bytes. Locally available helper checks pass (283 artifact cases and 69 build rejection cases). PHP/native/browser execution is unavailable in this workspace, so fresh exact-head hosted execution remains mandatory. The preceding exact head otherwise recorded success for software native/policy/gateway/package/security gates, financing installed acceptance, recurring agreements, WordPress installation and domain-renewal dispatch; those parent results diagnose regressions but do not certify this refresh.
+
 ## 2026-10-28 — refreshed to Devin feature head `9a1e9451`
 
 PR #266 advanced from `726fc7db` through the software admin dispatcher repair and generated inventory to `9a1e9451`, which adds the canonical workspace import to the installed software-commerce fixture. The separate integration lane normal-merges that exact head; Devin's branch remains untouched. The integration already contains the compatible dispatcher correction plus stricter owner-only prefix authority and readiness imports, so only the non-duplicated fixture change enters the combined tree. Fresh exact-head hosted execution is required.

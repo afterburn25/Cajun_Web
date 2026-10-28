@@ -1,5 +1,11 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — feature refresh after installed notice failure
+
+Continue from the normal merge of exact PR #266 head `cb916c0729525404ccc30f79902620026e174848`. Installed run `40667109804` reached the disabled-mail retry assertion after all earlier software setup/payment/tenant/fulfillment checks passed, then failed because `software_notices.php` lacked the direct migration import defining `software_commerce_ready()`. Devin fixed that at `62a1b601`, then repaired invoice-bound download-link preference and refreshed inventory. Do not duplicate those changes. The current combined merge preserves the integration branch's workspace hash and every independent licensing correction while taking the new feature bytes. Run the fresh exact-head installed/native/package/application workflows; older green runs are supporting evidence only.
+
+Locally available verification on the merge: 283 artifact-helper checks, 69 build rejection checks, exact inventory hashes for the three refreshed files and whitespace all pass. `tools/build.py --refresh` reached dependency/vendor validation but cannot finish here because no PHP executable is installed; do not report PHP lint or native execution from this workspace. No merge to main, release, live transaction or deployment occurred.
+
 ## 2026-10-28 — feature head `9a1e9451` normal-merged
 
 Devin advanced PR #266 with the same `software_*` dispatcher repair already present in the integration lane, its inventory refresh, and the missing canonical workspace import in `tests/software_commerce_browser_fixture.php`. The separate integration branch normal-merges exact feature head `9a1e9451`; no duplicate fixture patch or feature-branch rewrite was made. The combined site bytes retain the independently verified owner permission/readiness hardening. Run only the new combined exact head; parent CI does not certify the merge.
