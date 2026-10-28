@@ -1,3 +1,9 @@
+## Unreleased — refresh current PR266 financing portal behavior
+
+- Merge feature head `726fc7db` into the separate integration lane without changing Devin's branch.
+- Resolve missing or foreign customer financing agreements before layout output so the intended HTTP 404 is retained without a headers-already-sent warning.
+- Regenerate the combined installer inventory and require fresh exact-head acceptance.
+
 ## Unreleased — recover interrupted financing setup
 
 - Record audited pending markers before financed-license, finance-agreement and finance-gateway DDL, then safely resume only recognized empty partial setups.

@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — refreshed to Devin financing 404 repair
+
+PR #266 advanced from `36721397` to `726fc7db` with a focused customer-financing error-path correction and its generated inventory hash. The separate integration lane normal-merges that exact feature head: an unavailable or foreign finance agreement now resolves before layout output and returns the intended HTTP 404 without a headers-already-sent warning. Devin's branch remains untouched. Combined exact-head hosted acceptance is required; no prior parent run certifies this refresh.
+
 ## 2026-10-28 — interrupted financing setup recovery
 
 Independent migration review found that a process stop after financed-license, finance-agreement or finance-gateway `CREATE TABLE` but before the version commit left an empty table that every retry rejected as unrecognized. Each owner-gated setup now writes an audited pending marker before DDL, resumes only its recognized still-empty partial setup, validates the completed schema and clears the marker with the version commit. Unmarked tables and partial tables containing data still fail closed for owner review. Native regression coverage simulates one interrupted DDL in all three layers; exact hosted PHP/database execution remains required.
@@ -10,7 +14,7 @@ Independent source review found that a paid-off financing plan blocked every own
 
 ## 2026-10-28 — combined PR266 integration candidate refreshed
 
-`codex/licensing-integration-review` now contains Devin feature head `36721397`, prior review head `25e2d34f`, optional-finance routing correction #269 and delayed-lifecycle correction #270. The support forgery browser case posts through the real support action dispatcher and requires one attributed denial plus unchanged agreement/payment state. The combined payoff regression moves Devin's single validation-rate-window wait ahead of all six post-payoff probes, preserving the production rate limit without adding a second delay. Independent package review also rejects noncanonical and case-colliding customer software ZIP members before publication. Canonical installer generation, 283 artifact-helper cases, 69 build rejection cases, documentation and Python syntax pass locally; PHP/native/browser execution is unavailable in this workspace and remains a hosted gate. Exact refreshed-head acceptance is required. No merge, release, live charging or deployment.
+`codex/licensing-integration-review` now contains Devin feature head `726fc7db`, prior review head `25e2d34f`, optional-finance routing correction #269 and delayed-lifecycle correction #270. The support forgery browser case posts through the real support action dispatcher and requires one attributed denial plus unchanged agreement/payment state. The combined payoff regression moves Devin's single validation-rate-window wait ahead of all six post-payoff probes, preserving the production rate limit without adding a second delay. Independent package review also rejects noncanonical and case-colliding customer software ZIP members before publication. Canonical installer generation, 283 artifact-helper cases, 69 build rejection cases, documentation and Python syntax pass locally; PHP/native/browser execution is unavailable in this workspace and remains a hosted gate. Exact refreshed-head acceptance is required. No merge, release, live charging or deployment.
 
 ## 2026-10-28 — native SQL evidence for the independent corrections
 

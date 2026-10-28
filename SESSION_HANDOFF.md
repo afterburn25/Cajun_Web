@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — feature head refreshed without overwriting Devin
+
+PR #266 advanced by two commits to `726fc7db`. `codex/licensing-integration-review` normal-merges that exact head, preserving Devin's 404-before-layout correction for unavailable or foreign finance agreements and regenerating the combined installer inventory. Earlier exact-parent runs do not certify this merge. Continue only the new combined-head workflows; do not duplicate pending CI. The financing owner-reactivation browser diagnostic, complete PHP/database/browser/package matrices, independent review, real sandbox, next-version upgrade and merged-main gates remain open.
+
 ## 2026-10-28 — recover interrupted financing setup
 
 The three financing setup migrations now persist an owner-audited pending marker before nontransactional DDL. A retry may resume only that exact recognized preparation while every existing partial table is empty; it validates all schema/indexes and clears the marker atomically with the version. Unmarked tables or partial tables containing records remain blocked for manual review. Run the updated financing native/source-contract lanes on the exact integration head before accepting this recovery fix.
@@ -10,7 +14,7 @@ Treat the prior auto-reactivation behavior as a high-severity commercial-control
 
 ## 2026-10-28 — refreshed combined PR266 review lane
 
-Continue from `codex/licensing-integration-review`, refreshed to feature `36721397` with review evidence `25e2d34f`, routing correction #269 and lifecycle correction #270. The stale forged-support assertion is resolved against the actual dispatcher: the POST omits the private finance view, requires the blocked-action copy and one exact denied audit increment, and proves both offer and payment-request rows unchanged. The one validation-rate wait now precedes the combined payoff security probes. Software release publication additionally refuses noncanonical, Windows-reserved and case-colliding ZIP members. Local non-PHP checks pass; run only the refreshed exact-head hosted matrix rather than redispatching superseded heads. PHP8.2/8.4, MariaDB/MySQL, installed browser/Apache, package, real sandbox, independent review, next-version v1.25 upgrade and merged-main gates remain mandatory.
+Continue from `codex/licensing-integration-review`, refreshed to feature `726fc7db` with review evidence `25e2d34f`, routing correction #269 and lifecycle correction #270. The stale forged-support assertion is resolved against the actual dispatcher: the POST omits the private finance view, requires the blocked-action copy and one exact denied audit increment, and proves both offer and payment-request rows unchanged. The one validation-rate wait now precedes the combined payoff security probes. Software release publication additionally refuses noncanonical, Windows-reserved and case-colliding ZIP members. Local non-PHP checks pass; run only the refreshed exact-head hosted matrix rather than redispatching superseded heads. PHP8.2/8.4, MariaDB/MySQL, installed browser/Apache, package, real sandbox, independent review, next-version v1.25 upgrade and merged-main gates remain mandatory.
 
 ## 2026-10-28 — continued native verification
 
