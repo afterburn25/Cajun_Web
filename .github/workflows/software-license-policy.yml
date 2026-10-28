@@ -58,8 +58,10 @@ jobs:
           php -l site/portal/controllers/router.php
           php -l site/portal/controllers/actions.php
           php -l site/portal/views/workspace.php
+          php -l site/admin/controllers/actions.php
           php -l site/admin/controllers/studio.php
           php -l site/admin/views/studio/licenses.php
+          php -l site/app/staff/accounts.php
       - name: Keep real-sandbox acceptance source sandbox-only
         run: |
           python3 -m py_compile tests/software_anet_sandbox_acceptance.py
