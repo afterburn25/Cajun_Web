@@ -149,3 +149,7 @@ The current branch also adds a first-class `software` catalog family with arbitr
 # License-key entropy compatibility
 
 New licenses retain all 128 random bits produced at issuance and render them as eight four-hex groups. Historical four-group keys continue to validate and are never rewritten, so upgrades preserve installed customer identities.
+
+### Owner reconciliation and concurrent state changes
+
+Owner readback happens outside the database lock. Before persisting an old identity or lifecycle response, reconciliation compares the locked subscription's row ID, gateway ID and state with its pre-readback snapshot. A concurrent replacement or lifecycle transition requires a fresh reconciliation attempt and preserves the newer state. See [independent snapshot review](CODEX_FINANCE_RECONCILE_SNAPSHOT_REVIEW.md).
