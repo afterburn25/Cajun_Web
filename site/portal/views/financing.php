@@ -18,6 +18,11 @@ function license_finance_portal_render(?array $client,string $id,string $error='
             authorize_net_security_headers($financeGateway['mode']);
         }catch(Throwable){$financeGateway=null;}
     }
+    $row=null;$terms=null;
+    if($id!==''&&$id!=='1'){
+        try{$row=license_finance_offer_row($id,(int)$client['id']);$terms=license_finance_offer_terms($row);}
+        catch(Throwable $e){fail_page('Finance agreement unavailable.',404);}
+    }
     site_head('Financing Agreement','portal');support_banner();
     echo '<section class="section"><div class="container"><p><a href="'.esc(studio_url()).'">Client workspace</a> / Financing</p><h1>Financing agreement</h1>';
     show_flash();if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
@@ -34,8 +39,6 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         }
         echo '</div></section>';site_foot(false);exit;
     }
-    try{$row=license_finance_offer_row($id,(int)$client['id']);$terms=license_finance_offer_terms($row);}
-    catch(Throwable $e){http_response_code(404);echo '<p class="notice error">Finance agreement unavailable.</p></div></section>';site_foot(false);exit;}
     $state=license_finance_offer_status($row);
     $rights=$terms['rights'];
     echo '<article class="workspace-card"><span class="workspace-status">'.esc($state).'</span><h2>'.esc($terms['title']).'</h2>';
