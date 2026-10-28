@@ -12,6 +12,10 @@ Independent review found that a new software-entitlement key could validate with
 
 Protected Application run `40684017215` passed 2,747 Apache protection/root/subfolder/installer checks, then its published-v1.25 root-with-rewrite upgrade passed all 158 functional checks and both browser screenshots before the Apache log gate found `Undefined variable $mail_drafts_account` five times. The finance-agreement sender list used an accidental variable function; the surrounding catch hid the broken sender choice while the warning correctly failed acceptance. Focused PR #282 (`d40c3671`) calls the already-loaded `mail_drafts_account()` service directly and adds a source regression. Exact combined Apache and Application reruns remain required. [Evidence](docs/CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
 
+## 2026-10-28 — financing email sender correction pending integration
+
+Current `03c4f606` Application Apache acceptance passes 2,747 protection checks, then its populated published-v1.25 continuation detects an undefined `$mail_drafts_account` callable in the licensing view. The focused correction invokes the existing authorized account function and adds real sender-picker/local-draft acceptance. All 36 targeted HTTP/PDO checks pass across PHP 8.2/8.4 × MariaDB/MySQL, with four original failures preserved. Full combined hosted acceptance remains required; this is not main/release completion. See [failure, scope and evidence](docs/FINANCE_MAIL_SENDER_REVIEW.md).
+
 ## 2026-10-28 — attributed support-denial acceptance
 
 PR #274 advanced to `617e67cb` after reproducing the next unreached fixture error: a forbidden software POST to the private support software view correctly returns HTTP403, so that response cannot also expose the ordinary blocked-action message. The installed test now posts the forged mutation through the ordinary support portal, requires HTTP200 plus the refusal message and exactly one attributed denied support event, and separately preserves the private software/download 403 checks. Support readiness also requires both schema and explicit policy confirmation. Shipping permissions and handlers are unchanged.

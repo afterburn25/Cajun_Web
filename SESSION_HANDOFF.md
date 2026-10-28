@@ -12,6 +12,10 @@ Integrate focused PR #281 at exact head `14008290deb933fc97049c1ca2602a19e35ab8b
 
 Integrate focused PR #282 at exact head `d40c36711f4cd7bad0be555afc9bb59d9fc1cf15`, based on `03c4f606`: `site/admin/views/studio/licenses.php` must call `mail_drafts_account($a['id'])`, not the undefined variable function `$mail_drafts_account(...)`. Protected run `40684017215`, Apache job `122816732929`, passed 2,747 protection/root/subfolder checks and 158 populated root-rewrite upgrade checks before five warnings failed the final log gate. The source contract now fixes this spelling. Regenerate/verify inventory and rerun exact combined Apache/Application acceptance; no mail is sent by this path. [Evidence](docs/CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
 
+## 2026-10-28 — finance sender rendering first cause
+
+Review focused PR #280 at exact head `1994255cf5e365aeb5a5ea3c0dcb8eace9905883`, based on `03c4f606`. It fixes the invalid variable-function call found in Apache job `122816732929` and adds sender permission/revision/CSRF and local-draft regression coverage. Preserve the diagnostic guard and require fresh complete Apache acceptance after integration. The designated writer owns the integration branch; #277/#278 and the feature trial-control reconciliation remain separate. See [exact evidence and limits](docs/FINANCE_MAIL_SENDER_REVIEW.md).
+
 ## 2026-10-28 — PR #274 support follow-up
 
 Integrate exact #274 head `617e67cb0da2bc3037a566142dc69e09c2bcd037` after its earlier seat-scoping commit. The follow-up corrects only installed acceptance/review documentation: forged support mutations use the ordinary support portal to expose the refusal while requiring one attributed denied event; the private software view and ZIP remain separately HTTP403. No shipping authority change.
