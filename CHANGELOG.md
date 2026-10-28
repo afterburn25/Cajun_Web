@@ -6,6 +6,7 @@
 - Run the existing full Application and Software focused installed acceptance suites for PRs targeting the licensing feature branch; include dispatcher/permission changes in the focused trigger.
 - Run source-integrity, fast and full candidate package verification for the licensing integration PR without treating unchanged VERSION `1.25.0` as a completed next-version upgrade.
 - Run the remaining software syntax, native commerce, amount, CSP, reversal, subscription-lifecycle and webhook contract gates on the exact licensing integration candidate.
+- Load the canonical client-workspace readiness/support boundary in the installed software browser fixture before exercising sandbox payment settings.
 
 ## Unreleased — customer domain cooldown event ordering
 

@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — refreshed to Devin feature head `9a1e9451`
+
+PR #266 advanced from `726fc7db` through the software admin dispatcher repair and generated inventory to `9a1e9451`, which adds the canonical workspace import to the installed software-commerce fixture. The separate integration lane normal-merges that exact head; Devin's branch remains untouched. The integration already contains the compatible dispatcher correction plus stricter owner-only prefix authority and readiness imports, so only the non-duplicated fixture change enters the combined tree. Fresh exact-head hosted execution is required.
+
 ## 2026-10-28 — owner software administration routing correction
 
 Independent real-router reproduction found two application defects on the combined candidate: every `software_*` administration POST fell through to `Unknown administration action`, and whole-license deactivate/reactivate called `software_commerce_ready()` before loading its definition. The integration lane now routes software posts through the existing studio controller, assigns the whole prefix explicit owner-only `staff.manage` authority, and loads the commerce readiness boundary before the lifecycle checks. A fast source contract and the existing real-form installed acceptance cover the repair; hosted PHP and installed execution on the new exact head remain required.
@@ -9,6 +13,8 @@ CI review found that PRs targeting the licensing feature branch did not start th
 The three maintained package workflows had the same integration-base gap. Source integrity, fast direct-extraction/UPDATE audit, and full FULL-PROJECT/COMPLETE-UPLOAD/UPDATE verification now run for the licensing integration PR. These candidate checks do not replace the still-deferred populated published-v1.25-to-next-version gate while VERSION remains `1.25.0`.
 
 The remaining software-only syntax, native commerce, amount, CSP, reversal, subscription-lifecycle and webhook contract workflows were also push-only and are not all subsumed by Application acceptance. They now admit the licensing integration PR so exact-candidate evidence does not depend on older Devin-branch results.
+
+Feature run `40664435482` then reached the shared software browser fixture and failed sandbox setup because the CLI fixture loaded payment functions without the canonical workspace dependency that defines `studio_ready()` and support-session state. The fixture now imports `app/clients/workspace.php` after commerce migration, matching the real application bootstrap boundary. This is test-harness repair only; it does not enable gateway traffic or weaken payment readiness.
 
 ## 2026-10-28 — customer domain cooldown bypass correction integrated
 

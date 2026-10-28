@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — feature head `9a1e9451` normal-merged
+
+Devin advanced PR #266 with the same `software_*` dispatcher repair already present in the integration lane, its inventory refresh, and the missing canonical workspace import in `tests/software_commerce_browser_fixture.php`. The separate integration branch normal-merges exact feature head `9a1e9451`; no duplicate fixture patch or feature-branch rewrite was made. The combined site bytes retain the independently verified owner permission/readiness hardening. Run only the new combined exact head; parent CI does not certify the merge.
+
 ## 2026-10-28 — repair owner software action dispatch and readiness loading
 
 The latest independent HTTP matrix reproduced actual controller failures rather than browser timing: valid owner/CSRF `software_commerce_setup` returned `Unknown administration action`, while `studio_license_deactivate` and `studio_license_reactivate` reached an undefined `software_commerce_ready()`. The separate integration lane now dispatches both `studio_*` and `software_*` actions to the existing studio controller, maps all `software_*` actions to owner-only `staff.manage`, and explicitly loads the commerce migration contract before the lifecycle/deactivate/reactivate readiness calls. Keep the existing real-form software setup and paid-off owner control assertions; the new fast routing contract is supplemental. Re-run exact-head policy, focused financing and installed application acceptance before accepting the fix.
@@ -9,6 +13,8 @@ The licensing integration PR base is now included in the existing full Applicati
 The existing software package source, fast and full workflows also now admit the integration PR base. Require their exact-head results for generated-source integrity, all three direct-extract archives, checksum/member safety, no nested ZIPs and the pinned v1.25 delta audit. VERSION is still `1.25.0`, so this is candidate packaging evidence—not the real populated v1.25-to-next-version upgrade gate.
 
 All remaining software-only gates now admit the same PR base: browser-source syntax, fast/native commerce databases, exact gateway amount, payment CSP, refund/void reversal, subscription lifecycle and signed webhook contracts. These are distinct from the real Authorize.Net sandbox workflows and must not be described as provider transactions.
+
+Feature run `40664435482` exposed the next installed-test blocker at `Software browser fixture sandbox-on succeeds`: the CLI fixture loaded `payments.php` without the workspace import that defines `studio_ready()` and loads support-session state. The integration fixture now imports the canonical client workspace immediately after software-commerce migration. Preserve the real `payments_ready()` check and rerun focused installed acceptance; no gateway call or production behavior changed.
 
 ## 2026-10-28 — integrate focused domain-cooldown correction
 

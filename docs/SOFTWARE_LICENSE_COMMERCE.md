@@ -10,7 +10,7 @@ Customer domain changes are serialized under the license row lock. When replacem
 
 ## Current integration refresh — 2026-10-28
 
-The independent integration lane now includes exact PR #266 feature head `726fc7db`. Its unavailable-agreement path resolves the customer-owned finance row before emitting the portal layout, so foreign or missing agreement identifiers return the intended private HTTP 404 without a headers-already-sent warning. Installed tenant-isolation acceptance requires that 404 together with `Cache-Control: no-store, private` and `Referrer-Policy: no-referrer`. The generated installer inventory is refreshed for the combined bytes. This refresh still requires exact-head installed and package acceptance.
+The independent integration lane now includes exact PR #266 feature head `9a1e9451`. It retains the unavailable-agreement private HTTP404 repair, the software admin dispatcher correction and generated inventory, and adds the canonical client-workspace dependency to the installed software-commerce fixture. Installed tenant-isolation acceptance still requires HTTP404 together with `Cache-Control: no-store, private` and `Referrer-Policy: no-referrer`. This refresh requires exact-head installed and package acceptance.
 
 ## Interrupted financing setup recovery — 2026-10-28
 
@@ -18,7 +18,7 @@ Financed-license, customer finance-agreement and finance-gateway setup each reco
 
 ## Independent review correction — 2026-10-28
 
-The combined `codex/licensing-integration-review` lane includes current feature `726fc7db`, prior review evidence `25e2d34f` and both focused corrections below. Its support-session regression separately verifies the private finance view's HTTP403 and posts a forged finance action through the real dispatcher, requiring an attributed denied audit event and no agreement or payment-request mutation. The single validation-rate-window delay precedes all combined post-payoff probes. Exact combined-head installed execution remains pending.
+The combined `codex/licensing-integration-review` lane includes current feature `9a1e9451`, prior review evidence `25e2d34f` and both focused corrections below. Its support-session regression separately verifies the private finance view's HTTP403 and posts a forged finance action through the real dispatcher, requiring an attributed denied audit event and no agreement or payment-request mutation. The single validation-rate-window delay precedes all combined post-payoff probes. Exact combined-head installed execution remains pending.
 
 Payoff is now correctly scoped: it permanently eliminates financing-related suspension but cannot erase an explicit owner deactivation. Validation and financing synchronization no longer silently reactivate a paid-off key; the owner may deliberately reactivate the same key and retained domain history. Domain binding and the default prohibition on resale/distribution continue after payoff.
 
