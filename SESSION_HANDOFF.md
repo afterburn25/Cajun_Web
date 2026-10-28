@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — same-second customer domain cooldown
+
+`codex/licensing-domain-cooldown` adds one focused service correction, generated inventory and 12 native regressions. Use audit ID ordering to distinguish a replacement's internal deactivation from a later standalone deactivation in the same second. The before-fix actual service sequence authorized a third domain despite a 24-hour cooldown; the deterministic native case fails before and passes after. Existing owner override and same-domain recovery remain available. Review/include this correction after #269/#270; no feature/integration/main writes. New narrow CI uses PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 and dynamic test ports. [Review](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
+
 ## 2026-10-28 — continued native verification
 
 `tests/license_finance_webhook_native_cases.php` adds 40 real SQL routing/lifecycle checks to the existing signed zero-down fixture in `tests/license_financing_native_cases.php`. This extends #270 without shipping changes or browser-fixture edits. Local PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 passes all 40; preserve the separate full-Windows failure at the 0600 private-file requirement. The prior correction commit `168c4999` now has a complete passing hosted native matrix (588 recurring checks per leg) and 55 focused regressions on both PHP versions. Re-run the normal hosted matrix for the enclosing test commit; installed acceptance remains outstanding. The existing integration writer retains PR #266 and the integration branch. [Current report](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).

@@ -2,6 +2,8 @@
 
 ## Independent review correction — 2026-10-28
 
+Customer domain cooldown follow-up: compare serialized audit IDs when classifying replacement-internal versus later standalone deactivation. Equal second-resolution timestamps must not let a customer replace, deactivate and register another domain inside the configured cooldown. Twelve native service cases cover the collision, denial without mutation, same-domain recovery, expired/disabled cooldown and owner overrides on PHP8.2/8.4 × MariaDB10.11/MySQL8.4.
+
 Native follow-up: 40 actual PDO/InnoDB cases now exercise optional-finance capture/refund/void routing, all delayed protected-state events, normal transitions, audit-failure rollback, a second process waiting for the account mutex, and unchanged license/agreement/invoice/payment records. They pass locally across PHP 8.2/8.4 with MariaDB 10.11 and MySQL 8.4 and run inside the existing recurring native matrix. They do not perform real gateway transactions. Complete Linux installed acceptance remains separate; Windows correctly refuses the later private payment-key write because it cannot retain 0600 permissions.
 
 The follow-up `codex/licensing-lifecycle-ordering` correction preserves financing `cancelled`, `reversal_recovery` and `replacing` states against delayed lifecycle events. A delayed failure also cannot downgrade `billing_suspended`; ordinary active/failure transitions still work. This retains manual catch-up eligibility and existing settlement/replacement fences without changing payment verification, ledger math or payoff policy. Forty-five actual-service cases pass with isolated database doubles; native gateway concurrency remains a separate gate.

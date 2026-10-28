@@ -163,7 +163,7 @@ function software_grant_mutation_entitlement(int $licenseId):?array{
 function software_grant_recent_deactivation_blocks_add(int $licenseId,string $newDomain):bool{
     $hours=software_domain_change_cooldown_hours();
     if($hours===0)return false;
-    $last=one('SELECT detail,created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+    $last=one('SELECT id,detail,created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
         ['license.domain.deactivate','License '.$licenseId.' domain %']);
     if(!$last||!is_string($last['created_at']??null)||!is_string($last['detail']??null))return false;
     $stamp=strtotime($last['created_at'].' UTC');
@@ -171,10 +171,11 @@ function software_grant_recent_deactivation_blocks_add(int $licenseId,string $ne
     $prefix='License '.$licenseId.' domain ';
     $old=str_starts_with($last['detail'],$prefix)?substr($last['detail'],strlen($prefix)):'';
     if($old!==''&&hash_equals($old,$newDomain))return false; // accidental same-domain reactivation.
-    $replace=one('SELECT created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+    $replace=one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
         ['license.domain.replace','License '.$licenseId.' %']);
-    if($replace&&is_string($replace['created_at']??null)
-        &&(string)$replace['created_at']>=(string)$last['created_at'])return false;
+    // These mutations share the license lock. Audit IDs retain their order
+    // when a later standalone deactivation has the same second timestamp.
+    if($replace&&(int)$replace['id']>(int)$last['id'])return false;
     return true;
 }
 
