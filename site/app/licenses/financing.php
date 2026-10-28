@@ -203,7 +203,7 @@ function license_financing_periods(array $plan,RecurringBillingSchedule $doc):ar
 }
 
 /** Recompute access from retained invoices. paid_off_at is a permanent one-way boundary. */
-function license_financing_sync(int $licenseId,?string $today=null):?array{
+function license_financing_sync(int $licenseId,?string $today=null,bool $paymentRecovery=false):?array{
     if(license_financing_feature_state()===null)return null;
     $today??=gmdate('Y-m-d');
     $result=null;
@@ -268,19 +268,13 @@ function license_financing_sync(int $licenseId,?string $today=null):?array{
         );
         $old=(string)$plan['state'];$next=$evaluation['state'];
 
-        // Suspension is cleared by payment, never merely by a wall-clock move
-        // backwards. Once an issued installment actually crossed its retained
-        // grace boundary, keep payment access locked while any issued financing
-        // invoice remains unpaid. A verified catch-up marks that invoice paid,
-        // allowing the same key to return to active/grace on the next sync.
-        if($old==='suspended'&&!in_array($next,['suspended','paid_off'],true)){
-            foreach($periods as $period){
-                if(!$period['paid']){
-                    $next='suspended';
-                    $evaluation['state']='suspended';
-                    break;
-                }
-            }
+        // Suspension is cleared only by a sync that is explicitly tied to
+        // a verified invoice payment/correction. Ordinary validation, portal
+        // reads, scheduler runs and a wall-clock move backwards can never
+        // reactivate a payment-suspended site by themselves.
+        if($old==='suspended'&&!$paymentRecovery&&!in_array($next,['suspended','paid_off'],true)){
+            $next='suspended';
+            $evaluation['state']='suspended';
         }
 
         $now=gmdate('Y-m-d H:i:s');
@@ -339,7 +333,7 @@ function license_financing_sync_by_invoice(int $invoiceId):void{
         }
     }
     if(!$row)return;
-    $plan=license_financing_sync((int)$row['license_id']);
+    $plan=license_financing_sync((int)$row['license_id'],null,true);
     if(!$plan||!in_array((string)$plan['state'],['active','grace','paid_off'],true))return;
 
     // A fully repaid installment that was reopened by a verified refund/void
