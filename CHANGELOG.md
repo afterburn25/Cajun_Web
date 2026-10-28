@@ -4,6 +4,7 @@
 - Require owner-only `staff.manage` permission for the complete software administration prefix and retain action-specific password/transaction checks.
 - Load software-commerce readiness before lifecycle and whole-license deactivate/reactivate checks; add a fast routing contract and PR policy execution.
 - Run the existing full Application and Software focused installed acceptance suites for PRs targeting the licensing feature branch; include dispatcher/permission changes in the focused trigger.
+- Run source-integrity, fast and full candidate package verification for the licensing integration PR without treating unchanged VERSION `1.25.0` as a completed next-version upgrade.
 
 ## Unreleased — customer domain cooldown event ordering
 
