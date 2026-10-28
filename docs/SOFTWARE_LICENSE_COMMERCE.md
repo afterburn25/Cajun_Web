@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Focused provider acceptance repair — 2026-10-28
+
+Application run `40728300754` passed build, recovery, Apache and native phases and reached 2,997 installed-browser checks before the provider settings response exceeded Playwright's unchanged 30-second limit. A bounded StackCP page request now retains the provider account and hosting inventory but loads only StackCP setup and access workspaces, rather than recomputing unrelated provider histories. Both StackCP sections remain owner-only and preserve CSRF, password, immutable-history and exact-provider-read controls; the complete provider page remains available through an explicit return link. This clears an earlier integration-performance blocker without changing licensing, payment or financing state. Exact hosted browser evidence is still required. [Run review](CODEX_PR266_APPLICATION_40728300754.md).
+
 ## Installed-suite authentication isolation — 2026-10-28
 
 Software-commerce and financed-license installed acceptance authenticate their own owner, buyer and foreign-client sessions through the real packaged forms. They do not inherit cookies created near the beginning of the complete browser matrix: that matrix can correctly exceed the production 30-minute idle timeout before reaching these late commercial suites. This test-only isolation keeps the timeout, CSRF, ownership and tenant controls intact while ensuring the commercial lifecycle itself is exercised. Frozen run `40705973907` supplied the first-cause evidence; exact corrected-head HTTP/Chromium execution remains required.

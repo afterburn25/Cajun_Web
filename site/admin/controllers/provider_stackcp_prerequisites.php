@@ -17,5 +17,6 @@ function provider_stackcp_admin_action(string $action): never {
         provider_stackcp_assignment_change(posted('profile_id',32),(int)$package,posted('review_sha256',64),posted('link_id',32),posted('stack_identity',32),$action==='provider_inventory_stackcp_assignment_revoke',$password);
         flash($action==='provider_inventory_stackcp_assignment_save'?'Unverified StackCP assignment saved. Login remains unavailable.':'Local StackCP draft revoked. This does not revoke a provider session.');
     } else throw new InvalidArgumentException('Unknown StackCP setup action.');
-    redirect(admin_url('provider-settings').'#stackcp-prerequisites');
+    $raw=$_GET['stackcp_page']??'1';$page=is_string($raw)&&preg_match('/\A[1-9][0-9]{0,3}\z/',$raw)?min(500,(int)$raw):1;
+    redirect(admin_url('provider-settings',['stackcp_page'=>$page,'stackcp_access_page'=>$page]).'#stackcp-prerequisites');
 }
