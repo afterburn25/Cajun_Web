@@ -1033,5 +1033,7 @@ try{
         'Recurring payment reversal moves subscription to review');
     swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
         'Recurring reversal review state is persisted');
+    require __DIR__.'/software_domain_lifecycle_concurrency.php';
+    software_domain_lifecycle_concurrency_checks(1,'SOFTWARE-TEST',1,'swok');
     echo 'Software commerce native: '.$n.' checks passed'.PHP_EOL;
 }catch(Throwable $e){fwrite(STDERR,'FAIL: '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);}

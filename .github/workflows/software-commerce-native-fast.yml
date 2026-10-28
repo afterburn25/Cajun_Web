@@ -5,6 +5,7 @@ on:
       - feature/software-license-commerce-20261025
     paths:
       - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
       - 'site/app/billing/software_*.php'
       - 'site/app/billing/authorize_net_*.php'
       - 'site/app/licenses/software_*.php'
@@ -16,6 +17,7 @@ on:
       - feature/software-license-commerce-20261025
     paths:
       - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
       - 'site/app/billing/software_*.php'
       - 'site/app/billing/authorize_net_*.php'
       - 'site/app/licenses/software_*.php'
