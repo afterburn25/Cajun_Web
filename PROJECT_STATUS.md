@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 - Sandbox dependency runner isolated from transaction key
+
+The protected-environment follow-up still installed mutable browser packages on the same runner that later received the Authorize.Net transaction key and used mutable action tags. The focused correction pins every action commit, moves Accept.js tokenization to a separate runner that refuses a transaction key before importing Playwright, validates a three-nonce one-day handoff, and runs the fixed sandbox API calls on a fresh standard-library-only runner. A new no-secret pull-request workflow executes exact-byte and 17-check runtime contracts. Real credentials, environment policy and provider execution remain unavailable/unverified; do not run the manual probes until the server-side main-only environment gate and independent review are complete. [Security review](docs/CODEX_SANDBOX_WORKFLOW_SECURITY_REVIEW.md).
+
 ## 2026-10-28 - Sandbox secret boundary correction pending integration
 
 Independent review of PR279 head `25dfe346d2c0bb27643d6ee2ede4916ca98b2fb5` found that branch-editable guards cannot restrict repository secrets against a modified dispatch ref. This focused follow-up binds both provider jobs to `authorize-net-sandbox`, pins complete reviewed workflow/driver bytes and documents the required server-side main-branch policy and environment-only credentials. Both workflows parse with only the environment binding changed; the corrected contract passes and rejects all eight negative fixtures. The original contract passed four unsafe guard/dependency mutations. Documentation/dependency checks pass. No environment is configured and credentials remain unavailable; no gateway request, hosted enforcement, main merge or release is claimed. See [the security review](docs/CODEX_SANDBOX_WORKFLOW_SECURITY_REVIEW.md). The designated integration writer retains the licensing branch.

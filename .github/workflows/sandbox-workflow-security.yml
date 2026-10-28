@@ -1,0 +1,43 @@
+name: Authorize.net sandbox workflow security
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/*authorize-sandbox.yml'
+      - '.github/workflows/sandbox-workflow-security.yml'
+      - 'tests/anet_sandbox_*.py'
+      - 'tests/finance_anet_sandbox_acceptance.py'
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - 'tests/sandbox_workflow_contract.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/*authorize-sandbox.yml'
+      - '.github/workflows/sandbox-workflow-security.yml'
+      - 'tests/anet_sandbox_*.py'
+      - 'tests/finance_anet_sandbox_acceptance.py'
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - 'tests/sandbox_workflow_contract.py'
+permissions:
+  contents: read
+concurrency:
+  group: sandbox-workflow-security-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify merchant-secret runner isolation
+        run: |
+          python3 -m py_compile \
+            tests/anet_sandbox_runtime.py \
+            tests/anet_sandbox_tokenize.py \
+            tests/finance_anet_sandbox_acceptance.py \
+            tests/software_anet_sandbox_acceptance.py \
+            tests/sandbox_workflow_contract.py \
+            tests/anet_sandbox_runtime_contract.py
+          python3 tests/sandbox_workflow_contract.py
+          python3 tests/anet_sandbox_runtime_contract.py
