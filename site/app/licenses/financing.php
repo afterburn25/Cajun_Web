@@ -189,7 +189,11 @@ function license_financing_periods(array $plan,RecurringBillingSchedule $doc):ar
         [$plan['schedule_id'],(int)$plan['installments']]);
     $periods=[];
     foreach($maps as $map){
-        $invoice=recurring_billing_invoice_validate($map,$doc);
+        $validated=recurring_billing_invoice_validate($map,$doc);
+        $invoice=ledger_invoice((int)$validated['id']);
+        if(recurring_billing_invoice_snapshot($invoice)!==recurring_billing_invoice_snapshot($validated)){
+            throw new RuntimeException('Financing invoice ledger ownership changed.');
+        }
         $balance=ledger_balance($invoice);
         $snapshot=json_decode((string)$map['snapshot_json'],true,8,JSON_THROW_ON_ERROR);
         $period=$snapshot['period']??null;
@@ -207,7 +211,7 @@ function license_financing_sync(int $licenseId,?string $today=null,bool $payment
     if(license_financing_feature_state()===null)return null;
     $today??=gmdate('Y-m-d');
     $result=null;
-    license_transaction(function()use($licenseId,$today,&$result):void{
+    license_transaction(function()use($licenseId,$today,$paymentRecovery,&$result):void{
         license_lock($licenseId);
         $plan=one('SELECT f.*,l.customer_id AS client_id,l.is_active AS license_active FROM '.table('license_financing').' f JOIN '.table('website_licenses').' l ON l.id=f.license_id WHERE f.license_id=? FOR UPDATE',[$licenseId]);
         if(!$plan){$result=null;return;}
