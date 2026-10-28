@@ -2937,7 +2937,7 @@ function setup_expected_files(): array { return [
     'portal/views/domain_registration_drafts.php'=>'64716dffce69632c9682a1d5f193e338e4fb5211e158ceca3d756b3b90ed3142',
     'portal/views/domain_renewals.php'=>'bb7962b647dca18f59fe11851b82b0bcbceb010655d164c7c745c77c94d46bc7',
     'portal/views/domain_search.php'=>'10744b5fd3aa8633c29725d360f889a02bd497d3cf74d6e21c2e6bb3e42ca904',
-    'portal/views/financing.php'=>'a1fae30b3fafb7e21f74c4a43ff8465c878e1e0e1d0ccec943fecf1d97fe714c',
+    'portal/views/financing.php'=>'85e1f2aea24bf6007f316052afa9e7e38f435bf72c8b4f90f6babc25cb04379d',
     'portal/views/forwarding.php'=>'e498d1a89d9e5def923af76ec91f5abeadbffe53ffa6118400d5e2740b4be080',
     'portal/views/mailboxes.php'=>'500fe800b74273a65825ea1aca8af8eea0cc0ae5f0d39a2d112ed2e50b1fc9c3',
     'portal/views/package_force_ssl.php'=>'1f8000df35a57e5b26487a767aa5fd89a44f751114141b3e75e75f5b507300dd',
