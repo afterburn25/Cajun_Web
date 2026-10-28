@@ -2,9 +2,9 @@ name: Native recurring agreement and period invoice checks
 on:
   push:
     branches: [main, feature/software-license-commerce-20261025, codex/recurring-billing-records, codex/twentyi-recurring-eligibility, codex/twentyi-recurring-ui, codex/twentyi-service-orders, codex/twentyi-catalog-controls, codex/twentyi-catalog-readiness]
-    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'tests/finance_capture_snapshot_native.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'tests/finance_capture_snapshot_native.php', 'tests/finance_charge_*.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
-    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'tests/finance_capture_snapshot_native.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'tests/finance_capture_snapshot_native.php', 'tests/finance_charge_*.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -63,6 +63,19 @@ jobs:
               php tests/finance_capture_snapshot_native.php site/app/billing/finance_charge.php fc_ci_capture_ > qa/finance-capture-snapshot-native-results.json
               cat qa/finance-capture-snapshot-native-results.json
             '
+      - name: Bind delayed checkout results to their original finance attempt
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-recurring-test sh -ec '
+              mkdir -p qa
+              php -l tests/finance_charge_attempt_bindings.php
+              php -l tests/finance_charge_response_native.php
+              php tests/finance_charge_attempt_bindings.php > qa/finance-charge-attempt-bindings.json
+              php tests/finance_charge_response_native.php site/app/billing/finance_charge.php fc_ci_response_ > qa/finance-charge-response-native-results.json
+              cat qa/finance-charge-attempt-bindings.json
+              cat qa/finance-charge-response-native-results.json
+            '
       - name: Native consent and unique period invoices
         run: |
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
@@ -102,6 +115,8 @@ jobs:
           path: |
             qa/recurring-billing-native-results.json
             qa/finance-capture-snapshot-native-results.json
+            qa/finance-charge-attempt-bindings.json
+            qa/finance-charge-response-native-results.json
             qa/service-orders-native-results.json
             qa/service-orders-links-native-results.json
             qa/service-orders-link-views-native-results.json
