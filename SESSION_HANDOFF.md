@@ -1,5 +1,11 @@
 # Session handoff - Devin sole-owner continuation
 
+## Sandbox source-review CI queue policy — 2026-10-28
+
+Independent follow-up to PR #284 (`803a4688`) corrects its ordinary no-secret `sandbox-workflow-security.yml` to cancel superseded development checks while preserving every main run, as required by AGENTS.md. The branch-scoped group, triggers, jobs, permissions and all security assertions are unchanged. Only the cancellation expression and that file's reviewed SHA256 pin change. Both actual manual sandbox transaction workflows remain non-cancelling and byte-identical; all seven other pinned files are unchanged.
+
+The reviewed-source contract and17 isolated runtime checks pass on Python3.12.14/3.14.7. Whole-file inverses prove the limited delta, all workflow YAML parses, and exact source hashes are retained in [evidence](docs/evidence/sandbox-review-queue-policy.json). This isolated branch does not write PR284's branch, dispatch gateway tests, read credentials, configure environments, merge, publish or deploy. Independent review, the existing prerequisite merge order, server-side sandbox policy and unavailable real sandbox credentials remain release gates.
+
 ## 2026-10-28 - Keep transaction key off dependency-install runners
 
 Follow-up to PR283: exact workflow pins did not pin `actions/*@v4` or the Python packages installed before the later transaction-key step. The focused correction pins actions by commit and divides each manual probe across fresh runners. Tokenization receives only the browser API login/public key, refuses a transaction key before importing Playwright and emits three strict one-use nonces; the next runner receives the transaction key, installs no third-party Python code, rejects redirects/live endpoints and consumes only the validated bounded nonce file. Offline workflow and 17-check runtime contracts pass, with a dedicated no-secret PR workflow added. Environment policy, environment-only credentials, real sandbox execution, independent approval and normal integration remain open. [Security review](docs/CODEX_SANDBOX_WORKFLOW_SECURITY_REVIEW.md).

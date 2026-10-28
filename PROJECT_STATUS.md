@@ -1,5 +1,11 @@
 # CajunWebPro current status
 
+## Sandbox source-review CI queue policy — 2026-10-28
+
+Independent follow-up to PR #284 (`803a4688`) corrects its ordinary no-secret `sandbox-workflow-security.yml` to cancel superseded development checks while preserving every main run, as required by AGENTS.md. The branch-scoped group, triggers, jobs, permissions and all security assertions are unchanged. Only the cancellation expression and that file's reviewed SHA256 pin change. Both actual manual sandbox transaction workflows remain non-cancelling and byte-identical; all seven other pinned files are unchanged.
+
+The reviewed-source contract and17 isolated runtime checks pass on Python3.12.14/3.14.7. Whole-file inverses prove the limited delta, all workflow YAML parses, and exact source hashes are retained in [evidence](docs/evidence/sandbox-review-queue-policy.json). This isolated branch does not write PR284's branch, dispatch gateway tests, read credentials, configure environments, merge, publish or deploy. Independent review, the existing prerequisite merge order, server-side sandbox policy and unavailable real sandbox credentials remain release gates.
+
 ## 2026-10-28 - Sandbox dependency runner isolated from transaction key
 
 The protected-environment follow-up still installed mutable browser packages on the same runner that later received the Authorize.Net transaction key and used mutable action tags. The focused correction pins every action commit, moves Accept.js tokenization to a separate runner that refuses a transaction key before importing Playwright, validates a three-nonce one-day handoff, and runs the fixed sandbox API calls on a fresh standard-library-only runner. A new no-secret pull-request workflow executes exact-byte and 17-check runtime contracts. Real credentials, environment policy and provider execution remain unavailable/unverified; do not run the manual probes until the server-side main-only environment gate and independent review are complete. [Security review](docs/CODEX_SANDBOX_WORKFLOW_SECURITY_REVIEW.md).
