@@ -41,7 +41,7 @@ rb_ok('Recognized empty interrupted financing setups resume and clear all durabl
 // looking up or mutating payment/subscription records after remote readback.
 foreach([
     'One-time finance reconciliation reauthenticates inside its paid transaction'=>
-        fn()=>license_finance_charge_record_paid(0,'810001',1,null,'Incorrect owner credential'),
+        fn()=>license_finance_charge_record_paid(0,'810001',1,str_repeat('a',64),null,'Incorrect owner credential'),
     'Initial finance subscription reconciliation reauthenticates inside finalization'=>
         fn()=>license_finance_subscription_finalize(str_repeat('a',32),'810001',[],[],'pending_first_payment','Incorrect owner credential'),
     'Replacement reconciliation reauthenticates inside finalization'=>

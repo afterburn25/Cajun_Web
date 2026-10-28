@@ -1,0 +1,932 @@
+{
+  "parent": "5e56c25056ee532554d3f408ce2831ba6fd7b463",
+  "branch": "codex/finance-charge-attempt-results",
+  "source_sha256": "89101ddc2446f20d655f8e1b5dda02f1d4ffe0c43044fae20d219daf2d44ad6e",
+  "fixture_sha256": "f0db91bd69d68950d5be8e5f48e116014913d31babd631ef9ce01bf33932318c",
+  "bindings_fixture_sha256": "92983886f65b55ce15ba66bda2ef4e1a093b34d694c0fd9e6855615b3965f6de",
+  "runs": [
+    {
+      "label": "original-8.2-mariadb",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 180,
+      "failed": 33,
+      "report": "original-8.2-mariadb.json",
+      "sha256": "bfa42166dd780b43129b5a8322a83a6d4a6e67c3b97051cfa7e286908167d198"
+    },
+    {
+      "label": "original-8.2-mysql",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 180,
+      "failed": 33,
+      "report": "original-8.2-mysql.json",
+      "sha256": "ee3a9704f735a8a76c3c8773f5fa2cbac212ad3dffe42246796ba654bed5e700"
+    },
+    {
+      "label": "original-8.4-mariadb",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 180,
+      "failed": 33,
+      "report": "original-8.4-mariadb.json",
+      "sha256": "a5418631f571ac340d999c6a3f4ec1c309a9d7b620e6c5b70c9a10c54220425f"
+    },
+    {
+      "label": "original-8.4-mysql",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 180,
+      "failed": 33,
+      "report": "original-8.4-mysql.json",
+      "sha256": "09338d68b6fa9acbd223a9b35089c02ae49b432ba54ca69900904d76b5d1c395"
+    },
+    {
+      "label": "final-8.2-mariadb",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 180,
+      "failed": 0,
+      "report": "final-8.2-mariadb.json",
+      "sha256": "d976c6dc4a5703a1e43d3528c9fe59a1a21e260d10c617dfeb89b44035e0a0a3"
+    },
+    {
+      "label": "final-8.2-mysql",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 180,
+      "failed": 0,
+      "report": "final-8.2-mysql.json",
+      "sha256": "a7057e7c85a48b4f6ae3e011a17e4d7a8de7e878f0ca6cb983f673339078035c"
+    },
+    {
+      "label": "final-8.4-mariadb",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 180,
+      "failed": 0,
+      "report": "final-8.4-mariadb.json",
+      "sha256": "47af5825061e7280f90542fa007a6a063612cecdb42ca363822c36bc535986eb"
+    },
+    {
+      "label": "final-8.4-mysql",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 180,
+      "failed": 0,
+      "report": "final-8.4-mysql.json",
+      "sha256": "5ec21e771686840c14d374ef355034acdad11df76f79d1a15fde39b9f3bf8ab9"
+    }
+  ],
+  "original_failed_assertions": [
+    "mark_declined_new_key exact charge retained or updated",
+    "mark_declined_new_key exact attempt retained or updated",
+    "mark_declined_conflicting_transaction exact charge retained or updated",
+    "mark_declined_conflicting_transaction exact attempt retained or updated",
+    "mark_declined_missing_transaction exact charge retained or updated",
+    "mark_declined_missing_transaction exact attempt retained or updated",
+    "mark_uncertain_new_key exact charge retained or updated",
+    "mark_uncertain_new_key exact attempt retained or updated",
+    "mark_uncertain_conflicting_transaction exact charge retained or updated",
+    "mark_uncertain_conflicting_transaction exact attempt retained or updated",
+    "mark_uncertain_missing_transaction exact charge retained or updated",
+    "mark_uncertain_missing_transaction exact attempt retained or updated",
+    "mark_review_new_key exact charge retained or updated",
+    "mark_review_new_key exact attempt retained or updated",
+    "mark_review_conflicting_transaction exact charge retained or updated",
+    "mark_review_conflicting_transaction exact attempt retained or updated",
+    "mark_review_missing_transaction exact charge retained or updated",
+    "mark_review_missing_transaction exact attempt retained or updated",
+    "mark_sandbox_test_new_key exact charge retained or updated",
+    "mark_sandbox_test_new_key exact attempt retained or updated",
+    "mark_sandbox_test_conflicting_transaction exact charge retained or updated",
+    "mark_sandbox_test_conflicting_transaction exact attempt retained or updated",
+    "mark_sandbox_test_missing_transaction exact charge retained or updated",
+    "mark_sandbox_test_missing_transaction exact attempt retained or updated",
+    "paid_processing_new_key expected outcome",
+    "paid_processing_conflicting_transaction expected outcome",
+    "paid_processing_historical_transaction expected outcome",
+    "paid_uncertain_new_key expected outcome",
+    "paid_uncertain_conflicting_transaction expected outcome",
+    "paid_uncertain_historical_transaction expected outcome",
+    "paid_review_new_key expected outcome",
+    "paid_review_conflicting_transaction expected outcome",
+    "paid_review_historical_transaction expected outcome"
+  ],
+  "corrected_assertions": [
+    {
+      "name": "mark_declined_same expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_same exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_same exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_same parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_same mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_new_key expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_new_key exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_new_key exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_new_key parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_new_key mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_conflicting_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_conflicting_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_conflicting_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_conflicting_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_conflicting_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_missing_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_missing_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_missing_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_missing_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_missing_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_terminal expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_terminal exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_terminal exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_terminal parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_declined_terminal mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_same expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_same exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_same exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_same parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_same mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_new_key expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_new_key exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_new_key exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_new_key parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_new_key mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_conflicting_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_conflicting_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_conflicting_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_conflicting_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_conflicting_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_missing_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_missing_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_missing_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_missing_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_missing_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_terminal expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_terminal exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_terminal exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_terminal parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_uncertain_terminal mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_review_same expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_review_same exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_same exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_same parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_review_same mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_review_new_key expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_review_new_key exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_new_key exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_new_key parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_review_new_key mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_review_conflicting_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_review_conflicting_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_conflicting_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_conflicting_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_review_conflicting_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_review_missing_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_review_missing_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_missing_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_missing_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_review_missing_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_review_terminal expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_review_terminal exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_terminal exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_review_terminal parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_review_terminal mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_same expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_same exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_same exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_same parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_same mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_new_key expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_new_key exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_new_key exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_new_key parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_new_key mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_conflicting_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_conflicting_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_conflicting_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_conflicting_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_conflicting_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_missing_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_missing_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_missing_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_missing_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_missing_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_terminal expected outcome",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_terminal exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_terminal exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_terminal parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "mark_sandbox_test_terminal mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_same expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_same exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_same exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_same parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_same mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_unbound_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_unbound_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_unbound_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_unbound_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_unbound_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_new_key expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_new_key exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_new_key exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_new_key parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_new_key mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_conflicting_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_conflicting_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_conflicting_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_conflicting_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_conflicting_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_historical_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_historical_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_historical_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_historical_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_processing_historical_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_same expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_same exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_same exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_same parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_same mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_unbound_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_unbound_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_unbound_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_unbound_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_unbound_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_new_key expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_new_key exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_new_key exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_new_key parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_new_key mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_conflicting_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_conflicting_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_conflicting_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_conflicting_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_conflicting_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_historical_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_historical_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_historical_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_historical_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_uncertain_historical_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_review_same expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_review_same exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_same exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_same parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_review_same mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_review_unbound_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_review_unbound_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_unbound_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_unbound_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_review_unbound_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_review_new_key expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_review_new_key exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_new_key exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_new_key parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_review_new_key mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_review_conflicting_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_review_conflicting_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_conflicting_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_conflicting_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_review_conflicting_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_review_historical_transaction expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_review_historical_transaction exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_historical_transaction exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_review_historical_transaction parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_review_historical_transaction mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "paid_owner_revoked expected outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_owner_revoked exact charge retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_owner_revoked exact attempt retained or updated",
+      "passed": true
+    },
+    {
+      "name": "paid_owner_revoked parent records unchanged",
+      "passed": true
+    },
+    {
+      "name": "paid_owner_revoked mutex and transaction released",
+      "passed": true
+    }
+  ],
+  "verification": {
+    "results": [
+      {
+        "kind": "bindings",
+        "phase": "original",
+        "php": "8.2",
+        "count": 20,
+        "failed": 16,
+        "report": "bindings-original-8.2.json"
+      },
+      {
+        "kind": "bindings",
+        "phase": "corrected",
+        "php": "8.2",
+        "count": 20,
+        "failed": 0,
+        "report": "bindings-corrected-8.2.json"
+      },
+      {
+        "kind": "routing",
+        "php": "8.2",
+        "exit": 0,
+        "report": "routing-8.2.log"
+      },
+      {
+        "kind": "source",
+        "php": "8.2",
+        "exit": 0,
+        "report": "source-8.2.log"
+      },
+      {
+        "kind": "lifecycle",
+        "php": "8.2",
+        "exit": 0,
+        "report": "lifecycle-8.2.log"
+      },
+      {
+        "kind": "bindings",
+        "phase": "original",
+        "php": "8.4",
+        "count": 20,
+        "failed": 16,
+        "report": "bindings-original-8.4.json"
+      },
+      {
+        "kind": "bindings",
+        "phase": "corrected",
+        "php": "8.4",
+        "count": 20,
+        "failed": 0,
+        "report": "bindings-corrected-8.4.json"
+      },
+      {
+        "kind": "routing",
+        "php": "8.4",
+        "exit": 0,
+        "report": "routing-8.4.log"
+      },
+      {
+        "kind": "source",
+        "php": "8.4",
+        "exit": 0,
+        "report": "source-8.4.log"
+      },
+      {
+        "kind": "lifecycle",
+        "php": "8.4",
+        "exit": 0,
+        "report": "lifecycle-8.4.log"
+      }
+    ],
+    "yaml_files": 99,
+    "bash_syntax": true,
+    "prior_capture_function_unchanged": true,
+    "source_sha256": "89101ddc2446f20d655f8e1b5dda02f1d4ffe0c43044fae20d219daf2d44ad6e"
+  },
+  "database_shutdown": {
+    "verified_utc": "2026-10-28T23:36:44.1253214Z",
+    "stopped": true,
+    "note": "Graceful mysqladmin calls succeeded; immediate exit check observed a transient listener. Later check confirms both test ports closed. Data retained.",
+    "ports": [
+      33447,
+      33448
+    ]
+  },
+  "scope": "Canonical charge/attempt SQL, real mutex/transaction and delayed result snapshots. Synthetic owner and ledger-boundary sentinel; no ledger settlement, license access, HTTP or provider claim.",
+  "limits": [
+    "36 cases x5 assertions; 180 per lane, 720 executions across PHP8.2.35/8.4.25 and MariaDB10.11.19/MySQL8.4.13. Earlier pre-cleanup runs overlap and are not added.",
+    "Actual SQL charge/attempt DDL and mutex/transaction checks; pending result carries an earlier key while current rows represent newer state. No simultaneous writer is claimed in this fixture.",
+    "Paid-helper tests deliberately stop at a synthetic ledger boundary; they prove stale attempts are denied before ledger access, not that a bad payment was committed or a license improperly unlocked.",
+    "20 orchestration checks per PHP execute actual checkout/reconciliation with synthetic provider/owner/mutation doubles. Parent API does not pass the new required key;16 caller-contract failures are interface migration evidence, not16 additional application defects.",
+    "Historical transaction lookup prevents retaining an older transaction under a new attempt. Existing ledger uniqueness, invoice/amount verification and owner reauthentication remain intact.",
+    "Hosted exact-head and final combined/main acceptance, independent reviews, sandbox and release approvals remain required."
+  ]
+}

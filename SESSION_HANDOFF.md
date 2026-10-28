@@ -1,5 +1,15 @@
 # Session handoff - Devin sole-owner continuation
 
+## Delayed finance checkout result identity — 2026-10-28
+
+Follow-up to independent PR #290 on frozen `5e56c250`: `license_finance_charge_mark()` previously selected only the current invoice row, allowing a delayed result from an older attempt to overwrite a newer processing attempt. `license_finance_charge_record_paid()` also lacked the original request-key and retained transaction checks before reaching the ledger. This does not establish an unauthorized paid transition: existing ledger uniqueness can independently reject some stale receipts.
+
+The separate `codex/finance-charge-attempt-results` correction passes the original attempt key through every checkout response, exception and owner reconciliation path. Both helpers recheck that key and any retained transaction under the account mutex/row lock; paid recording also checks immutable attempt history before ledger access. Owner reauthentication remains inside the paid transaction. PR #290's callback function is byte-for-byte unchanged.
+
+Canonical charge/attempt PDO tests reproduce33 failures among180 assertions per supported PHP/database lane; all180 pass after correction (720 executions across PHP8.2.35/8.4.25 and MariaDB10.11.19/MySQL8.4.13). Twenty actual orchestration checks pass on each PHP version with isolated provider/persistence doubles. Companion10 routing,54 source and45 lifecycle checks, touched-file PHP syntax and workflow YAML/bash checks pass. The native fixture uses a synthetic owner and a ledger sentinel that rolls back eligible cases; it claims no completed ledger payment, license unlock, concurrent writer, installed HTTP or real gateway transaction. [Source hashes, original failures and scope](docs/evidence/finance-charge-attempt-results.json).
+
+The existing four-lane recurring workflow retains both new reports. No manual/duplicate dispatch, owned integration-branch push, production activation or release occurs. Independent review, hosted exact-head testing and final combined/main acceptance remain pending; real sandbox credentials remain unavailable. Disposable databases were gracefully stopped and their data retained.
+
 ## One-time finance capture history and lock correction — 2026-10-28
 
 Independent review of frozen integration `3789bb50` reproduced a delayed-capture defect in `license_finance_charge_webhook_review()`. After reading an unsettled row, the callback could wait while another worker completed/refunded/voided the payment or began a new attempt, then overwrite the newer state with `review` and bind the old transaction to the reused charge row. A capture arriving after a replacement attempt already existed had the same problem even without a read/lock race. This could prevent safe catch-up checkout or misdirect owner reconciliation; the callback itself does not mark an invoice paid or unlock a license.
