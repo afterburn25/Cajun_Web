@@ -3,6 +3,7 @@
 - Route all existing `software_*` owner forms through the studio administration controller instead of the generic unknown-action fallback.
 - Require owner-only `staff.manage` permission for the complete software administration prefix and retain action-specific password/transaction checks.
 - Load software-commerce readiness before lifecycle and whole-license deactivate/reactivate checks; add a fast routing contract and PR policy execution.
+- Run the existing full Application and Software focused installed acceptance suites for PRs targeting the licensing feature branch; include dispatcher/permission changes in the focused trigger.
 
 ## Unreleased — customer domain cooldown event ordering
 

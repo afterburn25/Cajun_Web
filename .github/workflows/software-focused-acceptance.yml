@@ -21,6 +21,29 @@ on:
       - 'site/includes/security/http.php'
       - 'site/install/inventory.generated.php'
       - '.github/workflows/software-focused-acceptance.yml'
+  pull_request:
+    branches: [feature/software-license-commerce-20261025]
+    paths:
+      - 'tests/software_commerce_cases.py'
+      - 'tests/software_commerce_browser_fixture.php'
+      - 'tests/browser_acceptance.py'
+      - 'site/app/billing/software_*.php'
+      - 'site/app/billing/authorize_net_*.php'
+      - 'site/app/licenses/software_*.php'
+      - 'site/api/software-download.php'
+      - 'site/api/software-webhook.php'
+      - 'site/api/handlers/license.php'
+      - 'site/portal/controllers/actions.php'
+      - 'site/portal/views/software.php'
+      - 'site/admin/controllers/actions.php'
+      - 'site/admin/controllers/studio.php'
+      - 'site/admin/views/studio/licenses.php'
+      - 'site/app/staff/accounts.php'
+      - 'site/database/schema/software_commerce_schema.php'
+      - 'site/database/migrations/software_commerce_migrate.php'
+      - 'site/includes/security/http.php'
+      - 'site/install/inventory.generated.php'
+      - '.github/workflows/software-focused-acceptance.yml'
   workflow_dispatch:
 permissions:
   contents: read
