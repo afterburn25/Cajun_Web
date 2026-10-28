@@ -253,13 +253,24 @@ def run_browser(env,browser):
           len(support_id)==32 and blocked.status_code==403
           and 'Sign in to your own account to review financing' in blocked.text)
     support_home=admin.get(support_root,timeout=25)
+    blocked_before=env['db']("SELECT COUNT(*) AS n FROM ci_support_events WHERE support_id=? "
+                             "AND actor_id=1 AND client_id=1 AND action='action.blocked' AND outcome='denied'",
+                             [support_id])[0]['n']
+    requests_before=env['db']('SELECT id,invoice_id,status,amount_cents FROM ci_payment_requests WHERE client_id=1 ORDER BY id')
     forged=admin.post(support_root+'&finance='+offer,data={
         'csrf':token(support_home),
         'action':'finance_offer_payment',
         'finance_id':offer
     },timeout=25)
+    blocked_after=env['db']("SELECT COUNT(*) AS n FROM ci_support_events WHERE support_id=? "
+                            "AND actor_id=1 AND client_id=1 AND action='action.blocked' AND outcome='denied'",
+                            [support_id])[0]['n']
     check('Staff support session cannot trigger financing payment actions',
-          'action is blocked during support' in forged.text.lower())
+          forged.status_code==403
+          and 'Sign in to your own account to review financing' in forged.text
+          and blocked_after==blocked_before+1
+          and env['db']('SELECT id,invoice_id,status,amount_cents FROM ci_payment_requests WHERE client_id=1 ORDER BY id')
+              ==requests_before)
     support_release=admin.get(support_root+'&download_release='+release['release_id'],timeout=25)
     check('Support download permission cannot bypass a financed project release lock',
           support_release.status_code==404)
