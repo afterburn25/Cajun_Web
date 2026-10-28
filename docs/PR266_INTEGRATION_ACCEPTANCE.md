@@ -11,6 +11,10 @@ Owner assigned Codex a separate integration, QA and security pass for PR #266. W
 - [Document-roots original run 40644435011](https://github.com/afterburn25/Cajun_Web/actions/runs/40644435011) failed before checkout when host port33306 was occupied. Its workflow now requests a dynamically assigned service port and passes that actual mapping into the existing native-test container. The maintained PHP8.2/8.4 × MariaDB10.11/MySQL8.4 matrix and assertions remain intact.
 - The focused financing workflow now also selects a companion PR targeting the licensing feature branch, filtered to the fixture/cases/workflow paths. Existing runs and protected acceptance workflows are preserved.
 
+### Next executed blocker
+
+[Financing run40648391263](https://github.com/afterburn25/Cajun_Web/actions/runs/40648391263) on Devin parent `6045b801` confirms the active project-release download and detail now pass. Its next failure is the CLI fixture's late-installment operation: unqualified `RecurringBillingTerms` resolves in the global namespace, while the class lives in `CajunWebPro\Foundation\RecurringBilling`. The fixture now imports that class explicitly, as the maintained recurring-browser fixture already does. No application authorization change is needed for this harness failure. Subsequent installed checks remain unexecuted until the corrected candidate runs.
+
 ### Verification and limits
 
 Local PHP8.4.27: fixture syntax, financing policy, financing source contract and production-payment gate contract pass. Python3.12 AST parsing of the changed browser cases passes. Actionlint1.7.12 validates both changed workflows with optional external shellcheck/pyflakes disabled. Repository documentation, generated inventory and whitespace checks are recorded with the correction commit. These are local checks, not installed database/browser acceptance or independent approval.

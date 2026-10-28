@@ -1,6 +1,7 @@
 <?php
 /** Disposable financed-license installed-browser fixture. Never contacts a gateway. */
 declare(strict_types=1);
+use CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms;
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||count($argv)!==3)exit(2);
 $root=realpath(__DIR__.'/../test-runtime/web/existing');
 if(!$root||!is_file($root.'/includes/bootstrap.php')||!is_file($root.'/config.php'))exit(2);
