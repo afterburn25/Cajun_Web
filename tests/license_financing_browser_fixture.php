@@ -127,9 +127,15 @@ if(in_array($operation,['setup','setup-initial'],true)){
         echo json_encode(['offer_id'=>$existing['id'],'license_id'=>(int)$existing['license_id'],
             'license_key'=>$license['license_key'],'domain'=>$domain],JSON_THROW_ON_ERROR);exit;
     }
+    $jobId=1;
+    if($initialCase){
+        query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',
+            [1,'Initial payment financed project','Synthetic financed project isolating the unpaid initial payment scenario.','build','[]',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
+        $jobId=(int)db()->lastInsertId();
+    }
     $source=finance_fixture_source($initialCase?'initial':'standard');$scheduleId=finance_fixture_id($initialCase?'schedule-initial':'schedule');
     $sourceDoc=service_plans_validate(service_plans_row($source,true),true);
-    $fields=['format'=>1,'id'=>$scheduleId,'client_id'=>1,'project_id'=>1,
+    $fields=['format'=>1,'id'=>$scheduleId,'client_id'=>1,'project_id'=>$jobId,
         'source_subscription'=>['id'=>$source,'revision'=>$sourceDoc->revision(),'sha256'=>$sourceDoc->fingerprint()],
         'title'=>'Browser website financing','terms'=>'Synthetic browser financing terms.','currency'=>'USD',
         'amount_cents'=>2500,'cadence'=>'monthly','anchor'=>gmdate('Y-m-d',time()+4*86400),
