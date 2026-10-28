@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Unresolved financing replacement creation — 2026-10-28
+
+Replacement enrollment retains `review` when the provider creation result lacks a verified identity or is otherwise unresolved. A second customer create remains blocked. Explicit recognized request-validation rejection without a candidate identity can restore retry; unknown, internal, duplicate or mixed errors require reconciliation. Existing retirement, remaining-period and paid-off protections remain in place. [Independent review](CODEX_FINANCE_REPLACEMENT_OUTCOME_REVIEW.md).
+
 ## Focused provider acceptance repair — 2026-10-28
 
 Application run `40728300754` passed build, recovery, Apache and native phases and reached 2,997 installed-browser checks before the provider settings response exceeded Playwright's unchanged 30-second limit. A bounded StackCP page request now retains the provider account and hosting inventory but loads only StackCP setup and access workspaces, rather than recomputing unrelated provider histories. Both StackCP sections remain owner-only and preserve CSRF, password, immutable-history and exact-provider-read controls; the complete provider page remains available through an explicit return link. This clears an earlier integration-performance blocker without changing licensing, payment or financing state. Exact hosted browser evidence is still required. [Run review](CODEX_PR266_APPLICATION_40728300754.md).
