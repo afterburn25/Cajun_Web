@@ -231,7 +231,7 @@ function setup_expected_files(): array { return [
     'app/plans/views.php'=>'b5dc0ecc18ebaa15105f23dab376dbdeef7f3c9320c0a9b45a52c944aca69429',
     'app/portfolio/browse.php'=>'fa8340a1416e8884a08eb6fe54b055dafb38ec5ae8bb925828e6e06020275d14',
     'app/projects/archive.php'=>'268adf8bec7572fb73db45babc2a3037868d69e6a330552ab6e1d3b428292fdb',
-    'app/projects/deliveries.php'=>'e1d11a85bc09e039c62131acc691c38e966ba980cd623bb26889285eb46f57e0',
+    'app/projects/deliveries.php'=>'cad3081076ee482808c66cdbb11a4be38e1c5a9bfeca439587bb92a89ba1b1b4',
     'app/projects/reviews.php'=>'fffd404534c4d73455a37b2e1ac69a4b48ad29c0ba9529a91821cdb18c16d7b1',
     'app/providers/catalog_import.php'=>'889f773922d61b899dad5953721e8739c4ce40d75e0ccae8056cc396f5b69519',
     'app/providers/catalog_import_document.php'=>'50be32d795dbf21a20c29ffe249c986e8ca345b42dce42a7a6e1695ada437e75',
