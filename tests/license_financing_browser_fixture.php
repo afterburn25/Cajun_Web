@@ -36,22 +36,12 @@ function finance_fixture_client():void{
 }
 function finance_fixture_id(string $seed):string{return substr(hash('sha256','finance-browser|'.$seed),0,32);}
 function finance_fixture_private_storage(string $root):void{
-    $private=__DIR__.'/../test-runtime/finance-private';
-    if(!is_dir($private)&&!mkdir($private,0755,true)&&!is_dir($private)){
-        throw new RuntimeException('Synthetic finance private storage could not be created.');
-    }
-    $private=realpath($private);
+    $private=realpath((string)(config()['storage']??''));
     $document=realpath(dirname($root));
-    if(!$private||!$document||str_starts_with($private.DIRECTORY_SEPARATOR,$document.DIRECTORY_SEPARATOR)){
-        throw new RuntimeException('Synthetic finance private storage is not outside the document root.');
+    if(!$private||!is_dir($private)||!$document
+        ||str_starts_with(str_replace('\\','/',$private).'/',str_replace('\\','/',$document).'/')){
+        throw new RuntimeException('Synthetic finance fixture requires the installed private storage to remain outside the document root.');
     }
-    $config=$GLOBALS['cwp_config'];
-    $config['storage']=$private;
-    $bytes='<?php return '.var_export($config,true).';';
-    if(file_put_contents($root.'/config.php',$bytes,LOCK_EX)===false){
-        throw new RuntimeException('Synthetic finance installed config could not retain private storage.');
-    }
-    $GLOBALS['cwp_config']=$config;
 }
 function finance_fixture_source(string $case):string{
     if(!in_array($case,['initial','standard'],true))throw new InvalidArgumentException('Unknown financing fixture source.');
