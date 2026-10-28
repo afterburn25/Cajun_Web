@@ -527,6 +527,16 @@ def run_browser(env, browser):
     },timeout=25)
     check('Version-aware validation authorizes the purchased product and entitled release',
           valid.status_code==200 and valid.json()=={'authorized':True,'error':None})
+    missing_product=requests.post(validate,json={
+        'license_key':paid['license_key'],
+        'domain':'software-http.example',
+        'version':paid['version'],
+    },timeout=25)
+    check('Software validation cannot omit product identity and reuse a key across products',
+          missing_product.status_code==200 and missing_product.json()=={
+              'authorized':False,
+              'error':'Product identifier is required for this software license'
+          })
     wrong_product=requests.post(validate,json={
         'license_key':paid['license_key'],
         'domain':'software-http.example',

@@ -1,5 +1,17 @@
 # CajunWebPro current status
 
+## 2026-10-28 — feature `2c0579c4` frozen without overwriting integration fixes
+
+GitHub advanced PR #266 from reviewed `93bfa54f` to exact head `2c0579c4f1379505b1fb8a53c3f90905d3e5dcdc`. Its shipping correction explicitly loads the software-commerce migration before three studio lifecycle readiness guards; those exact controller bytes were already present in integration head `03c4f606`, so recording the new feature ancestry introduces no shipping-tree conflict. The feature-only generated inventory is not copied over the integration inventory, which also covers the independent product-validation and finance-mail corrections. Devin's branch remains untouched.
+
+## 2026-10-28 — high-severity product-validation correction
+
+Independent review found that a new software-entitlement key could validate without a `product_id`; the existing mismatch check ran only when the caller supplied that optional field. A customer could therefore reuse a valid key/domain for one product when activating different software on the same domain. Focused PR #281 (`14008290`) requires product identity for rows in `software_entitlements`, retains exact matching, binds master software keys to their product, and preserves the legacy website-key request shape for licenses without an entitlement row. Native and installed regressions accompany the shipping correction; local source/artifact guards pass, while hosted PHP/database/HTTP execution and independent approval remain required. [Focused evidence](docs/CODEX_SOFTWARE_PRODUCT_VALIDATION_REVIEW.md).
+
+## 2026-10-28 — populated Apache upgrade warning reproduced
+
+Protected Application run `40684017215` passed 2,747 Apache protection/root/subfolder/installer checks, then its published-v1.25 root-with-rewrite upgrade passed all 158 functional checks and both browser screenshots before the Apache log gate found `Undefined variable $mail_drafts_account` five times. The finance-agreement sender list used an accidental variable function; the surrounding catch hid the broken sender choice while the warning correctly failed acceptance. Focused PR #282 (`d40c3671`) calls the already-loaded `mail_drafts_account()` service directly and adds a source regression. Exact combined Apache and Application reruns remain required. [Evidence](docs/CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
+
 ## 2026-10-28 — attributed support-denial acceptance
 
 PR #274 advanced to `617e67cb` after reproducing the next unreached fixture error: a forbidden software POST to the private support software view correctly returns HTTP403, so that response cannot also expose the ordinary blocked-action message. The installed test now posts the forged mutation through the ordinary support portal, requires HTTP200 plus the refusal message and exactly one attributed denied support event, and separately preserves the private software/download 403 checks. Support readiness also requires both schema and explicit policy confirmation. Shipping permissions and handlers are unchanged.

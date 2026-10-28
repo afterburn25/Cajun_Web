@@ -1,3 +1,15 @@
+## Unreleased — product-bound software validation
+
+- Require new software entitlements to identify their exact product during public validation, closing cross-product key reuse on an otherwise valid licensed domain.
+- Preserve the legacy website-license request contract for keys without a software-entitlement row.
+- Add native compatibility coverage and installed HTTP regression evidence; refresh the generated installer inventory.
+
+## Unreleased — finance mail sender upgrade warning
+
+- Call the retained mail-draft account reader directly when building finance-agreement sender choices.
+- Eliminate the populated Apache upgrade warning and preserve the existing no-send behavior.
+- Add a source contract that rejects the former undefined variable-function spelling.
+
 ## Unreleased — support-denial acceptance attribution
 
 - Verify forged support-context software mutations produce exactly one attributed denial without weakening private-view or download 403 boundaries.

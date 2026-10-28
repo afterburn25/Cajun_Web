@@ -25,6 +25,12 @@ Implements `POST /api/validate.php` — the endpoint that Website Core calls to 
 }
 ```
 
+That two-field shape remains supported for genuine legacy website licenses.
+New software-entitlement clients must also send the exact catalog SKU as
+`product_id` (and may send their installed `version`). Omitting `product_id`
+for a software entitlement is a definitive denial; a key for one product must
+never be reused to activate another product on the same domain.
+
 **Response:**
 ```json
 HTTP 200 {"authorized": true}

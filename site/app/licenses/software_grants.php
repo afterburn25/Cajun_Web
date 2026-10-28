@@ -138,6 +138,19 @@ function software_dependencies_satisfied(int $clientId,array $dependencySkus):bo
     return true;
 }
 
+/** New software entitlements must identify the product being activated.
+ *
+ * Legacy Website Core licenses predate product-bound validation and retain
+ * their existing {license_key, domain} wire contract. A v3 software key is
+ * commercially product-specific, however, so allowing its caller to omit the
+ * product would let the same valid key/domain authorize unrelated software.
+ */
+function software_grant_requires_product_identity(array $license):bool {
+    $licenseId=(int)($license['id']??0);
+    if($licenseId<1||!software_commerce_ready())return false;
+    return (bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
+}
+
 /** Classify a mutable license without letting orphan software rows fall back to legacy behavior. */
 function software_grant_mutation_entitlement(int $licenseId):?array{
     if($licenseId<1)throw new InvalidArgumentException('License not found.');

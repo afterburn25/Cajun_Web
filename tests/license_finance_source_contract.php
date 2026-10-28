@@ -19,6 +19,9 @@ fc_ok(substr_count($admin,'License register')===1,'License register appears once
 fc_ok(!str_contains($admin,'.number_format($candidate'),'No corrupted financing splice remains in licensing view');
 fc_ok(str_contains($admin,"'replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery'"),
     'Owner reconciliation queue includes interrupted replacement, lifecycle and verified-reversal recovery states');
+fc_ok(str_contains($admin,"\$financeMailAccounts[]=mail_drafts_account(\$a['id'])")
+    &&!str_contains($admin,'$mail_drafts_account('),
+    'Finance agreement sender list calls the retained mail-account reader without an undefined variable function');
 
 fc_ok(str_contains($admin,'Commercial rights are not included in financing.')
     &&!str_contains($admin,'Grant resale rights')

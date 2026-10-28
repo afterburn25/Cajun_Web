@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'ledger-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.7.0',dest)
@@ -19,6 +20,7 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.7 update preserves configuration locks private media and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/ledger-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),up,url,'ledgerup_',before,settings,preserved)
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'wrong','confirm':'1'});check('Ledger upgrade requires owner reauthentication','current password' in r.text.lower())
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.7 ledger upgrade succeeds','Invoice payment history enabled' in r.text)
     check('Actual 1.7 retains prior invoices requests trials notifications and data',all(db('SELECT * FROM ledgerup_'+t)==v for t,v in before.items()))

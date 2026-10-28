@@ -1,5 +1,17 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — latest PR #266 head `2c0579c4` recorded
+
+Use exact feature head `2c0579c4f1379505b1fb8a53c3f90905d3e5dcdc`, not the earlier `93bfa54f` checkpoint. The new `software_commerce_migrate.php` imports in the lifecycle/deactivate/reactivate controller paths are byte-identical to the existing integration tree, so the ancestry refresh is tree-neutral. Retain the integration-generated inventory because it additionally binds all accepted corrections. Recheck GitHub immediately before any ref update; never push Devin's feature branch.
+
+## 2026-10-28 — require product identity for software validation
+
+Integrate focused PR #281 at exact head `14008290deb933fc97049c1ca2602a19e35ab8b7`, based on `03c4f606`: the public validator previously authorized a valid software key/domain when `product_id` was omitted, permitting cross-product reuse on the same site. `software_grant_requires_product_identity()` now distinguishes new software-entitlement rows from genuine legacy website keys. The handler definitively denies missing identity only for the former, retains the existing mismatch denial, and preserves legacy `{license_key, domain}` callers. The installed suite proves the omission path and native coverage proves both classification directions. Generated inventory, 69 build guards, 283 artifact checks, Python/docs/whitespace pass; hosted PHP8.2/8.4 database and HTTP execution remains required. [Evidence](docs/CODEX_SOFTWARE_PRODUCT_VALIDATION_REVIEW.md).
+
+## 2026-10-28 — Apache populated-upgrade mail sender warning
+
+Integrate focused PR #282 at exact head `d40c36711f4cd7bad0be555afc9bb59d9fc1cf15`, based on `03c4f606`: `site/admin/views/studio/licenses.php` must call `mail_drafts_account($a['id'])`, not the undefined variable function `$mail_drafts_account(...)`. Protected run `40684017215`, Apache job `122816732929`, passed 2,747 protection/root/subfolder checks and 158 populated root-rewrite upgrade checks before five warnings failed the final log gate. The source contract now fixes this spelling. Regenerate/verify inventory and rerun exact combined Apache/Application acceptance; no mail is sent by this path. [Evidence](docs/CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
+
 ## 2026-10-28 — PR #274 support follow-up
 
 Integrate exact #274 head `617e67cb0da2bc3037a566142dc69e09c2bcd037` after its earlier seat-scoping commit. The follow-up corrects only installed acceptance/review documentation: forged support mutations use the ordinary support portal to expose the refusal while requiring one attributed denied event; the private software view and ZIP remain separately HTTP403. No shipping authority change.
