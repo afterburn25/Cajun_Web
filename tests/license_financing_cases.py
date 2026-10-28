@@ -201,7 +201,7 @@ def run_browser(env,browser):
 
     suspended_gateway=fixture('gateway-suspended',offer)
     recovery_page=alice.get(finance,timeout=25)
-    recovery_link=soup(recovery_page).find('a',string=lambda value: value and 'Pay the overdue installment securely' in value)
+    recovery_link=soup(recovery_page).find('a',string=lambda value: value and 'Pay the outstanding installment securely' in value)
     check('Suspended financing scheduler prepares the overdue recovery handoff',
           suspended_gateway['subscription_status']=='billing_suspended'
           and suspended_gateway['amount_cents']==2500
@@ -260,7 +260,7 @@ def run_browser(env,browser):
     replacement_form=_form(soup,replacement_page,'finance_subscription_reenroll')
     replacement_data=form_data(replacement_form)
     check('Caught-up suspended subscription exposes replacement only for remaining installments',
-          'Pay the overdue installment securely' not in replacement_page.text
+          'Pay the outstanding installment securely' not in replacement_page.text
           and 'Restore automatic installment payments' in replacement_page.text
           and '3 remaining installments' in replacement_page.text
           and replacement_data.get('finance_id')==offer)
