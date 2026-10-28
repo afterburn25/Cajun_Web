@@ -13,11 +13,22 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 jobs:
+  sandbox-dispatch-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require confirmed default-branch dispatch
+        env:
+          CONFIRM_SANDBOX_ONLY: ${{ inputs.confirm_sandbox_only }}
+          DISPATCH_REF: ${{ github.ref }}
+        run: |
+          test "$CONFIRM_SANDBOX_ONLY" = 'true'
+          test "$DISPATCH_REF" = 'refs/heads/main'
   authorize-sandbox:
     # The provider probe is intentionally registered and executed from the
     # reviewed default branch. Never pass merchant secrets to code selected
     # from an arbitrary workflow-dispatch ref.
-    if: ${{ inputs.confirm_sandbox_only && github.ref == 'refs/heads/main' }}
+    needs: sandbox-dispatch-boundary
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:

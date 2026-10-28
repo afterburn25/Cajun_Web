@@ -19,7 +19,10 @@ for name, (driver, digest) in WORKFLOWS.items():
     source = (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
     required = [
         "workflow_dispatch:",
-        "github.ref == 'refs/heads/main'",
+        "sandbox-dispatch-boundary:",
+        "needs: sandbox-dispatch-boundary",
+        "DISPATCH_REF: ${{ github.ref }}",
+        "test \"$DISPATCH_REF\" = 'refs/heads/main'",
         "ref: ${{ github.sha }}",
         "persist-credentials: false",
         "cancel-in-progress: false",

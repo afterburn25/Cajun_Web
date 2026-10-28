@@ -6,7 +6,7 @@ The software and financed-site real Authorize.Net sandbox workflows are manual-o
 
 This main-based proposal copies the two existing manual workflow definitions, their two standalone sandbox-only provider probes and this guide. It does not add application PHP, credentials, a new product version or a production-payment switch. The probe bytes match the reviewed integration candidate. They use contents:read, explicit sandbox confirmation, isolated dependencies, exact source hashes, non-overlapping execution and checkout without persisted Git credentials.
 
-The manual jobs accept secrets only when dispatched from `main`. The test drivers do not load candidate application PHP, so selecting another branch would add no application assurance and would unnecessarily expose the sandbox environment to branch-selected code. These runs are provider-contract evidence only; candidate application behavior remains covered by the separate installed/native suites.
+The manual jobs accept secrets only after a separate no-secret boundary job proves explicit sandbox confirmation and a `main` dispatch. A wrong ref fails before checkout rather than producing a misleading skipped success. The test drivers do not load candidate application PHP, so selecting another branch would add no application assurance and would unnecessarily expose the sandbox environment to branch-selected code. These runs are provider-contract evidence only; candidate application behavior remains covered by the separate installed/native suites.
 
 ## Reviewed execution sequence
 
