@@ -330,7 +330,7 @@ $entry0=ledger_insert($invoice0,0,'gateway',2500,'authorize_net','Synthetic catc
     null,null,hash('sha256','finance-native-period-0'));
 query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',
     ['paid','Synthetic financing catch-up receipt '.$entry0,gmdate('Y-m-d H:i:s'),$invoice0['id']]);
-$restored=license_financing_sync($licenseId,$lateDate);
+$restored=license_financing_sync($licenseId,$lateDate,true);
 rb_ok('Catch-up payment restores the same financed license after suspension',
     ($restored['state']??'')==='active'&&license_get($licenseKey)['license_key']===$licenseKey);
 
