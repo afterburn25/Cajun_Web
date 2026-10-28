@@ -67,8 +67,9 @@ query('UPDATE '.table('license_finance_offers').' SET terms_json=?,terms_sha256=
     [$originalOfferTerms,$originalOfferHash,$offer['id']]);
 rb_client();
 $signed=license_finance_offer_sign((string)$offer['id'],1,'Recurring client 1',true,true);
-rb_ok('Client signature activates financing without an initial payment when zero down',
-    ($signed['offer']['status']??'')==='signed'&&array_key_exists('payment',$signed)&&$signed['payment']===null);
+rb_ok('Zero-down client signature persists signed offer status',($signed['offer']['status']??'')==='signed');
+rb_ok('Zero-down client signature returns explicit payment field',array_key_exists('payment',$signed));
+rb_ok('Zero-down client signature requires no initial payment request',$signed['payment']===null);
 rb_staff();
 $plan=license_financing_sync($licenseId);
 rb_ok('Signed zero-down financing begins active on the same website license',
