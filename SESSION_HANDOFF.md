@@ -1,5 +1,13 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — continued native verification
+
+`tests/license_finance_webhook_native_cases.php` adds 40 real SQL routing/lifecycle checks to the existing signed zero-down fixture in `tests/license_financing_native_cases.php`. This extends #270 without shipping changes or browser-fixture edits. Local PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 passes all 40; preserve the separate full-Windows failure at the 0600 private-file requirement. The prior correction commit `168c4999` now has a complete passing hosted native matrix (588 recurring checks per leg) and 55 focused regressions on both PHP versions. Re-run the normal hosted matrix for the enclosing test commit; installed acceptance remains outstanding. The existing integration writer retains PR #266 and the integration branch. [Current report](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
+
+## 2026-10-28 — delayed event correction for integration review
+
+Independent review additionally reproduced delayed financing notifications clearing reversal/replacement fences and downgrading confirmed cancellation/suspension. `codex/licensing-lifecycle-ordering` is stacked on #269 and changes only the lifecycle service, its regression/workflow and generated hash plus documentation. Integrate the routing correction first, then this focused commit; refresh inventory if resolving changes from other branches. All 45 isolated lifecycle cases pass locally; native SQL, full installed acceptance, real sandbox and release remain unverified. The existing **Complete Licensing Integration** chat retains integration ownership. [Evidence](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
+
 ## 2026-10-28 — independent correction for the licensing integration writer
 
 The owner explicitly retained the **Complete Licensing Integration** chat as writer of `codex/licensing-integration-review`; this local reviewer prepares the separate `codex/licensing-webhook-isolation` correction. Frozen parent `6045b801`, refreshed feature `5ba2a37d`, main `fdf40a25`. Review/integrate the two optional-financing webhook routing fixes and regenerated hashes, then test the combined candidate. [Review report](docs/CODEX_LICENSING_REVIEW_2026_10_28.md) records 10 passing local regression cases, 12 existing suite passes, baseline package hashes, historical failure causes, unavailable sandbox secrets and remaining release gates. No approval, merge, release, live charging or deployment is claimed.
