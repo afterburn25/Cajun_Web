@@ -31,7 +31,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
     private=Path(r.json()['storage']);(private/'retained-customer.php').write_bytes(b'<?php exit; ?>private retained customer bytes')
     original={n:(root/n).read_bytes() for n in ['config.php','.installed.php','storage/.htaccess','upload/.htaccess','config/defaults.php','assets/css/site.css']}
     def records(action='snapshot'):
-        p=subprocess.run([php,str(ROOT/'tests/organized_update_fixture.php'),str(root),action],capture_output=True,text=True)
+        p=subprocess.run([php,str(ROOT/'tests/organized_update_fixture.php'),str(root),action,*([str(web)] if at_root else [])],capture_output=True,text=True)
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')

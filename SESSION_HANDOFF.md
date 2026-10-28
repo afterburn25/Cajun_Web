@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## Actual published-v1.25 root upgrade follow-up — 2026-10-28
+
+The first actual rehearsal [run 40779590487](https://github.com/afterburn25/Cajun_Web/actions/runs/40779590487) failed after successful root installation and two passing checks. Its installer report confirms private storage is outside the real Apache web root. The CLI seeding fixture already accepts a validated explicit document-root argument, but the root caller omitted it and inherited the historical parent-directory default. The root caller now passes the real boundary; subfolder calls and all private-storage checks remain unchanged. The new exact-command regression fails before this correction and all eight harness tests pass afterward. This is a test-context correction, not successful populated-upgrade acceptance; the corrected hosted run remains required. [Retained run identity, artifact hashes and first failure](docs/evidence/published-125-upgrade-first-run.json).
+
 ## Independent published-v1.25 upgrade rehearsal — 2026-10-28
 
 This isolated draft candidate starts from frozen integration `3789bb50c90cb836530f2d5dc2400cee394763d0` and uses **provisional test version 1.26.0** solely to exercise the existing populated published-v1.25 upgrade/recovery gate. It does not select or publish the final commercial release. It contains no independent #285/#286/#287 corrections; their review/incorporation and exact combined acceptance remain separate.

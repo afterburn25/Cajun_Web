@@ -160,6 +160,23 @@ class UpgradeHarness(unittest.TestCase):
         self.assertEqual(marker.read_text(), 'retained configuration')
         self.assertFalse((web / 'install.php').exists())
 
+    def test_root_seed_passes_the_actual_apache_document_root(self):
+        tree = ast.parse((ROOT / 'tests/organized_update_cases.py').read_text(encoding='utf-8'))
+        run = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'run')
+        records = next(node for node in ast.walk(run) if isinstance(node, ast.FunctionDef) and node.name == 'records')
+        for at_root in (True, False):
+            web = self.root / 'apache-web'
+            installed = web if at_root else web / 'organized-1.25.0'
+            runner = Mock(return_value=SimpleNamespace(returncode=0, stdout='{}', stderr=''))
+            namespace = {'subprocess': SimpleNamespace(run=runner), 'php': '/usr/bin/php8.3',
+                         'ROOT': ROOT, 'root': installed, 'web': web, 'at_root': at_root, 'json': json}
+            exec(compile(ast.Module(body=[records], type_ignores=[]), '<actual-records-helper>', 'exec'), namespace)
+            self.assertEqual(namespace['records']('seed'), {})
+            expected = ['/usr/bin/php8.3', str(ROOT / 'tests/organized_update_fixture.php'), str(installed), 'seed']
+            if at_root:
+                expected.append(str(web))
+            self.assertEqual(runner.call_args.args[0], expected)
+
 
 if __name__ == '__main__':
     unittest.main()
