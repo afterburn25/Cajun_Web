@@ -9,15 +9,28 @@ on:
         default: false
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   authorize-sandbox:
-    if: ${{ inputs.confirm_sandbox_only }}
+    # The provider probe is intentionally registered and executed from the
+    # reviewed default branch. Never pass merchant secrets to code selected
+    # from an arbitrary workflow-dispatch ref.
+    if: ${{ inputs.confirm_sandbox_only && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Enforce sandbox-only source contract
         run: |
+          python3 tests/sandbox_workflow_contract.py
+          printf '%s  %s\n' \
+            '506a880be466ae6b09f4b17ae379248c955054d7eea298ca2c29d76e8d7da129' \
+            'tests/software_anet_sandbox_acceptance.py' | sha256sum --check -
           python3 -m py_compile tests/software_anet_sandbox_acceptance.py
           ! grep -F 'https://api.authorize.net' tests/software_anet_sandbox_acceptance.py
           ! grep -F 'https://js.authorize.net' tests/software_anet_sandbox_acceptance.py
