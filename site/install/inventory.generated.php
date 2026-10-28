@@ -5,7 +5,7 @@ function setup_expected_files(): array { return [
     '.htaccess'=>'35a0a64b4b32da50b037cca5b21770696003cc6501df7ff973f6b45b385aa6ae',
     'admin/controllers/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'admin/controllers/account.php'=>'5f9aac3a44e0d64df96936ac0ba43a8f4a42210d884a7216cb33bf718aef3030',
-    'admin/controllers/actions.php'=>'9a164dce8c04c8c2b0c97970d29dd52d74fac20aa5b17e2cd7a8433e753e79ed',
+    'admin/controllers/actions.php'=>'1a7b77178192ba0b81b2cf11ac980e965a043cbf78136576b4501fbf93926ab5',
     'admin/controllers/appointments.php'=>'bd0fb0d0f46e34c0a0851a594379daccf82e810e554529a9fd225dcf42d586f5',
     'admin/controllers/auth.php'=>'21a237206ce49fd0152080e5552f157fc551cfaf31ab946bda8797ecbb9272eb',
     'admin/controllers/catalog.php'=>'14376621db877ef3bc81d7b9e10e8304fe4dc5ee36fa7a7f22a9ea4f1de6132d',
