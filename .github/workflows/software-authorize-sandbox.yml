@@ -41,7 +41,7 @@ jobs:
       - name: Install isolated browser dependencies without the transaction key
         run: |
           python3 -m venv .sandbox-token-venv
-          .sandbox-token-venv/bin/pip install --disable-pip-version-check playwright==1.55.0
+          .sandbox-token-venv/bin/pip install --disable-pip-version-check playwright==1.64.1
           .sandbox-token-venv/bin/python -m playwright install --with-deps chromium
       - name: Create three one-use sandbox nonces without the transaction key
         env:

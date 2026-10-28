@@ -8,8 +8,8 @@ CHECKOUT = "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
 UPLOAD = "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
 DOWNLOAD = "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
 REVIEWED_FILES = {
-    ".github/workflows/software-authorize-sandbox.yml": "b1c763c54fbd28e8fca67e7d14487adf6bebfaf010ff74cf0546b968b3677883",
-    ".github/workflows/license-financing-authorize-sandbox.yml": "a3c3b33254d666c861fd92523cc141bfe11fdf2cae0b7956870c9a29aa35067c",
+    ".github/workflows/software-authorize-sandbox.yml": "79024fd1503d308b7b67a8f6eb76c33360989a8e9ad409989d31c99d52ccd7f4",
+    ".github/workflows/license-financing-authorize-sandbox.yml": "88a172f065e70b780cd7746dec2f12cd82fa2f4eef620108cf56b2f21db3b34b",
     ".github/workflows/sandbox-workflow-security.yml": "ac20f94c10c30422b54d80379ab6639158365c0430995e588f7573fdda6d4764",
     "tests/software_anet_sandbox_acceptance.py": "21fa7504f6780ad665328f51bc516e86f60dd4a516ce4064fb14741ea7e74e83",
     "tests/finance_anet_sandbox_acceptance.py": "685e9e27e4ee727624dab859b9b44715ec5214e09474e08e53efc58797c867d3",
@@ -36,7 +36,7 @@ for name, gateway_marker in WORKFLOWS.items():
         "test \"$DISPATCH_REF\" = 'refs/heads/main'",
         "  sandbox-tokenize:\n",
         "environment: authorize-net-sandbox",
-        "playwright==1.55.0",
+        "playwright==1.64.1",
         CHECKOUT,
         UPLOAD,
         DOWNLOAD,
