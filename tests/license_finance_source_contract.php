@@ -100,6 +100,11 @@ fc_ok(str_contains($finance,"'pending_initial'=>['authorized'=>false")
     'Initial-payment and delinquency states expose separate definitive payment-lock reasons');
 fc_ok(str_contains($finance,"state='paid_off'")||str_contains($finance,"'paid_off'=>['authorized'=>true"),
     'Paid-off state is retained as a one-way financing boundary');
+$licenseService=fc_file('site/app/licenses/service.php');
+fc_ok(!str_contains($licenseApi,'license_restore_paid_off_active')
+    &&!str_contains($finance,"SET is_active=1")
+    &&str_contains($licenseService,'Financing payoff removes only payment-based'),
+    'Permanent payoff cannot override an explicit owner license deactivation');
 fc_ok(str_contains($finance,'license_financing_rights_grants')
     &&str_contains($finance,'rightsInvoiceId')
     &&str_contains($finance,'A normal financing installment cannot be reused as payment for commercial rights.')

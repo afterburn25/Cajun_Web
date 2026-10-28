@@ -394,20 +394,24 @@ $last=$terms->period(3);
 $afterLast=(new DateTimeImmutable($last['due'].'T00:00:00',new DateTimeZone('UTC')))
     ->modify('+6 days')->format('Y-m-d');
 license_deactivate($licenseId,1);
-rb_ok('Pre-payoff manual deactivation can exist only before permanent unlock',
+rb_ok('Pre-payoff manual owner deactivation is independent of financing state',
     (int)license_get($licenseKey)['is_active']===0);
 $paidOff=license_financing_sync($licenseId,$afterLast);
-rb_ok('All signed installments permanently unlock and reactivate the financed key',
+rb_ok('All signed installments permanently remove only the financing lock',
     ($paidOff['state']??'')==='paid_off'&&is_string($paidOff['paid_off_at'])&&$paidOff['paid_off_at']!==''
     &&license_financing_authorized($licenseId)===true
-    &&(int)license_get($licenseKey)['is_active']===1);
+    &&(int)license_get($licenseKey)['is_active']===0);
 $paidAccess=license_financing_access($licenseId);
 rb_ok('Paid-off financing exposes permanent authorization with no payment denial reason',
     $paidAccess===['authorized'=>true,'state'=>'paid_off','reason'=>null]);
-$paidDeactivateBlocked=false;
-try{license_deactivate($licenseId,1);}catch(RuntimeException $expected){$paidDeactivateBlocked=true;}
-rb_ok('Paid-off financed license cannot be disabled after the customer completes payment',
-    $paidDeactivateBlocked&&(int)license_get($licenseKey)['is_active']===1);
+license_reactivate($licenseId,1);
+rb_ok('Owner can explicitly reactivate a manually inactive paid-off license',
+    (int)license_get($licenseKey)['is_active']===1);
+license_deactivate($licenseId,1);
+rb_ok('Paid-off financing cannot override a later owner deactivation',
+    (int)license_get($licenseKey)['is_active']===0
+    &&license_financing_authorized($licenseId)===true);
+license_reactivate($licenseId,1);
 $paidDomainDeactivateBlocked=false;
 try{license_deactivate_domain($licenseId,'finance-native.example',1);}catch(RuntimeException $expected){$paidDomainDeactivateBlocked=true;}
 rb_ok('Paid-off financed license cannot be disabled by removing its active domain',

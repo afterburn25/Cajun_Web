@@ -97,11 +97,7 @@ try {
     }
 
     if (!(bool) $license['is_active']) {
-        if (license_restore_paid_off_active((int)$license['id'])) {
-            $license['is_active']=1;
-        } else {
-            license_response(false, 'License is deactivated');
-        }
+        license_response(false, 'License is deactivated');
     }
     if($productId!==null&&!hash_equals((string)$license['product_id'],$productId)){
         license_response(false,'License is not authorized for this product');

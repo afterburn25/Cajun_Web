@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — payoff no longer overrides owner license control
+
+Treat the prior auto-reactivation behavior as a high-severity commercial-control defect. A paid-off plan remains permanently free of financing suspension, but `website_licenses.is_active` is again an independent owner decision: validation does not self-heal it and payoff synchronization does not rewrite it. Updated native/browser cases prove owner deactivate/reactivate on the same key while financing remains `paid_off`; standalone domain removal remains blocked and replacement remains available. Run the exact-head hosted matrix before accepting this correction.
+
 ## 2026-10-28 — refreshed combined PR266 review lane
 
 Continue from `codex/licensing-integration-review`, which now includes feature `9af42ba7`, review evidence `25e2d34f`, routing correction #269 and lifecycle correction #270. The stale forged-support assertion is resolved against the actual dispatcher: the POST omits the private finance view, requires the blocked-action copy and one exact denied audit increment, and proves both offer and payment-request rows unchanged. Local non-PHP checks pass; current feature and integration hosted runs remain queued/in progress. Do not redispatch them. Exact combined-head PHP8.2/8.4, MariaDB/MySQL, installed browser/Apache, package, real sandbox, independent review, next-version v1.25 upgrade and merged-main gates remain mandatory.

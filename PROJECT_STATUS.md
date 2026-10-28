@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — high-severity payoff/owner-control correction
+
+Independent source review found that a paid-off financing plan blocked every owner whole-license deactivation and validation silently reactivated an inactive paid-off key. Payoff must permanently remove only financing suspension, not owner authority for fraud, breach or unauthorized resale. The integration candidate now preserves explicit owner deactivation, keeps the paid-off financing verdict immutable, and permits deliberate reactivation of the same key. Native and installed-browser regressions are updated; hosted execution remains required. Domain binding and default no-resale/no-distribution rights are unchanged.
+
 ## 2026-10-28 — combined PR266 integration candidate refreshed
 
 `codex/licensing-integration-review` now contains Devin feature head `9af42ba7`, prior review head `25e2d34f`, optional-finance routing correction #269 and delayed-lifecycle correction #270. The support forgery browser case posts through the real support action dispatcher and requires one attributed denial plus unchanged agreement/payment state. Canonical installer generation, 283 artifact-helper cases, 69 build rejection cases, documentation and Python syntax pass locally; PHP/native/browser execution is unavailable in this workspace and remains a hosted gate. The exact feature acceptance lanes are queued, not duplicated. No merge, release, live charging or deployment.

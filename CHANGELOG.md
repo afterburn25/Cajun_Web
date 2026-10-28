@@ -1,3 +1,9 @@
+## Unreleased — preserve owner control after financing payoff
+
+- Keep permanent payoff limited to financing-based suspension; an explicit owner deactivation remains authoritative and validation never silently reactivates it.
+- Retain the same paid-off plan, key, domain history and no-resale policy while allowing deliberate owner reactivation.
+- Add native and installed-browser regressions for the owner-deactivate/reactivate boundary after payoff.
+
 ## Unreleased — delayed financing lifecycle events
 
 - Preserve cancellation, reversal recovery and replacement reservations against delayed subscription events.

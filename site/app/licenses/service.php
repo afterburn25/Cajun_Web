@@ -266,10 +266,7 @@ function license_deactivate_domain_tx(int $licenseId, string $domain, int $actor
     license_audit($actor, 'domain.deactivate', 'License ' . $licenseId . ' domain ' . $domain);
 }
 
-/**
- * A fully paid financed-site license is permanently unlocked from future
- * whole-license deactivation. Domain binding remains mutable separately.
- */
+/** A fully paid plan cannot lose its last domain through the ordinary domain-removal path. */
 function license_paid_off_lock(int $licenseId): bool {
     if ($licenseId < 1) return false;
     $table = one(
@@ -288,38 +285,12 @@ function license_paid_off_lock(int $licenseId): bool {
 }
 
 /**
- * Recover an inactive key only when financing already reached the immutable
- * paid-off boundary. Used by validation/migration recovery; never authorizes
- * an unpaid or merely active financing plan.
- */
-function license_restore_paid_off_active(int $licenseId): bool {
-    if ($licenseId < 1) return false;
-    $restored = false;
-    license_transaction(function() use ($licenseId, &$restored): void {
-        license_lock($licenseId);
-        if (!license_paid_off_lock($licenseId)) return;
-        $row = one('SELECT is_active FROM '.table('website_licenses').' WHERE id=? FOR UPDATE',[$licenseId]);
-        if (!$row) throw new InvalidArgumentException('License not found.');
-        if ((int)$row['is_active'] !== 1) {
-            $now = gmdate('Y-m-d H:i:s');
-            query('UPDATE '.table('website_licenses').' SET is_active=1,updated_at=? WHERE id=?',[$now,$licenseId]);
-            license_audit(0,'financing.unlock',
-                'License '.$licenseId.' restored active from immutable paid-off financing state');
-        }
-        $restored = true;
-    });
-    return $restored;
-}
-
-/**
- * Deactivate an entire license.
+ * Deactivate an entire license. Financing payoff removes only payment-based
+ * suspension; it never overrides an explicit owner license-control decision.
  */
 function license_deactivate(int $licenseId, int $actor = 0): void {
     license_transaction(function() use ($licenseId, $actor): void {
         license_lock($licenseId);
-        if (license_paid_off_lock($licenseId)) {
-            throw new RuntimeException('A fully paid financed license is permanently unlocked and cannot be deactivated.');
-        }
         query('UPDATE ' . table('website_licenses') . ' SET is_active = 0, updated_at = ? WHERE id = ?',
             [gmdate('Y-m-d H:i:s'), $licenseId]);
         license_audit($actor, 'deactivate', 'License ' . $licenseId . ' deactivated');

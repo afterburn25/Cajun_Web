@@ -326,18 +326,24 @@ def run_browser(env,browser):
           alice.get(release_url,timeout=25).status_code==200)
 
     fixture('force-inactive-paid-off',offer)
-    check('Synthetic imported paid-off record begins inactive before validation recovery',
+    check('Synthetic paid-off record begins explicitly owner-inactive',
           env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
-    recovered=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
-    check('Validation self-heals an inactive immutable paid-off key on its registered domain',
-          recovered.status_code==200 and recovered.json()=={'authorized':True,'error':None}
-          and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+    inactive_probe=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
+    check('Paid-off financing cannot silently override explicit owner deactivation',
+          inactive_probe.status_code==200
+          and inactive_probe.json()=={'authorized':False,'error':'License is deactivated'}
+          and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
+
+    licenses=base+'/existing/admin/index.php?view=studio-licenses'
+    chosen_form(admin,licenses,'studio_license_reactivate','id',license_id,{})
+    check('Owner can explicitly reactivate the same paid-off license key',
+          env['db']('SELECT license_key,is_active FROM ci_website_licenses WHERE id=?',[license_id])
+              ==[{'license_key':license_key,'is_active':1}])
     wrong_recovery=requests.post(validate,json={'license_key':license_key,'domain':'paid-off-probe.example'},timeout=25)
-    check('Paid-off recovery does not weaken domain binding',
+    check('Paid-off owner reactivation does not weaken domain binding',
           wrong_recovery.status_code==200
           and wrong_recovery.json()=={'authorized':False,'error':'Domain not registered for this license'})
 
-    licenses=base+'/existing/admin/index.php?view=studio-licenses'
     owner_paid=admin.get(licenses,timeout=25)
     paid_forms=[form for form in soup(owner_paid).select('form')
                 if (form.select_one('[name=action]') is not None
@@ -349,14 +355,19 @@ def run_browser(env,browser):
                            and form.select_one('[name=action]').get('value')=='studio_domain_deactivate'
                            and form.select_one('[name=license_id]') is not None
                            and form.select_one('[name=license_id]').get('value')==str(license_id))]
-    check('Paid-off financed license owner UI removes whole-license and standalone-domain deactivation',
-          not paid_forms and not paid_domain_forms and 'Permanently unlocked' in owner_paid.text)
-    forged_disable=admin.post(licenses,data={
-        'csrf':token(owner_paid),'action':'studio_license_deactivate','id':str(license_id)
-    },timeout=25)
-    check('Forged owner deactivation cannot disable a fully paid financed key',
-          'permanently unlocked' in forged_disable.text.lower()
-          and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+    check('Paid-off owner UI preserves license control while preventing standalone domain removal',
+          len(paid_forms)==1 and not paid_domain_forms
+          and 'payment status can no longer suspend this license' in owner_paid.text.lower())
+    chosen_form(admin,licenses,'studio_license_deactivate','id',license_id,{})
+    owner_disabled=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
+    check('Owner deactivation remains authoritative after financing payoff',
+          owner_disabled.status_code==200
+          and owner_disabled.json()=={'authorized':False,'error':'License is deactivated'}
+          and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
+    chosen_form(admin,licenses,'studio_license_reactivate','id',license_id,{})
+    check('Owner reactivation restores the same paid-off license without changing its key',
+          env['db']('SELECT license_key,is_active FROM ci_website_licenses WHERE id=?',[license_id])
+              ==[{'license_key':license_key,'is_active':1}])
 
     paid_workspace=alice.get(base+'/existing/portal/index.php',timeout=25)
     client_domain_deactivate=[form for form in soup(paid_workspace).select('form')
@@ -364,8 +375,10 @@ def run_browser(env,browser):
                                   and form.select_one('[name=action]').get('value')=='license_domain_deactivate'
                                   and form.select_one('[name=license_id]') is not None
                                   and form.select_one('[name=license_id]').get('value')==str(license_id))]
-    check('Paid-off client workspace removes standalone domain deactivation but retains replacement',
-          not client_domain_deactivate
+    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',
+          'payment status can no longer suspend this license' in paid_workspace.text.lower()
+          and 'owner license controls' in paid_workspace.text.lower()
+          and not client_domain_deactivate
           and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)
     forged_domain=alice.post(base+'/existing/portal/index.php',data={
         'csrf':token(paid_workspace),'action':'license_domain_deactivate',
