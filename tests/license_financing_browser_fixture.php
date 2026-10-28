@@ -180,6 +180,11 @@ if($operation==='release'){
         $release=delivery_record($id);
     }
     if($release['status']!=='published')throw new RuntimeException('Synthetic financed project release was not published.');
+    $deliveries=realpath((string)config()['storage']).DIRECTORY_SEPARATOR.'deliveries';
+    $releaseFile=$deliveries.DIRECTORY_SEPARATOR.'release-'.$release['id'].'.php';
+    if(!is_dir($deliveries)||!is_file($releaseFile)||!chmod($deliveries,0755)||!chmod($releaseFile,0644)){
+        throw new RuntimeException('Synthetic financed project release could not be shared with the web server.');
+    }
     echo json_encode([
         'release_id'=>(string)$release['id'],
         'sha256'=>(string)$release['sha256'],

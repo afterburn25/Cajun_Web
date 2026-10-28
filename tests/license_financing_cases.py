@@ -152,6 +152,9 @@ def run_browser(env,browser):
     release_url=base+'/existing/portal/index.php?download_release='+release['release_id']
     release_detail=base+'/existing/portal/index.php?release='+release['release_id']
     active_release=alice.get(release_url,timeout=25)
+    if active_release.status_code!=200 or len(active_release.content)!=release['bytes']:
+        print('release-download diagnostic: status=%s content-type=%s body=%s'
+              % (active_release.status_code,active_release.headers.get('Content-Type'),active_release.text[:300]))
     check('Active financing permits the published project release',
           active_release.status_code==200
           and len(active_release.content)==release['bytes']
