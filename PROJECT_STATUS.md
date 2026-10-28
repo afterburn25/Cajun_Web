@@ -1,5 +1,17 @@
 # CajunWebPro current status
 
+## 2026-10-28 — combined PR266 integration candidate refreshed
+
+`codex/licensing-integration-review` now contains Devin feature head `9af42ba7`, prior review head `25e2d34f`, optional-finance routing correction #269 and delayed-lifecycle correction #270. The support forgery browser case posts through the real support action dispatcher and requires one attributed denial plus unchanged agreement/payment state. Canonical installer generation, 283 artifact-helper cases, 69 build rejection cases, documentation and Python syntax pass locally; PHP/native/browser execution is unavailable in this workspace and remains a hosted gate. The exact feature acceptance lanes are queued, not duplicated. No merge, release, live charging or deployment.
+
+## 2026-10-28 — independent delayed-financing-event correction
+
+Branch `codex/licensing-lifecycle-ordering`, stacked on [routing correction #269](https://github.com/afterburn25/Cajun_Web/pull/269), preserves cancelled, reversal-recovery and replacement states under delayed gateway lifecycle events, and retains confirmed suspension after a delayed failure. The real-service regression has 45 passing isolated cases (17 failed before the fix). Both corrections remain proposed for the existing integration writer; native/gateway/installed acceptance is still required. [Review and evidence](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
+
+## 2026-10-28 — independent licensing webhook correction
+
+Branch `codex/licensing-webhook-isolation` prepares two focused fixes for PR #266: optional financing no longer queries absent finance tables for software captures or requires financing production activation for unrelated software refunds/voids. Ten actual-service regression cases pass locally; broader acceptance, sandbox and release gates remain open. The owner retained the separate **Complete Licensing Integration** chat as integration writer. [Exact source, findings, evidence and handoff](docs/CODEX_LICENSING_REVIEW_2026_10_28.md). Not merged, released or deployed.
+
 ## 2026-10-28 — financed replacement recovery hardening
 
 The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).

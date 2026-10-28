@@ -1,5 +1,13 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Independent review correction — 2026-10-28
+
+The combined `codex/licensing-integration-review` lane includes current feature `9af42ba7`, prior review evidence `25e2d34f` and both focused corrections below. Its support-session regression separately verifies the private finance view's HTTP403 and posts a forged finance action through the real dispatcher, requiring an attributed denied audit event and no agreement or payment-request mutation. Exact combined-head installed execution remains pending.
+
+The follow-up `codex/licensing-lifecycle-ordering` correction preserves financing `cancelled`, `reversal_recovery` and `replacing` states against delayed lifecycle events. A delayed failure also cannot downgrade `billing_suspended`; ordinary active/failure transitions still work. This retains manual catch-up eligibility and existing settlement/replacement fences without changing payment verification, ledger math or payoff policy. Forty-five actual-service cases pass with isolated database doubles; native gateway concurrency remains a separate gate.
+
+The focused `codex/licensing-webhook-isolation` correction keeps optional financing from interrupting software capture/refund/void notification routing. Finance storage readiness is checked before capture lookup; refund/void ownership is resolved before finance production settings are required. Matched financing transactions retain the existing payment and activation gates. Ten isolated actual-service cases pass locally. [Source, findings, matrix and remaining release gates](CODEX_LICENSING_REVIEW_2026_10_28.md). This is proposed correction evidence, not merged application or real gateway certification.
+
 **Owner request:** October 25, 2026. This branch is an independently staged feature request; it is **not merged, shipped or deployed**. `main` is the authoritative production source. Devin remains integration/release lead. Avoid editing Devin's integration branch and require review of shared billing/auth/schema/portal changes.
 
 ## Existing functionality to retain (verified in `main` source)

@@ -184,6 +184,8 @@ function license_finance_charge_reconcile(int $invoice,string $transactionId,#[\
 
 function license_finance_charge_webhook_review(array $details,string $transactionId):string{
     if(!preg_match('/^[0-9]{5,30}$/D',$transactionId))throw new InvalidArgumentException('Invalid financing transaction ID.');
+    // Software-only installations have not prepared the optional finance tables.
+    if(!license_finance_gateway_ready()||!ledger_ready())return 'finance_payment_unmatched';
     $tx=$details['transaction']??null;if(!is_array($tx)||isset($tx['subscription']))return 'finance_payment_unmatched';
     $invoiceNumber=(string)($tx['order']['invoiceNumber']??'');
     if(!preg_match('/^CWP-([1-9][0-9]{0,14})$/D',$invoiceNumber,$m))return 'finance_payment_unmatched';
