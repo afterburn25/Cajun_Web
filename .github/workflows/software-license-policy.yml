@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feature/software-license-commerce-20261025
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
   workflow_dispatch:
 
 permissions:
@@ -24,6 +27,7 @@ jobs:
           php -l site/app/licenses/software_license_policy.php
           php -l tests/software_license_policy.php
           php -l tests/software_commerce_contract.php
+          php -l tests/software_admin_routing_contract.php
           php -l tests/software_production_gate_contract.php
           php -l site/app/licenses/software_grants.php
           php -l site/app/licenses/software_products.php
@@ -67,4 +71,5 @@ jobs:
         run: |
           php tests/software_license_policy.php
           php tests/software_commerce_contract.php
+          php tests/software_admin_routing_contract.php
           php tests/software_production_gate_contract.php

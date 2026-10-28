@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Owner administration dispatcher correction — 2026-10-28
+
+Every `software_*` owner form is now routed through the existing studio administration controller instead of falling through to the generic unknown-action response. The central staff-action boundary classifies the full prefix as owner-only `staff.manage`; individual password reauthentication and transaction checks remain in place. Whole-license lifecycle, deactivate and reactivate branches also load the software-commerce readiness definition before calling it. The fast routing contract complements the existing installed tests that submit the real owner setup and paid-off deactivate/reactivate forms.
+
 ## Customer domain cooldown ordering — 2026-10-28
 
 Customer domain changes are serialized under the license row lock. When replacement-internal deactivation and a later standalone deactivation have the same second-resolution timestamp, their audit IDs determine order: only a replacement event recorded after its internal deactivation is exempt. Timestamp age still determines cooldown expiry. This closes the same-second replace/deactivate/add bypass without changing same-domain recovery, owner overrides, disabled/expired cooldowns or installation limits. Twelve native service cases and a supported four-lane PHP/database workflow accompany the correction.

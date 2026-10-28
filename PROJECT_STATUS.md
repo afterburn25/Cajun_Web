@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — owner software administration routing correction
+
+Independent real-router reproduction found two application defects on the combined candidate: every `software_*` administration POST fell through to `Unknown administration action`, and whole-license deactivate/reactivate called `software_commerce_ready()` before loading its definition. The integration lane now routes software posts through the existing studio controller, assigns the whole prefix explicit owner-only `staff.manage` authority, and loads the commerce readiness boundary before the lifecycle checks. A fast source contract and the existing real-form installed acceptance cover the repair; hosted PHP and installed execution on the new exact head remain required.
+
 ## 2026-10-28 — customer domain cooldown bypass correction integrated
 
 Focused PR #272 reproduced a customer restriction bypass: with a one-install entitlement and 24-hour cooldown, replace A with B, deactivate B and register C could succeed when the replacement and standalone deactivation shared the same second-resolution timestamp. The combined integration candidate now uses audit IDs already serialized by the license lock to distinguish event order while retaining timestamp-based cooldown expiry, same-domain recovery and owner overrides. The exact #272 source, 12 native cases and focused four-lane workflow are merged into the review lane; fresh combined-head execution remains required.

@@ -218,6 +218,7 @@ function studio_admin_action(string $action,array $user): never {
         flash('Software license and purchase storage is prepared. Existing licenses were retained.');
         redirect(admin_url('studio-licenses'));
     }elseif($action==='software_license_lifecycle'){
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
         if(support_current())throw new RuntimeException('Leave support mode first.');
         staff_require('staff.manage');
@@ -381,6 +382,7 @@ function studio_admin_action(string $action,array $user): never {
         }
         $_SESSION['license_key_created']=$key;$target='studio-licenses';
     }elseif($action==='studio_license_deactivate'){
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
         if(software_commerce_ready()&&one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$id])){
             throw new InvalidArgumentException('Use the explicit software suspend/revoke controls for this entitlement.');
@@ -388,6 +390,7 @@ function studio_admin_action(string $action,array $user): never {
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         license_deactivate($id,(int)$user['id']);$target='studio-licenses';
     }elseif($action==='studio_license_reactivate'){
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
         if(software_commerce_ready()&&one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$id])){
             throw new InvalidArgumentException('Use the explicit software resume/restore controls for this entitlement.');
