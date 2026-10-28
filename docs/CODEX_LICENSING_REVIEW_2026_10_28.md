@@ -22,6 +22,18 @@ The two service changes are deliberately narrow. No schema, customer identity, g
 
 ## Executed local evidence
 
+### Customer domain cooldown ordering
+
+**P2 — same-second replace/deactivate/add bypasses the configured cooldown.** On combined candidate `79af3dd4938a76eafb0dd27c084b75dbaf3eccbf`, actual customer domain services accepted A→B, standalone deactivation of B, then registration of C despite a one-install entitlement and 24-hour cooldown. Replacement audit ID86 preceded standalone deactivation ID87; both timestamps were `2026-10-28 08:36:47`. The helper's timestamp `>=` comparison misclassified the later deactivation as part of the earlier replacement. No SQL mutation was used to produce this initial reproduction.
+
+The focused correction compares the audit IDs already ordered under the license row lock. Time remains the basis for cooldown expiry; IDs decide which mutation happened first. Twelve actual PDO/service regressions pass locally on PHP8.2.35/8.4.25 × MariaDB10.11.19/MySQL8.4.13. The repeatable test explicitly gives the two synthetic audit events equal timestamps so slow runners exercise the collision. It fails against the original service and passes after correction. Tests also preserve denial without row/audit mutation, immediate same-domain reactivation, expired/disabled cooldown behavior, owner override and the one-install limit. This does not widen customer authority or alter payment/license state.
+
+### Independent combined-candidate verification
+
+Read-only archive `79af3dd4938a76eafb0dd27c084b75dbaf3eccbf` passes all 15 focused suites and lint for its 12 changed shipping PHP files on both supported PHP versions. The 40 new native webhook cases also pass against those combined shipping bytes on all four combinations. Ten additional actual SQL/loopback HTTP probes per combination confirm owner deactivation survives a synthetic retained payoff record, validation does not silently reactivate it, explicit reactivation retains the same key and domain restrictions, and audit failure rolls deactivation back. Full software-commerce native acceptance passes 234 checks locally on PHP8.4/MariaDB for that exact combined source. These are independent execution results, not formal approval or actual payment collection.
+
+Hosted #270 test head `10ab1296c790bf76d64e8287d16e80272b86aaba` has successful [expanded native matrix 40656220349](https://github.com/afterburn25/Cajun_Web/actions/runs/40656220349) and [focused webhook run 40656220608](https://github.com/afterburn25/Cajun_Web/actions/runs/40656220608). All three exact-source packages at that head pass member/hash/path/CRC/no-nested-ZIP/direct-extraction auditing. Broader installed acceptance remains separate. Feature run [40656344028](https://github.com/afterburn25/Cajun_Web/actions/runs/40656344028) at `36721397` passes its named finance lifecycle/browser assertions but fails the final PHP diagnostics gate: a late `http_response_code(404)` in the finance view runs after layout output. The portal owner has the exact retained warning; the gate is not waived.
+
 ### Continuing goal: actual SQL verification
 
 The next review increment adds `tests/license_finance_webhook_native_cases.php` to the existing signed zero-down native fixture. All 40 cases pass with PHP 8.2.35 and 8.4.25 against both MariaDB 10.11.19 and MySQL 8.4.13. These are real PDO connections, foreign-key-constrained InnoDB rows, prepared queries, transactions, triggers and separate processes, not database doubles. Replaying these cases against archived before-fix source reproduces the missing optional finance table PDO exception on `5ba2a37d`, and the cancelled-state overwrite on `f6d49812`; the failing reports are retained.

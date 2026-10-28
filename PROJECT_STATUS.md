@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — customer domain cooldown correction
+
+Independent native review reproduced a 24-hour domain-move cooldown bypass: replace A with B, deactivate B, then register C within the same second. The helper confused equal timestamps with event order. Branch `codex/licensing-domain-cooldown`, stacked on #270, compares audit IDs under the existing license lock. Twelve real PDO/service cases pass on all four supported PHP/database combinations, retaining same-domain recovery, expired/disabled cooldown behavior and owner overrides. The integration writer still owns the combined branch. [Evidence and remaining gates](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
+
 ## 2026-10-28 — native SQL evidence for the independent corrections
 
 The continuing independent review adds 40 actual PDO/InnoDB cases to the existing recurring/financing native lane. All 40 pass locally on PHP 8.2/8.4 with MariaDB 10.11.19 and MySQL 8.4.13, including audit rollback and an independently connected worker re-reading a replacement fence after waiting for the account mutex. Before-fix archives reproduce both defects against real SQL. Correction commit `168c4999` also passes the complete hosted 588-check native matrix and 55 focused regressions; those runs predate these 40 new cases. The complete Windows suite stops later at the unchanged required 0600 private-file boundary (209 checks passed); installed acceptance remains required. No shipping code or production safeguard changes. [Evidence and scope](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).

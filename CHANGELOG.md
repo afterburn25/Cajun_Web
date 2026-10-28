@@ -1,3 +1,7 @@
+## Unreleased — customer domain cooldown ordering
+
+- Prevent same-second replace/deactivate/add sequences from bypassing the owner-configured domain-move cooldown. Retain same-domain recovery, owner overrides and expired/disabled cooldown behavior; add 12 native regressions on the supported PHP/database matrix.
+
 ## Unreleased — delayed financing lifecycle events
 
 - Add 40 native SQL regressions covering the webhook corrections, transaction rollback, serialized second-session delivery and unchanged licensing/ledger data across the existing PHP/database matrix.
