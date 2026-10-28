@@ -139,6 +139,9 @@ def run_browser(env,browser):
     bundle=fixture('bundle',offer)
     bundle_url=base+'/existing/api/bundle-download.php?id='+str(bundle['bundle_id'])
     active_bundle=alice.get(bundle_url,timeout=25)
+    if active_bundle.status_code!=200 or hashlib.sha256(active_bundle.content).hexdigest()!=bundle['sha256']:
+        print('bundle-download diagnostic: status=%s content-type=%s body=%s'
+              % (active_bundle.status_code,active_bundle.headers.get('Content-Type'),active_bundle.text[:300]))
     check('Active financing permits the owned website bundle',
           active_bundle.status_code==200
           and len(active_bundle.content)==bundle['bytes']
