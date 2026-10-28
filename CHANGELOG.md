@@ -1,3 +1,9 @@
+## Unreleased — financing reconciliation authorization
+
+- Reauthenticate owner-initiated one-time, subscription and replacement reconciliation inside their serialized commit transactions.
+- Require current owner credentials before recurring reconciliation may clear review.
+- Add native service-boundary rejection cases for stale credentials.
+
 ## Unreleased — financed billing replacement corrections
 
 - Allow caught-up replacement enrollment after the original agreement start while retaining exact future remaining periods.

@@ -6,6 +6,7 @@ if(PHP_SAPI!=='cli'||!defined('CWP_BOOT')||getenv('CWP_TEST_DATABASE')!=='cwp_te
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
 
 rb_staff();
 save_setting('license_schema_version','3');
@@ -17,6 +18,23 @@ rb_ok('Financing native setup creates v3 gateway replacement and reversal storag
     license_financing_feature_state()===true&&license_finance_offers_ready()&&license_finance_gateway_ready()
     &&setting('license_finance_gateway_schema_version')==='3'
     &&license_finance_gateway_table_present('license_finance_reversals'));
+
+// A stale owner credential must be checked by the commit helper itself, before
+// looking up or mutating payment/subscription records after remote readback.
+foreach([
+    'One-time finance reconciliation reauthenticates inside its paid transaction'=>
+        fn()=>license_finance_charge_record_paid(0,'810001',1,null,'Incorrect owner credential'),
+    'Initial finance subscription reconciliation reauthenticates inside finalization'=>
+        fn()=>license_finance_subscription_finalize(str_repeat('a',32),'810001',[],[],'pending_first_payment','Incorrect owner credential'),
+    'Replacement reconciliation reauthenticates inside finalization'=>
+        fn()=>license_finance_subscription_replacement_finalize(str_repeat('a',32),'810001','810002',[],[],'pending_first_payment','canceled','Incorrect owner credential'),
+    'Review-clearing recurring settlement requires current owner credentials'=>
+        fn()=>license_finance_subscription_settle([],'810001',true,'Incorrect owner credential'),
+] as $reauthName=>$reauthAttempt){
+    $reauthDenied=false;
+    try{$reauthAttempt();}catch(InvalidArgumentException $e){$reauthDenied=str_contains($e->getMessage(),'current password');}
+    rb_ok($reauthName,$reauthDenied&&!db()->inTransaction());
+}
 
 db()->exec('ALTER TABLE '.table('license_financing_rights_grants').' DROP INDEX license_history, ADD INDEX license_history(license_id,created_at,id)');
 rb_deny('Financing setup rejects an expanded nonunique rights-history index',

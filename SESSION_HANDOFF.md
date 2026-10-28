@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — owner reconciliation commit checks
+
+One-time/subscription/replacement owner reconciliation now reauthenticates inside serialized mutations. Four new native rejection cases pass on local MariaDB; the full local suite stops at the unchanged Windows private-permission guard. [Exact source-bound partial evidence](docs/evidence/pr266-owner-reauth-native.json). Continue original Linux CI, full application/package acceptance, real sandbox and independent review.
+
 ## 2026-10-28 — financed replacement recovery hardening
 
 The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).
