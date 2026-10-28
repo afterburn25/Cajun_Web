@@ -295,7 +295,7 @@ class UpgradeHarness(unittest.TestCase):
                 self.assertEqual(json.loads(result.stdout), {'scope': expected, 'state': 'complete', 'authorizations': 1})
 
     def test_release_diagnostic_reads_the_shipped_version_source(self):
-        inspect = functions(ROOT / 'tests/release_next_from_125.py', {'zipfile': zipfile, 're': re})['inspect_zip']
+        inspect = functions(ROOT / 'tests/release_next_from_125.py', {'zipfile': zipfile, 're': re, 'Path': Path})['inspect_zip']
         for label, files, expected in [
                 ('published-layout', {'config/defaults.php': "<?php\nconst CWP_VERSION = '1.25.0';\n"}, '1.25.0'),
                 ('wrong-version', {'config/defaults.php': "<?php\nconst CWP_VERSION = '1.24.0';\n"}, '1.24.0'),

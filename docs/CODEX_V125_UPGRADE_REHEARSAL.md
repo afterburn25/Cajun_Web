@@ -1,5 +1,11 @@
 # Published v1.25 upgrade rehearsal
 
+## Upgrade harness Python annotation correction — 2026-10-28
+
+Run [40785345723](https://github.com/afterburn25/Cajun_Web/actions/runs/40785345723) failed in all four lanes before application upgrade testing: the new diagnostic extraction test omitted `Path` from its function execution globals. CI Python3.12 evaluates that annotation immediately; local Python3.14 deferred it. All four complete job logs retain the same `NameError`. The helper now supplies the original `Path` dependency explicitly. No assertion, application byte, database/runtime probe or matrix lane changes.
+
+The exact original failure reproduces locally on Python3.12.14. All15 methods then pass across Python3.12.14/3.14.7 and PHP8.2.35/8.4.25. Earlier 268-check PHP8.3/MariaDB installed-upgrade success remains valid at its recorded source; the corrected four-lane matrix still requires fresh hosted acceptance. [Retained run identity and bounded local proof](evidence/published-125-upgrade-python-annotation.json).
+
 ## Verified populated v1.25 upgrade and supported runtime coverage — 2026-10-28
 
 The real populated upgrade rehearsal at source `3fd87727ebafaa9290f03e37c97043f9e029cf75` passes all **268 checks** in [run 40783809553](https://github.com/afterburn25/Cajun_Web/actions/runs/40783809553). Downloaded artifact 12859025835 has verified SHA-256/CRC/member hashes; CI checkout `b789ca9697d9349208645890c234e5609a56d999` and source share tree `b7d9bd101bf63e6f3c80817f2b851ad63de631d8`. Each root/subfolder × rewrite/no-rewrite scope passes 67 checks on actual PHP8.3.6/MariaDB10.11.19. All four installs verify 2,894 published files and actual OPCache residency with timestamp checks disabled. Populated business rows, encrypted provider/mail keys, inventory approvals, unknown operations, submission fences, access checks, interrupted update, recovery and reapplication survive. [Audited retained success evidence](evidence/published-125-upgrade-success.json).
