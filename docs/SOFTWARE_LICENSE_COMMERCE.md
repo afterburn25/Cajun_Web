@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Installed lifecycle acceptance contract — 2026-10-28
+
+Software entitlements use the explicit `software_license_lifecycle` controls, not the legacy whole-website deactivate/reactivate forms. Installed acceptance selects the exact license plus `suspend` or `resume`, supplies a retained reason, verifies customer state and download denial/recovery, and confirms the legacy action is rejected without changing the license. This is test correction only; it does not broaden owner authority or alter payment/financing state.
+
 ## Current integration checkpoint — 2026-10-28
 
 The independent integration lane now includes exact PR #266 head `cb916c07`. Exact-head installed run `40667109804` demonstrated the real owner setup, customer checkout, tenant isolation, sandbox CSP, trial upgrade and fulfillment paths before exposing a direct-dependency defect in the owner delivery retry. The feature now imports the software-commerce migration contract in `software_notices.php`, keeping a disabled/unaccepted mail attempt in the durable retryable state. Purchased-download ordering also prefers the verified invoice/unit entitlement when one customer has multiple eligible licenses for the same release; the installed suite binds the rendered link to the paid license and its purchase source.

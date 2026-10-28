@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — integrate PR #273 test continuation
+
+Incorporate exact focused correction head `b2ec170c4df75879789a5f7caa7ae770d542db8a` as a second parent of the integration lane. Its shipping renderer change is already byte-identical to Devin feature `94d24cea`; the remaining material change updates `tests/software_commerce_cases.py` to select the real reasoned software suspend/resume forms and assert forged legacy deactivation is refused. Preserve `docs/CODEX_SOFTWARE_DOWNLOAD_SOURCE_REVIEW.md` as the focused evidence record. No shipping lifecycle behavior changed. Fresh combined-head installed acceptance is mandatory.
+
 ## 2026-10-28 — feature refresh after installed notice failure
 
 Continue from the normal merge of exact PR #266 head `cb916c0729525404ccc30f79902620026e174848`. Installed run `40667109804` reached the disabled-mail retry assertion after all earlier software setup/payment/tenant/fulfillment checks passed, then failed because `software_notices.php` lacked the direct migration import defining `software_commerce_ready()`. Devin fixed that at `62a1b601`, then repaired invoice-bound download-link preference and refreshed inventory. Do not duplicate those changes. The current combined merge preserves the integration branch's workspace hash and every independent licensing correction while taking the new feature bytes. Run the fresh exact-head installed/native/package/application workflows; older green runs are supporting evidence only.

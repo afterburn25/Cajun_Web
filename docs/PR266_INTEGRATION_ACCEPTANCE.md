@@ -1,5 +1,9 @@
 # PR266 licensing integration acceptance
 
+## 2026-10-28 lifecycle-tail continuation correction
+
+Focused PR #273 exact head `b2ec170c4df75879789a5f7caa7ae770d542db8a` corrects an unreached test-harness defect: the final software block selected legacy `studio_license_deactivate` / `studio_license_reactivate` forms that software entitlements deliberately do not render. The combined test selects `software_license_lifecycle` by exact license and transition, supplies mandatory reasons, retains the state/download/key assertions, and adds a forged legacy-action refusal. Shipping lifecycle bytes are unchanged. Focused real HTTP/SQL execution reports 48 passing checks across all four PHP/database combinations; full combined hosted acceptance remains the gate.
+
 ## 2026-10-28 exact installed failure and feature refresh
 
 - Failing evidence: software-focused installed run `40667109804`, job `122744268918`.

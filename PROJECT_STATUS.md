@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — installed lifecycle acceptance corrected
+
+Focused PR #273 showed that the final installed software block searched for legacy website deactivate/reactivate forms that are intentionally absent for software entitlements. The integration candidate now uses the real `software_license_lifecycle` suspend/resume forms, supplies their required reasons, and proves a forged legacy action cannot bypass the explicit lifecycle controls. Shipping lifecycle code is unchanged. The correction retains the existing portal state, download denial/recovery, SQL state and key-preservation assertions. Independent focused execution reports 48 passing HTTP/SQL checks across PHP 8.2/8.4 × MariaDB/MySQL; full exact-candidate hosted execution remains required.
+
 ## 2026-10-28 — refreshed to Devin feature head `cb916c07`
 
 Exact integration run `40667109804` passed the installed software flow through setup, checkout, tenant isolation, CSP, trial-to-paid upgrade and fulfillment, then failed at the first owner delivery retry because `software_notices.php` called `software_commerce_ready()` without declaring its migration dependency. Devin repaired that first cause at `62a1b601`, refreshed the generated inventory, and also corrected purchased-download ordering so an invoice-bound entitlement is selected ahead of an owner-issued entitlement for the same asset. The existing installed assertion requires one link bound to the exact paid license plus `purchase #<invoice> · unit 1`.

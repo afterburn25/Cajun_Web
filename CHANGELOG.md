@@ -1,3 +1,9 @@
+## Unreleased — software lifecycle acceptance continuation
+
+- Exercise the explicit reasoned software suspend/resume controls in installed acceptance.
+- Assert legacy website deactivation cannot mutate a software entitlement.
+- No shipping lifecycle behavior changed.
+
 ## Unreleased — PR266 integration refresh
 
 - Normal-merged Devin's exact licensing head `cb916c07` after installed acceptance exposed the missing direct software-commerce readiness import in delivery retries.

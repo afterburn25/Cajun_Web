@@ -31,7 +31,7 @@ def _product_data():
     }
 
 
-def _action_form(soup, response, action, *, product_id=None, asset_id=None, invoice_id=None):
+def _action_form(soup, response, action, *, product_id=None, asset_id=None, invoice_id=None, license_id=None, transition=None):
     for form in soup(response).select('form'):
         marker=form.select_one('input[name=action]')
         if not marker or marker.get('value') != action:
@@ -47,6 +47,14 @@ def _action_form(soup, response, action, *, product_id=None, asset_id=None, invo
         if invoice_id is not None:
             invoice=form.select_one('input[name=invoice_id]')
             if not invoice or invoice.get('value') != str(invoice_id):
+                continue
+        if license_id is not None:
+            license_input=form.select_one('input[name=id]')
+            if not license_input or license_input.get('value') != str(license_id):
+                continue
+        if transition is not None:
+            transition_input=form.select_one('input[name=transition]')
+            if not transition_input or transition_input.get('value') != transition:
                 continue
         return form
     raise AssertionError('Software form missing '+action)
@@ -801,14 +809,19 @@ def run_browser(env, browser):
     context.close()
 
     register=admin.get(licenses,timeout=25)
-    suspend_form=next(
-        form for form in soup(register).select('form')
-        if form.select_one('input[name=action]') is not None
-        and form.select_one('input[name=action]').get('value')=='studio_license_deactivate'
-        and form.select_one('input[name=id]') is not None
-        and form.select_one('input[name=id]').get('value')==str(license_id)
-    )
-    suspended=admin.post(licenses,data=form_data(suspend_form),timeout=25)
+    legacy_deactivate={
+        'csrf':token(register),'action':'studio_license_deactivate','id':str(license_id),
+    }
+    legacy_refused=admin.post(licenses,data=legacy_deactivate,timeout=25)
+    check('Legacy owner action cannot bypass explicit software lifecycle controls',
+          'explicit software suspend/revoke controls' in legacy_refused.text
+          and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+    register=admin.get(licenses,timeout=25)
+    suspend_form=_action_form(soup,register,'software_license_lifecycle',
+                             license_id=license_id,transition='suspend')
+    suspend_data=form_data(suspend_form)
+    suspend_data['reason']='Installed software suspension acceptance'
+    suspended=admin.post(licenses,data=suspend_data,timeout=25)
     suspended_client=alice.get(portal,timeout=25)
     check('Owner suspension is shown distinctly and blocks private software download',
           suspended.status_code==200
@@ -816,14 +829,11 @@ def run_browser(env, browser):
           and alice.get(download,timeout=25).status_code==404
           and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
     register=admin.get(licenses,timeout=25)
-    reactivate_form=next(
-        form for form in soup(register).select('form')
-        if form.select_one('input[name=action]') is not None
-        and form.select_one('input[name=action]').get('value')=='studio_license_reactivate'
-        and form.select_one('input[name=id]') is not None
-        and form.select_one('input[name=id]').get('value')==str(license_id)
-    )
-    reactivated=admin.post(licenses,data=form_data(reactivate_form),timeout=25)
+    reactivate_form=_action_form(soup,register,'software_license_lifecycle',
+                                license_id=license_id,transition='resume')
+    reactivate_data=form_data(reactivate_form)
+    reactivate_data['reason']='Installed software resumption acceptance'
+    reactivated=admin.post(licenses,data=reactivate_data,timeout=25)
     reactivated_client=alice.get(portal,timeout=25)
     check('Owner reactivation restores the same software entitlement without repurchase',
           reactivated.status_code==200
