@@ -1,0 +1,1170 @@
+{
+  "source": "3fd87727ebafaa9290f03e37c97043f9e029cf75",
+  "ci_checkout": "b789ca9697d9349208645890c234e5609a56d999",
+  "identical_tree": "b7d9bd101bf63e6f3c80817f2b851ad63de631d8",
+  "run": 40783809553,
+  "job": 123151853223,
+  "artifact": {
+    "id": 12859025835,
+    "size": 15937,
+    "sha256": "9991acfea73f6573c159a99a0f4ea866da509232087efe99ea7fa87daa02174f",
+    "crc_valid": true,
+    "member_sha256": {
+      "organized-software-1.25 root-no-rewrite 1.25.0-cache-before.json": "10c1f12399ba592b67d80f02125f399c9dec5984b86199af8cde561dccf141c5",
+      "organized-software-1.25 root-no-rewrite 1.25.0-install.json": "cc8d876ebb6ccb57da4c8410e15a206d899664a4307dcdd0485569106467c628",
+      "organized-software-1.25 root-rewrite 1.25.0-cache-before.json": "f0675b7a92919c9ab7eaeab9aaf1cf2f9a8c80b88f35dd30f202304506167e45",
+      "organized-software-1.25 root-rewrite 1.25.0-install.json": "ac6e1b3d3d97895550f313be295f0a847d5ec21a1089d898100d3c177cf47e65",
+      "organized-software-1.25 subfolder-no-rewrite 1.25.0-cache-before.json": "ee634a91c4838d08a6c235d8936562bc75fd6242dee8055907e40a54f3274a9d",
+      "organized-software-1.25 subfolder-no-rewrite 1.25.0-install.json": "740b1ffe8b707590f23f273b674f7bbb37bf0af167f0425570f549a3632813b4",
+      "organized-software-1.25 subfolder-rewrite 1.25.0-cache-before.json": "024d75051b2ff721abedbb7a2865867fb6e3b198cd4980cfce4b76c36c150df4",
+      "organized-software-1.25 subfolder-rewrite 1.25.0-install.json": "8dca86b91e4d92f018ea98771e5f1403a32203053fd9b4e42042821ae969e140",
+      "software-release125-progress.json": "e24013493dd15f2ac81d023b1811ada206185f8600070d8c50236f7a0abeeb83",
+      "software-release125-root-no-rewrite-launcher.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "software-release125-root-no-rewrite.log": "3b45174306d21fb5c1dd031716305e00426c831225d61e5e23cc5302dd77604a",
+      "software-release125-root-rewrite-launcher.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "software-release125-root-rewrite.log": "d063dab9694ea4639c87055bb5f6224266a7a0592ef0be98c48a8898d359c043",
+      "software-release125-subfolder-no-rewrite-launcher.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "software-release125-subfolder-no-rewrite.log": "10b4ac7738230895a0b32926bf853624734079e9a576329c16999410c6a3579e",
+      "software-release125-subfolder-rewrite-launcher.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "software-release125-subfolder-rewrite.log": "497698c9e7a8b5f6a3eb2b823fc4f1eda07782df28e6fe357c979f477b888f12",
+      "software-release125-upgrade.json": "e85255362ba5ff64cc188cef86d54a510c45479236dbedc4ab53a13eaa4d7cda"
+    }
+  },
+  "passed": true,
+  "checks": 268,
+  "baseline": "Immutable published v1.25.0 COMPLETE-UPLOAD",
+  "baseline_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
+  "candidate_version": "1.26.0 provisional rehearsal only",
+  "database": "10.11.19-MariaDB-ubu2204 (actual service log)",
+  "scopes": [
+    {
+      "label": "root-no-rewrite",
+      "checks": 67,
+      "installer": "1.25.0",
+      "php": "PHP 8.3.6",
+      "cache_before": {
+        "enabled": true,
+        "cached": true,
+        "timestamps": "0",
+        "capacity_mib": "512"
+      }
+    },
+    {
+      "label": "root-rewrite",
+      "checks": 67,
+      "installer": "1.25.0",
+      "php": "PHP 8.3.6",
+      "cache_before": {
+        "enabled": true,
+        "cached": true,
+        "timestamps": "0",
+        "capacity_mib": "512"
+      }
+    },
+    {
+      "label": "subfolder-no-rewrite",
+      "checks": 67,
+      "installer": "1.25.0",
+      "php": "PHP 8.3.6",
+      "cache_before": {
+        "enabled": true,
+        "cached": true,
+        "timestamps": "0",
+        "capacity_mib": "512"
+      }
+    },
+    {
+      "label": "subfolder-rewrite",
+      "checks": 67,
+      "installer": "1.25.0",
+      "php": "PHP 8.3.6",
+      "cache_before": {
+        "enabled": true,
+        "cached": true,
+        "timestamps": "0",
+        "capacity_mib": "512"
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "name": "root-rewrite Apache started",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 actual retained release installs through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 owner signs in before saving original provider settings",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 authenticated original provider save succeeds before history seeding",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 original 1.20 installation holds encrypted provider profile and nonempty check history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 original release seeds populated package/domain ownership and unknown operation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 retained schema contains meaningful client project and invoice records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 prior organized version actually cached without timestamp checks",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 organized update rejects CSRF before journal creation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 inspect preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 owner inspection recognizes organized baseline",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 organized update requires current owner password",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 organized update requires backup confirmation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 organized file update interrupts with recovery available",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 maintenance blocks canonical administration",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 staged application payload stays private",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 owner resumes organized update through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 same owner session sees new version despite prior opcode cache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 organized update preserves exact business rows",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 organized update preserves config guards scaffolds and private bytes",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 fresh organized update adds no legacy PHP endpoints",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 owner can recover original organized files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovery invalidates cached version and preserves session",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovery does not reset business records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 original provider records and both keys survive recovered 1.20 files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered organized release can be updated again",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 update and recovery preserve original provider profile check history and both keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 original 1.20 provider key still decrypts after update and recovery",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 original1.25.0 nonempty submission records survive initial update recovery and reapplication",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated original intent has no resend control 13629021af52a8d6634cf3df7d2ae8ab",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated explicit original request replay creates no new send 13629021af52a8d6634cf3df7d2ae8ab",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated original intent has no resend control 78d4b50c457f4e444aeaa2c27c738412",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated explicit original request replay creates no new send 78d4b50c457f4e444aeaa2c27c738412",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated original intent has no resend control 9c7dc83b5b4ee9f22e076572cf77d127",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated explicit original request replay creates no new send 9c7dc83b5b4ee9f22e076572cf77d127",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated original intent has no resend control fa02acfd32a7ede8b17e81236890fee3",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 updated explicit original request replay creates no new send fa02acfd32a7ede8b17e81236890fee3",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 file recovery retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 13629021af52a8d6634cf3df7d2ae8ab",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 13629021af52a8d6634cf3df7d2ae8ab",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 78d4b50c457f4e444aeaa2c27c738412",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 78d4b50c457f4e444aeaa2c27c738412",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 9c7dc83b5b4ee9f22e076572cf77d127",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 9c7dc83b5b4ee9f22e076572cf77d127",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 original intent has no resend control fa02acfd32a7ede8b17e81236890fee3",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send fa02acfd32a7ede8b17e81236890fee3",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplication retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied original intent has no resend control 13629021af52a8d6634cf3df7d2ae8ab",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied explicit original request replay creates no new send 13629021af52a8d6634cf3df7d2ae8ab",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied original intent has no resend control 78d4b50c457f4e444aeaa2c27c738412",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied explicit original request replay creates no new send 78d4b50c457f4e444aeaa2c27c738412",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied original intent has no resend control 9c7dc83b5b4ee9f22e076572cf77d127",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied explicit original request replay creates no new send 9c7dc83b5b4ee9f22e076572cf77d127",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied original intent has no resend control fa02acfd32a7ede8b17e81236890fee3",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 reapplied explicit original request replay creates no new send fa02acfd32a7ede8b17e81236890fee3",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-rewrite 1.25.0 original1.25.0 mail key still decrypts without replacing submission history",
+      "passed": true
+    },
+    {
+      "name": "subfolder-rewrite Apache started",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 actual retained release installs through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 owner signs in before saving original provider settings",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 authenticated original provider save succeeds before history seeding",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 original 1.20 installation holds encrypted provider profile and nonempty check history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 original release seeds populated package/domain ownership and unknown operation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 retained schema contains meaningful client project and invoice records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 prior organized version actually cached without timestamp checks",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 organized update rejects CSRF before journal creation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 inspect preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 owner inspection recognizes organized baseline",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 organized update requires current owner password",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 organized update requires backup confirmation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 organized file update interrupts with recovery available",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 maintenance blocks canonical administration",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 staged application payload stays private",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 owner resumes organized update through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 same owner session sees new version despite prior opcode cache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 organized update preserves exact business rows",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 organized update preserves config guards scaffolds and private bytes",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 fresh organized update adds no legacy PHP endpoints",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 owner can recover original organized files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovery invalidates cached version and preserves session",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovery does not reset business records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 original provider records and both keys survive recovered 1.20 files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered organized release can be updated again",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 update and recovery preserve original provider profile check history and both keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 original 1.20 provider key still decrypts after update and recovery",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 original1.25.0 nonempty submission records survive initial update recovery and reapplication",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated original intent has no resend control 0bbb5ff53e5b35b5f316008060b29c82",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated explicit original request replay creates no new send 0bbb5ff53e5b35b5f316008060b29c82",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated original intent has no resend control 1b7a11e4a9bbe8c18400bf76d22655be",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated explicit original request replay creates no new send 1b7a11e4a9bbe8c18400bf76d22655be",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated original intent has no resend control 56dff235b242435e880972c03a1e30e4",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated explicit original request replay creates no new send 56dff235b242435e880972c03a1e30e4",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated original intent has no resend control ade0f5795365cae74e8e61a2a4b80787",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 updated explicit original request replay creates no new send ade0f5795365cae74e8e61a2a4b80787",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 file recovery retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 0bbb5ff53e5b35b5f316008060b29c82",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 0bbb5ff53e5b35b5f316008060b29c82",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 1b7a11e4a9bbe8c18400bf76d22655be",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 1b7a11e4a9bbe8c18400bf76d22655be",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 56dff235b242435e880972c03a1e30e4",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 56dff235b242435e880972c03a1e30e4",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 original intent has no resend control ade0f5795365cae74e8e61a2a4b80787",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send ade0f5795365cae74e8e61a2a4b80787",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplication retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied original intent has no resend control 0bbb5ff53e5b35b5f316008060b29c82",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied explicit original request replay creates no new send 0bbb5ff53e5b35b5f316008060b29c82",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied original intent has no resend control 1b7a11e4a9bbe8c18400bf76d22655be",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied explicit original request replay creates no new send 1b7a11e4a9bbe8c18400bf76d22655be",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied original intent has no resend control 56dff235b242435e880972c03a1e30e4",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied explicit original request replay creates no new send 56dff235b242435e880972c03a1e30e4",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied original intent has no resend control ade0f5795365cae74e8e61a2a4b80787",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 reapplied explicit original request replay creates no new send ade0f5795365cae74e8e61a2a4b80787",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-rewrite 1.25.0 original1.25.0 mail key still decrypts without replacing submission history",
+      "passed": true
+    },
+    {
+      "name": "root-no-rewrite Apache started",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 actual retained release installs through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 owner signs in before saving original provider settings",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 authenticated original provider save succeeds before history seeding",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 original 1.20 installation holds encrypted provider profile and nonempty check history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 original release seeds populated package/domain ownership and unknown operation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 retained schema contains meaningful client project and invoice records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 prior organized version actually cached without timestamp checks",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 organized update rejects CSRF before journal creation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 inspect preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 owner inspection recognizes organized baseline",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 organized update requires current owner password",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 organized update requires backup confirmation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 organized file update interrupts with recovery available",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 maintenance blocks canonical administration",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 staged application payload stays private",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 owner resumes organized update through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 same owner session sees new version despite prior opcode cache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 organized update preserves exact business rows",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 organized update preserves config guards scaffolds and private bytes",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 fresh organized update adds no legacy PHP endpoints",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 owner can recover original organized files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovery invalidates cached version and preserves session",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovery does not reset business records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 original provider records and both keys survive recovered 1.20 files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered organized release can be updated again",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 update and recovery preserve original provider profile check history and both keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 original 1.20 provider key still decrypts after update and recovery",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 original1.25.0 nonempty submission records survive initial update recovery and reapplication",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated original intent has no resend control 3a4be3c8eb9469e357933462fb104e98",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated explicit original request replay creates no new send 3a4be3c8eb9469e357933462fb104e98",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated original intent has no resend control 660cab701f07e2f4d12f9696edd47d60",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated explicit original request replay creates no new send 660cab701f07e2f4d12f9696edd47d60",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated original intent has no resend control b2dab71fec30d8161e9d2acf2f5613ed",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated explicit original request replay creates no new send b2dab71fec30d8161e9d2acf2f5613ed",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated original intent has no resend control f07fed6bc0d6453a727d36d099158490",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 updated explicit original request replay creates no new send f07fed6bc0d6453a727d36d099158490",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 file recovery retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 3a4be3c8eb9469e357933462fb104e98",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 3a4be3c8eb9469e357933462fb104e98",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 660cab701f07e2f4d12f9696edd47d60",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 660cab701f07e2f4d12f9696edd47d60",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control b2dab71fec30d8161e9d2acf2f5613ed",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send b2dab71fec30d8161e9d2acf2f5613ed",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control f07fed6bc0d6453a727d36d099158490",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send f07fed6bc0d6453a727d36d099158490",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplication retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied original intent has no resend control 3a4be3c8eb9469e357933462fb104e98",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send 3a4be3c8eb9469e357933462fb104e98",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied original intent has no resend control 660cab701f07e2f4d12f9696edd47d60",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send 660cab701f07e2f4d12f9696edd47d60",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied original intent has no resend control b2dab71fec30d8161e9d2acf2f5613ed",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send b2dab71fec30d8161e9d2acf2f5613ed",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied original intent has no resend control f07fed6bc0d6453a727d36d099158490",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send f07fed6bc0d6453a727d36d099158490",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 root-no-rewrite 1.25.0 original1.25.0 mail key still decrypts without replacing submission history",
+      "passed": true
+    },
+    {
+      "name": "subfolder-no-rewrite Apache started",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 actual retained release installs through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 owner signs in before saving original provider settings",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 authenticated original provider save succeeds before history seeding",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 original 1.20 installation holds encrypted provider profile and nonempty check history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 original release seeds populated package/domain ownership and unknown operation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 retained schema contains meaningful client project and invoice records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 prior organized version actually cached without timestamp checks",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 organized update rejects CSRF before journal creation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 inspect preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 owner inspection recognizes organized baseline",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 organized update requires current owner password",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 organized update requires backup confirmation",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 organized file update interrupts with recovery available",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 maintenance blocks canonical administration",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 staged application payload stays private",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 owner resumes organized update through Apache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 same owner session sees new version despite prior opcode cache",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 organized update preserves exact business rows",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 organized update preserves config guards scaffolds and private bytes",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 fresh organized update adds no legacy PHP endpoints",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 owner can recover original organized files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovery invalidates cached version and preserves session",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovery does not reset business records",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 original provider records and both keys survive recovered 1.20 files",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered organized release can be updated again",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 update and recovery preserve original provider profile check history and both keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 original 1.20 provider key still decrypts after update and recovery",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 original1.25.0 nonempty submission records survive initial update recovery and reapplication",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated original intent has no resend control 213ecdbaa0c7451e455604f3709109de",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated explicit original request replay creates no new send 213ecdbaa0c7451e455604f3709109de",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated original intent has no resend control 5990d7de15a3e22dd56f9904a947e3a5",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated explicit original request replay creates no new send 5990d7de15a3e22dd56f9904a947e3a5",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated original intent has no resend control ac6d01db565eec90bc3276470fd14641",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated explicit original request replay creates no new send ac6d01db565eec90bc3276470fd14641",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated original intent has no resend control cc588d019831a01dd49d971cf2579633",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 updated explicit original request replay creates no new send cc588d019831a01dd49d971cf2579633",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recover preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 file recovery retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 213ecdbaa0c7451e455604f3709109de",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 213ecdbaa0c7451e455604f3709109de",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control 5990d7de15a3e22dd56f9904a947e3a5",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send 5990d7de15a3e22dd56f9904a947e3a5",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control ac6d01db565eec90bc3276470fd14641",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send ac6d01db565eec90bc3276470fd14641",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 original intent has no resend control cc588d019831a01dd49d971cf2579633",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 recovered1.25.0 explicit original request replay creates no new send cc588d019831a01dd49d971cf2579633",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 apply preserves original inventory approvals and unknown operation history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplication retains original1.25.0 submission fences bodies and keys",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied keeps original accepted unknown unresolved abandoned history",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied original intent has no resend control 213ecdbaa0c7451e455604f3709109de",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send 213ecdbaa0c7451e455604f3709109de",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied original intent has no resend control 5990d7de15a3e22dd56f9904a947e3a5",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send 5990d7de15a3e22dd56f9904a947e3a5",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied original intent has no resend control ac6d01db565eec90bc3276470fd14641",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send ac6d01db565eec90bc3276470fd14641",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied original intent has no resend control cc588d019831a01dd49d971cf2579633",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 reapplied explicit original request replay creates no new send cc588d019831a01dd49d971cf2579633",
+      "passed": true
+    },
+    {
+      "name": "software-1.25 subfolder-no-rewrite 1.25.0 original1.25.0 mail key still decrypts without replacing submission history",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Synthetic populated customer/business/provider/mail data with local transports.",
+    "Apache HTTP acceptance; no Chromium visual capture in this dedicated gate.",
+    "Only PHP8.3/MariaDB10.11; supported PHP8.2/8.4 and MySQL upgrade lanes remain required.",
+    "Does not include independent PR285/286/287/289; combined candidate and post-merge main acceptance remain required.",
+    "No sandbox gateway, release approval, publication, production activation or deployment."
+  ]
+}

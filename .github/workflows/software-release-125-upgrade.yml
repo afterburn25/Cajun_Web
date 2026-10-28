@@ -11,6 +11,8 @@ on:
       - 'tests/software_release_125_harness_tests.py'
       - 'tests/organized_update_cases.py'
       - 'tests/inventory_retention_124_fixture.php'
+      - 'tests/release_next_from_125.py'
+      - 'tests/acceptance_environment.py'
       - '.github/workflows/software-release-125-upgrade.yml'
   pull_request:
     paths:
@@ -21,6 +23,8 @@ on:
       - 'tests/software_release_125_harness_tests.py'
       - 'tests/organized_update_cases.py'
       - 'tests/inventory_retention_124_fixture.php'
+      - 'tests/release_next_from_125.py'
+      - 'tests/acceptance_environment.py'
       - '.github/workflows/software-release-125-upgrade.yml'
   workflow_dispatch:
 permissions:
@@ -33,29 +37,41 @@ jobs:
   published-125-upgrade:
     runs-on: ubuntu-24.04
     timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database: ['mariadb-10.11', 'mysql-8.4']
     services:
       mariadb:
-        image: mariadb:10.11
+        image: ${{ matrix.database == 'mysql-8.4' && 'mysql:8.4' || 'mariadb:10.11' }}
         env:
           MARIADB_ROOT_PASSWORD: isolated-ci-root-only
           MARIADB_DATABASE: cwp_test
           MARIADB_USER: cwp_test
           MARIADB_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: isolated-ci-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
         ports:
           - 3306
         options: >-
-          --health-cmd="mariadb-admin ping --silent"
+          --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
-      PHP_BINARY: /usr/bin/php8.3
+      CWP_PHP_VERSION: ${{ matrix.php }}
+      CWP_DATABASE: ${{ matrix.database }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Check candidate version
         id: version
         run: |
@@ -70,18 +86,74 @@ jobs:
           PY
       - name: Syntax-check future gate while release remains 1.25
         run: python3 -m py_compile tests/software_release_125_upgrade.py tests/organized_update_cases.py tests/software_release_125_harness_tests.py
-      - name: Verify isolated upgrade harness contracts
-        run: python3 tests/software_release_125_harness_tests.py
       - name: Record deferred gate
         if: steps.version.outputs.run_gate != 'true'
         run: echo "Published v1.25 -> next-release upgrade gate is armed; candidate remains ${{ steps.version.outputs.candidate }}."
       - name: Install isolated release runtime
         if: steps.version.outputs.run_gate == 'true'
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y apache2 libapache2-mod-php8.3 php8.3-cli php8.3-mysql php8.3-zip php8.3-curl php8.3-mbstring php8.3-gd php8.3-xml
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
+          fi
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring" apache2-bin "libapache2-mod-php${CWP_PHP_VERSION}"
+          test -s "/usr/lib/apache2/modules/libphp${CWP_PHP_VERSION}.so"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
+            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+          fi
           python3 -m venv /tmp/cwp-release125-venv
           /tmp/cwp-release125-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4
+      - name: Verify isolated upgrade harness contracts
+        run: python3 tests/software_release_125_harness_tests.py
       - name: Build candidate UPDATE from exact commit
         if: steps.version.outputs.run_gate == 'true'
         run: python3 tools/build.py --commit "$GITHUB_SHA"
@@ -120,9 +192,10 @@ jobs:
         if: always() && steps.version.outputs.run_gate == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: software-published-125-upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          name: software-published-125-upgrade-php${{ matrix.php }}-${{ matrix.database }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             qa/software-release125-upgrade.json
+            qa/native-environment-results.json
             qa/software-release125-progress.json
             qa/software-release125-*.log
             qa/organized-software-1.25*.json

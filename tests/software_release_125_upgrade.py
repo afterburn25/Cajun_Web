@@ -17,6 +17,7 @@ import requests
 
 from organized_update_cases import run as organized_update
 from release_version import VERSION
+from acceptance_environment import selected, php_matches, probe as probe_environment
 
 ROOT = Path(__file__).resolve().parents[1]
 QA = ROOT / 'qa'
@@ -38,7 +39,7 @@ def launch(work, web, rewrite):
                'alias', 'env', 'headers', 'autoindex']
     if rewrite:
         modules.append('rewrite')
-    php_version = '8.3'
+    php_version = selected()['php']
     config = (
         f'ServerRoot "{work}"\nServerName localhost\nListen 127.0.0.1:{port}\n'
         f'PidFile "{work / "httpd.pid"}"\nErrorLog "{QA / ("software-release125-" + work.name + ".log")}"\n'
@@ -96,10 +97,12 @@ def main():
         if not value:
             raise AssertionError(name)
 
-    php = os.environ.get('PHP_BINARY', '/usr/bin/php8.3')
+    choice = selected()
+    php = os.environ.get('PHP_BINARY', '/usr/bin/php' + choice['php'])
     scopes = []
     complete = False
     try:
+        probe_environment('native')
         for rewrite in (True, False):
             for at_root in (True, False):
                 label = ('root' if at_root else 'subfolder') + ('-rewrite' if rewrite else '-no-rewrite')
@@ -124,10 +127,26 @@ def main():
                             time.sleep(.1)
                     check(label + ' Apache started', ready)
                     probe.unlink()
+                    runtime_probe = web / 'upgrade-gate-runtime.php'
+                    runtime_probe.write_text(
+                        "<?php header('Content-Type: application/json'); "
+                        "echo json_encode(['version'=>PHP_VERSION,'sapi'=>PHP_SAPI]);",
+                        encoding='utf-8')
+                    try:
+                        response = requests.get(base + '/' + runtime_probe.name, timeout=5)
+                        runtime = response.json()
+                        check(label + ' actual selected Apache PHP runtime',
+                              response.status_code == 200 and isinstance(runtime, dict)
+                              and set(runtime) == {'version', 'sapi'}
+                              and php_matches(runtime['version'], choice['php'])
+                              and runtime['sapi'] == 'apache2handler')
+                    finally:
+                        runtime_probe.unlink()
                     prefix = 'sw125_' + ('r' if at_root else 's') + ('on_' if rewrite else 'off_')
                     organized_update(web, base, check, QA, php, 'software-1.25 ' + label,
                                      prefix, '1.25.0', at_root=at_root)
-                    scopes.append({'label': label, 'checks': len(checks) - start})
+                    scopes.append({'label': label, 'checks': len(checks) - start,
+                                   'apache_http': runtime})
                 finally:
                     proc.terminate()
                     try:
@@ -142,6 +161,7 @@ def main():
             'complete': complete,
             'baseline': 'published v1.25.0 COMPLETE-UPLOAD',
             'candidate_version': VERSION,
+            'selected': choice,
             'scope': 'Published baseline update/recovery with synthetic local data; no live provider, mail or payment transport',
             'scopes': scopes,
             'checks': checks,

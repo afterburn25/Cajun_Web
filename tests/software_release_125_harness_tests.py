@@ -8,6 +8,7 @@ import getpass
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import socket
 import subprocess
@@ -16,6 +17,9 @@ import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, patch
+import zipfile
+
+from acceptance_environment import selected, php_matches
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,13 +44,16 @@ class UpgradeHarness(unittest.TestCase):
         (self.baseline / 'install.php').write_text('baseline installer', encoding='utf-8')
         (self.root / 'dist').mkdir()
         (self.root / 'dist/CajunWebPro-1.26.0-UPDATE.zip').touch()
-        self.env = patch.dict(os.environ, {'CWP_TEST_DATABASE': 'cwp_test'})
+        self.env = patch.dict(os.environ, {'CWP_TEST_DATABASE': 'cwp_test',
+                                          'CWP_PHP_VERSION': '8.3', 'CWP_DATABASE': 'mariadb-10.11'})
         self.env.start()
         self.addCleanup(self.env.stop)
         self.process = Mock()
         self.process.poll.return_value = None
+        self.http_runtime = {'version': '8.3.6', 'sapi': 'apache2handler'}
         self.requests = SimpleNamespace(
-            get=Mock(return_value=SimpleNamespace(status_code=200, text='upgrade-gate-ready')),
+            get=Mock(return_value=SimpleNamespace(status_code=200, text='upgrade-gate-ready',
+                                                 json=lambda: self.http_runtime)),
             RequestException=ConnectionError)
         self.calls = []
         self.ns = functions(ROOT / 'tests/software_release_125_upgrade.py', {
@@ -56,6 +63,7 @@ class UpgradeHarness(unittest.TestCase):
             'socket': socket, 'subprocess': subprocess, 'getpass': getpass,
             'grp': SimpleNamespace(getgrgid=lambda _: SimpleNamespace(gr_name='qa')),
             'requests': self.requests, 'organized_update': self.organized,
+            'selected': selected, 'php_matches': php_matches, 'probe_environment': Mock(),
         })
 
     def organized(self, web, base, check, qa, php, label, prefix, version, *, at_root=False):
@@ -67,8 +75,9 @@ class UpgradeHarness(unittest.TestCase):
         return self.process, 'http://127.0.0.1:12345'
 
     def test_launcher_supplies_cache_contract_and_retains_startup_log(self):
-        for rewrite in (False, True):
-            work = self.root / str(rewrite)
+        for version, rewrite in [(v, r) for v in ('8.2', '8.3', '8.4') for r in (False, True)]:
+            os.environ['CWP_PHP_VERSION'] = version
+            work = self.root / (version + str(rewrite))
             web = work / 'web'
             web.mkdir(parents=True)
             with patch.object(os, 'getgid', return_value=0, create=True), \
@@ -77,7 +86,7 @@ class UpgradeHarness(unittest.TestCase):
             kwargs = popen.call_args.kwargs
             self.assertIn('env', kwargs, 'Apache must receive the isolated PHP scan directory')
             scan = kwargs['env']['PHP_INI_SCAN_DIR']
-            self.assertTrue(scan.startswith('/etc/php/8.3/apache2/conf.d:'))
+            self.assertTrue(scan.startswith(f'/etc/php/{version}/apache2/conf.d:'))
             ini = Path(scan.split(':', 1)[1])
             settings = dict(line.split('=', 1) for line in
                             (ini / '99-release.ini').read_text().splitlines())
@@ -89,6 +98,8 @@ class UpgradeHarness(unittest.TestCase):
             self.assertNotEqual(kwargs['stdout'], subprocess.DEVNULL)
             config = (work / 'httpd.conf').read_text()
             self.assertEqual('mod_rewrite.so' in config, rewrite)
+            self.assertIn(f'libphp{version}.so', config)
+            self.assertIn(f'PHPIniDir /etc/php/{version}/apache2', config)
 
     def test_main_runs_root_and_subfolder_with_both_rewrite_modes(self):
         self.ns['launch'] = self.launch_stub
@@ -103,7 +114,37 @@ class UpgradeHarness(unittest.TestCase):
         self.assertTrue(report['passed'])
         self.assertTrue(report['complete'])
         self.assertEqual(len(report['scopes']), 4)
-        self.assertTrue(all(row['checks'] == 2 for row in report['scopes']))
+        self.assertTrue(all(row['checks'] == 3 for row in report['scopes']))
+        self.assertEqual(report['selected'], {'php': '8.3', 'database': 'mariadb-10.11'})
+        self.assertTrue(all(row['apache_http'] == self.http_runtime for row in report['scopes']))
+        self.ns['probe_environment'].assert_called_once_with('native')
+
+    def test_wrong_apache_version_or_sapi_fails_before_populating_database(self):
+        for actual in ({'version': '8.2.35', 'sapi': 'apache2handler'},
+                       {'version': '8.3.6', 'sapi': 'cli'}, {}, []):
+            with self.subTest(actual=actual):
+                self.ns['RUNTIME'] = self.root / ('wrong-runtime-' + str(len(self.requests.get.call_args_list)))
+                self.http_runtime = actual
+                self.ns['launch'] = self.launch_stub
+                with self.assertRaisesRegex(AssertionError, 'actual selected Apache PHP runtime'):
+                    self.ns['main']()
+                self.assertEqual(self.calls, [])
+                report = json.loads((self.qa / 'software-release125-upgrade.json').read_text())
+                self.assertFalse(report['passed'])
+                self.assertFalse(report['checks'][-1]['passed'])
+                self.assertEqual(report['scopes'], [])
+
+    def test_cli_or_database_probe_failure_stops_before_apache(self):
+        launcher = Mock()
+        self.ns['launch'] = launcher
+        self.ns['probe_environment'].side_effect = RuntimeError('Acceptance runtime mismatch')
+        with self.assertRaisesRegex(RuntimeError, 'runtime mismatch'):
+            self.ns['main']()
+        launcher.assert_not_called()
+        self.assertEqual(self.calls, [])
+        report = json.loads((self.qa / 'software-release125-upgrade.json').read_text())
+        self.assertFalse(report['passed'])
+        self.assertFalse(report['complete'])
 
     def test_failed_assertion_keeps_evidence_and_failure_exit(self):
         def fail(web, base, check, *args, **kwargs):
@@ -252,6 +293,23 @@ class UpgradeHarness(unittest.TestCase):
                 result = self.php_fragment(code)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(json.loads(result.stdout), {'scope': expected, 'state': 'complete', 'authorizations': 1})
+
+    def test_release_diagnostic_reads_the_shipped_version_source(self):
+        inspect = functions(ROOT / 'tests/release_next_from_125.py', {'zipfile': zipfile, 're': re})['inspect_zip']
+        for label, files, expected in [
+                ('published-layout', {'config/defaults.php': "<?php\nconst CWP_VERSION = '1.25.0';\n"}, '1.25.0'),
+                ('wrong-version', {'config/defaults.php': "<?php\nconst CWP_VERSION = '1.24.0';\n"}, '1.24.0'),
+                ('wrong-root-file', {'VERSION': '1.25.0', 'config/defaults.php': "<?php\nconst CWP_VERSION = '1.24.0';\n"}, '1.24.0'),
+                ('missing-runtime-version', {'VERSION': '1.25.0'}, None),
+                ('ambiguous-runtime-version', {'config/defaults.php': "<?php\nconst CWP_VERSION = '1.25.0';\nconst CWP_VERSION = '1.24.0';\n"}, None)]:
+            with self.subTest(label=label):
+                archive = self.root / (label + '.zip')
+                with zipfile.ZipFile(archive, 'w') as bundle:
+                    for name, content in files.items():
+                        bundle.writestr(name, content)
+                result = inspect(archive)
+                self.assertEqual(result['version_text'], expected)
+                self.assertEqual(result.get('version_source'), 'config/defaults.php')
 
 
 if __name__ == '__main__':
