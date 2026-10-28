@@ -500,7 +500,7 @@ function license_finance_subscription_settle(array $details,string $transactionI
             license_audit(0,'financing.subscription.payment','Finance agreement '.$offerId.' period '.$period.' paid by gateway transaction '.$transactionId);
         });
     });
-    $offer=license_finance_offer_row($offerId);$plan=license_financing_sync((int)$offer['license_id']);
+    $offer=license_finance_offer_row($offerId);$plan=license_financing_sync((int)$offer['license_id'],null,true);
     if(($plan['state']??'')==='paid_off'){
         staff_locked(fn()=>staff_transaction(function()use($offerId):void{
             query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=?',['paid_off',gmdate('Y-m-d H:i:s'),$offerId]);
