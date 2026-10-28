@@ -1,5 +1,11 @@
 # Session handoff - Devin sole-owner continuation
 
+## Native financing reconciliation audit correction — 2026-10-28
+
+This independent correction stacks on #287 (`4f368547`) and makes both direct owner reconciliation mutations atomic with their licensing audit event. Native trigger rejection reproduces two committed-state failures per PHP/database combination on the parent. The fix passes 75 assertions on PHP 8.2.35/8.4.25 × MariaDB 10.11.19/MySQL 8.4.13 (300 executions); the snapshot fences, real account mutex, owner reauthentication and provider-read boundary remain intact. A separate PHP writer verifies preservation of concurrent subscription state. The existing native workflow now runs and retains the regression. [Source, exact scope and retained first failures](docs/CODEX_FINANCE_RECONCILE_AUDIT.md).
+
+This branch contains #287 but not #285/#286/#288. Reserved branches and the current Application run remain untouched. The actual provider, installed HTTP, independent review, final combined/main acceptance and release gates remain pending.
+
 ## Independent financing reconciliation correction — 2026-10-28
 
 Prepared a focused correction from integration 3789bb50c90cb836530f2d5dc2400cee394763d0 on codex/finance-reconcile-snapshot-guard. Delayed owner gateway readback must not overwrite a newer subscription identity or lifecycle state. Both affected mutation blocks now compare the locked row with their verified snapshot and require retry on change. Exact-function synthetic regression: original 67 failures / 112 assertions, corrected 112 passes on each PHP 8.2.35 and 8.4.25; existing five finance contracts and lints pass. See [review and limitations](docs/CODEX_FINANCE_RECONCILE_SNAPSHOT_REVIEW.md). Native/HTTP and combined hosted acceptance remain separate. Review and incorporation by the integration writer are pending; no main merge, release, deployment or provider operation occurred. PRs #285 and #286 remain separate corrections.

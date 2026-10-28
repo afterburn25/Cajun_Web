@@ -1,5 +1,11 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Native financing reconciliation audit correction — 2026-10-28
+
+This independent correction stacks on #287 (`4f368547`) and makes both direct owner reconciliation mutations atomic with their licensing audit event. Native trigger rejection reproduces two committed-state failures per PHP/database combination on the parent. The fix passes 75 assertions on PHP 8.2.35/8.4.25 × MariaDB 10.11.19/MySQL 8.4.13 (300 executions); the snapshot fences, real account mutex, owner reauthentication and provider-read boundary remain intact. A separate PHP writer verifies preservation of concurrent subscription state. The existing native workflow now runs and retains the regression. [Source, exact scope and retained first failures](CODEX_FINANCE_RECONCILE_AUDIT.md).
+
+This branch contains #287 but not #285/#286/#288. Reserved branches and the current Application run remain untouched. The actual provider, installed HTTP, independent review, final combined/main acceptance and release gates remain pending.
+
 ## Focused provider acceptance repair — 2026-10-28
 
 Application run `40728300754` passed build, recovery, Apache and native phases and reached 2,997 installed-browser checks before the provider settings response exceeded Playwright's unchanged 30-second limit. A bounded StackCP page request now retains the provider account and hosting inventory but loads only StackCP setup and access workspaces, rather than recomputing unrelated provider histories. Both StackCP sections remain owner-only and preserve CSRF, password, immutable-history and exact-provider-read controls; the complete provider page remains available through an explicit return link. This clears an earlier integration-performance blocker without changing licensing, payment or financing state. Exact hosted browser evidence is still required. [Run review](CODEX_PR266_APPLICATION_40728300754.md).

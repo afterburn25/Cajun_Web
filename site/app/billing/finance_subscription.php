@@ -389,7 +389,7 @@ function license_finance_subscription_reconcile(string $offerId,string $gatewayI
                 ' remains until a payment transaction is verified');
         }elseif($local==='replacing'){
             $state='review';
-            staff_locked(fn()=>staff_transaction(function()use($offerId,$password,$row):void{
+            staff_locked(fn()=>staff_transaction(function()use($offerId,$password,$row,$actor,$gatewayId,$state):void{
                 staff_owner($password);
                 $current=license_finance_subscription_row($offerId,true);
                 if(!$current||(string)$current['id']!==(string)$row['id']
@@ -399,13 +399,16 @@ function license_finance_subscription_reconcile(string $offerId,string $gatewayI
                 }
                 query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE id=?',
                     ['review',gmdate('Y-m-d H:i:s'),$current['id']]);
+                license_audit((int)$actor['id'],'financing.subscription.reconcile',
+                    'Finance agreement '.$offerId.' reconciled to gateway subscription '.$gatewayId.' status '.$state);
             }));
+            return $state;
         }else{
             $state=license_finance_subscription_finalize($offerId,$gatewayId,$contract,$profiles,'pending_first_payment',$password);
         }
     }else{
         $state=match($gatewayStatus){'suspended'=>'billing_suspended','expired','canceled'=>'cancelled',default=>'review'};
-        staff_locked(fn()=>staff_transaction(function()use($offerId,$gatewayId,$profiles,$state,$password,$row):void{
+        staff_locked(fn()=>staff_transaction(function()use($offerId,$gatewayId,$profiles,$state,$password,$row,$actor):void{
             staff_owner($password);
             $current=license_finance_subscription_row($offerId,true);
             if(!$current)throw new RuntimeException('Financing subscription reservation disappeared.');
@@ -418,7 +421,10 @@ function license_finance_subscription_reconcile(string $offerId,string $gatewayI
             }
             query('UPDATE '.table('license_finance_subscriptions').' SET gateway_subscription_id=?,customer_profile_id=?,payment_profile_id=?,status=?,updated_at=? WHERE id=?',
                 [$gatewayId,$profiles['customer_profile_id'],$profiles['payment_profile_id'],$state,gmdate('Y-m-d H:i:s'),$current['id']]);
+            license_audit((int)$actor['id'],'financing.subscription.reconcile',
+                'Finance agreement '.$offerId.' reconciled to gateway subscription '.$gatewayId.' status '.$state);
         }));
+        return $state;
     }
     license_audit((int)$actor['id'],'financing.subscription.reconcile',
         'Finance agreement '.$offerId.' reconciled to gateway subscription '.$gatewayId.' status '.$state);
