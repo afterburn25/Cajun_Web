@@ -72,3 +72,6 @@ CI cleanup is not feature completion. Preserve the completed narrow queue-cleanu
 ## Preserved detailed history
 
 The complete pre-takeover status and every dated source/test/queue checkpoint remain at the [exact previous main version](https://github.com/afterburn25/Cajun_Web/blob/a86f6f4fa592e6f715a9420aec8de4622258642e/PROJECT_STATUS.md). Feature guides, [continuation evidence](docs/ROADMAP_CONTINUATION_2026_10_19.md), [1.25 publication evidence](docs/RELEASE_1.25.0_PUBLICATION.md), roadmaps, original failures and release assets remain intact. The current ownership above supersedes old allocation prose; it does not reinterpret historical results.
+# 2026-10-28 licensing integration security correction
+
+Independent forgery review found new license issuance truncated a 16-byte random value to 64 bits. The integration candidate now emits all 128 random bits while retaining compatibility with every existing shorter key. Exact-head native and installed acceptance remain required before merge.

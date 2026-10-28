@@ -49,11 +49,12 @@ function license_invoice_cutover(): int {
 
 /**
  * Generate a unique license key.
- * Format: XXXX-XXXX-XXXX-XXXX (32 hex characters)
+ * Format: XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX (32 hex characters)
+ * Existing shorter keys remain valid; only newly issued keys use the full
+ * 128 bits returned by random_bytes().
  */
 function license_generate_key(): string {
-    $key = strtoupper(bin2hex(random_bytes(16)));
-    return substr($key, 0, 4) . '-' . substr($key, 4, 4) . '-' . substr($key, 8, 4) . '-' . substr($key, 12, 4);
+    return implode('-',str_split(strtoupper(bin2hex(random_bytes(16))),4));
 }
 
 /**

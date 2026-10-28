@@ -79,7 +79,7 @@ existing license rows.
 **File:** `site/app/licenses/service.php`
 
 Functions:
-- `license_generate_key()` — generates unique license keys (XXXX-XXXX-XXXX-XXXX)
+- `license_generate_key()` — generates new 128-bit unique license keys as eight four-hex groups; previously issued four-group keys remain valid
 - `license_create($customerId, $productId, $actor, $master)` — creates a
   new license; `$master` produces a staff test key that validates on any
   domain (internal use — never issue to customers)

@@ -108,3 +108,6 @@ Do not deploy live, issue real provider writes/charges/refunds/customer mail/SSH
 ## Prior full handoff and evidence
 
 The complete earlier handoff, source pins, local evidence paths and dated run IDs remain at [pre-takeover SESSION_HANDOFF.md](https://github.com/afterburn25/Cajun_Web/blob/a86f6f4fa592e6f715a9420aec8de4622258642e/SESSION_HANDOFF.md). Also read [current continuation evidence](docs/ROADMAP_CONTINUATION_2026_10_19.md), [release workflow](docs/RELEASE_WORKFLOW.md), [whole roadmap](docs/ROADMAP.md) and [20i requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). Historical allocations do not override the new owner directive; historical results remain historical.
+# 2026-10-28 licensing key-entropy handoff
+
+The PR266 integration candidate corrects new license generation from 64-bit truncated keys to the intended 128-bit value, formatted as eight four-hex groups. Existing keys remain accepted and no migration rewrites stored identities. Run the exact refreshed native/browser/package matrix before merge.
