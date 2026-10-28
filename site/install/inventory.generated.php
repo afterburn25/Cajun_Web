@@ -152,7 +152,7 @@ function setup_expected_files(): array { return [
     'app/billing/finance_authorize_net.php'=>'016b6bf7126dcc7588ce2aeef9a1f3e4e6eedb1660a147e5e75b2bb6757e857d',
     'app/billing/finance_charge.php'=>'ea7c4b7e2f2304012d4f476e380bf7457569003201dd80e3dd1859ff15136a2a',
     'app/billing/finance_payment_review.php'=>'ced3a163b46dbee16769f1803de7db8972a940f1aad5f4bd04440a0390183fb4',
-    'app/billing/finance_subscription.php'=>'d65f9c608d7f74eaa8382bae2a05be571c7d6c2a604429b189d7dcee64c83816',
+    'app/billing/finance_subscription.php'=>'62227f2f866cdf2ab5633d2e7478ef282af29b77dbb83d02e22c209562903c0f',
     'app/billing/ledger.php'=>'d2e144b11747ad2ea51e3a6c425b75dd3133f54f58e14a210110dc1ff0f1714a',
     'app/billing/ledger_fulfillment.php'=>'010ae63b8a18100e119283bc6cd534377caeae3d635738713f9359a809e1613c',
     'app/billing/notifications.php'=>'069f9ec5056375d224b7dcd735d7db8c399d79045a1b1df655dda820bd717c89',
