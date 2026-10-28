@@ -698,7 +698,8 @@ def run_browser(env, browser):
           and 'legacy Website Core bundles are intentionally unavailable for this entitlement' in admin_register.text)
 
     support_admin=base+'/existing/admin/index.php?view=support'
-    if db("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]:
+    if (db("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]
+            or db("SELECT value FROM ci_settings WHERE name='support_policy_confirmed'") != [{'value':'1'}]):
         response=submit(admin,support_admin,'support_migrate',{'owner_password':OWNER,'confirm':'1'})
         check('Software support acceptance prepares support storage when needed',
               response.status_code==200 and 'Support access is ready' in response.text)
@@ -722,9 +723,16 @@ def run_browser(env, browser):
         'old_domain':'software-http.example',
         'new_domain':'support-forged.example'
     }
-    rejected=admin.post(support_software,data=forged_support,timeout=25)
+    denied_before=db(
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='action.blocked' AND outcome='denied'",[support_id])[0]['total']
+    rejected=admin.post(support_root,data=forged_support,timeout=25)
+    denied_after=db(
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='action.blocked' AND outcome='denied'",[support_id])[0]['total']
     check('Support context cannot mutate customer software domain',
-          'action is blocked during support' in rejected.text.lower()
+          rejected.status_code==200 and 'action is blocked during support' in rejected.text.lower()
+          and denied_after==denied_before+1
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     check('Support browser context cannot retrieve customer software ZIP',
