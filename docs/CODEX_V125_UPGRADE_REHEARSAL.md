@@ -1,5 +1,11 @@
 # Published v1.25 upgrade rehearsal
 
+## Published-v1.25 inventory scope follow-up — 2026-10-28
+
+Run [40782764921](https://github.com/afterburn25/Cajun_Web/actions/runs/40782764921) passes the corrected version/schema guard, then its synthetic inventory reader is refused. The published v1.25 application requires the exact account/operation scope; this older fixture called the projector with an empty default scope. The v1.25 fixture now supplies `twenty-i|<profile_id>|packages.list`, retaining the legacy v1.24 scope and the real production security check. Failure messages include only the finite result state for diagnosis.
+
+The actual fixture closure, using projection classes proven byte-identical to the immutable published package, reproduces both account-scope failures before correction. All 12 contract methods pass afterward on PHP 8.2.35 and 8.4.25, including a second profile identity and the unchanged legacy case. PHP lints, Python syntax, documentation/links, whitespace and exact staged bytes pass. This is test-only correction and local projection evidence; full Linux/Apache populated upgrade/recovery remains required. [Exact run and retained original failure](evidence/published-125-upgrade-scope-followup.json).
+
 ## Published-v1.25 inventory fixture follow-up — 2026-10-28
 
 Corrected root-context run [40781572702](https://github.com/afterburn25/Cajun_Web/actions/runs/40781572702) passes installation, actual owner login, encrypted provider settings and history seeding, then fails because the reused inventory fixture demands the published-v1.24 schema. Independently downloading and hashing the immutable v1.25 package confirms schema **5** and populated `operation` context. The fixture now requires the declared published runtime/schema pair (1.24/schema3 or 1.25/schema5) before seeding, preserves every 1.25 operation value in exact snapshots, and retains the older default 1.24 migration checks. The caller supplies the version only for 1.25. Existing upgrade, authorization, recovery and retained-data assertions remain unchanged.

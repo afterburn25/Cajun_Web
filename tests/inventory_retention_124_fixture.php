@@ -22,12 +22,14 @@ final class Retained124Transport implements HttpTransport {
 if($argv[2]==='seed'){
     $expectedSchema=$baseline==='1.24.0'?'3':'5';
     if(CWP_VERSION!==$baseline||setting('provider_inventory_schema_version')!==$expectedSchema)throw new RuntimeException('Seed only the declared published baseline and its exact inventory schema.');
-    $read=static function(array $row,#[SensitiveParameter] string $secret,string $address,callable $authorize):InventorySnapshot {
+    $read=static function(array $row,#[SensitiveParameter] string $secret,string $address,callable $authorize)use($baseline):InventorySnapshot {
         $authorize();if($address!=='8.8.8.8'||$secret!=='SYNTHETIC_ORIGINAL_120_GENERAL_KEY')throw new LogicException('Unexpected isolated fixture boundary.');
         $item=['id'=>101,'typeRef'=>9,'enabled'=>true,'name'=>'retained.example','names'=>['retained.example','retained-domain.example'],'created'=>'2024-01-02T03:04:05Z','packageTypeName'=>'Retained web','packageLabels'=>['Retained label'],'stackUsers'=>[],'productSpec'=>new stdClass()];
-        return InventoryProjector::packagesList(new TransportResponse(200,[],json_encode([$item],JSON_THROW_ON_ERROR)),time());
+        $scope=$baseline==='1.25.0'?'twenty-i|'.$row['id'].'|packages.list':'';
+        return InventoryProjector::packagesList(new TransportResponse(200,[],json_encode([$item],JSON_THROW_ON_ERROR)),time(),$scope);
     };
-    if(provider_inventory_refresh($profile['id'],(int)$profile['revision'],$password,fn()=>'8.8.8.8',$read)!=='complete')throw new RuntimeException('Original inventory fixture failed.');
+    $state=provider_inventory_refresh($profile['id'],(int)$profile['revision'],$password,fn()=>'8.8.8.8',$read);
+    if($state!=='complete')throw new RuntimeException('Original inventory fixture failed: '.$state);
     provider_inventory_link($profile['id'],101,1,(int)$profile['revision'],$password);
     provider_inventory_domain_link($profile['id'],101,'retained-domain.example',1,(int)$profile['revision'],$password);
     $grant=provider_operation_grant($profile['id'],'packages.update',['resellerId'=>'*','id'=>[101],'labels'=>[101=>'Retained label']],$password);

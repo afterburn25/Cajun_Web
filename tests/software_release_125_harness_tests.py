@@ -228,6 +228,31 @@ class UpgradeHarness(unittest.TestCase):
                 if accepted:
                     self.assertEqual(json.loads(result.stdout), [expected])
 
+    def test_inventory_reader_binds_v125_account_and_operation(self):
+        source = (ROOT / 'tests/inventory_retention_124_fixture.php').read_text(encoding='utf-8')
+        reader = source.split('    $read=static function', 1)[1].split('    if(provider_inventory_refresh', 1)[0]
+        if '    $state=provider_inventory_refresh' in reader:
+            reader = reader.split('    $state=provider_inventory_refresh', 1)[0]
+        requires = ''
+        for path in ['provider/TransportException.php', 'provider/TransportResponse.php',
+                     'twentyi-inventory/InventoryPackage.php', 'twentyi-inventory/InventorySnapshot.php',
+                     'twentyi-inventory/InventoryProjector.php']:
+            requires += 'require ' + json.dumps(str(ROOT / 'site/includes/foundation' / path)) + ';'
+        aliases = ('use CajunWebPro\\Foundation\\Provider\\TransportResponse;'
+                   'use CajunWebPro\\Foundation\\TwentyIInventory\\{InventoryProjector,InventorySnapshot};')
+        for baseline, account, expected in [
+                ('1.24.0', 'original-profile', ''),
+                ('1.25.0', 'original-profile', 'twenty-i|original-profile|packages.list'),
+                ('1.25.0', 'second-profile', 'twenty-i|second-profile|packages.list')]:
+            with self.subTest(baseline=baseline, account=account):
+                code = (aliases + requires + '$baseline=' + json.dumps(baseline) + ';$read=static function' + reader
+                        + '$calls=0;$snapshot=$read(["id"=>' + json.dumps(account)
+                        + '],"SYNTHETIC_ORIGINAL_120_GENERAL_KEY","8.8.8.8",function()use(&$calls){$calls++;});'
+                        + 'echo json_encode(["scope"=>$snapshot->scope,"state"=>$snapshot->state,"authorizations"=>$calls]);')
+                result = self.php_fragment(code)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(json.loads(result.stdout), {'scope': expected, 'state': 'complete', 'authorizations': 1})
+
 
 if __name__ == '__main__':
     unittest.main()
