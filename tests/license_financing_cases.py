@@ -71,6 +71,15 @@ def run_browser(env,browser):
     setup=fixture('setup','0')
     offer=setup['offer_id'];license_id=setup['license_id'];license_key=setup['license_key']
     domain=setup['domain']
+    projects=env['db']('SELECT o.id,o.client_id,o.job_id,l.customer_id AS license_client_id,s.job_id AS schedule_job_id '
+                       'FROM ci_license_finance_offers o '
+                       'JOIN ci_website_licenses l ON l.id=o.license_id '
+                       'JOIN ci_recurring_billing_schedules s ON s.id=o.schedule_id '
+                       'WHERE o.id IN (?,?)',[initial['offer_id'],offer])
+    check('Down-payment and zero-down financing use distinct owned projects with matching licenses and schedules',
+          len(projects)==2 and len({row['job_id'] for row in projects})==2
+          and all(row['client_id']==row['license_client_id']==1 and row['job_id']==row['schedule_job_id']
+                  for row in projects))
     finance=base+'/existing/portal/index.php?finance='+offer
 
     page=alice.get(finance,timeout=25)
@@ -162,6 +171,20 @@ def run_browser(env,browser):
           and active_release.headers.get('Content-Type')=='application/zip')
     check('Active financing release detail exposes the client download action',
           'Download website ZIP' in alice.get(release_detail,timeout=25).text)
+
+    initial_release=fixture('release',initial['offer_id'])
+    initial_release_url=base+'/existing/portal/index.php?download_release='+initial_release['release_id']
+    check('Unpaid down-payment project release remains locked while the separate active project downloads',
+          alice.get(initial_release_url,timeout=25).status_code==404
+          and alice.get(release_url,timeout=25).status_code==200)
+    initial_still_denied=requests.post(validate,json={
+        'license_key':initial['license_key'],'domain':initial['domain']
+    },timeout=25)
+    check('Independent active financing does not unlock the unpaid initial agreement',
+          initial_still_denied.status_code==200
+          and initial_still_denied.json()=={
+              'authorized':False,'error':'Financing initial payment is still required'
+          })
 
     late=fixture('late',offer)
     check('Issued unpaid installment past grace moves financing to suspended',

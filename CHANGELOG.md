@@ -1,3 +1,9 @@
+## Unreleased — PR266 integration acceptance corrections
+
+- Preserve Devin’s separate-project financing fixture repair and verify independent paid/unpaid project access through installed endpoints.
+- Replace the document-roots native CI fixed host database port with its assigned mapping, retaining the complete runtime/database matrix.
+- Add narrowly filtered financing acceptance for companion PRs targeting the licensing feature branch.
+
 ## Unreleased — CI queue hygiene
 
 - Fixed development-check workflow concurrency: per-`github.sha` groups (which made `cancel-in-progress` a no-op) replaced with per-PR/per-branch groups; superseded dev runs now cancel automatically while `main` pushes serialize.

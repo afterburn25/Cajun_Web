@@ -1,3 +1,7 @@
+## 2026-10-28 — owner-directed PR266 independent integration pass
+
+Codex correction branch refreshed from `73d4c37b` to Devin’s `6045b801`; main `fdf40a25`, published v1.25 unchanged. Preserved Devin’s project fixture isolation after independently tracing the active-release HTTP404 to shared project financing. Added explicit independence/continued-denial assertions and corrected the native document-roots fixed-port collision. [Scope, local verification, original failure links and remaining release gates](PR266_INTEGRATION_ACCEPTANCE.md). Hosted acceptance and required independent review remain open; no release/live operation.
+
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
 ## 2026-10-26 — CI queue-hygiene: sha-scoped concurrency groups caused the ~1000-run backlog

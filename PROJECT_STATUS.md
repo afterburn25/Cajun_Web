@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — PR266 independent correction candidate
+
+Owner assigned Codex a separate licensing/financing integration pass on `codex/licensing-integration-review`, refreshed to Devin parent `6045b801`. Preserves Devin’s project-isolation fix; adds installed independence assertions, a dynamic document-roots CI port, and narrowly filtered companion-PR acceptance. Local checks pass; hosted candidate acceptance and security/release gates remain pending. [Exact failures, evidence and remaining gates](docs/PR266_INTEGRATION_ACCEPTANCE.md). No production activation or deployment.
+
 ## 2026-10-26 - CI queue-hygiene repair (in flight)
 
 Branch `devin/ci-concurrency-hygiene`: all 34 superseded-run-blocking workflows audited; 32 development checks regrouped from per-`github.sha` concurrency (which made `cancel-in-progress` a no-op) to per-PR/per-branch groups with main-exempt cancellation; two unguarded checks gained the same block. `tools/ci_health.py` + weekly `ci-health.yml` + `docs/CI_HEALTH.md` added. Protected release/acceptance workflows unchanged. Backlog root cause was sha-scoped groups + a ~35-workflow-per-push lane against a ~4-5-slot account runner ceiling, not a GitHub outage. Not merged; no release or deployment implied.
