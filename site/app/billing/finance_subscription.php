@@ -441,7 +441,10 @@ function license_finance_subscription_lifecycle_review(string $eventType,string 
             return 'unknown_subscription';
         }
         $current=(string)$sub['status'];
-        if(in_array($current,['review','paid_off'],true))return 'replay';
+        // Delayed events for this gateway identity cannot reopen a terminal
+        // contract or clear a reversal/replacement fence.
+        if(in_array($current,['review','paid_off','cancelled','reversal_recovery','replacing'],true))return 'replay';
+        if($current==='billing_suspended'&&$eventType==='net.authorize.customer.subscription.failed')return 'replay';
         $target=match($eventType){
             'net.authorize.customer.subscription.failed'=>'payment_failed',
             'net.authorize.customer.subscription.suspended'=>'billing_suspended',

@@ -35,9 +35,17 @@ The finance view intentionally returns HTTP403 for every support-session request
 
 ### Candidate package checkpoint
 
-All three candidate packages built from clean source `dcd0b80793d89fa2f56a2f327db532ee8ad9ef12` pass the maintained artifact validator, all manifest/member sizes and hashes, CRCs, direct-extract entry checks, and byte-for-byte comparison after clean extraction. No ZIP is nested in any package. [Package identities and original timeout attempt](evidence/pr266-candidate-package-verification.json) are retained. These are temporary source-candidate packages carrying the unchanged development VERSION1.25.0, not replacement published1.25 assets or release approval. Subsequent test/documentation changes preserve this shipping tree; the final accepted version/head still needs its own release build and full upgrade acceptance.
+All three candidate packages built from clean source `dcd0b80793d89fa2f56a2f327db532ee8ad9ef12` pass the maintained artifact validator, all manifest/member sizes and hashes, CRCs, direct-extract entry checks, and byte-for-byte comparison after clean extraction. No ZIP is nested in any package. [Package identities and original timeout attempt](evidence/pr266-candidate-package-verification.json) are retained. These are temporary source-candidate packages carrying the unchanged development VERSION1.25.0, not replacement published1.25 assets or release approval. This historical checkpoint predates the subsequently combined PR269/270 shipping corrections and does not certify their bytes. The combined source needs its own package checks, and the final accepted version/head still needs its release build and full upgrade acceptance.
 
 The real sandbox workflows remain undispatched. The connector has no workflow-dispatch capability; browser startup fails with MXC volume Z credential error, and the separate Computer Use helper reports a missing app-server program. Sandbox secret availability is unverified. An owner with working GitHub access must arrange the sandbox-only workflow execution and required independent security/payment/legal review; no production switch or deployment is requested by this record.
+
+### Combined independent corrections
+
+Reviewed the exact PR269 `f6d49812` capture/reversal isolation fix and PR270 `168c4999` delayed-lifecycle safeguards, then incorporated their histories through sequential normal integration merges. Optional financing cannot intercept unrelated software payment notifications before readiness/ownership is known. Delayed events retain cancellation, reversal recovery and in-flight replacement fences; a delayed failure cannot downgrade confirmed suspension. Shared documentation was combined and installer hashes regenerated from the resulting source, preserving all existing recovery and owner-reauth changes.
+
+[Combined source hashes and55 service cases in both PHP modes](evidence/pr266-independent-corrections-combined.json) record actual local execution. The independent author's [scope report](CODEX_LICENSING_REVIEW_2026_10_28.md) retains the original reproductions, source identities and limits. This is review of those bounded changes, not approval of the whole payment/security surface.
+
+A concrete sandbox dispatch prerequisite is now [PR271](https://github.com/afterburn25/Cajun_Web/pull/271): register only the existing manual workflow definitions on default main, then select the reviewed licensing source ref when running them. GitHub's default-branch registration rule is documented in that proposal. It requires repository-owner/Devin review and normal main integration; production activation is outside its scope.
 
 ### Verification and limits
 

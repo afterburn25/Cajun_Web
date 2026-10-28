@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — combined independent licensing corrections
+
+The integration writer reviewed and incorporated PR269 webhook isolation and PR270 delayed-event safeguards sequentially on `codex/licensing-integration-review`, preserving recovery/owner-reauth fixes and both histories. All55 service regressions pass in normal and no-INI PHP8.4 modes on the combined tree; native/browser acceptance remains pending. Sandbox registration is separately proposed in [PR271](https://github.com/afterburn25/Cajun_Web/pull/271) and requires reviewed main integration before owner sandbox execution. [Evidence and release gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).
+
 ## 2026-10-28 — financed replacement recovery hardening
 
 The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).
@@ -7,6 +11,10 @@ The Codex companion now also repairs replacement enrollment after the original s
 ## 2026-10-28 — PR266 independent correction candidate
 
 Owner assigned Codex a separate licensing/financing integration pass on `codex/licensing-integration-review`, refreshed to Devin parent `6045b801`. Preserves Devin’s project-isolation fix; adds installed independence assertions, a dynamic document-roots CI port, and narrowly filtered companion-PR acceptance. Local checks pass; hosted candidate acceptance and security/release gates remain pending. [Exact failures, evidence and remaining gates](docs/PR266_INTEGRATION_ACCEPTANCE.md). No production activation or deployment.
+
+## 2026-10-28 — independent delayed-financing-event correction
+
+Branch `codex/licensing-lifecycle-ordering`, stacked on [routing correction #269](https://github.com/afterburn25/Cajun_Web/pull/269), preserves cancelled, reversal-recovery and replacement states under delayed gateway lifecycle events, and retains confirmed suspension after a delayed failure. The real-service regression has 45 passing isolated cases (17 failed before the fix). Both corrections remain proposed for the existing integration writer; native/gateway/installed acceptance is still required. [Review and evidence](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
 
 ## 2026-10-28 — independent licensing webhook correction
 

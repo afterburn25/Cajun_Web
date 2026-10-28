@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — combined independent licensing corrections
+
+The integration writer reviewed and incorporated PR269 webhook isolation and PR270 delayed-event safeguards sequentially on `codex/licensing-integration-review`, preserving recovery/owner-reauth fixes and both histories. All55 service regressions pass in normal and no-INI PHP8.4 modes on the combined tree; native/browser acceptance remains pending. Sandbox registration is separately proposed in [PR271](https://github.com/afterburn25/Cajun_Web/pull/271) and requires reviewed main integration before owner sandbox execution. [Evidence and release gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).
+
 ## 2026-10-28 — owner reconciliation commit checks
 
 One-time/subscription/replacement owner reconciliation now reauthenticates inside serialized mutations. Four new native rejection cases pass on local MariaDB; the full local suite stops at the unchanged Windows private-permission guard. [Exact source-bound partial evidence](docs/evidence/pr266-owner-reauth-native.json). Continue original Linux CI, full application/package acceptance, real sandbox and independent review.
@@ -11,6 +15,10 @@ The Codex companion now also repairs replacement enrollment after the original s
 ## 2026-10-28 — PR266 Codex correction lane
 
 Continue `codex/licensing-integration-review` from `6045b801`, preserving Devin’s feature branch. [Evidence and remaining gates](docs/PR266_INTEGRATION_ACCEPTANCE.md). Next: inspect original companion-PR financing/browser and document-roots matrix results; fix actual next failures, complete security review and source-bound release acceptance. Do not redispatch pending checks or treat local contracts as installed acceptance. Production payments/deployment remain owner gated.
+
+## 2026-10-28 — delayed event correction for integration review
+
+Independent review additionally reproduced delayed financing notifications clearing reversal/replacement fences and downgrading confirmed cancellation/suspension. `codex/licensing-lifecycle-ordering` is stacked on #269 and changes only the lifecycle service, its regression/workflow and generated hash plus documentation. Integrate the routing correction first, then this focused commit; refresh inventory if resolving changes from other branches. All 45 isolated lifecycle cases pass locally; native SQL, full installed acceptance, real sandbox and release remain unverified. The existing **Complete Licensing Integration** chat retains integration ownership. [Evidence](docs/CODEX_LICENSING_REVIEW_2026_10_28.md).
 
 ## 2026-10-28 — independent correction for the licensing integration writer
 

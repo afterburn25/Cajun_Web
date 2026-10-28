@@ -1,0 +1,496 @@
+{
+  "reviewed_sources": {
+    "pr269": "f6d49812f5aafb03a85e4b0a3dc20f5bfbabbed5",
+    "pr270": "168c49997959d0fd706d85204276951263f42bd9",
+    "integration_before": "25e2d34fcf8f8f453545748f3f0894e053dceca2",
+    "first_normal_merge": "0854394eeee3932ad312fdc4c17307db4e7fcac5"
+  },
+  "php": "8.4.27",
+  "source_sha256": {
+    "site/app/billing/finance_charge.php": "43ac6a612360944879979ef23a9340a7868ec0d638d94cb3d00487661743d0cf",
+    "site/app/billing/finance_payment_review.php": "ed0de689d3871a717f15bbd5d8365c3984da97cfdebc6301e8090fcc16e885db",
+    "site/app/billing/finance_subscription.php": "a5397babe26bbfa6786adfdfb90ab15624389b34b733e50d7dc42df8e77f7527",
+    "site/app/licenses/financing_policy.php": "77fc9d62e93d0ac367f7e2c279cf6847f066809b961eb45cea88a4af41f35d26",
+    "tests/finance_webhook_isolation.php": "26b7e0667a902b7b16fef2dfc9bccd01f4dfe5fcb8a219229b8265fbbe715b97",
+    "tests/finance_subscription_lifecycle.php": "cde7e5640d06000a9dbd7cf8e9880ca6b421aec8be5d375e82d4f368723ed720"
+  },
+  "results": [
+    {
+      "file": "tests/finance_webhook_isolation.php",
+      "minimal": false,
+      "passed": true,
+      "checks": [
+        {
+          "name": "Software capture does not require optional finance tables",
+          "passed": true
+        },
+        {
+          "name": "Unprepared finance capture performs no database query",
+          "passed": true
+        },
+        {
+          "name": "Unprepared financing declines reversal routing",
+          "passed": true
+        },
+        {
+          "name": "Prepared financing leaves another product capture unmatched",
+          "passed": true
+        },
+        {
+          "name": "Software refund does not require finance production activation",
+          "passed": true
+        },
+        {
+          "name": "Software void does not require finance production activation",
+          "passed": true
+        },
+        {
+          "name": "Recognized paid financing capture remains idempotent",
+          "passed": true
+        },
+        {
+          "name": "Recognized financing capture still enforces exact amount",
+          "passed": true
+        },
+        {
+          "name": "Recognized financing reversal still requires production activation",
+          "passed": true
+        },
+        {
+          "name": "Financing reversal keeps exact gateway transaction validation",
+          "passed": true
+        }
+      ],
+      "scope": "Actual PHP services with isolated read-only database doubles; no native SQL or real gateway evidence"
+    },
+    {
+      "file": "tests/finance_webhook_isolation.php",
+      "minimal": true,
+      "passed": true,
+      "checks": [
+        {
+          "name": "Software capture does not require optional finance tables",
+          "passed": true
+        },
+        {
+          "name": "Unprepared finance capture performs no database query",
+          "passed": true
+        },
+        {
+          "name": "Unprepared financing declines reversal routing",
+          "passed": true
+        },
+        {
+          "name": "Prepared financing leaves another product capture unmatched",
+          "passed": true
+        },
+        {
+          "name": "Software refund does not require finance production activation",
+          "passed": true
+        },
+        {
+          "name": "Software void does not require finance production activation",
+          "passed": true
+        },
+        {
+          "name": "Recognized paid financing capture remains idempotent",
+          "passed": true
+        },
+        {
+          "name": "Recognized financing capture still enforces exact amount",
+          "passed": true
+        },
+        {
+          "name": "Recognized financing reversal still requires production activation",
+          "passed": true
+        },
+        {
+          "name": "Financing reversal keeps exact gateway transaction validation",
+          "passed": true
+        }
+      ],
+      "scope": "Actual PHP services with isolated read-only database doubles; no native SQL or real gateway evidence"
+    },
+    {
+      "file": "tests/finance_subscription_lifecycle.php",
+      "minimal": false,
+      "passed": true,
+      "checks": [
+        {
+          "name": "review survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "Confirmed suspension survives a delayed failure and keeps catch-up eligibility",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts failed",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts suspended",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts terminated",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts cancelled",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts expired",
+          "passed": true
+        },
+        {
+          "name": "Payment failure can advance to billing_suspended",
+          "passed": true
+        },
+        {
+          "name": "Payment failure can advance to cancelled",
+          "passed": true
+        },
+        {
+          "name": "Payment failure can advance to review",
+          "passed": true
+        },
+        {
+          "name": "Suspension can advance to cancelled",
+          "passed": true
+        },
+        {
+          "name": "Suspension can advance to review",
+          "passed": true
+        },
+        {
+          "name": "Duplicate failure is idempotent",
+          "passed": true
+        },
+        {
+          "name": "Unknown event does not mutate",
+          "passed": true
+        },
+        {
+          "name": "Archived gateway identity cannot mutate its replacement",
+          "passed": true
+        },
+        {
+          "name": "Unknown gateway identity cannot mutate another agreement",
+          "passed": true
+        },
+        {
+          "name": "Malformed identity cannot mutate another agreement",
+          "passed": true
+        },
+        {
+          "name": "Unprepared storage is not queried",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery retains its ordinary settlement fence after delayed suspension",
+          "passed": true
+        },
+        {
+          "name": "replacing retains its ordinary settlement fence after delayed suspension",
+          "passed": true
+        },
+        {
+          "name": "Cancellation remains cancelled when a later verified payment settles",
+          "passed": true
+        }
+      ],
+      "scope": "Actual lifecycle service with strict in-memory database doubles; not native SQL, gateway, or installed acceptance"
+    },
+    {
+      "file": "tests/finance_subscription_lifecycle.php",
+      "minimal": true,
+      "passed": true,
+      "checks": [
+        {
+          "name": "review survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "review survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "paid_off survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "cancelled survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed failed",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed suspended",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed terminated",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed cancelled",
+          "passed": true
+        },
+        {
+          "name": "replacing survives delayed expired",
+          "passed": true
+        },
+        {
+          "name": "Confirmed suspension survives a delayed failure and keeps catch-up eligibility",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts failed",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts suspended",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts terminated",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts cancelled",
+          "passed": true
+        },
+        {
+          "name": "Active subscription accepts expired",
+          "passed": true
+        },
+        {
+          "name": "Payment failure can advance to billing_suspended",
+          "passed": true
+        },
+        {
+          "name": "Payment failure can advance to cancelled",
+          "passed": true
+        },
+        {
+          "name": "Payment failure can advance to review",
+          "passed": true
+        },
+        {
+          "name": "Suspension can advance to cancelled",
+          "passed": true
+        },
+        {
+          "name": "Suspension can advance to review",
+          "passed": true
+        },
+        {
+          "name": "Duplicate failure is idempotent",
+          "passed": true
+        },
+        {
+          "name": "Unknown event does not mutate",
+          "passed": true
+        },
+        {
+          "name": "Archived gateway identity cannot mutate its replacement",
+          "passed": true
+        },
+        {
+          "name": "Unknown gateway identity cannot mutate another agreement",
+          "passed": true
+        },
+        {
+          "name": "Malformed identity cannot mutate another agreement",
+          "passed": true
+        },
+        {
+          "name": "Unprepared storage is not queried",
+          "passed": true
+        },
+        {
+          "name": "reversal_recovery retains its ordinary settlement fence after delayed suspension",
+          "passed": true
+        },
+        {
+          "name": "replacing retains its ordinary settlement fence after delayed suspension",
+          "passed": true
+        },
+        {
+          "name": "Cancellation remains cancelled when a later verified payment settles",
+          "passed": true
+        }
+      ],
+      "scope": "Actual lifecycle service with strict in-memory database doubles; not native SQL, gateway, or installed acceptance"
+    }
+  ],
+  "limits": [
+    "Strict SQL doubles are not native concurrency or real gateway evidence",
+    "No full independent security approval",
+    "No feature/main merge or production operation"
+  ]
+}

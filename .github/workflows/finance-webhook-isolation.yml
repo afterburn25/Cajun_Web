@@ -4,16 +4,22 @@ on:
     paths:
       - 'site/app/billing/finance_charge.php'
       - 'site/app/billing/finance_payment_review.php'
+      - 'site/app/billing/finance_subscription.php'
+      - 'site/app/licenses/financing_policy.php'
       - 'site/app/billing/software_subscription_settle.php'
       - 'tests/finance_webhook_isolation.php'
+      - 'tests/finance_subscription_lifecycle.php'
       - '.github/workflows/finance-webhook-isolation.yml'
   push:
     branches: [main, feature/software-license-commerce-20261025]
     paths:
       - 'site/app/billing/finance_charge.php'
       - 'site/app/billing/finance_payment_review.php'
+      - 'site/app/billing/finance_subscription.php'
+      - 'site/app/licenses/financing_policy.php'
       - 'site/app/billing/software_subscription_settle.php'
       - 'tests/finance_webhook_isolation.php'
+      - 'tests/finance_subscription_lifecycle.php'
       - '.github/workflows/finance-webhook-isolation.yml'
   workflow_dispatch:
 permissions:
@@ -38,11 +44,15 @@ jobs:
         run: |
           mkdir -p qa
           docker run --rm --network none -v "$PWD:/app:ro" -w /app php:${{ matrix.php }}-cli php -n tests/finance_webhook_isolation.php | tee qa/finance-webhook-isolation.json
+      - name: Retain financing lifecycle fences under delayed notifications
+        shell: bash
+        run: |
+          docker run --rm --network none -v "$PWD:/app:ro" -w /app php:${{ matrix.php }}-cli php -n tests/finance_subscription_lifecycle.php | tee qa/finance-subscription-lifecycle.json
       - name: Preserve scoped regression evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: finance-webhook-isolation-php${{ matrix.php }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: qa/finance-webhook-isolation.json
+          path: qa/*.json
           retention-days: 14
           if-no-files-found: error

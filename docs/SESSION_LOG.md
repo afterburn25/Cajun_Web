@@ -1,5 +1,9 @@
 ## 2026-10-28 — owner-directed PR266 independent integration pass
 
+## 2026-10-28 — combined independent licensing corrections
+
+The integration writer reviewed and incorporated PR269 webhook isolation and PR270 delayed-event safeguards sequentially on `codex/licensing-integration-review`, preserving recovery/owner-reauth fixes and both histories. All55 service regressions pass in normal and no-INI PHP8.4 modes on the combined tree; native/browser acceptance remains pending. Sandbox registration is separately proposed in [PR271](https://github.com/afterburn25/Cajun_Web/pull/271) and requires reviewed main integration before owner sandbox execution. [Evidence and release gates](PR266_INTEGRATION_ACCEPTANCE.md).
+
 ## 2026-10-28 — financed replacement recovery hardening
 
 The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](PR266_INTEGRATION_ACCEPTANCE.md).
@@ -7,6 +11,10 @@ The Codex companion now also repairs replacement enrollment after the original s
 Codex correction branch refreshed from `73d4c37b` to Devin’s `6045b801`; main `fdf40a25`, published v1.25 unchanged. Preserved Devin’s project fixture isolation after independently tracing the active-release HTTP404 to shared project financing. Added explicit independence/continued-denial assertions and corrected the native document-roots fixed-port collision. [Scope, local verification, original failure links and remaining release gates](PR266_INTEGRATION_ACCEPTANCE.md). Hosted acceptance and required independent review remain open; no release/live operation.
 
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
+
+## 2026-10-28 — delayed financing lifecycle preservation
+
+Independent service probes reproduced cancellation/suspension regression and reversal/replacement fence loss. A separate follow-up branch stacked on #269 adds monotonic handling and 45 actual-service cases (17 fail before, all pass after, PHP 8.4.25 normal/no-INI). The #269 exact commit `f6d49812` also passed a full three-package build and manifest/member/extraction audit; see the [review report](CODEX_LICENSING_REVIEW_2026_10_28.md). Finance browser run 40649494078 at `5ba2a37d` now fails at the overdue scheduler recovery-handoff assertion; handed to the existing fixture writer without editing their files. No live gateway or production operation.
 
 ## 2026-10-28 — independent licensing routing corrections
 
