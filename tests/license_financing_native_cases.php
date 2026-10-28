@@ -29,8 +29,8 @@ $licenseKey=license_create(1,'WEBSITE-FINANCE-NATIVE',1,false,null);
 $license=license_get($licenseKey);$licenseId=(int)$license['id'];
 license_register_domain($licenseId,'finance-native.example',1);
 
-rb_historical_source(9000,2500);
-$fields=rb_fields(9100,9000);
+rb_historical_source(19000,2500);
+$fields=rb_fields(19100,19000);
 $fields['anchor']=gmdate('Y-m-d',time()+2*86400);
 $fields['due_after_days']=0;
 $offeredSchedule=recurring_billing_offer($fields);
@@ -39,7 +39,7 @@ rb_ok('Financing native schedule begins as exact future offered terms',
 
 rb_deny('Initial financing agreement cannot grant resale or distribution rights before separate paid evidence',
     fn()=>license_finance_offer_create(
-        $licenseId,rb_id(9100),'Synthetic financed website with premature resale',
+        $licenseId,rb_id(19100),'Synthetic financed website with premature resale',
         10000,0,10000,0,0,4,5,1,7,
         ['resale'=>true,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
         'Synthetic financed-site agreement that must remain site-use only until separate commercial-rights payment is verified.',
@@ -47,7 +47,7 @@ rb_deny('Initial financing agreement cannot grant resale or distribution rights 
     ));
 
 $offer=license_finance_offer_create(
-    $licenseId,rb_id(9100),'Synthetic financed website',
+    $licenseId,rb_id(19100),'Synthetic financed website',
     10000,0,10000,0,0,4,5,1,7,
     ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
     'Synthetic financed-site agreement retained only for native acceptance. Site use is licensed to this customer; resale and distribution are not granted.',
@@ -80,13 +80,13 @@ rb_ok('Signed zero-down financing begins active on the same website license',
 $zeroKey=license_create(1,'WEBSITE-FINANCE-ZERO-NOPAY',1,false,null);
 $zeroLicense=(int)license_get($zeroKey)['id'];
 license_register_domain($zeroLicense,'finance-zero-nopay.example',1);
-rb_historical_source(9010,2500);
-$zeroFields=rb_fields(9101,9010);
+rb_historical_source(19010,2500);
+$zeroFields=rb_fields(19101,19010);
 $zeroFields['anchor']=gmdate('Y-m-d',time()+3*86400);
 $zeroFields['due_after_days']=0;
 recurring_billing_offer($zeroFields);
 $zeroOffer=license_finance_offer_create(
-    $zeroLicense,rb_id(9101),'Zero-down financing without payment-link storage',
+    $zeroLicense,rb_id(19101),'Zero-down financing without payment-link storage',
     10000,0,10000,0,0,4,5,1,7,
     ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
     'Synthetic zero-down agreement verifies that no initial invoice or payment link is required merely to sign financing.',
@@ -109,13 +109,13 @@ save_setting('payments_schema_version','2');
 $downKey=license_create(1,'WEBSITE-FINANCE-DOWN-PENDING',1,false,null);
 $downLicense=(int)license_get($downKey)['id'];
 license_register_domain($downLicense,'finance-down-pending.example',1);
-rb_historical_source(9020,2500);
-$downFields=rb_fields(9102,9020);
+rb_historical_source(19020,2500);
+$downFields=rb_fields(19102,19020);
 $downFields['anchor']=gmdate('Y-m-d',time()+4*86400);
 $downFields['due_after_days']=0;
 recurring_billing_offer($downFields);
 $downOffer=license_finance_offer_create(
-    $downLicense,rb_id(9102),'Down-payment financing with delayed payment-link setup',
+    $downLicense,rb_id(19102),'Down-payment financing with delayed payment-link setup',
     10000,2000,8000,2000,0,4,5,1,7,
     ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
     'Synthetic down-payment agreement verifies that signature evidence survives temporary payment-link unavailability.',
@@ -192,13 +192,13 @@ rb_ok('Replacement initial payment restores the same financed license and key',
 $recoverKey=license_create(1,'WEBSITE-FINANCE-SIGN-RECOVER',1,false,null);
 $recoverLicense=(int)license_get($recoverKey)['id'];
 license_register_domain($recoverLicense,'finance-sign-recover.example',1);
-rb_historical_source(9030,2500);
-$recoverFields=rb_fields(9103,9030);
+rb_historical_source(19030,2500);
+$recoverFields=rb_fields(19103,19030);
 $recoverFields['anchor']=gmdate('Y-m-d',time()+5*86400);
 $recoverFields['due_after_days']=0;
 recurring_billing_offer($recoverFields);
 $recoverOffer=license_finance_offer_create(
-    $recoverLicense,rb_id(9103),'Signed agreement with transient payment setup outage',
+    $recoverLicense,rb_id(19103),'Signed agreement with transient payment setup outage',
     10000,2000,8000,2000,0,4,5,1,7,
     ['resale'=>false,'distribution'=>false,'exclusive_resale'=>false,'exclusive_distribution'=>false],
     'Synthetic agreement proves a transient payment infrastructure failure cannot roll back or misrepresent a committed client signature.',
