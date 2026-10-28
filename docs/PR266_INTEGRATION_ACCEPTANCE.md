@@ -1,5 +1,9 @@
 # PR266 licensing integration acceptance
 
+## 2026-10-28 support-denial continuation
+
+PR #274 follow-up `617e67cb` requires support preparation policy confirmation, submits the forged software-domain mutation through the ordinary support portal, and requires HTTP200 with the refusal plus exactly one attributed denied support event. The private software view and private ZIP retain independent HTTP403 assertions. This is test correction only; fresh exact-combined installed execution remains required.
+
 ## 2026-10-28 seat scope, CI port and upgrade readiness corrections
 
 - Run `40676646028` passes the prior notice/download fixes and fails only because the seat-limit assertion scans another valid trial's controls. Feature `a0d21c1c` suppresses those controls and regresses redeployment; integration retains the prior renderer and uses PR #274's exact-license selectors.

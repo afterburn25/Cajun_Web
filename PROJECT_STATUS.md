@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — attributed support-denial acceptance
+
+PR #274 advanced to `617e67cb` after reproducing the next unreached fixture error: a forbidden software POST to the private support software view correctly returns HTTP403, so that response cannot also expose the ordinary blocked-action message. The installed test now posts the forged mutation through the ordinary support portal, requires HTTP200 plus the refusal message and exactly one attributed denied support event, and separately preserves the private software/download 403 checks. Support readiness also requires both schema and explicit policy confirmation. Shipping permissions and handlers are unchanged.
+
 ## 2026-10-28 — feature `af377c89` reviewed; regression excluded
 
 PR #266 advanced to `af377c89` after installed run `40676646028` passed the notice, purchased-download and second-installation assertions, then failed a page-wide seat-control assertion. The feature attempted to hide add-install controls from every invoice-unbound trial, temporary and owner-issued standard grant. Independent real HTTP/SQL review showed that change prevents a customer from redeploying an otherwise valid license after deactivating its last domain. The integration history records Devin's exact head but retains the prior authorized renderer; Devin's branch is untouched.

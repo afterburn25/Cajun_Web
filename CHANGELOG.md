@@ -1,3 +1,7 @@
+## Unreleased — support-denial acceptance attribution
+
+- Verify forged support-context software mutations produce exactly one attributed denial without weakening private-view or download 403 boundaries.
+
 ## Unreleased — licensing integration acceptance repairs
 
 - Scope multi-license installation controls and domain-move acceptance to the intended license without hiding valid trial/temporary redeployment controls.

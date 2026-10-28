@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — PR #274 support follow-up
+
+Integrate exact #274 head `617e67cb0da2bc3037a566142dc69e09c2bcd037` after its earlier seat-scoping commit. The follow-up corrects only installed acceptance/review documentation: forged support mutations use the ordinary support portal to expose the refusal while requiring one attributed denied event; the private software view and ZIP remain separately HTTP403. No shipping authority change.
+
 ## 2026-10-28 — reject feature UI regression; integrate #274–#276
 
 Refresh the integration ancestry to exact feature `af377c89e35ffd0e10d02bead4c9d9c3698b5a31`, but retain the pre-`a0d21c1c` portal renderer because invoice-null gating hides valid trial/temporary/owner-issued redeployment controls. The invalid whole-page assertion is replaced by exact-license card/form selection from PR #274 (`8a24b10e`). Also integrate dynamic provider-settings service ports from #275 (`76dbfa3a`) and explicit retained payment preparation from #276 (`59255c8d`). No shipping payment or licensing authority is weakened; Devin's branch remains unchanged.
