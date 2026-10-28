@@ -1,5 +1,12 @@
 # PR266 licensing integration acceptance
 
+## 2026-10-28 full-browser session isolation
+
+- Frozen exact-candidate run `40705973907` passed build, Apache and recovery. Native/browser job `122881334881` passed native preparation and every installed check through the final scheduled-provider browser flow, then exited on `Form missing catalog_save at .../admin/index.php?view=login` when software commerce began.
+- This is a harness isolation defect, not a reason to weaken authentication: the full browser matrix legitimately runs beyond the application's 30-minute administrator idle timeout, while `software_commerce_cases.py` still borrowed the owner/client sessions created near process startup.
+- Software-commerce and financed-license installed acceptance now establish separate owner, buyer and foreign-client sessions through the real packaged login forms at each suite boundary. Financing's nested transactional-email draft assertions receive those same fresh authenticated sessions.
+- The repair changes tests only. It preserves the production timeout, CSRF, tenant boundaries, support restrictions and all payment/licensing assertions. Local Python syntax, whitespace, 69 build guards and 283 artifact-helper checks pass. Exact hosted HTTP/Chromium execution is still mandatory; no sandbox or live Authorize.net transaction is inferred.
+
 ## 2026-10-28 support-denial continuation
 
 PR #274 follow-up `617e67cb` requires support preparation policy confirmation, submits the forged software-domain mutation through the ordinary support portal, and requires HTTP200 with the refusal plus exactly one attributed denied support event. The private software view and private ZIP retain independent HTTP403 assertions. This is test correction only; fresh exact-combined installed execution remains required.

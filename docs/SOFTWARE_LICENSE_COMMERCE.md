@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Installed-suite authentication isolation — 2026-10-28
+
+Software-commerce and financed-license installed acceptance authenticate their own owner, buyer and foreign-client sessions through the real packaged forms. They do not inherit cookies created near the beginning of the complete browser matrix: that matrix can correctly exceed the production 30-minute idle timeout before reaching these late commercial suites. This test-only isolation keeps the timeout, CSRF, ownership and tenant controls intact while ensuring the commercial lifecycle itself is exercised. Frozen run `40705973907` supplied the first-cause evidence; exact corrected-head HTTP/Chromium execution remains required.
+
 ## Product-bound runtime validation — 2026-10-28
 
 New software entitlements must send their exact catalog SKU as `product_id` to the public validation API. A valid key and registered domain are not authority for a different product: omitting the product is a definitive denial for any row in `software_entitlements`, and a supplied mismatch remains denied. Genuine legacy website licenses without an entitlement row retain the original `{license_key, domain}` contract. Master software keys remain any-domain internal test keys for their recorded product, not universal cross-product keys. [Independent finding and evidence](CODEX_SOFTWARE_PRODUCT_VALIDATION_REVIEW.md).

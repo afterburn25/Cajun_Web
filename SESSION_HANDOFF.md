@@ -1,5 +1,17 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — Application browser timeout first cause and compatible repair
+
+Frozen candidate `74b5af3a` Application run `40705973907`, native/browser job `122881334881`, failed only after its native phase and the long installed-browser sequence. The retained exception is `Form missing catalog_save at .../admin/index.php?view=login`; all earlier support, catalog, provider and licensing checks passed. `software_commerce_cases.run_browser()` was the first late suite still borrowing the bootstrap `admin`, `alice` and `bob` cookie jars, so the owner cookie had legitimately crossed the production 30-minute idle boundary. The next financing suite had the same latent dependency. Both suites now authenticate isolated identities through the actual packaged login forms and assert each login before any mutation; financing passes those sessions to its nested mail-draft checks. Do not lengthen or bypass the production timeout. Local Python syntax, `git diff --check`, 69 build guards and 283 artifact checks pass. Require exact-head hosted browser completion. Preserve current PR #266 run `40728300754`; do not dispatch a duplicate while it is active.
+
+## 2026-10-28 — exact feature `d062bd5c` incorporated in an unattached review merge
+
+GitHub source of truth now reports PR #266 at `d062bd5c3b78f3ec265ffc8a404e253013cfa924`, a direct child of `5326ecb8`. Its application fix is byte-equivalent to the finance mail-account correction already reviewed in integration, while its generated inventory does not include the integration's additional shipping corrections. Normal merge `ec6549713190c6a325c0ad4dd3e97f8885eb4053` therefore retains the integration site bytes and inventory, records Devin's exact ancestry, and unions the handoff history. Local 69 build guards, 283 artifact checks, dependency/inventory locks, 99 workflow parses, documentation/link checks and whitespace pass. Do not move `codex/licensing-integration-review` until frozen Application run `40705973907` is terminal and the GitHub heads are rechecked; then advance by non-force lease and require fresh exact-head CI.
+
+## 2026-10-28 — preserve current acceptance, then record feature `5326ecb8`
+
+PR #266 advanced from `2c0579c4` to test-only head `5326ecb8e6c33a3c4b77d8851e3d0c64d8ebace4` while integration `74b5af3a` was executing. Do not cancel the frozen run. The delta correctly drives payments schema 1→2 through the owner form before gated activity/delivery/portfolio/current trial/ledger/notification cases. Integration already has stricter retained-record migration helpers for historical 1.5/1.6/1.7 plus the published-v1.24 upgrade; keep those and add only the missing fixture preparation. Prepare a normal two-parent refresh after the running acceptance is terminal, then rerun exact combined CI. Devin's branch remains untouched.
+
 ## 2026-10-28 — latest PR #266 head `2c0579c4` recorded
 
 Use exact feature head `2c0579c4f1379505b1fb8a53c3f90905d3e5dcdc`, not the earlier `93bfa54f` checkpoint. The new `software_commerce_migrate.php` imports in the lifecycle/deactivate/reactivate controller paths are byte-identical to the existing integration tree, so the ancestry refresh is tree-neutral. Retain the integration-generated inventory because it additionally binds all accepted corrections. Recheck GitHub immediately before any ref update; never push Devin's feature branch.
@@ -93,7 +105,30 @@ The Codex companion now also repairs replacement enrollment after the original s
 ## 2026-10-28 — PR266 Codex correction lane
 
 Continue `codex/licensing-integration-review` from `6045b801`, preserving Devin’s feature branch. [Evidence and remaining gates](docs/PR266_INTEGRATION_ACCEPTANCE.md). Next: inspect original companion-PR financing/browser and document-roots matrix results; fix actual next failures, complete security review and source-bound release acceptance. Do not redispatch pending checks or treat local contracts as installed acceptance. Production payments/deployment remain owner gated.
+## PR #266 release stabilization — 2026-10-27/28 (in flight)
 
+Owner directive: clear genuine release-blocking failures on `feature/software-license-commerce-20261025` (PR #266), no feature expansion; blocker-matrix discipline — failing run → root cause → smallest repair → local targeted regression → cross-component check.
+
+**Cleared this arc (oldest→newest):**
+
+- `5e2db4b` — payment-links restack raised `payments_ready()` to schema `2` but fixtures seeded `'1'`; seeded `'2'` in `ledger_native`, `notifications_native`, `domain_renewal_dispatch_native` and added the canonical `payments_migrate` submit to `recurring_billing_upgrade_cases` (all verified locally: 108/62/84 checks).
+- `2a18049`/`73d4c37`/`6045b80`/`5ba2a37` — financing lane: fixture dir/file modes unreadable by apache (`0700`/`0600` → `0755`/`0644`); stale `pending_initial` plan shared `job_id=1` locking the active release (dedicated `studio_jobs` row); unqualified `RecurringBillingTerms` in fixture global scope (FQCN).
+- `cbffd00` — `financing.php` 404 status set after layout output (moved offer lookup before `site_head`); **software dispatch**: all 15 `software_*` admin actions lived in `studio_admin_action` but the POST router only forwarded `studio_`-prefixed actions → added `software_` prefix. Verified locally: owner preparation stores `software_commerce_version=3`.
+- `9a1e945` — software browser fixture never loaded `app/clients/workspace.php` → `payments_ready()`/`studio_ready()` fatal.
+- `4b17cd3` — `software_notices.php` called `software_commerce_ready()` without its defining migrate file → fatal on owner delivery retry.
+- `94d24ce` — downloads query `ORDER BY l.id` surfaced the trial row first so `$shown` dedup bound the link to the trial license → invoice-bound rows first via `(e.invoice_id IS NULL)`.
+- `a0d21c1` — trial license's own add-install control leaked onto My Software → gate the control on `e.invoice_id !== null`.
+- `4f75380` — support-blocked POST rendered generic 403, losing the blocked-action reason → `fail_page($error,403)` before the gate (avoids the CSP contract's source-ordering assertion on `site_head`).
+- `93bfa54` — test tail still looked for retired `studio_license_deactivate`/`reactivate` forms → `software_license_lifecycle` + transition + reason (assertions unchanged).
+- `2c0579c` — `software_commerce_ready()` called without migrate require in `software_license_lifecycle`, `studio_license_deactivate` and `studio_license_reactivate` branches → added `require_once` to each. Suspend/resume verified end-to-end locally (is_active flips, portal renders 'Standard · Suspended'/'Active', KEYPAID key shown).
+- `5326ecb` — sealed `Application acceptance` failed at `2c0579c` on the payments-schema-`2` class (recurring_setup 403, payments_trial_setup form missing): every cumulative upgrade fixture (1.5→1.10, release_125 later-records, `existing` legs) now submits the canonical `payments_migrate` form before payments-gated views; record compares scoped to pre-upgrade columns (`link_hash`/`link_secret` added by migrate); settings checks declare `payments_schema_version` '1'→'2' and assert `'2'`.
+- (next) — apache leg of release_125 upgrade acceptance emitted `PHP Warning: Undefined variable $mail_drafts_account` at `admin/views/studio/licenses.php:59` — stray `$` made a variable-function call instead of `mail_drafts_account($a['id'])` (functions loaded via `financing_offers.php`→`app/mail/drafts.php`). Fixed.
+
+**Result**: sealed `Application acceptance` on `5326ecb` got past the payments gates (native-and-browser still running ~100min in) but the apache leg's warning sweep caught the `$mail_drafts_account` typo — fixed pending. Infra flake noted: `Provider settings storage checks` once failed on runner port-bind collision (33306), cleared on rerun — not code.
+
+**Local repro stack** (this VM): `~/bin/php` docker wrapper (`cwp-inventory-test:latest`); `docker exec cwpdb mariadb ...` resets `cwp_test` (creds cwp_test/local-ci-only, prefix `ci_`); installed site `test-runtime/web/existing` served at `127.0.0.1:8091` (owner@example.invalid / alice@example.invalid, 'Synthetic … passphrase 2026'). After editing `site/portal/views/*` or `site/admin/controllers/*` locally, `cp` the file into `test-runtime/web/existing/...` to exercise it. `tools/build.py --refresh` + commit `site/install/inventory.generated.php` after every `site/` change.
+
+**Next**: confirm sealed `Application acceptance` green, then final integration/security review of PR #266 → merge readiness report to owner (merge needs explicit approval; no live deploy, no live Authorize.net).
 ## Port-PR sequencing resolved — 2026-10-26
 
 PRs #257–#260 (vps-uncertainty, ssh-access, provider-catalog, domains ports → `devin/full-site-integration`) each carry a byte-identical copy of the shared `foundation/desk` + `foundation/notifications` layer (sha-verified across all four branches) — merge order is arbitrary and component code never conflicts. The only shared conflicts are the usual docs/config union files (AGENTS, CHANGELOG, STATUS, HANDOFF, SESSION_LOG, ROADMAP, integration queue, `application-tests.yml`, `provider-cloud-sites.yml`) plus each port's own new workflow. Still gated on hosted evidence — proceed 257→260 once runners free.

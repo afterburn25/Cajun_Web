@@ -1,5 +1,98 @@
 # Independent licensing integration review — 2026-10-28
 
+## Current integration addendum — 16:52 UTC
+
+GitHub `main` remains `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`.
+PR #266 advanced to exact head
+`d062bd5c3b78f3ec265ffc8a404e253013cfa924`, whose only shipping
+change is the direct `mail_drafts_account()` correction already present in the
+frozen integration tree. Prepared normal merge
+`ec6549713190c6a325c0ad4dd3e97f8885eb4053`, tree
+`608cb1a5c1e47ffad9eb7f422433eb434b151215`, has the prior prepared
+review head `bcfc2b5d` and Devin's exact head as its two parents. It retains the
+integration inventory because the integration licenses view includes the same
+bug fix plus the independently reviewed sender authorization work.
+
+The protected branch remains frozen at `74b5af3a` while sealed Application run
+`40705973907` completes. Build, Apache root/subfolder/rewrite, interrupted
+recovery and native database/upgrade/authorization jobs pass; the real HTTP and
+Chromium step is still running. All other 55 exact-candidate workflows pass,
+including the PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 recurring, domain-dispatch
+and WordPress matrices, both focused installed suites, and all package gates.
+No duplicate run was dispatched.
+
+The prepared refresh changes no shipping bytes from the frozen candidate. Its
+material delta is the owner-driven payment-schema preparation in six cumulative
+upgrade fixtures plus documentation and exact feature ancestry. Local 69 build
+guards, 283 artifact checks, canonical dependency/inventory locks, all 99
+workflow parses, documentation/link checks and whitespace pass. Fresh hosted
+CI remains mandatory after the ref moves; parent results are diagnostic only.
+
+PR #284's sandbox supply-chain hardening still conflicts with the candidate in
+exactly six files: the two sandbox workflows, their two Python runners, and the
+two status documents. Resolve the four security-sensitive files in favor of
+PR #284 and union the documents. No PR #266, #268 or #284 approval is recorded.
+Real Authorize.Net sandbox credentials/transactions, installed application
+recovery for those provider operations, a version above 1.25.0, actual
+published-v1.25-to-next-version upgrade/recovery, final retained artifacts,
+approved merge and exact-main acceptance remain release gates.
+
+## Current integration addendum — 14:46 UTC
+
+This addendum supersedes the older checkpoint values retained below. GitHub
+`main` remains `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`. The protected
+integration ref is frozen at `74b5af3a2f2dd50ad70f34ea211a5b5b973635af`,
+tree `3f13a533c139832d83e6fde057502e3d9d4e9e1f`. Its GitHub PR test
+merge `0c9f25e97c810eeb3fbca9eed784291d10530d78` has zero file changes
+from that head, so its results apply to the exact candidate tree.
+
+At this checkpoint 33 of 56 exact-candidate workflows are successful, 23 are
+queued/running and none has failed. Protected Application build is green;
+native/browser and Apache are running and recovery is queued. Exact-candidate
+software and financed-site focused installed suites pass 308 and 271 named
+HTTP/browser checks respectively, with empty PHP-diagnostic reports and clean
+fresh-install prerequisites. Downloaded evidence screenshots were inspected for
+desktop/mobile fit and legibility. No real provider request occurs in these
+suites.
+
+All three exact-candidate package workflows pass. FULL-PROJECT,
+COMPLETE-UPLOAD and UPDATE contain 6,120 / 2,956 / 2,943 members; direct
+extraction, CRC/member integrity, unsafe/case-colliding paths and nested ZIP
+refusal pass. The immutable published-v1.25 COMPLETE baseline hash verifies,
+and the candidate delta contains 104 changed-or-added shipping files with zero
+removed. These ephemeral development builds are not the final retained release
+assets.
+
+The integrated security corrections require product identity for modern
+software entitlements and restore the authorized finance-agreement sender
+lookup with CSRF, sender-grant, account-revision, tenant and unchanged-agreement
+regressions. The frozen predecessor run retained its original browser payment-
+schema and Apache mail-sender failures; the current run is the first combined
+hosted test of both fixes.
+
+PR #266 advanced during that run to test-only head
+`5326ecb8e6c33a3c4b77d8851e3d0c64d8ebace4`. An unattached normal
+two-parent refresh retains the integration's stronger published 1.5/1.6/1.7
+record-preservation helper and adds the missing current-install and 1.8/1.9/1.10
+owner-driven payment preparation. Its exact commit is
+`d43ce31e2ac60f4c9f01ef62c40c556d88426b08`, tree
+`aa475bf5449813fc2238f3ccde2b2d783ea08f28`. The integration ref will
+not move until the frozen protected run is terminal.
+
+Real Authorize.Net evidence remains blocked. The sandbox bootstrap sequence is
+PR #271 → #279 → #283 → #284. The final focused follow-up pins actions, keeps
+Playwright/Accept.js on a runner that never receives the transaction key, and
+uses a fresh standard-library-only transaction runner. The no-secret contracts
+pass locally; server-side `authorize-net-sandbox` main-only policy,
+environment-only credential scope, independent approval and real sandbox runs
+are unverified. No live charging, production switch or deployment is
+authorized.
+
+Remaining merge/release gates are the terminal frozen run, refreshed exact-
+candidate CI, independent approvals, real sandbox evidence, a version greater
+than 1.25.0, the actual populated published-v1.25 upgrade/recovery, retained
+final artifacts/checksums, approved merge, and post-merge `main` acceptance.
+
 ## Ownership and source
 
 The owner assigned this review to support the existing PR #266 implementation. After discovering a second active chat, the owner explicitly kept **Complete Licensing Integration** as the integration writer. This correction uses `codex/licensing-webhook-isolation`; it does not write `codex/licensing-integration-review`, Devin's feature branch, or `main`.

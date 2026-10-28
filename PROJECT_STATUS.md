@@ -1,5 +1,17 @@
 # CajunWebPro current status
 
+## 2026-10-28 — full-browser session-isolation repair prepared
+
+Frozen Application run `40705973907` passed build, Apache and recovery, and its native/browser job passed the native database phase before the browser process exited at `Form missing catalog_save ... view=login`. Complete job logs show every preceding support, catalog, provider and licensing check passed; the next software-commerce action borrowed the bootstrap owner cookie after the complete matrix had exceeded the application's real 30-minute idle limit. The integration candidate now gives both the software-commerce and immediately following financing suites fresh, suite-owned owner/buyer/foreign-client sessions through the real login forms. The production idle timeout and authorization checks are unchanged. Python syntax, whitespace, 69 build guards and 283 artifact-helper checks pass locally; exact hosted HTTP/Chromium execution remains required. Current PR #266 Application run `40728300754` is still preserved in progress and was not duplicated or cancelled.
+
+## 2026-10-28 — exact feature `d062bd5c` refresh prepared without moving CI
+
+PR #266 advanced from `5326ecb8` to exact head `d062bd5c3b78f3ec265ffc8a404e253013cfa924`. Its only shipping change is Devin's direct `mail_drafts_account()` repair and generated inventory update; the frozen integration candidate already contains the same repair plus the independently reviewed sender authorization regressions. Prepared merge `ec6549713190c6a325c0ad4dd3e97f8885eb4053` has both `bcfc2b5d` and `d062bd5c` as parents and preserves the combined inventory. The protected ref remains at `74b5af3a` while Application run `40705973907` finishes; no duplicate workflow was dispatched and Devin's branch was not modified.
+
+## 2026-10-28 — feature `5326ecb8` payment-upgrade fixtures reviewed
+
+PR #266 advanced by one test-only commit while exact integration candidate `74b5af3a` was in protected CI. The new feature delta prepares payments schema 2 through the real owner `payments_migrate` action before later payment-gated checks in cumulative upgrade fixtures. The integration candidate already uses the stronger retained-record helper for published 1.5/1.6/1.7 and the published-v1.24 continuation; the compatible union adds the missing current-install and 1.8/1.9/1.10 preparation without replacing those preservation checks. No shipping or generated-inventory bytes change. The running frozen acceptance remains preserved; refresh to exact feature ancestry will occur only after it is terminal.
+
 ## 2026-10-28 — feature `2c0579c4` frozen without overwriting integration fixes
 
 GitHub advanced PR #266 from reviewed `93bfa54f` to exact head `2c0579c4f1379505b1fb8a53c3f90905d3e5dcdc`. Its shipping correction explicitly loads the software-commerce migration before three studio lifecycle readiness guards; those exact controller bytes were already present in integration head `03c4f606`, so recording the new feature ancestry introduces no shipping-tree conflict. The feature-only generated inventory is not copied over the integration inventory, which also covers the independent product-validation and finance-mail corrections. Devin's branch remains untouched.

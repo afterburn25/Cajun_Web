@@ -71,11 +71,33 @@ def _license_card(soup, response, license_key):
 def run_browser(env, browser):
     root, qa, base, check = (env[k] for k in ['ROOT','QA','BASE','check'])
     soup, token, form_data, submit = (env[k] for k in ['soup','token','form_data','submit'])
-    admin, alice, bob = (env[k] for k in ['admin','alice','bob'])
     php=env['php']
     licenses=base+'/existing/admin/index.php?view=studio-licenses'
     catalog=base+'/existing/admin/index.php?view=catalog'
     portal=base+'/existing/portal/index.php?software=1'
+
+    # This suite runs near the end of the complete browser matrix, after the
+    # shared bootstrap sessions can legitimately exceed the 30-minute idle
+    # timeout. Establish suite-owned identities so full acceptance exercises
+    # software commerce instead of depending on an earlier module's cookies.
+    admin=requests.Session()
+    admin_login=submit(admin,base+'/existing/admin/index.php?view=login','login',{
+        'email':'owner@example.invalid','password':OWNER,
+    })
+    check('Software browser establishes a fresh isolated owner session',
+          admin_login.status_code==200 and 'Sales pipeline' in admin_login.text)
+    alice=requests.Session()
+    alice_login=submit(alice,base+'/existing/portal/index.php','login',{
+        'email':'alice@example.invalid','password':'Synthetic client passphrase 2026',
+    })
+    check('Software browser establishes a fresh isolated buyer session',
+          alice_login.status_code==200 and 'Welcome,' in alice_login.text)
+    bob=requests.Session()
+    bob_login=submit(bob,base+'/existing/portal/index.php','login',{
+        'email':'bob@example.invalid','password':'Synthetic client passphrase 2026',
+    })
+    check('Software browser establishes a fresh isolated foreign-client session',
+          bob_login.status_code==200 and 'Welcome,' in bob_login.text)
 
     # Prepare optional dependencies through their real owner forms so this
     # suite does not depend on another browser module having run first.
@@ -876,3 +898,4 @@ def run_browser(env, browser):
           and paid['license_key'] in reactivated_client.text
           and alice.get(download,timeout=25).status_code==200
           and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+    admin.close();alice.close();bob.close()

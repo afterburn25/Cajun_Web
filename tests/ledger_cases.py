@@ -38,6 +38,7 @@ def run_browser(env,browser):
     check('Fresh setup creates empty enabled real-payment ledger',db("SELECT value FROM fresh_settings WHERE name='invoice_ledger_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_invoice_payments')==[])
     admin=requests.Session();root=BASE+'/existing/admin/index.php';portal=BASE+'/existing/portal/index.php';url=root+'?view=invoice-payments';job=root+'?view=studio-job&id=1'
     submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
+    if 'Enable payment preparation' in admin.get(root+'?view=payments').text:submit(admin,root+'?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
     original=db('SELECT * FROM ci_studio_invoices');r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1','csrf':'invalid'});check('Ledger enablement rejects forged CSRF',not db("SELECT value FROM ci_settings WHERE name='invoice_ledger_schema_version'") and 'session expired' in r.text.lower())
     r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables ledger without editing prior invoices','Invoice payment history enabled' in r.text and db('SELECT * FROM ci_studio_invoices')==original)
     submit(admin,job,'studio_invoice',{'title':'Ledger design phase','amount':'1250.10','instructions':'Synthetic external payment instructions; do not send money.'});invoice=db("SELECT * FROM ci_studio_invoices WHERE title='Ledger design phase'")[0];iid=invoice['id'];target=url+'&invoice_id='+str(iid)

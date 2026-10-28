@@ -30,6 +30,9 @@ def run_browser(env,browser):
     globals().update(env);upgrade();url=BASE+'/existing/admin/index.php?view=payment-trials'
     admin=requests.Session();submit(admin,BASE+'/existing/admin/index.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=admin.get(url)
+    if 'Enable sandbox trials' not in r.text:
+        submit(admin,BASE+'/existing/admin/index.php?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
+        r=admin.get(url)
     if 'Enable sandbox trials' in r.text:r=submit(admin,url,'payments_trial_setup',{'owner_password':OWNER,'confirm':'1'})
     check('Owner sees sandbox history and truthful real-payment boundary',r.status_code==200 and 'Sandbox attempt history' in r.text and 'Test card data only' in r.text)
     check('Unauthenticated visitor cannot see sandbox trial data','Sandbox attempt history' not in requests.get(url).text)

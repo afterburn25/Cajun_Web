@@ -30,8 +30,31 @@ def run_browser(env,browser):
     env.setdefault('db',release_db)
     root,qa,base,check=(env[k] for k in ['ROOT','QA','BASE','check'])
     soup,token,form_data,submit=(env[k] for k in ['soup','token','form_data','submit'])
-    admin,alice,bob=(env[k] for k in ['admin','alice','bob'])
     php=env['php']
+
+    # Full acceptance reaches financing after the long general browser matrix
+    # and software-commerce checks. Use identities established at this suite
+    # boundary instead of borrowing bootstrap cookies that may have reached the
+    # application's real 30-minute idle limit.
+    admin=requests.Session()
+    admin_login=submit(admin,base+'/existing/admin/index.php?view=login','login',{
+        'email':'owner@example.invalid','password':'Synthetic owner passphrase 2026',
+    })
+    check('Financing browser establishes a fresh isolated owner session',
+          admin_login.status_code==200 and 'Sales pipeline' in admin_login.text)
+    alice=requests.Session()
+    alice_login=submit(alice,base+'/existing/portal/index.php','login',{
+        'email':'alice@example.invalid','password':'Synthetic client passphrase 2026',
+    })
+    check('Financing browser establishes a fresh isolated buyer session',
+          alice_login.status_code==200 and 'Welcome,' in alice_login.text)
+    bob=requests.Session()
+    bob_login=submit(bob,base+'/existing/portal/index.php','login',{
+        'email':'bob@example.invalid','password':'Synthetic client passphrase 2026',
+    })
+    check('Financing browser establishes a fresh isolated foreign-client session',
+          bob_login.status_code==200 and 'Welcome,' in bob_login.text)
+    env.update({'admin':admin,'alice':alice,'bob':bob})
 
     def fixture(operation,value):
         result=subprocess.run(
@@ -475,6 +498,7 @@ def run_browser(env,browser):
           p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     check('Financing portal has no uncaught browser script errors',not errors)
     context.close()
+    admin.close();alice.close();bob.close()
 
 
 def run_mail_draft_checks(env,offer,accounts):
