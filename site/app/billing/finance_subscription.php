@@ -27,7 +27,12 @@ function license_finance_subscription_replacement_contract(array $offer):array{
         $map=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=?',
             [$offer['schedule_id'],$period]);
         if(!$map){$offset=$period;break;}
-        $invoice=recurring_billing_invoice_validate($map,$doc);$balance=ledger_balance($invoice);
+        $validated=recurring_billing_invoice_validate($map,$doc);
+        $invoice=ledger_invoice((int)$validated['id']);
+        if(recurring_billing_invoice_snapshot($invoice)!==recurring_billing_invoice_snapshot($validated)){
+            throw new RuntimeException('Financing replacement invoice ledger ownership changed.');
+        }
+        $balance=ledger_balance($invoice);
         if($invoice['status']==='paid'&&(int)$balance['due_cents']===0)continue;
         $offset=$period;break;
     }
