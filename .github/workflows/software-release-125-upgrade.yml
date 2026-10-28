@@ -8,6 +8,7 @@ on:
       - 'site/config/defaults.php'
       - 'tools/build.py'
       - 'tests/software_release_125_upgrade.py'
+      - 'tests/software_release_125_harness_tests.py'
       - 'tests/organized_update_cases.py'
       - '.github/workflows/software-release-125-upgrade.yml'
   pull_request:
@@ -16,6 +17,7 @@ on:
       - 'site/config/defaults.php'
       - 'tools/build.py'
       - 'tests/software_release_125_upgrade.py'
+      - 'tests/software_release_125_harness_tests.py'
       - 'tests/organized_update_cases.py'
       - '.github/workflows/software-release-125-upgrade.yml'
   workflow_dispatch:
@@ -23,7 +25,7 @@ permissions:
   contents: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   published-125-upgrade:
@@ -65,7 +67,9 @@ jobs:
           print('run_gate='+('true' if tuple(map(int,parts))>(1,25,0) else 'false'))
           PY
       - name: Syntax-check future gate while release remains 1.25
-        run: python3 -m py_compile tests/software_release_125_upgrade.py tests/organized_update_cases.py
+        run: python3 -m py_compile tests/software_release_125_upgrade.py tests/organized_update_cases.py tests/software_release_125_harness_tests.py
+      - name: Verify isolated upgrade harness contracts
+        run: python3 tests/software_release_125_harness_tests.py
       - name: Record deferred gate
         if: steps.version.outputs.run_gate != 'true'
         run: echo "Published v1.25 -> next-release upgrade gate is armed; candidate remains ${{ steps.version.outputs.candidate }}."
@@ -117,6 +121,7 @@ jobs:
           name: software-published-125-upgrade-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             qa/software-release125-upgrade.json
+            qa/software-release125-progress.json
             qa/software-release125-*.log
             qa/organized-software-1.25*.json
           retention-days: 14

@@ -10,8 +10,17 @@ def token(response):
     n=BeautifulSoup(response.text,'html.parser').select_one('input[name=csrf]')
     return n['value']
 
-def run(web,base,check,qa,php,label,prefix,version):
-    folder='organized-'+version;root=web/folder;url=base+'/'+folder;shutil.copytree(ROOT/('test-runtime/released-'+version),root)
+def prepare_baseline(web, base, version, *, at_root=False):
+    root = web if at_root else web / ('organized-' + version)
+    url = base if at_root else base + '/organized-' + version
+    if at_root and root.exists() and any(root.iterdir()):
+        raise AssertionError('Root upgrade fixture requires an empty web directory')
+    shutil.copytree(ROOT / ('test-runtime/released-' + version), root, dirs_exist_ok=at_root)
+    return root, url
+
+
+def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
+    root,url=prepare_baseline(web,base,version,at_root=at_root)
     label+=' '+version
     session=requests.Session();r=session.get(url+'/install.php')
     password='Synthetic organized upgrade passphrase'
