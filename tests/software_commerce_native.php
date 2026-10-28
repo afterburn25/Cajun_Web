@@ -174,6 +174,23 @@ try{
     $unsafe->close();
     swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.2','Traversal ZIP must fail',$unsafePath,$password),
         'Software publisher rejects parent-directory ZIP paths');
+    swok(software_asset_member_name('folder/file.txt')==='folder/file.txt'
+        &&software_asset_member_name('folder/')==='folder/'
+        &&software_asset_member_name('C:/escape.txt')===null
+        &&software_asset_member_name('./relative.txt')===null
+        &&software_asset_member_name('folder//ambiguous.txt')===null
+        &&software_asset_member_name('folder/trailing. ')===null
+        &&software_asset_member_name('folder/CON.txt')===null
+        &&software_asset_member_name("control\nname.txt")===null,
+        'Software publisher accepts only canonical portable ZIP member names');
+    $collisionPath=$private.DIRECTORY_SEPARATOR.'synthetic-collision.zip';
+    $collision=new ZipArchive();
+    if($collision->open($collisionPath,ZipArchive::CREATE|ZipArchive::OVERWRITE)!==true)throw new RuntimeException('Collision ZIP fixture failed.');
+    $collision->addFromString('Readme.txt','first case');
+    $collision->addFromString('README.txt','second case');
+    $collision->close();
+    swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.2','Case collision ZIP must fail',$collisionPath,$password),
+        'Software publisher rejects case-colliding extraction paths');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_assets').' WHERE sku=?',['SOFTWARE-TEST'])->fetchColumn()===1,
         'Rejected package publications create no extra software asset rows');
 

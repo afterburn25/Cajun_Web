@@ -2,9 +2,11 @@
 
 ## Independent review correction — 2026-10-28
 
-The combined `codex/licensing-integration-review` lane includes current feature `9af42ba7`, prior review evidence `25e2d34f` and both focused corrections below. Its support-session regression separately verifies the private finance view's HTTP403 and posts a forged finance action through the real dispatcher, requiring an attributed denied audit event and no agreement or payment-request mutation. Exact combined-head installed execution remains pending.
+The combined `codex/licensing-integration-review` lane includes current feature `36721397`, prior review evidence `25e2d34f` and both focused corrections below. Its support-session regression separately verifies the private finance view's HTTP403 and posts a forged finance action through the real dispatcher, requiring an attributed denied audit event and no agreement or payment-request mutation. The single validation-rate-window delay precedes all combined post-payoff probes. Exact combined-head installed execution remains pending.
 
 Payoff is now correctly scoped: it permanently eliminates financing-related suspension but cannot erase an explicit owner deactivation. Validation and financing synchronization no longer silently reactivate a paid-off key; the owner may deliberately reactivate the same key and retained domain history. Domain binding and the default prohibition on resale/distribution continue after payoff.
+
+Customer software ZIP publication now accepts only canonical portable member names. Drive-qualified, dot/empty-segment, control-character, Windows-reserved/trailing-dot, nested-ZIP, special-file and case-colliding entries are refused before publication; stored ZIP bytes remain private and checksum-bound.
 
 The follow-up `codex/licensing-lifecycle-ordering` correction preserves financing `cancelled`, `reversal_recovery` and `replacing` states against delayed lifecycle events. A delayed failure also cannot downgrade `billing_suspended`; ordinary active/failure transitions still work. This retains manual catch-up eligibility and existing settlement/replacement fences without changing payment verification, ledger math or payoff policy. Forty-five actual-service cases pass with isolated database doubles; native gateway concurrency remains a separate gate.
 

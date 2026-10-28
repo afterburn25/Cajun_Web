@@ -1,3 +1,8 @@
+## Unreleased — canonical customer software ZIP members
+
+- Reject drive-qualified, dot-segment, empty-segment, control-character, Windows-reserved/trailing-dot and case-colliding software archive members before publication, in addition to traversal, nested ZIP and special-file checks.
+- Add native regressions for portable canonical member names and case-insensitive extraction collisions.
+
 ## Unreleased — preserve owner control after financing payoff
 
 - Keep permanent payoff limited to financing-based suspension; an explicit owner deactivation remains authoritative and validation never silently reactivates it.

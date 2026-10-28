@@ -4,6 +4,7 @@ import json
 import os
 import re
 import subprocess
+import time
 from urllib.parse import parse_qs, urlparse
 
 import requests
@@ -325,6 +326,10 @@ def run_browser(env,browser):
     check('Paid-off financing leaves published project release permanently downloadable',
           alice.get(release_url,timeout=25).status_code==200)
 
+    # api/validate.php allows 10 requests per minute per IP; the flow has
+    # already used eight. Start the full post-payoff security sequence in one
+    # fresh window so its six probes exercise policy rather than HTTP 429.
+    time.sleep(61)
     fixture('force-inactive-paid-off',offer)
     check('Synthetic paid-off record begins explicitly owner-inactive',
           env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])

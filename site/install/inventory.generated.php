@@ -199,7 +199,7 @@ function setup_expected_files(): array { return [
     'app/licenses/legacy.php'=>'875542e05b93685659f0be81115b143c5ef224dde1515f4cbf9cf021272ee5dd',
     'app/licenses/service.php'=>'106030b944da0fa4f78985743e296c33a1dfc16b5a46c14714695efaa5032da4',
     'app/licenses/software_asset_access.php'=>'145c3fdd9de18dbd6ab313e4ef5d7695cd7c3c487acad5ed58c903d58715844e',
-    'app/licenses/software_assets.php'=>'e2a30d8ffb809f4bd4d9ebfa232238ec67f36847c56f6b18836a9ba055f3faed',
+    'app/licenses/software_assets.php'=>'53a38bb3b51e321f7a50c9e43a96372702f6eb8618536ecf7e87b72d883892fe',
     'app/licenses/software_fulfill.php'=>'c161360a58cf994c884b00cde78f091487c1d8f70ad186a2e2d6fb4bb1a43a63',
     'app/licenses/software_grants.php'=>'8908c5fd836289fa484d25e28a400c9006a6a0a9e39c20eceddfa4b4d6ded2ef',
     'app/licenses/software_license_policy.php'=>'a369fe95acb531bf6756e055d7d8320e72a5467ccfd0bd047997ae2ada469497',
