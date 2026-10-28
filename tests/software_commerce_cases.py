@@ -804,11 +804,13 @@ def run_browser(env, browser):
     suspend_form=next(
         form for form in soup(register).select('form')
         if form.select_one('input[name=action]') is not None
-        and form.select_one('input[name=action]').get('value')=='studio_license_deactivate'
+        and form.select_one('input[name=action]').get('value')=='software_license_lifecycle'
         and form.select_one('input[name=id]') is not None
         and form.select_one('input[name=id]').get('value')==str(license_id)
+        and form.select_one('input[name=transition]') is not None
+        and form.select_one('input[name=transition]').get('value')=='suspend'
     )
-    suspended=admin.post(licenses,data=form_data(suspend_form),timeout=25)
+    suspended=admin.post(licenses,data={**form_data(suspend_form),'reason':'Synthetic acceptance suspension'},timeout=25)
     suspended_client=alice.get(portal,timeout=25)
     check('Owner suspension is shown distinctly and blocks private software download',
           suspended.status_code==200
@@ -819,11 +821,13 @@ def run_browser(env, browser):
     reactivate_form=next(
         form for form in soup(register).select('form')
         if form.select_one('input[name=action]') is not None
-        and form.select_one('input[name=action]').get('value')=='studio_license_reactivate'
+        and form.select_one('input[name=action]').get('value')=='software_license_lifecycle'
         and form.select_one('input[name=id]') is not None
         and form.select_one('input[name=id]').get('value')==str(license_id)
+        and form.select_one('input[name=transition]') is not None
+        and form.select_one('input[name=transition]').get('value')=='resume'
     )
-    reactivated=admin.post(licenses,data=form_data(reactivate_form),timeout=25)
+    reactivated=admin.post(licenses,data={**form_data(reactivate_form),'reason':'Synthetic acceptance resume'},timeout=25)
     reactivated_client=alice.get(portal,timeout=25)
     check('Owner reactivation restores the same software entitlement without repurchase',
           reactivated.status_code==200
