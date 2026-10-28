@@ -194,14 +194,19 @@ function license_finance_charge_webhook_review(array $details,string $transactio
     if(!software_anet_one_time_charge_confirmed($details,$transactionId,$invoice,(int)$charge['amount_cents']))return 'finance_payment_mismatch';
     if((string)$charge['status']==='paid'&&(string)$charge['transaction_id']===$transactionId)return 'finance_payment_replay';
     if(in_array((string)$charge['status'],['processing','uncertain','review'],true)){
-        staff_locked(fn()=>staff_transaction(function()use($charge,$transactionId):void{
+        return staff_locked(fn()=>staff_transaction(function()use($charge,$transactionId):string{
             $current=one('SELECT * FROM '.table('license_finance_charges').' WHERE id=? FOR UPDATE',[$charge['id']]);
-            if(!$current||$current['status']==='paid')return;
+            // A delayed capture cannot reopen a completed outcome or bind an older
+            // transaction to a newer attempt that reused this invoice's charge row.
+            if(!$current||!in_array((string)$current['status'],['processing','uncertain','review'],true)
+                ||!hash_equals((string)$current['request_key'],(string)$charge['request_key']))return 'finance_payment_replay';
+            $origin=one('SELECT request_key FROM '.table('license_finance_charge_attempts').' WHERE transaction_id=? FOR UPDATE',[$transactionId]);
+            if($origin&&!hash_equals((string)$origin['request_key'],(string)$current['request_key']))return 'finance_payment_replay';
             if($current['transaction_id']!==null&&!hash_equals((string)$current['transaction_id'],$transactionId))throw new RuntimeException('Financing charge retains a different gateway transaction.');
             query('UPDATE '.table('license_finance_charges').' SET status=?,transaction_id=?,updated_at=? WHERE id=?',
                 ['review',$transactionId,gmdate('Y-m-d H:i:s'),$current['id']]);
+            return 'finance_payment_review';
         }));
-        return 'finance_payment_review';
     }
     return 'finance_payment_replay';
 }

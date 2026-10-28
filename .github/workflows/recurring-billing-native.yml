@@ -2,9 +2,9 @@ name: Native recurring agreement and period invoice checks
 on:
   push:
     branches: [main, feature/software-license-commerce-20261025, codex/recurring-billing-records, codex/twentyi-recurring-eligibility, codex/twentyi-recurring-ui, codex/twentyi-service-orders, codex/twentyi-catalog-controls, codex/twentyi-catalog-readiness]
-    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'tests/finance_capture_snapshot_native.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
-    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/license_financ*.php', 'tests/finance_capture_snapshot_native.php', 'site/app/licenses/financ*.php', 'site/app/licenses/finance_installments.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -53,6 +53,16 @@ jobs:
       - name: Allow isolated MySQL audit-failure fixture triggers
         if: matrix.database.label == 'mysql-8.4'
         run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Preserve newer one-time finance outcomes under delayed captures
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-recurring-test sh -ec '
+              mkdir -p qa
+              php -l tests/finance_capture_snapshot_native.php
+              php tests/finance_capture_snapshot_native.php site/app/billing/finance_charge.php fc_ci_capture_ > qa/finance-capture-snapshot-native-results.json
+              cat qa/finance-capture-snapshot-native-results.json
+            '
       - name: Native consent and unique period invoices
         run: |
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
@@ -91,6 +101,7 @@ jobs:
           name: recurring-billing-native-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
           path: |
             qa/recurring-billing-native-results.json
+            qa/finance-capture-snapshot-native-results.json
             qa/service-orders-native-results.json
             qa/service-orders-links-native-results.json
             qa/service-orders-link-views-native-results.json
