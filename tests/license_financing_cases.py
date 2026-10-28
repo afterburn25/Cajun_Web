@@ -340,10 +340,15 @@ def run_browser(env,browser):
           and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
 
     licenses=base+'/existing/admin/index.php?view=studio-licenses'
-    chosen_form(admin,licenses,'studio_license_reactivate','id',license_id,{})
+    reactivated_response=chosen_form(admin,licenses,'studio_license_reactivate','id',license_id,{})
+    reactivated_row=env['db']('SELECT license_key,is_active FROM ci_website_licenses WHERE id=?',[license_id])
+    if reactivated_row!=[{'license_key':license_key,'is_active':1}]:
+        notices=[' '.join(node.get_text(' ',strip=True).split())
+                 for node in soup(reactivated_response).select('.notice')]
+        print('paid-off owner-reactivation diagnostic: status=%s url=%s notices=%s'
+              % (reactivated_response.status_code,reactivated_response.url,notices[:5]))
     check('Owner can explicitly reactivate the same paid-off license key',
-          env['db']('SELECT license_key,is_active FROM ci_website_licenses WHERE id=?',[license_id])
-              ==[{'license_key':license_key,'is_active':1}])
+          reactivated_row==[{'license_key':license_key,'is_active':1}])
     wrong_recovery=requests.post(validate,json={'license_key':license_key,'domain':'paid-off-probe.example'},timeout=25)
     check('Paid-off owner reactivation does not weaken domain binding',
           wrong_recovery.status_code==200

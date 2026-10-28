@@ -52,12 +52,29 @@ function license_financing_prepare(#[\SensitiveParameter]string $password):void{
         recurring_billing_require();
         $version=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['license_financing_schema_version'])['value']??'');
         if(!in_array($version,['','1','2'],true))throw new RuntimeException('Unknown financed-license storage version.');
+        $pending=(string)(setting('license_financing_schema_pending')??'');
+        if(!in_array($pending,['','2'],true))throw new RuntimeException('Unknown financed-license setup history.');
         $schema=license_financing_schema(config()['db']['prefix']);
         $present=license_financing_storage_table_present('license_financing');
         $grantsPresent=license_financing_storage_table_present('license_financing_rights_grants');
         if(in_array($version,['1','2'],true)&&!$present)throw new RuntimeException('Established financed-license storage is missing. Restore the original database.');
         if($version==='2'&&!$grantsPresent)throw new RuntimeException('Established financing rights-grant storage is missing. Restore the original database.');
-        if($version===''&&($present||$grantsPresent))throw new RuntimeException('Unrecognized financed-license storage exists. No data was adopted.');
+        if($version===''&&$pending===''&&($present||$grantsPresent))throw new RuntimeException('Unrecognized financed-license storage exists. No data was adopted.');
+        if($version===''&&$pending===''){
+            staff_transaction(function()use($actor):void{
+                save_setting('license_financing_schema_pending','2');
+                license_audit((int)$actor['id'],'financing.setup.begin','Financed-site licensing v2 preparation started');
+            });
+            $pending='2';
+        }
+        if($version===''&&$pending==='2'){
+            foreach(['license_financing','license_financing_rights_grants'] as $name){
+                if(license_financing_storage_table_present($name)
+                    &&(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn()!==0){
+                    throw new RuntimeException('Interrupted financed-license preparation contains data. Preserve and review the database.');
+                }
+            }
+        }
         if(!$present)db()->exec($schema['license_financing']);
         if(!$grantsPresent)db()->exec($schema['license_financing_rights_grants']);
         license_financing_validate_schema();
@@ -67,6 +84,7 @@ function license_financing_prepare(#[\SensitiveParameter]string $password):void{
                 throw new RuntimeException('Unrecognized financed-license records exist. No data was adopted.');
             }
             save_setting('license_financing_schema_version','2');
+            save_setting('license_financing_schema_pending','');
             license_audit((int)$actor['id'],$version==='1'?'financing.upgrade':'financing.setup',
                 $version==='1'
                     ?'Financed-site licensing upgraded additively from v1 to v2 rights evidence storage'

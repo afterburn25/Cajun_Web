@@ -11,13 +11,31 @@ require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
 rb_staff();
 save_setting('license_schema_version','3');
 save_setting('license_invoice_cutover','0');
+
+// Simulate three process stops after the durable pending marker and one DDL
+// statement. Re-running owner setup must finish only these recognized,
+// still-empty preparations; unmarked pre-existing tables remain fail-closed.
+save_setting('license_financing_schema_pending','2');
+$financingSchema=license_financing_schema(config()['db']['prefix']);
+db()->exec($financingSchema['license_financing']);
 license_financing_prepare($password);
+
+save_setting('license_finance_offers_schema_pending','1');
+$offerSchema=license_finance_offers_schema(config()['db']['prefix']);
+db()->exec($offerSchema['license_finance_offers']);
 license_finance_offers_prepare($password);
+
+save_setting('license_finance_gateway_schema_pending','3');
+$gatewaySchema=license_finance_gateway_schema(config()['db']['prefix']);
+db()->exec($gatewaySchema['license_finance_charges']);
 license_finance_gateway_prepare($password);
 rb_ok('Financing native setup creates v3 gateway replacement and reversal storage',
     license_financing_feature_state()===true&&license_finance_offers_ready()&&license_finance_gateway_ready()
     &&setting('license_finance_gateway_schema_version')==='3'
     &&license_finance_gateway_table_present('license_finance_reversals'));
+rb_ok('Recognized empty interrupted financing setups resume and clear all durable pending markers',
+    setting('license_financing_schema_pending')===''&&setting('license_finance_offers_schema_pending')===''
+    &&setting('license_finance_gateway_schema_pending')==='');
 
 // A stale owner credential must be checked by the commit helper itself, before
 // looking up or mutating payment/subscription records after remote readback.

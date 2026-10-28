@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — interrupted financing setup recovery
+
+Independent migration review found that a process stop after financed-license, finance-agreement or finance-gateway `CREATE TABLE` but before the version commit left an empty table that every retry rejected as unrecognized. Each owner-gated setup now writes an audited pending marker before DDL, resumes only its recognized still-empty partial setup, validates the completed schema and clears the marker with the version commit. Unmarked tables and partial tables containing data still fail closed for owner review. Native regression coverage simulates one interrupted DDL in all three layers; exact hosted PHP/database execution remains required.
+
 ## 2026-10-28 — high-severity payoff/owner-control correction
 
 Independent source review found that a paid-off financing plan blocked every owner whole-license deactivation and validation silently reactivated an inactive paid-off key. Payoff must permanently remove only financing suspension, not owner authority for fraud, breach or unauthorized resale. The integration candidate now preserves explicit owner deactivation, keeps the paid-off financing verdict immutable, and permits deliberate reactivation of the same key. Native and installed-browser regressions are updated; hosted execution remains required. Domain binding and default no-resale/no-distribution rights are unchanged.

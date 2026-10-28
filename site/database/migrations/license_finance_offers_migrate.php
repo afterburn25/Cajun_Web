@@ -33,10 +33,23 @@ function license_finance_offers_prepare(#[\SensitiveParameter]string $password):
         if(!payments_ready()||!ledger_ready())throw new RuntimeException('Prepare payment links and invoice ledger first.');
         $version=(string)(setting('license_finance_offers_schema_version')??'');
         if(!in_array($version,['','1'],true))throw new RuntimeException('Unknown finance-offer storage version.');
+        $pending=(string)(setting('license_finance_offers_schema_pending')??'');
+        if(!in_array($pending,['','1'],true))throw new RuntimeException('Unknown finance-offer setup history.');
         $present=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
             [config()['db']['prefix'].'license_finance_offers']);
         if($version==='1'&&!$present)throw new RuntimeException('Established finance-offer storage is missing. Restore the original database.');
-        if($version===''&&$present)throw new RuntimeException('Unrecognized finance-offer storage exists. No data was adopted.');
+        if($version===''&&$pending===''&&$present)throw new RuntimeException('Unrecognized finance-offer storage exists. No data was adopted.');
+        if($version===''&&$pending===''){
+            staff_transaction(function()use($actor):void{
+                save_setting('license_finance_offers_schema_pending','1');
+                license_audit((int)$actor['id'],'financing.offers.setup.begin','Client finance-agreement storage preparation started');
+            });
+            $pending='1';
+        }
+        if($version===''&&$pending==='1'&&$present
+            &&(int)query('SELECT COUNT(*) FROM '.table('license_finance_offers'))->fetchColumn()!==0){
+            throw new RuntimeException('Interrupted finance-offer preparation contains data. Preserve and review the database.');
+        }
         if(!$present)db()->exec(license_finance_offers_schema(config()['db']['prefix'])['license_finance_offers']);
         license_finance_offers_validate_schema();
         staff_transaction(function()use($actor):void{
@@ -45,6 +58,7 @@ function license_finance_offers_prepare(#[\SensitiveParameter]string $password):
                     throw new RuntimeException('Unrecognized finance-offer records exist. No data was adopted.');
                 }
                 save_setting('license_finance_offers_schema_version','1');
+                save_setting('license_finance_offers_schema_pending','');
                 license_audit((int)$actor['id'],'financing.offers.setup','Additive client finance-agreement storage verified');
             }
         });

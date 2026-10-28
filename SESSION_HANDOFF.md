@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — recover interrupted financing setup
+
+The three financing setup migrations now persist an owner-audited pending marker before nontransactional DDL. A retry may resume only that exact recognized preparation while every existing partial table is empty; it validates all schema/indexes and clears the marker atomically with the version. Unmarked tables or partial tables containing records remain blocked for manual review. Run the updated financing native/source-contract lanes on the exact integration head before accepting this recovery fix.
+
 ## 2026-10-28 — payoff no longer overrides owner license control
 
 Treat the prior auto-reactivation behavior as a high-severity commercial-control defect. A paid-off plan remains permanently free of financing suspension, but `website_licenses.is_active` is again an independent owner decision: validation does not self-heal it and payoff synchronization does not rewrite it. Updated native/browser cases prove owner deactivate/reactivate on the same key while financing remains `paid_off`; standalone domain removal remains blocked and replacement remains available. Run the exact-head hosted matrix before accepting this correction.

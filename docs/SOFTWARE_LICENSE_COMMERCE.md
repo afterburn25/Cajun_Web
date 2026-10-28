@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Interrupted financing setup recovery — 2026-10-28
+
+Financed-license, customer finance-agreement and finance-gateway setup each record an audited pending marker before issuing nontransactional DDL. A retry resumes only its matching recognized preparation and only if every already-created table remains empty. The completed schema and indexes are validated before the version is committed and the pending marker is cleared. Unmarked tables or partial storage containing records are preserved and rejected for owner review rather than adopted.
+
 ## Independent review correction — 2026-10-28
 
 The combined `codex/licensing-integration-review` lane includes current feature `36721397`, prior review evidence `25e2d34f` and both focused corrections below. Its support-session regression separately verifies the private finance view's HTTP403 and posts a forged finance action through the real dispatcher, requiring an attributed denied audit event and no agreement or payment-request mutation. The single validation-rate-window delay precedes all combined post-payoff probes. Exact combined-head installed execution remains pending.

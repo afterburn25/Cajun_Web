@@ -121,6 +121,13 @@ fc_ok(str_contains($coreFinanceMigration,"license_financing_schema_version','2'"
     &&str_contains($coreFinanceMigration,"['','1','2']"),
     'Core financed-license storage upgrades v1 additively to v2 rights evidence');
 
+$offerMigration=fc_file('site/database/migrations/license_finance_offers_migrate.php');
+fc_ok(str_contains($coreFinanceMigration,'license_financing_schema_pending')
+    &&str_contains($coreFinanceMigration,'financing.setup.begin')
+    &&str_contains($offerMigration,'license_finance_offers_schema_pending')
+    &&str_contains($offerMigration,'financing.offers.setup.begin'),
+    'Core financing and agreement setup retain explicit interrupted-preparation markers');
+
 $financeSchema=fc_file('site/database/schema/license_finance_gateway_schema.php');
 $financeMigration=fc_file('site/database/migrations/license_finance_gateway_migrate.php');
 $financeSubscription=fc_file('site/app/billing/finance_subscription.php');
@@ -136,6 +143,9 @@ fc_ok(str_contains($financeMigration,"license_finance_gateway_schema_version','3
     &&str_contains($financeMigration,'license_finance_gateway_upgrade_v3')
     &&str_contains($financeMigration,"['','1','2','3']"),
     'Finance gateway storage upgrades existing v1 or v2 data additively to v3');
+fc_ok(str_contains($financeMigration,'license_finance_gateway_schema_pending')
+    &&str_contains($financeMigration,'financing.gateway.setup.begin'),
+    'Finance gateway setup retains an explicit interrupted-preparation marker');
 fc_ok(str_contains($financeMigration,"setting('license_finance_gateway_schema_version')!=='3'")
     &&str_contains($financeMigration,'replacement_count')
     &&str_contains($financeMigration,'license_finance_reversals'),

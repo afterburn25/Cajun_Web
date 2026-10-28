@@ -1,3 +1,9 @@
+## Unreleased — recover interrupted financing setup
+
+- Record audited pending markers before financed-license, finance-agreement and finance-gateway DDL, then safely resume only recognized empty partial setups.
+- Keep unmarked or populated partial storage fail-closed and clear each marker only with its verified schema-version commit.
+- Add native and source-contract regressions for interruption after the first table creation in all three setup layers.
+
 ## Unreleased — canonical customer software ZIP members
 
 - Reject drive-qualified, dot-segment, empty-segment, control-character, Windows-reserved/trailing-dot and case-colliding software archive members before publication, in addition to traversal, nested ZIP and special-file checks.
