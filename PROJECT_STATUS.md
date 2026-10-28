@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — isolated licensing goal checkpoint
+
+The reviewed checkpoint is preserved on `codex/licensing-goal-review-20261028` after a concurrent integration writer advanced the shared branch. Its shipping tree matches inspected integration `98de3e6a`; tests/docs differ. The combined three-package candidate is verified, but hosted acceptance, real sandbox, independent approval and release gates remain incomplete. [Exact source, evidence and owner actions](docs/PR266_GOAL_CHECKPOINT_2026_10_28.md). PR271 sandbox registration is ready for owner/Devin review; production payments/deployment remain disabled.
+
 ## 2026-10-28 — combined independent licensing corrections
 
 The integration writer reviewed and incorporated PR269 webhook isolation and PR270 delayed-event safeguards sequentially on `codex/licensing-integration-review`, preserving recovery/owner-reauth fixes and both histories. All55 service regressions pass in normal and no-INI PHP8.4 modes on the combined tree; native/browser acceptance remains pending. Sandbox registration is separately proposed in [PR271](https://github.com/afterburn25/Cajun_Web/pull/271) and requires reviewed main integration before owner sandbox execution. [Evidence and release gates](docs/PR266_INTEGRATION_ACCEPTANCE.md).

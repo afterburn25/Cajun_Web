@@ -1,0 +1,43 @@
+{
+  "source_commit": "b56dd3148cdb4792843363849b65a204644f74ad",
+  "passed": true,
+  "scope": "Candidate package bytes only; not release, installed upgrade, Linux/browser or real gateway acceptance",
+  "artifacts": [
+    {
+      "artifact": "CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+      "members": 2956,
+      "sha256": "d7c70738aa0a30afe3f58085f1b0864496139c7a9cde6360420f7e802f0c2ebc",
+      "direct_extract": true,
+      "nested_zip": false,
+      "crc": true
+    },
+    {
+      "artifact": "CajunWebPro-1.25.0-FULL-PROJECT.zip",
+      "members": 6107,
+      "sha256": "6d2d28c96f1fc86cef2cc17c40e34cade1e577b9682619e569620edb1a625377",
+      "direct_extract": true,
+      "nested_zip": false,
+      "crc": true
+    },
+    {
+      "artifact": "CajunWebPro-1.25.0-UPDATE.zip",
+      "members": 2943,
+      "sha256": "8fda787c16a44f8711fb745b434a2a07c06ee7dc54fe6562caa6e29985a65299",
+      "direct_extract": true,
+      "nested_zip": false,
+      "crc": true
+    }
+  ],
+  "shipping_tree": "458c1db0ed7d1a537c7e6f436097a4ec2d6eb60d",
+  "same_shipping_tree_as": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+  "build_attempts": [
+    {
+      "outcome": "interrupted by environment disconnect",
+      "passed": false
+    },
+    {
+      "outcome": "resumed build passed",
+      "exit_code": 0
+    }
+  ]
+}

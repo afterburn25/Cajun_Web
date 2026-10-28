@@ -1,0 +1,54 @@
+{
+  "source": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+  "runs": [
+    {
+      "id": 40654680642,
+      "name": "Native assigned-package document roots checks",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+      "url": "https://github.com/afterburn25/Cajun_Web/actions/runs/40654680642"
+    },
+    {
+      "id": 40654680552,
+      "name": "License financing contract checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+      "url": "https://github.com/afterburn25/Cajun_Web/actions/runs/40654680552"
+    },
+    {
+      "id": 40654680487,
+      "name": "Repository checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+      "url": "https://github.com/afterburn25/Cajun_Web/actions/runs/40654680487"
+    },
+    {
+      "id": 40654680493,
+      "name": "Native recurring agreement and period invoice checks",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+      "url": "https://github.com/afterburn25/Cajun_Web/actions/runs/40654680493"
+    },
+    {
+      "id": 40654680554,
+      "name": "License financing focused installed acceptance",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+      "url": "https://github.com/afterburn25/Cajun_Web/actions/runs/40654680554"
+    },
+    {
+      "id": 40654680402,
+      "name": "Software and financing webhook isolation",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "98de3e6af79f6de7414c01be1bd9f845b3a30c0c",
+      "url": "https://github.com/afterburn25/Cajun_Web/actions/runs/40654680402"
+    }
+  ],
+  "scope": "Last inspected source snapshot; superseded canceled runs do not certify the current integration head"
+}
