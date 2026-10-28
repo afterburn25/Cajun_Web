@@ -75,6 +75,8 @@ $plan=license_financing_sync($licenseId);
 rb_ok('Signed zero-down financing begins active on the same website license',
     ($plan['state']??'')==='active'&&(int)license_get($licenseKey)['id']===$licenseId);
 
+require __DIR__.'/license_finance_webhook_native_cases.php';
+
 // A zero-down agreement has no initial invoice to collect. Signing it must
 // not depend on payment-link storage being enabled.
 $zeroKey=license_create(1,'WEBSITE-FINANCE-ZERO-NOPAY',1,false,null);
