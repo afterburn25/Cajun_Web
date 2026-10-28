@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Customer domain cooldown ordering — 2026-10-28
+
+Customer domain changes are serialized under the license row lock. When replacement-internal deactivation and a later standalone deactivation have the same second-resolution timestamp, their audit IDs determine order: only a replacement event recorded after its internal deactivation is exempt. Timestamp age still determines cooldown expiry. This closes the same-second replace/deactivate/add bypass without changing same-domain recovery, owner overrides, disabled/expired cooldowns or installation limits. Twelve native service cases and a supported four-lane PHP/database workflow accompany the correction.
+
 ## Current integration refresh — 2026-10-28
 
 The independent integration lane now includes exact PR #266 feature head `726fc7db`. Its unavailable-agreement path resolves the customer-owned finance row before emitting the portal layout, so foreign or missing agreement identifiers return the intended private HTTP 404 without a headers-already-sent warning. Installed tenant-isolation acceptance requires that 404 together with `Cache-Control: no-store, private` and `Referrer-Policy: no-referrer`. The generated installer inventory is refreshed for the combined bytes. This refresh still requires exact-head installed and package acceptance.

@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — integrate focused domain-cooldown correction
+
+The integration lane now includes exact PR #272 head `9eecf573`, stacked after #269/#270. `software_grant_recent_deactivation_blocks_add()` compares serialized audit IDs so equal-second replacement and later standalone deactivation events cannot be confused. The correction retains same-domain recovery, owner override, disabled/expired cooldown and the installation cap; 12 native service cases and a dynamic-port PHP8.2/8.4 × MariaDB/MySQL workflow are included. Run the new exact combined head rather than accepting #272's isolated evidence as combined acceptance.
+
 ## 2026-10-28 — feature head refreshed without overwriting Devin
 
 PR #266 advanced by two commits to `726fc7db`. `codex/licensing-integration-review` normal-merges that exact head, preserving Devin's 404-before-layout correction for unavailable or foreign finance agreements and regenerating the combined installer inventory. The installed foreign-customer regression now requires HTTP404 plus `no-store, private` and `no-referrer`, not merely absent agreement text. Earlier exact-parent runs do not certify this merge. Continue only the new combined-head workflows; do not duplicate pending CI. The financing owner-reactivation browser diagnostic, complete PHP/database/browser/package matrices, independent review, real sandbox, next-version upgrade and merged-main gates remain open.

@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — customer domain cooldown bypass correction integrated
+
+Focused PR #272 reproduced a customer restriction bypass: with a one-install entitlement and 24-hour cooldown, replace A with B, deactivate B and register C could succeed when the replacement and standalone deactivation shared the same second-resolution timestamp. The combined integration candidate now uses audit IDs already serialized by the license lock to distinguish event order while retaining timestamp-based cooldown expiry, same-domain recovery and owner overrides. The exact #272 source, 12 native cases and focused four-lane workflow are merged into the review lane; fresh combined-head execution remains required.
+
 ## 2026-10-28 — refreshed to Devin financing 404 repair
 
 PR #266 advanced from `36721397` to `726fc7db` with a focused customer-financing error-path correction and its generated inventory hash. The separate integration lane normal-merges that exact feature head: an unavailable or foreign finance agreement now resolves before layout output and returns the intended HTTP 404 without a headers-already-sent warning. Installed tenant-isolation acceptance now requires that 404 plus the existing private no-store/no-referrer headers, rather than passing on absence of agreement text alone. Devin's branch remains untouched. Combined exact-head hosted acceptance is required; no prior parent run certifies this refresh.

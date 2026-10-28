@@ -1,3 +1,9 @@
+## Unreleased — customer domain cooldown event ordering
+
+- Prevent a replace/deactivate/add sequence within one database-second from bypassing the configured customer domain-move cooldown.
+- Use serialized audit IDs to distinguish replacement-internal deactivation from a later standalone deactivation while retaining timestamp-based expiry, same-domain recovery and owner overrides.
+- Add 12 native service regressions and a PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 focused workflow.
+
 ## Unreleased — refresh current PR266 financing portal behavior
 
 - Merge feature head `726fc7db` into the separate integration lane without changing Devin's branch.
