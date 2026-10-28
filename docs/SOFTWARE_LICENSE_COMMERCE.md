@@ -1,5 +1,9 @@
 # Software licenses, purchases and unified client portal — implementation contract
 
+## Independent review correction — 2026-10-28
+
+The focused `codex/licensing-webhook-isolation` correction keeps optional financing from interrupting software capture/refund/void notification routing. Finance storage readiness is checked before capture lookup; refund/void ownership is resolved before finance production settings are required. Matched financing transactions retain the existing payment and activation gates. Ten isolated actual-service cases pass locally. [Source, findings, matrix and remaining release gates](CODEX_LICENSING_REVIEW_2026_10_28.md). This is proposed correction evidence, not merged application or real gateway certification.
+
 **Owner request:** October 25, 2026. This branch is an independently staged feature request; it is **not merged, shipped or deployed**. `main` is the authoritative production source. Devin remains integration/release lead. Avoid editing Devin's integration branch and require review of shared billing/auth/schema/portal changes.
 
 ## Existing functionality to retain (verified in `main` source)
