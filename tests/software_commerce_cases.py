@@ -49,7 +49,7 @@ def _action_form(soup, response, action, *, product_id=None, asset_id=None, invo
             if not invoice or invoice.get('value') != str(invoice_id):
                 continue
         if license_id is not None:
-            license_input=form.select_one('input[name=id]')
+            license_input=form.select_one('input[name=license_id], input[name=id]')
             if not license_input or license_input.get('value') != str(license_id):
                 continue
         if transition is not None:
@@ -58,6 +58,14 @@ def _action_form(soup, response, action, *, product_id=None, asset_id=None, invo
                 continue
         return form
     raise AssertionError('Software form missing '+action)
+
+
+def _license_card(soup, response, license_key):
+    cards=[card for card in soup(response).select('article.workspace-card')
+           if any(code.get_text(strip=True)==license_key for code in card.select('code'))]
+    if len(cards)!=1:
+        raise AssertionError('Expected exactly one software card for the owned license')
+    return cards[0]
 
 
 def run_browser(env, browser):
@@ -540,13 +548,14 @@ def run_browser(env, browser):
           db("SELECT COUNT(*) AS n FROM ci_audit WHERE action='license.validate'")==[{'n':0}])
 
     owned=alice.get(portal,timeout=25)
+    owned_card=_license_card(soup,owned,paid['license_key']).get_text(' ',strip=True)
     check('Paid software portal exposes owned license and approved download',
           'SOFTWARE-HTTP-ACCEPT' in owned.text
           and 'Synthetic browser acceptance download' in owned.text
-          and 'software-http.example' in owned.text
-          and 'Installations: 1 / 2' in owned.text
-          and 'Add installation domain' in owned.text
-          and 'Updates: through ' in owned.text)
+          and 'software-http.example' in owned_card
+          and 'Installations: 1 / 2' in owned_card
+          and 'Add installation domain' in owned_card
+          and 'Updates: through ' in owned_card)
     download_links=[a for a in soup(owned).select('a[href*="api/software-download.php"]') if 'Synthetic browser acceptance download' in a.get_text(' ',strip=True)]
     check('My Software shows one verified release link with exact purchase unit source',
           len(download_links)==1
@@ -559,8 +568,14 @@ def run_browser(env, browser):
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1 ORDER BY domain',[license_id])
               ==[{'domain':'second-http.example'},{'domain':'software-http.example'}])
     full=alice.get(portal,timeout=25)
+    full_card=_license_card(soup,full,paid['license_key'])
     check('My Software hides add-install control at purchased seat limit',
-          'Installations: 2 / 2' in full.text and 'Add installation domain' not in full.text)
+          'Installations: 2 / 2' in full_card.get_text(' ',strip=True)
+          and not full_card.select('input[name=action][value=license_domain_add]'))
+    other_card=_license_card(soup,full,active_trial['license_key'])
+    check('Another eligible license keeps its independent add-install control',
+          'Installations: 1 / 2' in other_card.get_text(' ',strip=True)
+          and _action_form(soup,full,'license_domain_add',license_id=active_trial['license_id']) is not None)
     third={'csrf':token(full),'action':'license_domain_add','license_id':str(license_id),'domain':'third-http.example'}
     denied_install=alice.post(portal,data=third,timeout=25)
     check('Generic client domain action cannot bypass software installation cap',
@@ -573,10 +588,11 @@ def run_browser(env, browser):
         'license_id':str(license_id),'domain':'second-http.example'
     }
     deactivated=alice.post(portal,data=deactivate,timeout=25)
+    reopened_card=_license_card(soup,deactivated,paid['license_key']).get_text(' ',strip=True)
     check('My Software can deactivate an installation and reopen the purchased seat',
           'Installation deactivated' in deactivated.text
-          and 'Installations: 1 / 2' in deactivated.text
-          and 'Add installation domain' in deactivated.text
+          and 'Installations: 1 / 2' in reopened_card
+          and 'Add installation domain' in reopened_card
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     bypass={
@@ -594,8 +610,9 @@ def run_browser(env, browser):
         'license_id':str(license_id),'domain':'software-http.example'
     }
     pending=alice.post(portal,data=deactivate_last,timeout=25)
+    pending_card=_license_card(soup,pending,paid['license_key']).get_text(' ',strip=True)
     check('License with no active installation is shown as Pending deployment',
-          'Pending deployment' in pending.text and 'Installations: 0 / 2' in pending.text
+          'Pending deployment' in pending_card and 'Installations: 0 / 2' in pending_card
           and db('SELECT COUNT(*) AS n FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])==[{'n':0}])
     add_again={
         'csrf':token(pending),'action':'license_domain_add',
@@ -604,7 +621,7 @@ def run_browser(env, browser):
     active_again=alice.post(portal,data=add_again,timeout=25)
     check('Customer can redeploy an owned license without repurchase',
           'Installation domain registered' in active_again.text
-          and 'Standard · Active' in active_again.text
+          and 'Standard · Active' in _license_card(soup,active_again,paid['license_key']).get_text(' ',strip=True)
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     chained_replace={
@@ -771,7 +788,7 @@ def run_browser(env, browser):
 
     # Real domain-replacement action and cross-tenant denial.
     own=alice.get(portal,timeout=25)
-    replace=_action_form(soup,own,'license_domain_replace')
+    replace=_action_form(soup,own,'license_domain_replace',license_id=license_id)
     replace_data=form_data(replace);replace_data['new_domain']='software-moved.example'
     moved=alice.post(portal,data=replace_data,timeout=25)
     active=db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1 ORDER BY domain',[license_id])
