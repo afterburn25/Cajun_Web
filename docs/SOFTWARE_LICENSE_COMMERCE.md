@@ -6,7 +6,7 @@ New software entitlements must send their exact catalog SKU as `product_id` to t
 
 ## Finance agreement sender upgrade correction — 2026-10-28
 
-The owner finance-agreement screen reads eligible sender accounts through the maintained `mail_drafts_account()` service. A variable-function typo previously left the list empty and emitted PHP warnings when populated v1.25 data had both mail-account and draft storage prepared. The correction changes no authorization or send operation; it restores the intended read-only sender choice and is covered by the populated Apache upgrade plus a focused source contract. [Failure evidence](CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
+The owner finance-agreement screen reads eligible sender accounts through the maintained `mail_drafts_account()` service. A variable-function typo previously left the list empty and emitted PHP warnings when the populated published-v1.24 fixture, upgraded to the development v1.25 candidate, had both mail-account and draft storage prepared. The correction changes no authorization or send operation; it restores the intended read-only sender choice and is covered by the populated Apache upgrade plus a focused source contract. [Failure evidence](CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md).
 
 ## Independent seat controls — 2026-10-28
 

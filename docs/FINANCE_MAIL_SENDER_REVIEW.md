@@ -4,7 +4,7 @@
 
 ## Original failure
 
-Application run `40684017215`, Apache job `122816732929`, passes 2,747 protection/root/subfolder/installer checks and the 28/19 published-baseline guards. The actual populated published-v1.25 root/rewrite case completes 158 inner checks, then fails the existing no-PHP-diagnostic guard (160 of 161 outer checks pass). The other three populated upgrade modes are not reached.
+Application run `40684017215`, Apache job `122816732929`, passes 2,747 protection/root/subfolder/installer checks and the 28/19 published-baseline guards. The actual populated immutable published-v1.24 (`7190b582`) root/rewrite upgrade to the development v1.25 candidate completes 158 inner checks, then fails the existing no-PHP-diagnostic guard (160 of 161 outer checks pass). The other three populated upgrade modes are not reached.
 
 The sealed log contains five warnings for undefined variable `$mail_drafts_account` in `site/admin/views/studio/licenses.php:59`. When an assigned Send account exists, the view invokes that undefined variable as a callable. Its catch retains the page but leaves the financing sender choices empty. The correction calls the existing `mail_drafts_account()` function. Current mailbox permissions and revision checks remain in that service; the diagnostic guard remains unchanged.
 

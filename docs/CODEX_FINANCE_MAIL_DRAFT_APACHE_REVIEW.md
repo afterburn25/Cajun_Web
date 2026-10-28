@@ -8,10 +8,11 @@ Focused PR: #282, exact head `d40c36711f4cd7bad0be555afc9bb59d9fc1cf15`,
 tree `17e8ca5ca62cbebe153ca79dc8b5ab3ae190993c`.
 
 Protected Application run `40684017215`, Apache job `122816732929`, passed
-2,747 Apache protection/root/subfolder/installer checks. Its populated
-published-v1.25 root-with-rewrite upgrade then completed all 158 functional
-checks and both upgraded-client screenshots, but the final Apache log gate
-found five identical PHP warnings:
+2,747 Apache protection/root/subfolder/installer checks. Its populated,
+immutable published-v1.24 (`7190b582`) root-with-rewrite upgrade to the
+development v1.25 candidate then completed all 158 functional checks and both
+upgraded-client screenshots, but the final Apache log gate found five identical
+PHP warnings:
 
 `Undefined variable $mail_drafts_account` in
 `site/admin/views/studio/licenses.php` line 59.
