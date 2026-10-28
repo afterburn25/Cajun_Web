@@ -83,6 +83,9 @@ def run_browser(env,browser):
                   for row in projects))
     finance=base+'/existing/portal/index.php?finance='+offer
 
+    accounts=fixture('setup-mail',offer)
+    run_mail_draft_checks(env,offer,accounts)
+
     page=alice.get(finance,timeout=25)
     check('Financing agreement is private and non-referring',
           page.status_code==200
@@ -472,3 +475,49 @@ def run_browser(env,browser):
           p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     check('Financing portal has no uncaught browser script errors',not errors)
     context.close()
+
+
+def run_mail_draft_checks(env,offer,accounts):
+    """Exercise the real sender picker and local draft action without submission."""
+    admin,check,db=(env[k] for k in ['admin','check','db'])
+    soup,form_data=(env[k] for k in ['soup','form_data'])
+    licenses=env['BASE']+'/existing/admin/index.php?view=studio-licenses'
+    page=admin.get(licenses,timeout=25)
+    forms=[form for form in soup(page).select('form')
+           if form.select_one('[name=action][value=studio_license_finance_offer_email]')
+           and form.select_one('[name=finance_id]').get('value')==offer]
+    check('Finance agreement exposes a local email draft form for an authorized sender',
+          page.status_code==200 and len(forms)==1)
+    form=forms[0];sender=accounts['sender'];readonly=accounts['readonly']
+    options={o.get('value'):o.get_text(' ',strip=True) for o in form.select('select[name=sender] option')}
+    reference=sender['id']+':'+str(sender['revision'])
+    check('Finance sender picker preserves current account revision and excludes read-only mailboxes',
+          reference in options and sender['address'] in options[reference]
+          and not any(value.startswith(readonly['id']+':') for value in options))
+    protected=db('SELECT * FROM ci_license_finance_offers WHERE id=?',[offer])
+    before=db('SELECT id FROM ci_mail_drafts ORDER BY id')
+    for name,change,message in [
+        ('invalid CSRF',{'csrf':'invalid'},'Your session expired.'),
+        ('read-only sender',{'sender':readonly['id']+':'+str(readonly['revision'])},'Send access'),
+        ('stale sender revision',{'sender':sender['id']+':'+str(sender['revision']+1)},'sending account changed'),
+    ]:
+        data=form_data(form);data.update({'sender':reference,**change})
+        denied=admin.post(licenses,data=data,timeout=25)
+        check('Finance email draft rejects '+name+' without creating a draft',
+              message in denied.text and db('SELECT id FROM ci_mail_drafts ORDER BY id')==before)
+    data=form_data(form);data['sender']=reference
+    response=admin.post(licenses,data=data,timeout=25,allow_redirects=False)
+    rows=db('SELECT id,account_id,account_revision,status,to_json,subject,body FROM ci_mail_drafts ORDER BY id')
+    created=[row for row in rows if {'id':row['id']} not in before]
+    check('Authorized finance email action creates exactly one local draft',
+          response.status_code in (302,303) and 'view=mail-send' in response.headers.get('Location','')
+          and len(created)==1)
+    draft=created[0]
+    client=db('SELECT c.email FROM ci_license_finance_offers o JOIN ci_studio_clients c ON c.id=o.client_id WHERE o.id=?',[offer])[0]
+    check('Finance draft retains the selected sender, client recipient and authenticated portal link',
+          draft['account_id']==sender['id'] and draft['account_revision']==sender['revision']
+          and draft['status']=='draft' and json.loads(draft['to_json'])==[client['email']]
+          and ('finance='+offer) in draft['body']
+          and ('matching client account' in draft['body'] or 'Sign in with your client account' in draft['body']))
+    check('Preparing an agreement email preserves financing terms and signature state',
+          db('SELECT * FROM ci_license_finance_offers WHERE id=?',[offer])==protected)

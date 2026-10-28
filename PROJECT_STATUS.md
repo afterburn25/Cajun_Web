@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — financing email sender correction pending integration
+
+Current03c Application Apache acceptance passes2,747 protection checks, then its populated published1.24 continuation detects an undefined `$mail_drafts_account` callable in the licensing view. The focused correction invokes the existing authorized account function and adds real sender-picker/local-draft acceptance. All36 targeted HTTP/PDO checks pass across PHP8.2/8.4 × MariaDB/MySQL, with four original failures preserved. Full combined hosted acceptance remains required; this is not main/release completion. See [failure, scope and evidence](docs/FINANCE_MAIL_SENDER_REVIEW.md).
+
 ## 2026-10-28 — attributed support-denial acceptance
 
 PR #274 advanced to `617e67cb` after reproducing the next unreached fixture error: a forbidden software POST to the private support software view correctly returns HTTP403, so that response cannot also expose the ordinary blocked-action message. The installed test now posts the forged mutation through the ordinary support portal, requires HTTP200 plus the refusal message and exactly one attributed denied support event, and separately preserves the private software/download 403 checks. Support readiness also requires both schema and explicit policy confirmation. Shipping permissions and handlers are unchanged.
