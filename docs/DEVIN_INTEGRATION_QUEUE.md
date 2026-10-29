@@ -1,3 +1,7 @@
+## 2026-10-28 — preserve reconciliation assertions across payoff integration
+
+Independent `codex/finance-reconcile-payoff-fixtures` declares the unpaid payoff-reader dependency in the existing strict #287/#289 fixtures. Case/assertion tails and production code are unchanged. Original combined undefined-function failure is preserved; 448 pure and 375 native executions pass against the frozen parent and combined source. [Evidence and pending review](CODEX_FINANCE_RECONCILE_FIXTURES.md).
+
 # Devin integration queue
 
 Created 2026-10-19 under the [sole-owner takeover](DEVIN_FULL_SITE_TAKEOVER.md); refreshed 2026-10-22 for the merge-first delivery cycle. Authoritative destination is `main`; the wide integration branch `devin/full-site-integration` and `devin/preflight-commercial` are staging lanes, not delivery.

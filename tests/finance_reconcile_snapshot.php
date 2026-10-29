@@ -2,7 +2,7 @@
 /** Verbatim owner reconciliation with deterministic concurrent state changes; no provider/SQL contact. */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli')exit(2);
-$source=file_get_contents(__DIR__.'/../site/app/billing/finance_subscription.php');
+$source=file_get_contents((string)($argv[1]??__DIR__.'/../site/app/billing/finance_subscription.php'));
 if(!preg_match('/^function license_finance_subscription_reconcile\(.*?(?=^function |\z)/ms',$source,$match))throw new RuntimeException('Missing reconciliation function');
 $body=rtrim($match[0]);$module=tempnam(sys_get_temp_dir(),'cwp-reconcile-');
 try{file_put_contents($module,"<?php\ndeclare(strict_types=1);\n".$body);require $module;}finally{unlink($module);}
@@ -12,6 +12,10 @@ function license_finance_gateway_ready():bool{return true;}
 function license_finance_offer_id(string $id):void{if($id!==str_repeat('a',32))throw new LogicException('Unexpected offer');}
 function staff_owner(string $password):array{if($password!=='synthetic-password')throw new LogicException('Unexpected password');return ['id'=>1];}
 function license_finance_offer_row(string $id):array{return ['status'=>'signed','installments'=>6,'license_id'=>7];}
+// These orchestration fixtures have no paid financing ledger. A local row's
+// concurrent paid_off label does not supply ledger evidence; full native
+// payoff suites exercise the real reader and its transaction requirement.
+function license_finance_subscription_payoff_due(array $offer):bool{return false;}
 function license_finance_subscription_row(string $id,bool $lock=false):array{global $fixture;if($lock&&!$fixture['locked'])throw new LogicException('Unlocked row read');return $fixture['row'];}
 function license_finance_anet_execute(string $method,array $request):array{global $fixture;if($method!=='ARBGetSubscriptionRequest'||$request!==['subscriptionId'=>'810001','includeTransactions'=>false]||$fixture['locked'])throw new LogicException('Unexpected gateway read');$fixture['reads']++;$fixture['row']=array_replace($fixture['row'],$fixture['concurrent']);$fixture['before_write']=$fixture['row'];return ['subscription'=>['profile'=>['customerProfileId'=>'910001','customerPaymentProfileId'=>'910002']]];}
 function license_finance_anet_subscription_readback(mixed ...$args):array{global $fixture;return ['status'=>$fixture['remote_status']];}

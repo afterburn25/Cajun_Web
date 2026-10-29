@@ -1,0 +1,11 @@
+# Reconciliation fixture compatibility with the payoff reader
+
+Date: 2026-10-28 (America/Chicago). Independent branch `codex/finance-reconcile-payoff-fixtures` from frozen [#289](https://github.com/afterburn25/Cajun_Web/pull/289) `deb99a8bcc52b89206d1852a3ada18ccc5c52cb8`. [Verified integration finding](https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6486964341).
+
+The existing strict reconciliation fixtures extract only the tested orchestration functions. Combined candidate `cc62bcc1316c1293ffee73d12e09b3c32055fb2b` adds #299's payoff reader call, which those fixtures had not declared. The unchanged pure fixture consequently exits with `Call to undefined function license_finance_subscription_payoff_due()` before assertions.
+
+Both fixtures now explicitly model their agreement as unpaid. They have no paid financing ledger; a concurrent subscription-row `paid_off` projection is still a stale-state control, not financial evidence. Actual ledger payoff, unpaid-reader transaction behavior and owner reconciliation remain covered by the separate full native payoff/replacement suites. The pure fixture also accepts an optional CLI source path so the exact combined function can be checked without rewriting either checkout.
+
+No production code or assertions change. Case/assertion tails match frozen #289 byte-for-byte. The 112 pure assertions pass on both #289 and combined cc62bcc1 under PHP 8.2.35/8.4.25 (448 executions). Native 75 assertions pass on #289 PHP 8.4/MariaDB and all four combined PHP 8.2/8.4 × MariaDB 10.11.19/MySQL 8.4.13 lanes (375 executions). The native cases retain actual mutexes, row locks, a separately committed writer and audit-failure rollback. All four touched-file PHP syntax checks pass. [Exact source/test/report hashes](evidence/finance-reconcile-payoff-fixtures.json).
+
+This is producer self-review of test compatibility, not independent approval or acceptance of all combined behavior. The combined candidate has known replacement/payoff corrections pending; this change does not resolve them. No shipping inventory or release version changes. Hosted checks, independent review, final combined acceptance, sandbox credentials, protected main integration and exact-main acceptance remain required. Devin's #266 and the integration writer's #268 are untouched.
