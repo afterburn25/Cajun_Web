@@ -1,3 +1,7 @@
+## 2026-10-28 — independent software acceptance orchestration correction
+
+Full Application `40802174745` on frozen PR294 recorded 3,508 passing browser checks then failed because provider scheduling and the top-level runner each invoked software commerce. The first legacy creation passed and the duplicate invocation correctly failed the exact-one-row assertion. Isolated `codex/software-acceptance-single-invocation` removes only the nested call; five executable dispatch tests fail three times before repair and all pass afterward. All production bytes and software/financing assertions remain unchanged. Build/Apache/recovery and 75 retained native reports (6,775 checks) passed on the original run; this is not corrected-head installed acceptance. Original artifact/hash/member evidence is retained. [Exact scope and next gates](docs/CODEX_PR266_APPLICATION_40802174745.md).
+
 ## Unreleased — product-bound software validation
 
 - Require new software entitlements to identify their exact product during public validation, closing cross-product key reuse on an otherwise valid licensed domain.

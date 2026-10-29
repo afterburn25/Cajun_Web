@@ -10,11 +10,14 @@ on:
       - 'tests/software_commerce_browser_fixture.php'
       - 'tests/provider_schedule_cases.py'
       - 'tests/browser_acceptance.py'
+      - 'tests/browser_suite_orchestration_test.py'
       - 'tests/apache_acceptance.py'
       - '.github/workflows/software-browser-syntax.yml'
   pull_request:
     branches:
       - feature/software-license-commerce-20261025
+      - main
+      - 'codex/**'
     paths:
       - 'tests/software_commerce_cases.py'
       - 'tests/software_anet_sandbox_acceptance.py'
@@ -22,6 +25,7 @@ on:
       - 'tests/software_commerce_browser_fixture.php'
       - 'tests/provider_schedule_cases.py'
       - 'tests/browser_acceptance.py'
+      - 'tests/browser_suite_orchestration_test.py'
       - 'tests/apache_acceptance.py'
       - '.github/workflows/software-browser-syntax.yml'
   workflow_dispatch:
@@ -38,3 +42,4 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 -m py_compile tests/software_commerce_cases.py tests/software_anet_sandbox_acceptance.py tests/software_release_125_delta.py tests/provider_schedule_cases.py tests/browser_acceptance.py tests/apache_acceptance.py
       - run: php -l tests/software_commerce_browser_fixture.php
+      - run: python3 tests/browser_suite_orchestration_test.py

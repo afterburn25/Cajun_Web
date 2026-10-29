@@ -1,0 +1,438 @@
+{
+  "base": "0ad3df4df455c28e44acfe5649eadc3650cdcf39",
+  "run": 40802174745,
+  "job": 123219390513,
+  "artifact": {
+    "artifact": 12873616770,
+    "size": 366546312,
+    "sha256": "075bc2b9dfe0f5e1bb1248037e3e0350220628f7e05b086384d73035264a8a72",
+    "inner_sha256": "12398efbd6c3baf52b19352ef0f5368c95337d3aba61d578e2bb4becb388675f",
+    "members": 593,
+    "crc_verified": true
+  },
+  "all_manifest_entries_verified": 593,
+  "browser_checks": 3509,
+  "browser_failed": 1,
+  "failure": "AssertionError('Legacy restaurant website key can still be created after software commerce is enabled')",
+  "duplicate_evidence": {
+    "Software browser establishes a fresh isolated owner session": [
+      true,
+      true
+    ],
+    "Advanced software setup preserves separate legacy website license form": [
+      true,
+      true
+    ],
+    "Legacy restaurant website key can still be created after software commerce is enabled": [
+      true,
+      false
+    ]
+  },
+  "native_reports": [
+    {
+      "path": "activity-native-results.json",
+      "checks": 64,
+      "sha256": "4c2dda676ac12a1288a3f5ea9bcd3712915e8279a8e5e28424a083b64127e1ac"
+    },
+    {
+      "path": "appointments-native-results.json",
+      "checks": 83,
+      "sha256": "1e4f65e81a428040847a0b4a62e26bc7bbb2caf32ceb7a5eb8da1beee7324675"
+    },
+    {
+      "path": "attempts-native-results.json",
+      "checks": 69,
+      "sha256": "693420f8b4ec447f2d69963bb55bf01b9919f0c312d2bea493eb66cf50bdbed5"
+    },
+    {
+      "path": "catalog-native-results.json",
+      "checks": 49,
+      "sha256": "dd862262a2028d3eb8f95610e7bdbf24a59fe255566c131a4c89ed0a3714d180"
+    },
+    {
+      "path": "client-authority-native-results.json",
+      "checks": 60,
+      "sha256": "a34ed4203c980b7f6fa8ab61aa08f97ffb3bde99eba2f5a6f78bf4cdcc0d70ba"
+    },
+    {
+      "path": "delivery-native-results.json",
+      "checks": 57,
+      "sha256": "6a5ebdefc3efdd206233f0ae3730885efafcec3fc856a4da110db6623a732c2c"
+    },
+    {
+      "path": "domain-contracts-native-results.json",
+      "checks": 99,
+      "sha256": "4979dd5fe476c6c1e999f86c0a8f0b2093b4fcbf9d426ea7d384fce1e009f4b6"
+    },
+    {
+      "path": "domain-expiry-native-results.json",
+      "checks": 111,
+      "sha256": "56ceaa362504d9c9245bd30aa8c79cf1e995714b60226853228a17fc728e6e63"
+    },
+    {
+      "path": "domain-registration-drafts-native-results.json",
+      "checks": 67,
+      "sha256": "25d80fd67d57186b964961e8de22a8d85aca185439f64d34acb42f53140271c7"
+    },
+    {
+      "path": "domain-renewal-agreements-native-results.json",
+      "checks": 71,
+      "sha256": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901"
+    },
+    {
+      "path": "domain-renewal-dispatch-native-results.json",
+      "checks": 84,
+      "sha256": "2d9f8e3f67c4e93bcf6a1b0062cbfd18117115a036a942fe7ce73058ea391940"
+    },
+    {
+      "path": "domain-renewals-native-results.json",
+      "checks": 78,
+      "sha256": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24"
+    },
+    {
+      "path": "hosting-confirmation-native-results.json",
+      "checks": 38,
+      "sha256": "86331c987e38aeb56144274cf7c67c0634414d6177478e1676770ac59964ca91"
+    },
+    {
+      "path": "hosting-delete-retry-native-results.json",
+      "checks": 67,
+      "sha256": "9ff4d34a3fc84ff54086b4530e2c5c0eaad8da4e913bdc2be8d1ccdf22305ee0"
+    },
+    {
+      "path": "hosting-fulfillment-forms-native-results.json",
+      "checks": 32,
+      "sha256": "95ea0114b3914c459a001b0d08541bb22898d7cb47226048c587ebd895183ab8"
+    },
+    {
+      "path": "hosting-fulfillment-native-results.json",
+      "checks": 76,
+      "sha256": "f145d948b53f002a6790d5e13b446cae91ea420958b5ad8dea4c4544d1fcdfbc"
+    },
+    {
+      "path": "hosting-operations-native-results.json",
+      "checks": 104,
+      "sha256": "66a0f42d243393995a763979f1f5f05fffad2e53d8fa292a50a8008bba12f199"
+    },
+    {
+      "path": "hosting-pending-native-results.json",
+      "checks": 21,
+      "sha256": "79e702b81321843579f24d3c80ee334db96c728492b4b344e076efd5c015c938"
+    },
+    {
+      "path": "hosting-reconciliation-native-results.json",
+      "checks": 178,
+      "sha256": "3e001c7bf684cb4ed7235ef2be51317a6bdd90c8abafbc08217384b23ec347ae"
+    },
+    {
+      "path": "hosting-records-native-results.json",
+      "checks": 112,
+      "sha256": "3be0d3793d7238e4663055f4c50a319a9a5774b08e527493f90e124836cf4ac3"
+    },
+    {
+      "path": "hosting-retry-native-results.json",
+      "checks": 44,
+      "sha256": "2ee986d9db6546b001f11c9d1e0a8f9cbf7501ee1d5dfd516ea4a665146b2499"
+    },
+    {
+      "path": "ledger-native-results.json",
+      "checks": 108,
+      "sha256": "977a091e3dca76cc335ab0ad54a766bdbea2a723caec75997ddb19825b4d6e1b"
+    },
+    {
+      "path": "license-native-results.json",
+      "checks": 114,
+      "sha256": "b1acb36f859ee0fc461fce0d7b6b6b06118c391093f5ff9a79db0563b9c1c871"
+    },
+    {
+      "path": "mail-accounts-native-results.json",
+      "checks": 68,
+      "sha256": "67b0e30f0cd21964e5b20eb5395d54ba8211f5bae746deee2876496cb81c5168"
+    },
+    {
+      "path": "mail-connections-native-results.json",
+      "checks": 55,
+      "sha256": "db9718584e7027d95801a967a0caaa5e81df6c4a74a57c77b9151d4095f09200"
+    },
+    {
+      "path": "mail-drafts-native-results.json",
+      "checks": 78,
+      "sha256": "7810a6ad978f4e298c97d317db787fa4abc25a377aef8585b54f53f31e96d59e"
+    },
+    {
+      "path": "mail-inbox-native-results.json",
+      "checks": 57,
+      "sha256": "22b98c4d22dddf31fafd0df3c3b681bf6cbd11d55328bb7f558837538f5b36fe"
+    },
+    {
+      "path": "mail-message-native-results.json",
+      "checks": 69,
+      "sha256": "b89761e85e9e72e6d9987750a96996827d7fd579771fce447bdbfd64de506423"
+    },
+    {
+      "path": "mail-notices-native-results.json",
+      "checks": 79,
+      "sha256": "f364ac9d823a8d9df1bbaac23d19b99872a64c2266b888d1f58873cb48b42b5a"
+    },
+    {
+      "path": "mail-submission-dispatch-native-results.json",
+      "checks": 80,
+      "sha256": "eba28f58ba84a30bc739094df1f791e57578d2098c23761742070174f799bc05"
+    },
+    {
+      "path": "mail-submissions-native-results.json",
+      "checks": 85,
+      "sha256": "d8c8fa1e3b0a41b881a5f9edce924dde986863af2a4ad9b18f0e690378f9a3af"
+    },
+    {
+      "path": "mail-templates-native-results.json",
+      "checks": 59,
+      "sha256": "6292130fc6211cd1de0e3f918b9f1c092e59e424be5eed7bd8aa4430e41efbfe"
+    },
+    {
+      "path": "native-results.json",
+      "checks": 65,
+      "sha256": "d6d6df684a4cf4b572d37633c2b4aa090fbfcd4ec17dd198dbb1b4e9efeb71fe"
+    },
+    {
+      "path": "notifications-native-results.json",
+      "checks": 62,
+      "sha256": "7635fd9a80e7bfbc1ef7e391fd0a4a08f77e4dc38c195c34e560524a0132214d"
+    },
+    {
+      "path": "password-reset-template-native-results.json",
+      "checks": 84,
+      "sha256": "6cc1b024b45786c4432f5e3e0e62c5c41a252eee7f73e0787a17950ccb5a49d9"
+    },
+    {
+      "path": "payments-native-results.json",
+      "checks": 62,
+      "sha256": "807a1f4544e761b12602ae9fd92d7e2145fbc9e861bb4298a33adb78bad9811c"
+    },
+    {
+      "path": "provider-catalog-import-native-results.json",
+      "checks": 65,
+      "sha256": "2c7899983da19e045c2d24f86f0671d896178dde5c035a23a63a8abaaf468dc1"
+    },
+    {
+      "path": "provider-checks-native-results.json",
+      "checks": 49,
+      "sha256": "045daebf293ab23883bf4f8fb1c2c3f782c5d2574e3dc079a17a788f700c8fa6"
+    },
+    {
+      "path": "provider-cloud-assignment-native-results.json",
+      "checks": 129,
+      "sha256": "d9a294e0d4696b1a9e019f41f8413f6a04db5912b9b8d371adcdf6e6ad75609e"
+    },
+    {
+      "path": "provider-cloud-confirmation-native-results.json",
+      "checks": 87,
+      "sha256": "a7759559c9656c10d56640ec5353a4224009261529fb2629cf49abd129a9baff"
+    },
+    {
+      "path": "provider-cloud-providers-native-results.json",
+      "checks": 98,
+      "sha256": "31c7a6e5731022495580acde8a46c328ca0ab7fbb40266ef0fb9f88ff3e98a4f"
+    },
+    {
+      "path": "provider-cloud-site-requests-native-results.json",
+      "checks": 111,
+      "sha256": "1a4b4096603c7edb12b17d0485595dd16451e8c2ca7db951056d1d8687ec69ce"
+    },
+    {
+      "path": "provider-cloud-sites-native-results.json",
+      "checks": 45,
+      "sha256": "eac8b9bc3b089a43ff93e7b839d73bfec83fd1b9739b77f4f9b87e885f9748af"
+    },
+    {
+      "path": "provider-directory-listing-controls-native-results.json",
+      "checks": 169,
+      "sha256": "cceb3d9f2315c89a122cc0b51fb900a0007b663ecb616f70e28f79ef00b1d74b"
+    },
+    {
+      "path": "provider-directory-listing-native-results.json",
+      "checks": 127,
+      "sha256": "61caba98d0e5af687251e68263f3b1681a16e4274c14714dd5865388d604810f"
+    },
+    {
+      "path": "provider-document-roots-native-results.json",
+      "checks": 115,
+      "sha256": "46aed7e041015940b00019f6796f68232f2dd25e3e74258f63babbcb18badcc4"
+    },
+    {
+      "path": "provider-domain-client-native-results.json",
+      "checks": 50,
+      "sha256": "b35045438542c71f0d11283f652af072c72c15da9488fe54941ea1efd96b37dd"
+    },
+    {
+      "path": "provider-domain-search-native-results.json",
+      "checks": 106,
+      "sha256": "42a5cc4800be0589bc8755ea575c81bf8ab255963650eb64641dcfa07b6300fe"
+    },
+    {
+      "path": "provider-execution-native-results.json",
+      "checks": 109,
+      "sha256": "9b586b924c7eb9897d2449aa19ab006dfa3d5a98f805b9133a54cb27f5aa1a00"
+    },
+    {
+      "path": "provider-force-ssl-controls-native-results.json",
+      "checks": 169,
+      "sha256": "cceb3d9f2315c89a122cc0b51fb900a0007b663ecb616f70e28f79ef00b1d74b"
+    },
+    {
+      "path": "provider-forwarding-native-results.json",
+      "checks": 85,
+      "sha256": "985d8036a359da7cc573fabe92e2df5510842d61f70f95bf75d524bd6e355a98"
+    },
+    {
+      "path": "provider-inventory-native-results.json",
+      "checks": 157,
+      "sha256": "32e3d9bb2fc1fd3cfcee413fec3c617f6ee92619d57fc1445182841ab9a0ed35"
+    },
+    {
+      "path": "provider-mailbox-native-results.json",
+      "checks": 91,
+      "sha256": "a0ca49f9585aa6b6e0f85ff537055d1502f1811081966f1efc85a39a4012ab8a"
+    },
+    {
+      "path": "provider-operations-native-results.json",
+      "checks": 92,
+      "sha256": "b4fe319771a7f396dc0f1dd39d36a019ed17f017198a03c66ef11a06796c008e"
+    },
+    {
+      "path": "provider-package-force-ssl-native-results.json",
+      "checks": 119,
+      "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423"
+    },
+    {
+      "path": "provider-package-php-native-results.json",
+      "checks": 99,
+      "sha256": "e5fac5d25c37fc7bcfb4bc4d8f1f0fbd18bc53e38446c8e757328f88427c6485"
+    },
+    {
+      "path": "provider-package-wordpress-installed-native-results.json",
+      "checks": 123,
+      "sha256": "65ad01d58d11220f73c81b5fe1c2e077b9573c236870a742f9d6dc0470d3774d"
+    },
+    {
+      "path": "provider-plan-catalog-native-results.json",
+      "checks": 78,
+      "sha256": "50cce39e0451571ada3e677c3e36aa25dab9492fda8c80ce1b1c2c0342ce02b3"
+    },
+    {
+      "path": "provider-registrar-native-results.json",
+      "checks": 63,
+      "sha256": "a842c0fdaa60a6407036e66436ea67dc4ba533fbbd84837ffc6dc625ab12ff07"
+    },
+    {
+      "path": "provider-registration-periods-native-results.json",
+      "checks": 80,
+      "sha256": "738e006372f832e5a014d6f74b3bacebf31fb9f0c7cfd227289a453e7ed873e0"
+    },
+    {
+      "path": "provider-schedule-native-results.json",
+      "checks": 102,
+      "sha256": "3b13cb6ec4116446c655c299cbed01397bc2ab5cf1135460124496d38cfd9f64"
+    },
+    {
+      "path": "provider-settings-native-results.json",
+      "checks": 69,
+      "sha256": "8652d799ae6949252535e4aa1dfb6778cf66e0e6853082ca0bf42f7b0d24c5e4"
+    },
+    {
+      "path": "recurring-billing-native-results.json",
+      "checks": 634,
+      "sha256": "b0edbe856f348b50da16db16b42ab1d12cfe0c6f2be377f72b94df5197fb5b91"
+    },
+    {
+      "path": "reviews-native-results.json",
+      "checks": 65,
+      "sha256": "1f03b32cb238436279cec3e650fff99460fda82f229f32d46eb7de09fe02828a"
+    },
+    {
+      "path": "service-observations-native-results.json",
+      "checks": 71,
+      "sha256": "a30423ce6f5c30579761690371de73eaf385d031e1a8b377f764b208848316c2"
+    },
+    {
+      "path": "service-orders-link-views-native-results.json",
+      "checks": 38,
+      "sha256": "4909beeba7f0b565f6b1e80a17a746a8090a43222fc58cb54be6043ecf09ddba"
+    },
+    {
+      "path": "service-orders-links-native-results.json",
+      "checks": 42,
+      "sha256": "df6502ae0e7aa65ae2fa6aff58ffc8d8135e43d74af65d35bfd6190e9af5c58d"
+    },
+    {
+      "path": "service-orders-native-results.json",
+      "checks": 82,
+      "sha256": "77474a2d48395ae17e2e9496f0e2608ff2ca85186f2f36aaedcee19e2ba11610"
+    },
+    {
+      "path": "service-plans-native-results.json",
+      "checks": 138,
+      "sha256": "5e2af47766e20fc4decdd57981d45bcad68ef989e5b64e2a2fc1f9d59af3d766"
+    },
+    {
+      "path": "stackcp-access-native-results.json",
+      "checks": 103,
+      "sha256": "4ae9f7f543a5e305c809ffb06906c86aeb05fa9d0022e39e860a755f33648197"
+    },
+    {
+      "path": "stackcp-access-read-snapshot-native-results.json",
+      "checks": 78,
+      "sha256": "bf37e5caa0c38fcb0be8e9794d896e593e2b523bc6d84cdbf006ff8a3f65b020"
+    },
+    {
+      "path": "stackcp-prerequisites-native-results.json",
+      "checks": 112,
+      "sha256": "38759e8605fa2577f15ef93d1af0caea8d433d7420351d71b178accb214ec95a"
+    },
+    {
+      "path": "stackcp-read-snapshot-native-results.json",
+      "checks": 49,
+      "sha256": "39723ff7cb8cc6392f17aad64d63dc6209eaf4109ce50f563447197d130928ae"
+    },
+    {
+      "path": "staff-native-results.json",
+      "checks": 52,
+      "sha256": "3a713505550a70fb6647958a557e104ffc3fbc87b26005687f1b3f74c1220ea3"
+    },
+    {
+      "path": "support-native-results.json",
+      "checks": 35,
+      "sha256": "1416039171aff8ee0d94bcba37fe24974b2e91bd55b6d525bc18bcd82a092cb3"
+    }
+  ],
+  "before": {
+    "tests": 5,
+    "failures": 3,
+    "stderr_sha256": "4b99ac8a549def62b108b8f1f8261a24cb704723b07c9649c983c7ff74314a20"
+  },
+  "after": {
+    "tests": 5,
+    "failures": 0,
+    "stderr_sha256": "6a99264eb16ec6aa8d3e0cb6c2294f92a69b233cc2c39f58b45ef5fb02a66d3c"
+  },
+  "scope": "Actual source AST dispatch with recorded suite boundaries; no browser/database assertions executed by this regression. Full exact corrected hosted acceptance remains required.",
+  "changed_source": {
+    "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
+    "tests/browser_suite_orchestration_test.py": "f1e84eb15788664f4c06606c909d0ac94f5ac803a671eecd06a21c96dfb38d44",
+    ".github/workflows/application-tests.yml": "9985cd965b883fde8cfcf52a255dbc6c66e874895b53a78743bc3c4a243b1276",
+    ".github/workflows/software-browser-syntax.yml": "b187f2b00a3d15ba6b4fbcec759d31aa295a087dc63b4b9a5f29ed47ed46dc6b"
+  },
+  "preserved_source": {
+    "tests/browser_acceptance.py": "254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10",
+    "tests/software_commerce_cases.py": "e985cbdd0ee189d4886221d3ba9492277abdeea1c0c92773e58efc160ec94ac4",
+    "tests/license_financing_cases.py": "a88a71b4f7ab52d18553f4f248100ccde7d570b99ef0a412c78aee81965d0506"
+  },
+  "local_validation": {
+    "python_sources_parsed": 5,
+    "build_rejection_checks": 69,
+    "artifact_helper_checks": 283,
+    "workflow_shell_steps": 27,
+    "application_workflow_inverse_matches": true,
+    "shipping_changed": false
+  }
+}

@@ -1,0 +1,19 @@
+# Application 40802174745: duplicate software suite
+
+The full acceptance run on `0ad3df4df455c28e44acfe5649eadc3650cdcf39` reached 3,508 passing browser assertions and failed its next assertion, `Legacy restaurant website key can still be created after software commerce is enabled`. Build, Apache and recovery jobs succeeded. The retained native/browser artifact contains 75 passing native reports with 6,775 checks, including the 634-check recurring-billing report.
+
+The provider-schedule browser routine called the software-commerce suite after its own checks. The top-level browser runner then called software commerce again. Retained evidence has two successful fresh-owner-session and legacy-form checks, followed by one successful and one failing legacy-creation assertion. The second valid creation leaves two rows; the exact-one-row assertion correctly rejects that state. The separate GitHub finding was independently confirmed before this repair: [PR294 discussion](https://github.com/afterburn25/Cajun_Web/pull/294#issuecomment-6488217407).
+
+## Correction and regression
+
+`codex/software-acceptance-single-invocation` starts at frozen PR294 head `0ad3df4df455c28e44acfe5649eadc3650cdcf39`. It removes only the three-line nested software-suite call from `provider_schedule_cases.py`. The top-level full and focused dispatch, software/financing suites and every production file remain byte-identical. No assertion, row cleanup, timeout, authentication, CSRF, payment or release gate is relaxed.
+
+`tests/browser_suite_orchestration_test.py` extracts the actual suite-dispatch AST and executes its imports, calls and conditional branches against recorded suite boundaries. It includes the actual provider-schedule dispatch tail and exercises full, provider-only, software-only and financing-only modes. Before correction, three of five tests fail; afterward all five pass and the full route invokes 56 distinct suites exactly once. This is orchestration evidence, not simulated browser acceptance. The fast syntax workflow runs it for relevant main, feature and Codex-base PRs. Full Application acceptance runs it in the build step before expensive installed execution, retaining existing sealed outcomes and non-canceling serialization.
+
+Local verification additionally passes 69 build rejection checks, 283 artifact-helper checks, five Python source parses, workflow YAML and all embedded Bash syntax. An inverse comparison proves the full Application workflow changes only by adding the new regression command; its permissions, timeouts, sealed outcomes and serialization remain identical.
+
+## Retained evidence and remaining gates
+
+[Run40802174745](https://github.com/afterburn25/Cajun_Web/actions/runs/40802174745), native/browser job `123219390513`, artifact `12873616770`: 366,546,312 bytes, SHA-256 `075bc2b9dfe0f5e1bb1248037e3e0350220628f7e05b086384d73035264a8a72`. Its nested archive SHA-256 is `12398efbd6c3baf52b19352ef0f5368c95337d3aba61d578e2bb4becb388675f`. Both CRC checks and all 593 member sizes/hashes match the sealed manifest. [Machine-readable evidence](evidence/pr266-software-suite-orchestration.json) retains exact assertion names, source hashes and original failing regression receipts.
+
+Corrected exact-head installed acceptance and independent review remain required. This branch is a focused correction, not approval of the financing stack or a release candidate. PR266 remains `d062bd5c3b78f3ec265ffc8a404e253013cfa924`, PR268 remains `3789bb50c90cb836530f2d5dc2400cee394763d0`, and main remains `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827` at the remote recheck. Neither owner's branch was modified. Separate financing unknown-result and post-enrollment receipt defects, unavailable sandbox credentials, final combined upgrade/package verification, review, merge and exact-main acceptance remain open. No deployment, publication or live payment activation occurred.
