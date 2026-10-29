@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import re
+import shlex
 from pathlib import Path
 import shutil
 import subprocess
@@ -167,12 +168,51 @@ def valid_port_context(workflow):
     return True
 
 
+def orchestration_evidence_checks(tmp, ctx):
+    # Execute the workflow's actual reporting command against copied public source,
+    # then exercise the real partition sealer. No application or provider runs.
+    workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
+    commands = re.findall(r'^          (python3 -B tests/browser_suite_orchestration_contract\.py[^\n]*)$', workflow, re.M)
+    check('Exactly one build orchestration report command exists', len(commands) == 1)
+    command = commands[0]
+    shell = shutil.which('bash')
+    check('Bash is available for the actual workflow reporting regression', shell is not None)
+    script = 'python3() { ' + shlex.quote(Path(sys.executable).as_posix()) + ' "$@"; }; set -o pipefail; ' + command
+    for failing in (False, True):
+        root = tmp / ('orchestration-failure' if failing else 'orchestration-success')
+        for name in ('browser_acceptance.py', 'provider_schedule_cases.py', 'browser_suite_orchestration_contract.py'):
+            blob(root / 'tests' / name, (ROOT / 'tests' / name).read_bytes())
+        if failing:
+            with (root / 'tests/provider_schedule_cases.py').open('a') as stream:
+                stream.write('\n# software_commerce_cases must not be owned here\n')
+        before = b'Preserved synthetic build transcript\n'
+        blob(root / 'qa/build-results.txt', before)
+        result = subprocess.run([shell, '-c', script], cwd=root, capture_output=True, timeout=60)
+        check('Workflow preserves orchestration exit status ' + str(failing), (result.returncode != 0) == failing)
+        steps = outcomes('build'); steps['build'] = 'failure' if failing else 'success'
+        out = tmp / ('orchestration-sealed-failure' if failing else 'orchestration-sealed-success')
+        digest = a.seal(root, ctx, out, 'build', steps, '')
+        envelope = a.verify_bundle(out, 'partition', ctx, digest)
+        with zipfile.ZipFile(out / 'partition.zip') as archive:
+            transcript = archive.read('qa/build-results.txt')
+        check('Sealed build retains original transcript and exact guard output ' + str(failing),
+              transcript == before + result.stdout and set(envelope['files']) == {'qa/build-results.txt'})
+        report = json.loads(transcript[len(before):])
+        check('Sealed build truthfully records guard result and step outcome ' + str(failing),
+              report['passed'] is (not failing) and report['count'] == 6 and envelope['steps'] == steps)
+    forbidden = tmp / 'orchestration-forbidden'
+    blob(forbidden / 'qa/browser-suite-orchestration-contract.json', result.stdout)
+    deny('Standalone orchestration report still cannot cross the build boundary',
+         lambda: a.seal(forbidden, ctx, tmp / 'orchestration-forbidden-seal', 'build', outcomes('build'), ''))
+
+
 def run(tmp):
     def remove_partition(path):
         resolved=path.resolve();require_parent=tmp.resolve()
         assert resolved.is_relative_to(require_parent) and resolved.name=='native-browser'
         shutil.rmtree(resolved)
     ctx = context(); source = tmp / 'source'; fixtures(source, ctx)
+    orchestration_evidence_checks(tmp, ctx)
     # Exercise the actual entry points and GitHub output file, including the
     # numeric suffix used by both immutable artifact-manifest outputs.
     cli_root=tmp/'cli-source';fixtures(cli_root,ctx);job_output=tmp/'github-output'

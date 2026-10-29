@@ -16,5 +16,34 @@
     "helper-after.json": "b5715b6a2b10db828420004139b3b482375b6c26d5b9778f479560405d313c01",
     "contract-after.json": "d7f1b0aa4feb2455affd8d4f0e964c591b0c6f91f564d8677f6116795ba69b8f"
   },
-  "scope": "Local exact workflow/acceptance-helper regression. No shipping or test-assertion changes; corrected hosted acceptance remains required."
+  "scope": "Local exact workflow/acceptance-helper regression. No shipping or test-assertion changes; corrected hosted acceptance remains required.",
+  "sealing_followup": {
+    "failed_source": "5a5389ac343e943b8cfd8b1aef0bf606593c5daf",
+    "failed_run": 40821246468,
+    "failed_job": 123273983150,
+    "failure": "ValueError: Evidence crosses partition/private boundary",
+    "hosted_before_failure": {
+      "helpers": 283,
+      "build_guards": 69,
+      "orchestration": 6,
+      "package_build": "success",
+      "fixtures_through": "1.25.0",
+      "native_browser": "skipped"
+    },
+    "after_helpers": 292,
+    "new_sealing_checks": 9,
+    "workflow_shell_steps": 24,
+    "reports": {
+      "seal-before.json": "2be4f49e906c3451f745d96fd63e9bdd7233cd59c480655c93e4ce78f6aa8448",
+      "seal-after.json": "aba4c9f04eb8f557087e1d2d4b49435fc52fa81bc467b7d0ee70de695c9f81b3"
+    },
+    "source": {
+      ".github/workflows/application-tests.yml": "53b8a9dc999bb7fbf67e09e8c468d5d84a1f961dc71d8c55f8ee794e3307cd7a",
+      "tests/acceptance_artifacts_test.py": "3f884c782892e6123e278f8c1820fcd354206b25faa3e59f11edd5392ed703ad",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f"
+    },
+    "shipping_and_partition_allowlist_unchanged": true,
+    "original_283_assertions_unchanged": true,
+    "scope": "Actual Bash workflow command against copied public source, real partition seal/ZIP/envelope verification for success and deliberate guard failure. Synthetic local helper evidence, not installed application acceptance."
+  }
 }
