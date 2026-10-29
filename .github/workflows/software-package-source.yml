@@ -9,6 +9,15 @@ on:
       - 'tools/build.py'
       - 'tools/directory-map.json'
       - '.github/workflows/software-package-source.yml'
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/**'
+      - 'foundation/**'
+      - 'tools/build.py'
+      - 'tools/directory-map.json'
+      - '.github/workflows/software-package-source.yml'
   workflow_dispatch:
 permissions:
   contents: read

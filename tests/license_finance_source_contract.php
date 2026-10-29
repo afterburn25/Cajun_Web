@@ -19,6 +19,9 @@ fc_ok(substr_count($admin,'License register')===1,'License register appears once
 fc_ok(!str_contains($admin,'.number_format($candidate'),'No corrupted financing splice remains in licensing view');
 fc_ok(str_contains($admin,"'replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery'"),
     'Owner reconciliation queue includes interrupted replacement, lifecycle and verified-reversal recovery states');
+fc_ok(str_contains($admin,"\$financeMailAccounts[]=mail_drafts_account(\$a['id'])")
+    &&!str_contains($admin,'$mail_drafts_account('),
+    'Finance agreement sender list calls the retained mail-account reader without an undefined variable function');
 
 fc_ok(str_contains($admin,'Commercial rights are not included in financing.')
     &&!str_contains($admin,'Grant resale rights')
@@ -100,6 +103,11 @@ fc_ok(str_contains($finance,"'pending_initial'=>['authorized'=>false")
     'Initial-payment and delinquency states expose separate definitive payment-lock reasons');
 fc_ok(str_contains($finance,"state='paid_off'")||str_contains($finance,"'paid_off'=>['authorized'=>true"),
     'Paid-off state is retained as a one-way financing boundary');
+$licenseService=fc_file('site/app/licenses/service.php');
+fc_ok(!str_contains($licenseApi,'license_restore_paid_off_active')
+    &&!str_contains($finance,"SET is_active=1")
+    &&str_contains($licenseService,'Financing payoff removes only payment-based'),
+    'Permanent payoff cannot override an explicit owner license deactivation');
 fc_ok(str_contains($finance,'license_financing_rights_grants')
     &&str_contains($finance,'rightsInvoiceId')
     &&str_contains($finance,'A normal financing installment cannot be reused as payment for commercial rights.')
@@ -116,6 +124,13 @@ fc_ok(str_contains($coreFinanceMigration,"license_financing_schema_version','2'"
     &&str_contains($coreFinanceMigration,"['','1','2']"),
     'Core financed-license storage upgrades v1 additively to v2 rights evidence');
 
+$offerMigration=fc_file('site/database/migrations/license_finance_offers_migrate.php');
+fc_ok(str_contains($coreFinanceMigration,'license_financing_schema_pending')
+    &&str_contains($coreFinanceMigration,'financing.setup.begin')
+    &&str_contains($offerMigration,'license_finance_offers_schema_pending')
+    &&str_contains($offerMigration,'financing.offers.setup.begin'),
+    'Core financing and agreement setup retain explicit interrupted-preparation markers');
+
 $financeSchema=fc_file('site/database/schema/license_finance_gateway_schema.php');
 $financeMigration=fc_file('site/database/migrations/license_finance_gateway_migrate.php');
 $financeSubscription=fc_file('site/app/billing/finance_subscription.php');
@@ -131,6 +146,9 @@ fc_ok(str_contains($financeMigration,"license_finance_gateway_schema_version','3
     &&str_contains($financeMigration,'license_finance_gateway_upgrade_v3')
     &&str_contains($financeMigration,"['','1','2','3']"),
     'Finance gateway storage upgrades existing v1 or v2 data additively to v3');
+fc_ok(str_contains($financeMigration,'license_finance_gateway_schema_pending')
+    &&str_contains($financeMigration,'financing.gateway.setup.begin'),
+    'Finance gateway setup retains an explicit interrupted-preparation marker');
 fc_ok(str_contains($financeMigration,"setting('license_finance_gateway_schema_version')!=='3'")
     &&str_contains($financeMigration,'replacement_count')
     &&str_contains($financeMigration,'license_finance_reversals'),

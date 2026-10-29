@@ -59,6 +59,18 @@ finance_reject(fn()=>license_financing_terms_math(650000,65000,585000,14000,2500
 finance_ok(license_financing_cadence_months('monthly')===1&&license_financing_cadence_months('quarterly')===3&&license_financing_cadence_months('annually')===12,
     'Financing cadence maps exactly to one three or twelve month intervals');
 finance_reject(fn()=>license_financing_cadence_months('weekly'),'Unsupported financing cadence is rejected');
+$replacement=license_financing_subscription_contract('monthly',2500,4,'2026-11-01',1,'2026-10-28');
+finance_ok($replacement===['months'=>1,'amount_cents'=>2500,'occurrences'=>3,
+    'start_date'=>'2026-11-01','period_offset'=>1],
+    'Caught-up replacement enrolls only future remaining installments after the original agreement began');
+finance_reject(fn()=>license_financing_subscription_contract('monthly',2500,4,'2026-10-01',0,'2026-10-28'),
+    'Initial enrollment still refuses an original start date that has already passed');
+finance_reject(fn()=>license_financing_subscription_contract('monthly',2500,4,'2026-10-28',1,'2026-10-28'),
+    'Replacement cannot automatically charge an installment that is already due');
+finance_reject(fn()=>license_financing_subscription_contract('monthly',2500,4,'2026-11-01',4,'2026-10-28'),
+    'Fully paid financing cannot create another replacement occurrence');
+finance_reject(fn()=>license_financing_subscription_contract('monthly',2500,4,'2026-02-30',1,'2026-01-28'),
+    'Replacement contract rejects invalid calendar dates');
 finance_ok(license_financing_period_from_pay_num(1,24)===0&&license_financing_period_from_pay_num(24,24)===23,
     'Gateway subscription payment number maps exactly to signed installment index');
 finance_reject(fn()=>license_financing_period_from_pay_num(25,24),'Gateway payment number beyond signed installments is rejected');

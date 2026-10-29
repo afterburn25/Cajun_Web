@@ -1,0 +1,75 @@
+name: Native software domain cooldown checks
+on:
+  pull_request:
+    paths:
+      - 'site/app/licenses/software_grants.php'
+      - 'site/app/licenses/service.php'
+      - 'tests/software_domain_cooldown_native.php'
+      - '.github/workflows/software-domain-cooldown.yml'
+  push:
+    branches: [main, feature/software-license-commerce-20261025]
+    paths:
+      - 'site/app/licenses/software_grants.php'
+      - 'site/app/licenses/service.php'
+      - 'tests/software_domain_cooldown_native.php'
+      - '.github/workflows/software-domain-cooldown.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: software-domain-cooldown-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare supported PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-cooldown-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Verify actual domain services and same-second audit ordering
+        shell: bash
+        run: |
+          mkdir -p qa
+          docker run --rm --network host -v "$PWD:/workspace:ro" -w /workspace \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            -e CWP_TEST_PORT=${{ job.services.database.ports[3306] }} \
+            cwp-cooldown-test php tests/software_domain_cooldown_native.php | tee qa/software-domain-cooldown.json
+      - name: Preserve regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-domain-cooldown-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.run_id }}
+          path: qa/software-domain-cooldown.json
+          if-no-files-found: error
+          retention-days: 14

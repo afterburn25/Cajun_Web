@@ -14,7 +14,7 @@ def run_browser(env, browser):
     base, qa, check, provider = (env[k] for k in ('BASE', 'QA', 'check', 'provider_server'))
     soup, token, submit = (env[k] for k in ('soup', 'token', 'submit'))
     admin = base + '/existing/admin/index.php'; portal = base + '/existing/portal/index.php'
-    url = admin + '?view=provider-settings'; staff_url = admin + '?view=staff'
+    url = admin + '?view=provider-settings&stackcp_page=1&stackcp_access_page=1'; staff_url = admin + '?view=staff'
     secret = 'SYNTHETIC_STACKCP_AUTH_CLIENT_KEY'; identity = 'stack-user:24001'; package = 2401
     db('DELETE FROM ci_rate_limits')
     inherited = {name: db('SELECT * FROM ci_' + name + ' ORDER BY ' + ('seq' if name == 'provider_refreshes' else 'id'))
@@ -75,7 +75,8 @@ def run_browser(env, browser):
 
     prefix = 'provider_inventory_stackcp_'; calls = provider.calls
     before = owner.get(url)
-    check('StackCP GET offers explicit preparation without creating tables or sessions', before.status_code == 200 and prefix + 'auth_prepare' in before.text
+    check('StackCP focused GET offers explicit preparation without unrelated provider workspaces, tables or sessions', before.status_code == 200 and prefix + 'auth_prepare' in before.text
+          and 'id="force-ssl-changes"' not in before.text and 'id="directory-listing-changes"' not in before.text
           and not db('SHOW TABLES LIKE "ci_provider_stackcp_auth"') and provider.calls == calls)
     check('StackCP administrator and support context are refused', member.get(url).status_code == 403 and owner.get(url + '&support=fixture').status_code == 403)
     for label, fields, reason in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'), ('password', {'current_password': 'wrong'}, 'current password')]:
@@ -97,7 +98,8 @@ def run_browser(env, browser):
     check('StackCP fixture makes one ordinary hosting-list read only', response.status_code == 200 and provider.calls == calls + 1 and provider.get_paths[-1] == '/package')
     page = owner.get(url); response = owner.post(url, data={'action': 'provider_inventory_link', 'csrf': token(page), 'profile_id': profile['id'], 'revision': str(profile['revision']), 'package_id': str(package), 'client_id': str(client_id), 'current_password': OWNER})
     links = db('SELECT * FROM ci_provider_package_links WHERE profile_id=? ORDER BY package_id', [profile['id']]); link = next(r for r in links if r['package_id'] == package)
-    page_number = [r['package_id'] for r in links].index(package) // 20 + 1; url += '&stackcp_page=' + str(page_number); calls = provider.calls
+    page_number = [r['package_id'] for r in links].index(package) // 20 + 1
+    url = admin + '?view=provider-settings&stackcp_page=' + str(page_number) + '&stackcp_access_page=' + str(page_number); calls = provider.calls
     response = post(prefix + 'assignment_save', stack_identity=identity, acknowledged='1'); evidence('save unverified local draft', response)
     draft_rows = db('SELECT * FROM ci_provider_stackcp_assignments ORDER BY ordinal')
     check('StackCP local draft binds exact client package and auth without provider verification', len(draft_rows) == 1 and json.loads(draft_rows[0]['document_json'])['state'] == 'unverified'

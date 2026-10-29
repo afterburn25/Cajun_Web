@@ -3,7 +3,7 @@ import copy
 import hashlib
 import json
 import time
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
 from release_cases import db
@@ -14,7 +14,7 @@ from cloud_assignment_fixture import dedicated_cloud_owner
 def run_browser(env, browser):
     base, qa, check, provider = (env[k] for k in ('BASE', 'QA', 'check', 'provider_server'))
     soup, token, submit, form_data = (env[k] for k in ('soup', 'token', 'submit', 'form_data'))
-    admin=base+'/existing/admin/index.php';url=admin+'?view=provider-settings';portal=base+'/existing/portal/index.php';services=portal+'?services=1'
+    admin=base+'/existing/admin/index.php';url=admin+'?view=provider-settings&focus=cloud-assignment';portal=base+'/existing/portal/index.php';services=portal+'?services=1'
     db('DELETE FROM ci_rate_limits')
     inherited={name:db('SELECT * FROM ci_'+name+' ORDER BY '+('seq' if name=='provider_refreshes' else 'id')) for name in ['provider_refreshes','audit','provider_cloud_assignment_evidence','provider_cloud_links']}
     before_owner=db('SELECT * FROM ci_users WHERE email=?',['owner@example.invalid'])[0]
@@ -41,6 +41,7 @@ def run_browser(env, browser):
         epoch=db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?',[profile['id']])[0]['epoch']
         time.sleep(max(0,int(epoch or 0)+31-time.time()))
     def evidence(label,response):
+        check(label+' retains the focused cloud assignment workspace',parse_qs(urlparse(response.url).query).get('focus')==['cloud-assignment'] and soup(response).select_one('[data-cloud-assignment-focus]') is not None)
         section=soup(response).select_one('[data-cloud-assignments]')
         rows=db('SELECT f.id,f.seq,f.operation,r.state,r.reason,r.package_count,r.skipped FROM ci_provider_refreshes f LEFT JOIN ci_provider_refresh_results r ON r.id=f.id WHERE f.actor_id=? ORDER BY f.seq',[actor])
         diagnostics.append({'step':label,'status':response.status_code,'read_results':rows,'provider_calls':provider.calls,'post_count':len(provider.posts),
@@ -56,7 +57,10 @@ def run_browser(env, browser):
         check(title+' has no script errors',not errors);context.close()
     def card(response):
         return next((v for v in soup(response).select('[data-client-cloud]') if 'Cloud server #2601' in v.text or 'cloud-assignment.browser.invalid' in v.text),None)
-    check('Cloud assignment status uses prepared history without a new provider call',soup(owner.get(url)).select_one('[data-cloud-assignment-prepare]') is None and provider.calls==calls)
+    focused=owner.get(url);focused_soup=soup(focused)
+    check('Cloud assignment focus keeps cloud controls and full settings navigation',focused.status_code==200 and any(urlparse(a.get('href','')).query=='view=provider-settings' for a in focused_soup.select('[data-cloud-assignment-focus] a')) and focused_soup.select_one('[data-provider-cloud-refresh]') is not None)
+    check('Cloud assignment focus excludes unrelated provider workspaces',focused_soup.select_one('[data-provider-editor], [data-provider-inventory], [data-cloudsite-create], [data-stackcp-auth]') is None)
+    check('Cloud assignment status uses prepared history without a new provider call',focused_soup.select_one('[data-cloud-assignment-prepare]') is None and provider.calls==calls)
     cool();response=post('provider_inventory_cloud_refresh');evidence('Initial complete cloud read',response)
     refresh=diagnostics[-1]['read_results'][-1]['id'];check('Cloud assignment read uses the exact shared cloud GET',provider.calls==calls+1 and provider.get_paths[-1]=='/cloud_server' and diagnostics[-1]['read_results'][-1]['state']=='complete')
     form=soup(response).select_one('[data-cloud-link]');check('Fresh complete cloud observation exposes an explicit local client assignment',form is not None and '2601' in form.text)

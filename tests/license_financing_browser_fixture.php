@@ -103,6 +103,24 @@ function finance_fixture_payment(int $invoice,string $reference):int{
 }
 
 finance_fixture_owner();
+if($operation==='setup-mail'){
+    finance_fixture_private_storage($root);
+    if(!mail_accounts_ready())mail_accounts_migrate($password);
+    if(!mail_drafts_ready())mail_drafts_migrate($password);
+    $accounts=[];
+    foreach(['sender'=>true,'readonly'=>false] as $name=>$send){
+        $label='Finance browser '.$name;
+        if(one('SELECT id FROM '.table('mail_accounts').' WHERE label=?',[$label]))throw new RuntimeException('Use a fresh financing mail fixture.');
+        $id=mail_accounts_save('',0,['label'=>$label,'address'=>$name.'@example.invalid',
+            'imap_host'=>'imap.example.invalid','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>$name,
+            'smtp_host'=>'smtp.example.invalid','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>$name],
+            true,['imap_password'=>'Synthetic finance incoming password','smtp_password'=>'Synthetic finance outgoing password'],$password);
+        mail_accounts_grant($id,1,0,true,$send,true,0,$password);
+        $account=mail_accounts_load($id);
+        $accounts[$name]=['id'=>$id,'revision'=>(int)$account['revision'],'address'=>$account['address']];
+    }
+    echo json_encode($accounts,JSON_THROW_ON_ERROR);exit;
+}
 if(in_array($operation,['setup','setup-initial'],true)){
     finance_fixture_private_storage($root);
     if(!staff_ready())staff_migrate(1,$password);

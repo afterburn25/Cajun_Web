@@ -102,8 +102,8 @@ function license_finance_payment_reversal_apply(array $reversal):string{
                     query('UPDATE '.table('license_finance_charges').' SET status=?,updated_at=? WHERE invoice_id=?',
                         ['review',$now,$invoiceId]);
                 }else{
-                    query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=?',
-                        ['review',$now,$origin['offer_id']]);
+                    query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=? AND status<>?',
+                        ['review',$now,$origin['offer_id'],'retirement_pending']);
                 }
                 license_audit(0,'financing.reversal.review',
                     'Finance agreement '.$origin['offer_id'].' invoice '.$invoiceId.' partial refund '.$eventAmount.
@@ -137,8 +137,8 @@ function license_finance_payment_reversal_apply(array $reversal):string{
                 query('UPDATE '.table('license_finance_charges').' SET status=?,updated_at=? WHERE invoice_id=?',
                     [$kind==='void'?'voided':'refunded',$now,$invoiceId]);
             }else{
-                query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=?',
-                    ['reversal_recovery',$now,$origin['offer_id']]);
+                query('UPDATE '.table('license_finance_subscriptions').' SET status=?,updated_at=? WHERE offer_id=? AND status<>?',
+                    ['reversal_recovery',$now,$origin['offer_id'],'retirement_pending']);
             }
             $syncInvoice=$invoiceId;$result=$kind==='void'?'finance_void_reversed':'finance_refund_reversed';
         });
@@ -151,11 +151,12 @@ function license_finance_payment_reversal_apply(array $reversal):string{
 
 function license_finance_payment_reversal_review(array $details,string $eventTransactionId,string $eventType):string{
     if(!license_finance_gateway_ready()||!ledger_ready())return 'finance_reversal_unmatched';
-    $gateway=license_finance_anet_settings();
     $reversal=software_anet_reversal_details($details,$eventTransactionId,$eventType);
     if(license_finance_reversal_origin((string)$reversal['original_transaction_id'])===null){
         return 'finance_reversal_unmatched';
     }
+    // Finance activation must not gate reversals belonging to software orders.
+    $gateway=license_finance_anet_settings();
     if($gateway['mode']!=='production')return 'sandbox_finance_reversal_verified';
     if($reversal['kind']==='refund'&&($reversal['amount_cents']===null||$reversal['amount_cents']<1)){
         throw new RuntimeException('Financing refund amount is not trustworthy.');
