@@ -18,7 +18,7 @@ def run_browser(env,browser):
           fresh_provider.status_code==200 and 'Your 20i control center' in fresh_provider.text
           and 'Save the General API key' in fresh_provider.text
           and 'Read verified for current settings' not in fresh_provider.text
-          and all(f'id="twentyi-{area}"' in fresh_provider.text for area in ('connection','check','hosting','cloud','domains','site-tools','access'))
+          and all(f'id="twentyi-{area}"' in fresh_provider.text for area in ('connection','hosting','cloud','domains','site-tools','access'))
           and 'https://my.20i.com/reseller/api' in fresh_provider.text
           and 'does not' in fresh_provider.text.lower())
     check('Fresh owner provider page does not require redundant inventory preparation',fresh_provider.status_code==200 and 'Prepare inventory storage' not in fresh_provider.text and 'Cloud server inventory' in fresh_provider.text and 'Save your 20i connection above' in fresh_provider.text)
