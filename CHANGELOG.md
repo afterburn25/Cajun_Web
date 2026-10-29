@@ -1,3 +1,9 @@
+## Unreleased — receipts during recurring financing enrollment
+
+- Validate all remaining installment balances before scheduling replacement payments.
+- Recheck initial and replacement enrollment after provider I/O; retain and verify cancellation of obsolete known subscriptions.
+- Preserve pending cancellation through lifecycle replays, settlements and verified reversals, with safe owner and scheduler retries.
+
 ## Unreleased — replacement billing after financing payoff
 
 - Avoid replacement creation after verified payoff and retain any known replacement created while payoff commits.

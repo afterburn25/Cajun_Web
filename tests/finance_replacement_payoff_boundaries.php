@@ -36,7 +36,7 @@ $groups=[
         'license_finance_subscription_create_profile','license_finance_subscription_enroll_opaque','license_finance_subscription_finalize',
         'license_finance_subscription_payoff_due','license_finance_subscription_payoff_retire','license_finance_subscription_reconcile',
         'license_finance_subscription_replacement_reserve','license_finance_subscription_replacement_review','license_finance_subscription_replacement_declined',
-        'license_finance_subscription_replacement_finalize','license_finance_subscription_reenroll_opaque','license_finance_subscription_signed_remaining_contract'],
+        'license_finance_subscription_replacement_finalize','license_finance_subscription_reenroll_opaque','license_finance_subscription_signed_remaining_contract','license_finance_subscription_replacement_retire'],
     'app/billing/finance_authorize_net.php'=>['license_finance_anet_retire_paid_off_subscription','license_finance_anet_retire_subscription'],
     'app/licenses/financing.php'=>['license_financing_sync_by_invoice'],
     'app/licenses/finance_installments.php'=>['license_finance_scheduler_run'],
@@ -46,7 +46,7 @@ foreach($groups as $path=>$names){
     $source=file_get_contents($root.'/site/'.$path);
     foreach($names as $name){
         if(!preg_match('/^function '.$name.'\(.*?(?=^function |\z)/ms',$source,$match)){
-            if(in_array($name,['license_finance_subscription_payoff_due','license_finance_subscription_payoff_retire','license_finance_anet_retire_paid_off_subscription','license_finance_subscription_signed_remaining_contract'],true))continue;
+            if(in_array($name,['license_finance_subscription_payoff_due','license_finance_subscription_payoff_retire','license_finance_anet_retire_paid_off_subscription','license_finance_subscription_signed_remaining_contract','license_finance_subscription_replacement_retire'],true))continue;
             throw new \RuntimeException('Missing source function '.$name);
         }
         eval('namespace FinancePayoffRetirement; use \\RuntimeException; use \\InvalidArgumentException; use \\LogicException; use \\Throwable; use \\PDOException; '.$match[0]);

@@ -115,7 +115,7 @@ function license_financing_subscription_settlement_status(string $status,bool $o
         'pending_first_payment','active','payment_failed','billing_suspended' => 'active',
         'cancelled' => 'cancelled',
         'review' => $ownerReconcile?'active':null,
-        'replacing','reversal_recovery','paid_off','sandbox_test' => null,
+        'replacing','reversal_recovery','paid_off','sandbox_test','retirement_pending' => null,
         default => throw new InvalidArgumentException('Unknown financing subscription state.')
     };
 }
