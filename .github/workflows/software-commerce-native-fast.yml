@@ -5,6 +5,7 @@ on:
       - feature/software-license-commerce-20261025
     paths:
       - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
       - 'site/app/billing/software_*.php'
       - 'site/app/billing/authorize_net_*.php'
       - 'site/app/licenses/software_*.php'
@@ -13,9 +14,12 @@ on:
       - '.github/workflows/software-commerce-native-fast.yml'
   pull_request:
     branches:
+      - main
       - feature/software-license-commerce-20261025
+      - 'codex/**'
     paths:
       - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
       - 'site/app/billing/software_*.php'
       - 'site/app/billing/authorize_net_*.php'
       - 'site/app/licenses/software_*.php'
@@ -63,7 +67,20 @@ jobs:
           mkdir -p test-runtime/software-private qa
           php -r '$storage=realpath("test-runtime/software-private");$cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>$storage,"key"=>str_repeat("a",64),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"swci_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");'
       - name: Run full software commerce native suite
-        run: php tests/software_commerce_native.php
+        shell: bash
+        run: |
+          git rev-parse HEAD > qa/software-commerce-native-commit.txt
+          git rev-parse 'HEAD^{tree}' > qa/software-commerce-native-tree.txt
+          sha256sum site/app/licenses/software_grants.php tests/software_commerce_native.php tests/software_domain_lifecycle_concurrency.php > qa/software-commerce-native-source.sha256
+          php tests/software_commerce_native.php 2>&1 | tee qa/software-commerce-native.log
+      - name: Preserve native regression evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: software-commerce-native-${{ github.run_id }}
+          path: qa/software-commerce-native*
+          if-no-files-found: error
+          retention-days: 14
       - name: Verify shipping source remained unchanged
         if: always()
         run: git diff --exit-code -- site foundation

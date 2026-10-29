@@ -4,6 +4,7 @@ on:
     branches: [feature/software-license-commerce-20261025]
     paths:
       - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
       - 'site/app/billing/software_payment_review.php'
       - 'site/app/billing/catalog.php'
       - 'site/app/billing/software_orders.php'
@@ -29,6 +30,7 @@ on:
     branches: [feature/software-license-commerce-20261025]
     paths:
       - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
       - 'site/app/billing/software_payment_review.php'
       - 'site/app/billing/catalog.php'
       - 'site/app/billing/software_orders.php'

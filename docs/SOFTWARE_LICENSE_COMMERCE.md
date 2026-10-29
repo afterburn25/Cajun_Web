@@ -23,8 +23,6 @@ This independent correction stacks on #287 (`4f368547`) and makes both direct ow
 
 This branch contains #287 but not #285/#286/#288. Reserved branches and the current Application run remain untouched. The actual provider, installed HTTP, independent review, final combined/main acceptance and release gates remain pending.
 
-||||||| 3789bb50
-=======
 ## Delayed finance checkout result identity — 2026-10-28
 
 Follow-up to independent PR #290 on frozen `5e56c250`: `license_finance_charge_mark()` previously selected only the current invoice row, allowing a delayed result from an older attempt to overwrite a newer processing attempt. `license_finance_charge_record_paid()` also lacked the original request-key and retained transaction checks before reaching the ledger. This does not establish an unauthorized paid transition: existing ledger uniqueness can independently reject some stale receipts.
@@ -45,7 +43,13 @@ Real PDO/InnoDB tests exercise canonical charge/attempt DDL, FKs/indexes, actual
 
 The regression is added to the existing four-lane recurring workflow, with its own retained report and test path filter; no duplicate workflow or manual dispatch is introduced. Both PHP versions pass the10-case routing suite,54 finance source contracts and touched-file syntax. Synthetic gateway details and parent records are explicit: this is not real Authorize.net, webhook-signature, installed-browser or paid-off-license acceptance. Hosted current-head testing, independent approval and exact combined/main acceptance remain required. Work stays on the separate `codex/finance-capture-snapshot` branch; Devin/integration ownership and unavailable sandbox credentials remain unchanged.
 
->>>>>>> refs/codex-ledger
+||||||| 3789bb50
+=======
+## Customer domain lifecycle concurrency — 2026-10-28
+
+Customer registration, deactivation and replacement recheck active and expiry state after acquiring the license row lock. A request waiting behind suspension or expiry must reject the mutation while preserving domains and the committed lifecycle state. The native suite exercises all three operations with real concurrent SQL connections and positive recovery controls. [Independent review and runtime scope](CODEX_SOFTWARE_DOMAIN_LOCK_REVIEW.md).
+
+>>>>>>> refs/c293
 ## Focused provider acceptance repair — 2026-10-28
 
 Application run `40728300754` passed build, recovery, Apache and native phases and reached 2,997 installed-browser checks before the provider settings response exceeded Playwright's unchanged 30-second limit. A bounded StackCP page request now retains the provider account and hosting inventory but loads only StackCP setup and access workspaces, rather than recomputing unrelated provider histories. Both StackCP sections remain owner-only and preserve CSRF, password, immutable-history and exact-provider-read controls; the complete provider page remains available through an explicit return link. This clears an earlier integration-performance blocker without changing licensing, payment or financing state. Exact hosted browser evidence is still required. [Run review](CODEX_PR266_APPLICATION_40728300754.md).
