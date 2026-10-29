@@ -134,6 +134,7 @@ jobs:
               php -n tests/provider_plan_catalog_document.php qa/provider-plan-catalog-document-noini.json
               php -d memory_limit=128M tests/recurring_billing_native.php
               php tests/license_finance_reconcile_native.php site/app/billing/finance_subscription.php fq_ci_recon_ > qa/license-finance-reconcile-native-results.json
+              cat qa/license-finance-reconcile-native-results.json
               cat qa/service-orders-native-results.json
               cat qa/service-orders-links-native-results.json
               cat qa/service-orders-link-views-native-results.json
@@ -160,8 +161,7 @@ jobs:
           path: |
             qa/recurring-billing-native-results.json
             qa/license-finance-reconcile-native-results.json
-
-qa/finance-capture-snapshot-native-results.json
+            qa/finance-capture-snapshot-native-results.json
             qa/finance-charge-attempt-bindings.json
             qa/finance-charge-response-native-results.json
             qa/finance-initial-enrollment-handler.json

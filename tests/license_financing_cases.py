@@ -207,6 +207,9 @@ def run_browser(env,browser):
     check('Unpaid down-payment project release remains locked while the separate active project downloads',
           alice.get(initial_release_url,timeout=25).status_code==404
           and alice.get(release_url,timeout=25).status_code==200)
+    # The validate rate bucket is a fixed per-IP minute window shared with the
+    # adjacent software suite; roll the bucket before this probe.
+    time.sleep(61)
     initial_still_denied=requests.post(validate,json={
         'license_key':initial['license_key'],'domain':initial['domain']
     },timeout=25)
