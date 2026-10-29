@@ -169,6 +169,9 @@ function license_finance_subscription_payoff_retire(string $offerId,#[\Sensitive
             return $row;
         }));
         if($reserved===null)return 'review';
+        // A disabled or unprepared gateway cannot verify terminal state; the
+        // reserved review status is retried once gateway settings return.
+        try{license_finance_anet_settings();}catch(Throwable){return 'review';}
         $terminal=license_finance_anet_retire_paid_off_subscription($offerId,$reserved);
         return staff_locked(fn()=>staff_transaction(function()use($offerId,$reserved,$terminal,$ownerPassword):string{
             if($ownerPassword!==null)staff_owner($ownerPassword);
@@ -433,6 +436,7 @@ function license_finance_subscription_replacement_retire(string $offerId,#[\Sens
         }));
         // The adapter verifies the exact retained contract and terminal readback.
         // Its active-cancellation policy also applies to this obsolete candidate.
+        try{license_finance_anet_settings();}catch(Throwable){return 'review';}
         $terminal=license_finance_anet_retire_paid_off_subscription($offerId,$reserved);
         return staff_locked(fn()=>staff_transaction(function()use($offerId,$ownerPassword,$reserved,$terminal):string{
             if($ownerPassword!==null)staff_owner($ownerPassword);
