@@ -1,3 +1,9 @@
+## Unreleased — retire automatic financing billing after payoff
+
+- Recheck payoff after in-flight initial enrollment and retain the returned subscription before cancellation.
+- Verify terminal gateway retirement after manual or recurring payoff; preserve uncertain outcomes for owner/scheduler reconciliation.
+- Keep committed payments, permanent license unlock and independent domain/rights controls intact.
+
 ## Unreleased — prevent financing enrollment after recorded payoff
 
 - Recheck signed initial and installment ledger evidence for both initial enrollment callers under the reservation mutex.
