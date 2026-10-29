@@ -76,6 +76,19 @@ jobs:
               cat qa/finance-charge-attempt-bindings.json
               cat qa/finance-charge-response-native-results.json
             '
+      - name: Initial financing enrollment from verified ledger payments
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-recurring-test sh -ec '
+              mkdir -p qa
+              php -l tests/finance_initial_enrollment_handler.php
+              php -l tests/finance_initial_enrollment_native.php
+              php tests/finance_initial_enrollment_handler.php > qa/finance-initial-enrollment-handler.json
+              php tests/finance_initial_enrollment_native.php fie_ci_native_ > qa/finance-initial-enrollment-native.json
+              cat qa/finance-initial-enrollment-handler.json
+              cat qa/finance-initial-enrollment-native.json
+            '
       - name: Native consent and unique period invoices
         run: |
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
@@ -117,6 +130,8 @@ jobs:
             qa/finance-capture-snapshot-native-results.json
             qa/finance-charge-attempt-bindings.json
             qa/finance-charge-response-native-results.json
+            qa/finance-initial-enrollment-handler.json
+            qa/finance-initial-enrollment-native.json
             qa/service-orders-native-results.json
             qa/service-orders-links-native-results.json
             qa/service-orders-link-views-native-results.json

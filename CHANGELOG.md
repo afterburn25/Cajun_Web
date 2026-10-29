@@ -1,3 +1,9 @@
+## Unreleased — verified financing initial-payment enrollment
+
+- Allow signed remaining installments after the exact down-payment invoice is fully paid in the retained ledger.
+- Recheck current client, agreement, schedule and payment at reservation; reject altered, reversed, duplicate and paid-off enrollment.
+- Use ledger evidence in the portal and hide paid-off payment/enrollment controls.
+
 ## Unreleased — product-bound software validation
 
 - Require new software entitlements to identify their exact product during public validation, closing cross-product key reuse on an otherwise valid licensed domain.
