@@ -17,6 +17,7 @@ Independent review of #297 identified stale projected state after a committed pa
 # Software licenses, purchases and unified client portal — implementation contract
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Native financing reconciliation audit correction — 2026-10-28
 
 This independent correction stacks on #287 (`4f368547`) and makes both direct owner reconciliation mutations atomic with their licensing audit event. Native trigger rejection reproduces two committed-state failures per PHP/database combination on the parent. The fix passes 75 assertions on PHP 8.2.35/8.4.25 × MariaDB 10.11.19/MySQL 8.4.13 (300 executions); the snapshot fences, real account mutex, owner reauthentication and provider-read boundary remain intact. A separate PHP writer verifies preservation of concurrent subscription state. The existing native workflow now runs and retains the regression. [Source, exact scope and retained first failures](CODEX_FINANCE_RECONCILE_AUDIT.md).
@@ -50,6 +51,13 @@ The regression is added to the existing four-lane recurring workflow, with its o
 Customer registration, deactivation and replacement recheck active and expiry state after acquiring the license row lock. A request waiting behind suspension or expiry must reject the mutation while preserving domains and the committed lifecycle state. The native suite exercises all three operations with real concurrent SQL connections and positive recovery controls. [Independent review and runtime scope](CODEX_SOFTWARE_DOMAIN_LOCK_REVIEW.md).
 
 >>>>>>> refs/c293
+||||||| 3789bb50
+=======
+## Unresolved financing replacement creation — 2026-10-28
+
+Replacement enrollment retains `review` when the provider creation result lacks a verified identity or is otherwise unresolved. A second customer create remains blocked. Explicit recognized request-validation rejection without a candidate identity can restore retry; unknown, internal, duplicate or mixed errors require reconciliation. Existing retirement, remaining-period and paid-off protections remain in place. [Independent review](CODEX_FINANCE_REPLACEMENT_OUTCOME_REVIEW.md).
+
+>>>>>>> refs/codex-286
 ## Focused provider acceptance repair — 2026-10-28
 
 Application run `40728300754` passed build, recovery, Apache and native phases and reached 2,997 installed-browser checks before the provider settings response exceeded Playwright's unchanged 30-second limit. A bounded StackCP page request now retains the provider account and hosting inventory but loads only StackCP setup and access workspaces, rather than recomputing unrelated provider histories. Both StackCP sections remain owner-only and preserve CSRF, password, immutable-history and exact-provider-read controls; the complete provider page remains available through an explicit return link. This clears an earlier integration-performance blocker without changing licensing, payment or financing state. Exact hosted browser evidence is still required. [Run review](CODEX_PR266_APPLICATION_40728300754.md).

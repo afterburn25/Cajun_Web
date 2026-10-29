@@ -28,6 +28,7 @@ Independent review of #297 identified stale projected state after a committed pa
 
 # Session handoff - Devin sole-owner continuation
 
+<<<<<<< HEAD
 ## 2026-10-28 — independent cloud assignment focus correction
 
 Run 40767087342 on integration base `3789bb50` finished with 3,218 passing browser checks followed by a 30-second cloud-assignment page navigation timeout. Independent correction `codex/cloud-assignment-focused-view` adds an explicit cloud inventory/assignment workspace with full-settings navigation and focus-preserving redirects. Existing cloud history and owner/CSRF controls are retained. Fifteen real-template checks pass on PHP 8.2/8.4 with and without INI; the old template fails the regression. Fourteen fixture checks pass. Windows native setup refuses required 0600 permissions before assertions; new native and installed browser cases require Linux CI. No timeout or security assertion was relaxed. [Evidence and scope](docs/CODEX_PR266_APPLICATION_40767087342.md).
@@ -84,6 +85,13 @@ The same native execution now retains stdout/stderr, checkout/tree identifiers a
 
 Independent review of exact integration parent `3789bb50` reproduced an in-flight domain registration/deactivation/replacement committing after a competing suspension. The license remains inactive; this is a P2 mutation boundary, not a validation bypass. The focused correction moves each active/expiry check immediately after the existing license row lock. Twelve original reproductions, 120 targeted checks and the full native suite (269 checks on each of PHP 8.2/8.4 × MariaDB/MySQL, 1,076 executions) are preserved; the targeted counts overlap the full suite. No unexpected PHP diagnostics. Both native workflow filters include the regression helper. Integration ownership, protected runs and unavailable sandbox credentials are unchanged; exact combined hosted acceptance and independent review remain required. [Evidence and limitations](docs/CODEX_SOFTWARE_DOMAIN_LOCK_REVIEW.md).
 
+||||||| 3789bb50
+=======
+## 2026-10-28 — retain unresolved financing replacement outcomes for review
+
+Independent review of frozen integration `3789bb50` reproduced unresolved ARB creation responses restoring `billing_suspended` and admitting another create. The focused correction keeps unknown/malformed/duplicate/internal outcomes in `review`; only explicit recognized request-validation rejection without a candidate identity permits retry. The same 100 assertions fail original source (42 failures) and pass corrected source on PHP 8.2/8.4; five existing financing/isolation suites also pass. These are exact function bodies with strict synthetic dependencies, not real gateway transactions or native SQL. Protected Application run `40767087342` is preserved, and the integration writer retains branch ownership. [Finding, evidence and limitations](docs/CODEX_FINANCE_REPLACEMENT_OUTCOME_REVIEW.md).
+
+>>>>>>> refs/codex-286
 ## 2026-10-28 — d062 Application terminal result and focused provider repair
 
 PR #266 remains exact `d062bd5c3b78f3ec265ffc8a404e253013cfa924`; main remains `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`; integration PR #268 remains `74b5af3a2f2dd50ad70f34ea211a5b5b973635af`. Application run `40728300754` is terminal failure. Build, recovery, Apache and native passed; browser job `122971621925` reached 2,997 passing checks and then timed out navigating the StackCP-focused provider URL. Artifact `12850372335` shows repeated real 27–31 second responses because the focused query still rendered every unrelated provider history workspace. The prepared correction scopes StackCP pagination to the account/inventory and two StackCP workspaces, retains bounded page selectors through redirects, and adds presence/absence regressions. Do not raise the browser timeout. The prior suite-owned session correction remains necessary later in the matrix. Local Python syntax, whitespace and 69 build guards pass; hosted exact-head Application remains required. See [exact evidence](docs/CODEX_PR266_APPLICATION_40728300754.md).
