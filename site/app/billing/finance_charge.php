@@ -58,18 +58,19 @@ function license_finance_charge_prepare(array $request,string $attemptKey):array
     });
     return $result;
 }
-function license_finance_charge_mark(int $invoice,string $state,?string $transactionId,string $attemptKey):void{
+function license_finance_charge_mark(int $invoice,string $state,?string $transactionId,string $attemptKey):bool{
     if(!in_array($state,['declined','uncertain','review','sandbox_test'],true))throw new InvalidArgumentException('Unsupported financing payment outcome.');
-    staff_locked(fn()=>staff_transaction(function()use($invoice,$state,$transactionId,$attemptKey):void{
+    return staff_locked(fn()=>staff_transaction(function()use($invoice,$state,$transactionId,$attemptKey):bool{
         $charge=one('SELECT * FROM '.table('license_finance_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
         if(!$charge||$charge['status']!=='processing'
             ||!hash_equals((string)$charge['request_key'],$attemptKey)
-            ||($charge['transaction_id']!==null&&($transactionId===null||!hash_equals((string)$charge['transaction_id'],$transactionId))))return;
+            ||($charge['transaction_id']!==null&&($transactionId===null||!hash_equals((string)$charge['transaction_id'],$transactionId))))return false;
         $now=gmdate('Y-m-d H:i:s');
         query('UPDATE '.table('license_finance_charge_attempts').' SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?',
             [$state,$transactionId,$now,$charge['request_key'],'processing']);
         query('UPDATE '.table('license_finance_charges').' SET status=?,transaction_id=?,updated_at=? WHERE id=?',
             [$state,$transactionId,$now,$charge['id']]);
+        return true;
     }));
 }
 function license_finance_charge_record_paid(int $invoice,string $transactionId,int $cents,string $attemptKey,?array $profiles=null,
@@ -129,7 +130,8 @@ function license_finance_charge_run(array $request,string $attemptKey,string $de
             }
         }
         if($gateway['mode']==='sandbox'){
-            license_finance_charge_mark($invoice,'sandbox_test',$transactionId,$attemptKey);
+            // A superseded response cannot authorize a recurring subscription.
+            if(!license_finance_charge_mark($invoice,'sandbox_test',$transactionId,$attemptKey))return 'review';
             if($prepared['create_profile']&&$profiles!==null)license_finance_subscription_create_profile((string)$offer['id'],$profiles);
             return 'sandbox';
         }
