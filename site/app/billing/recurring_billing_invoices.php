@@ -65,6 +65,7 @@ function recurring_billing_issue(string $id,int $client,int $revision,string $ha
     return recurring_billing_locked(function()use($id,$client,$revision,$hash,$period,$request):array{
         $actor=recurring_billing_staff();service_plans_client_row($client);$row=recurring_billing_row($id);
         if((int)$row['client_id']!==$client)throw new RuntimeException('Recurring agreement unavailable.');
+        if(recurring_billing_finance_managed($id))throw new RuntimeException('Financing installment invoices are issued only by the signed finance workflow.');
         $family=recurring_billing_family($row['subscription_id']);$doc=recurring_billing_validate($row,$family['source']);
         $input=recurring_billing_invoice_input($id,$client,$revision,$hash,$period,$actor);$prior=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE id=?',[$request]);
         if($prior){

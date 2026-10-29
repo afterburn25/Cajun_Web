@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/projects/archive.php';
+require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
 require_once CWP_CODE_ROOT.'/database/schema/delivery_schema.php';
 function delivery_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['delivery_schema_version'])['value']??'')==='1';}
 function delivery_require(): array {if(support_current())throw new RuntimeException('Leave support before managing website releases.');if(!delivery_ready())throw new RuntimeException('Enable website deliveries first.');return staff_require('clients.manage');}
@@ -56,6 +57,22 @@ function delivery_publish(string $id,string $review,#[\SensitiveParameter] strin
 function delivery_client_record(string $id): array {
     if(!delivery_ready()||!($client=studio_client()))throw new RuntimeException('Release unavailable.');$r=delivery_record($id);$job=studio_job((int)$r['job_id'],(int)$client['id']);if($r['status']!=='published'||(int)$r['client_id']!==(int)$client['id'])throw new RuntimeException('Release unavailable.');return $r;
 }
+/** Null means this release/project is not governed by financed-license access. */
+function delivery_financing_access(array $release): ?array {
+    if(license_financing_feature_state()===null)return null;
+    $plans=all(
+        'SELECT f.license_id FROM '.table('license_financing').' f '.
+        'JOIN '.table('recurring_billing_schedules').' s ON s.id=f.schedule_id '.
+        'WHERE s.job_id=? AND s.client_id=? ORDER BY f.license_id',
+        [(int)$release['job_id'],(int)$release['client_id']]
+    );
+    if(!$plans)return null;
+    foreach($plans as $plan){
+        $verdict=license_financing_access((int)$plan['license_id']);
+        if($verdict!==null&&!$verdict['authorized'])return $verdict;
+    }
+    return ['authorized'=>true,'state'=>'current','reason'=>null];
+}
 function delivery_range(string $header,int $size): array {
     if($header==='')return [0,$size-1,200];if(!preg_match('/^bytes=(\d{0,10})-(\d{0,10})$/D',$header,$m)||$m[1]===''&&$m[2]==='')throw new InvalidArgumentException('Unsupported byte range.');
     if($m[1]===''){$length=(int)$m[2];if($length<1)throw new InvalidArgumentException('Invalid byte range.');return [max(0,$size-$length),$size-1,206];}
@@ -66,15 +83,56 @@ function delivery_download(string $id,bool $admin=false): never {
     $fh=null;
     try{[$r,$fh,$actorType,$actorId]=staff_locked(function() use($id,$admin): array {
         if($admin){$actor=delivery_require();$r=delivery_record($id);$type='admin';$actorId=(int)$actor['id'];}
-        else{if($ctx=support_current()){$fresh=support_resolve($ctx['session']['id']);if(!$fresh||!staff_can('support.download',$fresh['actor'])){support_record('release.download','release',preg_match('/^[a-f0-9]{32}$/D',$id)?$id:'','denied');throw new RuntimeException('Download is unavailable.');}$GLOBALS['cwp_support']=$fresh;}$r=delivery_client_record($id);$type=support_current()?'support':'client';$actorId=(int)(support_current()['actor']['id']??studio_client()['id']);}
+        else{if($ctx=support_current()){$fresh=support_resolve($ctx['session']['id']);if(!$fresh||!staff_can('support.download',$fresh['actor'])){support_record('release.download','release',preg_match('/^[a-f0-9]{32}$/D',$id)?$id:'','denied');throw new RuntimeException('Download is unavailable.');}$GLOBALS['cwp_support']=$fresh;}$r=delivery_client_record($id);$finance=delivery_financing_access($r);if($finance!==null&&!$finance['authorized'])throw new RuntimeException('Financing access is locked.');$type=support_current()?'support':'client';$actorId=(int)(support_current()['actor']['id']??studio_client()['id']);}
         return [$r,delivery_open($r),$type,$actorId];
     });}catch(InvalidArgumentException|RuntimeException){if(support_current())support_record('release.download','release',preg_match('/^[a-f0-9]{32}$/D',$id)?$id:'','denied');fail_page('Website release unavailable. Contact the studio.',404);}
     $size=(int)$r['bytes'];$etag='"'.$r['sha256'].'"';$range=$_SERVER['HTTP_RANGE']??'';if($_SERVER['REQUEST_METHOD']==='HEAD'||isset($_SERVER['HTTP_IF_RANGE'])&&$_SERVER['HTTP_IF_RANGE']!==$etag)$range='';
     try{[$start,$end,$status]=delivery_range($range,$size);}catch(InvalidArgumentException){fclose($fh);header('Content-Range: bytes */'.$size);fail_page('Requested range is unavailable.',416);}
-    try{staff_locked(fn()=>staff_transaction(function() use($id,$admin,$r,$actorType,$actorId,$start,$end): void {
-        if($admin)delivery_require();else{if($ctx=support_current()){$fresh=support_check($ctx['session']['id']);if(!$fresh||!staff_can('support.download',$fresh['actor']))throw new RuntimeException('Support access ended.');$GLOBALS['cwp_support']=$fresh;}delivery_client_record($id);}
-        $action=$_SERVER['REQUEST_METHOD']==='HEAD'?'inspect':'download.started';delivery_event($r,$actorType,$actorId,$action,'bytes '.$start.'-'.$end);if(support_current())support_record('release.download','release',$id);elseif($admin)delivery_audit($actorId,$action,'Release '.$id);
-    }));}catch(Throwable){fclose($fh);fail_page('Download could not be recorded. Try again or contact the studio.',503);}
+    try{
+        staff_locked(function() use($id,$admin,$r,$actorType,$actorId,$start,$end): void {
+            $supportId=null;
+            if(!$admin){
+                // Financing sync owns the license transaction. Keep it outside the
+                // delivery-event transaction so a valid financed release download
+                // never fails only because nested transactions are forbidden.
+                if($ctx=support_current()){
+                    $supportId=(string)$ctx['session']['id'];
+                    $fresh=staff_transaction(fn()=>support_check($supportId));
+                    if(!$fresh||!staff_can('support.download',$fresh['actor']))throw new RuntimeException('Support access ended.');
+                    $GLOBALS['cwp_support']=$fresh;
+                }
+                $freshRelease=delivery_client_record($id);
+                $finance=delivery_financing_access($freshRelease);
+                if($finance!==null&&!$finance['authorized'])throw new RuntimeException('Financing access is locked.');
+            }
+            staff_transaction(function() use($id,$admin,$r,$actorType,$actorId,$start,$end,$supportId): void {
+                if($admin){
+                    delivery_require();
+                }else{
+                    if($supportId!==null){
+                        $fresh=support_check($supportId,false);
+                        if(!$fresh||!staff_can('support.download',$fresh['actor']))throw new RuntimeException('Support access ended.');
+                        $GLOBALS['cwp_support']=$fresh;
+                    }
+                    // Recheck customer/release ownership at attribution time. The
+                    // financing verdict was refreshed immediately before this
+                    // transaction under the same staff mutex.
+                    $freshRelease=delivery_client_record($id);
+                    if((string)$freshRelease['id']!==(string)$r['id']
+                        ||(int)$freshRelease['client_id']!==(int)$r['client_id']
+                        ||(string)$freshRelease['status']!=='published'){
+                        throw new RuntimeException('Release access changed.');
+                    }
+                }
+                $action=$_SERVER['REQUEST_METHOD']==='HEAD'?'inspect':'download.started';
+                delivery_event($r,$actorType,$actorId,$action,'bytes '.$start.'-'.$end);
+                if(support_current())support_record('release.download','release',$id);
+                elseif($admin)delivery_audit($actorId,$action,'Release '.$id);
+            });
+        });
+    }catch(Throwable){
+        fclose($fh);fail_page('Download could not be recorded. Try again or contact the studio.',503);
+    }
     http_response_code($status);header('Content-Type: application/zip');header('Content-Disposition: attachment; filename="website-'.$r['job_id'].'-'.$r['version'].'.zip"');header('Cache-Control: private, no-store');header('X-Content-Type-Options: nosniff');header('ETag: '.$etag);header('Accept-Ranges: bytes');header('Content-Length: '.($end-$start+1));if($status===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.$size);
     if(session_status()===PHP_SESSION_ACTIVE)session_write_close();if($_SERVER['REQUEST_METHOD']==='GET'){fseek($fh,strlen(CWP_GUARD)+$start);$left=$end-$start+1;while($left>0&&!feof($fh)){ $chunk=fread($fh,min(65536,$left));if($chunk===false||$chunk==='')break;echo $chunk;$left-=strlen($chunk);}}fclose($fh);exit;
 }

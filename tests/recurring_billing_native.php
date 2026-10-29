@@ -49,7 +49,7 @@ if(($argv[1]??'')==='worker'){
     rb_staff();echo "ready\n";fflush(STDOUT);try{$r=recurring_billing_issue($argv[2],1,(int)$argv[3],$argv[4],(int)$argv[5],$argv[6]);echo $r['replayed']?'replay':'new';}catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
 try {
-    foreach(schema_statements($prefix) as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('payments_schema_version','1');save_setting('invoice_ledger_schema_version','1');save_setting('support_schema_version','1');
+    foreach(schema_statements($prefix) as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('payments_schema_version','2');save_setting('invoice_ledger_schema_version','1');save_setting('support_schema_version','1');
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Recurring staff '.$i,'recurring'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);
     foreach([2=>['clients.manage','payments.manage'],3=>['clients.manage'],4=>['payments.manage']] as $id=>$permissions)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($permissions)]);
     for($i=1;$i<=2;$i++){query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Recurring client '.$i,'recurring-client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[$i,'Existing project '.$i,'Preserved scope','design','','2020-01-01 00:00:00','2020-01-01 00:00:00']);}
@@ -102,6 +102,7 @@ try {
         rb_ok('Restored '.$missing.' retains exact consent invoices and audit',recurring_billing_ready()&&rb_snapshot()===$beforeMissing);
     }
     rb_ok('Existing project fields are unchanged',$projects===recurring_billing_json(all('SELECT * FROM '.table('studio_jobs'))));rb_ok('No provider call or payment attempt is created',rb_count('provider_profiles')===0&&rb_count('payment_attempts')===0);rb_ok('Audit excludes agreement text and passwords',!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$password)&&!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$fields['terms']));
+    require __DIR__.'/license_financing_native_cases.php';
     require __DIR__.'/service_orders_native_cases.php';
     require __DIR__.'/service_orders_links_cases.php';
     require __DIR__.'/service_orders_link_views_cases.php';

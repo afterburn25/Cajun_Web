@@ -4,6 +4,24 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
+function license_bundle_is_software_entitlement(int $licenseId): bool {
+    if($licenseId<1)return false;
+    $table=config()['db']['prefix'].'software_entitlements';
+    $present=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$table]);
+    if($present&&one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]))return true;
+    $license=one('SELECT product_id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]);
+    if(!$license)return false;
+    $sku=(string)($license['product_id']??'');
+    $catalog=config()['db']['prefix'].'catalog_products';
+    $catalogPresent=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$catalog]);
+    if($catalogPresent){
+        $product=one('SELECT family FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
+        if(($product['family']??'')==='software')return true;
+    }
+    return (bool)one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+        ['license.software.issue','Software license '.$licenseId.' issued as %']);
+}
+
 /**
  * Create a bundled ZIP for a licensed product.
  * Returns the path to the created ZIP file.
@@ -23,6 +41,9 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
         // Master keys are internal staff testing keys — embedding one in a
         // deliverable ZIP would leak a key that authorizes every domain.
         throw new InvalidArgumentException('Master license keys cannot be bundled for delivery.');
+    }
+    if(license_bundle_is_software_entitlement((int)$license['id'])){
+        throw new InvalidArgumentException('Software entitlements use versioned private releases and cannot use legacy website bundles.');
     }
 
     // Find the industry module in Website Core examples
@@ -106,6 +127,9 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
 function license_bundle_store(int $licenseId, string $zipPath, string $title): void {
     if ((int)(one('SELECT is_master FROM '.table('website_licenses').' WHERE id=?',[$licenseId])['is_master']??0)===1) {
         throw new InvalidArgumentException('Master license keys cannot be bundled for delivery.');
+    }
+    if(license_bundle_is_software_entitlement($licenseId)){
+        throw new InvalidArgumentException('Software entitlements cannot be stored as legacy website bundles.');
     }
     $now = gmdate('Y-m-d H:i:s');
     $sha = is_file($zipPath) ? hash_file('sha256', $zipPath) : false;

@@ -17,6 +17,7 @@ def one_record(response, key):
 
 def prepare(repo, installed, base, php, owner, client, other, client_id, job_id, password, fields, submit, snapshot, ok):
     admin, portal = base + '/admin/index.php', base + '/portal/index.php'
+    submit(owner, admin + '?view=payments', 'payments_migrate', {'owner_password': password, 'confirm': '1'})
     before = snapshot()
     plans = admin + '?view=service-plans'
     response = submit(owner, plans, 'service_plans_setup', {'current_password': password})

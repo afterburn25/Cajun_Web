@@ -26,8 +26,8 @@ permissions:
   contents: read
 concurrency:
   # Preserve every running acceptance, including repeated invocations of one source.
-  group: application-${{ github.ref }}-${{ github.sha }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}-${{ inputs.php_version || '8.3' }}-${{ inputs.database || 'mariadb-10.11' }}
-  cancel-in-progress: false
+  group: application-${{ github.event.pull_request.number || github.ref }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}-${{ inputs.php_version || '8.3' }}-${{ inputs.database || 'mariadb-10.11' }}
+  cancel-in-progress: ${{ github.event.pull_request.head.ref == 'feature/software-license-commerce-20261025' || github.ref == 'refs/heads/feature/software-license-commerce-20261025' }}
 env:
   CWP_PHP_VERSION: ${{ inputs.php_version || '8.3' }}
   CWP_DATABASE: ${{ inputs.database || 'mariadb-10.11' }}
@@ -438,6 +438,7 @@ jobs:
           "$PHP_BINARY" tests/hosting_reconciliation_native.php
           "$PHP_BINARY" tests/client_authority_native.php
           "$PHP_BINARY" tests/license_native.php
+          "$PHP_BINARY" tests/software_commerce_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser
         run: .ci-venv/bin/python tests/browser_acceptance.py

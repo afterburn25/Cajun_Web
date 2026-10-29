@@ -1,0 +1,36 @@
+name: Software Authorize.net sandbox source contract
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - '.github/workflows/software-authorize-sandbox.yml'
+      - '.github/workflows/software-authorize-sandbox-contract.yml'
+  pull_request:
+    paths:
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - '.github/workflows/software-authorize-sandbox.yml'
+      - '.github/workflows/software-authorize-sandbox-contract.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify sandbox-only integration source
+        run: |
+          python3 -m py_compile tests/software_anet_sandbox_acceptance.py
+          grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/software_anet_sandbox_acceptance.py
+          grep -F 'https://jstest.authorize.net/v1/Accept.js' tests/software_anet_sandbox_acceptance.py
+          grep -F '"zip": "46282"' tests/software_anet_sandbox_acceptance.py
+          grep -F '"responseCode") or "") != "2"' tests/software_anet_sandbox_acceptance.py
+          ! grep -F 'https://api.authorize.net' tests/software_anet_sandbox_acceptance.py
+          ! grep -F 'https://js.authorize.net' tests/software_anet_sandbox_acceptance.py
+          ! grep -E 'ANET_(PRODUCTION|LIVE)_' tests/software_anet_sandbox_acceptance.py
+          grep -F 'credentials_or_nonce_recorded": False' tests/software_anet_sandbox_acceptance.py

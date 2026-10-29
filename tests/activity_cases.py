@@ -28,6 +28,8 @@ def upgrade():
     r=client.get(portal+'?activity=1');published=next(v for v in before['website_releases'] if v['status']=='published');draft=next(v for v in before['website_releases'] if v['status']=='draft')
     check('Retained 1.9 client sees studio review invoice receipt and published ZIP updates',all(x in r.text for x in ['Studio message','Review published','Invoice issued','Payment history updated',published['id']]) and draft['id'] not in r.text)
     response=client.get(portal+'?download_release='+published['id']);check('Retained published website downloads unchanged after 1.9 activity upgrade',response.content==(ROOT/'test-runtime/activity-upgrade.zip').read_bytes())
+    r=owner.get(root+'?view=payments')
+    if 'Enable payment preparation' in r.text:r=submit(owner,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Retained invoice balance renders after activity setup','$375.00' in owner.get(root+'?view=invoice-payments&invoice_id=3').text)
     r=submit(owner,root+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Retained protected credentials decrypt after 1.9 activity upgrade','Credentials protected and saved' in r.text)
 

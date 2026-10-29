@@ -9,7 +9,7 @@ require_once CWP_CODE_ROOT.'/app/billing/notifications.php';
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
 
 require_once CWP_CODE_ROOT.'/database/schema/payments_schema.php';
-function payments_ready(): bool {return staff_ready()&&studio_ready()&&setting('payments_schema_version')==='1';}
+function payments_ready(): bool {return staff_ready()&&studio_ready()&&setting('payments_schema_version')==='2';}
 function payments_audit(int $actor,string $action,string $detail): void {
     query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'payments.'.$action,$detail,gmdate('Y-m-d H:i:s')]);
 }
@@ -34,7 +34,10 @@ function payments_master(bool $create=false): string {
     $path=$storage.'/payment-master.key';
     if(is_link($path))throw new RuntimeException('The payment master key cannot be a symbolic link.');
     if(!is_file($path)){
-        if(!$create||(int)query('SELECT COUNT(*) FROM '.table('payment_gateways')." WHERE credentials<>''")->fetchColumn()>0)throw new RuntimeException('Payment master key unavailable. Restore the original protected key; existing credentials were not replaced.');
+        $sealed=(int)query('SELECT COUNT(*) FROM '.table('payment_gateways')." WHERE credentials<>''")->fetchColumn()>0;
+        $hasLinkColumn=(int)(one('SELECT COUNT(*) n FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'payment_requests','link_secret'])['n']??0)===1;
+        if(!$sealed&&$hasLinkColumn)$sealed=(int)query('SELECT COUNT(*) FROM '.table('payment_requests')." WHERE link_secret<>''")->fetchColumn()>0;
+        if(!$create||$sealed>0)throw new RuntimeException('Payment master key unavailable. Restore the original protected key; existing credentials were not replaced.');
         write_private_file($path,random_bytes(32));
     }
     clearstatcache(true,$path);
@@ -99,7 +102,19 @@ function payments_verify(string $env,int $revision,#[\SensitiveParameter] string
         payments_audit((int)$actor['id'],'sandbox.check','Revision '.$revision.' '.$result.'; authentication only');
     }));return $result;
 }
-function payments_purposes(): array {return ['full'=>'Full service invoice','deposit'=>'Agreed deposit invoice','milestone'=>'Agreed milestone invoice','final'=>'Agreed final balance invoice'];}
+function payments_purposes(): array {return ['full'=>'Full service invoice','deposit'=>'Agreed deposit invoice','milestone'=>'Agreed milestone invoice','final'=>'Agreed final balance invoice','financing'=>'Financing agreement payment'];}
+/** Link tokens are sealed with the payment master key bound to the request key; only the hash is queryable. */
+function payments_link_seal(#[\SensitiveParameter] string $token,string $requestKey): string {
+    $iv=random_bytes(12);$tag='';$cipher=openssl_encrypt($token,'aes-256-gcm',payments_master(true),OPENSSL_RAW_DATA,$iv,$tag,'cwp-paylink-v1|'.config()['db']['prefix'].'|'.$requestKey);
+    if($cipher===false)throw new RuntimeException('Could not protect the payment link.');return base64_encode($iv.$tag.$cipher);
+}
+function payments_link_open(array $r): string {
+    $encoded=$r['link_secret']??'';if(!is_string($encoded)||$encoded==='')return '';
+    $raw=base64_decode($encoded,true);if($raw===false||strlen($raw)<29)throw new RuntimeException('Protected payment link is damaged.');
+    $plain=openssl_decrypt(substr($raw,28),'aes-256-gcm',payments_master(),OPENSSL_RAW_DATA,substr($raw,0,12),substr($raw,12,16),'cwp-paylink-v1|'.config()['db']['prefix'].'|'.$r['request_key']);
+    if($plain===false)throw new RuntimeException('Payment link could not be opened. Restore the original key and database together.');return $plain;
+}
+function payments_link_url(array $r): ?string {$token=payments_link_open($r);return $token===''?null:page_url('pay',['t'=>$token]);}
 function payments_invoice(int $id): array {
     $i=one('SELECT i.*,j.client_id,c.active FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE i.id=?',[$id]);
     if(!$i||(int)$i['active']!==1||$i['status']!=='issued'||$i['currency']!=='USD'||(int)$i['amount_cents']<1||(int)$i['amount_cents']>99999999)throw new RuntimeException('Choose an unpaid USD invoice for an active client.');return $i;
@@ -114,8 +129,51 @@ function payments_prepare(int $invoice,string $purpose,int $days,string $fingerp
         $i=payments_invoice($invoice);if(!hash_equals(payments_invoice_hash($i),$fingerprint))throw new RuntimeException('The invoice changed. Reload and review its current amount.');
         attempts_assert_clear($invoice);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
-        query('INSERT INTO '.table('payment_requests').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,invoice_hash,purpose,status,amount_cents,currency,expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',[$invoice,$i['job_id'],$i['client_id'],$actor['id'],$key,$hash,$fingerprint,$purpose,'prepared',ledger_balance($i)['due_cents'],$i['currency'],time()+$days*86400,gmdate('Y-m-d H:i:s')]);
+        $token=bin2hex(random_bytes(32));
+        query('INSERT INTO '.table('payment_requests').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,invoice_hash,link_hash,link_secret,purpose,status,amount_cents,currency,expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[$invoice,$i['job_id'],$i['client_id'],$actor['id'],$key,$hash,$fingerprint,hash('sha256',$token),payments_link_seal($token,$key),$purpose,'prepared',ledger_balance($i)['due_cents'],$i['currency'],time()+$days*86400,gmdate('Y-m-d H:i:s')]);
         $id=(int)db()->lastInsertId();payments_audit((int)$actor['id'],'request.prepare','Request '.$id.' invoice '.$invoice.'; charging disabled');return $id;
+    }));
+}
+/** System-prepared request for a client-signed finance offer. The offer's creating owner is retained as actor. */
+function payments_financing_request(int $invoice,int $ownerId,int $days,string $evidenceHash):array{
+    if(!payments_ready()||!ledger_ready())throw new RuntimeException('Payment links and invoice ledger must be prepared first.');
+    if($invoice<1||$ownerId<1||$days<1||$days>30||!preg_match('/^[a-f0-9]{64}$/D',$evidenceHash)){
+        throw new InvalidArgumentException('Invalid financing payment request.');
+    }
+    return staff_locked(fn()=>staff_transaction(function()use($invoice,$ownerId,$days,$evidenceHash):array{
+        $owner=one('SELECT u.id FROM '.table('users').' u JOIN '.table('staff_profiles').' p ON p.user_id=u.id WHERE u.id=? AND p.role=? AND p.enabled=1 AND u.password_hash<>\'\' FOR UPDATE',
+            [$ownerId,'owner']);
+        if(!$owner)throw new RuntimeException('The finance offer owner is no longer authorized to prepare payment links.');
+        $i=payments_invoice($invoice);$due=ledger_balance($i)['due_cents'];
+        if($due<1)throw new RuntimeException('This financing invoice no longer has a payable balance.');
+        $latest=one('SELECT * FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=? ORDER BY id DESC LIMIT 1 FOR UPDATE',[$invoice,'financing']);
+        if($latest&&payments_request_state($latest)==='prepared'){
+            if((int)$latest['actor_id']!==$ownerId||(int)$latest['amount_cents']!==$due)throw new RuntimeException('Current financing payment request does not match the retained obligation.');
+            $url=payments_link_url($latest);if($url===null)throw new RuntimeException('Financing payment link could not be recovered.');
+            return ['id'=>(int)$latest['id'],'url'=>$url];
+        }
+        $sequence=(int)query('SELECT COUNT(*) FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=?',[$invoice,'financing'])->fetchColumn()+1;
+        if($sequence>100)throw new RuntimeException('Financing payment-link replacement limit reached. Review this invoice.');
+        $requestKey=hash('sha256','financing|'.$invoice.'|'.$evidenceHash.'|'.$sequence);
+        $requestHash=hash('sha256',json_encode([$invoice,$ownerId,$days,$evidenceHash,$due,$sequence],JSON_THROW_ON_ERROR));
+        $oldByKey=one('SELECT * FROM '.table('payment_requests').' WHERE request_key=? FOR UPDATE',[$requestKey]);
+        if($oldByKey){
+            if((int)$oldByKey['invoice_id']!==$invoice||(int)$oldByKey['actor_id']!==$ownerId||!hash_equals((string)$oldByKey['request_hash'],$requestHash)){
+                throw new RuntimeException('Financing payment request identity was reused with different details.');
+            }
+            $url=payments_link_url($oldByKey);if($url===null)throw new RuntimeException('Financing payment link could not be recovered.');
+            return ['id'=>(int)$oldByKey['id'],'url'=>$url];
+        }
+        attempts_assert_clear($invoice);
+        query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
+        $token=bin2hex(random_bytes(32));$fingerprint=payments_invoice_hash($i);
+        query('INSERT INTO '.table('payment_requests').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,invoice_hash,link_hash,link_secret,purpose,status,amount_cents,currency,expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [$invoice,$i['job_id'],$i['client_id'],$ownerId,$requestKey,$requestHash,$fingerprint,hash('sha256',$token),payments_link_seal($token,$requestKey),
+             'financing','prepared',$due,$i['currency'],time()+$days*86400,gmdate('Y-m-d H:i:s')]);
+        $row=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[(int)db()->lastInsertId()]);
+        payments_audit($ownerId,'request.financing','Finance payment request '.$row['id'].' invoice '.$invoice.' sequence '.$sequence);
+        $url=payments_link_url($row);if($url===null)throw new RuntimeException('Financing payment link was not created.');
+        return ['id'=>(int)$row['id'],'url'=>$url];
     }));
 }
 function payments_revoke(int $id): void {
@@ -135,5 +193,75 @@ function payments_client_view(array $invoice): void {
     if(!payments_ready()||!($client=studio_client()))return;
     $r=one('SELECT r.* FROM '.table('payment_requests').' r JOIN '.table('studio_jobs').' j ON j.id=r.job_id WHERE r.invoice_id=? AND r.client_id=? AND j.client_id=? ORDER BY r.id DESC LIMIT 1',[$invoice['id'],$client['id'],$client['id']]);
     if(!$r)return;
-    echo '<p class="payment-request"><strong>'.esc(payments_purposes()[$r['purpose']]??'Invoice request').'</strong> · '.esc(payments_request_state($r)).'<br>Online payment is not available yet. Preparing this request does not record a payment. Follow the studio’s invoice instructions.</p>';
+    echo '<p class="payment-request"><strong>'.esc(payments_purposes()[$r['purpose']]??'Invoice request').'</strong> · '.esc(payments_request_state($r)).' · expires '.esc(gmdate('Y-m-d H:i:s',(int)$r['expires_at'])).' UTC<br>Online payment is not available yet. Preparing this request does not record a payment. Follow the studio’s invoice instructions.</p>';
+    try{$url=payments_link_url($r);}catch(RuntimeException){$url=null;}
+    if($url!==null)echo '<p><a class="btn outline" href="'.esc($url).'">View this payment request →</a></p>';
+}
+/** Shareable payment-request page: the link token is the only credential and grants no portal access. */
+require_once CWP_CODE_ROOT.'/app/billing/payment_link_view.php';
+function payments_link_page(string $token): never {
+    header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');header('Cache-Control: no-store, private');
+    $r=null;$error='';$paymentMessage='';$financeGateway=null;
+    if(!payments_ready()||!preg_match('/^[a-f0-9]{64}$/D',$token))$error='invalid';
+    elseif(!consume_rate(ip_key('pay-link'),40,300))$error='Too many attempts. Wait a few minutes, then try again.';
+    elseif(!($r=one('SELECT * FROM '.table('payment_requests').' WHERE link_hash=?',[hash('sha256',$token)])))$error='invalid';
+    if($error==='invalid'){http_response_code(404);$error='This payment link is not valid.';}
+    if($error===''&&$r&&$r['purpose']==='financing'){
+        try{
+            require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
+            if(license_finance_gateway_ready()){
+                $financeGateway=license_finance_anet_settings();
+                authorize_net_security_headers($financeGateway['mode']);
+            }
+        }catch(Throwable $gatewayError){$financeGateway=null;}
+        if(($_SERVER['REQUEST_METHOD']??'')==='POST'&&($_POST['action']??null)==='finance_charge'){
+            try{
+                if($financeGateway===null)throw new RuntimeException('Financing card checkout is unavailable.');
+                if(!consume_rate(ip_key('finance-charge'),10,900))throw new RuntimeException('Please wait before another financing payment attempt.');
+                $billing=license_finance_billing_fields($_POST);
+                $status=license_finance_charge_run($r,posted('request_key',64),posted('descriptor',128),posted('payment_token',8192),$billing);
+                if($status==='paid'||$status==='paid_subscription_review'){
+                    $offer=license_finance_offer_for_invoice((int)$r['invoice_id']);
+                    flash($status==='paid'?'Financing payment verified.':'Payment verified. Automatic installment enrollment needs owner review.');
+                    redirect(studio_url(['finance'=>$offer['id']]));
+                }
+                $paymentMessage=match($status){
+                    'sandbox'=>'Sandbox transaction verified only. No real payment was recorded.',
+                    'declined'=>'The gateway declined this payment. You may retry with fresh card details.',
+                    default=>'The payment outcome needs billing review. Do not retry until the studio confirms its status.'
+                };
+            }catch(InvalidArgumentException|RuntimeException $e){
+                $paymentMessage=$e->getMessage();
+            }catch(Throwable $e){
+                report_error($e);$paymentMessage='The financing payment could not be submitted. Contact the studio before retrying.';
+            }
+        }
+    }
+    site_head('Invoice payment','pay');
+    echo '<section class="section"><div class="container"><span class="eyebrow">SECURE PAYMENT REQUEST</span><h1>Invoice payment</h1>';
+    if($error!==''){echo '<div class="notice error">'.esc($error).'</div><p>Contact the studio if you need a current payment link.</p>';}
+    else{
+        $projection=payments_link_projection($r);$online=$financeGateway!==null&&$projection['state']==='prepared'&&$r['purpose']==='financing';
+        payments_link_card($projection,$online);
+        if($paymentMessage!=='')echo '<div class="notice info">'.esc($paymentMessage).'</div>';
+        if($online){
+            echo '<form method="post" data-authorize-net data-login="'.esc($financeGateway['login']).'" data-client-key="'.esc($financeGateway['client_key']).'">';
+            echo '<input type="hidden" name="action" value="finance_charge"><input type="hidden" name="request_key" value="'.bin2hex(random_bytes(32)).'">';
+            echo '<input type="hidden" name="descriptor"><input type="hidden" name="payment_token">';
+            echo '<label>Card number<input data-card-number autocomplete="cc-number" inputmode="numeric" minlength="13" maxlength="23" required></label>';
+            echo '<label>Expiration month (MM)<input data-card-month autocomplete="cc-exp-month" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+            echo '<label>Expiration year (YY)<input data-card-year autocomplete="cc-exp-year" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+            echo '<label>Security code<input data-card-code autocomplete="cc-csc" inputmode="numeric" minlength="3" maxlength="4" required></label>';
+            echo '<h3>Billing address</h3>';
+            foreach([['first_name','First name',50],['last_name','Last name',50],['address','Street address',60],['city','City',40],['state','State / province',40],['zip','Postal code',20],['country','Country',60]] as $field){
+                echo '<label>'.esc($field[1]).'<input name="'.esc($field[0]).'" maxlength="'.$field[2].'" required'.($field[0]==='country'?' value="US"':'').'></label>';
+            }
+            echo '<p class="hint">Your card number, expiration date, and security code are sent directly to Authorize.Net for tokenization. CajunWebPro receives only the one-time payment token and billing address.</p>';
+            if($financeGateway['mode']==='sandbox')echo '<p class="notice info">Sandbox only. This cannot settle the real financing invoice.</p>';
+            echo '<p role="alert" data-payment-error></p><button class="btn gold" type="submit">Pay financing invoice securely</button></form>';
+            $external=$financeGateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';
+            echo '<script nonce="'.nonce().'" defer src="'.esc($external).'"></script><script nonce="'.nonce().'" defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';
+        }
+    }
+    echo '</div></section>';site_foot(false);exit;
 }

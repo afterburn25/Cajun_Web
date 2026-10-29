@@ -1,0 +1,123 @@
+name: Software published v1.25 upgrade gate
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'VERSION'
+      - 'site/config/defaults.php'
+      - 'tools/build.py'
+      - 'tests/software_release_125_upgrade.py'
+      - 'tests/organized_update_cases.py'
+      - '.github/workflows/software-release-125-upgrade.yml'
+  pull_request:
+    paths:
+      - 'VERSION'
+      - 'site/config/defaults.php'
+      - 'tools/build.py'
+      - 'tests/software_release_125_upgrade.py'
+      - 'tests/organized_update_cases.py'
+      - '.github/workflows/software-release-125-upgrade.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  published-125-upgrade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports:
+          - 3306
+        options: >-
+          --health-cmd="mariadb-admin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      PHP_BINARY: /usr/bin/php8.3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check candidate version
+        id: version
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          from pathlib import Path
+          value=Path('VERSION').read_text().strip()
+          parts=value.split('.')
+          if len(parts)!=3 or any(not p.isdigit() for p in parts):
+              raise SystemExit('VERSION must be numeric MAJOR.MINOR.PATCH')
+          print('candidate='+value)
+          print('run_gate='+('true' if tuple(map(int,parts))>(1,25,0) else 'false'))
+          PY
+      - name: Syntax-check future gate while release remains 1.25
+        run: python3 -m py_compile tests/software_release_125_upgrade.py tests/organized_update_cases.py
+      - name: Record deferred gate
+        if: steps.version.outputs.run_gate != 'true'
+        run: echo "Published v1.25 -> next-release upgrade gate is armed; candidate remains ${{ steps.version.outputs.candidate }}."
+      - name: Install isolated release runtime
+        if: steps.version.outputs.run_gate == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y apache2 libapache2-mod-php8.3 php8.3-cli php8.3-mysql php8.3-zip php8.3-curl php8.3-mbstring php8.3-gd php8.3-xml
+          python3 -m venv /tmp/cwp-release125-venv
+          /tmp/cwp-release125-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4
+      - name: Build candidate UPDATE from exact commit
+        if: steps.version.outputs.run_gate == 'true'
+        run: python3 tools/build.py --commit "$GITHUB_SHA"
+      - name: Materialize immutable published v1.25 baseline
+        if: steps.version.outputs.run_gate == 'true'
+        run: |
+          mkdir -p test-runtime/released-1.25.0
+          curl --fail --location --proto '=https' --tlsv1.2             --output /tmp/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip             https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip
+          echo "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39  /tmp/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip" | sha256sum -c -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import zipfile
+          source=Path('/tmp/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip')
+          target=Path('test-runtime/released-1.25.0')
+          with zipfile.ZipFile(source) as z:
+              if z.testzip() is not None:
+                  raise SystemExit('Published v1.25 baseline ZIP is corrupt')
+              names=z.namelist()
+              if len(names)!=len(set(n.casefold() for n in names)):
+                  raise SystemExit('Published v1.25 baseline contains duplicate/case-colliding paths')
+              for name in names:
+                  p=PurePosixPath(name)
+                  if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name:
+                      raise SystemExit('Unsafe published baseline path: '+name)
+              z.extractall(target)
+          if not (target/'install.php').is_file():
+              raise SystemExit('Published v1.25 COMPLETE package is not direct-extract')
+          PY
+      - name: Exercise published v1.25 update and recovery
+        if: steps.version.outputs.run_gate == 'true'
+        env:
+          CWP_TEST_PORT: ${{ job.services.mariadb.ports[3306] }}
+          PYTHONPATH: tests
+        run: /tmp/cwp-release125-venv/bin/python tests/software_release_125_upgrade.py
+      - name: Upload non-secret release-gate evidence
+        if: always() && steps.version.outputs.run_gate == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-published-125-upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qa/software-release125-upgrade.json
+            qa/software-release125-*.log
+            qa/organized-software-1.25*.json
+          retention-days: 14
+          if-no-files-found: warn

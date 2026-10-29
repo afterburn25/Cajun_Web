@@ -1,5 +1,31 @@
 # Session handoff - Devin sole-owner continuation
 
+## PR #266 release stabilization — 2026-10-27/28 (in flight)
+
+Owner directive: clear genuine release-blocking failures on `feature/software-license-commerce-20261025` (PR #266), no feature expansion; blocker-matrix discipline — failing run → root cause → smallest repair → local targeted regression → cross-component check.
+
+**Cleared this arc (oldest→newest):**
+
+- `5e2db4b` — payment-links restack raised `payments_ready()` to schema `2` but fixtures seeded `'1'`; seeded `'2'` in `ledger_native`, `notifications_native`, `domain_renewal_dispatch_native` and added the canonical `payments_migrate` submit to `recurring_billing_upgrade_cases` (all verified locally: 108/62/84 checks).
+- `2a18049`/`73d4c37`/`6045b80`/`5ba2a37` — financing lane: fixture dir/file modes unreadable by apache (`0700`/`0600` → `0755`/`0644`); stale `pending_initial` plan shared `job_id=1` locking the active release (dedicated `studio_jobs` row); unqualified `RecurringBillingTerms` in fixture global scope (FQCN).
+- `cbffd00` — `financing.php` 404 status set after layout output (moved offer lookup before `site_head`); **software dispatch**: all 15 `software_*` admin actions lived in `studio_admin_action` but the POST router only forwarded `studio_`-prefixed actions → added `software_` prefix. Verified locally: owner preparation stores `software_commerce_version=3`.
+- `9a1e945` — software browser fixture never loaded `app/clients/workspace.php` → `payments_ready()`/`studio_ready()` fatal.
+- `4b17cd3` — `software_notices.php` called `software_commerce_ready()` without its defining migrate file → fatal on owner delivery retry.
+- `94d24ce` — downloads query `ORDER BY l.id` surfaced the trial row first so `$shown` dedup bound the link to the trial license → invoice-bound rows first via `(e.invoice_id IS NULL)`.
+- `a0d21c1` — trial license's own add-install control leaked onto My Software → gate the control on `e.invoice_id !== null`.
+- `4f75380` — support-blocked POST rendered generic 403, losing the blocked-action reason → `fail_page($error,403)` before the gate (avoids the CSP contract's source-ordering assertion on `site_head`).
+- `93bfa54` — test tail still looked for retired `studio_license_deactivate`/`reactivate` forms → `software_license_lifecycle` + transition + reason (assertions unchanged).
+- `2c0579c` — `software_commerce_ready()` called without migrate require in `software_license_lifecycle`, `studio_license_deactivate` and `studio_license_reactivate` branches → added `require_once` to each. Suspend/resume verified end-to-end locally (is_active flips, portal renders 'Standard · Suspended'/'Active', KEYPAID key shown).
+- `5326ecb` — sealed `Application acceptance` failed at `2c0579c` on the payments-schema-`2` class (recurring_setup 403, payments_trial_setup form missing): every cumulative upgrade fixture (1.5→1.10, release_125 later-records, `existing` legs) now submits the canonical `payments_migrate` form before payments-gated views; record compares scoped to pre-upgrade columns (`link_hash`/`link_secret` added by migrate); settings checks declare `payments_schema_version` '1'→'2' and assert `'2'`.
+- `d062bd5` — apache leg of release_125 upgrade acceptance emitted `PHP Warning: Undefined variable $mail_drafts_account` at `admin/views/studio/licenses.php:59` — stray `$` made a variable-function call instead of `mail_drafts_account($a['id'])` (functions loaded via `financing_offers.php`→`app/mail/drafts.php`). Fixed; apache leg green on `d062bd5`.
+- (next) — `native-and-browser` leg on `d062bd5` (AND `main` run 40457205972 on 10-27, identical signature): `Page.goto` 30s timeout on `?view=provider-settings&stackcp_page=N&stackcp_access_page=N`. Root cause is a real perf bug: `ProviderStackCpReadProjection::accessFamilyReady`/`familyReady` re-verify the whole StackCP history chains per render with ~6 (access) and ~3 (family) correlated `audit` subqueries PER history row — O(chain × audit-scan) as suite-accumulated history grows past the 30s goto budget. Rewrote both walks to grouped LEFT JOINs (COUNT/MIN(id) by detail, and by detail+user_id for actor counts — `audit` is `utf8mb4_bin` so grouping is byte-exact, identical to BINARY comparisons; COALESCE→0 preserves COUNT miss semantics; NULL min-id preserved). Verified: `tests/stackcp_access_read_snapshot_native.php` 78/78 — byte-identical HTML vs pinned original, exact projections, fewer statements.
+
+**Result**: sealed `Application acceptance` on `d062bd5`: apache leg green; native-and-browser red only on the StackCP walk latency — fixed pending push. Infra flake noted: `Provider settings storage checks` once failed on runner port-bind collision (33306), cleared on rerun — not code.
+
+**Local repro stack** (this VM): `~/bin/php` docker wrapper (`cwp-inventory-test:latest`); `docker exec cwpdb mariadb ...` resets `cwp_test` (creds cwp_test/local-ci-only, prefix `ci_`); installed site `test-runtime/web/existing` served at `127.0.0.1:8091` (owner@example.invalid / alice@example.invalid, 'Synthetic … passphrase 2026'). After editing `site/portal/views/*` or `site/admin/controllers/*` locally, `cp` the file into `test-runtime/web/existing/...` to exercise it. `tools/build.py --refresh` + commit `site/install/inventory.generated.php` after every `site/` change.
+
+**Next**: confirm sealed `Application acceptance` green, then final integration/security review of PR #266 → merge readiness report to owner (merge needs explicit approval; no live deploy, no live Authorize.net).
+
 ## Port-PR sequencing resolved — 2026-10-26
 
 PRs #257–#260 (vps-uncertainty, ssh-access, provider-catalog, domains ports → `devin/full-site-integration`) each carry a byte-identical copy of the shared `foundation/desk` + `foundation/notifications` layer (sha-verified across all four branches) — merge order is arbitrary and component code never conflicts. The only shared conflicts are the usual docs/config union files (AGENTS, CHANGELOG, STATUS, HANDOFF, SESSION_LOG, ROADMAP, integration queue, `application-tests.yml`, `provider-cloud-sites.yml`) plus each port's own new workflow. Still gated on hosted evidence — proceed 257→260 once runners free.

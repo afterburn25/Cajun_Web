@@ -2,36 +2,66 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch_routes.php';
-site_head('Your Client Workspace','portal');support_banner();?><section class="page-hero compact"><div class="container"><span class="eyebrow">YOUR PROJECT. ALL IN ONE PLACE.</span><h1>Welcome, <span class="gold-text"><?=esc($client['name'])?>.</span></h1><div class="button-row"><a class="btn outline" href="<?=esc(studio_url())?>">All projects</a><?php if(delivery_ready())echo '<a class="btn outline" href="'.esc(studio_url(['downloads'=>1])).'">Website downloads</a>';if(provider_inventory_ready())echo '<a class="btn outline" href="'.esc(studio_url(['services'=>1])).'">Hosting services</a>';if(!support_current()):echo '<a class="btn outline" href="'.esc(studio_url(['registration_drafts'=>1])).'">Registration drafts</a>';if(provider_mailbox_client_navigation((int)$client['id']))echo '<a class="btn outline" href="'.esc(studio_url(['hosting_mail'=>1])).'">Hosting mailboxes</a>';if(provider_domain_client_navigation((int)$client['id']))echo '<a class="btn outline" href="'.esc(studio_url(['domains'=>1])).'">Find a domain</a>';if(recurring_billing_ready())echo '<a class="btn outline" href="'.esc(studio_url(['recurring'=>1])).'">Recurring billing</a>';if(service_plans_ready())echo '<a class="btn outline" href="'.esc(studio_url(['agreements'=>1])).'">Service agreements</a>';if(activity_ready())echo '<a class="btn outline" href="'.esc(activity_url('client')).'">Workspace activity</a>';?><form method="post"><?=support_csrf_field()?><input type="hidden" name="action" value="logout"><button class="btn outline">Sign out</button></form><?php endif;?></div></div></section><section class="section"><div class="container"><?php show_flash();if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
+site_head('Your Client Workspace','portal');support_banner();?><section class="page-hero compact"><div class="container"><span class="eyebrow">YOUR PROJECT. ALL IN ONE PLACE.</span><h1>Welcome, <span class="gold-text"><?=esc($client['name'])?>.</span></h1><div class="button-row"><a class="btn outline" href="<?=esc(studio_url())?>">All projects</a><?php if(delivery_ready())echo '<a class="btn outline" href="'.esc(studio_url(['downloads'=>1])).'">Website downloads</a>';
+if(!support_current())echo '<a class="btn outline" href="'.esc(studio_url(['software'=>1])).'">My Software</a>';if(!support_current()&&license_finance_offers_ready())echo '<a class="btn outline" href="'.esc(studio_url(['finance'=>1])).'">Financing agreements</a>';if(provider_inventory_ready())echo '<a class="btn outline" href="'.esc(studio_url(['services'=>1])).'">Hosting services</a>';if(!support_current()):echo '<a class="btn outline" href="'.esc(studio_url(['registration_drafts'=>1])).'">Registration drafts</a>';if(provider_mailbox_client_navigation((int)$client['id']))echo '<a class="btn outline" href="'.esc(studio_url(['hosting_mail'=>1])).'">Hosting mailboxes</a>';if(provider_domain_client_navigation((int)$client['id']))echo '<a class="btn outline" href="'.esc(studio_url(['domains'=>1])).'">Find a domain</a>';if(recurring_billing_ready())echo '<a class="btn outline" href="'.esc(studio_url(['recurring'=>1])).'">Recurring billing</a>';if(service_plans_ready())echo '<a class="btn outline" href="'.esc(studio_url(['agreements'=>1])).'">Service agreements</a>';if(activity_ready())echo '<a class="btn outline" href="'.esc(activity_url('client')).'">Workspace activity</a>';?><form method="post"><?=support_csrf_field()?><input type="hidden" name="action" value="logout"><button class="btn outline">Sign out</button></form><?php endif;?></div></div></section><section class="section"><div class="container"><?php show_flash();if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
 if(!support_current()&&support_ready()){ $policy=one('SELECT allowed FROM '.table('support_clients').' WHERE client_id=?',[$client['id']]);echo '<p class="hint">'.((int)($policy['allowed']??0)===1?'Authorized staff may access this portal for support. Staff sessions are audited and their messages are labeled Studio.':'Staff support portal access is restricted for this account.').'</p>'; }
 if(!$jobId){?><div class="workspace-grid"><?php $jobs=all('SELECT * FROM '.table('studio_jobs').' WHERE client_id=? ORDER BY id DESC LIMIT 100',[$client['id']]);foreach($jobs as $j):?><article class="workspace-card"><span class="workspace-status"><?=esc(studio_stages()[$j['stage']]??$j['stage'])?></span><h2><?=esc($j['title'])?></h2><p><?=nl2br(esc($j['summary']))?></p><a class="btn gold" href="<?=esc(studio_url(['job'=>$j['id']]))?>">Open project →</a></article><?php endforeach;if(!$jobs)echo '<p>Your projects will appear here after the studio adds them.</p>';?></div>
 <?php // License management section
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
-$licenses = !support_current() && license_storage_ready() && license_ready() ? all('SELECT * FROM '.table('website_licenses').' WHERE customer_id=? AND is_active=1 AND is_master=0 ORDER BY created_at DESC',[$client['id']]) : [];
+require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+$licenses=[];
+if(!support_current() && license_storage_ready() && license_ready()){
+    $softwareEntitlements=(bool)one(
+        'SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+        [config()['db']['prefix'].'software_entitlements']
+    );
+    $licenses=$softwareEntitlements
+        ? all('SELECT l.* FROM '.table('website_licenses').' l LEFT JOIN '.table('software_entitlements').' e ON e.license_id=l.id '.
+            'WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND e.license_id IS NULL ORDER BY l.created_at DESC',
+            [$client['id']])
+        : all('SELECT * FROM '.table('website_licenses').' WHERE customer_id=? AND is_active=1 AND is_master=0 ORDER BY created_at DESC',
+            [$client['id']]);
+}
 if($licenses):?>
 <h2>Website licenses</h2><div class="workspace-grid">
 <?php foreach($licenses as $lic):?>
+<?php
+$financePlan=null;$financeError='';
+try{$financePlan=license_financing_sync((int)$lic['id']);}catch(Throwable $e){$financeError='Financing status needs owner review.';report_error($e);}
+?>
 <article class="workspace-card">
 <h3>License</h3>
 <p>Key: <code><?=esc($lic['license_key'])?></code></p>
 <p>Product: <?=esc($lic['product_id'])?></p>
+<?php if($financePlan): ?>
+<p><strong>Financing:</strong> <?=esc(ucwords(str_replace('_',' ',(string)$financePlan['state'])))?><?php if($financePlan['paid_off_at']!==null): ?> · permanently paid off <?=esc($financePlan['paid_off_at'])?> UTC<?php endif; ?></p>
+<p><strong>License rights:</strong> <?=esc(license_financing_rights_label($financePlan))?></p>
+<?php if($financePlan['state']==='grace'): ?><p class="notice info">An installment is past due but still inside the agreed grace period.</p><?php endif; ?>
+<?php if($financePlan['state']==='suspended'): ?><p class="notice error">This financed site is temporarily payment-suspended. The same license resumes after the overdue issued installment is fully paid.</p><?php endif; ?>
+<?php if($financePlan['state']==='paid_off'): ?><p class="notice info">Financing is complete. This license is permanently unlocked: future billing and whole-license/domain deactivation cannot disable it. You may still replace the approved domain; commercial-rights restrictions remain in force.</p><?php endif; ?>
+<?php elseif($financeError!==''): ?><p class="notice warning"><?=esc($financeError)?></p><?php endif; ?>
 <h4>Registered domains</h4>
 <?php $domains=all('SELECT * FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY registered_at DESC',[$lic['id']]);?>
 <?php if($domains):?>
 <ul>
 <?php foreach($domains as $d):?>
 <li><?=esc($d['domain'])?> <span style="color:green">Active</span>
-<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form>
+<?php if(!$financePlan||$financePlan['paid_off_at']===null): ?><form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form><?php endif; ?>
 <form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_replace"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="old_domain" value="<?=esc($d['domain'])?>"><input type="text" name="new_domain" placeholder="new-domain.com" style="width:14em" required><button class="btn outline">Replace</button></form></li>
 <?php endforeach;?>
 </ul>
 <?php else:?><p class="muted">No domains registered yet.</p><?php endif;?>
-<?php $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[$lic['id']]);?>
-<?php if($bundles):?><h4>Downloads</h4><ul>
+<?php
+$bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[$lic['id']]);
+$bundleAccess=$financeError===''&&($financePlan===null||in_array((string)$financePlan['state'],['active','grace','paid_off'],true));
+?>
+<?php if($bundles&&$bundleAccess):?><h4>Downloads</h4><ul>
 <?php foreach($bundles as $b):?><li><a href="<?=esc(site_url('api/bundle-download.php?id='.(int)$b['id']))?>"><?=esc($b['title'])?> ↓</a> <small><?=esc(gmdate('Y-m-d',strtotime($b['created_at'])))?></small></li><?php endforeach;?>
-</ul><?php endif;?>
+</ul>
+<?php elseif($bundles): ?><p class="notice warning">Website bundle downloads are paused until financing access is current. Existing license and domain history are preserved.</p><?php endif;?>
 <form method="post"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_add"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><label>Register domain<input type="text" name="domain" placeholder="example.com" required></label><button class="btn gold">Add domain</button></form>
-<p class="hint">Up to 2 active domains per license (e.g. your public site and a test site). Registering or moving a domain takes the old site offline at its next license check. <code>www.</code> addresses count as the same site as their base domain.</p>
+<p class="hint">Up to 2 active domains per license (e.g. your public site and a test site). Registering or moving a domain takes the old site offline at its next license check. <code>www.</code> addresses count as the same site as their base domain. Changing the domain does not transfer the license to another customer or grant resale/distribution rights.</p>
 </article>
 <?php endforeach;?>
 </div>

@@ -8,7 +8,7 @@ require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
 
 require_once CWP_CODE_ROOT.'/database/schema/catalog_schema.php';
 function catalog_ready(): bool {return staff_ready()&&studio_ready()&&setting('catalog_schema_version')==='1';}
-function catalog_families(): array {return ['web-design'=>'Web design','maintenance'=>'Website care','addon'=>'Additional service','hosting'=>'Hosting (provider pending)','domain'=>'Domain (provider pending)','vps'=>'VPS (provider pending)'];}
+function catalog_families(): array {return ['web-design'=>'Web design','maintenance'=>'Website care','addon'=>'Additional service','software'=>'Software product','hosting'=>'Hosting (provider pending)','domain'=>'Domain (provider pending)','vps'=>'VPS (provider pending)'];}
 function catalog_terms(): array {return ['once'=>'One-time service','month'=>'One month of service','year'=>'One year of service'];}
 function catalog_audit(int $actor,string $action,string $detail): void {
     query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'catalog.'.$action,$detail,gmdate('Y-m-d H:i:s')]);
@@ -26,7 +26,7 @@ function catalog_product_input(array $input): array {
     $data['sku']=strtoupper($data['sku']);
     if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$data['sku'])||$data['title']===''||!isset(catalog_families()[$data['family']])||!isset(catalog_terms()[$data['term']])||!in_array($data['status'],['draft','published','retired'],true)||$data['currency']!=='USD')throw new InvalidArgumentException('Enter a unique SKU, title, valid family, status, service period and USD currency.');
     $data['amount_cents']=gcents(gtext($input,'amount',20));$data['setup_cents']=gcents(gtext($input,'setup',20))??0;$data['cost_cents']=gcents(gtext($input,'cost',20));$data['sort_order']=gint($input,'sort_order',0,9999);
-    if($data['status']==='published'&&(!in_array($data['family'],['web-design','maintenance','addon'],true)||($data['amount_cents']??0)<=0||$data['amount_cents']+$data['setup_cents']>99999999||$data['summary']===''||$data['terms']===''))throw new InvalidArgumentException('Publish only a configured design, care or additional service with a positive price, summary and agreed service terms. Unit price plus setup cannot exceed 999999.99 USD. Provider products remain draft.');
+    if($data['status']==='published'&&(!in_array($data['family'],['web-design','maintenance','addon','software'],true)||($data['amount_cents']??0)<=0||$data['amount_cents']+$data['setup_cents']>99999999||$data['summary']===''||$data['terms']===''))throw new InvalidArgumentException('Publish only a configured design, care, software or additional service with a positive price, summary and agreed terms. Unit price plus setup cannot exceed 999999.99 USD. Provider products remain draft.');
     return $data;
 }
 function catalog_save(int $id,int $expected,array $input): int {
@@ -41,6 +41,15 @@ function catalog_save_in_transaction(int $id,int $expected,array $input): int {
         $actor=catalog_require();$old=$id?one('SELECT * FROM '.table('catalog_products').' WHERE id=? FOR UPDATE',[$id]):null;
         if(provider_catalog_import_ready()&&$id&&provider_catalog_import_record($id)&&($data['family']!=='hosting'||!in_array($data['status'],['draft','retired'],true)))throw new InvalidArgumentException('Imported hosting products must remain hosting drafts or retired products. Changing the family cannot enable publication.');
         if(($id&&!$old)||($old&&(int)$old['revision']!==$expected)||(!$id&&$expected!==0))throw new RuntimeException('This product changed. Reload and review its latest version before saving.');
+        $oldSoftware=$old&&((($old['family']??'')==='software')
+            ||preg_match('/^(?:SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)$old['sku'])===1);
+        $newSoftware=$data['family']==='software'
+            ||preg_match('/^(?:SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',$data['sku'])===1;
+        if($old&&($oldSoftware||$newSoftware)
+            &&((string)$old['sku']!==$data['sku']||(string)$old['family']!==$data['family'])
+            &&catalog_software_identity_used($id,(string)$old['sku'])){
+            throw new RuntimeException('Software SKU and family are immutable after an order, asset, or license exists. Retire this product and create a new SKU instead.');
+        }
         if(one('SELECT id FROM '.table('catalog_products').' WHERE sku=? AND id<>?',[$data['sku'],$id]))throw new InvalidArgumentException('Another product already uses this SKU.');
         $revision=$old?(int)$old['revision']+1:1;$now=gmdate('Y-m-d H:i:s');$columns=array_keys($data);$values=array_values($data);
         if($id)query('UPDATE '.table('catalog_products').' SET '.implode(',',array_map(fn($k)=>$k.'=?',$columns)).',revision=?,updated_at=? WHERE id=?',[...$values,$revision,$now,$id]);
@@ -49,11 +58,39 @@ function catalog_save_in_transaction(int $id,int $expected,array $input): int {
         catalog_audit((int)$actor['id'],'save','Product '.$id.' revision '.$revision.' '.$data['status']);return $id;
 }
 /** Only customer-safe fields may be used in public cards or invoice snapshots. */
+function catalog_table_exists(string $suffix):bool{
+    return (bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+        [config()['db']['prefix'].$suffix]);
+}
+function catalog_software_identity_used(int $productId,string $sku):bool{
+    if(catalog_table_exists('software_orders')){
+        if(one('SELECT id FROM '.table('software_orders').' WHERE product_id=? LIMIT 1',[$productId]))return true;
+        // Order snapshots preserve the exact dependency SKUs disclosed at purchase.
+        // Once a SKU appears in any immutable purchase snapshot, renaming it would
+        // make an already-accepted dependency impossible to satisfy even if the
+        // current product policy later removes that dependency.
+        $needle=json_encode($sku,JSON_THROW_ON_ERROR);
+        if(one('SELECT id FROM '.table('software_orders').' WHERE LOCATE(?,snapshot)>0 LIMIT 1',[$needle]))return true;
+    }
+    if(catalog_table_exists('software_assets')
+        &&one('SELECT id FROM '.table('software_assets').' WHERE sku=? LIMIT 1',[$sku]))return true;
+    if(catalog_table_exists('website_licenses')
+        &&one('SELECT id FROM '.table('website_licenses').' WHERE product_id=? LIMIT 1',[$sku]))return true;
+    if(catalog_table_exists('software_product_policies')){
+        foreach(all('SELECT dependencies FROM '.table('software_product_policies')) as $row){
+            try{$ids=json_decode((string)$row['dependencies'],true,32,JSON_THROW_ON_ERROR);}
+            catch(Throwable){throw new RuntimeException('Software dependency policy is invalid; preserve product identity until reviewed.');}
+            if(!is_array($ids)||!array_is_list($ids))throw new RuntimeException('Software dependency policy is invalid; preserve product identity until reviewed.');
+            foreach($ids as $id)if((int)$id===$productId)return true;
+        }
+    }
+    return false;
+}
 function catalog_public_fields(): string {return 'id,sku,title,family,term,currency,amount_cents,setup_cents,summary,features,terms,revision';}
-function catalog_public(): array {return catalog_ready()?all('SELECT '.catalog_public_fields().' FROM '.table('catalog_products')." WHERE status='published' AND family IN ('web-design','maintenance','addon') ORDER BY sort_order,id LIMIT 200"):[];}
+function catalog_public(): array {return catalog_ready()?all('SELECT '.catalog_public_fields().' FROM '.table('catalog_products')." WHERE status='published' AND family IN ('web-design','maintenance','addon','software') ORDER BY sort_order,id LIMIT 200"):[];}
 function catalog_quote(int $productId,int $revision,int $quantity,bool $lock=false): array {
     if($quantity<1||$quantity>100)throw new InvalidArgumentException('Choose between 1 and 100 units.');
-    $p=one('SELECT '.catalog_public_fields().' FROM '.table('catalog_products')." WHERE id=? AND status='published' AND family IN ('web-design','maintenance','addon')".($lock?' FOR UPDATE':''),[$productId]);
+    $p=one('SELECT '.catalog_public_fields().' FROM '.table('catalog_products')." WHERE id=? AND status='published' AND family IN ('web-design','maintenance','addon','software')".($lock?' FOR UPDATE':''),[$productId]);
     if(!$p||(int)$p['revision']!==$revision||$p['currency']!=='USD'||!isset(catalog_terms()[$p['term']]))throw new RuntimeException('This product or price changed. Reload and review the current offer.');
     $total=(int)$p['amount_cents']*$quantity+(int)$p['setup_cents'];if((int)$p['amount_cents']<=0||$total>99999999||$total<=0)throw new InvalidArgumentException('The invoice total must be between 0.01 and 999999.99 USD.');
     return $p+['quantity'=>$quantity,'total_cents'=>$total];

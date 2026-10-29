@@ -1,0 +1,88 @@
+name: Software focused installed acceptance
+on:
+  push:
+    branches: [feature/software-license-commerce-20261025]
+    paths:
+      - 'tests/software_commerce_cases.py'
+      - 'tests/software_commerce_browser_fixture.php'
+      - 'tests/browser_acceptance.py'
+      - 'site/app/billing/software_*.php'
+      - 'site/app/billing/authorize_net_*.php'
+      - 'site/app/licenses/software_*.php'
+      - 'site/api/software-download.php'
+      - 'site/api/software-webhook.php'
+      - 'site/api/handlers/license.php'
+      - 'site/portal/controllers/actions.php'
+      - 'site/portal/views/software.php'
+      - 'site/admin/controllers/studio.php'
+      - 'site/admin/views/studio/licenses.php'
+      - 'site/database/schema/software_commerce_schema.php'
+      - 'site/database/migrations/software_commerce_migrate.php'
+      - 'site/includes/security/http.php'
+      - 'site/install/inventory.generated.php'
+      - '.github/workflows/software-focused-acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  installed-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: 3306
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOFTWARE_ACCEPTANCE_ONLY: '1'
+      PHP_BINARY: /usr/bin/php8.3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install isolated PHP and browser runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
+          python3 -m venv /tmp/cwp-software-http-venv
+          /tmp/cwp-software-http-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          /tmp/cwp-software-http-venv/bin/python -m playwright install --with-deps chromium
+      - name: Build exact direct-extract candidate packages
+        run: python3 tools/build.py --commit "$GITHUB_SHA"
+      - name: Prepare pristine public historical fixtures
+        run: python3 tests/prepare_legacy.py
+      - name: Seed the real installed-site browser fixture
+        run: php8.3 tests/native.php
+      - name: Run focused real HTTP and Chromium software acceptance
+        env:
+          PYTHONPATH: tests
+        run: /tmp/cwp-software-http-venv/bin/python tests/browser_acceptance.py
+      - name: Upload focused non-secret evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-focused-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qa/http-results.json
+            qa/php-diagnostics.json
+            qa/Software-Commerce-Desktop.png
+            qa/Software-Commerce-Mobile.png
+            qa/fresh-install-result.json
+          retention-days: 14
+          if-no-files-found: warn

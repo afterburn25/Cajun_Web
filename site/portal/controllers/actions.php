@@ -9,6 +9,91 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif($action==='finance_offer_sign'){
+  if(!$client)throw new RuntimeException('Sign in to review financing.');
+  require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+  $result=license_finance_offer_sign(posted('finance_id',32),(int)$client['id'],posted('signer_name',190),
+      isset($_POST['agree_terms'])&&$_POST['agree_terms']==='1',isset($_POST['agree_electronic'])&&$_POST['agree_electronic']==='1');
+  flash('Financing agreement signed. Your exact agreement and signature evidence are retained.');
+  if(($result['payment_pending']??false)===true){
+      flash('Your signature is complete. The studio still needs to prepare secure payment-link infrastructure before the initial payment can be collected.','warning');
+  }
+  if(is_array($result['payment']??null)&&is_string($result['payment']['url']??null))redirect($result['payment']['url']);
+  redirect(studio_url(['finance'=>posted('finance_id',32)]));
+ }
+ elseif($action==='finance_offer_decline'){
+  if(!$client)throw new RuntimeException('Sign in to review financing.');
+  require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+  $id=posted('finance_id',32);license_finance_offer_decline($id,(int)$client['id'],posted('reason',500));
+  flash('Financing agreement declined. The studio can prepare revised terms if needed.');redirect(studio_url(['finance'=>$id]));
+ }
+ elseif($action==='finance_offer_payment'){
+  if(!$client)throw new RuntimeException('Sign in to continue to financing payment.');
+  require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+  $id=posted('finance_id',32);$payment=license_finance_offer_payment_prepare($id,(int)$client['id']);
+  if($payment===null){flash('No initial payment is due on this agreement.');redirect(studio_url(['finance'=>$id]));}
+  redirect($payment['url']);
+ }
+ elseif($action==='finance_subscription_enroll'){
+  if(!$client)throw new RuntimeException('Sign in to set up financing installments.');
+  require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+  $id=posted('finance_id',32);
+  $status=license_finance_subscription_enroll_opaque($id,(int)$client['id'],posted('descriptor',128),posted('payment_token',8192));
+  flash(match($status){
+      'pending_first_payment'=>'Automatic financing installments are enrolled. Your signed schedule remains the source of each payment obligation.',
+      'sandbox_test'=>'Sandbox financing subscription created for testing only. No real payment obligation was settled.',
+      default=>'Automatic financing enrollment needs billing review. Do not submit another card until the studio confirms its status.'
+  },in_array($status,['pending_first_payment','sandbox_test'],true)?'success':'warning');
+  redirect(studio_url(['finance'=>$id]));
+ }
+ elseif($action==='finance_subscription_reenroll'){
+  if(!$client)throw new RuntimeException('Sign in to restore financing installments.');
+  require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+  $id=posted('finance_id',32);
+  $status=license_finance_subscription_reenroll_opaque($id,(int)$client['id'],posted('descriptor',128),posted('payment_token',8192));
+  flash(match($status){
+      'pending_first_payment'=>'Automatic financing installments were restored for the remaining signed periods. The prior suspended subscription remains in history.',
+      'sandbox_test'=>'Sandbox replacement subscription created for testing only. The prior suspended subscription remains in history and no real payment was settled.',
+      'billing_suspended'=>'The replacement subscription was not created. Your caught-up license remains active, but automatic billing is still suspended; you may retry with fresh payment details.',
+      default=>'Automatic financing replacement needs billing review. Do not submit another card until the studio confirms its status.'
+  },in_array($status,['pending_first_payment','sandbox_test'],true)?'success':'warning');
+  redirect(studio_url(['finance'=>$id]));
+ }
+ elseif($action==='software_subscription_cancel'){
+  if(!$client)throw new RuntimeException('Sign in to cancel recurring billing.');
+  require_once CWP_CODE_ROOT.'/app/billing/software_subscription_cancel.php';
+  $state=software_subscription_cancel($client,gint($_POST,'invoice_id',1,2147483647));
+  flash($state==='cancelled'?'The gateway confirmed cancellation. Software paid through the current period remains available.':'Your subscription cancellation needs review; please contact billing.');
+  redirect(studio_url(['software'=>1]));
+ }
+ elseif($action==='software_subscription_enroll'){
+  if(!$client)throw new RuntimeException('Sign in to enroll in software billing.');
+  require_once CWP_CODE_ROOT.'/app/billing/software_subscription_enroll.php';
+  $status=software_subscription_enroll($client,gint($_POST,'invoice_id',1,2147483647),
+      posted('descriptor',128),posted('payment_token',8192));
+  if($status==='pending_first_payment')flash('Subscription enrolled. Your software will unlock after the first scheduled charge is verified.');
+  elseif($status==='sandbox_test')flash('Sandbox subscription enrollment recorded. This is not a real payment.');
+  else flash('Subscription enrollment needs gateway review. Do not submit a second payment until reconciled.');
+  redirect(studio_url(['software'=>1]));
+ }
+ elseif($action==='software_charge'){
+  if(!$client)throw new RuntimeException('Sign in to pay your software invoice.');
+  require_once CWP_CODE_ROOT.'/app/billing/software_charge.php';
+  $status=software_charge_run($client,gint($_POST,'invoice_id',1,2147483647),posted('request_key',64),
+      posted('descriptor',128),posted('payment_token',8192));
+  if($status==='paid')flash('Payment verified. Your available software and license are in My Software.');
+  elseif($status==='sandbox')flash('Sandbox transaction approved for testing only. The real invoice remains unpaid.');
+  elseif($status==='declined')flash('The gateway declined the payment. No license was issued. You may retry this invoice with fresh card details.');
+  else flash('The payment needs gateway reconciliation. Do not try paying again until billing confirms its outcome.');
+  redirect(studio_url(['software'=>1]));
+ }
+ elseif($action==='software_order_buy'){
+  if(!$client)throw new RuntimeException('Sign in to order software.');
+  require_once CWP_CODE_ROOT.'/app/billing/software_orders.php';
+  $invoiceId=software_order_place($client,gint($_POST,'product_id',1,2147483647),gint($_POST,'revision',1,2147483647),gint($_POST,'quantity',1,25),posted('domain',253),posted('request_key',64),isset($_POST['subscribe'])&&$_POST['subscribe']==='1',gint($_POST,'policy_revision',0,2147483647));
+  flash('Your software invoice was created. Your download and license will be available after payment confirmation.');
+  redirect(studio_url(['software'=>1]));
+ }
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
  elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'cloud_website_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_cloud_site_requests_client_action($action,$client);}
@@ -19,24 +104,33 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}
  elseif($action==='activity_mark')activity_post('client');
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
- elseif($action==='login'){studio_login(strtolower(posted('email',190)),posted('password',1000));redirect(studio_url());}
+ elseif($action==='login'){
+  studio_login(strtolower(posted('email',190)),posted('password',1000));
+  if(array_key_exists('finance',$_GET)&&is_string($_GET['finance']))redirect(studio_url(['finance'=>$_GET['finance']]));
+  redirect(array_key_exists('software',$_GET)?studio_url(['software'=>1]):studio_url());
+ }
  elseif($action==='logout'){unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['client_last'],$_SESSION['client_login']);session_regenerate_id(true);redirect(studio_url());}
  else{if(!$client)throw new RuntimeException('Sign in to continue.');
  if($action==='license_domain_add'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
-  license_register_domain($licenseId,$domain,(int)$client['id']);flash('Domain registered.');redirect(studio_url());}
+  require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+  $software=software_grant_register_domain($licenseId,$domain,(int)$client['id']);
+  flash($software?'Installation domain registered.':'Domain registered.');redirect($software?studio_url(['software'=>1]):studio_url());}
  elseif($action==='license_domain_deactivate'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
-  license_deactivate_domain($licenseId,$domain,(int)$client['id']);flash('Domain deactivated.');redirect(studio_url());}
+  require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+  $software=software_grant_deactivate_domain($licenseId,$domain,(int)$client['id']);
+  flash($software?'Installation deactivated.':'Domain deactivated.');redirect($software?studio_url(['software'=>1]):studio_url());}
  elseif($action==='license_domain_replace'){$licenseId=gint($_POST,'license_id',1,2147483647);$old=posted('old_domain',255);$new=posted('new_domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
-  license_replace_domain($licenseId,$old,$new,(int)$client['id']);flash('Domain replaced — the old site goes offline at its next license check.');redirect(studio_url());}
+  require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+  software_grant_replace_domain($licenseId,$old,$new,(int)$client['id']);flash('Domain replaced — the old site goes offline at its next license check.');redirect(studio_url(['software'=>1]));}
  $job=studio_job($jobId,(int)$client['id']);
  if($action==='message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');if(!consume_rate(ip_key('client-message'),30,3600))throw new RuntimeException('Please wait before sending more messages.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$jobId,'client',$client['id'],$body,gmdate('Y-m-d H:i:s')]);flash('Message saved.');}
  elseif($action==='decision'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm the decision for this version.');$version=(int)posted('version',12);if(!one('SELECT id FROM '.table('studio_versions').' WHERE id=? AND job_id=?',[$version,$jobId]))throw new InvalidArgumentException('Review not found.');studio_decide((int)$client['id'],$version,posted('choice',20),posted('feedback',5000));flash('Your decision was recorded against that version.');}

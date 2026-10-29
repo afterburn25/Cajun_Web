@@ -2,7 +2,7 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "71dc6699f2e92b23af99b446f17de89ba9a7ad928af9e37283b802a2c01c7bf0",
+    "tests/browser_acceptance.py": "254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
@@ -169,7 +169,8 @@
     "\"$PHP_BINARY\" tests/hosting_delete_retry_native.php",
     "\"$PHP_BINARY\" tests/hosting_reconciliation_native.php",
     "\"$PHP_BINARY\" tests/client_authority_native.php",
-    "\"$PHP_BINARY\" tests/license_native.php"
+    "\"$PHP_BINARY\" tests/license_native.php",
+    "\"$PHP_BINARY\" tests/software_commerce_native.php"
   ],
   "native_command_baseline": {
     "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
@@ -666,5 +667,13 @@
       "predecessor_apache_sha256": "c4eea0a190c5e736dc44b5bc73002b22f4fa26e83c84d1e5c784b2b6642e10bf",
       "scope": "Actual published 1.25 subfolder installation followed by exact candidate UPDATE, complete-journal file rollback, reapply and missing request-head refusal. No interrupted-application or live provider claim."
     }
+  },
+  "software_commerce_native_command": {
+    "additions_after": "\"$PHP_BINARY\" tests/license_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/software_commerce_native.php"
+    ],
+    "predecessor_count": 160,
+    "predecessor_sha256": "5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe"
   }
 }

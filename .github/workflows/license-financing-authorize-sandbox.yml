@@ -1,0 +1,56 @@
+name: License financing Authorize.net real sandbox acceptance
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_sandbox_only:
+        description: 'Run sandbox-only financing initial-payment / finite-ARB / replacement checks'
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  finance-sandbox:
+    if: ${{ inputs.confirm_sandbox_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce sandbox-only source contract
+        run: |
+          python3 -m py_compile tests/finance_anet_sandbox_acceptance.py
+          ! grep -F 'https://api.authorize.net' tests/finance_anet_sandbox_acceptance.py
+          ! grep -F 'https://js.authorize.net' tests/finance_anet_sandbox_acceptance.py
+          grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/finance_anet_sandbox_acceptance.py
+          grep -F 'https://jstest.authorize.net/v1/Accept.js' tests/finance_anet_sandbox_acceptance.py
+      - name: Require separately stored sandbox credentials
+        env:
+          ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
+          ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
+          ANET_SANDBOX_PUBLIC_CLIENT_KEY: ${{ secrets.ANET_SANDBOX_PUBLIC_CLIENT_KEY }}
+        run: |
+          test -n "$ANET_SANDBOX_API_LOGIN_ID" || { echo 'Missing ANET_SANDBOX_API_LOGIN_ID'; exit 2; }
+          test -n "$ANET_SANDBOX_TRANSACTION_KEY" || { echo 'Missing ANET_SANDBOX_TRANSACTION_KEY'; exit 2; }
+          test -n "$ANET_SANDBOX_PUBLIC_CLIENT_KEY" || { echo 'Missing ANET_SANDBOX_PUBLIC_CLIENT_KEY'; exit 2; }
+      - name: Install isolated browser dependencies
+        run: |
+          python3 -m venv .finance-sandbox-venv
+          .finance-sandbox-venv/bin/pip install --disable-pip-version-check requests playwright
+          .finance-sandbox-venv/bin/python -m playwright install --with-deps chromium
+      - name: Exercise real Authorize.net financing sandbox only
+        env:
+          ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
+          ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
+          ANET_SANDBOX_PUBLIC_CLIENT_KEY: ${{ secrets.ANET_SANDBOX_PUBLIC_CLIENT_KEY }}
+        run: .finance-sandbox-venv/bin/python tests/finance_anet_sandbox_acceptance.py
+      - name: Upload non-secret financing sandbox evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: finance-anet-sandbox-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qa/finance-anet-sandbox-acceptance.json
+          retention-days: 14
+          if-no-files-found: warn

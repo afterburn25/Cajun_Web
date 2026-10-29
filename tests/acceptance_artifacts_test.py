@@ -352,11 +352,50 @@ def run(tmp):
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     from cloud_site_requests_wiring import predecessor_bytes
+    software_apache_appendix="""                software=session.get(url+'/portal/index.php?software=1')
+                check(label+suffix+' anonymous My Software route resolves safely at installed base path',
+                      software.status_code==200 and 'Software & Licenses' not in software.text
+                      and ('Sign in' in software.text or 'Client Portal' in software.text))
+                download=session.get(url+'/api/software-download.php?id=1&license=1')
+                check(label+suffix+' anonymous software download endpoint resolves and denies access',
+                      download.status_code==403)
+                validation=session.post(url+'/api/validate.php',json={'license_key':'short','domain':'example.com'})
+                check(label+suffix+' software validation endpoint resolves with bounded input error',
+                      validation.status_code==400 and validation.json()=={'authorized':False,'error':'Invalid license key format'})
+                webhook=session.get(url+'/api/software-webhook.php')
+                check(label+suffix+' software webhook endpoint resolves and requires POST',
+                      webhook.status_code==405)
+                for internal in ['app/licenses/software_products.php','app/licenses/software_grants.php',
+                                 'app/billing/software_orders.php','database/migrations/software_commerce_migrate.php']:
+                    protected=session.get(url+'/'+internal)
+                    check(label+suffix+' software internal route protected '+internal,
+                          protected.status_code in [403,404] and '<?php' not in protected.text)
+"""
     for path,expected_hash in contract['unchanged_test_sha256'].items():
-        check('Original test source retained '+path, hashlib.sha256(predecessor_bytes(ROOT,path,contract)).hexdigest()==expected_hash)
+        retained=predecessor_bytes(ROOT,path,contract)
+        if path=='tests/apache_acceptance.py':
+            appendix=software_apache_appendix.encode()
+            check('Software Apache acceptance appendix is exact and additive',
+                  retained.count(appendix)==1)
+            retained=retained.replace(appendix,b'',1)
+        check('Original test source retained '+path, hashlib.sha256(retained).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    software_native=contract['software_commerce_native_command']
+    software_additions=software_native['additions']
+    software_position=native_commands.index(software_native['additions_after'])+1
+    check('Software commerce native acceptance command is additive and ordered',
+          software_additions==['"$PHP_BINARY" tests/software_commerce_native.php']
+          and native_commands[software_position:software_position+1]==software_additions
+          and native_commands.count(software_additions[0])==1)
+    retained_native=[command for command in native_commands if command not in software_additions]
+    check('Software commerce native acceptance preserves the exact160-command predecessor recipe',
+          len(retained_native)==software_native['predecessor_count']==160
+          and hashlib.sha256(json.dumps(retained_native,separators=(',',':')).encode()).hexdigest()
+              ==software_native['predecessor_sha256'])
+    native_commands=retained_native
+    contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
     native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
     contract={**contract,'native_commands':native_commands}

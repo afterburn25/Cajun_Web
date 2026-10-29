@@ -45,6 +45,23 @@ function security_headers(): void {
     if (https_request()) header('Strict-Transport-Security: max-age=31536000');
 }
 
+
+/** Narrow payment-page CSP extension for the documented Authorize.net Accept.js environments. */
+function authorize_net_security_headers(string $mode): void {
+    if(headers_sent())throw new LogicException('Authorize.net CSP must be selected before page output.');
+    if(!in_array($mode,['sandbox','production'],true))throw new InvalidArgumentException('Invalid payment CSP mode.');
+    $nonce=(string)($GLOBALS['cwp_nonce']??'');
+    if($nonce==='')throw new LogicException('Security headers must be initialized first.');
+    $script=$mode==='sandbox'?'https://jstest.authorize.net':'https://js.authorize.net';
+    // Accept.js tokenizes directly from the browser. Sandbox uses apitest;
+    // production deployments have historically used api/api2 endpoints, so
+    // restrict connect-src to those Authorize.net hosts only.
+    $connect=$mode==='sandbox'
+        ? 'https://apitest.authorize.net'
+        : 'https://api.authorize.net https://api2.authorize.net';
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-".$nonce."' ".$script."; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ".$connect."; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+}
+
 function nonce(): string { return esc($GLOBALS['cwp_nonce'] ?? ''); }
 
 function redirect(string $url): never { header('Location: ' . $url, true, 303); exit; }

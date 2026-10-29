@@ -1,0 +1,77 @@
+name: License financing contract checks
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/app/licenses/financing.php'
+      - 'site/app/licenses/financing_policy.php'
+      - 'site/app/licenses/financing_offers.php'
+      - 'site/app/licenses/finance_installments.php'
+      - 'site/app/billing/finance_authorize_net.php'
+      - 'site/app/billing/finance_charge.php'
+      - 'site/app/billing/finance_subscription.php'
+      - 'site/app/billing/software_subscription_settle.php'
+      - 'site/app/jobs/finance.php'
+      - 'site/app/jobs/run.php'
+      - 'site/database/schema/license_financing_schema.php'
+      - 'site/database/schema/license_finance_offers_schema.php'
+      - 'site/database/schema/license_finance_gateway_schema.php'
+      - 'site/database/migrations/license_financing_migrate.php'
+      - 'site/database/migrations/license_finance_offers_migrate.php'
+      - 'site/database/migrations/license_finance_gateway_migrate.php'
+      - 'site/portal/views/financing.php'
+      - 'site/includes/layout/deliveries.php'
+      - 'site/app/projects/deliveries.php'
+      - 'site/admin/controllers/studio.php'
+      - 'site/admin/views/studio/licenses.php'
+      - 'site/portal/controllers/actions.php'
+      - 'site/api/handlers/license.php'
+      - 'tests/license_financing_policy.php'
+      - 'tests/license_financing_native_cases.php'
+      - 'tests/license_finance_source_contract.php'
+      - 'tests/license_financing_browser_fixture.php'
+      - 'tests/license_financing_cases.py'
+      - 'tests/browser_acceptance.py'
+      - '.github/workflows/license-financing-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  financing-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate financing PHP syntax
+        run: |
+          php -l site/app/licenses/financing.php
+          php -l site/app/licenses/service.php
+          php -l site/app/licenses/financing_policy.php
+          php -l site/app/licenses/financing_offers.php
+          php -l site/app/licenses/finance_installments.php
+          php -l site/app/billing/finance_authorize_net.php
+          php -l site/app/billing/finance_charge.php
+          php -l site/app/billing/finance_subscription.php
+          php -l site/app/jobs/finance.php
+          php -l site/app/jobs/run.php
+          php -l site/database/schema/license_financing_schema.php
+          php -l site/database/schema/license_finance_offers_schema.php
+          php -l site/database/schema/license_finance_gateway_schema.php
+          php -l site/database/migrations/license_financing_migrate.php
+          php -l site/database/migrations/license_finance_offers_migrate.php
+          php -l site/database/migrations/license_finance_gateway_migrate.php
+          php -l site/portal/views/financing.php
+          php -l site/api/handlers/license.php
+          php -l tests/license_financing_policy.php
+          php -l tests/license_financing_native_cases.php
+          php -l tests/license_finance_source_contract.php
+          php -l tests/license_financing_browser_fixture.php
+          python3 -m py_compile tests/license_financing_cases.py tests/browser_acceptance.py
+      - name: Run pure financing state policy
+        run: php tests/license_financing_policy.php
+      - name: Run financing integration source contract
+        run: php tests/license_finance_source_contract.php

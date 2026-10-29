@@ -134,7 +134,10 @@ try:
     check('Installer physically removed after successful setup',not (WEB/'fresh/install.php').exists())
     check('Installed homepage loads after cleanup',fresh.get(BASE+'/fresh/').status_code==200)
     from release_cases import run_http, run_browser
-    release_fixture=run_http(globals())
+    software_only=os.environ.get('CWP_SOFTWARE_ACCEPTANCE_ONLY')=='1'
+    financing_only=os.environ.get('CWP_FINANCING_ACCEPTANCE_ONLY')=='1'
+    focused_only=software_only or financing_only
+    release_fixture=None if focused_only else run_http(globals())
     # Native browser traffic, not offline documents or mocked fetch.
     from playwright.sync_api import sync_playwright, expect
     with sync_playwright() as pw:
@@ -165,115 +168,127 @@ try:
         with page.expect_download() as download:page.locator('a[href*="portal/index.php?file="]').first.click()
         check('Browser authorized download matches stored file',Path(download.value.path()).read_bytes()==(ROOT/'site/images/icons/favicon.png').read_bytes())
         page.get_by_role('button',name='Sign out').click();expect(page.locator('[name=email]')).to_be_visible();check('Browser client logout clears access',True)
-        run_browser(globals(),browser,release_fixture)
-        from staff_cases import run_browser as staff_browser
-        staff_browser(globals(),browser)
-        from support_cases import run_browser as support_browser
-        support_browser(globals(),browser)
-        from catalog_cases import run_browser as catalog_browser
-        catalog_browser(globals(),browser)
-        from provider_catalog_import_cases import run_browser as catalog_import_browser
-        catalog_import_browser(globals(),browser)
-        from payments_cases import run_browser as payments_browser
-        payments_browser(globals(),browser)
-        from attempts_cases import run_browser as attempts_browser
-        attempts_browser(globals(),browser)
-        from notifications_cases import run_browser as notifications_browser
-        notifications_browser(globals(),browser)
-        from ledger_cases import run_browser as ledger_browser
-        ledger_browser(globals(),browser)
-        from delivery_cases import run_browser as delivery_browser
-        delivery_browser(globals(),browser)
-        from activity_cases import run_browser as activity_browser
-        activity_browser(globals(),browser)
-        from portfolio_cases import run_browser as portfolio_browser
-        portfolio_browser(globals(),browser)
-        from mail_templates_cases import run_browser as mail_templates_browser
-        mail_templates_browser(globals(),browser)
-        from mail_accounts_cases import run_browser as mail_accounts_browser
-        mail_accounts_browser(globals(),browser)
-        from reviews_cases import run_browser as reviews_browser
-        reviews_browser(globals(),browser)
-        from appointments_cases import run_browser as appointments_browser
-        appointments_browser(globals(),browser)
-        from mail_connections_cases import run_browser as connections_browser
-        connections_browser(globals(),browser)
-        from mail_inbox_cases import run_browser as inbox_browser
-        inbox_browser(globals(),browser)
-        from mail_message_cases import run_browser as message_browser
-        message_browser(globals(),browser)
-        from mail_notices_cases import run_browser as notices_browser
-        notices_browser(globals(),browser)
-        from provider_settings_cases import run_browser as provider_browser
-        provider_browser(globals(),browser)
-        from provider_operations_cases import run_browser as provider_operations_browser
-        provider_operations_browser(globals(),browser)
-        from provider_domain_search_cases import run_browser as domain_search_browser
-        domain_search_browser(globals(),browser)
-        from provider_mailbox_cases import run_browser as mailbox_creation_browser
-        mailbox_creation_browser(globals(),browser)
-        from provider_forwarding_cases import run_browser as forwarding_browser
-        forwarding_browser(globals(),browser)
+        if software_only:
+            from software_commerce_cases import run_browser as software_commerce_browser
+            software_commerce_browser(globals(),browser)
+        elif financing_only:
+            from license_financing_cases import run_browser as license_financing_browser
+            license_financing_browser(globals(),browser)
+        else:
+            run_browser(globals(),browser,release_fixture)
+            from staff_cases import run_browser as staff_browser
+            staff_browser(globals(),browser)
+            from support_cases import run_browser as support_browser
+            support_browser(globals(),browser)
+            from catalog_cases import run_browser as catalog_browser
+            catalog_browser(globals(),browser)
+            from provider_catalog_import_cases import run_browser as catalog_import_browser
+            catalog_import_browser(globals(),browser)
+            from payments_cases import run_browser as payments_browser
+            payments_browser(globals(),browser)
+            from attempts_cases import run_browser as attempts_browser
+            attempts_browser(globals(),browser)
+            from notifications_cases import run_browser as notifications_browser
+            notifications_browser(globals(),browser)
+            from ledger_cases import run_browser as ledger_browser
+            ledger_browser(globals(),browser)
+            from delivery_cases import run_browser as delivery_browser
+            delivery_browser(globals(),browser)
+            from activity_cases import run_browser as activity_browser
+            activity_browser(globals(),browser)
+            from portfolio_cases import run_browser as portfolio_browser
+            portfolio_browser(globals(),browser)
+            from mail_templates_cases import run_browser as mail_templates_browser
+            mail_templates_browser(globals(),browser)
+            from mail_accounts_cases import run_browser as mail_accounts_browser
+            mail_accounts_browser(globals(),browser)
+            from reviews_cases import run_browser as reviews_browser
+            reviews_browser(globals(),browser)
+            from appointments_cases import run_browser as appointments_browser
+            appointments_browser(globals(),browser)
+            from mail_connections_cases import run_browser as connections_browser
+            connections_browser(globals(),browser)
+            from mail_inbox_cases import run_browser as inbox_browser
+            inbox_browser(globals(),browser)
+            from mail_message_cases import run_browser as message_browser
+            message_browser(globals(),browser)
+            from mail_notices_cases import run_browser as notices_browser
+            notices_browser(globals(),browser)
+            from provider_settings_cases import run_browser as provider_browser
+            provider_browser(globals(),browser)
+            from provider_operations_cases import run_browser as provider_operations_browser
+            provider_operations_browser(globals(),browser)
+            from provider_domain_search_cases import run_browser as domain_search_browser
+            domain_search_browser(globals(),browser)
+            from provider_mailbox_cases import run_browser as mailbox_creation_browser
+            mailbox_creation_browser(globals(),browser)
+            from provider_forwarding_cases import run_browser as forwarding_browser
+            forwarding_browser(globals(),browser)
 
-        from provider_registrar_cases import run_browser as registrar_browser
-        registrar_browser(globals(),browser)
-        from domain_renewals_cases import run_browser as domain_renewals_browser
-        domain_renewals_browser(globals(),browser)
+            from provider_registrar_cases import run_browser as registrar_browser
+            registrar_browser(globals(),browser)
+            from domain_renewals_cases import run_browser as domain_renewals_browser
+            domain_renewals_browser(globals(),browser)
 
-        from provider_cloud_sites_cases import run_browser as cloud_sites_browser
-        cloud_sites_browser(globals(),browser)
-        from service_observations_cases import run_browser as service_history_browser
-        service_history_browser(globals(),browser)
-        from mail_drafts_cases import run_browser as drafts_browser
-        drafts_browser(globals(),browser)
-        from mail_submissions_cases import run_browser as submissions_browser
-        submissions_browser(globals(),browser)
-        from client_authority_cases import run_browser as client_authority_browser
-        client_authority_browser(globals(),browser)
-        from service_plan_cases import run_browser as service_plan_browser
-        service_plan_browser(globals(),browser)
-        from recurring_billing_cases import run_browser as recurring_browser
-        recurring_browser(globals(),browser)
-        from domain_contracts_cases import run_browser as domain_contracts_browser
-        domain_contracts_browser(globals(),browser)
-        from provider_cloud_providers_cases import run_browser as cloud_providers_browser
-        cloud_providers_browser(globals(),browser)
-        from provider_registration_periods_cases import run_browser as registration_periods_browser
-        registration_periods_browser(globals(),browser)
-        from provider_package_php_cases import run_browser as package_php_browser
-        package_php_browser(globals(),browser)
-        from domain_expiry_cases import run_browser as domain_expiry_browser
-        domain_expiry_browser(globals(),browser)
-        from provider_document_roots_cases import run_browser as document_roots_browser
-        document_roots_browser(globals(),browser)
-        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser
-        package_force_ssl_browser(globals(),browser)
-        from provider_directory_listing_cases import run_browser as directory_listing_browser
-        directory_listing_browser(globals(),browser)
-        from provider_force_ssl_controls_cases import run_browser as force_ssl_controls_browser
-        force_ssl_controls_browser(globals(),browser)
-        from domain_renewal_agreements_cases import run_browser as renewal_agreements_browser
-        renewal_agreements_browser(globals(),browser)
-        from provider_package_wordpress_installed_cases import run_browser as wordpress_installed_browser
-        wordpress_installed_browser(globals(),browser)
-        from domain_renewal_dispatch_cases import run_browser as renewal_dispatch_browser
-        renewal_dispatch_browser(globals(),browser)
-        from provider_directory_listing_controls_cases import run_browser as directory_controls_browser
-        directory_controls_browser(globals(),browser)
-        from stackcp_prerequisites_cases import run_browser as stackcp_prerequisites_browser
-        stackcp_prerequisites_browser(globals(),browser)
-        from domain_registration_drafts_cases import run_browser as registration_drafts_browser
-        registration_drafts_browser(globals(),browser)
-        from stackcp_access_cases import run_browser as stackcp_access_browser
-        stackcp_access_browser(globals(),browser)
-        from provider_password_reset_template_cases import run_browser as reset_template_browser
-        reset_template_browser(globals(),browser)
-        from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser
-        cloud_assignment_browser(globals(),browser)
-        from license_release_cases import run_browser as license_release_browser
-        license_release_browser(globals(),browser)
-        from provider_schedule_cases import run_browser as schedule_browser
-        schedule_browser(globals(),browser)
+            from provider_cloud_sites_cases import run_browser as cloud_sites_browser
+            cloud_sites_browser(globals(),browser)
+            from service_observations_cases import run_browser as service_history_browser
+            service_history_browser(globals(),browser)
+            from mail_drafts_cases import run_browser as drafts_browser
+            drafts_browser(globals(),browser)
+            from mail_submissions_cases import run_browser as submissions_browser
+            submissions_browser(globals(),browser)
+            from client_authority_cases import run_browser as client_authority_browser
+            client_authority_browser(globals(),browser)
+            from service_plan_cases import run_browser as service_plan_browser
+            service_plan_browser(globals(),browser)
+            from recurring_billing_cases import run_browser as recurring_browser
+            recurring_browser(globals(),browser)
+            from domain_contracts_cases import run_browser as domain_contracts_browser
+            domain_contracts_browser(globals(),browser)
+            from provider_cloud_providers_cases import run_browser as cloud_providers_browser
+            cloud_providers_browser(globals(),browser)
+            from provider_registration_periods_cases import run_browser as registration_periods_browser
+            registration_periods_browser(globals(),browser)
+            from provider_package_php_cases import run_browser as package_php_browser
+            package_php_browser(globals(),browser)
+            from domain_expiry_cases import run_browser as domain_expiry_browser
+            domain_expiry_browser(globals(),browser)
+            from provider_document_roots_cases import run_browser as document_roots_browser
+            document_roots_browser(globals(),browser)
+            from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser
+            package_force_ssl_browser(globals(),browser)
+            from provider_directory_listing_cases import run_browser as directory_listing_browser
+            directory_listing_browser(globals(),browser)
+            from provider_force_ssl_controls_cases import run_browser as force_ssl_controls_browser
+            force_ssl_controls_browser(globals(),browser)
+            from domain_renewal_agreements_cases import run_browser as renewal_agreements_browser
+            renewal_agreements_browser(globals(),browser)
+            from provider_package_wordpress_installed_cases import run_browser as wordpress_installed_browser
+            wordpress_installed_browser(globals(),browser)
+            from domain_renewal_dispatch_cases import run_browser as renewal_dispatch_browser
+            renewal_dispatch_browser(globals(),browser)
+            from provider_directory_listing_controls_cases import run_browser as directory_controls_browser
+            directory_controls_browser(globals(),browser)
+            from stackcp_prerequisites_cases import run_browser as stackcp_prerequisites_browser
+            stackcp_prerequisites_browser(globals(),browser)
+            from domain_registration_drafts_cases import run_browser as registration_drafts_browser
+            registration_drafts_browser(globals(),browser)
+            from stackcp_access_cases import run_browser as stackcp_access_browser
+            stackcp_access_browser(globals(),browser)
+            from provider_password_reset_template_cases import run_browser as reset_template_browser
+            reset_template_browser(globals(),browser)
+            from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser
+            cloud_assignment_browser(globals(),browser)
+            from license_release_cases import run_browser as license_release_browser
+            license_release_browser(globals(),browser)
+            from provider_schedule_cases import run_browser as schedule_browser
+            schedule_browser(globals(),browser)
+            from software_commerce_cases import run_browser as software_commerce_browser
+            software_commerce_browser(globals(),browser)
+            if os.environ.get('CWP_SOFTWARE_ACCEPTANCE_ONLY') != '1':
+                from license_financing_cases import run_browser as license_financing_browser
+                license_financing_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

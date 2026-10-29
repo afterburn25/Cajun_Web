@@ -31,7 +31,7 @@ if(($argv[1]??'')==='receipt-worker'){$body=stream_get_contents(STDIN);echo n_re
 try{
     foreach(schema_statements('notifyci_') as $name=>$sql)if($name!=='payment_notifications')db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);
-    foreach(['staff','support','catalog','payments','payment_attempts'] as $module)save_setting($module.'_schema_version','1');
+    foreach(['staff','support','catalog','payment_attempts'] as $module)save_setting($module.'_schema_version','1');save_setting('payments_schema_version','2');
     $now=gmdate('Y-m-d H:i:s');
     foreach([['Owner','owner-notify@example.invalid'],['Staff','staff-notify@example.invalid']] as [$name,$email])query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',[$name,$email,password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",[json_encode(['payments.manage','clients.manage'])]);n_actor();
