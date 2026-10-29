@@ -338,7 +338,7 @@ function setup_expected_files(): array { return [
     'app/providers/stackcp_auth_vault.php'=>'e872c4cdb6c7749f8be7b19e6db807b449f2ce9fe1b99bb614f3bbc1741c2294',
     'app/providers/stackcp_documents.php'=>'1116431db4ddc4632de4acdd4bd52e3be23267fe51a6803c69d5f14d9e8e4489',
     'app/providers/stackcp_prerequisite_views.php'=>'7b0676816bae4423434289a5dc52cdc1aebedfdbdcc8430327d223ec17317219',
-    'app/providers/stackcp_read_projection.php'=>'44df918b3411d19f9fa3b98f7825615a649ae4893d4bc82dd9cd88766d5c04c3',
+    'app/providers/stackcp_read_projection.php'=>'90b1f48c659116fca544fb3612e657352a76a63723aa739cdea6851d7c3080d2',
     'app/settings/revisions.php'=>'edcf7ba63bea26eeb964e0b44379d78ae93dd00535754d2375e07bfd5fcdc1bb',
     'app/settings/store.php'=>'f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564',
     'app/staff/accounts.php'=>'3791b7017a0e6a56787272f567c9128ed27eb1b1472045336c78d78f9f5a6c4e',
