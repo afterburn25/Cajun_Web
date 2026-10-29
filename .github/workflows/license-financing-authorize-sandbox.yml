@@ -60,16 +60,48 @@ jobs:
     environment: authorize-net-sandbox
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      safe_evidence: ${{ steps.report.outputs.safe_evidence }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ github.sha }}
-          persist-credentials: false
-      - name: Receive short-lived opaque nonces
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: finance-anet-nonces-${{ github.run_id }}-${{ github.run_attempt }}
-          path: sandbox-handoff
+      - name: Retrieve pinned handoff bootstrap without downloaded Actions
+        env:
+          GH_READ_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,json,os,pathlib,re,urllib.request
+          assert os.environ["GITHUB_REPOSITORY"] == "afterburn25/Cajun_Web"
+          assert os.environ["GITHUB_REF"] == "refs/heads/main"
+          sha=os.environ["GITHUB_SHA"]
+          assert re.fullmatch(r"[a-f0-9]{40}",sha)
+          path="tests/anet_sandbox_handoff.py"
+          url="https://api.github.com/repos/afterburn25/Cajun_Web/contents/"+path+"?ref="+sha
+          req=urllib.request.Request(url,headers={
+              "Authorization":"Bearer "+os.environ["GH_READ_TOKEN"],
+              "Accept":"application/vnd.github+json",
+              "X-GitHub-Api-Version":"2026-03-10",
+          })
+          with urllib.request.urlopen(req,timeout=20) as response:
+              assert response.geturl()==url
+              raw=response.read(160001)
+          assert len(raw)<160001
+          document=json.loads(raw)
+          assert document.get("path")==path and document.get("type")=="file"
+          assert document.get("encoding")=="base64"
+          code=base64.b64decode("".join(document["content"].split()),validate=True)
+          assert document["size"]==len(code)
+          blob=hashlib.sha1(b"blob "+str(len(code)).encode()+b"\0"+code).hexdigest()
+          assert document["sha"]==blob=="bab553d853700db66e288cb25e7c99a9cc3642f7"
+          pathlib.Path("tests").mkdir(exist_ok=True)
+          pathlib.Path(path).write_bytes(code)
+          print("Immutable reviewed handoff bootstrap verified: PASS")
+          PY
+      - name: Retrieve reviewed source and one-use nonces without downloaded Actions
+        env:
+          GH_READ_TOKEN: ${{ github.token }}
+        run: python3 tests/anet_sandbox_handoff.py --kind finance
       - name: Enforce sandbox-only standard-library source contract
         run: |
           python3 tests/sandbox_workflow_contract.py
@@ -78,16 +110,63 @@ jobs:
           ! grep -F 'https://api.authorize.net' tests/anet_sandbox_runtime.py tests/finance_anet_sandbox_acceptance.py
           grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/anet_sandbox_runtime.py
       - name: Exercise real Authorize.net financing sandbox only
+        id: gateway
         env:
           ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
           ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
           ANET_SANDBOX_TOKEN_FILE: sandbox-handoff/finance-tokens.json
         run: python3 tests/finance_anet_sandbox_acceptance.py
-      - name: Upload non-secret financing sandbox evidence
+      - name: Export strictly sanitized non-secret acceptance status
+        id: report
         if: always()
+        env:
+          CWP_GATEWAY_RESULT: ${{ steps.gateway.outcome }}
+        run: |
+          python3 - <<'PY'
+          import base64,json,os,pathlib
+          path=pathlib.Path("qa/finance-anet-sandbox-acceptance.json")
+          safe={"test":"finance","job_result":os.environ["CWP_GATEWAY_RESULT"],"passed":False}
+          if path.is_file():
+              report=json.loads(path.read_text(encoding="utf-8"))
+              if report.get("credentials_or_nonce_recorded") is not False:
+                  raise RuntimeError("Sandbox report did not verify secret exclusion")
+              safe["passed"]=report.get("passed") is True and safe["job_result"]=="success"
+              for key in ["initial_payment_approved","initial_payment_readback_passed","original_installments","original_arb_created","original_arb_cancelled","replacement_installments","replacement_arb_created","replacement_arb_cancelled","one_time_cleanup"]:
+                  value=report.get(key)
+                  if type(value) in (bool,int) or (isinstance(value,str) and len(value)<120):
+                      safe[key]=value
+          encoded=base64.b64encode(json.dumps(safe,sort_keys=True,separators=(",",":")).encode()).decode()
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as output:
+              output.write("safe_evidence="+encoded+"\n")
+          PY
+  sandbox-evidence:
+    needs: [sandbox-dispatch-boundary, finance-sandbox]
+    if: always() && needs.sandbox-dispatch-boundary.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - name: Materialize sanitized evidence on a runner without merchant secrets
+        env:
+          CWP_SAFE_EVIDENCE: ${{ needs.finance-sandbox.outputs.safe_evidence }}
+        run: |
+          python3 - <<'PY'
+          import base64,json,os,pathlib
+          encoded=os.environ.get("CWP_SAFE_EVIDENCE","")
+          raw=base64.b64decode(encoded,validate=True) if encoded else b'{"passed":false,"status":"no-safe-report"}'
+          if len(raw)>8192:raise RuntimeError("Sandbox evidence exceeded a bounded size")
+          report=json.loads(raw)
+          if not isinstance(report,dict) or report.get("passed") not in (True,False):
+              raise RuntimeError("Invalid sandbox evidence")
+          output=pathlib.Path("qa/finance-anet-sandbox-acceptance.json")
+          output.parent.mkdir(parents=True,exist_ok=True)
+          output.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+          PY
+      - name: Upload non-secret sandbox evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: finance-anet-sandbox-${{ github.run_id }}-${{ github.run_attempt }}
           path: qa/finance-anet-sandbox-acceptance.json
           retention-days: 14
-          if-no-files-found: warn
+          if-no-files-found: error
