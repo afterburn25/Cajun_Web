@@ -344,6 +344,13 @@ function license_financing_sync_by_invoice(int $invoiceId):void{
     $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
         [config()['db']['prefix'].'license_finance_offers']);
     if(!$gatewayTable||!$offerTable)return;
+    if((string)$plan['state']==='paid_off'){
+        require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+        $offer=one('SELECT id FROM '.table('license_finance_offers').' WHERE license_id=? AND schedule_id=? AND status=?',
+            [$row['license_id'],$plan['schedule_id'],'signed']);
+        if($offer)license_finance_subscription_payoff_retire((string)$offer['id']);
+        return;
+    }
     $recovery=one('SELECT s.id,s.status FROM '.table('recurring_billing_invoices').' r '.
         'JOIN '.table('license_finance_offers').' o ON o.schedule_id=r.schedule_id '.
         'JOIN '.table('license_finance_subscriptions').' s ON s.offer_id=o.id '.
