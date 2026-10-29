@@ -22,6 +22,8 @@ def run_browser(env,browser):
           and 'https://my.20i.com/reseller/api' in fresh_provider.text
           and 'does not' in fresh_provider.text.lower())
     check('Fresh owner provider page does not require redundant inventory preparation',fresh_provider.status_code==200 and 'Prepare inventory storage' not in fresh_provider.text and 'Cloud server inventory' in fresh_provider.text and 'Save your 20i connection above' in fresh_provider.text)
+    check('Guide recognizes already prepared inventory storage before any 20i profile exists',
+          'Storage ready; connect 20i' in fresh_provider.text and 'Storage not prepared' not in fresh_provider.text)
     check('Fresh owner inventory page directs connection setup without unavailable actions',fresh_provider.status_code==200 and 'Save your 20i connection above before refreshing inventory.' in fresh_provider.text and 'Prepare inventory storage' not in fresh_provider.text and 'data-provider-refresh' not in fresh_provider.text)
     fresh_owner.close()
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
