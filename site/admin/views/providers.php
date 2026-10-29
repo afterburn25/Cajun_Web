@@ -20,8 +20,8 @@ $hubLastCheck=$hubChecks[0]??null;
 $hubVerified=$hubEnabled && $hubLastCheck
     && (int)$hubLastCheck['profile_revision']===(int)$record['revision']
     && ($hubLastCheck['result_code']??null)==='connected';
-$hubHasInventory=$record&&provider_inventory_ready();
-$hubRefresh=$hubHasInventory?provider_inventory_latest($profileId):null;
+$hubHasInventory=provider_inventory_ready();
+$hubRefresh=($record&&$hubHasInventory)?provider_inventory_latest($profileId):null;
 $hubInventoryCurrent=$hubHasInventory&&$hubRefresh
     && (int)$hubRefresh['profile_revision']===(int)$record['revision']
     && ($hubRefresh['state']??'')==='complete';
@@ -46,7 +46,7 @@ $hubNext=!$hubHasKey
   <div class="provider-hub-status" aria-label="Connection setup status">
     <div><span class="provider-hub-step">01</span><strong>API key</strong><small><?=esc($hubHasKey?'Saved securely':'Not saved')?></small></div>
     <div><span class="provider-hub-step">02</span><strong>Connection</strong><small><?=esc($hubVerified?'Read verified for current settings':($hubEnabled?'Check required':'Not enabled'))?></small></div>
-    <div><span class="provider-hub-step">03</span><strong>Inventory</strong><small><?=esc($hubInventoryCurrent?'Current package read complete':($hubHasInventory?'Refresh required':'Storage not prepared'))?></small></div>
+    <div><span class="provider-hub-step">03</span><strong>Inventory</strong><small><?=esc(!$hubHasInventory?'Storage not prepared':(!$record?'Storage ready; connect 20i':($hubInventoryCurrent?'Current package read complete':'Refresh required')))?></small></div>
     <div><span class="provider-hub-step">04</span><strong>Clients &amp; products</strong><small>Link or draft only after review</small></div>
   </div>
   <div class="provider-hub-next" aria-label="Recommended next step">
