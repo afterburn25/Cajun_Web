@@ -1,3 +1,7 @@
+## 2026-10-28 — preserve reconciliation assertions across payoff integration
+
+Independent `codex/finance-reconcile-payoff-fixtures` declares the unpaid payoff-reader dependency in the existing strict #287/#289 fixtures. Case/assertion tails and production code are unchanged. Original combined undefined-function failure is preserved; 448 pure and 375 native executions pass against the frozen parent and combined source. [Evidence and pending review](docs/CODEX_FINANCE_RECONCILE_FIXTURES.md).
+
 # Session handoff - Devin sole-owner continuation
 
 ## Native financing reconciliation audit correction — 2026-10-28

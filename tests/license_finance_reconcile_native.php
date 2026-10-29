@@ -65,6 +65,10 @@ query('CREATE TRIGGER `'.$prefix.'reject_audit` BEFORE INSERT ON '.table('audit'
 $fixture=[];
 function support_current():bool{return false;}
 function license_finance_gateway_ready():bool{return true;}
+// This native fixture owns subscription/audit tables, not a paid financing
+// ledger. Keep its stale-read and rollback cases on the unpaid path; the full
+// payoff suites exercise actual ledger validation and permanent payoff.
+function license_finance_subscription_payoff_due(array $offer):bool{return false;}
 function license_finance_offer_id(string $id):void{if(!preg_match('/^[a-f0-9]{32}$/D',$id))throw new LogicException('Bad fixture offer');}
 function staff_owner(string $password):array{if($password!=='synthetic-owner')throw new LogicException('Unexpected owner credential');return ['id'=>1];}
 function license_finance_offer_row(string $id):array{return ['id'=>$id,'status'=>'signed','installments'=>6,'license_id'=>7];}
