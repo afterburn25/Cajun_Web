@@ -1,0 +1,393 @@
+{
+  "scope": "Independent local self-review, not hosted native/browser acceptance or approval.",
+  "base": "3789bb50c90cb836530f2d5dc2400cee394763d0",
+  "failure_run": {
+    "identity": {
+      "attempt": "1",
+      "ci_sha": "2f5835a018c985af661d97dfe63c9b1ba136b8a0",
+      "contract_sha256": "d3c3f3cd2b7177f374ad847c911c48564f3c6f52e449101e1fd465570c37c7d0",
+      "environment": {
+        "database": "mariadb-10.11",
+        "php": "8.3"
+      },
+      "helper_sha256": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+      "reports_sha256": "876ba4189bc1e4dc3dcf09bcac847ee8ca6fc64bd0ddb4db23d128228fd21f1a",
+      "repository": "afterburn25/Cajun_Web",
+      "run_id": "40767087342",
+      "schema": 1,
+      "source_sha": "3789bb50c90cb836530f2d5dc2400cee394763d0",
+      "tree": "1e78ab8e01a7d2602c82fcf0f5c8751630497cb1",
+      "workflow_sha256": "bcb5f43fe46295e261e2f806e8f70e2ee5e1f50e157f0e5bd3f4c70717f52581"
+    },
+    "steps": {
+      "browser": "failure",
+      "input": "success",
+      "mutation": "success",
+      "native": "success",
+      "setup": "success"
+    },
+    "verified_members": 569,
+    "inner_sha256": "934740095d3a4f3d4e2457c69f15cf06c1493356c6ec20ba610df4ed5f03030e",
+    "browser_checks": 3218,
+    "browser_failure": "TimeoutError('Page.goto: Timeout 30000ms exceeded.\\nCall log:\\n  - navigating to \"http://127.0.0.1:8091/existing/admin/index.php?view=provider-settings\", waiting until \"load\"\\n')",
+    "last_check": {
+      "name": "Cloud-Assignment-Current-Owner Desktop fits viewport",
+      "passed": true
+    }
+  },
+  "render_reports": {
+    "before-render": {
+      "passed": false,
+      "scope": "Real providers, cloud inventory and assignment templates with synthetic saved projection/HTML helpers. No SQL, auth, HTTP, browser or provider acceptance.",
+      "view_sha256": "aa9b90fb5de1ac18e05cf69ed94da5ead7dba6aea1f70d633225b9a64cda353b",
+      "checks": [
+        {
+          "name": "Focused renderer completes without unrelated projections",
+          "passed": false,
+          "failure": "Unrelated provider projection reached."
+        }
+      ]
+    },
+    "8.2-default-view": {
+      "passed": true,
+      "scope": "Real providers, cloud inventory and assignment templates with synthetic saved projection/HTML helpers. No SQL, auth, HTTP, browser or provider acceptance.",
+      "view_sha256": "4e4aaa55223889ef5f455f785db45299be8e8e87de23843b7975bedda30d41cb",
+      "checks": [
+        {
+          "name": "Focused actual providers template reaches cloud inventory and assignment controls",
+          "passed": true
+        },
+        {
+          "name": "Focused workspace retains explicit return to the complete provider page",
+          "passed": true
+        },
+        {
+          "name": "Focused view excludes package editor and cloud website creation work",
+          "passed": true
+        },
+        {
+          "name": "Cloud assignment and refresh history remain visible",
+          "passed": true
+        },
+        {
+          "name": "Focused rendering escapes saved cloud names",
+          "passed": true
+        },
+        {
+          "name": "Focused forms retain CSRF and blank owner password inputs",
+          "passed": true
+        },
+        {
+          "name": "Current assignment projection is called once",
+          "passed": true
+        },
+        {
+          "name": "Focused historical context preserves warning and refuses reapproval",
+          "passed": true
+        },
+        {
+          "name": "Focused unprepared context keeps explicit preparation and no removal form",
+          "passed": true
+        },
+        {
+          "name": "Focused history recovery preserves error and hides assignment mutations",
+          "passed": true
+        },
+        {
+          "name": "Focused no-profile stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Focused no-storage stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering null",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering \"other\"",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering [\"cloud-assignment\"]",
+          "passed": true
+        }
+      ]
+    },
+    "8.2-minimal-view": {
+      "passed": true,
+      "scope": "Real providers, cloud inventory and assignment templates with synthetic saved projection/HTML helpers. No SQL, auth, HTTP, browser or provider acceptance.",
+      "view_sha256": "4e4aaa55223889ef5f455f785db45299be8e8e87de23843b7975bedda30d41cb",
+      "checks": [
+        {
+          "name": "Focused actual providers template reaches cloud inventory and assignment controls",
+          "passed": true
+        },
+        {
+          "name": "Focused workspace retains explicit return to the complete provider page",
+          "passed": true
+        },
+        {
+          "name": "Focused view excludes package editor and cloud website creation work",
+          "passed": true
+        },
+        {
+          "name": "Cloud assignment and refresh history remain visible",
+          "passed": true
+        },
+        {
+          "name": "Focused rendering escapes saved cloud names",
+          "passed": true
+        },
+        {
+          "name": "Focused forms retain CSRF and blank owner password inputs",
+          "passed": true
+        },
+        {
+          "name": "Current assignment projection is called once",
+          "passed": true
+        },
+        {
+          "name": "Focused historical context preserves warning and refuses reapproval",
+          "passed": true
+        },
+        {
+          "name": "Focused unprepared context keeps explicit preparation and no removal form",
+          "passed": true
+        },
+        {
+          "name": "Focused history recovery preserves error and hides assignment mutations",
+          "passed": true
+        },
+        {
+          "name": "Focused no-profile stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Focused no-storage stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering null",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering \"other\"",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering [\"cloud-assignment\"]",
+          "passed": true
+        }
+      ]
+    },
+    "8.4-default-view": {
+      "passed": true,
+      "scope": "Real providers, cloud inventory and assignment templates with synthetic saved projection/HTML helpers. No SQL, auth, HTTP, browser or provider acceptance.",
+      "view_sha256": "4e4aaa55223889ef5f455f785db45299be8e8e87de23843b7975bedda30d41cb",
+      "checks": [
+        {
+          "name": "Focused actual providers template reaches cloud inventory and assignment controls",
+          "passed": true
+        },
+        {
+          "name": "Focused workspace retains explicit return to the complete provider page",
+          "passed": true
+        },
+        {
+          "name": "Focused view excludes package editor and cloud website creation work",
+          "passed": true
+        },
+        {
+          "name": "Cloud assignment and refresh history remain visible",
+          "passed": true
+        },
+        {
+          "name": "Focused rendering escapes saved cloud names",
+          "passed": true
+        },
+        {
+          "name": "Focused forms retain CSRF and blank owner password inputs",
+          "passed": true
+        },
+        {
+          "name": "Current assignment projection is called once",
+          "passed": true
+        },
+        {
+          "name": "Focused historical context preserves warning and refuses reapproval",
+          "passed": true
+        },
+        {
+          "name": "Focused unprepared context keeps explicit preparation and no removal form",
+          "passed": true
+        },
+        {
+          "name": "Focused history recovery preserves error and hides assignment mutations",
+          "passed": true
+        },
+        {
+          "name": "Focused no-profile stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Focused no-storage stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering null",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering \"other\"",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering [\"cloud-assignment\"]",
+          "passed": true
+        }
+      ]
+    },
+    "8.4-minimal-view": {
+      "passed": true,
+      "scope": "Real providers, cloud inventory and assignment templates with synthetic saved projection/HTML helpers. No SQL, auth, HTTP, browser or provider acceptance.",
+      "view_sha256": "4e4aaa55223889ef5f455f785db45299be8e8e87de23843b7975bedda30d41cb",
+      "checks": [
+        {
+          "name": "Focused actual providers template reaches cloud inventory and assignment controls",
+          "passed": true
+        },
+        {
+          "name": "Focused workspace retains explicit return to the complete provider page",
+          "passed": true
+        },
+        {
+          "name": "Focused view excludes package editor and cloud website creation work",
+          "passed": true
+        },
+        {
+          "name": "Cloud assignment and refresh history remain visible",
+          "passed": true
+        },
+        {
+          "name": "Focused rendering escapes saved cloud names",
+          "passed": true
+        },
+        {
+          "name": "Focused forms retain CSRF and blank owner password inputs",
+          "passed": true
+        },
+        {
+          "name": "Current assignment projection is called once",
+          "passed": true
+        },
+        {
+          "name": "Focused historical context preserves warning and refuses reapproval",
+          "passed": true
+        },
+        {
+          "name": "Focused unprepared context keeps explicit preparation and no removal form",
+          "passed": true
+        },
+        {
+          "name": "Focused history recovery preserves error and hides assignment mutations",
+          "passed": true
+        },
+        {
+          "name": "Focused no-profile stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Focused no-storage stays read-only with return navigation",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering null",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering \"other\"",
+          "passed": true
+        },
+        {
+          "name": "Only exact explicit focus bypasses ordinary rendering [\"cloud-assignment\"]",
+          "passed": true
+        }
+      ]
+    },
+    "fixture": {
+      "scope": "Extracted real fixture SQL, literal production/legacy INSERTs against synthetic in-memory SQLite and captured clock; not native application/MySQL/browser.",
+      "checks": [
+        {
+          "name": "Actual aging SQL preserves all cloud source bytes",
+          "passed": true
+        },
+        {
+          "name": "Actual aging SQL still ages only unrelated and legacy reads",
+          "passed": true
+        },
+        {
+          "name": "Preserved newest cloud read imposes actual remaining cooldown",
+          "passed": true
+        },
+        {
+          "name": "Profile-scoped aging never changes another profile",
+          "passed": true
+        },
+        {
+          "name": "Profile-scoped cooldown is derived only from selected profile",
+          "passed": true
+        },
+        {
+          "name": "Unexpected interval refuses before any mutation or wait",
+          "passed": true
+        },
+        {
+          "name": "Already expired cooldown never adds an arbitrary delay",
+          "passed": true
+        },
+        {
+          "name": "Actual before-after guard detects unintended protected mutation",
+          "passed": true
+        },
+        {
+          "name": "Actual new assignment INSERT binds each expected field once",
+          "passed": true
+        },
+        {
+          "name": "Actual assignment event INSERT binds each expected field once",
+          "passed": true
+        },
+        {
+          "name": "Actual protected evidence INSERT binds each expected field once",
+          "passed": true
+        },
+        {
+          "name": "Actual native legacy fixture INSERT binds each expected field once",
+          "passed": true
+        },
+        {
+          "name": "Original extra-placeholder new assignment INSERT is rejected",
+          "passed": true
+        },
+        {
+          "name": "Original extra-placeholder protected evidence INSERT is rejected",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "native_local": {
+    "checks": [],
+    "failure": "The server did not retain private file permissions (0600)."
+  },
+  "sources": {
+    "site/admin/controllers/providers.php": "8634d9bc499b508233924ceb0d79ee3e07112a36a5cc5b916b7c9871b4550f88",
+    "site/admin/views/providers.php": "4e4aaa55223889ef5f455f785db45299be8e8e87de23843b7975bedda30d41cb",
+    "site/admin/views/provider_cloud.php": "b10ef4863826f6ca0f017b31f6aa1175dfa0abad5596dd7444853334bfd1cb70",
+    "tests/twentyi-cloud-assignment/focused-view.php": "a02cae860f563e0f29b51de8806d543cab5e5daa7060b3e0bf14af3bee97ed7f",
+    "tests/provider_cloud_assignment_native.php": "88619f5c6332e490a659c1f97f11c762cfc3d28ffe5e9fa3888c101cfc752d47",
+    "tests/provider_cloud_assignment_cases.py": "a3ebf6d8c6345a339851a21e9d0a46fc8cecf21152fcccedd5245befe0c76903"
+  }
+}
