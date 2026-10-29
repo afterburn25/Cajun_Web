@@ -8,15 +8,15 @@ CHECKOUT = "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
 UPLOAD = "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
 DOWNLOAD = "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
 REVIEWED_FILES = {
-    ".github/workflows/software-authorize-sandbox.yml": "64ac1136afc9ae5caed9c6197d7f39f67e183ad382f64611a5e5bf8f1205b24d",
-    ".github/workflows/license-financing-authorize-sandbox.yml": "ed981106a5d0e875ddd26e34372950bd1dcce230ce2a338bc66b22a963c8b92a",
+    ".github/workflows/software-authorize-sandbox.yml": "0049fb8b834f26fc8d5a104165ab4745845442c47b34f07a554a73acdd35a69f",
+    ".github/workflows/license-financing-authorize-sandbox.yml": "16141d459e7b2de6881dbc0f6fb992bfdc4ca567fe36d74e0409db903677fa85",
     ".github/workflows/sandbox-workflow-security.yml": "4ab277ea2d9d50387093d4202c18b299cddab6e54fbe93f95e4842d0ad7d6175",
     "tests/software_anet_sandbox_acceptance.py": "21fa7504f6780ad665328f51bc516e86f60dd4a516ce4064fb14741ea7e74e83",
     "tests/finance_anet_sandbox_acceptance.py": "685e9e27e4ee727624dab859b9b44715ec5214e09474e08e53efc58797c867d3",
     "tests/anet_sandbox_runtime.py": "df4ba0e1696ee7a7457c84ed28276a2dbe143bf39e36d56b5372150998215e81",
     "tests/anet_sandbox_tokenize.py": "f7cf297d49527f0d83759f4fecf5c35e68f18ecd07f8bc86493f03233fbff400",
     "tests/anet_sandbox_runtime_contract.py": "ed7f8d8130caa5911538e77373f42fb539b408dee7398b6fae3ce47a1a7e0d75",
-    "tests/anet_sandbox_handoff.py": "62a39315ae145df60a618252ee8373c96cb4f73c201e19b530fb5cc211932a6a",
+    "tests/anet_sandbox_handoff.py": "119271c703634e3da7fb4cda7b87e324e547ad46612bb6237da093713dd2de45",
 }
 WORKFLOWS = {
     "software-authorize-sandbox.yml": "  authorize-sandbox:\n",
