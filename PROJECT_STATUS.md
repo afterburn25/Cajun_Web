@@ -6,11 +6,25 @@ PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration c
 
 PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](docs/CODEX_PR266_APPLICATION_40820683270.md).
 
+## 2026-10-28 — preserve reconciliation assertions across payoff integration
+
+Independent `codex/finance-reconcile-payoff-fixtures` declares the unpaid payoff-reader dependency in the existing strict #287/#289 fixtures. Case/assertion tails and production code are unchanged. Original combined undefined-function failure is preserved; 448 pure and 375 native executions pass against the frozen parent and combined source. [Evidence and pending review](docs/CODEX_FINANCE_RECONCILE_FIXTURES.md).
+
 # CajunWebPro current status
 
 ## 2026-10-28 — independent cloud assignment focus correction
 
 Run 40767087342 on integration base `3789bb50` finished with 3,218 passing browser checks followed by a 30-second cloud-assignment page navigation timeout. Independent correction `codex/cloud-assignment-focused-view` adds an explicit cloud inventory/assignment workspace with full-settings navigation and focus-preserving redirects. Existing cloud history and owner/CSRF controls are retained. Fifteen real-template checks pass on PHP 8.2/8.4 with and without INI; the old template fails the regression. Fourteen fixture checks pass. Windows native setup refuses required 0600 permissions before assertions; new native and installed browser cases require Linux CI. No timeout or security assertion was relaxed. [Evidence and scope](docs/CODEX_PR266_APPLICATION_40767087342.md).
+
+## Native financing reconciliation audit correction — 2026-10-28
+
+This independent correction stacks on #287 (`4f368547`) and makes both direct owner reconciliation mutations atomic with their licensing audit event. Native trigger rejection reproduces two committed-state failures per PHP/database combination on the parent. The fix passes 75 assertions on PHP 8.2.35/8.4.25 × MariaDB 10.11.19/MySQL 8.4.13 (300 executions); the snapshot fences, real account mutex, owner reauthentication and provider-read boundary remain intact. A separate PHP writer verifies preservation of concurrent subscription state. The existing native workflow now runs and retains the regression. [Source, exact scope and retained first failures](docs/CODEX_FINANCE_RECONCILE_AUDIT.md).
+
+This branch contains #287 but not #285/#286/#288. Reserved branches and the current Application run remain untouched. The actual provider, installed HTTP, independent review, final combined/main acceptance and release gates remain pending.
+
+## Independent financing reconciliation correction — 2026-10-28
+
+Prepared a focused correction from integration 3789bb50c90cb836530f2d5dc2400cee394763d0 on codex/finance-reconcile-snapshot-guard. Delayed owner gateway readback must not overwrite a newer subscription identity or lifecycle state. Both affected mutation blocks now compare the locked row with their verified snapshot and require retry on change. Exact-function synthetic regression: original 67 failures / 112 assertions, corrected 112 passes on each PHP 8.2.35 and 8.4.25; existing five finance contracts and lints pass. See [review and limitations](docs/CODEX_FINANCE_RECONCILE_SNAPSHOT_REVIEW.md). Native/HTTP and combined hosted acceptance remain separate. Review and incorporation by the integration writer are pending; no main merge, release, deployment or provider operation occurred. PRs #285 and #286 remain separate corrections.
 
 ## 2026-10-28 — current Application failure isolated and focused repair prepared
 
