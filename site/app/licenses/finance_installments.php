@@ -139,6 +139,12 @@ function license_finance_scheduler_run(?int $at=null):array{
                 }
             }
             if(license_finance_gateway_ready()){
+                require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+                $retiring=license_finance_subscription_row((string)$row['id']);
+                if($retiring&&(string)$retiring['status']==='retirement_pending'
+                    &&license_finance_subscription_replacement_retire((string)$row['id'])==='review'){
+                    $summary['errors']++;$summary['state']='partial';
+                }
                 $sub=one('SELECT status FROM '.table('license_finance_subscriptions').' WHERE offer_id=?',[$row['id']]);
                 if(license_financing_recovery_link_allowed((string)($sub['status']??''))){
                     $offer=license_finance_offer_row((string)$row['id']);

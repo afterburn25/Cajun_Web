@@ -73,13 +73,19 @@ function unchanged(string $state):bool {
 }
 function fixture_value(string $name):mixed {global $fixture;return $fixture[$name];}
 $events=['failed'=>'payment_failed','suspended'=>'billing_suspended','terminated'=>'review','cancelled'=>'cancelled','expired'=>'cancelled'];
-foreach(['review','paid_off','cancelled','reversal_recovery','replacing'] as $state) {
+foreach(['review','paid_off','cancelled','reversal_recovery','replacing','retirement_pending'] as $state) {
     foreach($events as $event=>$target) {
         reset_fixture($state);
         check_case($state.' survives delayed '.$event,
             fn()=>lifecycle_event($event)==='replay'&&unchanged($state));
     }
 }
+reset_fixture('retirement_pending');
+check_case('Pending retirement cannot accept automatic or owner settlement',
+    fn()=>license_financing_subscription_settlement_status('retirement_pending')===null
+        &&license_financing_subscription_settlement_status('retirement_pending',true)===null&&unchanged('retirement_pending'));
+check_case('Pending retirement cannot create a parallel recovery link',
+    fn()=>!license_financing_recovery_link_allowed('retirement_pending')&&unchanged('retirement_pending'));
 reset_fixture('billing_suspended');
 check_case('Confirmed suspension survives a delayed failure and keeps catch-up eligibility',
     fn()=>lifecycle_event('failed')==='replay'&&unchanged('billing_suspended')

@@ -95,6 +95,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
             }
         }
         if($financeSub)echo '<p><strong>Automatic installments:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financeSub['status']))).($financeSub['gateway_subscription_id']!==null?' · gateway subscription '.esc((string)$financeSub['gateway_subscription_id']):'').'</p>';
+        if($financeSub&&$financeSub['status']==='retirement_pending')echo '<p class="notice warning">Automatic billing requires review. Cancellation is awaiting confirmation; another automatic billing setup is unavailable until this is resolved. Recorded payments remain credited.</p>';
         if($financeSub&&license_financing_recovery_link_allowed((string)$financeSub['status'])){
             $recovery=one('SELECT p.* FROM '.table('payment_requests').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.purpose=? AND p.status=? ORDER BY r.period_index,p.id DESC LIMIT 1',
                 [$row['schedule_id'],'financing','prepared']);
