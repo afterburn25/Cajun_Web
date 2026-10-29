@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## 2026-10-29 — keep software orchestration evidence inside its sealed partition
 
 PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](CODEX_PR266_APPLICATION_40820683270.md).
@@ -7,8 +6,6 @@ PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration c
 
 PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](CODEX_PR266_APPLICATION_40820683270.md).
 
-||||||| 3789bb50
-=======
 ## 2026-10-28 — preserve payments during initial and replacement enrollment
 
 Independent `codex/finance-replacement-ledger-guard` from #300 `07fa7caf` prevents partial or nonconsecutive paid installments from being billed again by a newly created full ARB. Initial and replacement finalizers retain obsolete known candidates for verified cancellation; lifecycle/refund/void/settlement paths preserve pending retirement. Final PHP/database matrix passes 6,136 native executions and 306 focused executions. Initial cases include 30 actual separate-process payment commits per lane. Original replacement 37/230, pending-state 11/22, initial 6/44 and finalizer-rollback 4/22 failures remain retained. Hosted checks and independent review are pending; unknown replacement outcomes, established-ARB receipt audit, final combined acceptance, sandbox and main integration remain open. [Review and evidence](CODEX_FINANCE_ENROLLMENT_RECEIPTS.md).
@@ -29,7 +26,6 @@ Independent `codex/finance-initial-sync-binding`, based on PR #296 `17357a9d`, c
 
 Independent `codex/finance-initial-payment-enrollment`, based on PR #295 at `27d7b9e`, corrects the portal/handler mismatch after a nonzero verified down payment. Enrollment now requires the exact agreement invoice and retained ledger payment, current client and running signed schedule, then repeats admission under the reservation lock. Paid-off plans cannot enroll new installments; existing license/domain/rights and subscription history stay intact. Native application checks pass 119 per PHP 8.2/8.4 × MariaDB/MySQL lane (476 total), plus 22 handler checks per PHP. Original handler and intermediate cross-agreement invoice substitution failures are retained. Hosted acceptance and independent review remain pending; no real gateway, merge or release claim. [Review and evidence](CODEX_FINANCE_INITIAL_ENROLLMENT_REVIEW.md).
 
->>>>>>> refs/codex-ledger
 ## 2026-10-28 — owner-directed PR266 independent integration pass
 
 ## 2026-10-28 — financed replacement recovery hardening
@@ -2155,8 +2151,7 @@ Owner direction: full purchase-to-install DRM for Website Core bundles sold thro
 - `site/app/licenses/fulfill.php` — `license_fulfill_invoice()` post-transaction hook in both `catalog_transition` and `ledger_receive` paid paths; idempotent per customer+product; failure never rolls back payment; SKU convention `WEBSITE-{INDUSTRY}`; private-storage bundles only; best-effort customer email with license key + portal link.
 - Admin UI `studio-licenses` (create/deactivate/domains/bundle list+regenerate); portal domain management + owner-only `api/bundle-download.php` (realpath-contained, support sessions rejected, audited).
 - `tests/license_native.php` (30+ assertions, CI/MariaDB) + `tests/license_bundle_functional.php` (14 checks, real Website_Core checkout, extraction verified: `site/install.php` + module manifest with embedded key).
-- Fixed: leftover `<<<<<<< HEAD` merge marker in `schema/base.php` shipped broken until build caught it; installer inventory refreshed via `python tools/build.py --refresh` (required after every site/ change).
-
+- Fixed: leftover `
 Remaining (no live environment here): production `license_core_dir` config, real purchase->bundle->install->validation cycle, live-domain change deactivation.
 
 ## Licensing follow-up: domain semantics + atomic replace — 2026-10-15

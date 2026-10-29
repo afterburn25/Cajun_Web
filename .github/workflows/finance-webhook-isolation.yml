@@ -9,12 +9,8 @@ on:
       - 'site/app/billing/software_subscription_settle.php'
       - 'tests/finance_webhook_isolation.php'
       - 'tests/finance_subscription_lifecycle.php'
-<<<<<<< HEAD
       - 'tests/finance_reconcile_snapshot.php'
-||||||| 3789bb50
-=======
       - 'tests/finance_replacement_outcomes.php'
->>>>>>> refs/codex-286
       - '.github/workflows/finance-webhook-isolation.yml'
   push:
     branches: [main, feature/software-license-commerce-20261025]
@@ -26,12 +22,8 @@ on:
       - 'site/app/billing/software_subscription_settle.php'
       - 'tests/finance_webhook_isolation.php'
       - 'tests/finance_subscription_lifecycle.php'
-<<<<<<< HEAD
       - 'tests/finance_reconcile_snapshot.php'
-||||||| 3789bb50
-=======
       - 'tests/finance_replacement_outcomes.php'
->>>>>>> refs/codex-286
       - '.github/workflows/finance-webhook-isolation.yml'
   workflow_dispatch:
 permissions:
@@ -60,18 +52,14 @@ jobs:
         shell: bash
         run: |
           docker run --rm --network none -v "$PWD:/app:ro" -w /app php:${{ matrix.php }}-cli php -n tests/finance_subscription_lifecycle.php | tee qa/finance-subscription-lifecycle.json
-<<<<<<< HEAD
       - name: Reject stale owner reconciliation after concurrent lifecycle changes
         shell: bash
         run: |
           docker run --rm --network none -v "$PWD:/app:ro" -w /app php:${{ matrix.php }}-cli php -n tests/finance_reconcile_snapshot.php | tee qa/finance-reconcile-snapshot.json
-||||||| 3789bb50
-=======
       - name: Prevent repeated creates after uncertain replacement results
         shell: bash
         run: |
           docker run --rm --network none -v "$PWD:/app:ro" -w /app php:${{ matrix.php }}-cli php -n tests/finance_replacement_outcomes.php | tee qa/finance-replacement-outcomes.json
->>>>>>> refs/codex-286
       - name: Preserve scoped regression evidence
         if: always()
         uses: actions/upload-artifact@v4
