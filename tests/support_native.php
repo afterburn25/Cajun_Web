@@ -56,8 +56,12 @@ try{
     support_ok('Owner remains able to review a staff-restricted active client',support_resolve($ownerOverride)!==null&&one('SELECT allowed FROM '.table('support_clients').' WHERE client_id=1')['allowed']==0);
     support_end($ownerOverride);support_policy(1,true);
     $id=support_start(1);query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=1',[str_repeat('d',32)]);support_ok('Client credential change revokes support',support_resolve($id)===null);
-    $id=support_start(1);query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');support_ok('Disabled client revokes support',support_resolve($id)===null);query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
-    $staff=staff_save(0,'Support viewer','viewer@example.invalid','administrator',true,['support.login'],$password);$link=staff_invite($staff,$password);parse_str((string)parse_url($link,PHP_URL_FRAGMENT),$parts);staff_activate($parts['token'],$password);support_actor($staff);
+    $id=support_start(1);query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');support_ok('Disabled client revokes support',support_resolve($id)===null);
+    support_denied('Even owner may not open disabled client',fn()=>support_start(1));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
+    $staff=staff_save(0,'Support viewer','viewer@example.invalid','administrator',true,['support.login'],$password);$link=staff_invite($staff,$password);parse_str((string)parse_url($link,PHP_URL_FRAGMENT),$parts);staff_activate($parts['token'],$password);
+    support_policy(1,false);
+    support_actor($staff);support_denied('Delegated support staff cannot bypass restricted client policy',fn()=>support_start(1));
+    support_actor(1);support_policy(1,true);support_actor($staff);
     support_denied('Non-owner cannot change client support authorization',fn()=>support_policy(1,true));
     $id=support_start(1);support_denied('View permission does not grant troubleshooting writes',fn()=>support_message($id,1,'No write grant'));
     support_ok('View permission does not grant file download',!support_can('support.download'));
