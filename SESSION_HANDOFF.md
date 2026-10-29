@@ -1,5 +1,9 @@
 # Session handoff - Devin sole-owner continuation
 
+## 2026-10-28 — stale sandbox subscription continuation corrected
+
+Independent follow-up `codex/finance-sandbox-stale-profile` addresses review comment 6483700465 on PR #291 without changing its frozen head `110c30da`. A rejected stale sandbox mark now returns false and checkout stops before recurring subscription creation. Native regression reproduces four rejected-response paths reaching the subscription boundary; after correction all 220 checks pass in each PHP 8.2/8.4 × MariaDB/MySQL lane, and 26 caller-binding checks pass per PHP. Provider, preparation and subscription boundaries remain synthetic. No real sandbox validation or approval is claimed. [Review and limits](docs/CODEX_FINANCE_SANDBOX_PROFILE_REVIEW.md).
+
 ## Delayed finance checkout result identity — 2026-10-28
 
 Follow-up to independent PR #290 on frozen `5e56c250`: `license_finance_charge_mark()` previously selected only the current invoice row, allowing a delayed result from an older attempt to overwrite a newer processing attempt. `license_finance_charge_record_paid()` also lacked the original request-key and retained transaction checks before reaching the ledger. This does not establish an unauthorized paid transition: existing ledger uniqueness can independently reject some stale receipts.
