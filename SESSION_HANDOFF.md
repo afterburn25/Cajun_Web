@@ -358,3 +358,10 @@ The complete earlier handoff, source pins, local evidence paths and dated run ID
 # 2026-10-28 licensing key-entropy handoff
 
 The PR266 integration candidate corrects new license generation from 64-bit truncated keys to the intended 128-bit value, formatted as eight four-hex groups. Existing keys remain accepted and no migration rewrites stored identities. Run the exact refreshed native/browser/package matrix before merge.
+# 2026-10-28 Devin integration candidate
+
+`devin/licensing-integration-candidate` carries the full Codex correction stack merged onto feature `2d8d32d` in verified dependency order: guard-order (acceptance reorder + #268 financing + webhook lane), chain A #287→#289→#301 (reconcile atomicity), chain B #290→#303 (capture/attempts/stale-profile/payoff/receipts), c293 (incl. #285 domain lock), #286 (uncertain replacement), #288 (v1.26 rehearsal + key entropy). Union-merged log docs verified; the recurring-billing-native workflow was re-resolved as ledger-side plus chain-A's reconcile step (the naive union broke YAML).
+
+Verifications this session: `license_financing_cases.py` gained `time.sleep(61)` before the unpaid-initial re-validate probe (same fixed-minute per-IP rate-bucket collision Codex fixed in 36721397; the `Independent active financing does not unlock the unpaid initial agreement` failure on run 40822597884 was that collision, not an auth defect — denied state verified locally through every runnable fixture op). StackCP snapshot native: 78/78 on the merged tree. Finance natives on merged tree: reconcile 8, capture-snapshot 141, attempt-bindings 27, payoff-retirement 291, replacement-payoff 139, initial-enrollment 208 — all passing. Inventory regenerated via `tools/build.py --refresh`.
+
+Owner confirmed the `authorize-net-sandbox` GitHub environment (main-only restriction + three ANET secrets). Next: CI on the candidate, then the sandbox workflow lane (#271→#279→#283→#284, main-targeted) post-merge; keep production payments disabled.
