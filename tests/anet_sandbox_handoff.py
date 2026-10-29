@@ -97,7 +97,7 @@ def approved_artifact_redirect(url: str) -> bool:
             and bool(parsed.path) and bool(parsed.query)
             and len(url) <= 8192
             and (
-                re.fullmatch(r"productionresultssa[0-9]{1,3}\\.blob\\.core\\.windows\\.net", host) is not None
+                re.fullmatch(r"productionresultssa[0-9]{1,3}\.blob\.core\.windows\.net", host) is not None
                 or host == "results-receiver.actions.githubusercontent.com"
             )
         )
