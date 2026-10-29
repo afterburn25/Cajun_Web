@@ -10,6 +10,30 @@ PR304 fixes the duplicate software-suite call, but its full run40820683270 faile
 
 Independent `codex/finance-reconcile-payoff-fixtures` declares the unpaid payoff-reader dependency in the existing strict #287/#289 fixtures. Case/assertion tails and production code are unchanged. Original combined undefined-function failure is preserved; 448 pure and 375 native executions pass against the frozen parent and combined source. [Evidence and pending review](CODEX_FINANCE_RECONCILE_FIXTURES.md).
 
+## 2026-10-28 — preserve payments during initial and replacement enrollment
+
+Independent `codex/finance-replacement-ledger-guard` from #300 `07fa7caf` prevents partial or nonconsecutive paid installments from being billed again by a newly created full ARB. Initial and replacement finalizers retain obsolete known candidates for verified cancellation; lifecycle/refund/void/settlement paths preserve pending retirement. Final PHP/database matrix passes 6,136 native executions and 306 focused executions. Initial cases include 30 actual separate-process payment commits per lane. Original replacement 37/230, pending-state 11/22, initial 6/44 and finalizer-rollback 4/22 failures remain retained. Hosted checks and independent review are pending; unknown replacement outcomes, established-ARB receipt audit, final combined acceptance, sandbox and main integration remain open. [Review and evidence](CODEX_FINANCE_ENROLLMENT_RECEIPTS.md).
+
+## 2026-10-28 — retain and retire a replacement created during payoff
+
+Independent `codex/finance-replacement-payoff-guard`, based on frozen #299 `fa404e59`, retains the known new gateway ID/history and verifies its retirement when payoff arrives during replacement creation or first readback. It also repairs the shared payoff reader's transaction requirement for ordinary unpaid owner reconciliation. Parent fails 40/138; the corrected PHP/database matrix passes 1,896 native and 272 focused executions. Earlier failures remain retained. Hosted exact-head and independent review are pending; final combined acceptance, unknown-create/partial-receipt audit, sandbox credentials and main integration remain gates. [Review and evidence](CODEX_FINANCE_REPLACEMENT_PAYOFF.md).
+
+## 2026-10-28 — retire recurring billing after verified financing payoff
+
+Independent `codex/finance-payoff-subscription-retirement`, based on frozen #298 `4405433d`, closes the post-reservation/manual-payoff billing gap. It retains the gateway identity before cancellation, requires exact contract and terminal readback, preserves uncertainty for owner/scheduler reconciliation, and never rolls back payment or permanent payoff. Parent fails 57/270; corrected native PHP/database matrix passes 3,132 total executions (1,344 new), plus 272 focused checks. Original failed probes and the isolated-owner test-harness correction are retained. Hosted exact-head and independent approval remain required; no main merge or release. [Review and evidence](CODEX_FINANCE_PAYOFF_RETIREMENT.md).
+
+## 2026-10-28 — initial financing enrollment rechecks authoritative payoff
+
+Independent review of #297 identified stale projected state after a committed payoff and an unchecked profile enrollment path. Separate `codex/finance-enrollment-payoff-guard`, based on frozen `89ecee07`, centralizes reservation-time signed agreement/customer/schedule/initial-payment and installment-ledger admission. Parent fails 138/240 native assertions; corrected source passes 240 new plus 207 existing assertions per PHP/database lane (1,788 executions across four lanes). Valid sandbox enrollment retains exact current charge/attempt proof without fulfillment. Permanent payoff, charge, replacement and production gates remain unchanged. Hosted and independent review gates remain open; no main merge or release. [Review and evidence](CODEX_FINANCE_ENROLLMENT_PAYOFF_GUARD.md).
+
+## 2026-10-28 — initial-payment integrity in license synchronization
+
+Independent `codex/finance-initial-sync-binding`, based on PR #296 `17357a9d`, closes the separate core access-state projection gap: another agreement/customer's paid invoice, wrong amount/currency or unavailable ledger must not activate the target financing. The target native reproduction has a fully reversed receipt with 500 cents due. Shared signed-offer/ledger validation now runs before activation; the permanent payoff early boundary is byte-identical. Parent fails 22/207 assertions; corrected native PHP 8.2/8.4 × MariaDB/MySQL matrix passes 207 per lane (828 total, including 119 existing enrollment assertions). Hosted acceptance and independent review remain pending. No customer pointer-edit capability, real gateway operation, main merge or release is claimed. [Review and evidence](CODEX_FINANCE_INITIAL_SYNC_REVIEW.md).
+
+## 2026-10-28 — verified initial-payment enrollment correction
+
+Independent `codex/finance-initial-payment-enrollment`, based on PR #295 at `27d7b9e`, corrects the portal/handler mismatch after a nonzero verified down payment. Enrollment now requires the exact agreement invoice and retained ledger payment, current client and running signed schedule, then repeats admission under the reservation lock. Paid-off plans cannot enroll new installments; existing license/domain/rights and subscription history stay intact. Native application checks pass 119 per PHP 8.2/8.4 × MariaDB/MySQL lane (476 total), plus 22 handler checks per PHP. Original handler and intermediate cross-agreement invoice substitution failures are retained. Hosted acceptance and independent review remain pending; no real gateway, merge or release claim. [Review and evidence](CODEX_FINANCE_INITIAL_ENROLLMENT_REVIEW.md).
+
 # Devin integration queue
 
 Created 2026-10-19 under the [sole-owner takeover](DEVIN_FULL_SITE_TAKEOVER.md); refreshed 2026-10-22 for the merge-first delivery cycle. Authoritative destination is `main`; the wide integration branch `devin/full-site-integration` and `devin/preflight-commercial` are staging lanes, not delivery.

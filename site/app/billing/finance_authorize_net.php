@@ -182,3 +182,23 @@ function license_finance_anet_retire_subscription(string $offerId,array $old,?ca
     }
     return $status;
 }
+
+/** Payoff permits active cancellation; replacement retirement keeps its stricter policy. */
+function license_finance_anet_retire_paid_off_subscription(string $offerId,array $sub,?callable $execute=null):string{
+    $execute??=fn(string $method,array $request):array=>license_finance_anet_execute($method,$request);
+    $id=(string)($sub['gateway_subscription_id']??'');
+    $read=function()use($execute,$offerId,$sub,$id):string{
+        $details=$execute('ARBGetSubscriptionRequest',['subscriptionId'=>$id,'includeTransactions'=>false]);
+        $verified=license_finance_anet_subscription_readback($details,$offerId,$id,(int)$sub['amount_cents'],
+            (int)$sub['interval_months'],(int)$sub['total_occurrences'],(string)$sub['start_date']);
+        return (string)$verified['status'];
+    };
+    $status=$read();
+    if(in_array($status,['active','suspended'],true)){
+        $reply=$execute('ARBCancelSubscriptionRequest',['subscriptionId'=>$id]);
+        if(($reply['messages']['resultCode']??'')!=='Ok')throw new RuntimeException('Paid-off financing subscription cancellation needs reconciliation.');
+        $status=$read();
+    }
+    if(!in_array($status,['canceled','expired','terminated'],true))throw new RuntimeException('Paid-off financing subscription may still collect payments.');
+    return $status;
+}

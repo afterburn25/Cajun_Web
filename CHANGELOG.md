@@ -6,6 +6,42 @@ PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration c
 
 PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](docs/CODEX_PR266_APPLICATION_40820683270.md).
 
+## Unreleased — receipts during recurring financing enrollment
+
+- Validate all remaining installment balances before scheduling replacement payments.
+- Recheck initial and replacement enrollment after provider I/O; retain and verify cancellation of obsolete known subscriptions.
+- Preserve pending cancellation through lifecycle replays, settlements and verified reversals, with safe owner and scheduler retries.
+
+## Unreleased — replacement billing after financing payoff
+
+- Avoid replacement creation after verified payoff and retain any known replacement created while payoff commits.
+- Verify cancellation of that replacement and preserve uncertain results for reconciliation without reversing permanent payoff.
+- Keep ordinary unpaid owner reconciliation available through a correctly scoped payoff-read transaction.
+
+## Unreleased — retire automatic financing billing after payoff
+
+- Recheck payoff after in-flight initial enrollment and retain the returned subscription before cancellation.
+- Verify terminal gateway retirement after manual or recurring payoff; preserve uncertain outcomes for owner/scheduler reconciliation.
+- Keep committed payments, permanent license unlock and independent domain/rights controls intact.
+
+## Unreleased — prevent financing enrollment after recorded payoff
+
+- Recheck signed initial and installment ledger evidence for both initial enrollment callers under the reservation mutex.
+- Refuse stale projected payoff, existing installment payments and changed customer/schedule state before ARB creation.
+- Keep sandbox no-fulfillment enrollment bound to its exact current charge/attempt and preserve permanent payoff.
+
+## Unreleased — financing access requires its own verified initial payment
+
+- Share exact signed-agreement and ledger verification between enrollment, the portal and core license synchronization.
+- Reject another agreement/customer invoice, changed amount/currency and status-only payment evidence before activation.
+- Preserve the permanent payoff early return and independent owner/domain/rights restrictions.
+
+## Unreleased — verified financing initial-payment enrollment
+
+- Allow signed remaining installments after the exact down-payment invoice is fully paid in the retained ledger.
+- Recheck current client, agreement, schedule and payment at reservation; reject altered, reversed, duplicate and paid-off enrollment.
+- Use ledger evidence in the portal and hide paid-off payment/enrollment controls.
+
 ## Unreleased — product-bound software validation
 
 - Require new software entitlements to identify their exact product during public validation, closing cross-product key reuse on an otherwise valid licensed domain.

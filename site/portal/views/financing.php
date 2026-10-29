@@ -95,6 +95,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
             }
         }
         if($financeSub)echo '<p><strong>Automatic installments:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financeSub['status']))).($financeSub['gateway_subscription_id']!==null?' · gateway subscription '.esc((string)$financeSub['gateway_subscription_id']):'').'</p>';
+        if($financeSub&&$financeSub['status']==='retirement_pending')echo '<p class="notice warning">Automatic billing requires review. Cancellation is awaiting confirmation; another automatic billing setup is unavailable until this is resolved. Recorded payments remain credited.</p>';
         if($financeSub&&license_financing_recovery_link_allowed((string)$financeSub['status'])){
             $recovery=one('SELECT p.* FROM '.table('payment_requests').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.purpose=? AND p.status=? ORDER BY r.period_index,p.id DESC LIMIT 1',
                 [$row['schedule_id'],'financing','prepared']);
@@ -131,11 +132,9 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         }elseif($financeSub&&in_array((string)$financeSub['status'],['replacing','review'],true)){
             echo '<p class="notice warning">Automatic financing enrollment is being reconciled. Do not submit another card until billing review is complete.</p>';
         }
-        $initialSatisfied=(int)$terms['initial_payment_cents']===0;
-        if((int)$terms['initial_payment_cents']>0){
-            $activation=null;
-            if($row['activation_invoice_id']!==null)$activation=one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$row['activation_invoice_id']]);
-            $initialSatisfied=($activation['status']??'')==='paid';
+        $financePaidOff=$financePlan&&($financePlan['paid_off_at']!==null||(string)$financePlan['state']==='paid_off');
+        try{$initialSatisfied=license_finance_offer_initial_paid($row);}catch(Throwable){$initialSatisfied=false;}
+        if((int)$terms['initial_payment_cents']>0&&!$financePaidOff){
             if($initialSatisfied){
                 echo '<p class="notice info">Initial payment is verified. You can now enroll the remaining signed installments.</p>';
             }else{
@@ -147,7 +146,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
                 elseif(!$financeSub)echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="finance_offer_payment"><input type="hidden" name="finance_id" value="'.esc($row['id']).'"><button class="btn gold">Prepare initial payment page</button></form>';
             }
         }
-        if(!$financeSub&&$initialSatisfied){
+        if(!$financeSub&&$initialSatisfied&&!$financePaidOff){
             if($financeGateway){
                 echo '<h3>Set up automatic installment payments</h3>';
                 echo '<form method="post" data-authorize-net data-login="'.esc($financeGateway['login']).'" data-client-key="'.esc($financeGateway['client_key']).'">'.support_csrf_field();
