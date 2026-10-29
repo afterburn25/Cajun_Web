@@ -73,6 +73,7 @@ jobs:
               php -n tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
               php tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
               php -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+              php tests/twentyi-cloud-assignment/focused-view.php qa/cloud-assignment-focused-view.json
               php tests/provider_cloud_assignment_native.php
               php tests/provider_inventory_upgrade_native.php
               php tests/provider_inventory_native.php
@@ -93,6 +94,7 @@ jobs:
             qa/cloud-assignment-legacy-minimal.json
             qa/cloud-assignment-views-default.json
             qa/cloud-assignment-views-minimal.json
+            qa/cloud-assignment-focused-view.json
             qa/provider-cloud-assignment-native-results.json
             qa/cloud-assignment-fixture-results.json
             qa/provider-inventory-upgrade-results.json

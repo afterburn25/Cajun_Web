@@ -70,8 +70,10 @@ function license_finance_charge_mark(int $invoice,string $state,?string $transac
             [$state,$transactionId,$now,$charge['id']]);
     }));
 }
-function license_finance_charge_record_paid(int $invoice,string $transactionId,int $cents,?array $profiles=null):void{
-    staff_locked(fn()=>staff_transaction(function()use($invoice,$transactionId,$cents,$profiles):void{
+function license_finance_charge_record_paid(int $invoice,string $transactionId,int $cents,?array $profiles=null,
+    #[\SensitiveParameter]?string $ownerPassword=null):void{
+    staff_locked(fn()=>staff_transaction(function()use($invoice,$transactionId,$cents,$profiles,$ownerPassword):void{
+        if($ownerPassword!==null)staff_owner($ownerPassword);
         $charge=one('SELECT * FROM '.table('license_finance_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
         if(!$charge||!in_array((string)$charge['status'],['processing','uncertain','review'],true)||(int)$charge['amount_cents']!==$cents){
             throw new RuntimeException('Financing gateway attempt no longer matches this payment.');
@@ -167,7 +169,7 @@ function license_finance_charge_reconcile(int $invoice,string $transactionId,#[\
     if($needsSubscription&&$profiles===null){
         try{$profiles=license_finance_anet_profile_from_transaction($transactionId);}catch(Throwable $e){report_error($e);}
     }
-    license_finance_charge_record_paid($invoice,$transactionId,(int)$charge['amount_cents'],$profiles);
+    license_finance_charge_record_paid($invoice,$transactionId,(int)$charge['amount_cents'],$profiles,$password);
     $result='paid';
     if($needsSubscription){
         if($profiles===null)$result='paid_subscription_review';
@@ -182,6 +184,8 @@ function license_finance_charge_reconcile(int $invoice,string $transactionId,#[\
 
 function license_finance_charge_webhook_review(array $details,string $transactionId):string{
     if(!preg_match('/^[0-9]{5,30}$/D',$transactionId))throw new InvalidArgumentException('Invalid financing transaction ID.');
+    // Software-only installations have not prepared the optional finance tables.
+    if(!license_finance_gateway_ready()||!ledger_ready())return 'finance_payment_unmatched';
     $tx=$details['transaction']??null;if(!is_array($tx)||isset($tx['subscription']))return 'finance_payment_unmatched';
     $invoiceNumber=(string)($tx['order']['invoiceNumber']??'');
     if(!preg_match('/^CWP-([1-9][0-9]{0,14})$/D',$invoiceNumber,$m))return 'finance_payment_unmatched';

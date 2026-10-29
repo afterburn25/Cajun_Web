@@ -11,6 +11,17 @@ on:
       - 'site/database/schema/software_commerce_schema.php'
       - 'site/database/migrations/software_commerce_migrate.php'
       - '.github/workflows/software-commerce-native-fast.yml'
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/software_commerce_native.php'
+      - 'site/app/billing/software_*.php'
+      - 'site/app/billing/authorize_net_*.php'
+      - 'site/app/licenses/software_*.php'
+      - 'site/database/schema/software_commerce_schema.php'
+      - 'site/database/migrations/software_commerce_migrate.php'
+      - '.github/workflows/software-commerce-native-fast.yml'
   workflow_dispatch:
 permissions:
   contents: read

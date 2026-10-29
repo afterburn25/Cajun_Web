@@ -1,3 +1,11 @@
+## 2026-10-29 — keep software orchestration evidence inside its sealed partition
+
+PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](CODEX_PR266_APPLICATION_40820683270.md).
+
+## 2026-10-29 — preserve acceptance command order after software-suite repair
+
+PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](CODEX_PR266_APPLICATION_40820683270.md).
+
 # Devin integration queue
 
 Created 2026-10-19 under the [sole-owner takeover](DEVIN_FULL_SITE_TAKEOVER.md); refreshed 2026-10-22 for the merge-first delivery cycle. Authoritative destination is `main`; the wide integration branch `devin/full-site-integration` and `devin/preflight-commercial` are staging lanes, not delivery.
@@ -5,6 +13,10 @@ Created 2026-10-19 under the [sole-owner takeover](DEVIN_FULL_SITE_TAKEOVER.md);
 Dispositions: READY-TO-MERGE = hosted acceptance green at exact head + required review complete. PENDING-ACCEPTANCE = exists but unverified/unreviewed at current head. IN-ACCEPTANCE = hosted run in flight at named commit. BLOCKED = named blocker recorded below. INTEGRATED = ancestor of `main`. SUPERSEDED = replaced by named successor.
 
 Merge-first rule (AGENTS.md, standing): prefer the smallest independently-verifiable slice; land one reviewed increment at a time into `main`; a green run on an older base does not validate a re-based merge result.
+
+## PR266 companion correction — 2026-10-28
+
+`codex/licensing-integration-review`, feature parent `6045b801`, main `fdf40a25`: PENDING-ACCEPTANCE. Installed financing independence assertions and document-roots dynamic CI port; preserves Devin’s repair. [Original failures, checks and next gates](PR266_INTEGRATION_ACCEPTANCE.md). No main merge or release clearance.
 
 ## Active delivery lane
 

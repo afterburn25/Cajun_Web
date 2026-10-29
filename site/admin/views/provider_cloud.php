@@ -35,7 +35,7 @@ if($cloudLatest): ?><p>Last cloud refresh: <?=badge($cloudLatest['state'])?> · 
 </article><?php endforeach; ?>
 <?php endif; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_links.php'; ?>
-<?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_sites.php'; ?>
+<?php if(empty($cloudAssignmentFocused))require CWP_CODE_ROOT.'/admin/views/provider_cloud_sites.php'; ?>
 <?php $cloudHistory=provider_inventory_history($profileId,1,InventoryRead::CLOUD_SERVERS_LIST);if($cloudHistory): ?><h3>Cloud refresh history</h3>
 <?php foreach(array_slice($cloudHistory,0,20) as $row): ?><p><?=esc($row['started_at'])?> UTC · <?=badge($row['state'])?> · <?=(int)$row['package_count']?> server records · <?=(int)$row['skipped']?> skipped · saved version <?=(int)$row['profile_revision']?></p><?php endforeach; ?>
 <?php endif; ?>
