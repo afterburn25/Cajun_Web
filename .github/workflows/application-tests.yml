@@ -114,6 +114,7 @@ jobs:
           set -o pipefail
           python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
           python3 tests/build_guards.py
+          python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt
       - name: Prepare only pristine public historical fixtures
         id: fixtures
         run: |
@@ -438,7 +439,6 @@ jobs:
           "$PHP_BINARY" tests/hosting_reconciliation_native.php
           "$PHP_BINARY" tests/client_authority_native.php
           "$PHP_BINARY" tests/license_native.php
-          python -B tests/browser_suite_orchestration_contract.py > qa/browser-suite-orchestration-contract.json
           "$PHP_BINARY" tests/software_commerce_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser

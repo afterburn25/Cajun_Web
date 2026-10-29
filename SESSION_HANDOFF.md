@@ -1,3 +1,11 @@
+## 2026-10-29 — keep software orchestration evidence inside its sealed partition
+
+PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](docs/CODEX_PR266_APPLICATION_40820683270.md).
+
+## 2026-10-29 — preserve acceptance command order after software-suite repair
+
+PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](docs/CODEX_PR266_APPLICATION_40820683270.md).
+
 # Session handoff - Devin sole-owner continuation
 
 ## 2026-10-28 — independent cloud assignment focus correction
