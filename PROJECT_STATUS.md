@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — independent cloud assignment focus correction
+
+Run 40767087342 on integration base `3789bb50` finished with 3,218 passing browser checks followed by a 30-second cloud-assignment page navigation timeout. Independent correction `codex/cloud-assignment-focused-view` adds an explicit cloud inventory/assignment workspace with full-settings navigation and focus-preserving redirects. Existing cloud history and owner/CSRF controls are retained. Fifteen real-template checks pass on PHP 8.2/8.4 with and without INI; the old template fails the regression. Fourteen fixture checks pass. Windows native setup refuses required 0600 permissions before assertions; new native and installed browser cases require Linux CI. No timeout or security assertion was relaxed. [Evidence and scope](docs/CODEX_PR266_APPLICATION_40767087342.md).
+
 ## 2026-10-28 — current Application failure isolated and focused repair prepared
 
 Exact PR #266 head `d062bd5c` Application run `40728300754` is terminal. Build, recovery, Apache and native database phases passed; the installed browser phase recorded 2,997 passing checks before its first exception. Job `122971621925` timed out at the unchanged 30-second Playwright limit loading the StackCP-focused provider-settings URL. Checkpoint artifact `12850372335` and its PHP server log prove repeated 27–31 second responses: the page still rendered every unrelated provider workspace and reprojected their accumulated histories. The integration candidate now scopes bounded StackCP pagination to the provider account/inventory plus both StackCP sections, preserves focused redirects, and adds installed assertions that unrelated control workspaces are absent. Authentication, CSRF, history validation and timeouts are unchanged. Python syntax, whitespace and 69 build guards pass locally; exact hosted PHP/database/browser execution is mandatory. [Run review](docs/CODEX_PR266_APPLICATION_40728300754.md).
