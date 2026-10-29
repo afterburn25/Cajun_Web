@@ -98,8 +98,58 @@ function license_finance_subscription_finalize(string $offerId,string $gatewayId
         return $state;
     }));
 }
-function license_finance_subscription_reserve(array $offer,array $contract,array $profiles):void{
-    staff_locked(fn()=>staff_transaction(function()use($offer,$contract,$profiles):void{
+/** A paid display status is not payment evidence. Reuse the retained invoice ledger. */
+function license_finance_subscription_initial_paid(array $offer):bool{
+    $terms=license_finance_offer_terms($offer);
+    if((string)$offer['status']!=='signed'||!hash_equals((string)$offer['terms_sha256'],(string)$offer['signed_terms_sha256'])){
+        throw new RuntimeException('Signed financing terms are inconsistent.');
+    }
+    foreach(['client_id','job_id','license_id','initial_payment_cents','installments'] as $field){
+        if((int)$offer[$field]!==($terms[$field]??null))throw new RuntimeException('Signed financing terms changed.');
+    }
+    if((string)$offer['schedule_id']!==($terms['schedule_id']??null))throw new RuntimeException('Signed financing schedule changed.');
+    $initial=(int)$terms['initial_payment_cents'];
+    if($initial===0)return true;
+    if($initial<0||!ledger_ready()||$offer['activation_invoice_id']===null)return false;
+    $invoice=ledger_invoice((int)$offer['activation_invoice_id']);
+    if((int)$invoice['client_id']!==(int)$offer['client_id']||(int)$invoice['job_id']!==(int)$offer['job_id']
+        ||(int)$invoice['active']!==1||(int)$invoice['amount_cents']!==$initial||$invoice['currency']!=='USD'
+        ||!str_starts_with((string)$invoice['instructions'],'Initial payment for signed finance agreement '.$offer['id'].'. ')){
+        throw new RuntimeException('Finance initial invoice no longer matches the signed agreement.');
+    }
+    $balance=ledger_balance($invoice);
+    return $invoice['status']==='paid'&&(int)$balance['paid_cents']===$initial&&(int)$balance['due_cents']===0;
+}
+/** Read-only admission; repeat under the reservation mutex before any gateway request. */
+function license_finance_subscription_enrollment_offer(string $offerId,int $clientId,bool $lock=false):array{
+    if(!license_finance_gateway_ready())throw new RuntimeException('Prepare financing gateway storage first.');
+    service_plans_current_client($clientId);
+    $offer=license_finance_offer_row($offerId,$clientId,$lock);
+    if(!license_finance_subscription_initial_paid($offer))throw new RuntimeException('Complete the signed agreement initial payment first.');
+    $plan=one('SELECT f.*,l.customer_id AS client_id,j.client_id AS project_client_id FROM '.table('license_financing').
+        ' f JOIN '.table('website_licenses').' l ON l.id=f.license_id JOIN '.table('studio_jobs').' j ON j.id=? WHERE f.license_id=?'.($lock?' FOR UPDATE':''),
+        [$offer['job_id'],$offer['license_id']]);
+    $terms=license_finance_offer_terms($offer);
+    if(!$plan||(int)$plan['client_id']!==$clientId||(int)$plan['project_client_id']!==$clientId
+        ||(string)$plan['schedule_id']!==(string)$offer['schedule_id']||(int)$plan['installments']!==(int)$offer['installments']
+        ||!hash_equals((string)$plan['terms_sha256'],(string)$terms['schedule_terms_sha256'])){
+        throw new RuntimeException('Financing enrollment ownership or schedule changed.');
+    }
+    if($plan['paid_off_at']!==null||(string)$plan['state']==='paid_off')throw new RuntimeException('Paid-off financing cannot enroll more automatic installments.');
+    if(!in_array((string)$plan['state'],['pending_initial','active','grace'],true))throw new RuntimeException('Review financing access before enrolling automatic installments.');
+    [, $schedule]=license_financing_schedule($plan);
+    if($schedule->phase()!=='running')throw new RuntimeException('The signed financing schedule is no longer running.');
+    return $offer;
+}
+function license_finance_subscription_reserve(array $offer,array $contract,array $profiles,?int $clientId=null):void{
+    staff_locked(fn()=>staff_transaction(function()use($offer,$contract,$profiles,$clientId):void{
+        if($clientId!==null){
+            $current=license_finance_subscription_enrollment_offer((string)$offer['id'],$clientId,true);
+            if(!hash_equals((string)$current['terms_sha256'],(string)$offer['terms_sha256'])
+                ||license_finance_subscription_contract($current)!==$contract){
+                throw new RuntimeException('Financing enrollment changed. Review the current agreement.');
+            }
+        }
         $existing=license_finance_subscription_row((string)$offer['id'],true);
         if($existing){
             if(in_array((string)$existing['status'],['creating','review'],true))throw new RuntimeException('A financing subscription attempt already exists and must be reconciled.');
@@ -141,10 +191,9 @@ function license_finance_subscription_create_profile(string $offerId,array $prof
 function license_finance_subscription_enroll_opaque(string $offerId,int $clientId,string $descriptor,#[\SensitiveParameter]string $nonce):string{
     if(support_current())throw new RuntimeException('Financing enrollment is unavailable during support access.');
     software_anet_nonce($descriptor,$nonce);
-    $offer=license_finance_offer_row($offerId,$clientId);if((string)$offer['status']!=='signed')throw new RuntimeException('Sign the finance agreement first.');
-    if((int)$offer['initial_payment_cents']!==0)throw new RuntimeException('Complete the signed agreement initial payment instead.');
+    $offer=license_finance_subscription_enrollment_offer($offerId,$clientId);
     $contract=license_finance_subscription_contract($offer);$profiles=['customer_profile_id'=>'','payment_profile_id'=>''];
-    license_finance_subscription_reserve($offer,$contract,$profiles);$gatewayId=null;
+    license_finance_subscription_reserve($offer,$contract,$profiles,$clientId);$gatewayId=null;
     try{
         $reply=license_finance_anet_execute('ARBCreateSubscriptionRequest',
             license_finance_anet_arb_opaque_request($offerId,$contract['amount_cents'],$contract['start_date'],$contract['months'],$contract['occurrences'],$descriptor,$nonce));

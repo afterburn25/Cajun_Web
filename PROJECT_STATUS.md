@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## 2026-10-28 — verified initial-payment enrollment correction
+
+Independent `codex/finance-initial-payment-enrollment`, based on PR #295 at `27d7b9e`, corrects the portal/handler mismatch after a nonzero verified down payment. Enrollment now requires the exact agreement invoice and retained ledger payment, current client and running signed schedule, then repeats admission under the reservation lock. Paid-off plans cannot enroll new installments; existing license/domain/rights and subscription history stay intact. Native application checks pass 119 per PHP 8.2/8.4 × MariaDB/MySQL lane (476 total), plus 22 handler checks per PHP. Original handler and intermediate cross-agreement invoice substitution failures are retained. Hosted acceptance and independent review remain pending; no real gateway, merge or release claim. [Review and evidence](docs/CODEX_FINANCE_INITIAL_ENROLLMENT_REVIEW.md).
+
 ## 2026-10-28 — stale sandbox subscription continuation corrected
 
 Independent follow-up `codex/finance-sandbox-stale-profile` addresses review comment 6483700465 on PR #291 without changing its frozen head `110c30da`. A rejected stale sandbox mark now returns false and checkout stops before recurring subscription creation. Native regression reproduces four rejected-response paths reaching the subscription boundary; after correction all 220 checks pass in each PHP 8.2/8.4 × MariaDB/MySQL lane, and 26 caller-binding checks pass per PHP. Provider, preparation and subscription boundaries remain synthetic. No real sandbox validation or approval is claimed. [Review and limits](docs/CODEX_FINANCE_SANDBOX_PROFILE_REVIEW.md).

@@ -1,3 +1,7 @@
+## 2026-10-28 — verified initial-payment enrollment correction
+
+Independent `codex/finance-initial-payment-enrollment`, based on PR #295 at `27d7b9e`, corrects the portal/handler mismatch after a nonzero verified down payment. Enrollment now requires the exact agreement invoice and retained ledger payment, current client and running signed schedule, then repeats admission under the reservation lock. Paid-off plans cannot enroll new installments; existing license/domain/rights and subscription history stay intact. Native application checks pass 119 per PHP 8.2/8.4 × MariaDB/MySQL lane (476 total), plus 22 handler checks per PHP. Original handler and intermediate cross-agreement invoice substitution failures are retained. Hosted acceptance and independent review remain pending; no real gateway, merge or release claim. [Review and evidence](CODEX_FINANCE_INITIAL_ENROLLMENT_REVIEW.md).
+
 ## 2026-10-28 — owner-directed PR266 independent integration pass
 
 ## 2026-10-28 — financed replacement recovery hardening
