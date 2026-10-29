@@ -34,6 +34,7 @@ if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_search')header('Cache-Control: no-store, private');
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
+if($supportRequested)header('Cache-Control: no-store, private');
 if($supportRequested){
  if($_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??null)==='support_end'){
   try{support_check_csrf($supportId);support_end($supportId);redirect(admin_url('support'));}catch(Throwable){support_unavailable();}
