@@ -47,7 +47,8 @@ def get_json(url: str, bearer: str) -> dict:
         "X-GitHub-Api-Version": "2026-03-10",
         "User-Agent": "CajunWebPro-reviewed-sandbox-handoff/1",
     })
-    with urllib.request.urlopen(req, timeout=20) as response:
+    # Do not forward the read-only API bearer across a source-API redirect.
+    with urllib.request.build_opener(NoRedirect).open(req, timeout=20) as response:
         raw = response.read(MAX_SOURCE + 1)
         if response.geturl() != url or len(raw) > MAX_SOURCE:
             raise RuntimeError("GitHub API source exceeded bounds or redirected")
@@ -80,6 +81,30 @@ def reviewed_files(sha: str, bearer: str, root: Path) -> None:
         out.write_bytes(data)
 
 
+def approved_artifact_redirect(url: str) -> bool:
+    # The GitHub Actions documentation lists these artifact storage endpoints.
+    # Accept only GitHub's named Azure storage accounts, not arbitrary blob
+    # accounts, arbitrary GitHub subdomains, or attacker-controlled HTTPS hosts.
+    try:
+        parsed = urllib.parse.urlsplit(url)
+        host = parsed.hostname or ""
+        return (
+            parsed.scheme == "https"
+            and parsed.netloc == host
+            and parsed.username is None
+            and parsed.password is None
+            and parsed.fragment == ""
+            and bool(parsed.path) and bool(parsed.query)
+            and len(url) <= 8192
+            and (
+                re.fullmatch(r"productionresultssa[0-9]{1,3}\\.blob\\.core\\.windows\\.net", host) is not None
+                or host == "results-receiver.actions.githubusercontent.com"
+            )
+        )
+    except ValueError:
+        return False
+
+
 def artifact_zip(archive_url: str, bearer: str) -> bytes:
     if not re.fullmatch(re.escape(API) + r"/actions/artifacts/[0-9]+/zip", archive_url):
         raise RuntimeError("Unexpected artifact archive URL")
@@ -94,14 +119,17 @@ def artifact_zip(archive_url: str, bearer: str) -> bytes:
         if exc.code != 302:
             raise RuntimeError("Cannot obtain reviewed handoff artifact") from None
         redirect = exc.headers.get("Location", "")
-    parsed = urllib.parse.urlsplit(redirect)
-    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or len(redirect) > 8192:
-        raise RuntimeError("Unsafe artifact download URL")
-    # Do not forward the GITHUB_TOKEN to the temporary signed download URL.
-    with urllib.request.urlopen(urllib.request.Request(redirect), timeout=20) as response:
+    if not approved_artifact_redirect(redirect):
+        raise RuntimeError("GitHub artifact redirect is not an approved storage endpoint")
+    # Never forward the GitHub bearer to the signed artifact URL. Do not
+    # follow a *second* redirect, even between approved storage hosts.
+    signed_request = urllib.request.Request(redirect)
+    with urllib.request.build_opener(NoRedirect).open(signed_request, timeout=20) as response:
+        if response.geturl() != redirect:
+            raise RuntimeError("Artifact download unexpectedly redirected")
         data = response.read(MAX_ZIP + 1)
-        if len(data) > MAX_ZIP or response.geturl() != redirect:
-            raise RuntimeError("Artifact too large or unexpectedly redirected")
+        if len(data) > MAX_ZIP:
+            raise RuntimeError("Artifact archive exceeded the bounded size")
     return data
 
 
