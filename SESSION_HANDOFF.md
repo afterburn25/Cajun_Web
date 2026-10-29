@@ -22,6 +22,13 @@ Owner directive: clear genuine release-blocking failures on `feature/software-li
 
 **Result**: sealed `Application acceptance` on `d062bd5`: apache leg green; native-and-browser red only on the StackCP walk latency — fixed pending push. Infra flake noted: `Provider settings storage checks` once failed on runner port-bind collision (33306), cleared on rerun — not code.
 
+**Codex integration matrix** (verified via `git merge-base --is-ancestor`):
+- `codex/software-acceptance-guard-order` (`0d18707b`) already contains: feature branch through `d062bd5` + PR #268 (`3789bb50`, `refs/codex-review`) + webhook lane #269/#270/#272 + acceptance-order lane #294→#304→#306. It does NOT contain `2d8d32d` (my StackCP fix).
+- Still pending, stacked on `codex/licensing-integration-review`: reconcile chain `refs/codex-301` (#287→#289→#301), payoff chain `refs/codex-ledger` (#290→#291→#295→#296→#297→#298→#299→#300→#303), `refs/c293` (#293, includes #285), `refs/codex-286` (#286), `refs/codex-288` (#288 upgrade rehearsal). Sandbox lane #271→#279→#283→#284→#292 targets `main` (post-merge work).
+- Merge surface vs `2d8d32d`: only `SESSION_HANDOFF.md` + `site/install/inventory.generated.php` overlap — regenerate inventory, hand-edit handoff.
+- `0d18707b`'s lone sealed failure `Independent active financing does not unlock the unpaid initial agreement` = 10/min validate.php per-IP fixed-minute rate bucket shared across suites — reorder puts software (~8 POSTs) + financing (~5) clusters adjacent → tail POST gets 429. NOT an authz defect: verified locally on Codex's own overlaid code (pending_initial denial holds through setup/release ops). Fix = `time.sleep(61)` before the late POST, mirroring their own `36721397` pattern.
+- Codex `3789bb50` "Focus StackCP provider acceptance view" + `0ad3df4d` "Focus cloud assignment workspace" bound the page's scope — complementary to `2d8d32d`'s batched audit verification (different files, no conflict).
+
 **Local repro stack** (this VM): `~/bin/php` docker wrapper (`cwp-inventory-test:latest`); `docker exec cwpdb mariadb ...` resets `cwp_test` (creds cwp_test/local-ci-only, prefix `ci_`); installed site `test-runtime/web/existing` served at `127.0.0.1:8091` (owner@example.invalid / alice@example.invalid, 'Synthetic … passphrase 2026'). After editing `site/portal/views/*` or `site/admin/controllers/*` locally, `cp` the file into `test-runtime/web/existing/...` to exercise it. `tools/build.py --refresh` + commit `site/install/inventory.generated.php` after every `site/` change.
 
 **Next**: confirm sealed `Application acceptance` green, then final integration/security review of PR #266 → merge readiness report to owner (merge needs explicit approval; no live deploy, no live Authorize.net).
