@@ -106,7 +106,7 @@ function setup_expected_files(): array { return [
     'admin/views/provider_registrar.php'=>'62fbb5d0d267256594a9b5aabbec4acf3137cdb23863a4cf9f75281755b673ea',
     'admin/views/provider_registration_periods.php'=>'b97c5daf6d4ad75041e96cfc557905a52348eea6ca10b0a27d88a2935a3c2eec',
     'admin/views/provider_schedule.php'=>'4172f682492806d0feca4df0a64362a1b61feaa76ff455835beccfd53ae9afbc',
-    'admin/views/providers.php'=>'fafd8759f1cf67e299c03813fcecf2710fee1959114cf9efd1b9d13a6fd293cc',
+    'admin/views/providers.php'=>'1638d85ce1be74698bb41cd43ac1967e89a2004178578c3b4444f38bc788b868',
     'admin/views/reviews.php'=>'126793965131eaadf598853c8074e6fc82f6d9f28c8527f486b577b2a9bdfd00',
     'admin/views/security.php'=>'bb3ad107cbeaff5ff42eb5598df1f27bda6ad1bb976aeb2c03a316722f7d35c1',
     'admin/views/service.php'=>'02b8ed4ba94035fa42fbdcfe4ea669a9eaddd38938f2ad3fe2b9163d4d5dd932',
