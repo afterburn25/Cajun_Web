@@ -14,6 +14,13 @@ def run_browser(env,browser):
     check('Fresh packaged installation stamps current cloud inventory storage',db("SELECT value FROM fresh_settings WHERE name='provider_inventory_schema_version'")==[{'value':'5'}] and db('SHOW TABLES LIKE "fresh_provider_observation_cloud"')!=[] and db('SHOW COLUMNS FROM fresh_provider_refreshes LIKE "operation"')!=[] and db('SHOW TABLES LIKE "fresh_provider_domain_links"')!=[])
     fresh_owner=requests.Session();submit(fresh_owner,BASE+'/fresh/admin/index.php?view=login','login',{'email':'fresh@example.invalid','password':'Fresh synthetic passphrase 2026'})
     fresh_provider=fresh_owner.get(BASE+'/fresh/admin/index.php?view=provider-settings')
+    check('20i guide shows one clear next step without inventing a connected state',
+          fresh_provider.status_code==200 and 'Your 20i control center' in fresh_provider.text
+          and 'Save the General API key' in fresh_provider.text
+          and 'Read verified for current settings' not in fresh_provider.text
+          and all(f'id="twentyi-{area}"' in fresh_provider.text for area in ('connection','check','hosting','cloud','domains','site-tools','access'))
+          and 'https://my.20i.com/reseller/api' in fresh_provider.text
+          and 'does not' in fresh_provider.text.lower())
     check('Fresh owner provider page does not require redundant inventory preparation',fresh_provider.status_code==200 and 'Prepare inventory storage' not in fresh_provider.text and 'Cloud server inventory' in fresh_provider.text and 'Save your 20i connection above' in fresh_provider.text)
     check('Fresh owner inventory page directs connection setup without unavailable actions',fresh_provider.status_code==200 and 'Save your 20i connection above before refreshing inventory.' in fresh_provider.text and 'Prepare inventory storage' not in fresh_provider.text and 'data-provider-refresh' not in fresh_provider.text)
     fresh_owner.close()
@@ -32,6 +39,9 @@ def run_browser(env,browser):
     profile=db('SELECT * FROM ci_provider_profiles')[0];pid=profile['id'];cipher=profile['credentials']
     check('Owner HTTP saves protected key without contacting provider',profile['revision']==1 and profile['enabled']==1 and secret not in cipher and provider_server.calls==0)
     check('Provider HTML omits key ciphertext and password refill',secret not in r.text and cipher not in r.text and all(n.get('value','')=='' for n in soup(r).select('input[type=password]')))
+    check('20i guide reports saved key without inventing verified credentials',
+          'Saved securely' in r.text and 'Check required' in r.text
+          and 'Read verified for current settings' not in r.text and 'Refresh your hosting inventory' not in r.text)
     check('Provider page is private with no referrer','no-store' in r.headers.get('Cache-Control','') and r.headers.get('Referrer-Policy')=='no-referrer')
     r=edit(label='Preserved invalid edit',general_key='SecretMustNeverEcho',current_password='wrong')
     check('Provider error preserves name but clears key and password','Preserved invalid edit' in r.text and 'SecretMustNeverEcho' not in r.text and all(n.get('value','')=='' for n in soup(r).select('input[type=password]')) and db('SELECT * FROM ci_provider_profiles')[0]==profile)
@@ -55,6 +65,9 @@ def run_browser(env,browser):
     check('Anonymous visitor has no provider settings',soup(requests.get(url)).select_one('[data-provider-editor]') is None)
     r=action('check');results=db('SELECT * FROM ci_provider_check_results')
     check('Packaged check performs one fixed verified loopback HTTPS read',provider_server.calls==1 and len(results)==1 and results[0]['state']=='verified' and results[0]['result_code']=='connected' and 'Read verified' in r.text)
+    check('20i guide reflects exact current revision verification but not an order',
+          'Read verified for current settings' in r.text and 'does <strong>not</strong> create orders' in r.text
+          and 'Current package read complete' not in r.text)
     r=action('check');check('HTTP cooldown blocks a second network call','Wait 30 seconds' in r.text and provider_server.calls==1)
     for mode,code in [('authentication','authentication'),('object','unexpected_response'),('echo','protocol')]:
         provider_server.mode=mode;db('UPDATE ci_provider_checks SET started_epoch=?',[int(time.time())-31]);r=action('check')
