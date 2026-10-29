@@ -31,7 +31,7 @@ def _product_data():
     }
 
 
-def _action_form(soup, response, action, *, product_id=None, asset_id=None, invoice_id=None):
+def _action_form(soup, response, action, *, product_id=None, asset_id=None, invoice_id=None, license_id=None, transition=None):
     for form in soup(response).select('form'):
         marker=form.select_one('input[name=action]')
         if not marker or marker.get('value') != action:
@@ -48,18 +48,56 @@ def _action_form(soup, response, action, *, product_id=None, asset_id=None, invo
             invoice=form.select_one('input[name=invoice_id]')
             if not invoice or invoice.get('value') != str(invoice_id):
                 continue
+        if license_id is not None:
+            license_input=form.select_one('input[name=license_id], input[name=id]')
+            if not license_input or license_input.get('value') != str(license_id):
+                continue
+        if transition is not None:
+            transition_input=form.select_one('input[name=transition]')
+            if not transition_input or transition_input.get('value') != transition:
+                continue
         return form
     raise AssertionError('Software form missing '+action)
+
+
+def _license_card(soup, response, license_key):
+    cards=[card for card in soup(response).select('article.workspace-card')
+           if any(code.get_text(strip=True)==license_key for code in card.select('code'))]
+    if len(cards)!=1:
+        raise AssertionError('Expected exactly one software card for the owned license')
+    return cards[0]
 
 
 def run_browser(env, browser):
     root, qa, base, check = (env[k] for k in ['ROOT','QA','BASE','check'])
     soup, token, form_data, submit = (env[k] for k in ['soup','token','form_data','submit'])
-    admin, alice, bob = (env[k] for k in ['admin','alice','bob'])
     php=env['php']
     licenses=base+'/existing/admin/index.php?view=studio-licenses'
     catalog=base+'/existing/admin/index.php?view=catalog'
     portal=base+'/existing/portal/index.php?software=1'
+
+    # This suite runs near the end of the complete browser matrix, after the
+    # shared bootstrap sessions can legitimately exceed the 30-minute idle
+    # timeout. Establish suite-owned identities so full acceptance exercises
+    # software commerce instead of depending on an earlier module's cookies.
+    admin=requests.Session()
+    admin_login=submit(admin,base+'/existing/admin/index.php?view=login','login',{
+        'email':'owner@example.invalid','password':OWNER,
+    })
+    check('Software browser establishes a fresh isolated owner session',
+          admin_login.status_code==200 and 'Sales pipeline' in admin_login.text)
+    alice=requests.Session()
+    alice_login=submit(alice,base+'/existing/portal/index.php','login',{
+        'email':'alice@example.invalid','password':'Synthetic client passphrase 2026',
+    })
+    check('Software browser establishes a fresh isolated buyer session',
+          alice_login.status_code==200 and 'Welcome,' in alice_login.text)
+    bob=requests.Session()
+    bob_login=submit(bob,base+'/existing/portal/index.php','login',{
+        'email':'bob@example.invalid','password':'Synthetic client passphrase 2026',
+    })
+    check('Software browser establishes a fresh isolated foreign-client session',
+          bob_login.status_code==200 and 'Welcome,' in bob_login.text)
 
     # Prepare optional dependencies through their real owner forms so this
     # suite does not depend on another browser module having run first.
@@ -511,6 +549,16 @@ def run_browser(env, browser):
     },timeout=25)
     check('Version-aware validation authorizes the purchased product and entitled release',
           valid.status_code==200 and valid.json()=={'authorized':True,'error':None})
+    missing_product=requests.post(validate,json={
+        'license_key':paid['license_key'],
+        'domain':'software-http.example',
+        'version':paid['version'],
+    },timeout=25)
+    check('Software validation cannot omit product identity and reuse a key across products',
+          missing_product.status_code==200 and missing_product.json()=={
+              'authorized':False,
+              'error':'Product identifier is required for this software license'
+          })
     wrong_product=requests.post(validate,json={
         'license_key':paid['license_key'],
         'domain':'software-http.example',
@@ -532,13 +580,14 @@ def run_browser(env, browser):
           db("SELECT COUNT(*) AS n FROM ci_audit WHERE action='license.validate'")==[{'n':0}])
 
     owned=alice.get(portal,timeout=25)
+    owned_card=_license_card(soup,owned,paid['license_key']).get_text(' ',strip=True)
     check('Paid software portal exposes owned license and approved download',
           'SOFTWARE-HTTP-ACCEPT' in owned.text
           and 'Synthetic browser acceptance download' in owned.text
-          and 'software-http.example' in owned.text
-          and 'Installations: 1 / 2' in owned.text
-          and 'Add installation domain' in owned.text
-          and 'Updates: through ' in owned.text)
+          and 'software-http.example' in owned_card
+          and 'Installations: 1 / 2' in owned_card
+          and 'Add installation domain' in owned_card
+          and 'Updates: through ' in owned_card)
     download_links=[a for a in soup(owned).select('a[href*="api/software-download.php"]') if 'Synthetic browser acceptance download' in a.get_text(' ',strip=True)]
     check('My Software shows one verified release link with exact purchase unit source',
           len(download_links)==1
@@ -551,8 +600,14 @@ def run_browser(env, browser):
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1 ORDER BY domain',[license_id])
               ==[{'domain':'second-http.example'},{'domain':'software-http.example'}])
     full=alice.get(portal,timeout=25)
+    full_card=_license_card(soup,full,paid['license_key'])
     check('My Software hides add-install control at purchased seat limit',
-          'Installations: 2 / 2' in full.text and 'Add installation domain' not in full.text)
+          'Installations: 2 / 2' in full_card.get_text(' ',strip=True)
+          and not full_card.select('input[name=action][value=license_domain_add]'))
+    other_card=_license_card(soup,full,active_trial['license_key'])
+    check('Another eligible license keeps its independent add-install control',
+          'Installations: 1 / 2' in other_card.get_text(' ',strip=True)
+          and _action_form(soup,full,'license_domain_add',license_id=active_trial['license_id']) is not None)
     third={'csrf':token(full),'action':'license_domain_add','license_id':str(license_id),'domain':'third-http.example'}
     denied_install=alice.post(portal,data=third,timeout=25)
     check('Generic client domain action cannot bypass software installation cap',
@@ -565,10 +620,11 @@ def run_browser(env, browser):
         'license_id':str(license_id),'domain':'second-http.example'
     }
     deactivated=alice.post(portal,data=deactivate,timeout=25)
+    reopened_card=_license_card(soup,deactivated,paid['license_key']).get_text(' ',strip=True)
     check('My Software can deactivate an installation and reopen the purchased seat',
           'Installation deactivated' in deactivated.text
-          and 'Installations: 1 / 2' in deactivated.text
-          and 'Add installation domain' in deactivated.text
+          and 'Installations: 1 / 2' in reopened_card
+          and 'Add installation domain' in reopened_card
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     bypass={
@@ -586,8 +642,9 @@ def run_browser(env, browser):
         'license_id':str(license_id),'domain':'software-http.example'
     }
     pending=alice.post(portal,data=deactivate_last,timeout=25)
+    pending_card=_license_card(soup,pending,paid['license_key']).get_text(' ',strip=True)
     check('License with no active installation is shown as Pending deployment',
-          'Pending deployment' in pending.text and 'Installations: 0 / 2' in pending.text
+          'Pending deployment' in pending_card and 'Installations: 0 / 2' in pending_card
           and db('SELECT COUNT(*) AS n FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])==[{'n':0}])
     add_again={
         'csrf':token(pending),'action':'license_domain_add',
@@ -596,7 +653,7 @@ def run_browser(env, browser):
     active_again=alice.post(portal,data=add_again,timeout=25)
     check('Customer can redeploy an owned license without repurchase',
           'Installation domain registered' in active_again.text
-          and 'Standard · Active' in active_again.text
+          and 'Standard · Active' in _license_card(soup,active_again,paid['license_key']).get_text(' ',strip=True)
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     chained_replace={
@@ -673,7 +730,8 @@ def run_browser(env, browser):
           and 'legacy Website Core bundles are intentionally unavailable for this entitlement' in admin_register.text)
 
     support_admin=base+'/existing/admin/index.php?view=support'
-    if db("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]:
+    if (db("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]
+            or db("SELECT value FROM ci_settings WHERE name='support_policy_confirmed'") != [{'value':'1'}]):
         response=submit(admin,support_admin,'support_migrate',{'owner_password':OWNER,'confirm':'1'})
         check('Software support acceptance prepares support storage when needed',
               response.status_code==200 and 'Support access is ready' in response.text)
@@ -697,9 +755,16 @@ def run_browser(env, browser):
         'old_domain':'software-http.example',
         'new_domain':'support-forged.example'
     }
-    rejected=admin.post(support_software,data=forged_support,timeout=25)
+    denied_before=db(
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='action.blocked' AND outcome='denied'",[support_id])[0]['total']
+    rejected=admin.post(support_root,data=forged_support,timeout=25)
+    denied_after=db(
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='action.blocked' AND outcome='denied'",[support_id])[0]['total']
     check('Support context cannot mutate customer software domain',
-          'action is blocked during support' in rejected.text.lower()
+          rejected.status_code==200 and 'action is blocked during support' in rejected.text.lower()
+          and denied_after==denied_before+1
           and db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1',[license_id])
               ==[{'domain':'software-http.example'}])
     check('Support browser context cannot retrieve customer software ZIP',
@@ -763,7 +828,7 @@ def run_browser(env, browser):
 
     # Real domain-replacement action and cross-tenant denial.
     own=alice.get(portal,timeout=25)
-    replace=_action_form(soup,own,'license_domain_replace')
+    replace=_action_form(soup,own,'license_domain_replace',license_id=license_id)
     replace_data=form_data(replace);replace_data['new_domain']='software-moved.example'
     moved=alice.post(portal,data=replace_data,timeout=25)
     active=db('SELECT domain FROM ci_license_domains WHERE license_id=? AND is_active=1 ORDER BY domain',[license_id])
@@ -801,16 +866,19 @@ def run_browser(env, browser):
     context.close()
 
     register=admin.get(licenses,timeout=25)
-    suspend_form=next(
-        form for form in soup(register).select('form')
-        if form.select_one('input[name=action]') is not None
-        and form.select_one('input[name=action]').get('value')=='software_license_lifecycle'
-        and form.select_one('input[name=id]') is not None
-        and form.select_one('input[name=id]').get('value')==str(license_id)
-        and form.select_one('input[name=transition]') is not None
-        and form.select_one('input[name=transition]').get('value')=='suspend'
-    )
-    suspended=admin.post(licenses,data={**form_data(suspend_form),'reason':'Synthetic acceptance suspension'},timeout=25)
+    legacy_deactivate={
+        'csrf':token(register),'action':'studio_license_deactivate','id':str(license_id),
+    }
+    legacy_refused=admin.post(licenses,data=legacy_deactivate,timeout=25)
+    check('Legacy owner action cannot bypass explicit software lifecycle controls',
+          'explicit software suspend/revoke controls' in legacy_refused.text
+          and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+    register=admin.get(licenses,timeout=25)
+    suspend_form=_action_form(soup,register,'software_license_lifecycle',
+                             license_id=license_id,transition='suspend')
+    suspend_data=form_data(suspend_form)
+    suspend_data['reason']='Installed software suspension acceptance'
+    suspended=admin.post(licenses,data=suspend_data,timeout=25)
     suspended_client=alice.get(portal,timeout=25)
     check('Owner suspension is shown distinctly and blocks private software download',
           suspended.status_code==200
@@ -818,16 +886,11 @@ def run_browser(env, browser):
           and alice.get(download,timeout=25).status_code==404
           and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
     register=admin.get(licenses,timeout=25)
-    reactivate_form=next(
-        form for form in soup(register).select('form')
-        if form.select_one('input[name=action]') is not None
-        and form.select_one('input[name=action]').get('value')=='software_license_lifecycle'
-        and form.select_one('input[name=id]') is not None
-        and form.select_one('input[name=id]').get('value')==str(license_id)
-        and form.select_one('input[name=transition]') is not None
-        and form.select_one('input[name=transition]').get('value')=='resume'
-    )
-    reactivated=admin.post(licenses,data={**form_data(reactivate_form),'reason':'Synthetic acceptance resume'},timeout=25)
+    reactivate_form=_action_form(soup,register,'software_license_lifecycle',
+                                license_id=license_id,transition='resume')
+    reactivate_data=form_data(reactivate_form)
+    reactivate_data['reason']='Installed software resumption acceptance'
+    reactivated=admin.post(licenses,data=reactivate_data,timeout=25)
     reactivated_client=alice.get(portal,timeout=25)
     check('Owner reactivation restores the same software entitlement without repurchase',
           reactivated.status_code==200
@@ -835,3 +898,4 @@ def run_browser(env, browser):
           and paid['license_key'] in reactivated_client.text
           and alice.get(download,timeout=25).status_code==200
           and db('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':1}])
+    admin.close();alice.close();bob.close()

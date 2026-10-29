@@ -14,7 +14,7 @@ def run_browser(env, browser):
     base, qa, check, provider = (env[k] for k in ('BASE', 'QA', 'check', 'provider_server'))
     soup, token, submit = (env[k] for k in ('soup', 'token', 'submit'))
     admin = base + '/existing/admin/index.php'; portal = base + '/existing/portal/index.php'
-    url = admin + '?view=provider-settings'; staff_url = admin + '?view=staff'
+    url = admin + '?view=provider-settings&stackcp_page=1&stackcp_access_page=1'; staff_url = admin + '?view=staff'
     package, identity = 2501, 'stack-user:25001'
     secret = 'SYNTHETIC_STACKCP_ACCESS_AUTH_KEY'; prefix = 'provider_inventory_stackcp_access_'
     db('DELETE FROM ci_rate_limits')
@@ -82,11 +82,14 @@ def run_browser(env, browser):
     evidence('explicit hosting assignment', response); links = db('SELECT * FROM ci_provider_package_links WHERE profile_id=? ORDER BY package_id', [profile['id']])
     own_links = [r for r in links if r['package_id'] == package]; check('StackCP access selected package links to exact client', len(own_links) == 1 and own_links[0]['client_id'] == client_id)
     page_number = [r['package_id'] for r in links].index(package) // 20 + 1
-    url += '&stackcp_page=' + str(page_number) + '&stackcp_access_page=' + str(page_number)
+    url = admin + '?view=provider-settings&stackcp_page=' + str(page_number) + '&stackcp_access_page=' + str(page_number)
     response = post('provider_inventory_stackcp_assignment_save', stack_identity=identity, acknowledged='1'); evidence('unverified assignment', response)
     own = '[data-stackcp-access-package="' + str(package) + '"]'
     before = owner.get(url)
-    check('StackCP access GET does not silently prepare or call provider', before.status_code == 200 and not db('SHOW TABLES LIKE "ci_provider_stackcp_reads"') and provider.calls == start_calls + 1)
+    check('StackCP access focused GET excludes unrelated provider workspaces without silently preparing or calling provider', before.status_code == 200
+          and 'id="stackcp-prerequisites"' in before.text and 'id="stackcp-access-observations"' in before.text
+          and 'id="force-ssl-changes"' not in before.text and 'id="directory-listing-changes"' not in before.text
+          and not db('SHOW TABLES LIKE "ci_provider_stackcp_reads"') and provider.calls == start_calls + 1)
     check('StackCP access excludes delegated and support identities', member.get(url).status_code == 403 and owner.get(url + '&support=fixture').status_code == 403)
     response = post(prefix + 'prepare'); evidence('explicit observation preparation', response)
     cool(); response = post('provider_inventory_refresh'); evidence('hosting source after link', response)

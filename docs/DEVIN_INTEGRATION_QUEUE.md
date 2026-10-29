@@ -6,6 +6,10 @@ Dispositions: READY-TO-MERGE = hosted acceptance green at exact head + required 
 
 Merge-first rule (AGENTS.md, standing): prefer the smallest independently-verifiable slice; land one reviewed increment at a time into `main`; a green run on an older base does not validate a re-based merge result.
 
+## PR266 companion correction — 2026-10-28
+
+`codex/licensing-integration-review`, feature parent `6045b801`, main `fdf40a25`: PENDING-ACCEPTANCE. Installed financing independence assertions and document-roots dynamic CI port; preserves Devin’s repair. [Original failures, checks and next gates](PR266_INTEGRATION_ACCEPTANCE.md). No main merge or release clearance.
+
 ## Active delivery lane
 
 | Order | Candidate | Head | Base | Scope | Disposition |

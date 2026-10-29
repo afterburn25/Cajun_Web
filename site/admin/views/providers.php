@@ -139,6 +139,11 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <nav aria-label="Refresh history pages"><?php if($refreshPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage-1]))?>">Newer refreshes</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage+1]))?>">Older refreshes</a><?php endif; ?></nav>
 <?php endif; ?>
 <?php endif; ?></section>
+<?php
+$stackCpFocused=array_key_exists('stackcp_page',$_GET)||array_key_exists('stackcp_access_page',$_GET);
+if($stackCpFocused): ?>
+<section class="workspace-card"><p><a class="btn outline" href="<?=esc(admin_url('provider-settings'))?>">Return to all 20i settings</a></p><p class="hint">This focused page keeps the saved account and hosting inventory visible while loading only StackCP setup and access observations.</p></section>
+<?php else: ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_schedule.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_providers.php'; ?>
@@ -164,7 +169,8 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_package_wordpress_installed.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>
 <?php provider_cloud_site_requests_admin_render(); ?>
+<?php endif; ?>
 
 <?php provider_stackcp_admin_render(); ?>
-<?php provider_password_reset_template_admin_render(); ?>
+<?php if(!$stackCpFocused)provider_password_reset_template_admin_render(); ?>
 <?php provider_stackcp_access_admin_render(); ?>

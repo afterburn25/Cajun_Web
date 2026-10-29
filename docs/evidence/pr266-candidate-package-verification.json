@@ -1,0 +1,43 @@
+{
+  "source_commit": "dcd0b80793d89fa2f56a2f327db532ee8ad9ef12",
+  "passed": true,
+  "scope": "Candidate package bytes only; not release, installed upgrade, Linux/browser or real gateway acceptance",
+  "artifacts": [
+    {
+      "artifact": "CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+      "members": 2956,
+      "sha256": "f6987c34d6e7df221f87e0cd4bf7b53806a2f9f33b57580beeff50534895e19c",
+      "direct_extract": true,
+      "nested_zip": false,
+      "crc": true
+    },
+    {
+      "artifact": "CajunWebPro-1.25.0-FULL-PROJECT.zip",
+      "members": 6101,
+      "sha256": "2413b931e604a4c63030b3bc31e3f65d40c056c1b9e8fb7d58dad69720171cc4",
+      "direct_extract": true,
+      "nested_zip": false,
+      "crc": true
+    },
+    {
+      "artifact": "CajunWebPro-1.25.0-UPDATE.zip",
+      "members": 2943,
+      "sha256": "249aa88fbd0160fdd64359c3e11ca5f8d15009f5402c896380823463391beba8",
+      "direct_extract": true,
+      "nested_zip": false,
+      "crc": true
+    }
+  ],
+  "attempts": [
+    {
+      "outcome": "timed out",
+      "limit_seconds": 60,
+      "scope": "Initial combined archive validation/extraction attempt; no passing result claimed"
+    },
+    {
+      "outcome": "passed",
+      "scope": "Background validation with progress log; all three archives checked and clean-extracted"
+    }
+  ],
+  "shipping_tree": "6f5cab77aafe1cc0dfd131e624f219ff22e48aad"
+}

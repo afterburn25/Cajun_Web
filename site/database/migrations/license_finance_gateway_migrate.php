@@ -85,16 +85,33 @@ function license_finance_gateway_prepare(#[\SensitiveParameter]string $password)
         if(!payments_ready()||!ledger_ready())throw new RuntimeException('Prepare payment links and invoice ledger first.');
         $version=(string)(setting('license_finance_gateway_schema_version')??'');
         if(!in_array($version,['','1','2','3'],true))throw new RuntimeException('Unknown finance gateway storage version.');
+        $pending=(string)(setting('license_finance_gateway_schema_pending')??'');
+        if(!in_array($pending,['','3'],true))throw new RuntimeException('Unknown finance gateway setup history.');
         $schema=license_finance_gateway_schema(config()['db']['prefix']);
         $v1=['license_finance_charges','license_finance_charge_attempts','license_finance_subscriptions','license_finance_subscription_receipts'];
 
         if($version===''){
             foreach(array_keys($schema) as $name){
-                if(license_finance_gateway_table_present($name)){
+                if($pending===''&&license_finance_gateway_table_present($name)){
                     throw new RuntimeException('Unrecognized finance gateway storage exists. No data was adopted.');
                 }
             }
-            foreach($schema as $sql)db()->exec($sql);
+            if($pending===''){
+                staff_transaction(function()use($actor):void{
+                    save_setting('license_finance_gateway_schema_pending','3');
+                    license_audit((int)$actor['id'],'financing.gateway.setup.begin','Financed payment gateway v3 preparation started');
+                });
+                $pending='3';
+            }
+            foreach($schema as $name=>$sql){
+                if(license_finance_gateway_table_present($name)){
+                    if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn()!==0){
+                        throw new RuntimeException('Interrupted finance gateway preparation contains data. Preserve and review the database.');
+                    }
+                    continue;
+                }
+                db()->exec($sql);
+            }
             license_finance_gateway_validate_schema();
             staff_transaction(function()use($actor):void{
                 foreach(array_keys(license_finance_gateway_schema(config()['db']['prefix'])) as $name){
@@ -103,6 +120,7 @@ function license_finance_gateway_prepare(#[\SensitiveParameter]string $password)
                     }
                 }
                 save_setting('license_finance_gateway_schema_version','3');
+                save_setting('license_finance_gateway_schema_pending','');
                 license_audit((int)$actor['id'],'financing.gateway.setup','Financed payment gateway v3 storage verified with reversal history');
             });
             return;

@@ -10,6 +10,16 @@ on:
       - 'VERSION'
       - 'tests/software_release_125_delta.py'
       - '.github/workflows/software-package-build-fast.yml'
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/**'
+      - 'tools/build.py'
+      - 'tools/directory-map.json'
+      - 'VERSION'
+      - 'tests/software_release_125_delta.py'
+      - '.github/workflows/software-package-build-fast.yml'
   workflow_dispatch:
 permissions:
   contents: read

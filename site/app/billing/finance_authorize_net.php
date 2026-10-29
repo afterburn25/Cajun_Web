@@ -161,3 +161,24 @@ function license_finance_anet_subscription_readback(array $details,string $offer
     }
     return ['status'=>$status,'subscription_id'=>$subscriptionId];
 }
+
+/** Confirm the old ARB can never collect again before a replacement is admitted. */
+function license_finance_anet_retire_subscription(string $offerId,array $old,?callable $execute=null):string{
+    $execute??=fn(string $method,array $request):array=>license_finance_anet_execute($method,$request);
+    $id=(string)($old['gateway_subscription_id']??'');
+    $read=function()use($execute,$offerId,$old,$id):array{
+        $details=$execute('ARBGetSubscriptionRequest',['subscriptionId'=>$id,'includeTransactions'=>false]);
+        return license_finance_anet_subscription_readback($details,$offerId,$id,(int)$old['amount_cents'],
+            (int)$old['interval_months'],(int)$old['total_occurrences'],(string)$old['start_date']);
+    };
+    $status=(string)$read()['status'];
+    if($status==='suspended'){
+        $reply=$execute('ARBCancelSubscriptionRequest',['subscriptionId'=>$id]);
+        if(($reply['messages']['resultCode']??'')!=='Ok')throw new RuntimeException('The prior financing subscription could not be retired. Reconcile it before replacing billing.');
+        $status=(string)$read()['status'];
+    }
+    if(!in_array($status,['canceled','expired','terminated'],true)){
+        throw new RuntimeException('The prior financing subscription may still collect payments. Reconcile it before replacing billing.');
+    }
+    return $status;
+}

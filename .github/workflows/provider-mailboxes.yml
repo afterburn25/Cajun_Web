@@ -35,14 +35,13 @@ jobs:
           MYSQL_USER: cwp_test
           MYSQL_PASSWORD: local-ci-only
           MYSQL_ROOT_PASSWORD: synthetic-root-only
-        ports: ['33306:3306']
+        ports: ['3306/tcp']
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
-      CWP_TEST_PORT: '33306'
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
     steps:
@@ -61,7 +60,7 @@ jobs:
       - name: Native mailbox permissions history replay and recovery tests
         run: |
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
-            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT=${{ job.services.database.ports[3306] }} \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-inventory-test sh -ec '
               for source in site/app/providers/*.php site/database/schema/provider_mailbox_schema.php site/admin/views/provider_mailboxes.php site/admin/controllers/provider_mailboxes.php site/portal/controllers/mailboxes.php site/portal/views/mailboxes.php tests/provider_mailboxes_native.php; do php -l "$source"; done

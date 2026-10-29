@@ -84,6 +84,18 @@ function license_financing_terms_math(int $cashPrice,int $initialPayment,int $am
 function license_financing_cadence_months(string $cadence):int{
     return match($cadence){'monthly'=>1,'quarterly'=>3,'annually'=>12,default=>throw new InvalidArgumentException('Financing cadence must be monthly, quarterly, or annually.')};
 }
+/** Build only the remaining signed ARB periods, using their own next start date. */
+function license_financing_subscription_contract(string $cadence,int $amount,int $installments,string $start,int $periodOffset,string $today):array{
+    $months=license_financing_cadence_months($cadence);
+    if($amount<1||$installments<1||$installments>360||$periodOffset<0||$periodOffset>=$installments){
+        throw new InvalidArgumentException('Financing recurring terms are invalid.');
+    }
+    if(license_financing_date($start)<=license_financing_date($today)){
+        throw new InvalidArgumentException('The next financing installment must begin on a future date.');
+    }
+    return ['months'=>$months,'amount_cents'=>$amount,'occurrences'=>$installments-$periodOffset,
+        'start_date'=>$start,'period_offset'=>$periodOffset];
+}
 function license_financing_period_from_pay_num(int $payNum,int $installments):int{
     if($payNum<1||$installments<1||$installments>360||$payNum>$installments)throw new InvalidArgumentException('Financing subscription payment number is outside the signed installment count.');
     return $payNum-1;

@@ -1,4 +1,24 @@
+## 2026-10-28 — owner-directed PR266 independent integration pass
+
+## 2026-10-28 — financed replacement recovery hardening
+
+The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](PR266_INTEGRATION_ACCEPTANCE.md).
+
+Codex correction branch refreshed from `73d4c37b` to Devin’s `6045b801`; main `fdf40a25`, published v1.25 unchanged. Preserved Devin’s project fixture isolation after independently tracing the active-release HTTP404 to shared project financing. Added explicit independence/continued-denial assertions and corrected the native document-roots fixed-port collision. [Scope, local verification, original failure links and remaining release gates](PR266_INTEGRATION_ACCEPTANCE.md). Hosted acceptance and required independent review remain open; no release/live operation.
+
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
+
+## 2026-10-28 — native webhook SQL matrix continuation
+
+The owner made licensing/financing review a continuing goal. The previous pass made progress through #269/#270 and exact-source package evidence; it did not complete the integration. Continued on the same review branch with 40 native PDO/InnoDB cases, all passing on local PHP 8.2.35/8.4.25 × MariaDB 10.11.19/MySQL 8.4.13. Actual audit-trigger failure proves rollback, and a separate database process waits on the shared mutex then observes a newly reserved replacement. Optional-table absence is exercised by a reversible rename inside the disposable fixture. Existing full Windows native run retains 209 passing checks and a later 0600 file-permission failure; no production/private-file gate was weakened. New cases are included in the existing Linux native matrix, with browser fixtures still owned by the integration writer. [Evidence](CODEX_LICENSING_REVIEW_2026_10_28.md).
+
+## 2026-10-28 — delayed financing lifecycle preservation
+
+Independent service probes reproduced cancellation/suspension regression and reversal/replacement fence loss. A separate follow-up branch stacked on #269 adds monotonic handling and 45 actual-service cases (17 fail before, all pass after, PHP 8.4.25 normal/no-INI). The #269 exact commit `f6d49812` also passed a full three-package build and manifest/member/extraction audit; see the [review report](CODEX_LICENSING_REVIEW_2026_10_28.md). Finance browser run 40649494078 at `5ba2a37d` now fails at the overdue scheduler recovery-handoff assertion; handed to the existing fixture writer without editing their files. No live gateway or production operation.
+
+## 2026-10-28 — independent licensing routing corrections
+
+Owner requested independent PR #266 integration/QA/security work, then retained the existing **Complete Licensing Integration** chat as integration writer and scoped this chat to review/tested corrections. Frozen source `6045b801`; refreshed feature `5ba2a37d`; main `fdf40a25`. Reproduced and corrected two optional-financing routing failures, with 10 actual-service cases passing in PHP 8.4.25 normal/no-INI modes. Twelve existing contract suites and the frozen-source three-package build/extraction audit pass. All full acceptance, real sandbox, newly versioned populated upgrade and release gates remain separate. [Detailed report](CODEX_LICENSING_REVIEW_2026_10_28.md). Separate correction branch only; no modification to the other writer's branch, main merge, release or live operation.
 
 ## 2026-10-26 — CI queue-hygiene: sha-scoped concurrency groups caused the ~1000-run backlog
 
