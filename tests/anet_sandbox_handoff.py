@@ -124,12 +124,17 @@ def artifact_zip(archive_url: str, bearer: str) -> bytes:
     # Never forward the GitHub bearer to the signed artifact URL. Do not
     # follow a *second* redirect, even between approved storage hosts.
     signed_request = urllib.request.Request(redirect)
-    with urllib.request.build_opener(NoRedirect).open(signed_request, timeout=20) as response:
-        if response.geturl() != redirect:
-            raise RuntimeError("Artifact download unexpectedly redirected")
-        data = response.read(MAX_ZIP + 1)
-        if len(data) > MAX_ZIP:
-            raise RuntimeError("Artifact archive exceeded the bounded size")
+    try:
+        with urllib.request.build_opener(NoRedirect).open(signed_request, timeout=20) as response:
+            if response.geturl() != redirect:
+                raise RuntimeError("Artifact download unexpectedly redirected")
+            data = response.read(MAX_ZIP + 1)
+            if len(data) > MAX_ZIP:
+                raise RuntimeError("Artifact archive exceeded the bounded size")
+    except (urllib.error.HTTPError, urllib.error.URLError):
+        # Signed URLs are bearer credentials for one-use nonces; never format
+        # a transport exception that might include the token in CI logs.
+        raise RuntimeError("GitHub artifact download failed or redirected") from None
     return data
 
 
