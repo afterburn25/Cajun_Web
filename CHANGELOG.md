@@ -1,3 +1,9 @@
+## Unreleased — replacement billing after financing payoff
+
+- Avoid replacement creation after verified payoff and retain any known replacement created while payoff commits.
+- Verify cancellation of that replacement and preserve uncertain results for reconciliation without reversing permanent payoff.
+- Keep ordinary unpaid owner reconciliation available through a correctly scoped payoff-read transaction.
+
 ## Unreleased — retire automatic financing billing after payoff
 
 - Recheck payoff after in-flight initial enrollment and retain the returned subscription before cancellation.

@@ -1,0 +1,1194 @@
+{
+  "base_pr": 299,
+  "base_sha": "fa404e59b740b300a04c66cc870a6768352479a1",
+  "branch": "codex/finance-replacement-payoff-guard",
+  "source_sha256": {
+    "site/app/billing/finance_subscription.php": "4c640ccdfe269f3d463edcf3a35bac5c4e0dccb7089f5ba303679bc3dd1e8241",
+    "tests/finance_replacement_payoff_boundaries.php": "d64c5793c01b675638e8d360c8db054cf84c725736eb845601eba39a73edfbdc",
+    "tests/finance_replacement_payoff_native.php": "eaae47960f586f6b9aef01d744e56e05bfe4b5ac78350d620a361e597d928464",
+    ".github/workflows/recurring-billing-native.yml": "95b587655d2af76d66ec002d152a85d3b1a7c5c4dc211514c5a1ffecfcda299a"
+  },
+  "findings": [
+    "https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6486610355",
+    "https://github.com/afterburn25/Cajun_Web/pull/299#issuecomment-6486717744"
+  ],
+  "native_executions": 1896,
+  "focused_executions": 272,
+  "matrix": [
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 138,
+      "failed": 0,
+      "label": "8.2-mariadb-replacement",
+      "parent": false,
+      "diagnostics": 18,
+      "report_sha256": "ab1edcc0e0b0e6694c4f825e74f5e44862a4239294553e0bcfafc8c555a906ba"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 290,
+      "failed": 0,
+      "label": "8.2-mariadb-retirement",
+      "parent": false,
+      "diagnostics": 50,
+      "report_sha256": "9e8bdd0587fc33c58c24eeebea0ca575dbf540e41bb3acb0e3d59655e590eda7"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 5,
+      "failed": 0,
+      "label": "8.2-mariadb-owner",
+      "parent": false,
+      "diagnostics": 1,
+      "report_sha256": "287defd65fe7efa6c1d2997d7ccfa77c6c9b1b20de4983309edb43c48e1595e4"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 41,
+      "failed": 0,
+      "label": "8.2-mariadb-settlement",
+      "parent": false,
+      "diagnostics": 7,
+      "report_sha256": "4c8579d44d6065848d17dc256bb91f99eb83c0a2b4bfe35fd0d74fd86a260738"
+    },
+    {
+      "label": "first-native",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 138,
+      "failed": 0,
+      "parent": false,
+      "report_sha256": "b3c60e95a28fcf1093b06b00d87de53cd3e6be605b6ee21d11343b33486525ea"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 290,
+      "failed": 0,
+      "label": "8.4-mariadb-retirement",
+      "parent": false,
+      "diagnostics": 50,
+      "report_sha256": "0f1a4fa1e7ebcb544c45afc780d8f245d4aaccb7d36b9b887235d082efefb8a1"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 5,
+      "failed": 0,
+      "label": "8.4-mariadb-owner",
+      "parent": false,
+      "diagnostics": 1,
+      "report_sha256": "1b4ba2a5d074a92851d632ffd81b3863232ddff28a2ca65531d66bd8e28fa11d"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 41,
+      "failed": 0,
+      "label": "8.4-mariadb-settlement",
+      "parent": false,
+      "diagnostics": 7,
+      "report_sha256": "009024f852a227cbfb7d382cae02a4f6283c33d247a42ba88b1e756c3412d478"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 138,
+      "failed": 40,
+      "label": "parent-84-mysql",
+      "parent": true,
+      "diagnostics": 21,
+      "report_sha256": "7baa515837d2270bad678b15a508e44417c096e4e8d8854912de8e25602726b6"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 138,
+      "failed": 0,
+      "label": "8.2-mysql-replacement",
+      "parent": false,
+      "diagnostics": 18,
+      "report_sha256": "9e6c45153a66089721f78d49759898bf930828ac0b3f26e15b6915530bce44c8"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 290,
+      "failed": 0,
+      "label": "8.2-mysql-retirement",
+      "parent": false,
+      "diagnostics": 50,
+      "report_sha256": "b67f31b8f50642c7bb78d944677f5b0b499639cbcde5c7c7041037a4bfc49a22"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 5,
+      "failed": 0,
+      "label": "8.2-mysql-owner",
+      "parent": false,
+      "diagnostics": 1,
+      "report_sha256": "b1d7308700693fadcd2faca37e4da27c3ad2a946c325d9028f7d257e251838e4"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 41,
+      "failed": 0,
+      "label": "8.2-mysql-settlement",
+      "parent": false,
+      "diagnostics": 7,
+      "report_sha256": "4d0773cc159d66f1a014f55c6b3024794d1738404e473ee0982858e95383f39c"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 138,
+      "failed": 0,
+      "label": "8.4-mysql-replacement",
+      "parent": false,
+      "diagnostics": 18,
+      "report_sha256": "323eaa412b228e59d0befb8ea1782d8bbb2a06ffecf285a86c321687310d18eb"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 290,
+      "failed": 0,
+      "label": "8.4-mysql-retirement",
+      "parent": false,
+      "diagnostics": 50,
+      "report_sha256": "ed68e359fa3de5a06c1e2274ca725e0e8367d62f3cfa4cf3446216dfd2ff830b"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 5,
+      "failed": 0,
+      "label": "8.4-mysql-owner",
+      "parent": false,
+      "diagnostics": 1,
+      "report_sha256": "61d3f566f57448a9a9c19c4e388848c77267b0e793f6bd707b764a7f66c651a8"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 41,
+      "failed": 0,
+      "label": "8.4-mysql-settlement",
+      "parent": false,
+      "diagnostics": 7,
+      "report_sha256": "e9d15fa78dc925dc87e377253e78cee23dd4bb623447963e3d5dba360e68fc6b"
+    }
+  ],
+  "focused": {
+    "tests": [
+      {
+        "php": "8.2",
+        "test": "finance_initial_enrollment_handler",
+        "count": 22,
+        "sha256": "3b537caf79923f4d689e5bb350f9f26fcb9d7158138242f98f3480b6f2257ed9"
+      },
+      {
+        "php": "8.2",
+        "test": "finance_subscription_lifecycle",
+        "count": 45,
+        "sha256": "56a6e0e2819bedd739c5ba7945340eea03fed2aa44a246f0cb81fa383357493e"
+      },
+      {
+        "php": "8.2",
+        "test": "finance_enrollment_sandbox_boundary",
+        "count": 6,
+        "sha256": "fdd33db92af4f9cbc21be3d714948991e70cde21410b8d8f3b8102ccd2911035"
+      },
+      {
+        "php": "8.2",
+        "test": "license_finance_replacement_contract",
+        "count": 9,
+        "sha256": "f414abbc810fb999c7c7f5f25e3d8be256f97dd2cc381877cbcecd1a0cd66191"
+      },
+      {
+        "php": "8.2",
+        "test": "license_finance_source_contract",
+        "count": 54,
+        "sha256": "0e9e7473c33d3ad0552f6820de85116a1acdbaaa555edfd08b9a45ab170e0e4a"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_initial_enrollment_handler",
+        "count": 22,
+        "sha256": "3b537caf79923f4d689e5bb350f9f26fcb9d7158138242f98f3480b6f2257ed9"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_subscription_lifecycle",
+        "count": 45,
+        "sha256": "56a6e0e2819bedd739c5ba7945340eea03fed2aa44a246f0cb81fa383357493e"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_enrollment_sandbox_boundary",
+        "count": 6,
+        "sha256": "fdd33db92af4f9cbc21be3d714948991e70cde21410b8d8f3b8102ccd2911035"
+      },
+      {
+        "php": "8.4",
+        "test": "license_finance_replacement_contract",
+        "count": 9,
+        "sha256": "f414abbc810fb999c7c7f5f25e3d8be256f97dd2cc381877cbcecd1a0cd66191"
+      },
+      {
+        "php": "8.4",
+        "test": "license_finance_source_contract",
+        "count": 54,
+        "sha256": "0e9e7473c33d3ad0552f6820de85116a1acdbaaa555edfd08b9a45ab170e0e4a"
+      }
+    ],
+    "source_boundary": {
+      "unchanged": [
+        "license_finance_subscription_contract",
+        "license_finance_subscription_replacement_contract",
+        "license_finance_subscription_history_row",
+        "license_finance_subscription_known_gateway_id",
+        "license_finance_subscription_row",
+        "license_finance_subscription_mark_review",
+        "license_finance_subscription_finalize",
+        "license_finance_subscription_payoff_retire",
+        "license_finance_subscription_sandbox_initial",
+        "license_finance_subscription_enrollment_offer",
+        "license_finance_subscription_reserve",
+        "license_finance_subscription_create_profile",
+        "license_finance_subscription_enroll_opaque",
+        "license_finance_subscription_replacement_reserve",
+        "license_finance_subscription_replacement_review",
+        "license_finance_subscription_replacement_declined",
+        "license_finance_subscription_reconcile",
+        "license_finance_subscription_charge_reconcile",
+        "license_finance_subscription_lifecycle_review",
+        "license_finance_subscription_settle"
+      ],
+      "changed": [
+        "license_finance_subscription_payoff_due",
+        "license_finance_subscription_replacement_finalize",
+        "license_finance_subscription_reenroll_opaque"
+      ],
+      "added": [
+        "license_finance_subscription_signed_remaining_contract"
+      ]
+    },
+    "yaml_bash_steps": [
+      "Prepare official PHP with PDO MySQL",
+      "Allow isolated MySQL audit-failure fixture triggers",
+      "Preserve newer one-time finance outcomes under delayed captures",
+      "Bind delayed checkout results to their original finance attempt",
+      "Initial financing enrollment from verified ledger payments",
+      "Native consent and unique period invoices",
+      "Print retained native order and recurring reports",
+      "Scope"
+    ]
+  },
+  "parent_count": 138,
+  "parent_failed": 40,
+  "parent_report_sha256": "7baa515837d2270bad678b15a508e44417c096e4e8d8854912de8e25602726b6",
+  "parent_failures": [
+    {
+      "name": "before_create expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "before_create exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "before_create avoids creating an unnecessary replacement",
+      "passed": false
+    },
+    {
+      "name": "before_create does not claim cancellation without proof",
+      "passed": false
+    },
+    {
+      "name": "during_create expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "during_create exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "during_create retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "during_create does not claim cancellation without proof",
+      "passed": false
+    },
+    {
+      "name": "during_readback expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "during_readback exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "during_readback retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "during_readback does not claim cancellation without proof",
+      "passed": false
+    },
+    {
+      "name": "readback_timeout expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "readback_timeout exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "readback_timeout retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "readback_timeout owner can reconcile the retained candidate",
+      "passed": false
+    },
+    {
+      "name": "wrong_readback expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "wrong_readback exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "wrong_readback retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "wrong_readback owner can reconcile the retained candidate",
+      "passed": false
+    },
+    {
+      "name": "cancel_error expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "cancel_error exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "cancel_error retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "cancel_error owner can reconcile the retained candidate",
+      "passed": false
+    },
+    {
+      "name": "cancel_timeout expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "cancel_timeout exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "cancel_timeout retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "cancel_timeout owner can reconcile the retained candidate",
+      "passed": false
+    },
+    {
+      "name": "lost_cancel_reply expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "lost_cancel_reply exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "lost_cancel_reply retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "lost_cancel_reply owner can reconcile the retained candidate",
+      "passed": false
+    },
+    {
+      "name": "still_active expected replacement outcome",
+      "passed": false
+    },
+    {
+      "name": "still_active exact retained gateway identity",
+      "passed": false
+    },
+    {
+      "name": "still_active retains verifiable predecessor history",
+      "passed": false
+    },
+    {
+      "name": "still_active owner can reconcile the retained candidate",
+      "passed": false
+    },
+    {
+      "name": "pending_first_payment outside-transaction reader verifies unpaid ledger",
+      "passed": false
+    },
+    {
+      "name": "pending_first_payment ordinary owner reconciliation stays available",
+      "passed": false
+    },
+    {
+      "name": "review outside-transaction reader verifies unpaid ledger",
+      "passed": false
+    },
+    {
+      "name": "review ordinary owner reconciliation stays available",
+      "passed": false
+    }
+  ],
+  "corrected_checks": [
+    {
+      "name": "normal expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "normal exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "normal correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "normal preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "normal verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "normal owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "normal retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "normal retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "normal does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "normal rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "before_create expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "before_create exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "before_create correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "before_create preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "before_create verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "before_create owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "before_create avoids creating an unnecessary replacement",
+      "passed": true
+    },
+    {
+      "name": "before_create retains original history without invented replacement",
+      "passed": true
+    },
+    {
+      "name": "before_create does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "before_create rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "before_create releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "during_create expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "during_create exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "during_create correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "during_create preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "during_create verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "during_create owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "during_create retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "during_create retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "during_create does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "during_create rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "during_create releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "during_readback expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "during_readback exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "during_readback correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "during_readback preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "during_readback verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "during_readback owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "during_readback retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "during_readback retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "during_readback does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "during_readback rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "during_readback releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout owner can reconcile the retained candidate",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout reconciliation preserves payments and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "readback_timeout reconciliation never creates another subscription",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback owner can reconcile the retained candidate",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback reconciliation preserves payments and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "wrong_readback reconciliation never creates another subscription",
+      "passed": true
+    },
+    {
+      "name": "cancel_error expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "cancel_error exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "cancel_error correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "cancel_error preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "cancel_error verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "cancel_error owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "cancel_error retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "cancel_error retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "cancel_error does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "cancel_error rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "cancel_error releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "cancel_error owner can reconcile the retained candidate",
+      "passed": true
+    },
+    {
+      "name": "cancel_error reconciliation preserves payments and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "cancel_error reconciliation never creates another subscription",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout owner can reconcile the retained candidate",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout reconciliation preserves payments and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "cancel_timeout reconciliation never creates another subscription",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply owner can reconcile the retained candidate",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply reconciliation preserves payments and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "lost_cancel_reply reconciliation never creates another subscription",
+      "passed": true
+    },
+    {
+      "name": "still_active expected replacement outcome",
+      "passed": true
+    },
+    {
+      "name": "still_active exact retained gateway identity",
+      "passed": true
+    },
+    {
+      "name": "still_active correct old-subscription retirement",
+      "passed": true
+    },
+    {
+      "name": "still_active preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "still_active verified payoff remains permanent",
+      "passed": true
+    },
+    {
+      "name": "still_active owner payments remain committed",
+      "passed": true
+    },
+    {
+      "name": "still_active retains verifiable predecessor history",
+      "passed": true
+    },
+    {
+      "name": "still_active retains the exact signed replacement contract",
+      "passed": true
+    },
+    {
+      "name": "still_active does not claim cancellation without proof",
+      "passed": true
+    },
+    {
+      "name": "still_active rejects a second create",
+      "passed": true
+    },
+    {
+      "name": "still_active releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "still_active owner can reconcile the retained candidate",
+      "passed": true
+    },
+    {
+      "name": "still_active reconciliation preserves payments and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "still_active reconciliation never creates another subscription",
+      "passed": true
+    },
+    {
+      "name": "pending_first_payment outside-transaction reader verifies unpaid ledger",
+      "passed": true
+    },
+    {
+      "name": "pending_first_payment read leaves financial and license records unchanged",
+      "passed": true
+    },
+    {
+      "name": "pending_first_payment reader reuses caller transaction",
+      "passed": true
+    },
+    {
+      "name": "pending_first_payment ordinary owner reconciliation stays available",
+      "passed": true
+    },
+    {
+      "name": "pending_first_payment owner read releases locks",
+      "passed": true
+    },
+    {
+      "name": "review outside-transaction reader verifies unpaid ledger",
+      "passed": true
+    },
+    {
+      "name": "review read leaves financial and license records unchanged",
+      "passed": true
+    },
+    {
+      "name": "review reader reuses caller transaction",
+      "passed": true
+    },
+    {
+      "name": "review ordinary owner reconciliation stays available",
+      "passed": true
+    },
+    {
+      "name": "review owner read releases locks",
+      "passed": true
+    }
+  ],
+  "cases": [
+    {
+      "scenario": "normal",
+      "outcome": "pending_first_payment",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "before_create",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "during_create",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "during_readback",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "readback_timeout",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "wrong_readback",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "cancel_error",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "cancel_timeout",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "lost_cancel_reply",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "scenario": "still_active",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    }
+  ],
+  "scope": "Exact caller/finalizer/retirement/reconciliation functions and canonical native storage. Actual owner ledger_receive commits at synthetic provider boundaries; real readback validation. Synthetic signed future invoices, initial receipts and provider transport/mode. No real gateway, production flag, HTTP or external approval.",
+  "original_failures": "The first replacement probe failed 2/6 on frozen #299. The first correction also failed 2/6 because the shared payoff reader evaluated unpaid periods without a transaction. That failure and source digest are retained. The second probe passed 6/6. Expanded native parent failed 40/138 without a fixture exception; corrected matrix passes. No production guard or assertion was weakened.",
+  "limitations": [
+    "Provider transport/mode, future invoices and historical initial receipts are synthetic.",
+    "Each replacement lane executes 27 real owner ledger_receive commits at simulated provider boundaries.",
+    "Known returned replacement IDs are retained; unknown create results and partial/noncontiguous payment overlap require separate review.",
+    "No real gateway, final combined browser/upgrade/package, main acceptance or independent approval is claimed."
+  ]
+}
