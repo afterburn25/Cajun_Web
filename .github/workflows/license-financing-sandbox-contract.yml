@@ -36,3 +36,4 @@ jobs:
           python3 -m py_compile tests/anet_sandbox_tokenize.py tests/anet_sandbox_runtime.py tests/finance_anet_sandbox_acceptance.py
           python3 tests/sandbox_workflow_contract.py
           python3 tests/anet_sandbox_runtime_contract.py
+          python3 tests/anet_sandbox_handoff_contract.py
