@@ -1,0 +1,20 @@
+{
+  "base": "2e31a040e3ccf0e58919142c4ac287aabe2e89b7",
+  "failed_run": 40820683270,
+  "failed_job": 123272195324,
+  "failure": "Software commerce native acceptance command is additive and ordered",
+  "before_checks": 218,
+  "before_failed": 1,
+  "after_checks": 283,
+  "after_failed": 0,
+  "orchestration_checks": 6,
+  "workflow_shell_steps": 24,
+  "workflow_sha256": "eecf74c33a27499a0aa50d90cdc19665c5d0ae068791803074637d7cae381734",
+  "inverse_matches": true,
+  "reports": {
+    "helper-before.json": "0d058430ab7aadb44cd1553ac6c8ee63d80b681f88b5b1ac5186d78243fd2589",
+    "helper-after.json": "b5715b6a2b10db828420004139b3b482375b6c26d5b9778f479560405d313c01",
+    "contract-after.json": "d7f1b0aa4feb2455affd8d4f0e964c591b0c6f91f564d8677f6116795ba69b8f"
+  },
+  "scope": "Local exact workflow/acceptance-helper regression. No shipping or test-assertion changes; corrected hosted acceptance remains required."
+}
