@@ -98,34 +98,12 @@ function license_finance_subscription_finalize(string $offerId,string $gatewayId
         return $state;
     }));
 }
-/** A paid display status is not payment evidence. Reuse the retained invoice ledger. */
-function license_finance_subscription_initial_paid(array $offer):bool{
-    $terms=license_finance_offer_terms($offer);
-    if((string)$offer['status']!=='signed'||!hash_equals((string)$offer['terms_sha256'],(string)$offer['signed_terms_sha256'])){
-        throw new RuntimeException('Signed financing terms are inconsistent.');
-    }
-    foreach(['client_id','job_id','license_id','initial_payment_cents','installments'] as $field){
-        if((int)$offer[$field]!==($terms[$field]??null))throw new RuntimeException('Signed financing terms changed.');
-    }
-    if((string)$offer['schedule_id']!==($terms['schedule_id']??null))throw new RuntimeException('Signed financing schedule changed.');
-    $initial=(int)$terms['initial_payment_cents'];
-    if($initial===0)return true;
-    if($initial<0||!ledger_ready()||$offer['activation_invoice_id']===null)return false;
-    $invoice=ledger_invoice((int)$offer['activation_invoice_id']);
-    if((int)$invoice['client_id']!==(int)$offer['client_id']||(int)$invoice['job_id']!==(int)$offer['job_id']
-        ||(int)$invoice['active']!==1||(int)$invoice['amount_cents']!==$initial||$invoice['currency']!=='USD'
-        ||!str_starts_with((string)$invoice['instructions'],'Initial payment for signed finance agreement '.$offer['id'].'. ')){
-        throw new RuntimeException('Finance initial invoice no longer matches the signed agreement.');
-    }
-    $balance=ledger_balance($invoice);
-    return $invoice['status']==='paid'&&(int)$balance['paid_cents']===$initial&&(int)$balance['due_cents']===0;
-}
 /** Read-only admission; repeat under the reservation mutex before any gateway request. */
 function license_finance_subscription_enrollment_offer(string $offerId,int $clientId,bool $lock=false):array{
     if(!license_finance_gateway_ready())throw new RuntimeException('Prepare financing gateway storage first.');
     service_plans_current_client($clientId);
     $offer=license_finance_offer_row($offerId,$clientId,$lock);
-    if(!license_finance_subscription_initial_paid($offer))throw new RuntimeException('Complete the signed agreement initial payment first.');
+    if(!license_finance_offer_initial_paid($offer))throw new RuntimeException('Complete the signed agreement initial payment first.');
     $plan=one('SELECT f.*,l.customer_id AS client_id,j.client_id AS project_client_id FROM '.table('license_financing').
         ' f JOIN '.table('website_licenses').' l ON l.id=f.license_id JOIN '.table('studio_jobs').' j ON j.id=? WHERE f.license_id=?'.($lock?' FOR UPDATE':''),
         [$offer['job_id'],$offer['license_id']]);

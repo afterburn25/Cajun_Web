@@ -132,7 +132,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
             echo '<p class="notice warning">Automatic financing enrollment is being reconciled. Do not submit another card until billing review is complete.</p>';
         }
         $financePaidOff=$financePlan&&($financePlan['paid_off_at']!==null||(string)$financePlan['state']==='paid_off');
-        try{$initialSatisfied=license_finance_subscription_initial_paid($row);}catch(Throwable){$initialSatisfied=false;}
+        try{$initialSatisfied=license_finance_offer_initial_paid($row);}catch(Throwable){$initialSatisfied=false;}
         if((int)$terms['initial_payment_cents']>0&&!$financePaidOff){
             if($initialSatisfied){
                 echo '<p class="notice info">Initial payment is verified. You can now enroll the remaining signed installments.</p>';

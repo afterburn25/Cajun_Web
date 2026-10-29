@@ -1,3 +1,9 @@
+## Unreleased — financing access requires its own verified initial payment
+
+- Share exact signed-agreement and ledger verification between enrollment, the portal and core license synchronization.
+- Reject another agreement/customer invoice, changed amount/currency and status-only payment evidence before activation.
+- Preserve the permanent payoff early return and independent owner/domain/rights restrictions.
+
 ## Unreleased — verified financing initial-payment enrollment
 
 - Allow signed remaining installments after the exact down-payment invoice is fully paid in the retained ledger.

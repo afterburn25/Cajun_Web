@@ -5,7 +5,8 @@ if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 $prefix=(string)($argv[1]??'');$port=(int)getenv('CWP_TEST_PORT');
 if(!preg_match('/^fie_[a-z0-9_]{3,12}_$/D',$prefix)||getenv('CWP_TEST_HOST')!=='127.0.0.1'||$port<1||$port>65535)exit(2);
 if(!getenv('CWP_TEST_USER')||!getenv('CWP_TEST_PASSWORD'))exit(2);
-define('CWP_BOOT',true);$root=dirname(__DIR__);
+define('CWP_BOOT',true);$root=isset($argv[2])?realpath($argv[2]):dirname(__DIR__);
+if(!$root||!is_file($root.'/site/app/billing/finance_subscription.php'))exit(2);
 require $root.'/site/includes/bootstrap.php';require $root.'/site/database/schema/base.php';
 require $root.'/site/app/billing/finance_subscription.php';
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','key'=>str_repeat('synthetic-enrollment-',4),
@@ -25,7 +26,8 @@ function fie_snapshot():array{
     $r=[];foreach(['website_licenses','license_domains','license_financing','license_finance_offers','studio_invoices','invoice_payments','recurring_billing_schedules','recurring_billing_events','license_finance_subscriptions','license_finance_subscription_history'] as $t)$r[$t]=all('SELECT * FROM '.table($t).' ORDER BY id');return $r;
 }
 function fie_seed(string $name,int $initial):array{
-    global $password;static $id=1000;$id+=100;
+    global $password,$expectedPreparationDiagnostics;static $id=1000;$id+=100;
+    if($initial>0)$expectedPreparationDiagnostics=($expectedPreparationDiagnostics??0)+1;
     rb_staff();rb_historical_source($id,1000);$fields=rb_fields($id+10,$id);recurring_billing_offer($fields);
     $now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('website_licenses').' (license_key,customer_id,product_id,created_at,updated_at) VALUES (?,1,?,?,?)',['synthetic-'.$name,'website_core',$now,$now]);$license=(int)db()->lastInsertId();
@@ -127,9 +129,12 @@ try{
         $cases[]=['name'=>$name,'error'=>$error,'allowed'=>$allow];
         $write('UPDATE '.table('studio_jobs').' SET client_id=1 WHERE id=1');$write('UPDATE '.table('studio_clients').' SET active=1,auth_version=? WHERE id=1',[str_repeat('1',32)]);save_setting('invoice_ledger_schema_version','1');$_GET=[];
     }
+    require __DIR__.'/finance_initial_sync_native_cases.php';
 }catch(Throwable $e){$checks[]=['name'=>'fixture exception: '.get_class($e).' '.$e->getMessage(),'passed'=>false];}
 $failed=count(array_filter($checks,fn($c)=>!$c['passed']));
 echo json_encode(['passed'=>$failed===0,'count'=>count($checks),'failed'=>$failed,'checks'=>$checks,'cases'=>$cases,'php'=>PHP_VERSION,'database'=>query('SELECT VERSION()')->fetchColumn(),
     'subscription_sha256'=>hash_file('sha256',$root.'/site/app/billing/finance_subscription.php'),'portal_sha256'=>hash_file('sha256',$root.'/site/portal/views/financing.php'),
-    'scope'=>'Actual application functions, canonical schema, signed offers, journal validation, session authority, ledger hashes/balances and SQL reservation. Synthetic customer/receipt fixtures and a separate committed writer after preflight. Actual portal fragment with synthetic gateway display settings. No provider calls, HTTP, real payments or release approval.'],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR).PHP_EOL;
+    'financing_sha256'=>hash_file('sha256',$root.'/site/app/licenses/financing.php'),'offers_sha256'=>hash_file('sha256',$root.'/site/app/licenses/financing_offers.php'),
+    'expected_preparation_diagnostics'=>$expectedPreparationDiagnostics??0,
+    'scope'=>'Actual application functions, canonical schema, signed offers, journal validation, session authority, ledger hashes/balances, SQL reservation and license synchronization/payoff boundary. Synthetic customer/receipt fixtures and a separate committed writer after preflight. Actual portal fragment with synthetic gateway display settings. No provider calls, HTTP, real payments or release approval.'],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR).PHP_EOL;
 exit($failed===0?0:1);

@@ -221,19 +221,22 @@ function license_financing_sync(int $licenseId,?string $today=null,bool $payment
         }
         $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
             [config()['db']['prefix'].'license_finance_offers']);
+        if($offerTable)require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
         $signedOffer=$offerTable?one(
-            'SELECT activation_invoice_id,initial_payment_cents,status FROM '.table('license_finance_offers').
+            'SELECT * FROM '.table('license_finance_offers').
             ' WHERE license_id=? AND schedule_id=? ORDER BY created_at DESC LIMIT 1',
             [$licenseId,$plan['schedule_id']]
         ):null;
+        $initialPaid=null;
+        if($signedOffer&&(string)$signedOffer['status']==='signed'){
+            if((int)$signedOffer['client_id']!==(int)$plan['client_id'])throw new RuntimeException('Financing initial payment ownership changed.');
+            $initialPaid=license_finance_offer_initial_paid($signedOffer);
+        }
         if($signedOffer&&(string)$signedOffer['status']==='signed'&&(int)$signedOffer['initial_payment_cents']>0){
             if($signedOffer['activation_invoice_id']===null){
                 if((string)$plan['state']!=='pending_initial')throw new RuntimeException('Initial financing invoice history is incomplete.');
                 $result=$plan;return;
             }
-            $initial=ledger_invoice((int)$signedOffer['activation_invoice_id']);$initialBalance=ledger_balance($initial);
-            $initialPaid=$initial['status']==='paid'&&(int)$initialBalance['due_cents']===0
-                &&(int)$initialBalance['paid_cents']===(int)$initial['amount_cents'];
             if(!$initialPaid){
                 if((string)$plan['state']!=='pending_initial'){
                     $now=gmdate('Y-m-d H:i:s');
