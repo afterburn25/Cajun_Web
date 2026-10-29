@@ -6,132 +6,32 @@ sandbox card. Never prints merchant credentials, card data, or opaque nonces.
 from __future__ import annotations
 
 from datetime import date, timedelta
-from decimal import Decimal, InvalidOperation
 from pathlib import Path
 import json
 import os
 import secrets
 import sys
 
-import requests
-from playwright.sync_api import sync_playwright
+from anet_sandbox_runtime import API, exact_amount, gateway as runtime_gateway, load_tokens, required, result_ok
 
-ACCEPT_JS = "https://jstest.authorize.net/v1/Accept.js"
-API = "https://apitest.authorize.net/xml/v1/request.api"
-TEST_CARD = "4007000000027"  # Authorize.net documented sandbox Visa.
-TEST_CVV = "900"             # Documented sandbox CVV successful-match trigger.
 AMOUNT = "1.23"
 
 
-def required(name: str) -> str:
-    value = os.environ.get(name, "").strip()
-    if not value:
-        raise RuntimeError(f"Missing required sandbox secret: {name}")
-    return value
-
-
 def gateway(method: str, body: dict, login: str, key: str) -> dict:
-    payload = {
-        method: {
-            "merchantAuthentication": {
-                "name": login,
-                "transactionKey": key,
-            },
-            **body,
-        }
-    }
-    response = requests.post(
-        API,
-        json=payload,
-        timeout=30,
-        allow_redirects=False,
-        headers={"Content-Type": "application/json", "User-Agent": "CajunWebPro-sandbox-acceptance/1"},
-    )
-    if response.status_code != 200:
-        raise RuntimeError(f"Authorize.net sandbox HTTP status {response.status_code}")
-    text = response.content.lstrip(b"\xef\xbb\xbf").decode("utf-8")
-    obj = json.loads(text)
-    if not isinstance(obj, dict):
-        raise RuntimeError("Authorize.net sandbox returned an invalid JSON envelope")
-    return obj
-
-
-def result_ok(reply: dict) -> bool:
-    return reply.get("messages", {}).get("resultCode") == "Ok"
-
-
-def exact_amount(value) -> str:
-    try:
-        amount = Decimal(str(value))
-    except (InvalidOperation, ValueError):
-        raise RuntimeError("Authorize.net sandbox returned an invalid decimal amount")
-    if amount.as_tuple().exponent < -2 or amount < 0:
-        raise RuntimeError("Authorize.net sandbox returned unsupported amount precision")
-    return f"{amount:.2f}"
-
-
-def tokenize(login: str, client_key: str) -> dict:
-    expiration = date.today().replace(day=1) + timedelta(days=400)
-    month = f"{expiration.month:02d}"
-    year = f"{expiration.year % 100:02d}"
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch()
-        try:
-            page = browser.new_page()
-            page.set_content("<!doctype html><meta charset=utf-8><title>Sandbox tokenization</title>")
-            page.add_script_tag(url=ACCEPT_JS)
-            page.wait_for_function("window.Accept && typeof window.Accept.dispatchData === 'function'", timeout=30000)
-            result = page.evaluate(
-                """({login, clientKey, card, month, year, code}) => new Promise((resolve, reject) => {
-                    const timer = setTimeout(() => reject(new Error('Accept.js timeout')), 30000);
-                    window.Accept.dispatchData({
-                        authData: {apiLoginID: login, clientKey: clientKey},
-                        cardData: {cardNumber: card, month: month, year: year, cardCode: code}
-                    }, response => {
-                        clearTimeout(timer);
-                        resolve(response);
-                    });
-                })""",
-                {
-                    "login": login,
-                    "clientKey": client_key,
-                    "card": TEST_CARD,
-                    "month": month,
-                    "year": year,
-                    "code": TEST_CVV,
-                },
-            )
-        finally:
-            browser.close()
-    if not isinstance(result, dict) or result.get("messages", {}).get("resultCode") == "Error":
-        messages = result.get("messages", {}).get("message", []) if isinstance(result, dict) else []
-        codes = [str(item.get("code", "")) for item in messages if isinstance(item, dict)]
-        raise RuntimeError("Accept.js sandbox tokenization failed: " + ",".join(codes))
-    opaque = result.get("opaqueData")
-    if (
-        not isinstance(opaque, dict)
-        or opaque.get("dataDescriptor") != "COMMON.ACCEPT.INAPP.PAYMENT"
-        or not isinstance(opaque.get("dataValue"), str)
-        or len(opaque["dataValue"]) < 8
-    ):
-        raise RuntimeError("Accept.js sandbox did not return a valid opaque payment token")
-    return {
-        "dataDescriptor": opaque["dataDescriptor"],
-        "dataValue": opaque["dataValue"],
-    }
+    return runtime_gateway(method, body, login, key, "CajunWebPro-sandbox-acceptance/1")
 
 
 def main() -> None:
     login = required("ANET_SANDBOX_API_LOGIN_ID")
     transaction_key = required("ANET_SANDBOX_TRANSACTION_KEY")
-    client_key = required("ANET_SANDBOX_PUBLIC_CLIENT_KEY")
+    tokens = iter(load_tokens(3))
 
     run_id = os.environ.get("GITHUB_RUN_ID") or secrets.token_hex(5)
     invoice = ("CWP-SBX-" + run_id)[-20:]
     ref = ("SBX" + run_id)[-20:]
 
     # 1) Real browser -> Accept.js -> sandbox nonce.
-    opaque = tokenize(login, client_key)
+    opaque = next(tokens)
 
     # 2) Real sandbox transaction using only the one-use nonce on the server side.
     charge = gateway(
@@ -168,7 +68,7 @@ def main() -> None:
 
     # 4) Deterministic sandbox decline using Authorize.net's documented
     # general bank-decline ZIP trigger (46282). Use a fresh one-use nonce.
-    decline_opaque = tokenize(login, client_key)
+    decline_opaque = next(tokens)
     declined = gateway(
         "createTransactionRequest",
         {
@@ -204,7 +104,7 @@ def main() -> None:
         raise RuntimeError("Sandbox declined transaction did not include a reason payload")
 
     # 5) Fresh nonce for ARB because Accept.js opaque data is one-use.
-    arb_opaque = tokenize(login, client_key)
+    arb_opaque = next(tokens)
     subscription_invoice = ("CWP-ARB-" + run_id)[-20:]
     subscription_name = ("CajunWebPro SBX " + run_id)[-50:]
     start_date = (date.today() + timedelta(days=2)).isoformat()

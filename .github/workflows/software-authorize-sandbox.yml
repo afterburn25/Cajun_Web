@@ -9,43 +9,83 @@ on:
         default: false
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  authorize-sandbox:
-    if: ${{ inputs.confirm_sandbox_only }}
+  sandbox-dispatch-boundary:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
-      - name: Enforce sandbox-only source contract
+      - name: Require confirmed default-branch dispatch
+        env:
+          CONFIRM_SANDBOX_ONLY: ${{ inputs.confirm_sandbox_only }}
+          DISPATCH_REF: ${{ github.ref }}
         run: |
-          python3 -m py_compile tests/software_anet_sandbox_acceptance.py
-          ! grep -F 'https://api.authorize.net' tests/software_anet_sandbox_acceptance.py
-          ! grep -F 'https://js.authorize.net' tests/software_anet_sandbox_acceptance.py
-          grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/software_anet_sandbox_acceptance.py
-          grep -F 'https://jstest.authorize.net/v1/Accept.js' tests/software_anet_sandbox_acceptance.py
-      - name: Require separately stored sandbox credentials
+          test "$CONFIRM_SANDBOX_ONLY" = 'true'
+          test "$DISPATCH_REF" = 'refs/heads/main'
+  sandbox-tokenize:
+    needs: sandbox-dispatch-boundary
+    environment: authorize-net-sandbox
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify reviewed tokenization source
+        run: |
+          python3 tests/sandbox_workflow_contract.py
+          python3 -m py_compile tests/anet_sandbox_tokenize.py
+      - name: Install isolated browser dependencies without the transaction key
+        run: |
+          python3 -m venv .sandbox-token-venv
+          .sandbox-token-venv/bin/pip install --disable-pip-version-check playwright==1.64.1
+          .sandbox-token-venv/bin/python -m playwright install --with-deps chromium
+      - name: Create three one-use sandbox nonces without the transaction key
         env:
           ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
-          ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
           ANET_SANDBOX_PUBLIC_CLIENT_KEY: ${{ secrets.ANET_SANDBOX_PUBLIC_CLIENT_KEY }}
+        run: .sandbox-token-venv/bin/python tests/anet_sandbox_tokenize.py --count 3 --output sandbox-handoff/software-tokens.json
+      - name: Transfer short-lived opaque nonces to a fresh runner
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: software-anet-nonces-${{ github.run_id }}-${{ github.run_attempt }}
+          path: sandbox-handoff/software-tokens.json
+          retention-days: 1
+          if-no-files-found: error
+  authorize-sandbox:
+    needs: [sandbox-dispatch-boundary, sandbox-tokenize]
+    environment: authorize-net-sandbox
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Receive short-lived opaque nonces
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: software-anet-nonces-${{ github.run_id }}-${{ github.run_attempt }}
+          path: sandbox-handoff
+      - name: Enforce sandbox-only standard-library source contract
         run: |
-          test -n "$ANET_SANDBOX_API_LOGIN_ID" || { echo 'Missing ANET_SANDBOX_API_LOGIN_ID'; exit 2; }
-          test -n "$ANET_SANDBOX_TRANSACTION_KEY" || { echo 'Missing ANET_SANDBOX_TRANSACTION_KEY'; exit 2; }
-          test -n "$ANET_SANDBOX_PUBLIC_CLIENT_KEY" || { echo 'Missing ANET_SANDBOX_PUBLIC_CLIENT_KEY'; exit 2; }
-      - name: Install isolated browser dependencies
-        run: |
-          python3 -m venv .sandbox-venv
-          .sandbox-venv/bin/pip install --disable-pip-version-check requests playwright
-          .sandbox-venv/bin/python -m playwright install --with-deps chromium
+          python3 tests/sandbox_workflow_contract.py
+          python3 tests/anet_sandbox_runtime_contract.py
+          python3 -m py_compile tests/anet_sandbox_runtime.py tests/software_anet_sandbox_acceptance.py
+          ! grep -F 'https://api.authorize.net' tests/anet_sandbox_runtime.py tests/software_anet_sandbox_acceptance.py
+          grep -F 'https://apitest.authorize.net/xml/v1/request.api' tests/anet_sandbox_runtime.py
       - name: Exercise real Authorize.net sandbox only
         env:
           ANET_SANDBOX_API_LOGIN_ID: ${{ secrets.ANET_SANDBOX_API_LOGIN_ID }}
           ANET_SANDBOX_TRANSACTION_KEY: ${{ secrets.ANET_SANDBOX_TRANSACTION_KEY }}
-          ANET_SANDBOX_PUBLIC_CLIENT_KEY: ${{ secrets.ANET_SANDBOX_PUBLIC_CLIENT_KEY }}
-        run: .sandbox-venv/bin/python tests/software_anet_sandbox_acceptance.py
+          ANET_SANDBOX_TOKEN_FILE: sandbox-handoff/software-tokens.json
+        run: python3 tests/software_anet_sandbox_acceptance.py
       - name: Upload non-secret sandbox evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: software-anet-sandbox-${{ github.run_id }}-${{ github.run_attempt }}
           path: qa/software-anet-sandbox-acceptance.json
