@@ -1,0 +1,80 @@
+name: RC 1.26 test package (no live operations)
+on:
+  push:
+    branches:
+      - chatgpt/rc126-artifact-20261029
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rc126-package-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assemble reviewed admin changes without rewriting originals
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "RC integration builder"
+          git config user.email "rc-builder@users.noreply.github.com"
+          for branch in chatgpt/20i-catalog-import-no-repassword-20261029 chatgpt/owner-all-client-portal-review-20261029 chatgpt/20i-connection-guided-ui-20261029; do
+            git fetch --no-tags origin "refs/heads/$branch:refs/remotes/origin/$branch"
+            if git merge --no-ff --no-commit "refs/remotes/origin/$branch"; then
+              git commit -m "Integrate $branch into disposable release candidate"
+            else
+              conflicts="$(git diff --name-only --diff-filter=U)"
+              test "$conflicts" = "site/install/inventory.generated.php" || { echo "Unexpected conflicting files: $conflicts"; exit 1; }
+              git checkout --ours -- site/install/inventory.generated.php
+              git add site/install/inventory.generated.php
+              git commit -m "Integrate $branch, regenerate installer inventory next"
+            fi
+          done
+      - name: Set up PHP and Node
+        shell: bash
+        run: |
+          php -v
+          node -v
+      - name: Refresh generated installer inventory
+        run: |
+          python3 tools/build.py --refresh
+          git add site/install/inventory.generated.php
+          if ! git diff --cached --quiet; then git commit -m "Refresh integrated installer inventory"; fi
+      - name: Build from exact clean candidate commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          COMMIT="$(git rev-parse HEAD)"
+          python3 tools/build.py --commit "$COMMIT"
+          python3 - <<'PY'
+          import json,pathlib,zipfile
+          root=pathlib.Path('dist')
+          manifests=list(root.glob('CajunWebPro-*-COMPLETE-UPLOAD.manifest.json'))
+          assert len(manifests)==1,manifests
+          package=root/manifests[0].name.replace('.manifest.json','.zip')
+          assert package.is_file()
+          with zipfile.ZipFile(package) as z:
+              names=z.namelist()
+              assert names and not any(x.lower().endswith('.zip') for x in names),'Nested ZIP forbidden'
+              assert z.testzip() is None
+              dest=pathlib.Path('rc-upload')
+              dest.mkdir()
+              z.extractall(dest)
+          (pathlib.Path('rc-upload')/'RC-TEST-ONLY.txt').write_text('UNRELEASED 1.26.0 test candidate. Do not deploy to production. Validate installation, financing, 20i and security before shipping.\\n')
+          print('Created test-only upload bundle; files:',len(names))
+          PY
+      - name: Upload directly extractable installation files (no ZIP inside ZIP)
+        uses: actions/upload-artifact@v4
+        with:
+          name: CajunWebPro-1.26.0-RC-TEST-COMPLETE-UPLOAD
+          path: rc-upload/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
