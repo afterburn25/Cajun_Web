@@ -228,12 +228,15 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <nav aria-label="Refresh history pages"><?php if($refreshPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage-1]))?>">Newer refreshes</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage+1]))?>">Older refreshes</a><?php endif; ?></nav>
 <?php endif; ?>
 <?php endif; ?></section>
+<div class="provider-hub-group-heading" id="twentyi-cloud"><span class="eyebrow">03 / CLOUD</span><h2>Cloud servers &amp; scheduled reads</h2><p>Review observed cloud services and available assignment tools. A scheduled refresh reads package information; it does not purchase, cancel or change hosting.</p></div>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_schedule.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_providers.php'; ?>
-<section class="workspace-card"><h2>Service capabilities</h2><p>A successful connection check confirms access to the hosting list. It does not confirm that every service is available or approved for use.</p>
-<h3>Additional services still to be connected</h3><ul><li>Automatic hosting plan discovery and account balance</li><li>Hosting plan changes and deletion</li><li>Domain registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
+<section class="workspace-card provider-hub-limits"><h2>What the connection does not enable automatically</h2>
+<p>20i's Reseller API offers many operations, but having an API key does not mean every operation has been integrated, tested, approved or made available to your clients here. The controls below are feature-specific: some are read-only observations, some save local assignments, and others require explicit approval.</p>
+<p>Do not assume account balance, automatic purchases, renewals, VPS actions, backup restore, SSH or StackCP sign-in are ready merely because the package-list check passes. Use the dedicated controls and their recorded results to confirm individual capabilities. See <a href="<?=esc(admin_url('provider-operations'))?>">20i operations</a> for separately reviewed provider-side changes.</p></section>
 
+<div class="provider-hub-group-heading" id="twentyi-domains"><span class="eyebrow">04 / DOMAINS &amp; MAIL</span><h2>Domains, registration &amp; mailboxes</h2><p>Check domain availability and observed registrar details, then review documented renewal or mailbox operations. Searches and observations are not purchases; submitted changes may have separate approvals.</p></div>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_domain_search.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_registration_periods.php'; ?>
 
@@ -243,6 +246,7 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php require CWP_CODE_ROOT.'/admin/views/domain_contracts.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/domain_expiry.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/domain_renewals.php'; ?>
+<div class="provider-hub-group-heading" id="twentyi-site-tools"><span class="eyebrow">05 / WEBSITE OPERATIONS</span><h2>Package configuration &amp; website tools</h2><p>Review service status, PHP versions, document roots, SSL, directory listing, WordPress installation and forwarding. The page distinguishes observations from separately authorized changes.</p></div>
 <?php require CWP_CODE_ROOT.'/admin/views/service_observations.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_package_php.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_document_roots.php'; ?>
@@ -254,6 +258,7 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>
 <?php provider_cloud_site_requests_admin_render(); ?>
 
+<div class="provider-hub-group-heading" id="twentyi-access"><span class="eyebrow">06 / ACCESS &amp; ADVANCED</span><h2>StackCP access &amp; advanced management</h2><p>StackCP login and membership information require their own setup and verification; a saved General API key alone does not provide client login. Check the separate access records before enabling an owner-approved workflow.</p><p><a href="<?=esc(admin_url('provider-operations'))?>">Open reviewed 20i operations</a> · <a href="https://docs.20i.com/api/20i-api-documentation" target="_blank" rel="noopener noreferrer">Official API documentation</a></p></div>
 <?php provider_stackcp_admin_render(); ?>
 <?php provider_password_reset_template_admin_render(); ?>
 <?php provider_stackcp_access_admin_render(); ?>
