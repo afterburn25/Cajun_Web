@@ -93,7 +93,7 @@ jobs:
           code=base64.b64decode("".join(document["content"].split()),validate=True)
           assert document["size"]==len(code)
           blob=hashlib.sha1(b"blob "+str(len(code)).encode()+b"\0"+code).hexdigest()
-          assert document["sha"]==blob=="bab553d853700db66e288cb25e7c99a9cc3642f7"
+          assert document["sha"]==blob=="022c8a8391cde8eb3e36555d41efec44439bb552"
           pathlib.Path("tests").mkdir(exist_ok=True)
           pathlib.Path(path).write_bytes(code)
           print("Immutable reviewed handoff bootstrap verified: PASS")
