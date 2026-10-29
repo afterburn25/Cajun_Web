@@ -8,14 +8,15 @@ CHECKOUT = "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
 UPLOAD = "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
 DOWNLOAD = "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
 REVIEWED_FILES = {
-    ".github/workflows/software-authorize-sandbox.yml": "79024fd1503d308b7b67a8f6eb76c33360989a8e9ad409989d31c99d52ccd7f4",
-    ".github/workflows/license-financing-authorize-sandbox.yml": "88a172f065e70b780cd7746dec2f12cd82fa2f4eef620108cf56b2f21db3b34b",
+    ".github/workflows/software-authorize-sandbox.yml": "64ac1136afc9ae5caed9c6197d7f39f67e183ad382f64611a5e5bf8f1205b24d",
+    ".github/workflows/license-financing-authorize-sandbox.yml": "ed981106a5d0e875ddd26e34372950bd1dcce230ce2a338bc66b22a963c8b92a",
     ".github/workflows/sandbox-workflow-security.yml": "4ab277ea2d9d50387093d4202c18b299cddab6e54fbe93f95e4842d0ad7d6175",
     "tests/software_anet_sandbox_acceptance.py": "21fa7504f6780ad665328f51bc516e86f60dd4a516ce4064fb14741ea7e74e83",
     "tests/finance_anet_sandbox_acceptance.py": "685e9e27e4ee727624dab859b9b44715ec5214e09474e08e53efc58797c867d3",
     "tests/anet_sandbox_runtime.py": "df4ba0e1696ee7a7457c84ed28276a2dbe143bf39e36d56b5372150998215e81",
     "tests/anet_sandbox_tokenize.py": "f7cf297d49527f0d83759f4fecf5c35e68f18ecd07f8bc86493f03233fbff400",
     "tests/anet_sandbox_runtime_contract.py": "ed7f8d8130caa5911538e77373f42fb539b408dee7398b6fae3ce47a1a7e0d75",
+    "tests/anet_sandbox_handoff.py": "62a39315ae145df60a618252ee8373c96cb4f73c201e19b530fb5cc211932a6a",
 }
 WORKFLOWS = {
     "software-authorize-sandbox.yml": "  authorize-sandbox:\n",
@@ -39,7 +40,9 @@ for name, gateway_marker in WORKFLOWS.items():
         "playwright==1.64.1",
         CHECKOUT,
         UPLOAD,
-        DOWNLOAD,
+        "tests/anet_sandbox_handoff.py",
+        "sandbox-evidence:",
+        "GH_READ_TOKEN:",
         "retention-days: 1",
         gateway_marker,
         "ANET_SANDBOX_TOKEN_FILE:",
@@ -49,6 +52,15 @@ for name, gateway_marker in WORKFLOWS.items():
     if missing:
         raise AssertionError(f"{name} lost sandbox workflow boundary: {missing}")
     token_job, gateway_job = source.split(gateway_marker, 1)
+    if "\n  sandbox-evidence:\n" not in gateway_job:
+        raise AssertionError(f"{name} omits independent evidence runner")
+    key_job, evidence_job = gateway_job.split("\n  sandbox-evidence:\n", 1)
+    if "      - uses:" in key_job or "uses: actions/" in key_job:
+        raise AssertionError(f"{name} executes downloaded Actions on the transaction-key runner")
+    if "ANET_SANDBOX_TRANSACTION_KEY:" not in key_job or "actions: read" not in key_job:
+        raise AssertionError(f"{name} lost protected credential or read-only artifact boundary")
+    if "ANET_SANDBOX_TRANSACTION_KEY" in evidence_job:
+        raise AssertionError(f"{name} exposes the transaction key to the artifact-upload runner")
     if "ANET_SANDBOX_TRANSACTION_KEY" in token_job:
         raise AssertionError(f"{name} exposes the transaction key to browser dependency code")
     if "pip install" in gateway_job or "playwright" in gateway_job or "requests" in gateway_job:
