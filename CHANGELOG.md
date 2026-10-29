@@ -1,3 +1,9 @@
+## Unreleased — prevent financing enrollment after recorded payoff
+
+- Recheck signed initial and installment ledger evidence for both initial enrollment callers under the reservation mutex.
+- Refuse stale projected payoff, existing installment payments and changed customer/schedule state before ARB creation.
+- Keep sandbox no-fulfillment enrollment bound to its exact current charge/attempt and preserve permanent payoff.
+
 ## Unreleased — financing access requires its own verified initial payment
 
 - Share exact signed-agreement and ledger verification between enrollment, the portal and core license synchronization.

@@ -1,3 +1,7 @@
+## 2026-10-28 — initial financing enrollment rechecks authoritative payoff
+
+Independent review of #297 identified stale projected state after a committed payoff and an unchecked profile enrollment path. Separate `codex/finance-enrollment-payoff-guard`, based on frozen `89ecee07`, centralizes reservation-time signed agreement/customer/schedule/initial-payment and installment-ledger admission. Parent fails 138/240 native assertions; corrected source passes 240 new plus 207 existing assertions per PHP/database lane (1,788 executions across four lanes). Valid sandbox enrollment retains exact current charge/attempt proof without fulfillment. Permanent payoff, charge, replacement and production gates remain unchanged. Hosted and independent review gates remain open; no main merge or release. [Review and evidence](CODEX_FINANCE_ENROLLMENT_PAYOFF_GUARD.md).
+
 # Software licenses, purchases and unified client portal — implementation contract
 
 ## Delayed finance checkout result identity — 2026-10-28

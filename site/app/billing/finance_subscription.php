@@ -98,12 +98,32 @@ function license_finance_subscription_finalize(string $offerId,string $gatewayId
         return $state;
     }));
 }
-/** Read-only admission; repeat under the reservation mutex before any gateway request. */
-function license_finance_subscription_enrollment_offer(string $offerId,int $clientId,bool $lock=false):array{
+/** Sandbox observations never pay an invoice, but may exercise the matching profile enrollment. */
+function license_finance_subscription_sandbox_initial(array $offer):bool{
+    if(license_finance_anet_settings()['mode']!=='sandbox'||!ledger_ready()||$offer['activation_invoice_id']===null)return false;
+    $invoice=ledger_invoice((int)$offer['activation_invoice_id']);$balance=ledger_balance($invoice);
+    if($invoice['status']!=='issued'||(int)$balance['paid_cents']!==0||(int)$balance['revision']!==0)return false;
+    $charge=one('SELECT c.*,a.invoice_id AS attempt_invoice,a.amount_cents AS attempt_amount,a.status AS attempt_status,a.transaction_id AS attempt_transaction FROM '.table('license_finance_charges').
+        ' c JOIN '.table('license_finance_charge_attempts').' a ON a.request_key=c.request_key WHERE c.invoice_id=?'.(db()->inTransaction()?' FOR UPDATE':''),[$invoice['id']]);
+    return $charge&&(string)$charge['offer_id']===(string)$offer['id']
+        &&(int)$charge['amount_cents']===(int)$offer['initial_payment_cents']
+        &&(int)$charge['attempt_invoice']===(int)$invoice['id']&&(int)$charge['attempt_amount']===(int)$charge['amount_cents']
+        &&$charge['status']==='sandbox_test'&&$charge['attempt_status']==='sandbox_test'
+        &&preg_match('/^[0-9]{5,30}$/D',(string)$charge['transaction_id'])===1
+        &&hash_equals((string)$charge['transaction_id'],(string)$charge['attempt_transaction']);
+}
+/** Read-only admission; locked admission also checks authoritative installment balances. */
+function license_finance_subscription_enrollment_offer(string $offerId,?int $clientId=null,bool $lock=false,bool $sandboxProfile=false):array{
     if(!license_finance_gateway_ready())throw new RuntimeException('Prepare financing gateway storage first.');
-    service_plans_current_client($clientId);
+    if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Financing enrollment is unavailable during support access.');
+    if($clientId!==null)service_plans_current_client($clientId);
     $offer=license_finance_offer_row($offerId,$clientId,$lock);
-    if(!license_finance_offer_initial_paid($offer))throw new RuntimeException('Complete the signed agreement initial payment first.');
+    $clientId=(int)$offer['client_id'];
+    $client=one('SELECT active FROM '.table('studio_clients').' WHERE id=?'.($lock?' FOR UPDATE':''),[$clientId]);
+    if(!$client||(int)$client['active']!==1)throw new RuntimeException('Financing customer is unavailable.');
+    if(!license_finance_offer_initial_paid($offer)&&(!$sandboxProfile||!license_finance_subscription_sandbox_initial($offer))){
+        throw new RuntimeException('Complete the signed agreement initial payment first.');
+    }
     $plan=one('SELECT f.*,l.customer_id AS client_id,j.client_id AS project_client_id FROM '.table('license_financing').
         ' f JOIN '.table('website_licenses').' l ON l.id=f.license_id JOIN '.table('studio_jobs').' j ON j.id=? WHERE f.license_id=?'.($lock?' FOR UPDATE':''),
         [$offer['job_id'],$offer['license_id']]);
@@ -117,16 +137,29 @@ function license_finance_subscription_enrollment_offer(string $offerId,int $clie
     if(!in_array((string)$plan['state'],['pending_initial','active','grace'],true))throw new RuntimeException('Review financing access before enrolling automatic installments.');
     [, $schedule]=license_financing_schedule($plan);
     if($schedule->phase()!=='running')throw new RuntimeException('The signed financing schedule is no longer running.');
+    if($lock){
+        if(!db()->inTransaction()||!ledger_ready())throw new RuntimeException('Financing installment ledger is unavailable.');
+        // Payment commits before best-effort state synchronization. Never infer
+        // an unpaid obligation from the projected financing state alone.
+        $periods=license_financing_periods($plan,$schedule);
+        $evaluation=license_financing_evaluate($periods,(int)$offer['installments'],(int)$terms['grace_days'],gmdate('Y-m-d'));
+        if(!in_array($evaluation['state'],['active','grace'],true))throw new RuntimeException('Review current financing installment balances before automatic enrollment.');
+        $maps=all('SELECT invoice_id FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index<? ORDER BY period_index FOR UPDATE',[$offer['schedule_id'],(int)$offer['installments']]);
+        foreach($maps as $map){
+            $invoice=ledger_invoice((int)$map['invoice_id']);$balance=ledger_balance($invoice);
+            // Initial enrollment schedules every signed period. Any existing
+            // partial/full receipt needs reconciliation, never another full ARB.
+            if($invoice['status']!=='issued'||(int)$balance['paid_cents']!==0)throw new RuntimeException('Existing installment payments require review before automatic enrollment.');
+        }
+    }
     return $offer;
 }
 function license_finance_subscription_reserve(array $offer,array $contract,array $profiles,?int $clientId=null):void{
     staff_locked(fn()=>staff_transaction(function()use($offer,$contract,$profiles,$clientId):void{
-        if($clientId!==null){
-            $current=license_finance_subscription_enrollment_offer((string)$offer['id'],$clientId,true);
-            if(!hash_equals((string)$current['terms_sha256'],(string)$offer['terms_sha256'])
-                ||license_finance_subscription_contract($current)!==$contract){
-                throw new RuntimeException('Financing enrollment changed. Review the current agreement.');
-            }
+        $current=license_finance_subscription_enrollment_offer((string)$offer['id'],$clientId,true,$clientId===null);
+        if(!hash_equals((string)$current['terms_sha256'],(string)$offer['terms_sha256'])
+            ||license_finance_subscription_contract($current)!==$contract){
+            throw new RuntimeException('Financing enrollment changed. Review the current agreement.');
         }
         $existing=license_finance_subscription_row((string)$offer['id'],true);
         if($existing){
@@ -145,7 +178,7 @@ function license_finance_subscription_create_profile(string $offerId,array $prof
         ||!preg_match('/^[0-9]{1,20}$/D',(string)($profiles['payment_profile_id']??''))){
         throw new InvalidArgumentException('Verified customer payment profile is required.');
     }
-    $offer=license_finance_offer_row($offerId);if((string)$offer['status']!=='signed')throw new RuntimeException('Finance agreement must be signed first.');
+    $offer=license_finance_subscription_enrollment_offer($offerId,null,false,true);
     $contract=license_finance_subscription_contract($offer);license_finance_subscription_reserve($offer,$contract,$profiles);
     $gatewayId=null;
     try{
