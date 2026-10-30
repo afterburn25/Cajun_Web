@@ -4,6 +4,9 @@ on:
     branches:
       - chatgpt/rc126-artifact-20261029
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 permissions:
   contents: read
 concurrency:
