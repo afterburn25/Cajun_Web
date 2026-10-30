@@ -51,6 +51,10 @@ function master_portal_clients(array $query): array {
     }));
 }
 function master_portal_render(array $actor): never {
+    // The portal router does not load admin email controllers. Load the passive
+    // navigation access policies before rendering the shared admin shell.
+    require_once CWP_CODE_ROOT.'/app/mail/accounts.php';
+    require_once CWP_CODE_ROOT.'/app/mail/notices.php';
     $data=null;$error=null;
     if (staff_can('support.login',$actor)&&support_ready()&&setting('support_policy_confirmed')==='1') {
         try {$data=master_portal_clients($_GET);}catch(InvalidArgumentException|RuntimeException $e) {
