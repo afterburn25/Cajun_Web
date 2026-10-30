@@ -7,6 +7,11 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     require CWP_CODE_ROOT.'/admin/controllers/auth.php';
     $user=require_admin();
     $permission=staff_action_permission($action);if($permission!==null)staff_require($permission);
+    // Enforce the support boundary before dispatch, including alternate admin views.
+    if((str_starts_with($action,'software_')||str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))
+        && (support_current()||array_key_exists('support',$_GET))){
+        throw new RuntimeException('Leave client support before managing licenses or software.');
+    }
     if(str_starts_with($action,'provider_reset_template_')){provider_password_reset_template_admin_action($action);return;}
     if(in_array($action,['staff_migrate','staff_save','staff_invite'],true))staff_admin_action($action);
     if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);

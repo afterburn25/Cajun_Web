@@ -69,6 +69,13 @@ try:
   fields=issue.evaluate('(f)=>Object.fromEntries(new FormData(f))');before=state()
   owner.request.post(licenses,form={**fields,'csrf':'invalid','customer_id':'1','product_id':sku,'license_type':'standard','licensee_name':'CSRF attempt','domain':'denied.example.invalid'})
   check('Invalid license-issuance CSRF preserves stored licenses',state()==before)
+  for target in [licenses+'&support=invalid',admin+'?view=dashboard&support=invalid']:
+   page.goto(licenses)
+   issue=form(page,'studio_license_create').filter(has=page.locator('[name="license_type"]'))
+   valid=issue.evaluate('(f)=>Object.fromEntries(new FormData(f))');before=state()
+   refused=owner.request.post(target,form={**valid,'customer_id':'1','product_id':sku,'license_type':'standard','licensee_name':'Support boundary refusal','domain':'blocked.example.invalid'})
+   check('Support-scoped license POST is refused before mutation through '+urlsplit(target).query,
+         refused.status in (200,403) and state()==before and ('Leave client support' in refused.text()))
   for kind in ['standard','trial','temporary','master']:
    page.goto(licenses);issue=form(page,'studio_license_create').filter(has=page.locator('[name="license_type"]'))
    values={'customer_id':'1','product_id':sku,'license_type':kind,'licensee_name':'Licensing Client','domain':kind+'.example.invalid' if kind!='master' else '', 'master_purpose':'Internal synthetic acceptance only' if kind=='master' else ''}
