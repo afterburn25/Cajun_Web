@@ -187,7 +187,7 @@ function setup_expected_files(): array { return [
     'app/clients/accounts.php'=>'03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e',
     'app/clients/files.php'=>'240db0d553fa492b677767de7207f7f05e620d5f8a4522a94dc2770c26d26149',
     'app/clients/identity.php'=>'42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9',
-    'app/clients/master_portal.php'=>'91d13f3ba8172b71ee23898a0c4280c1c6b4d622c386129e00cc051ea8f851a8',
+    'app/clients/master_portal.php'=>'3176acef34193df074f7ec15e0b87363d0558b81a90bd2bc2ef29a69481c39cc',
     'app/clients/workspace.php'=>'347b6e6eedaab3f8798d298a1e3ed403242d26a1b8dca8cc0f219ee794c085a9',
     'app/hosting/catalog_billing.php'=>'ac6497e0b09eae8d3d7796583712cd857c0a79ebdb783c747b64c86c104f5189',
     'app/hosting/catalog_checkout.php'=>'b0d2538dced06e1e2ed78bbaf7ec284d6a9462b3564a3700cbeef41229f886c2',
