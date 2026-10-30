@@ -12,7 +12,7 @@ jobs:
   source:
     if: github.ref == 'refs/heads/chatgpt/1261-release-validation-20261030'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     permissions:
       contents: write
     outputs:
@@ -23,40 +23,39 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Record current-session denial tests without changing application code
+      - name: Expand checked licensing integration and record exact source
         id: record
         env:
           EXPECTED_HEAD: ${{ github.sha }}
           SOURCE_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: '1'
         run: |
-          python3 - <<'PY'
-          import base64,os,subprocess
+          python3 tools/integration/licensing_workspace_apply.py
+          python3 tools/build.py --refresh
+          php tests/licensing_workspace_contract.php > /tmp/licensing-workspace-contract.json
+          python3 - <<'PYCODE'
+          import base64,json,os,subprocess
           from pathlib import Path
           branch='refs/heads/chatgpt/1261-release-validation-20261030'
-          path='tests/license_financing_native_cases.php'
-          before=subprocess.check_output(['git','hash-object',path],text=True).strip()
-          if before=='965bda125e37594665130b9f593606dd29086dad':
-              subprocess.run(['git','apply','--check','tools/integration/finance_current_session_tests.patch'],check=True)
-              subprocess.run(['git','apply','tools/integration/finance_current_session_tests.patch'],check=True)
-          elif 'rechecks current owner role' not in Path(path).read_text():
-              raise SystemExit('Unrecognized financing fixture revision')
-          subprocess.run(['php','-l',path],check=True)
+          receipt=json.loads(Path('docs/LICENSING_WORKSPACE_SOURCE.json').read_text())
+          allowed={x['path'] for x in receipt['files']}|{'site/install/inventory.generated.php','docs/LICENSING_WORKSPACE_SOURCE.json'}
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          untracked=set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          if (changed|untracked)-allowed:raise SystemExit('Unexpected assembly modifications: '+str((changed|untracked)-allowed))
           subprocess.run(['git','diff','--check'],check=True)
-          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
-          if changed and changed!=[path]:raise SystemExit('Unexpected source modification')
           remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
-          if remote!=os.environ['EXPECTED_HEAD']:raise SystemExit('Validation branch moved')
-          if changed:
+          if remote!=os.environ['EXPECTED_HEAD']:raise SystemExit('Validation branch moved; no overwrite')
+          if changed or untracked:
               subprocess.run(['git','config','user.name','CajunWebPro validation builder'],check=True)
               subprocess.run(['git','config','user.email','validation-builder@users.noreply.github.com'],check=True)
-              subprocess.run(['git','add','--',path],check=True)
-              subprocess.run(['git','commit','-m','test(finance): assert revoked owner authority instead of repeated passwords'],check=True)
+              subprocess.run(['git','add','--',*sorted(changed|untracked)],check=True)
+              subprocess.run(['git','commit','-m','fix(licensing): connect owner navigation and authenticated software portal'],check=True)
               auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
               env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
               subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
           sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('source_sha='+sha+'\n')
-          PY
+          PYCODE
       - name: Export exact committed source for offline review
         run: |
           set -euo pipefail
@@ -125,6 +124,7 @@ jobs:
           assert r['passed'] is True and len(r['checks'])>=60
           assert all(c['passed'] is True for c in r['checks'])
           assert Path('qa/release-finance/stderr.log').read_text()==''
+          assert len(r['expected_diagnostics'])==2 and all(d['expected'] is True for d in r['expected_diagnostics'])
           print('Verified financial SQL assertions:',len(r['checks']))
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -134,5 +134,67 @@ jobs:
           path: |
             qa/release-finance-native-results.json
             qa/release-finance/
+          if-no-files-found: error
+          retention-days: 14
+
+  licensing-workspace:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.source_sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.source_sha }}
+          persist-credentials: false
+      - name: Prepare isolated licensing SQL and ZIP runtime
+        run: |
+          docker build -f tests/licensing-workspace/Dockerfile -t cwp-licensing-workspace .
+          docker run --rm --network host cwp-licensing-workspace php -r '
+          for($i=0;$i<90;$i++){try{new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","cwp_test","local-ci-only");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p qa/licensing-workspace
+          php tests/licensing_workspace_contract.php > qa/licensing-workspace/source-contract.json
+      - name: Prepare installed browser
+        run: |
+          python3 -m venv .licensing-venv
+          .licensing-venv/bin/pip install playwright
+          .licensing-venv/bin/python -m playwright install --with-deps chromium
+      - name: Issue validate suspend resume and download through real owner and client routes
+        run: .licensing-venv/bin/python tests/licensing_workspace_browser.py
+      - name: Require nonempty exact-source licensing evidence
+        run: |
+          python3 - <<'PYCODE'
+          import json,os
+          r=json.load(open('qa/licensing-workspace/results.json'))
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA']
+          assert r['passed'] is True and len(r['checks'])>=35
+          assert all(c['passed'] is True for c in r['checks'])
+          print('Verified installed licensing assertions:',len(r['checks']))
+          PYCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: licensing-workspace-${{ matrix.database }}-${{ needs.source.outputs.source_sha }}
+          path: qa/licensing-workspace/
           if-no-files-found: error
           retention-days: 14
