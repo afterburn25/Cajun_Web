@@ -16,7 +16,7 @@ if(($_POST['action']??'')==='provider_settings_save'&&($_POST['profile_id']??'')
 <?php
 $connectionSaved=$record && !empty($record['has_credentials']);
 $connectionEnabled=$connectionSaved && (int)$record['enabled']===1;
-$inventoryPrepared=$record && provider_inventory_ready();
+$inventoryPrepared=provider_inventory_ready();
 ?>
 <ol>
 <li><strong>Save your 20i General API key.</strong> <?=$connectionSaved?'A key is saved. Replace it only if it has changed.':'Enter the key in the connection form below.'?> The key is kept in protected private storage and is never displayed again.</li>
