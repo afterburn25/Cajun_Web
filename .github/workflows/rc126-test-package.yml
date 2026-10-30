@@ -19,24 +19,42 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Assemble reviewed admin changes without rewriting originals
+      - name: Import bounded reviewed admin files without merging security history
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "RC integration builder"
           git config user.email "rc-builder@users.noreply.github.com"
-          for branch in chatgpt/20i-catalog-import-no-repassword-20261029 chatgpt/owner-all-client-portal-review-20261029 chatgpt/20i-connection-guided-ui-20261029; do
+          # Preserve the base candidate's payment workflows, security tests,
+          # acceptance contracts and historical release handoff unchanged.
+          # Only the explicitly reviewed admin/product/support files are ported.
+          import_files() {
+            branch="$1"
+            shift
             git fetch --no-tags origin "refs/heads/$branch:refs/remotes/origin/$branch"
-            if git merge --no-ff --no-commit "refs/remotes/origin/$branch"; then
-              git commit -m "Integrate $branch into disposable release candidate"
-            else
-              conflicts="$(git diff --name-only --diff-filter=U)"
-              test "$conflicts" = "site/install/inventory.generated.php" || { echo "Unexpected conflicting files: $conflicts"; exit 1; }
-              git checkout --ours -- site/install/inventory.generated.php
-              git add site/install/inventory.generated.php
-              git commit -m "Integrate $branch, regenerate installer inventory next"
+            git restore --source="refs/remotes/origin/$branch" --worktree -- "$@"
+            git add -- "$@"
+            if ! git diff --cached --quiet; then
+              git commit -m "Port reviewed files from $branch into disposable RC"
             fi
-          done
+          }
+          import_files chatgpt/20i-catalog-import-no-repassword-20261029 \
+            site/admin/controllers/catalog.php \
+            site/admin/views/catalog_import.php \
+            site/app/providers/catalog_import.php \
+            site/database/migrations/provider_catalog_import_migrate.php
+          import_files chatgpt/owner-all-client-portal-review-20261029 \
+            site/admin/controllers/support.php \
+            site/app/support/sessions.php \
+            site/database/migrations/support_migrate.php \
+            site/portal/controllers/router.php \
+            site/portal/views/auth.php
+          import_files chatgpt/20i-connection-guided-ui-20261029 \
+            site/admin/views/providers.php \
+            site/assets/css/admin.css
+          # Installer inventory is generated from the combined source below.
+          # Fail instead of resolving any remaining unrelated conflict.
+          test -z "$(git diff --name-only --diff-filter=U)"
       - name: Set up PHP and Node
         shell: bash
         run: |
