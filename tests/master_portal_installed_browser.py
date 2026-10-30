@@ -74,7 +74,7 @@ try:
   toggle.click();page.wait_for_function(opened,timeout=10000)
   check('Mobile navigation opens through its real toggle',page.evaluate(opened))
   page.keyboard.press('Escape');page.wait_for_function(closed,timeout=10000)
-  check('Escape closes mobile navigation and restores toggle focus',page.evaluate(closed)&&False if False else page.evaluate(closed) and toggle.evaluate('(el)=>document.activeElement===el'))
+  check('Escape closes mobile navigation and restores toggle focus',page.evaluate(closed) and toggle.evaluate('(el)=>document.activeElement===el'))
   toggle.click();page.wait_for_function(opened,timeout=10000)
   page.get_by_role('button',name='Close administration navigation',exact=True).click();page.wait_for_function(closed,timeout=10000)
   check('Mobile close button restores unobstructed workspace',page.evaluate(closed))
