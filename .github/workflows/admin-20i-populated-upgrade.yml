@@ -1,0 +1,99 @@
+name: Populated 1.25 and exact RC owner upgrade (isolated only)
+on:
+  push:
+    branches: [chatgpt/admin-20i-integration-20261030]
+    paths:
+      - '.github/workflows/admin-20i-populated-upgrade.yml'
+      - 'tests/admin_20i_populated_upgrade.py'
+      - 'tests/admin_20i_upgrade_probe.php'
+      - 'tools/update/**'
+      - 'site/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: admin-20i-populated-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  upgrade:
+    if: github.ref == 'refs/heads/chatgpt/admin-20i-integration-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_IMAGE: cwp-upgrade-php:8.4
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Build real UPDATE from exact clean recorded source
+        run: python3 tools/build.py --commit "$CWP_SOURCE_SHA"
+      - name: Materialize exact baseline bytes without live access
+        run: |
+          python3 tools/integration/rc126_baseline.py --snapshot test-runtime/rc126-original
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,urllib.request
+          path=Path('test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip')
+          if path.exists(): raise SystemExit('Refuse to replace prior baseline')
+          url='https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'
+          with urllib.request.urlopen(url,timeout=90) as response:
+              data=response.read(128*1024*1024+1)
+          if len(data)>128*1024*1024: raise SystemExit('Baseline exceeds size limit')
+          if hashlib.sha256(data).hexdigest()!='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39': raise SystemExit('Published baseline digest mismatch')
+          path.write_bytes(data)
+          PY
+      - name: Build isolated installer runtime and test dependencies
+        run: |
+          docker build -t "$CWP_TEST_IMAGE" - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libpng-dev && docker-php-ext-install pdo_mysql gd && rm -rf /var/lib/apt/lists/*
+          WORKDIR /workspace
+          DOCKER
+          python3 -m venv "$RUNNER_TEMP/upgrade-venv"
+          "$RUNNER_TEMP/upgrade-venv/bin/pip" install requests beautifulsoup4
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","cwp_test","local-ci-only");echo "Isolated SQL ready\n";exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Install populate upgrade retain and recover through actual owner HTTP
+        run: |
+          "$RUNNER_TEMP/upgrade-venv/bin/python" tests/admin_20i_populated_upgrade.py
+      - name: Require completed nonempty four-scope evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          r=json.load(open('qa/admin-20i-populated/results.json'))
+          assert r['source_sha']==__import__('os').environ['CWP_SOURCE_SHA']
+          assert r['passed'] is True and len(r['scopes'])==4 and len(r['checks'])>=60
+          assert all(c['passed'] is True for c in r['checks'])
+          assert {s['scope'] for s in r['scopes']}=={'125-root','125-subfolder','126-root','126-subfolder'}
+          print('Populated HTTP upgrade scopes verified:',len(r['checks']))
+          PY
+      - name: Preserve hashed retention evidence and failures (not private files)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: populated-owner-upgrade-${{ matrix.database }}-${{ github.sha }}
+          path: qa/admin-20i-populated/
+          if-no-files-found: warn
+          retention-days: 14
