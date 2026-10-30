@@ -26,7 +26,7 @@ def run(name,args,report=None,scope='portable PHP; synthetic inputs, no SQL/prov
     if not ok:info['error']=doc.get('failure',doc.get('error',r.stderr[-2000:]))
     if doc:(E/(name+'.json')).write_text(json.dumps(doc,indent=2)+'\n')
     results.append(info);print(json.dumps(info),flush=True)
-for t in ['admin_session_no_reentry','provider_workspace_policy']:
+for t in ['admin_session_no_reentry','provider_workspace_policy','owner_update_session_policy']:
     run(t,['php','tests/'+t+'.php'])
 portable=['provider_package_types','provider_catalog_import','hosting_catalog_document','hosting_checkout_document','hosting_catalog_plan_setup_document','hosting_catalog_variants_document','hosting_catalog_billing','hosting_catalog_comparison','hosting_catalog_login','hosting_checkout_views','hosting_catalog_plan_setup_views','hosting_catalog_variants_contract','hosting_checkout_purchases_guards']
 file_reports={'hosting_catalog_document','hosting_checkout_document','hosting_catalog_plan_setup_document'}

@@ -13,12 +13,21 @@ for key in ['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER',
 base=['docker','run','--rm','--network','host','--user',str(os.getuid())+':'+str(os.getgid()),'-v',str(ROOT)+':/workspace','-w','/workspace',*envargs]
 results=[]
 for suite,flag in suites:
+ report=ROOT/'qa'/(suite.replace('_','-')+'-results.json')
+ if report.exists():raise SystemExit('Refuse stale native report: '+str(report))
  name='cwp-fixture-'+suite.replace('_','-')
  command=base+['--name',name]+(['-e',flag+'=1'] if flag else [])+[image,'php','tests/'+suite+'.php']
  try:
   with (OUT/(suite+'.stdout')).open('w') as out,(OUT/(suite+'.stderr')).open('w') as err:
    run=subprocess.run(command,cwd=ROOT,stdout=out,stderr=err,timeout=1200)
-  result={'suite':suite,'passed':run.returncode==0,'exit_code':run.returncode}
+  report_error=None;facts={}
+  try:
+   facts=json.loads(report.read_text());checks=facts.get('checks')
+   valid=(facts.get('passed') is True and isinstance(checks,list) and len(checks)>0 and all(isinstance(c,dict) and c.get('passed') is True and isinstance(c.get('name'),str) for c in checks))
+   if not valid:report_error='Native report is failed, empty or malformed'
+  except (OSError,ValueError):report_error='Expected native report is missing or invalid'
+  result={'suite':suite,'passed':run.returncode==0 and report_error is None,'exit_code':run.returncode,'report':str(report.relative_to(ROOT)),'checks':len(facts.get('checks',[])) if isinstance(facts.get('checks'),list) else 0}
+  if report_error:result['report_error']=report_error
  except subprocess.TimeoutExpired:
   subprocess.run(['docker','rm','-f',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
   result={'suite':suite,'passed':False,'error':'Fixture exceeded its 1200-second bound'}
