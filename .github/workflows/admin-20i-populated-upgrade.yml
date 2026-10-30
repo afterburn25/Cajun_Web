@@ -1,19 +1,22 @@
 name: Populated 1.25 and exact RC owner upgrade (isolated only)
 on:
-  push:
-    branches: [chatgpt/admin-20i-integration-20261030]
-    paths:
-      - '.github/workflows/admin-20i-populated-upgrade.yml'
-      - 'tests/admin_20i_populated_upgrade.py'
-      - 'tests/admin_20i_upgrade_probe.php'
-      - 'tools/update/**'
-      - 'site/**'
+  workflow_call:
+    inputs:
+      source_sha:
+        description: Exact recorded source produced by the integration assembly
+        type: string
+        required: true
   workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact fully assembled commit; leave empty for selected branch head
+        type: string
+        required: false
 permissions:
   contents: read
 concurrency:
-  group: admin-20i-populated-${{ github.ref }}
-  cancel-in-progress: true
+  group: admin-20i-populated-${{ github.ref }}-${{ inputs.source_sha || github.sha }}
+  cancel-in-progress: false
 jobs:
   upgrade:
     if: github.ref == 'refs/heads/chatgpt/admin-20i-integration-20261030'
@@ -39,12 +42,12 @@ jobs:
       CWP_TEST_PORT: '33306'
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
-      CWP_SOURCE_SHA: ${{ github.sha }}
+      CWP_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ inputs.source_sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Build real UPDATE from exact clean recorded source
@@ -93,7 +96,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: populated-owner-upgrade-${{ matrix.database }}-${{ github.sha }}
+          name: populated-owner-upgrade-${{ matrix.database }}-${{ inputs.source_sha || github.sha }}
           path: qa/admin-20i-populated/
           if-no-files-found: warn
           retention-days: 14

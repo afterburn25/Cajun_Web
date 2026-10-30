@@ -222,8 +222,15 @@ jobs:
           path: qa/admin-20i-upgrade/
           if-no-files-found: error
           retention-days: 14
+  populated-upgrade:
+    needs: assemble
+    uses: ./.github/workflows/admin-20i-populated-upgrade.yml
+    with:
+      source_sha: ${{ needs.assemble.outputs.source_sha }}
+    permissions:
+      contents: read
   checkpoint:
-    needs: [assemble, portable, native, master-portal, upgrade-files]
+    needs: [assemble, portable, native, master-portal, upgrade-files, populated-upgrade]
     runs-on: ubuntu-24.04
     steps:
       - name: State exactly what passed and what remains
@@ -231,7 +238,7 @@ jobs:
           {
             echo '## Integrated source checkpoint'
             echo 'Source: `${{ needs.assemble.outputs.source_sha }}`'
-            echo 'The focused portable, four SQL runtime combinations, installed browser, master portal and exact-RC file upgrade/recovery jobs passed.'
+            echo 'The focused portable, four SQL runtime combinations, installed browser, master portal, exact-RC file recovery and populated upgrade jobs passed.'
             echo 'NOT a production release: expanded financial-state upgrades, full historical-suite contract reconciliation and independent security review remain required.'
             echo 'No live provider calls, charges, deployments or customer data changes were performed.'
           } >> "$GITHUB_STEP_SUMMARY"
