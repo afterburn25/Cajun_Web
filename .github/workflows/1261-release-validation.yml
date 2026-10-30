@@ -13,17 +13,53 @@ jobs:
     if: github.ref == 'refs/heads/chatgpt/1261-release-validation-20261030'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.record.outputs.source_sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
           persist-credentials: false
-      - name: Export exact committed source for offline review
+      - name: Record current-session denial tests without changing application code
+        id: record
         env:
-          CWP_SOURCE_SHA: ${{ github.sha }}
+          EXPECTED_HEAD: ${{ github.sha }}
+          SOURCE_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64,os,subprocess
+          from pathlib import Path
+          branch='refs/heads/chatgpt/1261-release-validation-20261030'
+          path='tests/license_financing_native_cases.php'
+          before=subprocess.check_output(['git','hash-object',path],text=True).strip()
+          if before=='965bda125e37594665130b9f593606dd29086dad':
+              subprocess.run(['git','apply','--check','tools/integration/finance_current_session_tests.patch'],check=True)
+              subprocess.run(['git','apply','tools/integration/finance_current_session_tests.patch'],check=True)
+          elif 'rechecks current owner role' not in Path(path).read_text():
+              raise SystemExit('Unrecognized financing fixture revision')
+          subprocess.run(['php','-l',path],check=True)
+          subprocess.run(['git','diff','--check'],check=True)
+          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          if changed and changed!=[path]:raise SystemExit('Unexpected source modification')
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=os.environ['EXPECTED_HEAD']:raise SystemExit('Validation branch moved')
+          if changed:
+              subprocess.run(['git','config','user.name','CajunWebPro validation builder'],check=True)
+              subprocess.run(['git','config','user.email','validation-builder@users.noreply.github.com'],check=True)
+              subprocess.run(['git','add','--',path],check=True)
+              subprocess.run(['git','commit','-m','test(finance): assert revoked owner authority instead of repeated passwords'],check=True)
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('source_sha='+sha+'\n')
+          PY
+      - name: Export exact committed source for offline review
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CWP_SOURCE_SHA"
           test -z "$(git status --porcelain)"
           mkdir -p qa/release-validation-source
           git archive --format=tar HEAD | gzip -n > qa/release-validation-source/source.tar.gz
@@ -32,7 +68,71 @@ jobs:
           sha256sum qa/release-validation-source/source.tar.gz > qa/release-validation-source/SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: release-validation-source-${{ github.sha }}
+          name: release-validation-source-${{ steps.record.outputs.source_sha }}
           path: qa/release-validation-source/
           if-no-files-found: error
           retention-days: 7
+  finance-native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_RECURRING_TEST_PREFIX: rbill_rel_
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.source_sha }}
+          persist-credentials: false
+      - name: Prepare isolated PDO runtime
+        run: |
+          docker build --build-arg PHP_VERSION=8.4 -f tests/invitations/Dockerfile -t cwp-release-finance .
+          docker run --rm --network host cwp-release-finance php -r '
+          for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Exercise full financing native cases and populated preparation
+        run: |
+          mkdir -p qa/release-finance
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            -e CWP_RECURRING_TEST_PREFIX -e CWP_SOURCE_SHA cwp-release-finance \
+            php tests/release_finance_native.php > qa/release-finance/stdout.log 2> qa/release-finance/stderr.log
+      - name: Require genuine nonempty SQL evidence
+        run: |
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('qa/release-finance-native-results.json').read_text())
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA']
+          assert r['passed'] is True and len(r['checks'])>=60
+          assert all(c['passed'] is True for c in r['checks'])
+          assert Path('qa/release-finance/stderr.log').read_text()==''
+          print('Verified financial SQL assertions:',len(r['checks']))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: release-finance-${{ matrix.database }}-${{ needs.source.outputs.source_sha }}
+          path: |
+            qa/release-finance-native-results.json
+            qa/release-finance/
+          if-no-files-found: error
+          retention-days: 14
