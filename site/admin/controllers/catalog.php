@@ -12,15 +12,15 @@ function catalog_admin_action(string $action,array $user): never {
         provider_catalog_import_owner();
         if($action==='catalog_import_prepare'){
             if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current backup.');
-            provider_catalog_import_prepare(posted('owner_password',1000));flash('Observed hosting type imports enabled. Existing catalog products are unchanged.');redirect(admin_url('catalog'));
+            provider_catalog_import_prepare();flash('Observed hosting type imports enabled. Existing catalog products are unchanged.');redirect(admin_url('catalog'));
         }
         if($action==='catalog_import_create'){
             if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm creation of this local draft.');
-            $id=provider_catalog_import_create(posted('preview_hash',64),posted('type_ref',18),posted('sku',60),posted('term',10),posted('owner_password',1000));
+            $id=provider_catalog_import_create(posted('preview_hash',64),posted('type_ref',18),posted('sku',60),posted('term',10));
             flash('Observed hosting type saved as a local draft, or its existing draft retained. Review its price, terms and image. No product was published or ordered.');redirect(admin_url('catalog',['id'=>$id]));
         }
         if($action==='catalog_import_image'){
-            $id=gint($_POST,'id',1,9999999);provider_catalog_import_image($id,gint($_POST,'revision',1,9999999),gint($_POST,'image_revision',0,9999999),posted('remove_image',1)==='1',posted('owner_password',1000));flash('Draft product image saved. Publication has not changed.');redirect(admin_url('catalog',['id'=>$id]));
+            $id=gint($_POST,'id',1,9999999);provider_catalog_import_image($id,gint($_POST,'revision',1,9999999),gint($_POST,'image_revision',0,9999999),posted('remove_image',1)==='1');flash('Draft product image saved. Publication has not changed.');redirect(admin_url('catalog',['id'=>$id]));
         }
         throw new InvalidArgumentException('Unknown catalog import action.');
     }

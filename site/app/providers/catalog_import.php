@@ -7,10 +7,12 @@ require_once __DIR__.'/catalog_import_document.php';
 require_once __DIR__.'/catalog_import_storage.php';
 require_once CWP_CODE_ROOT.'/database/migrations/provider_catalog_import_migrate.php';
 
-function provider_catalog_import_owner(#[\SensitiveParameter] ?string $password=null): array {
+function provider_catalog_import_owner(): array {
+    // Importing saved 20i hosting types is a local draft/catalog action.
+    // Enforce fresh owner, catalog, support-session and auth-version authority,
+    // but do not demand the already authenticated owner's password again.
     $actor=provider_settings_manager(false);
     catalog_require();
-    if($password!==null&&!password_verify($password,$actor['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
     return $actor;
 }
 function provider_catalog_import_transaction(): void {
@@ -44,10 +46,10 @@ function provider_catalog_import_preview(int $page=1): array {
         return $context+['types'=>$types,'unnamed'=>$document->unnamed,'page'=>$page,'has_more'=>$more];
     }));
 }
-function provider_catalog_import_create(string $expected,string $type,string $sku,string $term,#[\SensitiveParameter] string $password): int {
+function provider_catalog_import_create(string $expected,string $type,string $sku,string $term): int {
     if(!preg_match('/^[a-f0-9]{64}$/D',$expected))throw new InvalidArgumentException('Review the current saved hosting observation first.');
-    return staff_locked(fn()=>staff_transaction(function()use($expected,$type,$sku,$term,$password):int {
-        $actor=provider_catalog_import_owner($password);$context=provider_catalog_import_context();
+    return staff_locked(fn()=>staff_transaction(function()use($expected,$type,$sku,$term):int {
+        $actor=provider_catalog_import_owner();$context=provider_catalog_import_context();
         if(!hash_equals($context['hash'],$expected))throw new RuntimeException('The observed hosting types or your access changed. Review the preview again before importing.');
         $document=$context['document'];$selected=$document->type($type);
         $old=one('SELECT product_id FROM '.table('catalog_provider_imports').' WHERE profile_id=? AND type_ref=?',[$context['profile_id'],$type]);
@@ -62,11 +64,11 @@ function provider_catalog_import_create(string $expected,string $type,string $sk
         return $product;
     }));
 }
-function provider_catalog_import_image(int $product,int $revision,int $imageRevision,bool $remove,#[\SensitiveParameter] string $password): void {
+function provider_catalog_import_image(int $product,int $revision,int $imageRevision,bool $remove): void {
     $uploaded=null;
-    try {staff_locked(function()use($product,$revision,$imageRevision,$remove,$password,&$uploaded):void {
-        staff_transaction(function()use($product,$revision,$imageRevision,$remove,$password,&$uploaded):void {
-            $actor=provider_catalog_import_owner($password);$record=provider_catalog_import_record($product);
+    try {staff_locked(function()use($product,$revision,$imageRevision,$remove,&$uploaded):void {
+        staff_transaction(function()use($product,$revision,$imageRevision,$remove,&$uploaded):void {
+            $actor=provider_catalog_import_owner();$record=provider_catalog_import_record($product);
             $current=one('SELECT revision FROM '.table('catalog_products').' WHERE id=? FOR UPDATE',[$product]);
             if(!$record||!$current||(int)$current['revision']!==$revision||(int)$record['media_revision']!==$imageRevision||$imageRevision>=2147483647)throw new RuntimeException('This product or image changed. Reload before replacing it.');
             if($remove&&isset($_FILES['product_image'])&&($_FILES['product_image']['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE)throw new InvalidArgumentException('Choose either a replacement image or removal.');

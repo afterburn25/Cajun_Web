@@ -54,13 +54,14 @@ def run_browser(env, browser):
 
     response = owner.get(url, timeout=15)
     fields = selected(response, '3')
-    fields.update(sku='HTTP-IMPORT-THREE', term='year', confirm='1', owner_password=password)
+    fields.update(sku='HTTP-IMPORT-THREE', term='year', confirm='1')
+    check('Owner import form no longer asks to re-enter password', 'owner_password' not in fields and 'current owner password' not in response.text.lower())
     before = state()
     response = owner.post(url, data=dict(fields, csrf='invalid'), timeout=25)
     check('Catalog import HTTP rejects invalid CSRF without changing records', response.status_code == 200 and 'session expired' in response.text.lower() and state() == before)
-    response = owner.post(url, data=dict(fields, owner_password='wrong'), timeout=25)
+    response = owner.post(url, data=dict(fields, preview_hash='0' * 64), timeout=25)
     retry = selected(response, '3')
-    check('Catalog import error preserves selected SKU period consent and captured preview', response.status_code == 200 and 'current password is not correct' in response.text and all(retry[k] == fields[k] for k in ('sku', 'term', 'confirm', 'preview_hash')) and retry['owner_password'] == '' and state() == before)
+    check('Stale import preview fails with preserved SKU, period and consent', response.status_code == 200 and 'observed hosting types or your access changed' in response.text and all(retry[k] == fields[k] for k in ('sku', 'term', 'confirm')) and retry['preview_hash'] == '0' * 64 and 'owner_password' not in retry and state() == before)
     response = owner.post(url, data=fields, timeout=25)
     imported, = db('SELECT * FROM pimci_catalog_provider_imports WHERE type_ref=?', ['3'])
     product_id = imported['product_id']
@@ -84,7 +85,7 @@ def run_browser(env, browser):
         return form_data(form_for(owner.get(edit, timeout=15), 'catalog_import_image'))
 
     image = image_fields()
-    image['owner_password'] = password
+    check('Imported draft image form needs no owner password', 'owner_password' not in image)
     pixels = png((30, 80, 120)) + b'PRIVATE_UPLOAD_METADATA_MARKER'
     media_root = root / 'test-runtime/provider-catalog-import-private/media'
     media_before = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in media_root.iterdir() if p.is_file()}
@@ -109,11 +110,11 @@ def run_browser(env, browser):
     original_image = mapping['media_id']
     original_bytes = fetched.content
     capture = image_fields()
-    response = owner.post(edit, data=dict(capture, owner_password=password), files={'product_image': ('replacement.png', png((160, 90, 40)), 'image/png')}, timeout=25)
+    response = owner.post(edit, data=dict(capture), files={'product_image': ('replacement.png', png((160, 90, 40)), 'image/png')}, timeout=25)
     replaced, = db('SELECT * FROM pimci_catalog_provider_imports WHERE product_id=?', [product_id])
     check('Owner replacement selects a new image and retains the original file', response.status_code == 200 and replaced['media_revision'] == 2 and replaced['media_id'] != original_image and owner.get(image_url, timeout=15).content == original_bytes)
     before = state()
-    response = owner.post(edit, data=dict(capture, owner_password=password, remove_image='1'), timeout=25)
+    response = owner.post(edit, data=dict(capture, remove_image='1'), timeout=25)
     check('Captured stale image form cannot remove the replacement', response.status_code == 200 and 'product or image changed' in response.text and state() == before and form_data(form_for(response, 'catalog_import_image'))['image_revision'] == capture['image_revision'])
     edit_fields = form_data(form_for(owner.get(edit, timeout=15), 'catalog_save'))
     response = owner.post(edit, data=dict(edit_fields, family='addon', status='published', amount='10.00', summary='Mislabelled hosting', terms='Manual period'), timeout=25)
