@@ -544,8 +544,8 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <?php else: ?>
 <?php if($lic['is_active']): ?><?php if(!(int)($lic['is_master']??0) && !$isSoftwareEntitlement): ?><form method="post"><?php admin_action('studio_license_bundle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><label>Create bundle<select name="industry" required><option value="">Choose industry…</option><option value="restaurant">Restaurant</option><option value="salon">Salon</option><option value="generic">Generic Business</option></select></label><button class="btn gold">Generate bundle</button></form><?php endif; ?>
 <?php if($financePlan&&$financePlan['paid_off_at']!==null): ?>
-<p class="hint"><strong>Financing permanently paid:</strong> payment status can no longer suspend this license. Owner deactivation, domain binding and commercial-rights restrictions still apply independently.</p>
-<?php endif; ?><form method="post"><?php admin_action('studio_license_deactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Deactivate license</button></form>
+<p class="hint"><strong>Financing permanently paid:</strong> payment status can no longer suspend this license, and owner deactivation is blocked. Domain binding and commercial-rights restrictions remain in effect.</p>
+<?php else: ?><form method="post"><?php admin_action('studio_license_deactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Deactivate license</button></form><?php endif; ?>
 <?php else: ?><form method="post"><?php admin_action('studio_license_reactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Reactivate license</button></form><?php endif; ?>
 <?php endif; ?></section>
 <?php endforeach; ?>

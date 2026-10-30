@@ -427,11 +427,13 @@ rb_ok('Paid-off financing exposes permanent authorization with no payment denial
 license_reactivate($licenseId,1);
 rb_ok('Owner can explicitly reactivate a manually inactive paid-off license',
     (int)license_get($licenseKey)['is_active']===1);
-license_deactivate($licenseId,1);
-rb_ok('Paid-off financing cannot override a later owner deactivation',
-    (int)license_get($licenseKey)['is_active']===0
-    &&license_financing_authorized($licenseId)===true);
-license_reactivate($licenseId,1);
+$paidBefore=license_get($licenseKey);$paidPlanBefore=license_financing_plan($licenseId);
+$paidAuditBefore=rb_count('audit');$paidDeactivateBlocked=false;
+try{license_deactivate($licenseId,1);}catch(RuntimeException $expected){$paidDeactivateBlocked=str_contains($expected->getMessage(),'permanently unlocked');}
+rb_ok('Paid-off license refuses later owner deactivation without changing key state or audit',
+    $paidDeactivateBlocked&&license_get($licenseKey)===$paidBefore
+    &&license_financing_plan($licenseId)===$paidPlanBefore&&rb_count('audit')===$paidAuditBefore
+    &&(int)license_get($licenseKey)['is_active']===1&&license_financing_authorized($licenseId)===true);
 $paidDomainDeactivateBlocked=false;
 try{license_deactivate_domain($licenseId,'finance-native.example',1);}catch(RuntimeException $expected){$paidDomainDeactivateBlocked=true;}
 rb_ok('Paid-off financed license cannot be disabled by removing its active domain',

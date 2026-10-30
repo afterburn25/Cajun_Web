@@ -286,12 +286,15 @@ function license_paid_off_lock(int $licenseId): bool {
 }
 
 /**
- * Deactivate an entire license. Financing payoff removes only payment-based
- * suspension; it never overrides an explicit owner license-control decision.
+ * Deactivate an unpaid or unfinanced license. Completed website financing is
+ * permanently unlocked; neither billing nor a later owner action may disable it.
  */
 function license_deactivate(int $licenseId, int $actor = 0): void {
     license_transaction(function() use ($licenseId, $actor): void {
         license_lock($licenseId);
+        if (license_paid_off_lock($licenseId)) {
+            throw new RuntimeException('This financed license is permanently unlocked after full payoff and cannot be deactivated.');
+        }
         query('UPDATE ' . table('website_licenses') . ' SET is_active = 0, updated_at = ? WHERE id = ?',
             [gmdate('Y-m-d H:i:s'), $licenseId]);
         license_audit($actor, 'deactivate', 'License ' . $licenseId . ' deactivated');

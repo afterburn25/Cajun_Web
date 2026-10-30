@@ -21,7 +21,7 @@ function support_open_form(int $clientId): void {
         $allowed=one('SELECT allowed FROM '.table('support_clients').' WHERE client_id=?',[$clientId]);
         if((int)($allowed['allowed']??0)!==1)return;
     }
-    ?><form method="post" action="<?=esc(admin_url('support'))?>"><?php admin_action('support_start');studio_hidden('client_id',$clientId);?><button class="btn gold"><?=$owner?'Open client portal (owner review)':'Open client portal'?></button></form><?php
+    ?><form method="post" action="<?=esc(admin_url('support'))?>"><?php admin_action('support_start');?><input type="hidden" name="client_id" value="<?=(int)$clientId?>"><button class="btn gold"><?=$owner?'Open client portal (owner review)':'Open client portal'?></button></form><?php
 }
 function support_admin_render(array $user,string $error): never {
     admin_head('Client support','support',$user);

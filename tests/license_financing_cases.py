@@ -397,17 +397,21 @@ def run_browser(env,browser):
                            and form.select_one('[name=action]').get('value')=='studio_domain_deactivate'
                            and form.select_one('[name=license_id]') is not None
                            and form.select_one('[name=license_id]').get('value')==str(license_id))]
-    check('Paid-off owner UI preserves license control while preventing standalone domain removal',
-          len(paid_forms)==1 and not paid_domain_forms
-          and 'payment status can no longer suspend this license' in owner_paid.text.lower())
-    chosen_form(admin,licenses,'studio_license_deactivate','id',license_id,{})
+    check('Paid-off owner UI prevents deactivation and standalone domain removal',
+          not paid_forms and not paid_domain_forms
+          and 'owner deactivation is blocked' in owner_paid.text.lower())
+    paid_before=env['db']('SELECT * FROM ci_website_licenses WHERE id=?',[license_id])
+    payoff_before=env['db']('SELECT * FROM ci_license_financing WHERE license_id=?',[license_id])
+    refused=admin.post(licenses,data={
+        'csrf':soup(owner_paid).select_one('[name=csrf]').get('value'),
+        'action':'studio_license_deactivate','id':str(license_id)},timeout=25)
     owner_disabled=requests.post(validate,json={'license_key':license_key,'domain':domain},timeout=25)
-    check('Owner deactivation remains authoritative after financing payoff',
-          owner_disabled.status_code==200
-          and owner_disabled.json()=={'authorized':False,'error':'License is deactivated'}
-          and env['db']('SELECT is_active FROM ci_website_licenses WHERE id=?',[license_id])==[{'is_active':0}])
-    chosen_form(admin,licenses,'studio_license_reactivate','id',license_id,{})
-    check('Owner reactivation restores the same paid-off license without changing its key',
+    check('Forged owner deactivation request cannot disable a permanently paid license',
+          'permanently unlocked after full payoff' in refused.text
+          and owner_disabled.status_code==200 and owner_disabled.json().get('authorized') is True
+          and env['db']('SELECT * FROM ci_website_licenses WHERE id=?',[license_id])==paid_before
+          and env['db']('SELECT * FROM ci_license_financing WHERE license_id=?',[license_id])==payoff_before)
+    check('Refused owner deactivation preserves the same active paid-off key',
           env['db']('SELECT license_key,is_active FROM ci_website_licenses WHERE id=?',[license_id])
               ==[{'license_key':license_key,'is_active':1}])
 
