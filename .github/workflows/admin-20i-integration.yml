@@ -29,6 +29,8 @@ jobs:
         run: |
           python3 tools/integration/admin_20i_assemble.py
           python3 tools/integration/rc126_baseline.py --record
+          python3 tools/integration/master_portal_wiring.py
+          python3 tools/build.py --refresh
       - name: Record the expanded source on the integration branch only
         id: commit
         env:
@@ -73,7 +75,9 @@ jobs:
           python3 tools/build.py --refresh
           git diff --exit-code
       - name: Run focused session, hosting, licensing and finance regressions
-        run: python3 tools/integration/portable_checks.py --root . --out qa/admin-20i-portable
+        run: |
+          python3 tools/integration/portable_checks.py --root . --out qa/admin-20i-portable
+          php tests/master_portal_policy.php
       - name: Upload source-bound portable evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -140,6 +144,59 @@ jobs:
           path: qa/
           if-no-files-found: error
           retention-days: 14
+  master-portal:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_IMAGE: cwp-integration-php:8.4
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.source_sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source_sha }}
+          persist-credentials: false
+      - name: Prepare isolated SQL and PHP
+        run: |
+          docker build --build-arg PHP_VERSION=8.4 -f tests/invitations/Dockerfile -t "$CWP_TEST_IMAGE" .
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","cwp_test","local-ci-only");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Exercise master portal SQL authorization and client isolation
+        run: python3 tools/integration/master_portal_checks.py
+      - name: Prepare browser
+        run: |
+          python3 -m venv .master-venv
+          .master-venv/bin/pip install playwright
+          .master-venv/bin/python -m playwright install --with-deps chromium
+      - name: Sign in select client return and reject privilege confusion
+        run: .master-venv/bin/python tests/master_portal_installed_browser.py
+      - name: Preserve source-bound portal evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: master-portal-${{ matrix.database }}-${{ needs.assemble.outputs.source_sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
   upgrade-files:
     needs: assemble
     runs-on: ubuntu-24.04
@@ -166,7 +223,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   checkpoint:
-    needs: [assemble, portable, native, upgrade-files]
+    needs: [assemble, portable, native, master-portal, upgrade-files]
     runs-on: ubuntu-24.04
     steps:
       - name: State exactly what passed and what remains
@@ -174,7 +231,7 @@ jobs:
           {
             echo '## Integrated source checkpoint'
             echo 'Source: `${{ needs.assemble.outputs.source_sha }}`'
-            echo 'The focused portable, four SQL runtime combinations, installed browser and exact-RC file upgrade/recovery jobs passed.'
-            echo 'NOT a production release: populated upgrades from the exact installed 1.26 RC and published 1.25, full historical-suite contract reconciliation and independent security review remain required.'
+            echo 'The focused portable, four SQL runtime combinations, installed browser, master portal and exact-RC file upgrade/recovery jobs passed.'
+            echo 'NOT a production release: expanded financial-state upgrades, full historical-suite contract reconciliation and independent security review remain required.'
             echo 'No live provider calls, charges, deployments or customer data changes were performed.'
           } >> "$GITHUB_STEP_SUMMARY"
