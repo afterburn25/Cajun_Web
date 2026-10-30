@@ -30,6 +30,7 @@ jobs:
           python3 tools/integration/admin_20i_assemble.py
           python3 tools/integration/rc126_baseline.py --record
           python3 tools/integration/master_portal_wiring.py
+          python3 tools/integration/admin_release_fixes.py
           python3 tools/build.py --refresh
       - name: Record the expanded source on the integration branch only
         id: commit
