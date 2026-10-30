@@ -10,6 +10,8 @@ if($c['db']['name']!=='cwp_test'||$c['db']['host']!=='127.0.0.1'||!preg_match('/
 if(!str_starts_with($c['site_url'],'http://127.0.0.1:8093'))exit(2);
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8093','SCRIPT_NAME'=>'/admin/index.php','REQUEST_METHOD'=>'GET'];
 $_SERVER['DOCUMENT_ROOT']=$root;start_session();require_once $root.'/app/staff/accounts.php';
+// Match the original admin application's workspace/catalog dependency loading.
+require_once $root.'/app/clients/workspace.php';
 $owner=one('SELECT * FROM '.table('users').' WHERE id=1');
 if(!$owner||$owner['email']!=='organized@example.invalid')throw new RuntimeException('Disposable owner identity missing');
 $_SESSION=['uid'=>1,'auth_version'=>$owner['auth_version'],'login_at'=>time(),'last_activity'=>time()];
