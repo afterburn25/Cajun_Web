@@ -42,11 +42,14 @@ jobs:
         run: |
           php -v
           node -v
+          python3 -V
       - name: Refresh generated installer inventory
         run: |
           python3 tools/build.py --refresh
-          git add site/install/inventory.generated.php
-          if ! git diff --cached --quiet; then git commit -m "Refresh integrated installer inventory"; fi
+          git add -u -- site/ foundation/
+          if ! git diff --cached --quiet; then git commit -m "Refresh integrated generated site sources"; fi
+          git status --short
+          test -z "$(git status --porcelain --untracked-files=all)" || { echo 'Unclean refreshed source tree'; exit 1; }
       - name: Build from exact clean candidate commit
         shell: bash
         run: |
