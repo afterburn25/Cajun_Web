@@ -76,7 +76,7 @@ try:
    submit(page,'studio_license_create',values,issue)
   rows={x['license_type']:x for x in state()['licenses']}
   check('All four license types are persisted by real admin forms',set(rows)=={'standard','trial','temporary','master'} and state()['license_count']==4)
-  page.goto(licenses);check('License register displays issued software keys',all(x['license_key'] in page.content() for x in rows.values()))
+  page.goto(licenses);check('License register displays all four masked software key identities',all(x['license_key'][:8] in page.content() and x['license_key'] not in page.content() for x in rows.values()))
   submit(page,'software_asset_publish',{'sku':sku,'version':'1.0.0','title':'Synthetic release download','private_path':'/workspace/test-runtime/licensing-private/release.zip','customer_visible':True})
   asset=state()['assets'][0];check('Real publication records verified immutable ZIP checksum',asset['sha256']==archive_sha and asset['is_published']==1)
   page.screenshot(path=str(OUT/'licensing-admin.png'),full_page=True)
@@ -119,7 +119,13 @@ try:
   check('License setup did not activate card payments',state()['software_mode']=='disabled')
   check('No third-party browser requests or JS errors',external==[] and errors==[])
   browser.close()
-except Exception as e:checks.append({'name':type(e).__name__+': '+str(e),'passed':False})
+except Exception as e:
+ checks.append({'name':type(e).__name__+': '+str(e),'passed':False})
+ for label in ['page','cp']:
+  try:
+   candidate=locals().get(label)
+   if candidate is not None and not candidate.is_closed():candidate.screenshot(path=str(OUT/('failure-'+label+'.png')),full_page=True,animations='disabled')
+  except Exception:pass
 finally:
  logs=subprocess.run(['docker','logs',server],capture_output=True,text=True);text=logs.stdout+logs.stderr;(OUT/'server.log').write_text(text)
  subprocess.run(['docker','rm','-f',server],capture_output=True)
