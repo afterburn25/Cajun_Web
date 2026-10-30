@@ -157,7 +157,11 @@ def main():
                           assert_no_error(response) and 'Signed in as' in response.text and 'name="owner_password"' not in response.text)
                     target, data = fields(response, 'apply')
                     response = owner.post(target, data={**data, 'csrf': 'invalid', 'backup_confirm': '1'}, timeout=120)
-                    check(label + ' invalid CSRF refuses updater without changing retained SQL', response.status_code == 403 and same_retained(before, probe(installed, 'snapshot'), allow_settings_additions=False))
+                    denied = probe(installed, 'snapshot')
+                    check(label + ' invalid CSRF refuses updater without changing retained SQL',
+                          response.status_code == 200 and 'Your session expired. Refresh the page and try again.' in response.text
+                          and '<h2>Complete</h2>' not in response.text and denied['version'] == initial
+                          and same_retained(before, denied, allow_settings_additions=False))
                     response = submit(owner, updater, 'apply')
                     check(label + ' backup confirmation remains required', 'Confirm a recoverable backup' in response.text and probe(installed, 'snapshot')['version'] == initial)
                     response = submit(owner, updater, 'inspect', {'backup_confirm': '1'})
