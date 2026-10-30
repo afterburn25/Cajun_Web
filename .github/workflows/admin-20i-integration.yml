@@ -88,7 +88,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   native:
-    needs: assemble
+    needs: [assemble, portable, master-portal]
     runs-on: ubuntu-24.04
     timeout-minutes: 65
     strategy:
@@ -224,7 +224,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   populated-upgrade:
-    needs: assemble
+    needs: [assemble, portable, master-portal]
     uses: ./.github/workflows/admin-20i-populated-upgrade.yml
     with:
       source_sha: ${{ needs.assemble.outputs.source_sha }}
