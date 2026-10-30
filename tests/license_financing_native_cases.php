@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||!defined('CWP_BOOT')||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 
+require_once __DIR__.'/release_expected_fault.php';
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
@@ -179,7 +180,7 @@ $downOffer=license_finance_offer_create(
 );
 save_setting('payments_schema_version','');
 rb_client();
-$downSigned=license_finance_offer_sign((string)$downOffer['id'],1,'Recurring client 1',true,true);
+$downSigned=rb_expected_report(fn()=>license_finance_offer_sign((string)$downOffer['id'],1,'Recurring client 1',true,true),'financing_offers.php');
 rb_ok('Down-payment agreement stays signed when payment-link storage is temporarily unavailable',
     ($downSigned['offer']['status']??'')==='signed'
     &&($downSigned['payment']??null)===null
@@ -262,7 +263,7 @@ $recoverOffer=license_finance_offer_create(
 );
 save_setting('invoice_ledger_schema_version','');
 rb_client();
-$recoverSigned=license_finance_offer_sign((string)$recoverOffer['id'],1,'Recurring client 1',true,true);
+$recoverSigned=rb_expected_report(fn()=>license_finance_offer_sign((string)$recoverOffer['id'],1,'Recurring client 1',true,true),'payments.php');
 rb_staff();
 $recoverRow=license_finance_offer_row((string)$recoverOffer['id']);
 rb_ok('Committed financing signature survives later payment infrastructure failure',

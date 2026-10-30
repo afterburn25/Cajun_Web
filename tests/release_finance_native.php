@@ -30,6 +30,6 @@ try {
     }
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e.PHP_EOL);}
 $passed=count($checks)>0&&!in_array(false,array_column($checks,'passed'),true);
-file_put_contents(__DIR__.'/../qa/release-finance-native-results.json',json_encode(['passed'=>$passed,'source_sha'=>getenv('CWP_SOURCE_SHA'),'php'=>PHP_VERSION,'scope'=>'Actual SQL and complete existing finance native cases; synthetic gateway facts; no provider/merchant network calls. Repeated schema preparation is not an installed file upgrade.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+file_put_contents(__DIR__.'/../qa/release-finance-native-results.json',json_encode(['passed'=>$passed,'source_sha'=>getenv('CWP_SOURCE_SHA'),'php'=>PHP_VERSION,'scope'=>'Actual SQL and complete existing finance native cases; synthetic gateway facts; no provider/merchant network calls. Repeated schema preparation is not an installed file upgrade.','checks'=>$checks,'expected_diagnostics'=>$GLOBALS['rb_expected_diagnostics']??[]],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 echo json_encode(['passed'=>$passed,'checks'=>count($checks)]).PHP_EOL;
 exit($passed?0:1);

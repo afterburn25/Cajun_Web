@@ -66,7 +66,7 @@ function master_portal_render(array $actor): never {
     if ($error!==null) {echo '<div class="notice error" role="alert">'.esc($error).'</div>';admin_foot();exit;}
     ?><p class="admin-intro">One administrator sign-in. Choose a client workspace below, or manage services and billing from the shortcuts. Client review keeps your staff identity and audit trail; it never signs in as the customer.</p>
     <section class="workspace-card"><h2>Your administration workspace</h2><div class="button-row"><?php
-    foreach (['studio-clients'=>'Manage clients','catalog'=>'Products & prices','hosting-offers'=>'Hosting offers','hosting-purchases'=>'Hosting purchases','recurring-billing'=>'Recurring billing','payments'=>'Payment requests','provider-settings'=>'20i workspace','support'=>'Client access settings'] as $view=>$label) {
+    foreach (['studio-clients'=>'Manage clients','catalog'=>'Products & prices','studio-licenses'=>'Licenses & software','hosting-offers'=>'Hosting offers','hosting-purchases'=>'Hosting purchases','recurring-billing'=>'Recurring billing','payments'=>'Payment requests','provider-settings'=>'20i workspace','support'=>'Client access settings'] as $view=>$label) {
         $permission=staff_view_permission($view);
         if ($permission!==null&&staff_can($permission,$actor)) echo '<a class="btn outline small" href="'.esc(admin_url($view)).'">'.esc($label).'</a>';
     }

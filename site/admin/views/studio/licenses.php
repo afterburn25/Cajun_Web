@@ -11,9 +11,10 @@ $financingReady=license_financing_feature_state()===true;
 $financeOffersReady=license_finance_offers_ready();
 $financeGatewayReady=license_finance_gateway_ready();
 $ready = license_ready() && license_invoice_cutover_ready();
+require CWP_CODE_ROOT.'/admin/views/studio/license_overview.php';
 ?>
 <?php if(!$ready): ?>
-<section class="workspace-card"><h2>Prepare website licensing</h2><p>Prepare or upgrade licensing storage and preserve the boundary for older invoice reviews. Existing licenses, domains and bundles are retained. No external service is contacted.</p>
+<section class="workspace-card" id="licensing-setup"><h2>Prepare website licensing</h2><p>Prepare or upgrade licensing storage and preserve the boundary for older invoice reviews. Existing licenses, domains and bundles are retained. No external service is contacted.</p>
 <form method="post"><?php admin_action('studio_license_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Prepare licensing storage</button></form></section>
 <?php return; endif; ?>
 <?php
@@ -63,8 +64,9 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 ?>
 
 <?php if(!$softwareReady): ?>
-<section class="workspace-card"><h2>Enable advanced software licensing</h2><p>Add trial, temporary, master and paid software tracking, customer purchases, payment checks and private downloads. Existing licenses and invoices are retained.</p><form method="post"><?php admin_action('software_commerce_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare software commerce</button></form></section>
+<section class="workspace-card" id="software-setup"><h2>Enable advanced software licensing</h2><p>Add trial, temporary, master and paid software tracking, customer purchases, payment checks and private downloads. Existing licenses and invoices are retained.</p><?php if(catalog_ready()): ?><form method="post"><?php admin_action('software_commerce_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare software commerce</button></form><?php else: ?><p>Prepare the service catalog first, then return here to enable software licensing.</p><a class="btn gold" href="<?=esc(admin_url('catalog'))?>">Prepare service catalog</a><?php endif; ?></section>
 <?php endif; ?>
+<div id="licensing-financing"></div>
 <?php if(!$financingReady): ?>
 <section class="workspace-card"><h2>Enable financed-site licensing</h2><p>Prepare website-license payment enforcement. Only issued unpaid installments beyond the agreed grace period may suspend a site; full payoff permanently removes the payment lock.</p>
 <?php if(recurring_billing_ready()): ?><form method="post"><?php admin_action('studio_license_financing_setup');admin_input('current_password','Owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare financed-site licensing</button></form><?php else: ?><p class="notice info">Prepare recurring billing and the invoice ledger first.</p><?php endif; ?></section>
@@ -145,7 +147,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 </section>
 <?php endif; ?>
 <?php if($softwareReady): ?>
-<section class="workspace-card">
+<section class="workspace-card" id="software-payments">
 <h2>Authorize.net payment configuration</h2>
 <p>Checkout uses the existing encrypted payment credentials. Sandbox transactions can be tested but will not unlock real licenses. Production charging remains disabled until reviewed and approved.</p>
 <p>Current checkout mode: <strong><?=esc((string)setting('software_gateway_mode','disabled'))?></strong></p>
@@ -184,7 +186,7 @@ Both must be present before production settings can be read; this page still off
 <button class="btn gold">Save domain policy</button></form>
 </section>
 <?php if(staff_can('staff.manage')): ?>
-<section class="workspace-card">
+<section class="workspace-card" id="software-policies">
 <h2>Software entitlement policies</h2>
 <p>Configure rights that are snapshotted when a new software license is issued. Changing a policy does not rewrite existing customer entitlements. Update months 0 means lifetime updates while the license itself remains valid.</p>
 <?php if(!$softwarePolicyProducts): ?><p class="muted">Create a software catalog product before defining entitlement policy.</p><?php endif; ?>
@@ -211,7 +213,7 @@ Both must be present before production settings can be read; this page still off
 <?php endif; ?>
 <?php endif; ?>
 <div class="workspace-grid">
-<section class="workspace-card">
+<section class="workspace-card" id="license-create">
 <h2>Create a license</h2>
 <form method="post">
 <?php admin_action('studio_license_create'); ?>
@@ -275,7 +277,7 @@ Both must be present before production settings can be read; this page still off
 </div>
 
 <?php if($softwareReady && staff_can('staff.manage')): ?>
-<section class="workspace-card"><h2>Publish a software download</h2>
+<section class="workspace-card" id="software-downloads"><h2>Publish a software download</h2>
 <p>Place a versioned release ZIP in the server's private storage first; never expose a direct public file path or ZIP-inside-ZIP. This form validates the archive and records its SHA-256.</p>
 <form method="post"><?php admin_action('software_asset_publish'); ?>
 <?php admin_input('sku','Registered software product SKU','','text','required maxlength="60"'); ?>
@@ -404,7 +406,7 @@ $subscriptionChargeCandidates=all('SELECT s.invoice_id,s.gateway_subscription_id
 <?php endforeach; ?>
 </section>
 <?php endif; ?>
-<h2>License register</h2>
+<h2 id="license-register">License register</h2>
 <div class="workspace-grid">
 <?php foreach($licenses as $lic): ?>
 <?php
