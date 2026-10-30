@@ -1,0 +1,38 @@
+name: 1.26.1 isolated release validation
+on:
+  push:
+    branches: [chatgpt/1261-release-validation-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cwp1261-validation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/1261-release-validation-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export exact committed source for offline review
+        env:
+          CWP_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CWP_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p qa/release-validation-source
+          git archive --format=tar HEAD | gzip -n > qa/release-validation-source/source.tar.gz
+          git ls-files --stage > qa/release-validation-source/git-files.txt
+          git rev-parse HEAD > qa/release-validation-source/source-sha.txt
+          sha256sum qa/release-validation-source/source.tar.gz > qa/release-validation-source/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-validation-source-${{ github.sha }}
+          path: qa/release-validation-source/
+          if-no-files-found: error
+          retention-days: 7
