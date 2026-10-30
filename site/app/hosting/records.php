@@ -22,7 +22,7 @@ function hosting_records_owner(bool $ready=true):array {
 }
 function hosting_records_password(#[\SensitiveParameter] string $password,bool $ready=true):array {
     $actor=hosting_records_owner($ready);
-    if (!password_verify($password,$actor['password_hash'])) throw new InvalidArgumentException('Your current password is not correct.');
+    if (!admin_session_matches($actor)) throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
     return $actor;
 }
 function hosting_records_id(string $id):void {

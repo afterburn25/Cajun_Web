@@ -10,5 +10,5 @@ if(!$renewalReady): ?><form method="post"><?php admin_action('provider_inventory
 <?php else: ?>
 <?php if(!$renewalHistory): ?><p>No renewal requests on this page.</p><?php endif; ?>
 <?php foreach($renewalHistory as $renewalDoc)domain_renewals_render_history($renewalDoc,true);$renewalPage=max(1,min(10000,(int)($_GET['renewal_page']??1))); ?>
-<nav class="button-row" aria-label="Renewal request pages"><?php if($renewalPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['renewal_page'=>$renewalPage-1]))?>#domain-renewal-requests">Newer requests</a><?php endif;?><?php if(count($renewalHistory)===20&&$renewalPage<10000): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['renewal_page'=>$renewalPage+1]))?>#domain-renewal-requests">Older requests</a><?php endif;?></nav>
+<nav class="button-row" aria-label="Renewal request pages"><?php if($renewalPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['section'=>'domains','renewal_page'=>$renewalPage-1]))?>#domain-renewal-requests">Newer requests</a><?php endif;?><?php if(count($renewalHistory)===20&&$renewalPage<10000): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['section'=>'domains','renewal_page'=>$renewalPage+1]))?>#domain-renewal-requests">Older requests</a><?php endif;?></nav>
 <?php endif;?></section>

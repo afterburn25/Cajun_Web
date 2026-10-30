@@ -29,20 +29,23 @@ if(array_key_exists('forwarding',$_GET)||(is_string($_POST['action']??null)&&str
 if(array_key_exists('domain_renewals',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'domain_renewal_')))header('Cache-Control: no-store, private');
 if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/hosting_catalog.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/hosting_purchases.php';
+if(array_key_exists('hosting_purchases',$_GET))header('Cache-Control: no-store, private');
+if(array_key_exists('hosting',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';
-require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
-require_once CWP_CODE_ROOT.'/portal/views/financing.php';
 if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');
-if(array_key_exists('finance',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'finance_offer_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_search')header('Cache-Control: no-store, private');
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
+if($supportRequested)header('Cache-Control: no-store, private');
 if($supportRequested){
  if($_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??null)==='support_end'){
   try{support_check_csrf($supportId);support_end($supportId);redirect(admin_url('support'));}catch(Throwable){support_unavailable();}
  }
  $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;
 }
+if(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_access();}catch(RuntimeException){fail_page('Sign in as the primary client outside support access to view hosting purchases.',403);}}
 $client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity']))activity_render('client',$error);
@@ -51,11 +54,9 @@ if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
-if(isset($_GET['software'])){
- require CWP_CODE_ROOT.'/portal/views/auth.php'; // unauthenticated storefront buyers sign in on this same target
- require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);
-}
 require CWP_CODE_ROOT.'/portal/views/auth.php';
+if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);
+if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);
@@ -71,7 +72,6 @@ if(array_key_exists('wp_installed',$_GET))provider_wp_installed_client_render($c
 if(array_key_exists('forwarding',$_GET))provider_forwarding_client_render($client,$error);
 if(array_key_exists('cloud_websites',$_GET))provider_cloud_site_requests_client_render($client,$error);
 if(array_key_exists('recurring',$_GET))recurring_billing_portal_render($client,$error);
-if(array_key_exists('finance',$_GET))license_finance_portal_render($client,is_string($_GET['finance']??null)?$_GET['finance']:'',$error);
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET))service_plans_portal_render($client,$error);
 if($jobId){try{$job=studio_job($jobId,(int)$client['id']);}catch(InvalidArgumentException){if(support_current())support_record('portal.view','project',(string)$jobId,'denied');fail_page('Project not found or access denied.',404);}}
 if(support_current())support_record('portal.view',$jobId?'project':'client',(string)($jobId?:$client['id']));

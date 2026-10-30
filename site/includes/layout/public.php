@@ -44,6 +44,7 @@ function site_head(string $title, string $active='home', string $description='')
 <link rel="icon" type="image/png" sizes="32x32" href="<?=esc(asset('favicon.png'))?>">
 <link rel="stylesheet" href="<?=esc(asset('site.css'))?>">
 <link rel="stylesheet" href="<?=esc(asset('premium.css'))?>">
+<?php if (in_array($active,['hosting','shared-hosting'],true)): ?><link rel="stylesheet" href="<?=esc(asset('hosting-comparison.css'))?>"><?php endif; ?>
 <?php if ($active === 'home'): ?><link rel="preload" as="image" href="<?=esc(asset('hero-detail.webp'))?>"><?php endif; ?>
 <link rel="stylesheet" href="<?=esc(asset('growth.css'))?>"><script defer src="<?=esc(asset('growth.js'))?>"></script><script defer src="<?=esc(asset('site.js'))?>"></script><script defer src="<?=esc(asset('activity.js'))?>"></script><link rel="stylesheet" href="<?=esc(asset('mail-notices.css'))?>"><script defer src="<?=esc(asset('mail-notices.js'))?>"></script>
 <script type="application/ld+json" nonce="<?=nonce()?>"><?=json_encode(['@context'=>'https://schema.org','@type'=>'Organization','name'=>$brand,'url'=>site_url(),'logo'=>asset('logo.png')],JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?></script>

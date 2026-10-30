@@ -56,7 +56,7 @@ require_once CWP_CODE_ROOT.'/database/migrations/staff_migrate.php';
 function staff_owner(#[\SensitiveParameter] string $password): array {
     if(!staff_ready())throw new RuntimeException('Enable administrator access first.');
     $actor=staff_require('staff.manage');
-    if(!password_verify($password,$actor['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
+    if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
     return $actor;
 }
 function staff_revoke_credentials(int $id): void {
@@ -107,7 +107,7 @@ function staff_account_save(int $id,string $name,string $email,#[\SensitiveParam
     if(trim($name)===''||strlen($name)>120||strlen($email)>190||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('A name and valid email are required.');
     if($password!=='')validate_admin_password($password);
     return staff_locked(fn()=>staff_transaction(function() use($id,$name,$email,$current,$password): string {
-        $u=require_admin();if((int)$u['id']!==$id||!password_verify($current,$u['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
+        $u=require_admin();if((int)$u['id']!==$id||!admin_session_matches($u))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
         $version=bin2hex(random_bytes(16));staff_revoke_credentials($id);query('UPDATE '.table('users').' SET name=?,email=?,password_hash=?,auth_version=? WHERE id=?',[trim($name),strtolower($email),$password===''?$u['password_hash']:password_hash($password,PASSWORD_DEFAULT),$version,$id]);log_event('account.update');return $version;
     }));
 }
@@ -130,6 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if(in_array($view,['hosting-offers','hosting-purchases'],true))return 'staff.manage';
     if($view==='registration-drafts')return 'staff.manage';
     if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
     if($view==='studio-licenses')return 'staff.manage';
@@ -153,6 +154,7 @@ function staff_view_permission(string $view): ?string {
 }
 function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'provider_reset_template_'))return 'staff.manage';
+    if(str_starts_with($action,'hosting_catalog_'))return 'staff.manage';
     if(str_starts_with($action,'registration_drafts_'))return 'staff.manage';
     if(str_starts_with($action,'software_'))return 'staff.manage';
     if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';

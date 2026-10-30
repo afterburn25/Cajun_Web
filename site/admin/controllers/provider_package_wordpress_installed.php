@@ -10,5 +10,5 @@ function provider_wp_installed_admin_action(string $action):never {
         $r=provider_wp_installed_refresh($link,$binding,$password);flash($r['state']==='complete'?'The reported WordPress installation indication was saved.':'The WordPress installation indication refresh did not provide a usable observation.',$r['state']==='complete'?'success':'error');
     }elseif($action==='provider_inventory_wp_installed_share'){
         $sharing=posted('sharing',7);if(!in_array($sharing,['enable','disable'],true))throw new InvalidArgumentException('Choose whether to share the WordPress installation observation.');provider_wp_installed_share(posted('link_id',32),posted('expected_id',32),posted('event_id',32),$sharing==='enable',posted('anchor_id',32),$password);flash($sharing==='enable'?'The saved WordPress installation indication is shared with the assigned client.':'WordPress installation indication sharing is off.');
-    }else throw new InvalidArgumentException('Unknown WordPress installation observation action.');redirect(admin_url('provider-settings').'#package-wordpress-installed');
+    }else throw new InvalidArgumentException('Unknown WordPress installation observation action.');redirect(admin_url('provider-settings',['section'=>'website']).'#package-wordpress-installed');
 }

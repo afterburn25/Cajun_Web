@@ -67,7 +67,7 @@ $searchAvailable=is_array($searchResult)&&$searchAttempt['state']==='checked'&&(
 <?php if(is_array($searchResult)&&is_array($searchResult['suggestions']??null)&&$searchResult['suggestions']): ?><p>Suggestions requiring a separate check:</p><ul><?php foreach($searchResult['suggestions'] as $suggestion):if(!is_string($suggestion))continue; ?><li><?=esc($suggestion)?></li><?php endforeach; ?></ul><?php endif; ?>
 </article>
 <?php endforeach; ?>
-<nav aria-label="Domain search history pages"><?php if($searchPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['domain_search_page'=>$searchPage-1]))?>">Newer searches</a><?php endif; ?><?php if(count($searchHistory)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['domain_search_page'=>$searchPage+1]))?>">Older searches</a><?php endif; ?></nav></div>
+<nav aria-label="Domain search history pages"><?php if($searchPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['section'=>'domains','domain_search_page'=>$searchPage-1]))?>">Newer searches</a><?php endif; ?><?php if(count($searchHistory)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['section'=>'domains','domain_search_page'=>$searchPage+1]))?>">Older searches</a><?php endif; ?></nav></div>
 <?php endif; ?>
 </section>
 

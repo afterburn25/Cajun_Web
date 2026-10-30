@@ -44,11 +44,11 @@ function provider_cloud_site_requests_form(string $action,array $fields):void {
     foreach($fields as $name=>$value)provider_cloud_site_requests_hidden($name,$value);
 }
 function provider_cloud_site_requests_password():void {
-    echo '<label>Your current owner password<input type="password" name="current_password" value="" autocomplete="current-password" required></label>';
+    echo '';
 }
 function provider_cloud_site_requests_confirmation_url(string $grantId):string {
     if(!preg_match('/\A[a-f0-9]{32}\z/D',$grantId))throw new InvalidArgumentException('Reload the accepted website request.');
-    return admin_url('provider-settings',['cloud_website_confirm'=>$grantId]).'#cloud-website-confirmation';
+    return admin_url('provider-settings',['section'=>'website','cloud_website_confirm'=>$grantId]).'#cloud-website-confirmation';
 }
 function provider_cloud_site_requests_form_id(array $retry,string $key):?string {
     if(!array_key_exists($key,$retry))return bin2hex(random_bytes(16));
@@ -122,7 +122,7 @@ function provider_cloud_site_requests_render(array $options,array $history,bool 
     if(!$history)echo '<p>No requests on this page.</p>';
     foreach($history as $row)provider_cloud_site_requests_render_history($row,$owner,$retry);
     echo '</div><nav class="button-row" aria-label="Website request pages">';
-    $url=static fn(int $p):string=>$owner?admin_url('provider-settings',['cloud_websites_page'=>$p]).'#cloud-website-requests':studio_url(['cloud_websites'=>1,'cloud_websites_page'=>$p]);
+    $url=static fn(int $p):string=>$owner?admin_url('provider-settings',['section'=>'website','cloud_websites_page'=>$p]).'#cloud-website-requests':studio_url(['cloud_websites'=>1,'cloud_websites_page'=>$p]);
     if($page>1)echo '<a class="btn outline" href="'.esc($url($page-1)).'">Newer requests</a>';
     if(count($history)===20&&$page<9999)echo '<a class="btn outline" href="'.esc($url($page+1)).'">Older requests</a>';
     echo '</nav><a class="btn outline" href="'.esc($url($page)).'">Reload request forms</a></section>';

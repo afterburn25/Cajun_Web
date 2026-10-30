@@ -13,6 +13,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'registration_drafts_'))registration_drafts_admin_action($action);
     if(str_starts_with($action,'recurring_')){recurring_ui_action($action);return;}
     if(str_starts_with($action,'service_plans_')){service_plans_admin_action($action);return;}
+    if(str_starts_with($action,'hosting_catalog_')){hosting_catalog_admin_action($action);return;}
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);
     if(str_starts_with($action,'provider_settings_')){provider_settings_admin_action($action);return;}

@@ -10,8 +10,8 @@ use InvalidArgumentException;
 /**
  * The read-only inventory capability register. Every entry documents
  * exactly what the sources establish: the endpoint exists in 20i's
- * documentation and (for packages.list only) an authenticated read
- * succeeded under issue #65. No entry claims production-verified
+ * documentation and which bounded authenticated reads were observed.
+ * No entry claims production-verified
  * behavior; the register deliberately excludes every documented
  * mutating, credential-returning or access-changing endpoint.
  */
@@ -33,8 +33,8 @@ final class InventoryRegister
             ),
             InventoryRead::PACKAGE_TYPES => new InventoryCapability(
                 InventoryRead::PACKAGE_TYPES, 'GET', '/reseller/{resellerId}/packageTypes',
-                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
-                'Available package types/configurations; the owner reference defers the full response schema elsewhere.'
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_AUTHENTICATED_READ, true,
+                'Original bounded schema read 39090394774 observed integer id and string label. Only those fields are projected; account coverage, pricing, platform mapping and images remain unknown. The complete two-operation diagnostic failed separately on the cloud response.'
             ),
             InventoryRead::ACCOUNT_BALANCE => new InventoryCapability(
                 InventoryRead::ACCOUNT_BALANCE, 'GET', '/reseller/{resellerId}/accountBalance',
@@ -107,7 +107,7 @@ final class InventoryRegister
     /** Operations with implemented allowlist projections of documented metadata. */
     public static function projectable(string $operation): bool
     {
-        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST], true);
+        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST, InventoryRead::PACKAGE_TYPES], true);
     }
 
     /** Operations whose list responses support the identity-only projection. */

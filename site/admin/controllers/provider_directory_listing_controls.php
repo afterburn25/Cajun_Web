@@ -12,5 +12,5 @@ function provider_directory_indexing_controls_admin_action(string $action):never
         if(posted('reviewed',1)!=='1')throw new InvalidArgumentException('Review restoring this request’s saved history first.');
         provider_directory_indexing_controls_recover_finished(posted('request_id',32),posted('ledger_sha256',64),$password);flash('Saved request history restored. The result is not yet confirmed; check the current setting separately.');
     }elseif($action==='provider_directory_indexing_control_verify'){$view=provider_directory_indexing_controls_verify(posted('request_id',32),$password);flash(provider_directory_indexing_controls_label($view['status']),$view['status']==='observed'?'success':'error');}
-    else throw new InvalidArgumentException('Unknown Directory listing change action.');redirect(admin_url('provider-settings').'#directory-listing-changes');
+    else throw new InvalidArgumentException('Unknown Directory listing change action.');redirect(admin_url('provider-settings',['section'=>'website']).'#directory-listing-changes');
 }

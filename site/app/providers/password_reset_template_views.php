@@ -36,7 +36,7 @@ function provider_password_reset_template_admin_render():void {
             echo '<article class="workspace-card" data-reset-template-review><h3>Review your replacement</h3><div class="workspace-grid">';provider_password_reset_template_source('Current saved template',$review['before_content']);provider_password_reset_template_source('Proposed template',$review['content']);echo '</div><form method="post">';admin_action('provider_reset_template_change');
             foreach(['request_id','profile_id','revision','observation_id','review_sha256'] as $key)provider_password_reset_template_hidden($key,(string)$review[$key]);
             provider_password_reset_template_hidden('content_base64',base64_encode($review['content']));
-            echo '<label class="check"><input type="checkbox" name="reviewed" value="1" required> I reviewed the full replacement and approve saving it to this 20i account.</label>';provider_password_reset_template_password();echo '<button class="btn gold">Save reviewed template to 20i</button><a class="btn outline" href="'.esc(admin_url('provider-settings')).'#password-reset-template">Return to editing</a></form></article>';
+            echo '<label class="check"><input type="checkbox" name="reviewed" value="1" required> I reviewed the full replacement and approve saving it to this 20i account.</label>';provider_password_reset_template_password();echo '<button class="btn gold">Save reviewed template to 20i</button><a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'advanced'])).'#password-reset-template">Return to editing</a></form></article>';
         }elseif(is_array($screen['review']??null)){
             $edit=$screen['review'];$content=$retainedDraft??(string)($screen['latest']['content']??'');
             if(($_POST['action']??'')==='provider_reset_template_review'&&is_string($_POST['content']??null)&&strlen($_POST['content'])<=65536)$content=$_POST['content'];
@@ -66,7 +66,7 @@ function provider_password_reset_template_admin_render():void {
             else echo '<p>The saved history remains available. An uncertain request is never automatically sent again.</p>';
             echo '</article>';
         }
-        echo '<nav class="button-row" aria-label="Template change history">';if($page>1)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['reset_template_page'=>$page-1])).'#password-reset-template">Previous requests</a>';if($screen['has_more'])echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['reset_template_page'=>$page+1])).'#password-reset-template">More requests</a>';echo '</nav>';
+        echo '<nav class="button-row" aria-label="Template change history">';if($page>1)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'advanced','reset_template_page'=>$page-1])).'#password-reset-template">Previous requests</a>';if($screen['has_more'])echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'advanced','reset_template_page'=>$page+1])).'#password-reset-template">More requests</a>';echo '</nav>';
     }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<p class="notice error">'.esc($e->getMessage()).'</p>';}
     echo '</details>';
 }
