@@ -80,9 +80,13 @@
         [
           "170251c615423372589b70c57833f8af8ce111f14e99761dd50963c142b18838",
           "69f29a5b6b0fa8b575c7282025c568fdce1646da57ea99390b2a88fc6223d205"
+        ],
+        [
+          "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
+          "e8f3c2d7902c6f9c1b265e8d346fae09557518d6cbcefaa4e9bb75e4e32dbfdc"
         ]
       ],
-      "after_sha256": "ceadd8712e199177e5d9d65570daefa8890098955e3b3a24e3216a389ff4b337"
+      "after_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558"
     },
     "tests/combined_repair_provenance.py": {
       "before_sha256": null,

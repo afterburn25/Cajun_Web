@@ -1,0 +1,9 @@
+{
+  "predecessor_commit": "d3bb0c231a511f945d8455aaf08e630f76cab096",
+  "files": {
+    "tools/acceptance-contract.json": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
+    "docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json": "53d948c0393f238783f8d577f8b2397c260ea52b4e3ab7fa1b30d974e0c030c0",
+    "docs/COMBINED_NATIVE_ROUND2.json": "5b4d21030c05d22950b064b5d12e035bfe4775a1dd58132f83f83d59069aa48b"
+  },
+  "scope": "Current cloud renderer identity plus reversible predecessor receipts. All six renderer predecessors verified; no application, native case, permission or assertion removed."
+}
