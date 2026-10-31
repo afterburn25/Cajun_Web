@@ -6,6 +6,7 @@ define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/mail/submissions.php';
+require_once __DIR__.'/current_owner_authority.php';
 use CajunWebPro\Foundation\MailCompose\DraftContent;
 use CajunWebPro\Foundation\MailSubmission\{PreparedMime,SubmissionSnapshot,TransportOutcome};
 $private=__DIR__.'/../test-runtime/submission-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
@@ -55,7 +56,7 @@ try {
     su_actor(1);mail_accounts_migrate($password);mail_drafts_migrate($password);$a=su_account('Submission A');$b=su_account('Submission B');foreach([1,2,3,4,5] as $actor){su_grant($a,$actor);su_grant($b,$actor);}
     $mailKey=file_get_contents($private.'/mail-master.key');file_put_contents($private.'/provider-master.key','SYNTHETIC_EXISTING_PROVIDER_KEY');$providerKey=file_get_contents($private.'/provider-master.key');
     $settings=all('SELECT * FROM '.table('settings').' ORDER BY name');
-    su_deny('Submission setup requires correct current owner password',fn()=>mail_submissions_migrate('wrong'));
+    su_deny('Submission setup rejects revoked owner authority without changing stored state',fn()=>cwp_test_owner_revoked(fn()=>mail_submissions_migrate($password)));
     su_actor(5);su_deny('Administrator permissions do not confer owner setup',fn()=>mail_submissions_migrate($password));su_actor(1);
     su_deny('Unprepared storage cannot be used',fn()=>mail_submissions_actor());
     save_setting('mail_submissions_schema_version','future');su_deny('Future submission storage version cannot be downgraded',fn()=>mail_submissions_migrate($password));query('DELETE FROM '.table('settings').' WHERE name=?',['mail_submissions_schema_version']);

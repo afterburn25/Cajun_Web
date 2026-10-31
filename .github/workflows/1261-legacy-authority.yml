@@ -35,6 +35,9 @@ jobs:
           import base64,json,os,subprocess
           def git(*args):return subprocess.check_output(['git',*args],text=True).strip()
           rows=json.load(open('tools/integration/legacy_authority_recipe.json'))
+          mail=json.load(open('tools/integration/legacy_mail_submission.json'))
+          if len(mail)!=1 or mail[0]['path']!='tests/mail_submissions_native.php':raise SystemExit('Unexpected mail test scope')
+          rows+=mail
           changed=set(git('diff','--name-only').splitlines())
           if changed-{x['path'] for x in rows} or git('ls-files','--others','--exclude-standard'):raise SystemExit('Unexpected assembly change')
           subprocess.run(['git','diff','--exit-code','5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d','--','site','foundation','tools/structure','tools/build.py','VERSION','START-HERE.txt'],check=True)
