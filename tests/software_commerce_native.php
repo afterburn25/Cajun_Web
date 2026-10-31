@@ -2,6 +2,7 @@
 /** Native software checks, disposable MariaDB only; no gateway contact. */
 declare(strict_types=1);
 require_once __DIR__.'/current_owner_authority.php';
+require_once __DIR__.'/software_expected_mail.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -411,7 +412,7 @@ try{
         &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$reconcileInvoice])===['status'=>'issued']
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$reconcileInvoice])->fetchColumn()===0,
         'Rejected owner proof leaves uncertain charge, invoice and entitlements unchanged');
-    swok(software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,$password)==='paid',
+    swok(cwp_test_disabled_software_notice($reconcileInvoice,fn()=>software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,$password))==='paid',
         'Owner reconciliation finalizes an independently verified uncertain charge');
     $reconciledCharge=one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$reconcileInvoice]);
     $reconciledAttempt=one('SELECT status,transaction_id FROM '.table('software_charge_attempts').' WHERE request_key=?',[$reconcileRequest]);
@@ -451,7 +452,7 @@ try{
         &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$webhookInvoice])===['status'=>'issued']
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookInvoice])->fetchColumn()===0,
         'One-time capture webhook retains transaction identity without paying or fulfilling the invoice');
-    swok(software_charge_reconcile_finalize($webhookInvoice,'650000003',$webhookCents,$password)==='paid',
+    swok(cwp_test_disabled_software_notice($webhookInvoice,fn()=>software_charge_reconcile_finalize($webhookInvoice,'650000003',$webhookCents,$password))==='paid',
         'Owner can finalize the exact one-time webhook review after independent reconciliation');
     swok(software_charge_capture_webhook_review($webhookDetails,'650000003')==='one_time_replay'
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$webhookInvoice])->fetchColumn()===1,
@@ -672,7 +673,7 @@ try{
     swok((int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$invoice])->fetchColumn()===2,'Paid two-unit invoice mints exactly two keys after retry');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice])->fetchColumn()===1,'One delivery email outbox entry');
     save_setting('email_mode','disabled');
-    swok(!software_delivery_notice_send($invoice),
+    swok(!cwp_test_disabled_software_notice($invoice,fn()=>software_delivery_notice_send($invoice)),
         'Disabled mail transport leaves software delivery notice retryable');
     $notice=one('SELECT status,attempts,sent_at,last_error FROM '.table('software_notices').' WHERE invoice_id=?',[$invoice]);
     swok(($notice['status']??'')==='pending'&&(int)($notice['attempts']??0)===1&&($notice['sent_at']??null)===null,
