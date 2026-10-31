@@ -83,6 +83,7 @@ function proposal_revise(string $id,array $data): void {
     staff_locked(function() use($id,$input,$actor): void {
         staff_transaction(function() use($id,$input,$actor): void {
             $row=proposal_row($id);$p=proposal_model($row);$version=(int)$row['current_version']+1;
+            if(one('SELECT id FROM '.table('proposal_versions').' WHERE proposal_id=? AND content_hash=?',[$id,proposal_content_hash($input)]))throw new InvalidArgumentException('Revise the deliverables, exclusions, schedule or milestones before adding a new proposal version.');
             $vid=bin2hex(random_bytes(16));
             $pv=ProposalVersion::create($vid,$version,$input['deliverables'],$input['exclusions'],$input['schedule_notes'],$input['milestones'],'staff:'.$actor['id'],gmdate('Y-m-d\TH:i:s\Z'));
             $draft=$p->state()===Proposal::DRAFT;

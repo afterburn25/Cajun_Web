@@ -1,11 +1,15 @@
 {
   "base_commit": "97c8b71c1ac807ee9e71b62331f00d78386c0ac2",
   "files": {
-    "site/app/marketing/proposals.php": "b9cc44793c8b1010e2139a9a3f3d4a65a0943cfd772b6a72fdf8dad3e39614a5",
+    "site/app/marketing/proposals.php": "4bd4a317b75bb0efa0d9a5f81046961ccf96fa8de843c34b2d6d6ffdaa508790",
     "site/includes/layout/proposals.php": "a999eddef77aaf574bb3a4d1513b97716798827ad8e71220bcfcc044fe1f3e23",
     "site/portal/controllers/actions.php": "c0c355e88465d6819a8f16f05ace512b82a28aef0a2c298ac87b3d3200a3dc3e",
-    "tests/proposals_native.php": "cfcaa9034269468b1aa0541d11cc1b0ea961283f110e79f6482426bd9e97c451",
-    "tests/proposals_cases.py": "5cb22428086f5878e4ac4fe28c7f0151077b2b5a028a2604c66dffc785e2e48e"
+    "tests/proposals_native.php": "d2aba33d044e14b0914f1136f0e3ae191eb0033339ec79d4e834a8e570893bc0",
+    "tests/proposals_cases.py": "5cb22428086f5878e4ac4fe28c7f0151077b2b5a028a2604c66dffc785e2e48e",
+    "site/database/migrations/proposals_migrate.php": "4d83f2178e9f00abe52d774da91ea07ab8aa9193effb851fb6d1461ffd12caec",
+    "site/database/schema/proposals_validate_schema.php": "d6f76819dae41351877992e83defed7b64009278873fa19a3335eda1b5678e8c",
+    "tests/proposals_schema_native_cases.php": "b82ad523ae272b726731c115304cd14e98d692d28bb0d2d64de9e6f885db45af",
+    "tests/proposals_schema_policy.php": "883a36099d913ee5e6227fef6da8f70788b66390e70f8d2b40fb5a1639a5c8f7"
   },
   "scope": "Current exact application and fixture identities. Initial correction receipt retained as history. No native or browser success inferred."
 }
