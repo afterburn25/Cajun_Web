@@ -1,0 +1,26 @@
+name: Software payment reversal contract
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reversal-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: php -l site/app/billing/authorize_net_contract.php
+      - run: php -l site/app/billing/software_payment_review.php
+      - run: php -l site/app/billing/software_subscription_settle.php
+      - run: php -l tests/software_payment_reversal_contract.php
+      - run: php tests/software_payment_reversal_contract.php

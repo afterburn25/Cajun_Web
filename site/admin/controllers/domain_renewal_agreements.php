@@ -4,7 +4,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';
 function domain_renewal_agreements_admin_action(string $action):never {
     provider_settings_manager();service_plans_owner();$password=posted('current_password',200);
-    if($action==='provider_inventory_renewal_agreements_prepare'){domain_renewal_agreements_prepare($password);flash('Renewal agreement history is ready.');redirect(admin_url('provider-settings').'#domain-renewal-requests');}
+    if($action==='provider_inventory_renewal_agreements_prepare'){domain_renewal_agreements_prepare($password);flash('Renewal agreement history is ready.');redirect(admin_url('provider-settings',['section'=>'domains']).'#domain-renewal-requests');}
     if($action!=='provider_inventory_renewal_agreement_bind')throw new InvalidArgumentException('Unknown renewal agreement action.');
     $revision=posted('request_revision',10);if(!preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',$revision)||(int)$revision>4294967295)throw new InvalidArgumentException('Reload the renewal request.');
     $deadline=posted('offer_expires',16);$date=DateTimeImmutable::createFromFormat('!Y-m-d\TH:i',$deadline,new DateTimeZone('UTC'));if(!$date||$date->format('Y-m-d\TH:i')!==$deadline)throw new InvalidArgumentException('Choose a valid acceptance deadline in UTC.');

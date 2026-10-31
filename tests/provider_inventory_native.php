@@ -1,6 +1,8 @@
 <?php
 /** Actual database refresh/link orchestration with synthetic resolver/transport; no provider API. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportException,TransportRequest,TransportResponse};
@@ -58,7 +60,7 @@ try {
     provider_inventory_migrate($password);pi_ok('Inventory storage prepared at v5','5'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')&&pi_count('provider_domain_links')===0&&pi_count('provider_domain_link_events')===0);
     // Populated v1/v2, interrupted migration and legacy suppression run in provider_inventory_upgrade_native.php.
     save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','5');
-    pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'));
+    pi_deny('Revoked owner refuses: Wrong current password prevents DNS and refresh intent',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read')));
     pi_deny('Stale revision prevents DNS and refresh intent',fn()=>pi_refresh($id,null,null,2));
     pi_actor(2);pi_deny('Administrator cannot refresh provider inventory',fn()=>pi_refresh($id));pi_deny('Administrator cannot read inventory',fn()=>provider_inventory_latest($id));pi_actor();
     $_GET['support']='fixture';pi_deny('Client support cannot refresh inventory',fn()=>pi_refresh($id));unset($_GET['support']);
@@ -81,7 +83,7 @@ try {
     $scripted=[new TransportResponse(503,[],'{}')];pi_refresh($id);pi_ok('Unavailable refresh preserves the last good observation',provider_inventory_latest($id)['state']==='unavailable'&&provider_inventory_observation($id)['state']==='partial');pi_cool();
     $observation=provider_inventory_observation($id);
     // Linking: explicit owner approval over the observed identity only.
-    pi_deny('Link without password refused',fn()=>provider_inventory_link($id,101,1,1,'wrong'));
+    pi_deny('Revoked owner refuses: Link without password refused',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_link($id,101,1,1,'wrong')));
     pi_actor(2);pi_deny('Administrator cannot link',fn()=>provider_inventory_link($id,101,1,1,$password));pi_actor();
     pi_deny('Stale revision cannot link',fn()=>provider_inventory_link($id,101,1,2,$password));
     pi_deny('Unobserved package cannot link',fn()=>provider_inventory_link($id,9999,1,1,$password));
@@ -92,12 +94,12 @@ try {
     pi_ok('Other client sees no linked services',provider_inventory_client_services(2)===[]);
     $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];pi_ok('Refresh omitting the linked package completes',pi_refresh($id)==='complete');pi_cool();
     $services=provider_inventory_client_services(1);pi_ok('Linked mapping persists honestly when absent from the last good read',count($services)===1&&!$services[0]['present']&&$services[0]['package']===null&&provider_inventory_links($id)!==[]);
-    $link=provider_inventory_links($id)[0];pi_deny('Unlink requires owner password',fn()=>provider_inventory_unlink($link['id'],'wrong'));
+    $link=provider_inventory_links($id)[0];pi_deny('Revoked owner refuses: Unlink requires owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_unlink($link['id'],'wrong')));
     provider_inventory_unlink($link['id'],$password);pi_ok('Unlink removes mapping and records event',provider_inventory_links($id)===[]&&count(provider_inventory_link_events($id))===2&&provider_inventory_link_events($id)[0]['event']==='unlink');
     pi_ok('Unlinked package absent from client view',provider_inventory_client_services(1)===[]);
     // Domain linking: explicit owner approval of one observed name,
     // independent of which client owns the carrying package.
-    pi_deny('Domain link without password refused',fn()=>provider_inventory_domain_link($id,201,'c.example',2,1,'wrong'));
+    pi_deny('Revoked owner refuses: Domain link without password refused',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_domain_link($id,201,'c.example',2,1,'wrong')));
     pi_actor(2);pi_deny('Administrator cannot link a domain',fn()=>provider_inventory_domain_link($id,201,'c.example',2,1,$password));pi_actor();
     pi_deny('Stale revision cannot link a domain',fn()=>provider_inventory_domain_link($id,201,'c.example',2,2,$password));
     pi_deny('Unobserved domain cannot link',fn()=>provider_inventory_domain_link($id,201,'unseen.example',2,1,$password));
@@ -124,7 +126,7 @@ try {
     $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];pi_refresh($id);pi_cool();
     provider_inventory_domain_relink($dlink['id'],1,$password);
     pi_ok('Domain re-approval rebinds under the current observation',provider_inventory_domain_link_events($id)[0]['event']==='relink'&&provider_inventory_client_domains(2)[0]['present']);
-    pi_deny('Domain unlink requires owner password',fn()=>provider_inventory_domain_unlink($dlink['id'],'wrong'));
+    pi_deny('Revoked owner refuses: Domain unlink requires owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_domain_unlink($dlink['id'],'wrong')));
     provider_inventory_domain_unlink($dlink['id'],$password);
     pi_ok('Domain unlink removes mapping and records event',provider_inventory_domain_links($id)===[]&&provider_inventory_domain_link_events($id)[0]['event']==='unlink'&&provider_inventory_client_domains(2)===[]);
     // Exercise the real hourly quota before moving this isolated fixture to
@@ -173,7 +175,7 @@ try {
     pi_ok('Changed context exposes nothing through the old mapping',count($services)===1&&!$services[0]['present']&&$services[0]['package']===null&&$services[0]['context_changed']===true);
     $link=provider_inventory_links($id)[0];pi_ok('Old mapping remains stored and is marked stale',(int)$link['profile_revision']===4&&(int)$link['current_revision']===5);
     pi_deny('Re-approval requires the exact current revision',fn()=>provider_inventory_relink($link['id'],4,$password));
-    pi_deny('Re-approval requires the owner password',fn()=>provider_inventory_relink($link['id'],5,'wrong'));
+    pi_deny('Revoked owner refuses: Re-approval requires the owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_relink($link['id'],5,'wrong')));
     provider_inventory_relink($link['id'],5,$password);
     $link=provider_inventory_links($id)[0];
     pi_ok('Re-approval rebinds the mapping to the current context',(int)$link['profile_revision']===5&&$link['key_fingerprint']===$observation['key_fingerprint']&&provider_inventory_link_events($id)[0]['event']==='relink');
@@ -211,7 +213,7 @@ try {
     pi_ok('Cloud result audit failure rolls back observations',pi_audit_failure('refresh_finished',fn()=>$cloudRefresh())&&pi_count('provider_observation_cloud')===$before&&provider_inventory_observation($id,InventoryRead::CLOUD_SERVERS_LIST)===$partial);pi_cool();
     $beforeDns=$dnsCalls;$beforeTransport=$transportCalls;$beforeIntent=pi_count('provider_refreshes');
     pi_deny('Unknown reader cannot persist intent or use credentials',fn()=>provider_inventory_refresh($id,6,$password,'pi_resolve','pi_read','cloudservers.delete'));
-    pi_deny('Cloud refresh requires current owner password',fn()=>provider_inventory_refresh($id,6,'wrong','pi_resolve','pi_read',InventoryRead::CLOUD_SERVERS_LIST));
+    pi_deny('Revoked owner refuses: Cloud refresh requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_refresh($id,6,'wrong','pi_resolve','pi_read',InventoryRead::CLOUD_SERVERS_LIST)));
     pi_ok('Refused cloud actions have no provider or storage effect',$dnsCalls===$beforeDns&&$transportCalls===$beforeTransport&&pi_count('provider_refreshes')===$beforeIntent);
     pi_ok('Mislabeled cloud snapshot is refused before persistence',$cloudRefresh(fn()=>InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|wrong-account|cloudservers.list'))==='refused'&&pi_count('provider_observation_cloud')===$before);pi_cool();
     $code=$cloudRefresh(function()use($id){query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');return InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|'.$id.'|cloudservers.list');});

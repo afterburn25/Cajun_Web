@@ -1,6 +1,8 @@
 <?php
 /** Native database and actual PHP forms; all provider traffic is synthetic. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
@@ -84,11 +86,11 @@ try{
 
     provider_registrar_prepare($password);
     reg_ok('Renewal date GET does not create storage',!domain_contracts_ready()&&!array_filter(domain_contracts_tables()));
-    reg_deny('Preparation checks current password',fn()=>domain_contracts_prepare('wrong'));reg_actor(2);reg_deny('Administrator cannot prepare dates',fn()=>domain_contracts_prepare($password));reg_actor();
+    reg_deny('Revoked owner refuses: Preparation checks current password',fn()=>cwp_test_owner_revoked(fn()=>domain_contracts_prepare('wrong')));reg_actor(2);reg_deny('Administrator cannot prepare dates',fn()=>domain_contracts_prepare($password));reg_actor();
     db()->beginTransaction();try{try{domain_contracts_prepare($password);reg_ok('Preparation refuses caller transaction',false);}catch(LogicException){reg_ok('Preparation refuses caller transaction',true);}reg_ok('No DDL inside caller transaction',db()->inTransaction()&&!array_filter(domain_contracts_tables()));}finally{db()->rollBack();}
     reg_ok('Preparation audit failure rolls back markers',reg_fault('prepared',fn()=>domain_contracts_prepare($password))&&!domain_contracts_ready());domain_contracts_prepare($password);$n=reg_count('audit');domain_contracts_prepare($password);reg_ok('Preparation idempotent without provider calls',reg_count('audit')===$n&&$dns===0&&$sent===0);
     $body='[{"id":701,"name":"one.synthetic.invalid"},{"id":702,"name":"two.synthetic.invalid"}]';$read=reg_refresh($id);dc_cooldown();provider_registrar_link($id,701,1,1,$read['id'],$password);provider_registrar_link($id,702,2,1,$read['id'],$password);$link=one('SELECT * FROM '.table('provider_registrar_links').' WHERE client_id=1');$other=one('SELECT * FROM '.table('provider_registrar_links').' WHERE client_id=2');
-    $beforeDns=$dns;$before=reg_count('provider_refreshes');reg_deny('Wrong password refuses before DNS or intent',fn()=>domain_contracts_refresh($link['id'],1,1,$read['id'],'wrong','dc_resolve','dc_read'));reg_actor(2);reg_deny('Non-owner refuses before DNS',fn()=>dc_refresh($link));reg_actor();reg_ok('Denied reads leave DNS and intent unchanged',$dns===$beforeDns&&reg_count('provider_refreshes')===$before);
+    $beforeDns=$dns;$before=reg_count('provider_refreshes');reg_deny('Revoked owner refuses: Wrong password refuses before DNS or intent',fn()=>cwp_test_owner_revoked(fn()=>domain_contracts_refresh($link['id'],1,1,$read['id'],'wrong','dc_resolve','dc_read')));reg_actor(2);reg_deny('Non-owner refuses before DNS',fn()=>dc_refresh($link));reg_actor();reg_ok('Denied reads leave DNS and intent unchanged',$dns===$beforeDns&&reg_count('provider_refreshes')===$before);
     reg_deny('Stale posted account revision refuses before DNS',fn()=>domain_contracts_refresh($link['id'],1,2,$read['id'],$password,'dc_resolve','dc_read'));reg_deny('Stale posted source refuses before DNS',fn()=>domain_contracts_refresh($link['id'],1,1,str_repeat('f',32),$password,'dc_resolve','dc_read'));
     reg_ok('Binding audit interruption rolls back shared intent',reg_fault('bound',fn()=>dc_refresh($link))&&reg_count('provider_refreshes')===$before&&$dns===$beforeDns);
     $first=dc_refresh($link);$row=domain_contracts_read_row($first['id']);reg_ok('Shared receipt binds one complete saved date',$first['state']==='complete'&&$row['date']==='2028-02-29'&&$contractSent===1&&setting('domain_contracts_intent_count')==='1'&&setting('domain_contracts_result_count')==='1');

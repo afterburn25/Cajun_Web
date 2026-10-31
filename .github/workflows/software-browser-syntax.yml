@@ -1,0 +1,40 @@
+name: Software installed-browser test syntax
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/software_commerce_cases.py'
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - 'tests/software_release_125_delta.py'
+      - 'tests/software_commerce_browser_fixture.php'
+      - 'tests/provider_schedule_cases.py'
+      - 'tests/browser_acceptance.py'
+      - 'tests/apache_acceptance.py'
+      - '.github/workflows/software-browser-syntax.yml'
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/software_commerce_cases.py'
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - 'tests/software_release_125_delta.py'
+      - 'tests/software_commerce_browser_fixture.php'
+      - 'tests/provider_schedule_cases.py'
+      - 'tests/browser_acceptance.py'
+      - 'tests/apache_acceptance.py'
+      - '.github/workflows/software-browser-syntax.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m py_compile tests/software_commerce_cases.py tests/software_anet_sandbox_acceptance.py tests/software_release_125_delta.py tests/provider_schedule_cases.py tests/browser_acceptance.py tests/apache_acceptance.py
+      - run: php -l tests/software_commerce_browser_fixture.php

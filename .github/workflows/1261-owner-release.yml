@@ -1,0 +1,120 @@
+name: 1.26.1 owner-reviewed installation packages
+on:
+  push:
+    branches: [chatgpt/1261-owner-release-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: owner-release-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apache-financial-upgrade:
+    if: github.ref == 'refs/heads/chatgpt/1261-owner-release-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ github.sha }}
+      CWP_APACHE_PHP: '8.3'
+      CWP_RECURRING_TEST_PREFIX: rbill_rel_
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify unchanged reviewed application and test source syntax
+        run: |
+          git diff --exit-code c4de9b63e9aae81531794f6bba14570292a8213b HEAD -- site foundation tools/structure
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          ast.parse(Path('tests/owner_release_apache.py').read_text())
+          PY
+          php -l tests/owner_release_finance_probe.php
+      - name: Prepare actual Apache and disposable SQL runtime
+        run: |
+          sudo apt-get -o Acquire::Retries=3 update -qq
+          sudo apt-get -o Acquire::Retries=3 install -y apache2-bin libapache2-mod-php8.3 php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
+          sudo update-alternatives --set php /usr/bin/php8.3
+          test -s /usr/lib/apache2/modules/libphp8.3.so
+          php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          python3 -m venv "$RUNNER_TEMP/owner-venv"
+          "$RUNNER_TEMP/owner-venv/bin/pip" install --disable-pip-version-check requests beautifulsoup4
+      - name: Build actual standalone packages from this clean commit
+        run: |
+          mkdir -p qa/owner-build
+          python3 tools/build.py --commit "$CWP_SOURCE_SHA" > qa/owner-build/build.log 2>&1
+          python3 tests/build_guards.py > qa/owner-build/guards.log 2>&1
+          python3 tools/integration/portable_checks.py --root . --out qa/owner-build/portable
+          php tests/master_portal_policy.php
+          php tests/licensing_workspace_contract.php > qa/owner-build/licensing-contract.json
+          php tests/licensing_action_boundary.php > qa/owner-build/licensing-boundary.json
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Reconstruct the exact deployed RC without touching production
+        run: python3 tools/integration/rc126_baseline.py --snapshot test-runtime/rc126-original
+      - name: Test real Apache installs and populated financial upgrades
+        run: '"$RUNNER_TEMP/owner-venv/bin/python" tests/owner_release_apache.py'
+      - name: Verify full financial lifecycle on the package source
+        run: |
+          mkdir -p qa/release-finance
+          php tests/release_finance_native.php > qa/release-finance/stdout.log 2> qa/release-finance/stderr.log
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('qa/release-finance-native-results.json').read_text())
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA'] and r['passed'] is True
+          assert len(r['checks'])>=108 and all(c['passed'] is True for c in r['checks'])
+          assert Path('qa/release-finance/stderr.log').read_text()==''
+          r=json.loads(Path('qa/owner-release/results.json').read_text())
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA'] and r['passed'] is True
+          assert len(r['scopes'])==4 and all(c['passed'] is True for c in r['checks'])
+          print('Verified Apache and financing source-bound acceptance')
+          PY
+      - name: Preserve acceptance reports including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-release-evidence-${{ matrix.database }}-${{ github.sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve standalone installation archives only after acceptance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-installation-packages-${{ matrix.database }}-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+  verified-packages:
+    needs: apache-financial-upgrade
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          {
+            echo '## Owner-reviewed installable archive checkpoint'
+            echo 'Exact source: `${{ github.sha }}`'
+            echo 'Both database engines passed actual Apache root/subfolder and rewrite on/off upgrades from the exact installed RC, retaining signed active/suspended/paid-off financial records and private files. Fresh COMPLETE installs, public/admin routes, source guards and financial lifecycle also passed.'
+            echo 'Review performed by ChatGPT at the owner request; not an independent third-party audit. The separate combined integration run must also be verified before delivery.'
+            echo 'No deployment, merchant transaction, provider request or production data modification.'
+          } >> "$GITHUB_STEP_SUMMARY"

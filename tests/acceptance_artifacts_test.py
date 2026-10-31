@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import re
+import shlex
 from pathlib import Path
 import shutil
 import subprocess
@@ -167,12 +168,51 @@ def valid_port_context(workflow):
     return True
 
 
+def orchestration_evidence_checks(tmp, ctx):
+    # Execute the workflow's actual reporting command against copied public source,
+    # then exercise the real partition sealer. No application or provider runs.
+    workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
+    commands = re.findall(r'^          (python3 -B tests/browser_suite_orchestration_contract\.py[^\n]*)$', workflow, re.M)
+    check('Exactly one build orchestration report command exists', len(commands) == 1)
+    command = commands[0]
+    shell = shutil.which('bash')
+    check('Bash is available for the actual workflow reporting regression', shell is not None)
+    script = 'python3() { ' + shlex.quote(Path(sys.executable).as_posix()) + ' "$@"; }; set -o pipefail; ' + command
+    for failing in (False, True):
+        root = tmp / ('orchestration-failure' if failing else 'orchestration-success')
+        for name in ('browser_acceptance.py', 'provider_schedule_cases.py', 'browser_suite_orchestration_contract.py'):
+            blob(root / 'tests' / name, (ROOT / 'tests' / name).read_bytes())
+        if failing:
+            with (root / 'tests/provider_schedule_cases.py').open('a') as stream:
+                stream.write('\n# software_commerce_cases must not be owned here\n')
+        before = b'Preserved synthetic build transcript\n'
+        blob(root / 'qa/build-results.txt', before)
+        result = subprocess.run([shell, '-c', script], cwd=root, capture_output=True, timeout=60)
+        check('Workflow preserves orchestration exit status ' + str(failing), (result.returncode != 0) == failing)
+        steps = outcomes('build'); steps['build'] = 'failure' if failing else 'success'
+        out = tmp / ('orchestration-sealed-failure' if failing else 'orchestration-sealed-success')
+        digest = a.seal(root, ctx, out, 'build', steps, '')
+        envelope = a.verify_bundle(out, 'partition', ctx, digest)
+        with zipfile.ZipFile(out / 'partition.zip') as archive:
+            transcript = archive.read('qa/build-results.txt')
+        check('Sealed build retains original transcript and exact guard output ' + str(failing),
+              transcript == before + result.stdout and set(envelope['files']) == {'qa/build-results.txt'})
+        report = json.loads(transcript[len(before):])
+        check('Sealed build truthfully records guard result and step outcome ' + str(failing),
+              report['passed'] is (not failing) and report['count'] == 6 and envelope['steps'] == steps)
+    forbidden = tmp / 'orchestration-forbidden'
+    blob(forbidden / 'qa/browser-suite-orchestration-contract.json', result.stdout)
+    deny('Standalone orchestration report still cannot cross the build boundary',
+         lambda: a.seal(forbidden, ctx, tmp / 'orchestration-forbidden-seal', 'build', outcomes('build'), ''))
+
+
 def run(tmp):
     def remove_partition(path):
         resolved=path.resolve();require_parent=tmp.resolve()
         assert resolved.is_relative_to(require_parent) and resolved.name=='native-browser'
         shutil.rmtree(resolved)
     ctx = context(); source = tmp / 'source'; fixtures(source, ctx)
+    orchestration_evidence_checks(tmp, ctx)
     # Exercise the actual entry points and GitHub output file, including the
     # numeric suffix used by both immutable artifact-manifest outputs.
     cli_root=tmp/'cli-source';fixtures(cli_root,ctx);job_output=tmp/'github-output'
@@ -352,9 +392,33 @@ def run(tmp):
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     from cloud_site_requests_wiring import predecessor_bytes
+    software_apache_appendix="""                software=session.get(url+'/portal/index.php?software=1')
+                check(label+suffix+' anonymous My Software route resolves safely at installed base path',
+                      software.status_code==200 and 'Software & Licenses' not in software.text
+                      and ('Sign in' in software.text or 'Client Portal' in software.text))
+                download=session.get(url+'/api/software-download.php?id=1&license=1')
+                check(label+suffix+' anonymous software download endpoint resolves and denies access',
+                      download.status_code==403)
+                validation=session.post(url+'/api/validate.php',json={'license_key':'short','domain':'example.com'})
+                check(label+suffix+' software validation endpoint resolves with bounded input error',
+                      validation.status_code==400 and validation.json()=={'authorized':False,'error':'Invalid license key format'})
+                webhook=session.get(url+'/api/software-webhook.php')
+                check(label+suffix+' software webhook endpoint resolves and requires POST',
+                      webhook.status_code==405)
+                for internal in ['app/licenses/software_products.php','app/licenses/software_grants.php',
+                                 'app/billing/software_orders.php','database/migrations/software_commerce_migrate.php']:
+                    protected=session.get(url+'/'+internal)
+                    check(label+suffix+' software internal route protected '+internal,
+                          protected.status_code in [403,404] and '<?php' not in protected.text)
+"""
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        if path=='tests/apache_acceptance.py':
+            appendix=software_apache_appendix.encode()
+            check('Software Apache acceptance appendix is exact and additive',
+                  retained.count(appendix)==1)
+            retained=retained.replace(appendix,b'',1)
         check('Original test source retained '+path, hashlib.sha256(retained).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
@@ -369,6 +433,20 @@ def run(tmp):
         for path,expected_hash in ext['source_sha256'].items():
             check('Backup fixture identity '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
         contract={**contract,'native_commands':native_commands}
+    software_native=contract['software_commerce_native_command']
+    software_additions=software_native['additions']
+    software_position=native_commands.index(software_native['additions_after'])+1
+    check('Software commerce native acceptance command is additive and ordered',
+          software_additions==['"$PHP_BINARY" tests/software_commerce_native.php']
+          and native_commands[software_position:software_position+1]==software_additions
+          and native_commands.count(software_additions[0])==1)
+    retained_native=[command for command in native_commands if command not in software_additions]
+    check('Software commerce native acceptance preserves the exact160-command predecessor recipe',
+          len(retained_native)==software_native['predecessor_count']==160
+          and hashlib.sha256(json.dumps(retained_native,separators=(',',':')).encode()).hexdigest()
+              ==software_native['predecessor_sha256'])
+    native_commands=retained_native
+    contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
     native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
     contract={**contract,'native_commands':native_commands}

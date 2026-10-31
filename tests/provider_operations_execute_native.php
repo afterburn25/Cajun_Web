@@ -1,6 +1,8 @@
 <?php
 /** Owner-granted operation execution against real MariaDB + real gateway/ledger; injected transport only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -86,7 +88,7 @@ try {
     foreach($adapter->capabilities() as $capability)pe_ok('Write is not blanket retry-safe '.$capability->operation,!$capability->idempotent);
 
     // ---- authority gates ----
-    pe_deny('Execution requires owner password',fn()=>pe_exec($profile,1,$deadGrant,'k1','wrong'));
+    pe_deny('Revoked owner refuses: Execution requires owner password',fn()=>cwp_test_owner_revoked(fn()=>pe_exec($profile,1,$deadGrant,'k1','wrong')));
     pe_actor(2);pe_deny('Administrator cannot execute',fn()=>pe_exec($profile,1,$deadGrant,'k1',$password));pe_actor();
     pe_deny('Stale profile revision refused before any work',fn()=>pe_exec($profile,9,$deadGrant,'k1',$password));
     pe_deny('Malformed idempotency key refused',fn()=>pe_exec($profile,1,$deadGrant,"bad\nkey",$password));
@@ -265,7 +267,7 @@ try {
     $scripted=[new TransportResponse(503,[],'')];
     pe_gateway($profile,'packages.update','idem-rec-del',$deletedScope);
     pe_ok('Two uncertain rows exist for reconciliation',2<=(int)query("SELECT COUNT(*) FROM ".table('provider_operations')." WHERE status='uncertain'")->fetchColumn());
-    pe_deny('Reconcile requires the owner password',fn()=>pe_reconcile($profile,$rev,'idem-rec-gone','wrong'));
+    pe_deny('Revoked owner refuses: Reconcile requires the owner password',fn()=>cwp_test_owner_revoked(fn()=>pe_reconcile($profile,$rev,'idem-rec-gone','wrong')));
     pe_deny('Reconcile refuses a stale revision',fn()=>pe_reconcile($profile,9,'idem-rec-gone',$password));
     pe_actor(2);pe_deny('Administrator cannot reconcile',fn()=>pe_reconcile($profile,$rev,'idem-rec-gone',$password));pe_actor();
     $r=pe_reconcile($profile,$rev,'idem-create-1',$password);

@@ -1,6 +1,7 @@
 <?php
 /** Native A-05 adapter acceptance against disposable tables, never customer data. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='staffci_';
@@ -17,7 +18,7 @@ try{
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Original owner','owner-staff@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('d',32),gmdate('Y-m-d H:i:s')]);
     $original=one('SELECT * FROM '.table('users').' WHERE id=1');staff_test_session(1);
-    deny_staff('Upgrade requires current password',fn()=>staff_migrate(1,'wrong'));
+    deny_staff('Initial owner setup rejects client-support context and preserves all stored state',fn()=>cwp_test_owner_revoked(fn()=>staff_migrate(1,'')));
     db()->exec(staff_schema('staffci_')['staff_profiles']); // Interrupted DDL, no initialized identities.
     db()->exec('ALTER TABLE '.table('staff_profiles').' MODIFY enabled VARCHAR(3) NOT NULL');
     deny_staff('Incompatible staff schema is rejected without replacement',fn()=>staff_migrate(1,$password));

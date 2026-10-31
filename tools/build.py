@@ -214,6 +214,11 @@ def main():
             safe(n);p=ROOT/n
             if p.is_symlink():raise RuntimeError('Project contains symlink')
             full_project_area(n)
+            # Repository ZIP fixtures are useful for upgrade/installer tests but
+            # must never be embedded inside a distributed archive. Keep them in
+            # Git while omitting every tracked ZIP from FULL-PROJECT packaging.
+            if p.suffix.lower()=='.zip':
+                continue
             if p.name in {'config.php','proxy-config.php','.installed.php','payment-master.key'} or p.name.startswith('.env') or p.suffix in {'.pem','.key','.p12','.sql'} or any(part in {'.git','node_modules','__pycache__','qa','dist','test-runtime'} for part in PurePosixPath(n).parts):raise RuntimeError('Unsanitized full-project source: '+n)
             data=read_source(n)
             if p.read_bytes()!=data:

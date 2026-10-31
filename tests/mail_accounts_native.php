@@ -1,6 +1,8 @@
 <?php
 /** Disposable database/account fixtures. No IMAP, SMTP or external credential use. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if (PHP_SAPI!=='cli' || getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='maci_';
@@ -31,7 +33,7 @@ try {
     staff_seed_owner(1);
     foreach ([2=>['mail.read'],3=>['mail.send'],4=>['mail.templates.manage'],5=>[]] as $id=>$permissions) query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$id===5?'owner':'administrator',json_encode($permissions)]);
     ma_actor();$settings=all('SELECT * FROM '.table('settings').' ORDER BY name');
-    ma_deny('Account setup requires current owner password',fn()=>mail_accounts_migrate('wrong'));
+    ma_deny('Revoked owner refuses: Account setup requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>mail_accounts_migrate('wrong')));
     ma_actor(2);ma_deny('Read permission cannot enable account storage',fn()=>mail_accounts_migrate($password));ma_actor();
     ma_deny('Account library is unavailable before setup',fn()=>mail_accounts_list());
     foreach (mail_accounts_schema('maci_') as $sql) db()->exec($sql);
@@ -49,7 +51,7 @@ try {
     mail_accounts_migrate($password);mail_accounts_migrate($password);
     ma_ok('Additive repeated setup preserves earlier settings',mail_accounts_ready()&&all('SELECT * FROM '.table('settings')." WHERE name<>'mail_accounts_schema_version' ORDER BY name")===$settings);
     ma_deny('Initial account requires both passwords',fn()=>mail_accounts_save('',0,ma_input(),true,[],$password));
-    ma_deny('Account save reauthenticates owner',fn()=>mail_accounts_save('',0,ma_input(),true,ma_secrets(),'wrong'));
+    ma_deny('Revoked owner refuses: Account save reauthenticates owner',fn()=>cwp_test_owner_revoked(fn()=>mail_accounts_save('',0,ma_input(),true,ma_secrets(),'wrong')));
     $storage=config()['storage'];$GLOBALS['cwp_config']['storage']=CWP_ROOT;
     ma_deny('Mail key cannot be stored under served root',fn()=>mail_accounts_save('',0,ma_input(),true,ma_secrets(),$password));$GLOBALS['cwp_config']['storage']=$storage;
     foreach (['imap_host'=>'imap..example.invalid','smtp_host'=>'https://smtp.example.invalid','imap_port'=>'0','smtp_port'=>'65536','imap_encryption'=>'none','address'=>"bad\n@example.invalid",'label'=>str_repeat('x',121)] as $key=>$bad) {

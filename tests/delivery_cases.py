@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def archive(extra=None):
     stream=io.BytesIO()
@@ -31,10 +32,13 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.8 delivery update preserves config locks media master key and unrelated files',all(p.read_bytes()==b for p,b in preserved.items()))
     up=requests.Session();root=BASE+'/delivery-upgrade/admin/index.php';url=root+'?view=deliveries';submit(up,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),up,root,'deliveryup_',before,settings,preserved)
     r=submit(up,url,'delivery_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.8 additive delivery setup succeeds','Website deliveries enabled' in r.text and db('SELECT * FROM deliveryup_website_releases')==[])
     check('Actual 1.8 retains all prior billing notifications and client records',all(db('SELECT * FROM deliveryup_'+t)==rows for t,rows in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings))
     check('Actual 1.8 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM deliveryup_users'),users)))
+    r=up.get(root+'?view=payments')
+    if 'Enable payment preparation' in r.text:r=submit(up,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Actual 1.8 retained manual receipt and balance still render','$375.00' in up.get(root+'?view=invoice-payments&invoice_id=3').text)
     r=upload(up,url,'retained-upgrade');rid=db('SELECT id FROM deliveryup_website_releases')[0]['id'];r=publish(up,url+'&release='+rid,{'owner_password':'Synthetic upgrade passphrase 2026'});check('Upgraded 1.8 accepts and publishes new ZIP','Website release published' in r.text)
     client=requests.Session();portal=BASE+'/delivery-upgrade/portal/index.php';submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'});check('Retained client can download exact newly delivered ZIP',client.get(portal+'?download_release='+rid).content==archive())

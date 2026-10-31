@@ -1,0 +1,39 @@
+name: Software Authorize.net sandbox source contract
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - '.github/workflows/software-authorize-sandbox.yml'
+      - '.github/workflows/software-authorize-sandbox-contract.yml'
+      - '.github/workflows/sandbox-workflow-security.yml'
+      - 'tests/anet_sandbox_*.py'
+      - 'tests/sandbox_workflow_contract.py'
+  pull_request:
+    paths:
+      - 'tests/software_anet_sandbox_acceptance.py'
+      - '.github/workflows/software-authorize-sandbox.yml'
+      - '.github/workflows/software-authorize-sandbox-contract.yml'
+      - '.github/workflows/sandbox-workflow-security.yml'
+      - 'tests/anet_sandbox_*.py'
+      - 'tests/sandbox_workflow_contract.py'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify reviewed sandbox source, runner isolation, and provider contract
+        run: |
+          python3 -m py_compile tests/anet_sandbox_tokenize.py tests/anet_sandbox_runtime.py tests/software_anet_sandbox_acceptance.py
+          python3 tests/sandbox_workflow_contract.py
+          python3 tests/anet_sandbox_runtime_contract.py
+          python3 tests/anet_sandbox_handoff_contract.py

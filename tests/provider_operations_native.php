@@ -1,6 +1,8 @@
 <?php
 /** Durable provider operation ledger and owner grants against real MariaDB; no provider API. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -51,7 +53,7 @@ try {
     po_actor();provider_settings_migrate($password);
     $profile=provider_settings_save('',0,'20i fixture',true,$secret,$password);
 
-    po_deny('Operation storage requires owner password',fn()=>provider_operations_migrate('wrong'));
+    po_deny('Revoked owner refuses: Operation storage requires owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_operations_migrate('wrong')));
     po_actor(2);po_deny('Administrator cannot prepare operation storage',fn()=>provider_operations_migrate($password));po_actor();
     provider_operations_migrate($password);
     po_ok('Operation storage records version','4'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??''));
@@ -117,7 +119,7 @@ try {
 
     // ---- owner grants ----
     $scope=['resellerId'=>'*','id'=>[42],'labels'=>[42=>'a']];
-    po_deny('Grant requires owner password',fn()=>provider_operation_grant($profile,'packages.update',$scope,'wrong'));
+    po_deny('Revoked owner refuses: Grant requires owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_operation_grant($profile,'packages.update',$scope,'wrong')));
     po_actor(2);po_deny('Administrator cannot grant',fn()=>provider_operation_grant($profile,'packages.update',$scope,$password));po_actor();
     po_deny('Grant bounds the duration',fn()=>provider_operation_grant($profile,'packages.update',$scope,$password,30));
     po_deny('Grant bounds the duration upper',fn()=>provider_operation_grant($profile,'packages.update',$scope,$password,90000));
@@ -149,7 +151,7 @@ try {
     po_ok('Expired grant is inactive',!provider_operation_grant_active($profile,'packages.update',$active));
     $grantId2=provider_operation_grant($profile,'packages.update',$scope,$password);
     po_ok('Re-grant supersedes expiry',provider_operation_grant_active($profile,'packages.update',$active));
-    po_deny('Revoke requires owner password',fn()=>provider_operation_revoke($grantId2,'wrong'));
+    po_deny('Revoked owner refuses: Revoke requires owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_operation_revoke($grantId2,'wrong')));
     provider_operation_revoke($grantId2,$password);
     po_ok('Revoked grant is inactive',!provider_operation_grant_active($profile,'packages.update',$active));
     po_deny('Double revoke refuses',fn()=>provider_operation_revoke($grantId2,$password));

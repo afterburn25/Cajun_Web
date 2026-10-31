@@ -1,6 +1,8 @@
 <?php
 /** Isolated MariaDB tests and synthetic HMAC/reporting fixtures, not provider acceptance. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='notifyci_';
@@ -31,14 +33,14 @@ if(($argv[1]??'')==='receipt-worker'){$body=stream_get_contents(STDIN);echo n_re
 try{
     foreach(schema_statements('notifyci_') as $name=>$sql)if($name!=='payment_notifications')db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);
-    foreach(['staff','support','catalog','payments','payment_attempts'] as $module)save_setting($module.'_schema_version','1');
+    foreach(['staff','support','catalog','payment_attempts'] as $module)save_setting($module.'_schema_version','1');save_setting('payments_schema_version','2');
     $now=gmdate('Y-m-d H:i:s');
     foreach([['Owner','owner-notify@example.invalid'],['Staff','staff-notify@example.invalid']] as [$name,$email])query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',[$name,$email,password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",[json_encode(['payments.manage','clients.manage'])]);n_actor();
     query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Notification client','notification-client@example.invalid',str_repeat('c',32),$now]);
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (1,?,?,?,?,?)',['Notification project','Retain summary','Retain milestones',$now,$now]);
     query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['NOTIFICATION-INVOICE','Synthetic invoice',12510,'Retain instructions',$now]);$invoice=one('SELECT * FROM '.table('studio_invoices'));
-    n_deny('Migration requires owner reauthentication',fn()=>notifications_migrate('wrong'));
+    n_deny('Revoked owner refuses: Migration requires owner reauthentication',fn()=>cwp_test_owner_revoked(fn()=>notifications_migrate('wrong')));
     db()->exec(notifications_schema('notifyci_')['payment_notifications']);db()->exec('ALTER TABLE '.table('payment_notifications').' DROP INDEX notification_id');
     n_deny('Migration refuses missing notification uniqueness',fn()=>notifications_migrate($password));db()->exec('ALTER TABLE '.table('payment_notifications').' ADD UNIQUE notification_id(notification_id)');
     db()->exec('ALTER TABLE '.table('payment_notifications').' MODIFY body_hash CHAR(64) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL');n_deny('Migration refuses case-folded body digests',fn()=>notifications_migrate($password));db()->exec('ALTER TABLE '.table('payment_notifications').' MODIFY body_hash CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
@@ -46,7 +48,7 @@ try{
     $credentials=['api_login_id'=>'SandboxNotifyFixture','transaction_key'=>'FixtureKey123456','signature_key'=>$key,'public_client_key'=>'SandboxPublicFixture'];
     payments_save('sandbox',0,$credentials,$password);query('UPDATE '.table('payment_gateways')." SET validation='authenticated' WHERE environment='sandbox'");
     $body=n_payload();n_ok('Unconfigured receiver stores nothing',n_receive($body)===503&&!all('SELECT * FROM '.table('payment_notifications')));
-    n_deny('Configuration refuses wrong password',fn()=>notifications_configure(0,1,$webhook,true,'wrong'));
+    n_deny('Revoked owner refuses: Configuration refuses wrong password',fn()=>cwp_test_owner_revoked(fn()=>notifications_configure(0,1,$webhook,true,'wrong')));
     n_deny('Configuration refuses malformed provider ID',fn()=>notifications_configure(0,1,'bad',true,$password));
     n_deny('Configuration refuses stale gateway revision',fn()=>notifications_configure(0,2,$webhook,true,$password));
     notifications_configure(0,1,$webhook,true,$password);n_deny('Configuration uses compare-and-swap revision',fn()=>notifications_configure(0,1,$webhook,false,$password));
@@ -69,7 +71,7 @@ try{
     n_ok('Concurrent receiver processes retain exactly one delivery',$status===200&&trim($out)==='200'&&$err===''&&$exit===0&&(int)query('SELECT COUNT(*) FROM '.table('payment_notifications').' WHERE notification_id=?',[json_decode($parallel,true)['notificationId']])->fetchColumn()===1);
     db()->exec('CREATE TRIGGER notifyci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic strict audit failure'");
     $before=(int)query('SELECT COUNT(*) FROM '.table('payment_notifications'))->fetchColumn();try{n_receive(n_payload());$failed=false;}catch(PDOException){$failed=true;}n_ok('Receipt audit failure rolls back before acknowledgement',$failed&&(int)query('SELECT COUNT(*) FROM '.table('payment_notifications'))->fetchColumn()===$before);db()->exec('DROP TRIGGER notifyci_fail');
-    n_deny('Verification requires owner password',fn()=>notifications_verify($id,1,'wrong','n_transport'));
+    n_deny('Revoked owner refuses: Verification requires owner password',fn()=>cwp_test_owner_revoked(fn()=>notifications_verify($id,1,'wrong','n_transport')));
     foreach([['authAmount'=>999.99],['order'=>['invoiceNumber'=>'Unrelated']],['transactionType'=>'refundTransaction'],['responseCode'=>2],['transactionStatus'=>'unrecognized']] as $bad){$overrides=$bad;n_deny('Reporting mismatch leaves queued '.array_key_first($bad),fn()=>notifications_verify($id,1,$password,'n_transport'));}
     n_ok('Notification amount never overwrites request or attempt',one('SELECT * FROM '.table('payment_attempts').' WHERE id=1')===$a&&one('SELECT status FROM '.table('payment_notifications').' WHERE id=?',[$id])['status']==='queued');$overrides=[];
     $during=function(): void {db()->exec('CREATE TRIGGER notifyci_verify_fail BEFORE UPDATE ON '.table('payment_notifications')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic processing failure'");};

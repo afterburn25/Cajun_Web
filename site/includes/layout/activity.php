@@ -20,7 +20,7 @@ function activity_render(string $audience,string $error=''): never {
             $user=staff_require('clients.manage');admin_head('Workspace activity','activity',$user);
             if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
             echo '<section class="admin-card"><h2>Enable workspace activity</h2><p>Project updates and a personal unread list for clients and staff. Retained updates initially appear unread. This does not send email.</p>';
-            if(staff_can('staff.manage',$user)){echo '<p>Back up your database first. This adds read status without changing projects, messages, invoices or website files.</p><form method="post">'.csrf_field().'<input type="hidden" name="action" value="activity_setup">';admin_input('password','Your owner password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Enable workspace activity</button></form>';}
+            if(staff_can('staff.manage',$user)){echo '<p>Back up your database first. This adds read status without changing projects, messages, invoices or website files.</p><form method="post">'.csrf_field().'<input type="hidden" name="action" value="activity_setup">';echo '<button class="btn gold">Enable workspace activity</button></form>';}
             else echo '<p>Ask an owner to enable workspace activity.</p>';
             echo '</section>';admin_foot();exit;
         }

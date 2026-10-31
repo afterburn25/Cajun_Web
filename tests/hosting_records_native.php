@@ -1,6 +1,8 @@
 <?php
 /** Disposable native MariaDB fixtures. Synthetic journals are not provider evidence. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -54,7 +56,7 @@ try {
     foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     for($i=1;$i<=2;$i++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Synthetic client '.$i,'client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     hr_actor();$settings=all('SELECT * FROM '.table('settings').' ORDER BY name');
-    hr_deny('Setup requires current password',fn()=>hosting_records_migrate('wrong'));
+    hr_deny('Revoked owner refuses: Setup requires current password',fn()=>cwp_test_owner_revoked(fn()=>hosting_records_migrate('wrong')));
     hr_actor(2);hr_deny('Administrator with all grants cannot prepare owner hosting storage',fn()=>hosting_records_migrate($password));hr_actor();
     hr_deny('Read refuses unprepared storage',fn()=>hosting_records_get(hr_id(1),1));
     save_setting('hosting_records_schema_version','future');hr_deny('Future readiness is not downgraded',fn()=>hosting_records_migrate($password));query('DELETE FROM '.table('settings').' WHERE name=?',['hosting_records_schema_version']);
@@ -75,7 +77,7 @@ try {
     hosting_records_migrate($password);hosting_records_migrate($password);
     hr_ok('Repeated setup is additive and empty',hosting_records_ready()&&!all('SELECT * FROM '.table('hosting_records'))&&all('SELECT * FROM '.table('settings')." WHERE name<>'hosting_records_schema_version' ORDER BY name")===$settings);
     $id=hr_id(1);$before=hr_snapshot();
-    hr_deny('Create requires current password',fn()=>hosting_records_create($id,1,$package,'wrong'));
+    hr_deny('Revoked owner refuses: Create requires current password',fn()=>cwp_test_owner_revoked(fn()=>hosting_records_create($id,1,$package,'wrong')));
     hr_deny('Unknown client cannot receive a record',fn()=>hosting_records_create($id,999,$package,$password));
     hr_deny('Identifier trailing newline is refused',fn()=>hosting_records_create($id."\n",1,$package,$password));
     hr_ok('Strict creation audit failure rolls back record',hr_audit_failure(fn()=>hosting_records_create($id,1,$package,$password))&&hr_snapshot()===$before);

@@ -10,5 +10,5 @@ function provider_document_roots_admin_action(string $action):never {
         $r=provider_document_roots_refresh($link,$binding,$password);flash($r['state']==='complete'?'The reported website folders were saved.':'The website folders refresh did not provide a usable observation.',$r['state']==='complete'?'success':'error');
     }elseif($action==='provider_inventory_document_roots_share'){
         $sharing=posted('sharing',7);if(!in_array($sharing,['enable','disable'],true))throw new InvalidArgumentException('Choose whether to share the website folder observation.');provider_document_roots_share(posted('link_id',32),posted('expected_id',32),posted('event_id',32),$sharing==='enable',posted('anchor_id',32),$password);flash($sharing==='enable'?'The saved website folders are shared with the assigned client.':'Website folder sharing is off.');
-    }else throw new InvalidArgumentException('Unknown Website folder observation action.');redirect(admin_url('provider-settings').'#document-roots');
+    }else throw new InvalidArgumentException('Unknown Website folder observation action.');redirect(admin_url('provider-settings',['section'=>'website']).'#document-roots');
 }

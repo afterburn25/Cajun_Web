@@ -4,6 +4,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'notification-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.6.0',dest)
@@ -18,6 +19,7 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.6 update preserves config locks private files and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/notification-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),up,url,'notifyup_',before,settings,preserved)
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'wrong','confirm':'1'});check('Notification upgrade refuses wrong password','current password' in r.text.lower())
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.6 additive notification upgrade succeeds','Sandbox notification inbox enabled' in r.text)
     check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(db('SELECT * FROM notifyup_'+t)==v for t,v in before.items()))
@@ -29,6 +31,8 @@ def run_browser(env,browser):
     globals().update(env);upgrade();url=BASE+'/existing/admin/index.php?view=payment-notifications';endpoint=BASE+'/existing/webhooks/authorize-net/index.php'
     check('Fresh installer creates empty inbox and disabled receiver',db("SELECT value FROM fresh_settings WHERE name='payment_notifications_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_payment_notifications')==[] and db("SELECT * FROM fresh_settings WHERE name='sandbox_notification_receiver'")==[])
     admin=requests.Session();submit(admin,BASE+'/existing/admin/index.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
+    r=admin.get(url)
+    if 'Enable payment preparation' in admin.get(BASE+'/existing/admin/index.php?view=payments').text:submit(admin,BASE+'/existing/admin/index.php?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
     r=admin.get(url)
     if 'Enable sandbox inbox' in r.text:r=submit(admin,url,'payments_notification_setup',{'owner_password':OWNER,'confirm':'1'})
     check('Owner notification page displays truthful sandbox boundary','Notification inbox' in r.text and 'Production and client checkout remain disabled' in r.text)

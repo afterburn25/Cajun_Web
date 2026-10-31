@@ -1,6 +1,8 @@
 <?php
 /** Native database and actual PHP forms; all provider traffic is synthetic. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
@@ -37,14 +39,14 @@ try{
         reg_ok('Preparation preserves caller transaction without registrar DDL',db()->inTransaction()&&!array_filter(provider_registrar_tables()));
     }finally{if(db()->inTransaction())db()->rollBack();}
     reg_ok('Caller data rolls back after refused registrar preparation',!one('SELECT name FROM '.table('settings').' WHERE name=?',['registrar_caller_probe'])&&!one('SELECT id FROM '.table('audit').' WHERE action=?',['provider.registrar_prepared']));
-    reg_deny('Registrar refresh needs its own prepared storage',fn()=>reg_refresh($id));reg_deny('Prepare requires current owner password',fn()=>provider_registrar_prepare('wrong'));
+    reg_deny('Registrar refresh needs its own prepared storage',fn()=>reg_refresh($id));reg_deny('Revoked owner refuses: Prepare requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_registrar_prepare('wrong')));
     reg_actor(2);reg_deny('Administrator cannot prepare registrar storage',fn()=>provider_registrar_prepare($password));reg_actor();
     reg_ok('Preparation audit failure leaves only empty resumable tables',reg_fault('registrar_prepared',fn()=>provider_registrar_prepare($password))&&!provider_registrar_ready()&&reg_count('provider_registrar_links')===0);
     provider_registrar_prepare($password);provider_registrar_prepare($password);reg_ok('Repeated prepare retains one setup audit',provider_registrar_ready()&&(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=?',['provider.registrar_prepared'])->fetchColumn()===1);
     $body=json_encode([['id'=>701,'name'=>'one.synthetic.invalid','contact'=>['email'=>'REGISTRAR_PRIVATE_MARKER'],'authCode'=>'REGISTRAR_PRIVATE_MARKER'],['id'=>702,'name'=>'two.synthetic.invalid']]);$read=reg_refresh($id);$obs=provider_registrar_latest($id);
     reg_ok('Existing inventory path persists sanitized registrar identities',$read['state']==='complete'&&$dns===1&&$sent===1&&reg_count('provider_registrar_observations')===2&&$obs['coverage']==='unknown');
     reg_deny('Hosting identity cannot be used as registrar domain id',fn()=>provider_registrar_link($id,999,1,1,$read['id'],$password));
-    reg_deny('Assignment refuses wrong password',fn()=>provider_registrar_link($id,701,1,1,$read['id'],'wrong'));
+    reg_deny('Revoked owner refuses: Assignment refuses wrong password',fn()=>cwp_test_owner_revoked(fn()=>provider_registrar_link($id,701,1,1,$read['id'],'wrong')));
     reg_deny('Assignment refuses mismatched observation',fn()=>provider_registrar_link($id,701,1,1,str_repeat('a',32),$password));
     reg_deny('Assignment refuses missing client',fn()=>provider_registrar_link($id,701,99,1,$read['id'],$password));
     reg_actor(2);reg_deny('Administrator cannot assign registrar domains',fn()=>provider_registrar_link($id,701,1,1,$read['id'],$password));reg_actor();

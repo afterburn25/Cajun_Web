@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
+// License and financing links must reach their authenticated views, not the project fallback.
+$softwareRequested=array_key_exists('software',$_GET);$financeRequested=array_key_exists('finance',$_GET);
+if($softwareRequested||$financeRequested){
+    header('Cache-Control: no-store, private');
+    if(($softwareRequested&&$financeRequested)||($softwareRequested&&($_GET['software']??null)!=='1')
+        ||($financeRequested&&(!is_string($_GET['finance'])||($_GET['finance']!=='1'&&!preg_match('/^[a-f0-9]{32}$/D',$_GET['finance']))))){
+        fail_page('Invalid software or financing request.',400);
+    }
+}
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
@@ -29,17 +38,24 @@ if(array_key_exists('forwarding',$_GET)||(is_string($_POST['action']??null)&&str
 if(array_key_exists('domain_renewals',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'domain_renewal_')))header('Cache-Control: no-store, private');
 if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/hosting_catalog.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/hosting_purchases.php';
+if(array_key_exists('hosting_purchases',$_GET))header('Cache-Control: no-store, private');
+if(array_key_exists('hosting',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';
 if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_search')header('Cache-Control: no-store, private');
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
+if($supportRequested)header('Cache-Control: no-store, private');
 if($supportRequested){
  if($_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??null)==='support_end'){
   try{support_check_csrf($supportId);support_end($supportId);redirect(admin_url('support'));}catch(Throwable){support_unavailable();}
  }
  $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;
 }
+if(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_access();}catch(RuntimeException){fail_page('Sign in as the primary client outside support access to view hosting purchases.',403);}}
+master_portal_dispatch();
 $client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity']))activity_render('client',$error);
@@ -49,6 +65,11 @@ if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403)
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
 require CWP_CODE_ROOT.'/portal/views/auth.php';
+if($softwareRequested){require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);}
+if($financeRequested){require_once CWP_CODE_ROOT.'/portal/views/financing.php';license_finance_portal_render($client,$_GET['finance'],$error);}
+
+if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);
+if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);

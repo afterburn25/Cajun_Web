@@ -1,4 +1,52 @@
+## 2026-10-29 — keep software orchestration evidence inside its sealed partition
+
+PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](CODEX_PR266_APPLICATION_40820683270.md).
+
+## 2026-10-29 — preserve acceptance command order after software-suite repair
+
+PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](CODEX_PR266_APPLICATION_40820683270.md).
+
+## 2026-10-28 — preserve payments during initial and replacement enrollment
+
+Independent `codex/finance-replacement-ledger-guard` from #300 `07fa7caf` prevents partial or nonconsecutive paid installments from being billed again by a newly created full ARB. Initial and replacement finalizers retain obsolete known candidates for verified cancellation; lifecycle/refund/void/settlement paths preserve pending retirement. Final PHP/database matrix passes 6,136 native executions and 306 focused executions. Initial cases include 30 actual separate-process payment commits per lane. Original replacement 37/230, pending-state 11/22, initial 6/44 and finalizer-rollback 4/22 failures remain retained. Hosted checks and independent review are pending; unknown replacement outcomes, established-ARB receipt audit, final combined acceptance, sandbox and main integration remain open. [Review and evidence](CODEX_FINANCE_ENROLLMENT_RECEIPTS.md).
+
+## 2026-10-28 — retain and retire a replacement created during payoff
+
+Independent `codex/finance-replacement-payoff-guard`, based on frozen #299 `fa404e59`, retains the known new gateway ID/history and verifies its retirement when payoff arrives during replacement creation or first readback. It also repairs the shared payoff reader's transaction requirement for ordinary unpaid owner reconciliation. Parent fails 40/138; the corrected PHP/database matrix passes 1,896 native and 272 focused executions. Earlier failures remain retained. Hosted exact-head and independent review are pending; final combined acceptance, unknown-create/partial-receipt audit, sandbox credentials and main integration remain gates. [Review and evidence](CODEX_FINANCE_REPLACEMENT_PAYOFF.md).
+
+## 2026-10-28 — retire recurring billing after verified financing payoff
+
+Independent `codex/finance-payoff-subscription-retirement`, based on frozen #298 `4405433d`, closes the post-reservation/manual-payoff billing gap. It retains the gateway identity before cancellation, requires exact contract and terminal readback, preserves uncertainty for owner/scheduler reconciliation, and never rolls back payment or permanent payoff. Parent fails 57/270; corrected native PHP/database matrix passes 3,132 total executions (1,344 new), plus 272 focused checks. Original failed probes and the isolated-owner test-harness correction are retained. Hosted exact-head and independent approval remain required; no main merge or release. [Review and evidence](CODEX_FINANCE_PAYOFF_RETIREMENT.md).
+
+## 2026-10-28 — initial-payment integrity in license synchronization
+
+Independent `codex/finance-initial-sync-binding`, based on PR #296 `17357a9d`, closes the separate core access-state projection gap: another agreement/customer's paid invoice, wrong amount/currency or unavailable ledger must not activate the target financing. The target native reproduction has a fully reversed receipt with 500 cents due. Shared signed-offer/ledger validation now runs before activation; the permanent payoff early boundary is byte-identical. Parent fails 22/207 assertions; corrected native PHP 8.2/8.4 × MariaDB/MySQL matrix passes 207 per lane (828 total, including 119 existing enrollment assertions). Hosted acceptance and independent review remain pending. No customer pointer-edit capability, real gateway operation, main merge or release is claimed. [Review and evidence](CODEX_FINANCE_INITIAL_SYNC_REVIEW.md).
+
+## 2026-10-28 — verified initial-payment enrollment correction
+
+Independent `codex/finance-initial-payment-enrollment`, based on PR #295 at `27d7b9e`, corrects the portal/handler mismatch after a nonzero verified down payment. Enrollment now requires the exact agreement invoice and retained ledger payment, current client and running signed schedule, then repeats admission under the reservation lock. Paid-off plans cannot enroll new installments; existing license/domain/rights and subscription history stay intact. Native application checks pass 119 per PHP 8.2/8.4 × MariaDB/MySQL lane (476 total), plus 22 handler checks per PHP. Original handler and intermediate cross-agreement invoice substitution failures are retained. Hosted acceptance and independent review remain pending; no real gateway, merge or release claim. [Review and evidence](CODEX_FINANCE_INITIAL_ENROLLMENT_REVIEW.md).
+
+## 2026-10-28 — owner-directed PR266 independent integration pass
+
+## 2026-10-28 — financed replacement recovery hardening
+
+The Codex companion now also repairs replacement enrollment after the original start date and requires verified terminal retirement of the prior ARB before creating parallel billing. Policy and synthetic gateway regressions pass; full installer refresh passes. Hosted native/browser and independent security/real-sandbox gates remain open. [Exact evidence and current gates](PR266_INTEGRATION_ACCEPTANCE.md).
+
+Codex correction branch refreshed from `73d4c37b` to Devin’s `6045b801`; main `fdf40a25`, published v1.25 unchanged. Preserved Devin’s project fixture isolation after independently tracing the active-release HTTP404 to shared project financing. Added explicit independence/continued-denial assertions and corrected the native document-roots fixed-port collision. [Scope, local verification, original failure links and remaining release gates](PR266_INTEGRATION_ACCEPTANCE.md). Hosted acceptance and required independent review remain open; no release/live operation.
+
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
+
+## 2026-10-28 — native webhook SQL matrix continuation
+
+The owner made licensing/financing review a continuing goal. The previous pass made progress through #269/#270 and exact-source package evidence; it did not complete the integration. Continued on the same review branch with 40 native PDO/InnoDB cases, all passing on local PHP 8.2.35/8.4.25 × MariaDB 10.11.19/MySQL 8.4.13. Actual audit-trigger failure proves rollback, and a separate database process waits on the shared mutex then observes a newly reserved replacement. Optional-table absence is exercised by a reversible rename inside the disposable fixture. Existing full Windows native run retains 209 passing checks and a later 0600 file-permission failure; no production/private-file gate was weakened. New cases are included in the existing Linux native matrix, with browser fixtures still owned by the integration writer. [Evidence](CODEX_LICENSING_REVIEW_2026_10_28.md).
+
+## 2026-10-28 — delayed financing lifecycle preservation
+
+Independent service probes reproduced cancellation/suspension regression and reversal/replacement fence loss. A separate follow-up branch stacked on #269 adds monotonic handling and 45 actual-service cases (17 fail before, all pass after, PHP 8.4.25 normal/no-INI). The #269 exact commit `f6d49812` also passed a full three-package build and manifest/member/extraction audit; see the [review report](CODEX_LICENSING_REVIEW_2026_10_28.md). Finance browser run 40649494078 at `5ba2a37d` now fails at the overdue scheduler recovery-handoff assertion; handed to the existing fixture writer without editing their files. No live gateway or production operation.
+
+## 2026-10-28 — independent licensing routing corrections
+
+Owner requested independent PR #266 integration/QA/security work, then retained the existing **Complete Licensing Integration** chat as integration writer and scoped this chat to review/tested corrections. Frozen source `6045b801`; refreshed feature `5ba2a37d`; main `fdf40a25`. Reproduced and corrected two optional-financing routing failures, with 10 actual-service cases passing in PHP 8.4.25 normal/no-INI modes. Twelve existing contract suites and the frozen-source three-package build/extraction audit pass. All full acceptance, real sandbox, newly versioned populated upgrade and release gates remain separate. [Detailed report](CODEX_LICENSING_REVIEW_2026_10_28.md). Separate correction branch only; no modification to the other writer's branch, main merge, release or live operation.
 
 ## 2026-10-26 — CI queue-hygiene: sha-scoped concurrency groups caused the ~1000-run backlog
 
@@ -2112,8 +2160,7 @@ Owner direction: full purchase-to-install DRM for Website Core bundles sold thro
 - `site/app/licenses/fulfill.php` — `license_fulfill_invoice()` post-transaction hook in both `catalog_transition` and `ledger_receive` paid paths; idempotent per customer+product; failure never rolls back payment; SKU convention `WEBSITE-{INDUSTRY}`; private-storage bundles only; best-effort customer email with license key + portal link.
 - Admin UI `studio-licenses` (create/deactivate/domains/bundle list+regenerate); portal domain management + owner-only `api/bundle-download.php` (realpath-contained, support sessions rejected, audited).
 - `tests/license_native.php` (30+ assertions, CI/MariaDB) + `tests/license_bundle_functional.php` (14 checks, real Website_Core checkout, extraction verified: `site/install.php` + module manifest with embedded key).
-- Fixed: leftover `<<<<<<< HEAD` merge marker in `schema/base.php` shipped broken until build caught it; installer inventory refreshed via `python tools/build.py --refresh` (required after every site/ change).
-
+- Fixed: leftover `
 Remaining (no live environment here): production `license_core_dir` config, real purchase->bundle->install->validation cycle, live-domain change deactivation.
 
 ## Licensing follow-up: domain semantics + atomic replace — 2026-10-15

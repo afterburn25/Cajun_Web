@@ -1,6 +1,8 @@
 <?php
 /** Native disposable MySQL/MariaDB with the real shared gateway and synthetic transport. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -85,7 +87,7 @@ try {
     mb_ok('Fresh mailbox GET creates no storage',provider_mailbox_ready()===false&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pmb_provider_mailbox_requests']));
     db()->beginTransaction();try{query('INSERT INTO '.table('settings').' (name,value) VALUES (?,?)',['mailbox_caller_probe','uncommitted']);try{provider_mailbox_prepare($password);mb_ok('Preparation refuses caller transaction',false);}catch(LogicException){mb_ok('Preparation refuses caller transaction',true);}mb_ok('Preparation preserves caller transaction and creates no mailbox tables',db()->inTransaction()&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pmb_provider_mailbox_policies']));}finally{if(db()->inTransaction())db()->rollBack();}
     mb_ok('Caller data rolls back after refused preparation',!one('SELECT name FROM '.table('settings').' WHERE name=?',['mailbox_caller_probe'])&&!one('SELECT id FROM '.table('audit').' WHERE action=?',['provider.mailbox_prepared']));
-    mb_deny('Preparation requires current owner password',fn()=>provider_mailbox_prepare('wrong'));
+    mb_deny('Revoked owner refuses: Preparation requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_mailbox_prepare('wrong')));
     mb_actor(2);mb_deny('Administrator cannot prepare mailbox records',fn()=>provider_mailbox_prepare($password));mb_actor();
     mb_ok('Interrupted preparation rolls back marker and audit',mb_audit_fail('mailbox_prepared',fn()=>provider_mailbox_prepare($password))&&!one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_mailbox_schema_version']));
     provider_mailbox_prepare($password);mb_ok('Empty interrupted preparation resumes with exact schema',provider_mailbox_ready());

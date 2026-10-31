@@ -1,0 +1,11 @@
+# Admin portal and permanent-payoff corrections
+
+Development only. No production deployment, payment or provider transaction.
+
+The installed master browser first exposed a missing passive mail-navigation dependency, fixed in 69482f1 and assembled as 7930148. The next real browser run reached the owner hub but exposed another missing helper: support_open_form called studio_hidden, which is only supplied by the full admin studio controller. The shared form now renders its numeric client ID directly while keeping the same POST action, CSRF and permission checks. A local five-assertion rendering regression intentionally omits that unrelated helper.
+
+The owner's retained October 26/27 requirement states that full financing payoff permanently unlocks the site key and it cannot be disabled later. Source review found both manual deactivation and old test expectations still allowed owner override after payoff. The corrected license_deactivate checks the existing paid-off/inconsistent-state guard under the same license row lock before any mutation or success audit. The UI no longer offers deactivation for an active paid-off license. Domain binding, separate resale/distribution rights and unpaid controls are unchanged. Existing historically inactive licenses are not silently activated; the explicit recovery action remains.
+
+A negative-before/positive-after local regression invoked the actual service method through a transaction/query double. All24 corrected assertions pass; this is not real SQL or a populated financing upgrade. Existing native/browser financing assertions are changed from permitting paid-off disablement to requiring refusal with exact retained state. No security refusal is deleted. The full historical financing suites and populated payoff/merchant-state upgrade checks remain release gates.
+
+The five source changes are whole-input/output hash-bound in tools/integration/admin_release_fixes.py, then recorded as ordinary source and regenerated installer inventory by the isolated assembly job. Both new local suites are included in portable checks. Exact-source master SQL/browser and upgrade reruns remain required before a successful result can be claimed. Failed runs41130834284 and41131973589 remain evidence, not successful portal certification.

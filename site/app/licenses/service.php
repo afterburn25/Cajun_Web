@@ -49,11 +49,12 @@ function license_invoice_cutover(): int {
 
 /**
  * Generate a unique license key.
- * Format: XXXX-XXXX-XXXX-XXXX (32 hex characters)
+ * Format: XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX (32 hex characters)
+ * Existing shorter keys remain valid; only newly issued keys use the full
+ * 128 bits returned by random_bytes().
  */
 function license_generate_key(): string {
-    $key = strtoupper(bin2hex(random_bytes(16)));
-    return substr($key, 0, 4) . '-' . substr($key, 4, 4) . '-' . substr($key, 8, 4) . '-' . substr($key, 12, 4);
+    return implode('-',str_split(strtoupper(bin2hex(random_bytes(16))),4));
 }
 
 /**
@@ -161,6 +162,24 @@ function license_canonical_domain(string $domain): string {
 }
 
 /**
+ * Resolve the active-installation limit. Legacy website licenses retain the
+ * historical two-domain allowance. Software-commerce v3 entitlements may
+ * snapshot a product-specific limit without changing older license rows.
+ */
+function license_domain_limit(int $licenseId): int {
+    $column=one(
+        'SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',
+        [config()['db']['prefix'].'software_entitlements','max_installations']
+    );
+    if(!$column)return 2;
+    $row=one('SELECT max_installations FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
+    if(!$row)return 2;
+    $limit=(int)$row['max_installations'];
+    if($limit<1||$limit>25)throw new RuntimeException('Software installation policy is invalid.');
+    return $limit;
+}
+
+/**
  * Register a domain for a license.
  */
 function license_register_domain(int $licenseId, string $domain, int $actor = 0): void {
@@ -172,11 +191,9 @@ function license_register_domain(int $licenseId, string $domain, int $actor = 0)
 }
 
 /**
- * Registration guts — caller holds the transaction and the license lock,
- * and $domain is already canonical. A license supports at most 2 active
- * domains (public + test instance); registering or reactivating beyond
- * that requires deactivating one first — the deactivated site's next
- * validation then fails and it goes offline.
+ * Registration guts — caller holds the transaction and the license lock.
+ * Legacy licenses retain two active domains; software v3 entitlements use
+ * their snapshotted product-specific installation limit.
  */
 function license_register_domain_tx(int $licenseId, string $domain, int $actor = 0): void {
     $now = gmdate('Y-m-d H:i:s');
@@ -186,8 +203,9 @@ function license_register_domain_tx(int $licenseId, string $domain, int $actor =
             'SELECT COUNT(*) FROM ' . table('license_domains') . ' WHERE license_id = ? AND is_active = 1',
             [$licenseId]
         )->fetchColumn();
-        if ($active >= 2) {
-            throw new InvalidArgumentException('This license already has 2 active domains (public + test). Deactivate one before registering a new site.');
+        $limit=license_domain_limit($licenseId);
+        if ($active >= $limit) {
+            throw new InvalidArgumentException('This license already has '.$limit.' active installation'.($limit===1?'':'s').'. Deactivate one before registering a new site.');
         }
     }
     query(
@@ -230,6 +248,9 @@ function license_deactivate_domain(int $licenseId, string $domain, int $actor = 
     $domain = license_canonical_domain($domain);
     license_transaction(function() use ($licenseId, $domain, $actor): void {
         license_lock($licenseId);
+        if (license_paid_off_lock($licenseId)) {
+            throw new RuntimeException('A fully paid financed license must remain bound to an active domain. Replace the domain instead of deactivating it.');
+        }
         license_deactivate_domain_tx($licenseId, $domain, $actor);
     });
 }
@@ -246,12 +267,34 @@ function license_deactivate_domain_tx(int $licenseId, string $domain, int $actor
     license_audit($actor, 'domain.deactivate', 'License ' . $licenseId . ' domain ' . $domain);
 }
 
+/** A fully paid plan cannot lose its last domain through the ordinary domain-removal path. */
+function license_paid_off_lock(int $licenseId): bool {
+    if ($licenseId < 1) return false;
+    $table = one(
+        'SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
+        [config()['db']['prefix'].'license_financing']
+    );
+    if (!$table) return false;
+    $row = one('SELECT state,paid_off_at FROM '.table('license_financing').' WHERE license_id=?',[$licenseId]);
+    if (!$row) return false;
+    $paid = $row['paid_off_at'] !== null;
+    $state = (string)($row['state'] ?? '');
+    if ($paid !== ($state === 'paid_off')) {
+        throw new RuntimeException('Financed license payoff state is inconsistent. Preserve the license for owner review.');
+    }
+    return $paid;
+}
+
 /**
- * Deactivate an entire license.
+ * Deactivate an unpaid or unfinanced license. Completed website financing is
+ * permanently unlocked; neither billing nor a later owner action may disable it.
  */
 function license_deactivate(int $licenseId, int $actor = 0): void {
     license_transaction(function() use ($licenseId, $actor): void {
         license_lock($licenseId);
+        if (license_paid_off_lock($licenseId)) {
+            throw new RuntimeException('This financed license is permanently unlocked after full payoff and cannot be deactivated.');
+        }
         query('UPDATE ' . table('website_licenses') . ' SET is_active = 0, updated_at = ? WHERE id = ?',
             [gmdate('Y-m-d H:i:s'), $licenseId]);
         license_audit($actor, 'deactivate', 'License ' . $licenseId . ' deactivated');

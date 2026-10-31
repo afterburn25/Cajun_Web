@@ -1,6 +1,8 @@
 <?php
 /** Disposable native database; shared reader with synthetic transport, never a provider account. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -64,7 +66,7 @@ try{
     db()->beginTransaction();save_setting('cloud_provider_rollback_probe','keep');cp_deny('Fresh preparation refuses caller transaction before DDL',fn()=>provider_cloud_providers_prepare($password));
     cp_ok('Preparation guard preserves caller transaction and absent table',db()->inTransaction()&&!provider_cloud_providers_table_exists());db()->rollBack();
     cp_ok('Caller rollback removes probe and no preparation marker appears',one('SELECT value FROM '.table('settings').' WHERE name=?',['cloud_provider_rollback_probe'])===null&&one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_providers_schema_version'])===null);
-    cp_deny('Wrong preparation password refuses',fn()=>provider_cloud_providers_prepare('wrong'));
+    cp_deny('Revoked owner refuses: Wrong preparation password refuses',fn()=>cwp_test_owner_revoked(fn()=>provider_cloud_providers_prepare('wrong')));
     cp_actor(2);cp_deny('Administrator cannot prepare',fn()=>provider_cloud_providers_prepare($password));cp_actor();
     cp_ok('Preparation audit failure rolls back marker',cp_fault('cloud_providers_prepared',fn()=>provider_cloud_providers_prepare($password))&&one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_providers_schema_version'])===null);
     provider_cloud_providers_prepare($password);provider_cloud_providers_prepare($password);
@@ -74,7 +76,7 @@ try{
     cp_actor(2);cp_deny('Administrator cannot refresh',fn()=>cp_refresh($profile));cp_deny('Administrator cannot inspect saved identifiers',fn()=>provider_cloud_providers_view($profile));cp_actor();
     $_GET['support']='fixture';cp_deny('Support context cannot refresh',fn()=>cp_refresh($profile));unset($_GET['support']);
     $_SESSION=['client_id'=>1,'client_auth'=>'synthetic'];cp_deny('Client cannot inspect provider choices',fn()=>provider_cloud_providers_view($profile));cp_actor();
-    cp_deny('Wrong refresh password refuses before DNS',fn()=>provider_inventory_refresh_attempt($profile,1,'wrong','cp_dns','cp_read',InventoryRead::CLOUD_PROVIDERS_LIST));
+    cp_deny('Revoked owner refuses: Wrong refresh password refuses before DNS',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_refresh_attempt($profile,1,'wrong','cp_dns','cp_read',InventoryRead::CLOUD_PROVIDERS_LIST)));
     cp_deny('Stale revision refuses before DNS',fn()=>provider_inventory_refresh_attempt($profile,2,$password,'cp_dns','cp_read',InventoryRead::CLOUD_PROVIDERS_LIST));
     cp_ok('Denied starts retain no intent and make no network call',cp_count('provider_refreshes')===0&&$calls===0&&$dnsCalls===0);
     cp_ok('Start witness failure atomically prevents intent and DNS',cp_fault('cloud_providers_started',fn()=>cp_refresh($profile))&&cp_count('provider_refreshes')===0&&$dnsCalls===0);

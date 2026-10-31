@@ -2,7 +2,7 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "71dc6699f2e92b23af99b446f17de89ba9a7ad928af9e37283b802a2c01c7bf0",
+    "tests/browser_acceptance.py": "254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
@@ -170,7 +170,8 @@
     "\"$PHP_BINARY\" tests/hosting_delete_retry_native.php",
     "\"$PHP_BINARY\" tests/hosting_reconciliation_native.php",
     "\"$PHP_BINARY\" tests/client_authority_native.php",
-    "\"$PHP_BINARY\" tests/license_native.php"
+    "\"$PHP_BINARY\" tests/license_native.php",
+    "\"$PHP_BINARY\" tests/software_commerce_native.php"
   ],
   "native_command_baseline": {
     "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
@@ -503,11 +504,11 @@
       "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
       "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
       "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
-      "tests/payments_native.php": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
-      "tests/provider_package_wordpress_installed_native.php": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
+      "tests/payments_native.php": "e6338398dabd138d53243b7950bdf79de3b5488a9d8a4d9876bc8374d3363b19",
+      "tests/provider_package_wordpress_installed_native.php": "53f159d3e61c5a49bf8f415a2b3a749ea37b7ccd03a35333d7e07af30d72c2be",
       "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
-      "tests/domain_expiry_native.php": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
-      "tests/domain_contracts_native.php": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd",
+      "tests/domain_expiry_native.php": "31692b8d8622eb152c41d6de04ccce35ba8acc5af491d237d1c59f025f32a545",
+      "tests/domain_contracts_native.php": "8a5f691a77699a487d858f54f596b121063fd10fa888be79c64609184dd64850",
       "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
       "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
       "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
@@ -560,7 +561,7 @@
     ],
     "source_sha256": {
       "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
-      "tests/provider_catalog_import_native.php": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "tests/provider_catalog_import_native.php": "a40b72b039000ff442129b501212d34ccf75f8135ea0e26161dd28298487edf8",
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
@@ -628,7 +629,7 @@
     "source_sha256": {
       "tests/twentyi-cloud-site-requests/documents.php": "0a227898eeb5b4cec6cf3f7f4800580b1e02421edbcd675484aae741df91790b",
       "tests/cloud_site_requests_ui_contract.php": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
-      "tests/provider_cloud_site_requests_native.php": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
+      "tests/provider_cloud_site_requests_native.php": "23837d2606bb2a38ad45f513a7fb3aabefcf07f052182ba19fab731f8c17e9a8",
       "tests/provider_cloud_site_requests_cases.py": "4862727e170bcfaff792e70f557698a0109dd27202b3207f9a9bddca24861fc8",
       "tests/cloud_site_requests_wiring.py": "df71ec091795b411d8e67b14769c1591fe9bfa1b5963a15abc07e2ac2cda6624",
       "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
@@ -668,6 +669,14 @@
       "scope": "Actual published 1.25 subfolder installation followed by exact candidate UPDATE, complete-journal file rollback, reapply and missing request-head refusal. No interrupted-application or live provider claim."
     }
   },
+  "software_commerce_native_command": {
+    "additions_after": "\"$PHP_BINARY\" tests/license_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/software_commerce_native.php"
+    ],
+    "predecessor_count": 160,
+    "predecessor_sha256": "5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe"
+  },
   "non20i_native_command_extension": {
     "additions": [
       "\"$PHP_BINARY\" tests/backups_native.php"
@@ -675,15 +684,15 @@
     "after": {
       "\"$PHP_BINARY\" tests/backups_native.php": "\"$PHP_BINARY\" tests/delivery_native.php"
     },
-    "predecessor_native_count": 160,
-    "predecessor_native_sha256": "5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe",
+    "predecessor_native_count": 161,
+    "predecessor_native_sha256": "80f08255e6104fcc5c373852094f5700cd3c01e77b7babc0b056cc7835f2bb53",
     "source_sha256": {
       "tests/backups_native.php": "92ba3b341e3bae4b53c2372ce7aedc23065f6170095cbd0208e3adba5aaf54ce"
     }
   },
   "backups_browser_extension": {
-    "hook": "        from backups_cases import run_browser as backups_browser\n        backups_browser(globals(),browser)\n",
-    "source_sha256": "a5686cb1a26f375eb656c938c1350033a054471ed6075c1266d6729efcb5e734",
-    "predecessor_sha256": "71dc6699f2e92b23af99b446f17de89ba9a7ad928af9e37283b802a2c01c7bf0"
+    "hook": "            from backups_cases import run_browser as backups_browser\n            backups_browser(globals(),browser)\n",
+    "source_sha256": "0a1f1248faaef87afa5ce07c03118bd4f5163035f73e6fe3715cc5b8e36ef114",
+    "predecessor_sha256": "254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10"
   }
 }

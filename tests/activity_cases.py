@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'activity-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.9.0',dest)
@@ -20,6 +21,7 @@ def upgrade():
     check('Actual 1.9 update preserves configuration guards private ZIPs media and master key',all(p.read_bytes()==b for p,b in preserved.items()))
     owner=requests.Session();root=BASE+'/activity-upgrade/admin/index.php';url=root+'?view=activity';portal=BASE+'/activity-upgrade/portal/index.php'
     submit(owner,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),owner,root,'activityup_',before,settings,preserved)
     r=submit(owner,url,'activity_setup',{'password':'Synthetic upgrade passphrase 2026'});check('Actual 1.9 owner enables empty per-person read state','Workspace activity is enabled' in r.text and db('SELECT * FROM activityup_activity_reads')==[])
     check('Actual 1.9 activity setup preserves retained business and delivery records',all(db('SELECT * FROM activityup_'+t)==rows for t,rows in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings))
@@ -28,6 +30,8 @@ def upgrade():
     r=client.get(portal+'?activity=1');published=next(v for v in before['website_releases'] if v['status']=='published');draft=next(v for v in before['website_releases'] if v['status']=='draft')
     check('Retained 1.9 client sees studio review invoice receipt and published ZIP updates',all(x in r.text for x in ['Studio message','Review published','Invoice issued','Payment history updated',published['id']]) and draft['id'] not in r.text)
     response=client.get(portal+'?download_release='+published['id']);check('Retained published website downloads unchanged after 1.9 activity upgrade',response.content==(ROOT/'test-runtime/activity-upgrade.zip').read_bytes())
+    r=owner.get(root+'?view=payments')
+    if 'Enable payment preparation' in r.text:r=submit(owner,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Retained invoice balance renders after activity setup','$375.00' in owner.get(root+'?view=invoice-payments&invoice_id=3').text)
     r=submit(owner,root+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Retained protected credentials decrypt after 1.9 activity upgrade','Credentials protected and saved' in r.text)
 

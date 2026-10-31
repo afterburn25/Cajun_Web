@@ -10,5 +10,5 @@ function provider_forwarding_admin_action(string $action):never {
         provider_forwarding_configure(posted('event_id',32),posted('link_id',32),posted('permission_id',32),posted('context',64),posted('enabled',1)==='1',$number('daily_limit',20),$number('hours',720),posted('permission_confirm',1)==='1',$password);flash('Forwarding request permission saved. No forwarding was activated.');
     }elseif($action==='provider_inventory_forwarding_review'){
         provider_forwarding_change(posted('request_id',32),posted('expected_event',32),posted('event_id',32),posted('command',7),posted('review_note',1000),null,$password);flash('Review saved. Email delivery is unchanged.');
-    }else throw new InvalidArgumentException('Unknown forwarding request action.');redirect(admin_url('provider-settings').'#forwarding-requests');
+    }else throw new InvalidArgumentException('Unknown forwarding request action.');redirect(admin_url('provider-settings',['section'=>'website']).'#forwarding-requests');
 }

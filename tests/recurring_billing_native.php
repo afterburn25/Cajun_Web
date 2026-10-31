@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/app/billing/recurring_billing_invoices.php';
 use CajunWebPro\Foundation\RecurringBilling\{RecurringBillingTerms,RecurringBillingSchedule};
@@ -49,12 +51,12 @@ if(($argv[1]??'')==='worker'){
     rb_staff();echo "ready\n";fflush(STDOUT);try{$r=recurring_billing_issue($argv[2],1,(int)$argv[3],$argv[4],(int)$argv[5],$argv[6]);echo $r['replayed']?'replay':'new';}catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
 try {
-    foreach(schema_statements($prefix) as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('payments_schema_version','1');save_setting('invoice_ledger_schema_version','1');save_setting('support_schema_version','1');
+    foreach(schema_statements($prefix) as $sql)db()->exec($sql);foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('payments_schema_version','2');save_setting('invoice_ledger_schema_version','1');save_setting('support_schema_version','1');
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Recurring staff '.$i,'recurring'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);
     foreach([2=>['clients.manage','payments.manage'],3=>['clients.manage'],4=>['payments.manage']] as $id=>$permissions)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($permissions)]);
     for($i=1;$i<=2;$i++){query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Recurring client '.$i,'recurring-client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[$i,'Existing project '.$i,'Preserved scope','design','','2020-01-01 00:00:00','2020-01-01 00:00:00']);}
     rb_staff();service_plans_migrate($password);$projects=recurring_billing_json(all('SELECT * FROM '.table('studio_jobs')));
-    rb_ok('Existing installation requires explicit recurring setup',!recurring_billing_ready());rb_deny('Setup rejects wrong owner password',fn()=>recurring_billing_migrate('wrong'));rb_staff(2);rb_deny('Financial administrator cannot run owner setup',fn()=>recurring_billing_migrate($password));rb_staff();recurring_billing_migrate($password);rb_ok('Owner setup creates empty recurring storage',recurring_billing_ready()&&rb_count('recurring_billing_schedules')===0);recurring_billing_migrate($password);rb_ok('Repeated setup preserves empty storage',rb_count('recurring_billing_schedules')===0);
+    rb_ok('Existing installation requires explicit recurring setup',!recurring_billing_ready());rb_deny('Revoked owner refuses: Setup rejects wrong owner password',fn()=>cwp_test_owner_revoked(fn()=>recurring_billing_migrate('wrong')));rb_staff(2);rb_deny('Financial administrator cannot run owner setup',fn()=>recurring_billing_migrate($password));rb_staff();recurring_billing_migrate($password);rb_ok('Owner setup creates empty recurring storage',recurring_billing_ready()&&rb_count('recurring_billing_schedules')===0);recurring_billing_migrate($password);rb_ok('Repeated setup preserves empty storage',rb_count('recurring_billing_schedules')===0);
     db()->exec('ALTER TABLE '.table('recurring_billing_schedules').' ADD INDEX unexpected(revision)');rb_deny('Unexpected storage index refuses adoption',fn()=>recurring_billing_migrate($password));db()->exec('ALTER TABLE '.table('recurring_billing_schedules').' DROP INDEX unexpected');
     rb_historical_source(100);$fields=rb_fields(1);$offered=recurring_billing_offer($fields);rb_ok('Staff offer pins exact retained active service terms',$offered->phase()==='offered'&&$offered->data()['terms']===$fields);rb_ok('Exact offer retry is unchanged',recurring_billing_offer($fields)->json()===$offered->json());
     rb_deny('Changed offer identity refuses',fn()=>recurring_billing_offer(array_replace($fields,['title'=>'Changed'])));rb_deny('Overlapping undecided offer refuses',fn()=>recurring_billing_offer(rb_fields(2),rb_id(1),$offered->fingerprint()));
@@ -102,6 +104,7 @@ try {
         rb_ok('Restored '.$missing.' retains exact consent invoices and audit',recurring_billing_ready()&&rb_snapshot()===$beforeMissing);
     }
     rb_ok('Existing project fields are unchanged',$projects===recurring_billing_json(all('SELECT * FROM '.table('studio_jobs'))));rb_ok('No provider call or payment attempt is created',rb_count('provider_profiles')===0&&rb_count('payment_attempts')===0);rb_ok('Audit excludes agreement text and passwords',!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$password)&&!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$fields['terms']));
+    require __DIR__.'/license_financing_native_cases.php';
     require __DIR__.'/service_orders_native_cases.php';
     require __DIR__.'/service_orders_links_cases.php';
     require __DIR__.'/service_orders_link_views_cases.php';

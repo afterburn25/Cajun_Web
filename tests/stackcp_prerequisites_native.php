@@ -1,6 +1,8 @@
 <?php
 /** Disposable native database and actual application authority; no provider client or network callback. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if (PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/app/providers/stackcp_assignments.php';
 use CajunWebPro\Foundation\Provider\TransportResponse;
@@ -41,7 +43,7 @@ try {
     $none=provider_stackcp_auth_status($profile);sc_ok('Unprepared status creates no auth tables and never promises login',$none===['prepared'=>false,'status'=>'unprepared','login_ready'=>false]&&!provider_stackcp_exists('auth'));
     sc_ok('Unprepared assignment is also a side-effect-free finite status',provider_stackcp_assignment_status($profile,701)['status']==='unprepared'&&!provider_stackcp_exists('assignment'));
     db()->beginTransaction();save_setting('scp_transaction_probe','retain');sc_deny('Preparation rejects caller transaction before any DDL',fn()=>provider_stackcp_auth_prepare($password));sc_ok('Preparation preserves caller transaction and absent family',db()->inTransaction()&&!provider_stackcp_exists('auth'));db()->rollBack();sc_ok('Caller rollback remains effective',one('SELECT name FROM '.table('settings').' WHERE name=?',['scp_transaction_probe'])===null);
-    sc_deny('Preparation reauthenticates owner',fn()=>provider_stackcp_auth_prepare('wrong'));sc_actor(2);sc_deny('Administrator with all permissions cannot prepare auth',fn()=>provider_stackcp_auth_prepare($password));sc_actor();
+    sc_deny('Revoked owner refuses: Preparation reauthenticates owner',fn()=>cwp_test_owner_revoked(fn()=>provider_stackcp_auth_prepare('wrong')));sc_actor(2);sc_deny('Administrator with all permissions cannot prepare auth',fn()=>provider_stackcp_auth_prepare($password));sc_actor();
     save_setting('provider_stackcp_auth_schema_version','future');sc_deny('Future marker refuses downgrade',fn()=>provider_stackcp_auth_prepare($password));query('DELETE FROM '.table('settings').' WHERE name=?',['provider_stackcp_auth_schema_version']);
     sc_ok('Preparation audit fault rolls back marker and counters',sc_fault('stackcp_auth_prepared',fn()=>provider_stackcp_auth_prepare($password))&&!sc_ready('auth'));
     provider_stackcp_auth_prepare($password);$audits=sc_count('audit');provider_stackcp_auth_prepare($password);sc_ok('Repeated preparation validates without new audit',sc_ready('auth')&&sc_count('audit')===$audits);

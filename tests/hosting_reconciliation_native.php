@@ -1,6 +1,8 @@
 <?php
 /** Disposable native MariaDB fixtures. Synthetic journals are not provider evidence. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -124,7 +126,7 @@ try {
     hr_actor();hosting_records_migrate($password);provider_settings_migrate($password);
     $profileId=provider_settings_save('',0,'Synthetic reconciliation provider',true,'synthetic-local-only-key',$password);hosting_operations_migrate($password);
     hr_ok('Existing operation setup does not activate reconciliation storage',!hosting_reconciliation_ready());
-    hr_deny('Reconciliation setup requires the owner password',fn()=>hosting_reconciliation_migrate('wrong'));
+    hr_deny('Revoked owner refuses: Reconciliation setup requires the owner password',fn()=>cwp_test_owner_revoked(fn()=>hosting_reconciliation_migrate('wrong')));
     hr_actor(2);hr_deny('Administrator cannot prepare reconciliation storage',fn()=>hosting_reconciliation_migrate($password));hr_actor();
     $_GET['support']='';hr_deny('Support selector cannot prepare reconciliation storage',fn()=>hosting_reconciliation_migrate($password));unset($_GET['support']);
     db()->beginTransaction();hr_deny('Reconciliation setup refuses an inherited transaction',fn()=>hosting_reconciliation_migrate($password));db()->rollBack();

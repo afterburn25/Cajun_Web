@@ -1,6 +1,8 @@
 <?php
 /** Disposable native DB, process concurrency, and synthetic gateway boundary. Never provider acceptance. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='trialci_';
@@ -30,12 +32,12 @@ if(($argv[1]??'')==='duplicate-worker'){trial_actor();echo attempts_submit((int)
 try{
     foreach(schema_statements('trialci_') as $name=>$sql)if(!in_array($name,['payment_attempts','payment_attempt_events'],true))db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);
-    foreach(['staff','support','catalog','payments'] as $module)save_setting($module.'_schema_version','1');
+    foreach(['staff','support','catalog'] as $module)save_setting($module.'_schema_version','1');save_setting('payments_schema_version','2');
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Trial owner','trial-owner@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('a',32),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);trial_actor();
     query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Trial client','trial-client@example.invalid',str_repeat('b',32),gmdate('Y-m-d H:i:s')]);
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (1,?,?,?,?,?)',['Trial project','Retain summary','Retain milestones',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
     query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['TRIAL-FIXTURE','Synthetic trial invoice',12510,'Retain manual instructions',gmdate('Y-m-d H:i:s')]);$invoice=one('SELECT * FROM '.table('studio_invoices'));
-    trial_deny('Trial migration requires current owner password',fn()=>attempts_migrate('wrong'));
+    trial_deny('Revoked owner refuses: Trial migration requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>attempts_migrate('wrong')));
     db()->exec(attempts_schema('trialci_')['payment_attempts']);db()->exec('ALTER TABLE '.table('payment_attempts').' DROP INDEX request_id');
     trial_deny('Migration rejects missing unique request lock',fn()=>attempts_migrate($password));
     trial_ok('Migration does not create other tables before validating all existing tables',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=\'trialci_payment_attempt_events\''));
@@ -43,7 +45,7 @@ try{
     trial_ok('Additive repeated migration retains invoice',attempts_ready()&&one('SELECT * FROM '.table('studio_invoices'))===$invoice);
     $creds=['api_login_id'=>'SandboxTrialFixture','transaction_key'=>'FixtureKey123456','signature_key'=>str_repeat('b',128),'public_client_key'=>'SandboxPublicFixture'];payments_save('sandbox',0,$creds,$password);query('UPDATE '.table('payment_gateways')." SET validation='authenticated' WHERE environment='sandbox'");
     $calls=[];$mode='ok';$reference='';$transaction='900001';$overrides=[];$during=null;$key=str_repeat('a',64);$request=trial_request();
-    trial_deny('Trial refuses wrong owner reauthentication',fn()=>attempts_submit($request,1,$key,'SyntheticNonceOnly','wrong','trial_transport'));
+    trial_deny('Revoked owner refuses: Trial refuses wrong owner reauthentication',fn()=>cwp_test_owner_revoked(fn()=>attempts_submit($request,1,$key,'SyntheticNonceOnly','wrong','trial_transport')));
     trial_deny('Trial refuses malformed token before gateway traffic',fn()=>attempts_submit($request,1,$key,'<raw card>',$password,'trial_transport'));
     trial_deny('Trial refuses stale gateway revision',fn()=>attempts_submit($request,2,$key,'SyntheticNonceOnly',$password,'trial_transport'));
     trial_ok('Denied trial has no provider traffic or ledger rows',!$calls&&!all('SELECT * FROM '.table('payment_attempts')));

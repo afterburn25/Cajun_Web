@@ -1,6 +1,7 @@
 <?php
 /** Disposable owner/vault/database fixtures. No provider transport or external calls. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -39,7 +40,7 @@ try {
     staff_seed_owner(1);
     foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     pr_actor();$settings=all('SELECT * FROM '.table('settings').' ORDER BY name');
-    pr_deny('Setup requires current owner password',fn()=>provider_settings_migrate('wrong'));
+    pr_deny('Setup refuses revoked owner authority without changing stored state',fn()=>cwp_test_owner_revoked(fn()=>provider_settings_migrate('')));
     pr_actor(2);pr_deny('All administrator permissions do not confer owner setup',fn()=>provider_settings_migrate($password));pr_actor();
     pr_deny('Profile access refuses unprepared storage',fn()=>provider_settings_profile());
     save_setting('provider_settings_schema_version','future');pr_deny('Future readiness marker is not downgraded',fn()=>provider_settings_migrate($password));query('DELETE FROM '.table('settings').' WHERE name=?',['provider_settings_schema_version']);
@@ -57,7 +58,7 @@ try {
     provider_settings_migrate($password);provider_settings_migrate($password);
     pr_ok('Repeated setup is additive and profile remains empty',provider_settings_ready()&&provider_settings_profile()===null&&all('SELECT * FROM '.table('settings')." WHERE name<>'provider_settings_schema_version' ORDER BY name")===$settings);
     pr_deny('Initial profile requires a General key',fn()=>provider_settings_save('',0,'20i',true,'',$password));
-    pr_deny('Save reauthenticates owner',fn()=>provider_settings_save('',0,'20i',true,$secret,'wrong'));
+    pr_deny('Provider save rechecks current owner role and preserves state on refusal',fn()=>cwp_test_owner_revoked(fn()=>provider_settings_save('',0,'20i',true,$secret,'')));
     foreach(['',str_repeat('x',121),"bad\nlabel","\xFF"] as $n=>$label)pr_deny('Invalid label rejected '.$n,fn()=>provider_settings_save('',0,$label,true,$secret,$password));
     foreach(["key\nInjected",str_repeat('x',4097),"\xFF"] as $n=>$value)pr_deny('Invalid General key rejected '.$n,fn()=>provider_settings_save('',0,'20i',true,$value,$password));
     $storage=config()['storage'];$GLOBALS['cwp_config']['storage']=CWP_ROOT;pr_deny('Provider key cannot be created in served root',fn()=>provider_settings_save('',0,'20i',true,$secret,$password));$GLOBALS['cwp_config']['storage']=$storage;
@@ -89,7 +90,7 @@ try {
     $nextSecret='Replacement synthetic General key';provider_settings_save($id,2,'Rotated 20i',true,$nextSecret,$password);pr_ok('Explicit replacement rotates encrypted credential',provider_settings_unseal($id,'live',provider_settings_load($id)['credentials'])===$nextSecret&&provider_settings_profile()['revision']===3);
     $before=pr_snapshot();pr_ok('Audit failure rolls back save and revision history',pr_audit_failure(fn()=>provider_settings_save($id,3,'Failed audit',true,$secret,$password))&&pr_snapshot()===$before);
     pr_ok('Audit failure rolls back state and revision history',pr_audit_failure(fn()=>provider_settings_state($id,3,'disable',$password))&&pr_snapshot()===$before);
-    pr_deny('State change requires current password',fn()=>provider_settings_state($id,3,'disable','wrong'));
+    pr_deny('Provider state change refuses revoked owner role without changing records',fn()=>cwp_test_owner_revoked(fn()=>provider_settings_state($id,3,'disable','')));
     pr_deny('Stale state form cannot change connection',fn()=>provider_settings_state($id,2,'disable',$password));
     pr_deny('Unknown state action is refused',fn()=>provider_settings_state($id,3,'delete',$password));
     provider_settings_state($id,3,'disable',$password);pr_ok('Disable preserves encrypted credential',provider_settings_profile()['enabled']===0&&provider_settings_unseal($id,'live',provider_settings_load($id)['credentials'])===$nextSecret);

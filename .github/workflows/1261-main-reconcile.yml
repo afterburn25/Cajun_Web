@@ -1,0 +1,98 @@
+name: Combined source provenance and release retention
+on:
+  push:
+    branches: [chatgpt/1261-main-reconcile-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: main-reconcile-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  reconcile:
+    if: github.ref == 'refs/heads/chatgpt/1261-main-reconcile-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source_sha: ${{ steps.record.outputs.source_sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the recorded combined ancestry without source mutation
+        id: record
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git merge-base --is-ancestor 771556e701103a3db9f757da05da9b2357a4247b HEAD
+          git merge-base --is-ancestor 1c44ca120e7768998fafa720b3e1c4c85990c330 HEAD
+          git merge-base --is-ancestor 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD
+          test -z "$(git status --porcelain)"
+          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Preserve exact reconciliation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reconciliation-source-${{ github.sha }}
+          path: docs/MAIN_RECONCILIATION_1.26.1.json
+          if-no-files-found: warn
+          retention-days: 14
+  verify:
+    needs: reconcile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CWP_SOURCE_SHA: ${{ needs.reconcile.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.reconcile.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require preserved main ancestry and exact reviewed combined application
+        run: |
+          git merge-base --is-ancestor 0099b9190756c31e690b83b2cdf93c366de03f5c HEAD
+          git merge-base --is-ancestor 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD
+          git diff --exit-code 771556e701103a3db9f757da05da9b2357a4247b HEAD -- site foundation tools/structure tools/build.py VERSION START-HERE.txt
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          python3 tools/check_docs.py
+      - name: Preserve sandbox credentials and lifecycle security contracts
+        run: |
+          mkdir -p qa/main-reconciliation
+          python3 tests/sandbox_workflow_contract.py
+          python3 tests/anet_sandbox_runtime_contract.py
+          php tests/licensing_action_boundary.php > qa/main-reconciliation/licensing-boundary.json
+          php tests/licensing_workspace_contract.php > qa/main-reconciliation/licensing-workspace.json
+          php tests/master_portal_policy.php
+      - name: Run session hosting and financial regressions
+        run: python3 tools/integration/portable_checks.py --root . --out qa/main-reconciliation/portable
+      - name: Verify clean-source packaging and all build refusal checks
+        run: |
+          python3 tools/build.py --commit "$CWP_SOURCE_SHA" > qa/main-reconciliation/build.log 2>&1
+          python3 tests/build_guards.py > qa/main-reconciliation/build-guards.log 2>&1
+          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          r=json.loads(Path('docs/MAIN_RECONCILIATION_1.26.1.json').read_text())
+          assert r['runtime_matches_delivered_release'] is True  # Historical immutable 1.26.1 receipt.
+          combined=json.loads(Path('docs/CONSOLIDATION_AFTER_BACKUPS.json').read_text())
+          assert combined['main']=='1c44ca120e7768998fafa720b3e1c4c85990c330'
+          report={'passed':True,'source_sha':os.environ['CWP_SOURCE_SHA'],'main_ancestor':combined['main'],'release_ancestor':r['release_sha'],'reviewed_combined_runtime':'771556e701103a3db9f757da05da9b2357a4247b','runtime_matches_reviewed_combination':True,'runtime_byte_identical_to_delivered_release':False,'scope':'Current combined runtime including reviewed backups; original delivered archive stays immutable. Sandbox isolation, portable policies and clean-source build; full native/installed checks remain separate. No live operations.'}
+          Path('qa/main-reconciliation/results.json').write_text(json.dumps(report,indent=2)+'\n')
+          PY
+      - name: Preserve reports without replacing delivered ZIPs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: main-reconciliation-checks-${{ needs.reconcile.outputs.source_sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14

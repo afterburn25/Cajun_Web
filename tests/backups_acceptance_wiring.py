@@ -7,7 +7,7 @@ def predecessor_browser(root, contract):
     if item is None:
         return driver
     hook = item['hook']
-    expected = '        from backups_cases import run_browser as backups_browser\n        backups_browser(globals(),browser)\n'
+    expected = '            from backups_cases import run_browser as backups_browser\n            backups_browser(globals(),browser)\n'
     if hook != expected or driver.count(hook) != 1:
         raise AssertionError('Backup browser hook must occur exactly once')
     if hashlib.sha256(driver.encode()).hexdigest() != item['source_sha256']:

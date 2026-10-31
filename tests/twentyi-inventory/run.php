@@ -75,11 +75,11 @@ ok('Register and descriptor sets agree', array_keys(InventoryRegister::all()) ==
 $register = InventoryRegister::all();
 ok('Every registered operation is a documented GET', array_reduce($register, fn($c, $cap) => $c && $cap->method === 'GET', true));
 ok('Every registered path is a literal documented template', array_reduce($register, fn($c, $cap) => $c && str_starts_with($cap->pathTemplate, '/'), true));
-ok('Only packages.list carries authenticated-read evidence', count(array_filter($register, fn($cap) => $cap->evidence === InventoryCapability::EVIDENCE_AUTHENTICATED_READ)) === 1);
+ok('Authenticated-read evidence is limited to existing packages and bounded package types', array_keys(array_filter($register, fn($cap) => $cap->evidence === InventoryCapability::EVIDENCE_AUTHENTICATED_READ)) === [InventoryRead::PACKAGES_LIST, InventoryRead::PACKAGE_TYPES]);
 ok('Package detail is a documented sensitive read', InventoryRegister::get(InventoryRead::PACKAGE_DETAIL)->risk === InventoryCapability::RISK_SENSITIVE_READ);
-ok('Package types schema is honestly unknown', InventoryRegister::get(InventoryRead::PACKAGE_TYPES)->schemaKnown === false);
+ok('Package types exposes the reviewed read-only schema without claiming cloud acceptance', InventoryRegister::get(InventoryRead::PACKAGE_TYPES)->schemaKnown === true && InventoryRegister::get(InventoryRead::PACKAGE_TYPES)->risk === InventoryCapability::RISK_READ && InventoryRegister::get(InventoryRead::CLOUD_SERVERS_LIST)->evidence === InventoryCapability::EVIDENCE_DOCUMENTED);
 ok('Account balance schema is honestly unknown', InventoryRegister::get(InventoryRead::ACCOUNT_BALANCE)->schemaKnown === false);
-ok('Only the evidenced list shape is projectable', InventoryRegister::projectable(InventoryRead::PACKAGES_LIST) && !InventoryRegister::projectable(InventoryRead::PACKAGE_DETAIL) && !InventoryRegister::projectable(InventoryRead::PACKAGE_TYPES) && !InventoryRegister::projectable(InventoryRead::ACCOUNT_BALANCE));
+ok('Projectable metadata stays an exact closed set excluding details balance and credentials', array_values(array_filter(InventoryRead::operations(), fn($operation) => InventoryRegister::projectable($operation))) === [InventoryRead::PACKAGES_LIST, InventoryRead::PACKAGE_TYPES, InventoryRead::DOMAINS_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST]);
 deny('Register refuses unknown operations', fn() => InventoryRegister::get('vps.power'));
 deny('A capability cannot claim a non-GET method', fn() => new InventoryCapability('x', 'POST', '/x', InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false));
 

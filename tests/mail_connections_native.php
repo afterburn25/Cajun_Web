@@ -1,6 +1,8 @@
 <?php
 /** Disposable database and injected transport boundaries. Real TLS is covered separately. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 use CajunWebPro\Foundation\MailTransport\ProbeFailure;
@@ -42,7 +44,7 @@ try {
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",[json_encode(['mail.read','mail.send'])]);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (3,'owner',1,'[]')");
     save_setting('mail_accounts_schema_version','1');mc_actor();
     $id=mail_accounts_save('',0,mc_input(),true,['imap_password'=>'Synthetic private password','smtp_password'=>'Synthetic private password'],$password);
-    mc_deny('Connection setup requires current owner password',fn()=>mail_connections_migrate('wrong'));
+    mc_deny('Revoked owner refuses: Connection setup requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>mail_connections_migrate('wrong')));
     mc_actor(2);mc_deny('Mailbox permissions cannot enable connection checks',fn()=>mail_connections_migrate($password));mc_actor();
     mc_deny('Checking is unavailable before explicit setup',fn()=>mc_check($id));
     mc_ok('Setup audit failure does not mark checks ready',mc_audit_failure(fn()=>mail_connections_migrate($password))&&!mail_connections_ready());
@@ -65,7 +67,7 @@ try {
     query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=1',[$id]);mc_deny('Revoked assignment prevents all connection checks',fn()=>mc_check($id));mc_grant($id);
     query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');mc_deny('Disabled staff identity prevents all connection checks',fn()=>mc_check($id));query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');mc_actor();
     query('UPDATE '.table('staff_profiles')." SET role='administrator',permissions=? WHERE user_id=1",[json_encode(['mail.read','mail.send'])]);mc_deny('Changed owner role is refreshed before checking',fn()=>mc_check($id));query('UPDATE '.table('staff_profiles')." SET role='owner',permissions='[]' WHERE user_id=1");
-    mc_deny('Wrong current password prevents DNS and transport',fn()=>mail_connections_check($id,1,'imap','wrong','mc_resolve','mc_transport'));
+    mc_deny('Revoked owner refuses: Wrong current password prevents DNS and transport',fn()=>cwp_test_owner_revoked(fn()=>mail_connections_check($id,1,'imap','wrong','mc_resolve','mc_transport')));
     mc_deny('Stale account revision prevents DNS and transport',fn()=>mc_check($id,99));
     mc_deny('Unknown protocol is rejected',fn()=>mc_check($id,1,'pop3'));
     mc_ok('No network boundary was called by denied requests',$resolveCalls===0&&$transportCalls===0);

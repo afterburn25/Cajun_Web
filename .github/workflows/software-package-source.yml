@@ -1,0 +1,36 @@
+name: Software package source integrity
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/**'
+      - 'foundation/**'
+      - 'tools/build.py'
+      - 'tools/directory-map.json'
+      - '.github/workflows/software-package-source.yml'
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/**'
+      - 'foundation/**'
+      - 'tools/build.py'
+      - 'tools/directory-map.json'
+      - '.github/workflows/software-package-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  package-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh and verify canonical shipping source
+        run: python3 tools/build.py --refresh
+      - name: Require generated installer source to be current
+        run: git diff --exit-code -- site foundation

@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'ledger-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.7.0',dest)
@@ -19,6 +20,7 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.7 update preserves configuration locks private media and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/ledger-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),up,url,'ledgerup_',before,settings,preserved)
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'wrong','confirm':'1'});check('Ledger upgrade requires owner reauthentication','current password' in r.text.lower())
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.7 ledger upgrade succeeds','Invoice payment history enabled' in r.text)
     check('Actual 1.7 retains prior invoices requests trials notifications and data',all(db('SELECT * FROM ledgerup_'+t)==v for t,v in before.items()))
@@ -36,6 +38,7 @@ def run_browser(env,browser):
     check('Fresh setup creates empty enabled real-payment ledger',db("SELECT value FROM fresh_settings WHERE name='invoice_ledger_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_invoice_payments')==[])
     admin=requests.Session();root=BASE+'/existing/admin/index.php';portal=BASE+'/existing/portal/index.php';url=root+'?view=invoice-payments';job=root+'?view=studio-job&id=1'
     submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
+    if 'Enable payment preparation' in admin.get(root+'?view=payments').text:submit(admin,root+'?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
     original=db('SELECT * FROM ci_studio_invoices');r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1','csrf':'invalid'});check('Ledger enablement rejects forged CSRF',not db("SELECT value FROM ci_settings WHERE name='invoice_ledger_schema_version'") and 'session expired' in r.text.lower())
     r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables ledger without editing prior invoices','Invoice payment history enabled' in r.text and db('SELECT * FROM ci_studio_invoices')==original)
     submit(admin,job,'studio_invoice',{'title':'Ledger design phase','amount':'1250.10','instructions':'Synthetic external payment instructions; do not send money.'});invoice=db("SELECT * FROM ci_studio_invoices WHERE title='Ledger design phase'")[0];iid=invoice['id'];target=url+'&invoice_id='+str(iid)

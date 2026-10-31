@@ -10,7 +10,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
         $verified=password_verify($password,$hash);
         if(!$u||$u['password_hash']===''||!$verified||!staff_profile($u)){log_event('auth.failed','Sign-in rejected');throw new InvalidArgumentException('The email or password is not correct.');}
         if(password_needs_rehash($hash,PASSWORD_DEFAULT)){query('UPDATE '.table('users').' SET password_hash=? WHERE id=? AND auth_version=?',[password_hash($password,PASSWORD_DEFAULT),$u['id'],$u['auth_version']]);}
-        support_end_browser('admin-login');login_user($u);query('DELETE FROM '.table('rate_limits').' WHERE expires<?',[time()]);query('DELETE FROM '.table('resets').' WHERE expires<?',[time()]);log_event('auth.login');redirect(admin_url(staff_home($u)));
+        support_end_browser('admin-login');login_user($u);query('DELETE FROM '.table('rate_limits').' WHERE expires<?',[time()]);query('DELETE FROM '.table('resets').' WHERE expires<?',[time()]);log_event('auth.login');redirect(master_portal_login_destination($u));
     }
     if($action==='forgot'){
         $email=strtolower(posted('email',190));

@@ -4,6 +4,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'trial-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.5.0',dest)
@@ -12,12 +13,13 @@ def upgrade():
     shutil.copyfile(ROOT/'test-runtime/trial-upgrade-config.php',dest/'config.php');(dest/'.installed.php').write_text('<?php exit; ?>original guard');(dest/'unrelated.txt').write_text('Retain unrelated file')
     preserved={p:p.read_bytes() for p in [dest/'config.php',dest/'.installed.php',dest/'unrelated.txt',ROOT/'test-runtime/trial-upgrade-private/media/retained.php',ROOT/'test-runtime/trial-upgrade-private/payment-master.key']}
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','payment_gateways','payment_requests','leads','projects']
-    before={t:db('SELECT * FROM trialup_'+t) for t in tables}
+    before={t:db('SELECT * FROM trialup_'+t) for t in tables};settings=db('SELECT * FROM trialup_settings')
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
     from structure_helpers import apply_file_update
     apply_file_update(globals(),dest)
     check('Original 1.5 update preserves config guard private files and external master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/trial-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),up,url,'trialup_',before,settings,preserved)
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'wrong','confirm':'1'});check('Trial upgrade refuses wrong owner password','current password' in r.text.lower())
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Original 1.5 upgrade enables additive sandbox history','Sandbox trial history enabled' in r.text)
     check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(db('SELECT * FROM trialup_'+t)==v for t,v in before.items()))
@@ -28,6 +30,9 @@ def run_browser(env,browser):
     globals().update(env);upgrade();url=BASE+'/existing/admin/index.php?view=payment-trials'
     admin=requests.Session();submit(admin,BASE+'/existing/admin/index.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=admin.get(url)
+    if 'Enable sandbox trials' not in r.text:
+        submit(admin,BASE+'/existing/admin/index.php?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
+        r=admin.get(url)
     if 'Enable sandbox trials' in r.text:r=submit(admin,url,'payments_trial_setup',{'owner_password':OWNER,'confirm':'1'})
     check('Owner sees sandbox history and truthful real-payment boundary',r.status_code==200 and 'Sandbox attempt history' in r.text and 'Test card data only' in r.text)
     check('Unauthenticated visitor cannot see sandbox trial data','Sandbox attempt history' not in requests.get(url).text)

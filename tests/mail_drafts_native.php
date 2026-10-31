@@ -1,6 +1,7 @@
 <?php
 /** Disposable database/current-authority fixtures. No SMTP, IMAP or customer data. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -47,7 +48,7 @@ try {
     foreach([2=>['administrator',['mail.send','mail.templates.manage']],3=>['administrator',['mail.read']],4=>['owner',[]],5=>['administrator',array_keys(staff_permissions())]] as $id=>[$role,$permissions])query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode($permissions)]);
     dr_actor();mail_accounts_migrate($password);mail_templates_migrate($password);$a=dr_account('Draft account A');$b=dr_account('Draft account B');$key=file_get_contents($private.'/mail-master.key');
     $settings=all('SELECT * FROM '.table('settings').' ORDER BY name');
-    dr_deny('Draft storage setup requires current owner password',fn()=>mail_drafts_migrate('wrong'));
+    dr_deny('Draft setup refuses revoked owner authority without changing stored state',fn()=>cwp_test_owner_revoked(fn()=>mail_drafts_migrate('')));
     dr_actor(5);dr_deny('All administrator grants do not confer owner setup',fn()=>mail_drafts_migrate($password));dr_actor();
     dr_deny('Draft access refuses unprepared storage',fn()=>mail_drafts_list($a));
     save_setting('mail_drafts_schema_version','future');dr_deny('Future draft storage is not downgraded',fn()=>mail_drafts_migrate($password));query('DELETE FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version']);

@@ -35,6 +35,7 @@ def run(env):
     original_invoices = before['studio_invoices']
     keys = {name: (private / name).read_bytes()
             for name in ['mail-master.key', 'provider-master.key', 'retained-customer.php']}
+    submit(owner, admin + '?view=payments', 'payments_migrate', {'owner_password': password, 'confirm': '1'})
     check(label + ' recurring upgrade requires explicit owner preparation',
           'Prepare recurring billing' in owner.get(listing).text)
     submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})

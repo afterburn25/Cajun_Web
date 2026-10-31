@@ -1,0 +1,86 @@
+name: Software commerce fast native database checks
+on:
+  push:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
+      - 'site/app/billing/software_*.php'
+      - 'site/app/billing/authorize_net_*.php'
+      - 'site/app/licenses/software_*.php'
+      - 'site/database/schema/software_commerce_schema.php'
+      - 'site/database/migrations/software_commerce_migrate.php'
+      - '.github/workflows/software-commerce-native-fast.yml'
+  pull_request:
+    branches:
+      - main
+      - feature/software-license-commerce-20261025
+      - 'codex/**'
+    paths:
+      - 'tests/software_commerce_native.php'
+      - 'tests/software_domain_lifecycle_concurrency.php'
+      - 'site/app/billing/software_*.php'
+      - 'site/app/billing/authorize_net_*.php'
+      - 'site/app/licenses/software_*.php'
+      - 'site/database/schema/software_commerce_schema.php'
+      - 'site/database/migrations/software_commerce_migrate.php'
+      - '.github/workflows/software-commerce-native-fast.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  native-fast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports:
+          - 3306/tcp
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bind assigned database port
+        run: echo "CWP_TEST_PORT=${{ job.services.mariadb.ports[3306] }}" >> "$GITHUB_ENV"
+      - name: Install PHP runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php-cli php-mysql php-zip php-curl php-mbstring
+      - name: Write isolated test-only config
+        run: |
+          mkdir -p test-runtime/software-private qa
+          php -r '$storage=realpath("test-runtime/software-private");$cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>$storage,"key"=>str_repeat("a",64),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"swci_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");'
+      - name: Run full software commerce native suite
+        shell: bash
+        run: |
+          git rev-parse HEAD > qa/software-commerce-native-commit.txt
+          git rev-parse 'HEAD^{tree}' > qa/software-commerce-native-tree.txt
+          sha256sum site/app/licenses/software_grants.php tests/software_commerce_native.php tests/software_domain_lifecycle_concurrency.php > qa/software-commerce-native-source.sha256
+          php tests/software_commerce_native.php 2>&1 | tee qa/software-commerce-native.log
+      - name: Preserve native regression evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: software-commerce-native-${{ github.run_id }}
+          path: qa/software-commerce-native*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Verify shipping source remained unchanged
+        if: always()
+        run: git diff --exit-code -- site foundation

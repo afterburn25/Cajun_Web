@@ -4,7 +4,7 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 // GENERATED from canonical bootstrap modules by tools/build.py.
 
 // config/defaults.php
-const CWP_VERSION = '1.25.0';
+const CWP_VERSION = '1.26.1';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 
 // includes/security/input.php
@@ -43,6 +43,23 @@ function security_headers(): void {
     header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-" . $GLOBALS['cwp_nonce'] . "'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
     header('Cache-Control: no-store, private');
     if (https_request()) header('Strict-Transport-Security: max-age=31536000');
+}
+
+
+/** Narrow payment-page CSP extension for the documented Authorize.net Accept.js environments. */
+function authorize_net_security_headers(string $mode): void {
+    if(headers_sent())throw new LogicException('Authorize.net CSP must be selected before page output.');
+    if(!in_array($mode,['sandbox','production'],true))throw new InvalidArgumentException('Invalid payment CSP mode.');
+    $nonce=(string)($GLOBALS['cwp_nonce']??'');
+    if($nonce==='')throw new LogicException('Security headers must be initialized first.');
+    $script=$mode==='sandbox'?'https://jstest.authorize.net':'https://js.authorize.net';
+    // Accept.js tokenizes directly from the browser. Sandbox uses apitest;
+    // production deployments have historically used api/api2 endpoints, so
+    // restrict connect-src to those Authorize.net hosts only.
+    $connect=$mode==='sandbox'
+        ? 'https://apitest.authorize.net'
+        : 'https://api.authorize.net https://api2.authorize.net';
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-".$nonce."' ".$script."; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ".$connect."; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
 }
 
 function nonce(): string { return esc($GLOBALS['cwp_nonce'] ?? ''); }
@@ -102,6 +119,19 @@ function require_admin(): array { $u=admin_user(); if(!$u) redirect(admin_url('l
 
 function login_user(array $u): void { session_regenerate_id(true); $_SESSION['uid']=(int)$u['id']; $_SESSION['auth_version']=(string)$u['auth_version']; $_SESSION['login_at']=$_SESSION['last_activity']=time(); $_SESSION['csrf']=bin2hex(random_bytes(32)); query('UPDATE '.table('users').' SET last_login=? WHERE id=?',[gmdate('Y-m-d H:i:s'),$u['id']]); }
 
+/** Recheck the current administrator identity at action boundaries without password re-entry.
+ * Callers retain their own role, permission, CSRF, support and transaction guards.
+ * Never trust an actor captured before a role change, logout or credential rotation.
+ */
+function admin_session_matches(array $actor): bool {
+    if (array_key_exists('support', $_GET) || (function_exists('support_current') && support_current())) return false;
+    $current = admin_user();
+    if (!$current || !isset($actor['id'], $actor['auth_version'], $current['id'], $current['auth_version'])) return false;
+    if ((int)$actor['id'] <= 0 || (int)$actor['id'] !== (int)$current['id']) return false;
+    $version = (string)$actor['auth_version'];
+    return \CajunWebPro\Foundation\Access\AuthorizationVersion::matches((string)$current['auth_version'], $version);
+}
+
 // includes/database.php
 function db(): PDO {
     static $connection;
@@ -149,7 +179,7 @@ function admin_url(string $view='dashboard',array $params=[]): string { return s
 /** Release-versioned URLs prevent an old stylesheet surviving an upgrade. */
 
 function asset(string $path): string {
-    static $paths = ['mail-notices.js'=>'assets/js/mail-notices.js','mail-notices.css'=>'assets/css/mail-notices.css','activity.js'=>'assets/js/activity.js','admin.css'=>'assets/css/admin.css','admin.js'=>'assets/js/admin.js','bayou-detail.webp'=>'images/backgrounds/bayou-detail.webp','bayou.webp'=>'images/backgrounds/bayou.webp','emblem.png'=>'images/branding/emblem.png','favicon.png'=>'images/icons/favicon.png','growth.css'=>'assets/css/growth.css','growth.js'=>'assets/js/growth.js','hero-detail.webp'=>'images/backgrounds/hero-detail.webp','hero.webp'=>'images/backgrounds/hero.webp','logo.png'=>'images/branding/logo.png','micrograin.png'=>'images/backgrounds/micrograin.png','payment-trial.js'=>'assets/js/payment-trial.js','premium.css'=>'assets/css/premium.css','project-construction.webp'=>'images/portfolio/project-construction.webp','project-placeholder.svg'=>'images/portfolio/project-placeholder.svg','project-restaurant.webp'=>'images/portfolio/project-restaurant.webp','project-wellness.webp'=>'images/portfolio/project-wellness.webp','site.css'=>'assets/css/site.css','site.js'=>'assets/js/site.js','staff-setup.js'=>'assets/js/staff-setup.js'];
+    static $paths = ['hosting-comparison.css'=>'assets/css/hosting-comparison.css','mail-notices.js'=>'assets/js/mail-notices.js','mail-notices.css'=>'assets/css/mail-notices.css','activity.js'=>'assets/js/activity.js','admin.css'=>'assets/css/admin.css','admin.js'=>'assets/js/admin.js','bayou-detail.webp'=>'images/backgrounds/bayou-detail.webp','bayou.webp'=>'images/backgrounds/bayou.webp','emblem.png'=>'images/branding/emblem.png','favicon.png'=>'images/icons/favicon.png','growth.css'=>'assets/css/growth.css','growth.js'=>'assets/js/growth.js','hero-detail.webp'=>'images/backgrounds/hero-detail.webp','hero.webp'=>'images/backgrounds/hero.webp','logo.png'=>'images/branding/logo.png','micrograin.png'=>'images/backgrounds/micrograin.png','payment-trial.js'=>'assets/js/payment-trial.js','premium.css'=>'assets/css/premium.css','project-construction.webp'=>'images/portfolio/project-construction.webp','project-placeholder.svg'=>'images/portfolio/project-placeholder.svg','project-restaurant.webp'=>'images/portfolio/project-restaurant.webp','project-wellness.webp'=>'images/portfolio/project-wellness.webp','site.css'=>'assets/css/site.css','site.js'=>'assets/js/site.js','staff-setup.js'=>'assets/js/staff-setup.js'];
     if (!isset($paths[$path])) throw new InvalidArgumentException('Unknown public asset.');
     return site_url($paths[$path]).'?v='.rawurlencode(CWP_VERSION);
 }

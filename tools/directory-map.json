@@ -89,6 +89,7 @@
       "https_request",
       "local_request",
       "security_headers",
+      "authorize_net_security_headers",
       "nonce",
       "redirect",
       "fail_page"
@@ -257,6 +258,22 @@
       "database/migrations/ledger_migrate.php",
       "database/schema/ledger_schema.php"
     ],
+    "app/licenses/financing.php": [
+      "app/licenses/financing_policy.php",
+      "database/migrations/license_financing_migrate.php",
+      "database/schema/license_financing_schema.php"
+    ],
+    "app/licenses/financing_offers.php": [
+      "database/migrations/license_finance_offers_migrate.php",
+      "database/schema/license_finance_offers_schema.php"
+    ],
+    "app/billing/finance_authorize_net.php": [
+      "database/migrations/license_finance_gateway_migrate.php",
+      "database/schema/license_finance_gateway_schema.php"
+    ],
+    "app/billing/finance_charge.php": [],
+    "app/billing/finance_subscription.php": [],
+    "app/licenses/finance_installments.php": [],
     "app/projects/deliveries.php": [
       "database/migrations/delivery_migrate.php",
       "database/schema/delivery_schema.php"

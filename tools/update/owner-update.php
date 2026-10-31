@@ -26,6 +26,14 @@ boot();
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 require_once CWP_CODE_ROOT.'/app/updates/structure.php';
 header('Referrer-Policy: no-referrer');header('X-Robots-Tag: noindex, nofollow');
+/** A logged-in owner uses the same current, revocable session as administration. */
+function structure_update_actor(?array $actor): array {
+    $current=$actor?admin_user():null;
+    if (!$actor || !$current || ($actor['role']??'')!=='owner' || ($current['role']??'')!=='owner' || !admin_session_matches($actor)) {
+        throw new RuntimeException('An active owner session is required. Sign in again.');
+    }
+    return $current;
+}
 $history=json_decode(file_get_contents(__DIR__.'/legacy-release-files.json'),true,64,JSON_THROW_ON_ERROR);
 $error='';$result=null;$actor=admin_user();
 if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -39,7 +47,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             if(!$user || !password_verify($password,$user['password_hash']) || !($profile=staff_profile($user)) || $profile['role']!=='owner')throw new RuntimeException('Owner authentication failed.');
             login_user($user);$actor=admin_user();
         }
-        if(!$actor || $actor['role']!=='owner' || !password_verify($password,$actor['password_hash']))throw new RuntimeException('Your current owner password is required.');
+        $actor=structure_update_actor($actor);
         if(posted('backup_confirm',1)!=='1')throw new RuntimeException('Confirm a recoverable backup of website files, database and configured private storage first.');
         $dir=structure_store();$lock=structure_lock($dir);
         $action=posted('action',30);
@@ -63,8 +71,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 <?php if($result['state']==='rolled-back'):?><p>Recognized original files were restored. Configuration, database and private files were not reset. Keep the recovery journal. Review the failure and your backup before starting another owner-confirmed attempt.</p><?php endif;?>
 <?php endif;?>
 <form method="post"><?=csrf_field()?>
-<?php if(!$actor):?><label>Owner email<input name="email" type="email" required autocomplete="username"></label><?php else:?><p>Signed in as <?=esc($actor['email'])?>.</p><?php endif;?>
-<label>Current owner password<input name="owner_password" type="password" required autocomplete="current-password"></label>
+<?php if(!$actor):?><label>Owner email<input name="email" type="email" required autocomplete="username"></label><label>Owner sign-in password<input name="owner_password" type="password" required autocomplete="current-password"></label><?php else:?><p>Signed in as <?=esc($actor['email'])?>. Your current owner session authorizes this action.</p><?php endif;?>
 <label><input name="backup_confirm" value="1" type="checkbox" required> I have a recoverable backup of the website, database and configured private storage.</label>
 <button name="action" value="inspect">Verify and inspect</button><button name="action" value="apply">Apply or retry update</button><button name="action" value="recover">Recover original files</button>
 </form></html>

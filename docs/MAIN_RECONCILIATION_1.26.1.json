@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "main_sha": "0099b9190756c31e690b83b2cdf93c366de03f5c",
+  "release_sha": "5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d",
+  "merge_base": "fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827",
+  "input_head": "d2fb551027940fedce731a41ec77e212968bd3bd",
+  "conflicts": [
+    {
+      "path": ".github/workflows/license-financing-authorize-sandbox.yml",
+      "resolution": "Retain tested three-runner secret isolation and its unchanged hash-pinned contracts",
+      "sha256": "16141d459e7b2de6881dbc0f6fb992bfdc4ca567fe36d74e0409db903677fa85"
+    },
+    {
+      "path": ".github/workflows/software-authorize-sandbox.yml",
+      "resolution": "Retain tested three-runner secret isolation and its unchanged hash-pinned contracts",
+      "sha256": "0049fb8b834f26fc8d5a104165ab4745845442c47b34f07a554a73acdd35a69f"
+    },
+    {
+      "path": "PROJECT_STATUS.md",
+      "resolution": "Union append-only notes; every release line and main-added line retained",
+      "sha256": "3988e826c320590ee6123b56356e0cb9e5716bc101b8d4856d3ede110196c389"
+    },
+    {
+      "path": "SESSION_HANDOFF.md",
+      "resolution": "Union append-only notes; every release line and main-added line retained",
+      "sha256": "f904d8379abe3545d46c84dd3fc22053d137eb03a333689758b39dc66e2fb219"
+    },
+    {
+      "path": "tests/sandbox_workflow_contract.py",
+      "resolution": "Retain tested three-runner secret isolation and its unchanged hash-pinned contracts",
+      "sha256": "88a404bb2333f802d6a99326fde58cba48d3a5ef403d5692764bb8e6bf18f4b3"
+    }
+  ],
+  "main_only_files": [
+    {
+      "path": ".github/workflows/license-financing-authorize-sandbox.yml",
+      "main_sha256": "88a172f065e70b780cd7746dec2f12cd82fa2f4eef620108cf56b2f21db3b34b",
+      "release_sha256": "16141d459e7b2de6881dbc0f6fb992bfdc4ca567fe36d74e0409db903677fa85",
+      "resolved_sha256": "16141d459e7b2de6881dbc0f6fb992bfdc4ca567fe36d74e0409db903677fa85",
+      "same_as_release": true,
+      "same_as_main": false
+    },
+    {
+      "path": ".github/workflows/sandbox-workflow-security.yml",
+      "main_sha256": "4ab277ea2d9d50387093d4202c18b299cddab6e54fbe93f95e4842d0ad7d6175",
+      "release_sha256": "4ab277ea2d9d50387093d4202c18b299cddab6e54fbe93f95e4842d0ad7d6175",
+      "resolved_sha256": "4ab277ea2d9d50387093d4202c18b299cddab6e54fbe93f95e4842d0ad7d6175",
+      "same_as_release": true,
+      "same_as_main": true
+    },
+    {
+      "path": ".github/workflows/software-authorize-sandbox.yml",
+      "main_sha256": "79024fd1503d308b7b67a8f6eb76c33360989a8e9ad409989d31c99d52ccd7f4",
+      "release_sha256": "0049fb8b834f26fc8d5a104165ab4745845442c47b34f07a554a73acdd35a69f",
+      "resolved_sha256": "0049fb8b834f26fc8d5a104165ab4745845442c47b34f07a554a73acdd35a69f",
+      "same_as_release": true,
+      "same_as_main": false
+    },
+    {
+      "path": "PROJECT_STATUS.md",
+      "main_sha256": "3a9516f3913e5edaa92ec6a8ac6e967e3db4a98fd1913cc4edd5a5ca85127e74",
+      "release_sha256": "a2ab46fce2dbbddd9875ce9c61f34eb02827497622bf3a26487663905bb559c3",
+      "resolved_sha256": "3988e826c320590ee6123b56356e0cb9e5716bc101b8d4856d3ede110196c389",
+      "same_as_release": false,
+      "same_as_main": false
+    },
+    {
+      "path": "SESSION_HANDOFF.md",
+      "main_sha256": "6fb1eec00602de385aa7e90e192eb6457e9ccfa937cf6d44a7d2c59eabe0fce1",
+      "release_sha256": "5ba403e3c23b6eb239dceba64e75b363d32eaa6276298da10397b78c69781c0e",
+      "resolved_sha256": "f904d8379abe3545d46c84dd3fc22053d137eb03a333689758b39dc66e2fb219",
+      "same_as_release": false,
+      "same_as_main": false
+    },
+    {
+      "path": "docs/CODEX_SANDBOX_WORKFLOW_SECURITY_REVIEW.md",
+      "main_sha256": "78401aa5e0ee42194e4a83099dc99b67395c814b3c22ace918efb22b6951b5be",
+      "release_sha256": null,
+      "resolved_sha256": "78401aa5e0ee42194e4a83099dc99b67395c814b3c22ace918efb22b6951b5be",
+      "same_as_release": false,
+      "same_as_main": true
+    },
+    {
+      "path": "docs/PR266_SANDBOX_BOOTSTRAP.md",
+      "main_sha256": "39d0b290ab3cef434d1be90b3925bafe1565fb587efd9b22bb0e3a28c538a918",
+      "release_sha256": null,
+      "resolved_sha256": "39d0b290ab3cef434d1be90b3925bafe1565fb587efd9b22bb0e3a28c538a918",
+      "same_as_release": false,
+      "same_as_main": true
+    },
+    {
+      "path": "docs/evidence/sandbox-review-queue-policy.json",
+      "main_sha256": "fe22a0f484156259dd371a0971ed8f8ab35a5066296b8e3510ed3b49ad0bfeeb",
+      "release_sha256": null,
+      "resolved_sha256": "fe22a0f484156259dd371a0971ed8f8ab35a5066296b8e3510ed3b49ad0bfeeb",
+      "same_as_release": false,
+      "same_as_main": true
+    },
+    {
+      "path": "tests/anet_sandbox_runtime.py",
+      "main_sha256": "df4ba0e1696ee7a7457c84ed28276a2dbe143bf39e36d56b5372150998215e81",
+      "release_sha256": "df4ba0e1696ee7a7457c84ed28276a2dbe143bf39e36d56b5372150998215e81",
+      "resolved_sha256": "df4ba0e1696ee7a7457c84ed28276a2dbe143bf39e36d56b5372150998215e81",
+      "same_as_release": true,
+      "same_as_main": true
+    },
+    {
+      "path": "tests/anet_sandbox_runtime_contract.py",
+      "main_sha256": "ed7f8d8130caa5911538e77373f42fb539b408dee7398b6fae3ce47a1a7e0d75",
+      "release_sha256": "ed7f8d8130caa5911538e77373f42fb539b408dee7398b6fae3ce47a1a7e0d75",
+      "resolved_sha256": "ed7f8d8130caa5911538e77373f42fb539b408dee7398b6fae3ce47a1a7e0d75",
+      "same_as_release": true,
+      "same_as_main": true
+    },
+    {
+      "path": "tests/anet_sandbox_tokenize.py",
+      "main_sha256": "f7cf297d49527f0d83759f4fecf5c35e68f18ecd07f8bc86493f03233fbff400",
+      "release_sha256": "f7cf297d49527f0d83759f4fecf5c35e68f18ecd07f8bc86493f03233fbff400",
+      "resolved_sha256": "f7cf297d49527f0d83759f4fecf5c35e68f18ecd07f8bc86493f03233fbff400",
+      "same_as_release": true,
+      "same_as_main": true
+    },
+    {
+      "path": "tests/finance_anet_sandbox_acceptance.py",
+      "main_sha256": "685e9e27e4ee727624dab859b9b44715ec5214e09474e08e53efc58797c867d3",
+      "release_sha256": "685e9e27e4ee727624dab859b9b44715ec5214e09474e08e53efc58797c867d3",
+      "resolved_sha256": "685e9e27e4ee727624dab859b9b44715ec5214e09474e08e53efc58797c867d3",
+      "same_as_release": true,
+      "same_as_main": true
+    },
+    {
+      "path": "tests/sandbox_workflow_contract.py",
+      "main_sha256": "6c8b0b140c59ef07d7babd5fb0ad736f87f3f49cda26b2caa878f791e997c403",
+      "release_sha256": "88a404bb2333f802d6a99326fde58cba48d3a5ef403d5692764bb8e6bf18f4b3",
+      "resolved_sha256": "88a404bb2333f802d6a99326fde58cba48d3a5ef403d5692764bb8e6bf18f4b3",
+      "same_as_release": true,
+      "same_as_main": false
+    },
+    {
+      "path": "tests/software_anet_sandbox_acceptance.py",
+      "main_sha256": "21fa7504f6780ad665328f51bc516e86f60dd4a516ce4064fb14741ea7e74e83",
+      "release_sha256": "21fa7504f6780ad665328f51bc516e86f60dd4a516ce4064fb14741ea7e74e83",
+      "resolved_sha256": "21fa7504f6780ad665328f51bc516e86f60dd4a516ce4064fb14741ea7e74e83",
+      "same_as_release": true,
+      "same_as_main": true
+    }
+  ],
+  "immutable_paths": [
+    "site",
+    "foundation",
+    "tools/structure",
+    "tools/build.py",
+    "VERSION",
+    "START-HERE.txt"
+  ],
+  "runtime_matches_delivered_release": true,
+  "status": "Reconciled source only; pending exact-commit acceptance and normal protected main integration",
+  "scope": "No changes to live services, main, credentials, payment configuration or delivered archives"
+}

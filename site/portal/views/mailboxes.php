@@ -14,7 +14,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 <p class="hint">Use lowercase letters, numbers, dots, underscores, plus signs or hyphens. Enter only the part before @.</p>
 <label>Mailbox password<input type="password" name="mailbox_password" minlength="12" maxlength="128" required autocomplete="new-password"></label>
 <label>Confirm mailbox password<input type="password" name="mailbox_password_confirm" minlength="12" maxlength="128" required autocomplete="new-password"></label>
-<?php if($mailboxAdmin): ?><label>Your current owner password<input type="password" name="current_password" required autocomplete="current-password"></label><?php endif; ?>
+
 <label><input type="checkbox" name="mailbox_confirm" value="1" required> Create this mailbox on the selected domain.</label>
 <button class="btn gold">Create mailbox</button></form>
 <?php else: ?><p>Mailbox creation is currently unavailable. Contact the studio to enable it for your domain.</p><?php endif; ?>
