@@ -1,0 +1,26 @@
+{
+  "base_commit": "97c8b71c1ac807ee9e71b62331f00d78386c0ac2",
+  "files": {
+    "site/app/marketing/proposals.php": [
+      "d18dfa218e2210f0df1a852da8dc318cc8cb036002de233a5562a7d3b801b6fb",
+      "b9cc44793c8b1010e2139a9a3f3d4a65a0943cfd772b6a72fdf8dad3e39614a5"
+    ],
+    "site/includes/layout/proposals.php": [
+      "71db3d7687193428940b5b51bd7740c5e8f075af77a4f5e09d15108f3a360413",
+      "a999eddef77aaf574bb3a4d1513b97716798827ad8e71220bcfcc044fe1f3e23"
+    ],
+    "site/portal/controllers/actions.php": [
+      "f26fefff5c1b37421e9f183900ebfc79d42f76e48cae7887c27151d4234a732f",
+      "c0c355e88465d6819a8f16f05ace512b82a28aef0a2c298ac87b3d3200a3dc3e"
+    ],
+    "tests/proposals_native.php": [
+      "5ae9ec9a880d1df22306407f321d41345ce0dbea6b96a02589c944e03e3d748d",
+      "9f59f6cd0d44aaa5ae265ec48d260c2631a309bf3fc410e1f012769eedccea99"
+    ],
+    "tests/proposals_cases.py": [
+      "1ee63bb4ff130305df35d4e86d312e066f2c1fab863406e5e8972eb8d5b8531f",
+      "d0fdf42221a4e292371f60f9e1e289782051c6973a6d2c28861498562aa32cda"
+    ]
+  },
+  "scope": "Exact reviewed-version correction for pending PR178. No main integration, deployment, payment or customer approval. Native and installed results remain separate."
+}

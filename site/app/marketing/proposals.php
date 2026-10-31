@@ -28,14 +28,14 @@ function proposal_input(array $data): array {
 /** The foundation's canonical hash of the exact content a client will review. */
 function proposal_content_hash(array $input): string {return hash('sha256',json_encode(['deliverables'=>array_values($input['deliverables']),'exclusions'=>array_values($input['exclusions']),'scheduleNotes'=>$input['schedule_notes'],'milestones'=>$input['milestones']],JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR));}
 
-function proposal_row(string $id): array {$row=one('SELECT * FROM '.table('proposals').' WHERE id=?',[$id]);if(!$row)throw new InvalidArgumentException('Proposal not found.');return $row;}
+function proposal_row(string $id,bool $lock=false): array {$row=one('SELECT * FROM '.table('proposals').' WHERE id=?'.($lock?' FOR UPDATE':''),[$id]);if(!$row)throw new InvalidArgumentException('Proposal not found.');return $row;}
 function proposal_version_row(array $row,int $version): array {$v=one('SELECT * FROM '.table('proposal_versions').' WHERE proposal_id=? AND version=?',[$row['id'],$version]);if(!$v)throw new RuntimeException('Recorded proposal version is missing.');return $v;}
 function proposal_versions(string $id): array {return all('SELECT * FROM '.table('proposal_versions').' WHERE proposal_id=? ORDER BY version',[$id]);}
 function proposal_history(string $id): array {return all('SELECT * FROM '.table('proposal_events').' WHERE proposal_id=? ORDER BY id DESC LIMIT 200',[$id]);}
 function proposals_all(): array {return all('SELECT p.*,c.name AS client_name FROM '.table('proposals').' p JOIN '.table('studio_clients').' c ON c.id=p.client_id ORDER BY p.created_at DESC LIMIT 200');}
 /** Proposals a signed-in client may review — drafts and withdrawals stay staff-side. */
 function proposals_for_client(int $clientId): array {return proposals_ready()?all("SELECT p.* FROM ".table('proposals')." p WHERE p.client_id=? AND p.status IN ('sent','changes-requested','approved') ORDER BY p.created_at DESC LIMIT 50",[$clientId]):[];}
-function proposal_client_row(string $id,array $client): array {$row=proposal_row($id);if((int)$row['client_id']!==(int)$client['id'])throw new InvalidArgumentException('Proposal not found.');return $row;}
+function proposal_client_row(string $id,array $client,bool $lock=false): array {$row=proposal_row($id,$lock);if((int)$row['client_id']!==(int)$client['id'])throw new InvalidArgumentException('Proposal not found.');return $row;}
 
 function proposal_model_version(array $v): ProposalVersion {
     return new ProposalVersion($v['id'],(int)$v['version'],json_decode($v['deliverables'],true,512,JSON_THROW_ON_ERROR),json_decode($v['exclusions'],true,512,JSON_THROW_ON_ERROR)?:[],(string)$v['schedule_notes'],json_decode($v['milestones'],true,512,JSON_THROW_ON_ERROR)?:[],'staff:'.$v['created_by'],$v['created_at'],$v['content_hash']);
@@ -109,16 +109,24 @@ function proposal_withdraw(string $id): void {
         proposals_event($id,'withdrawn','staff',(int)$actor['id']);
     });});
 }
-/** The owning client approves the current version or requests changes — decisions pin the exact version id so superseded terms cannot be approved. */
-function proposal_decide(string $id,string $kind,string $note,array $client): void {
-    if(support_current())throw new RuntimeException('Support sessions cannot decide proposals.');
-    staff_locked(function() use($id,$kind,$note,$client): void {staff_transaction(function() use($id,$kind,$note,$client): void {
-        $row=proposal_client_row($id,$client);$p=proposal_model($row);$version=proposal_version_row($row,(int)$row['current_version']);
-        $kind=$kind==='approve'?ApprovalDecision::APPROVE:ApprovalDecision::REQUEST_CHANGES;
-        $decision=new ApprovalDecision(bin2hex(random_bytes(16)),$version['id'],'client:'.$client['id'],$kind,substr(trim($note),0,2000),gmdate('Y-m-d\TH:i:s\Z'));
+/** Apply only the exact immutable version the authenticated customer reviewed. */
+function proposal_decide(string $id,string $kind,string $note,array $client,string $versionId='',string $contentHash=''): void {
+    if(!preg_match('/^[a-f0-9]{32}$/D',$id)||!preg_match('/^[a-f0-9]{32}$/D',$versionId)||!preg_match('/^[a-f0-9]{64}$/D',$contentHash))throw new InvalidArgumentException('Reload and review the exact proposal version before deciding.');
+    if(!in_array($kind,['approve','changes'],true))throw new InvalidArgumentException('Choose approval or request changes.');
+    staff_locked(function() use($id,$kind,$note,$client,$versionId,$contentHash): void {staff_transaction(function() use($id,$kind,$note,$client,$versionId,$contentHash): void {
+        if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Support sessions cannot decide proposals.');
+        $current=studio_client();
+        if(!proposals_ready()||!$current||(int)$current['id']!==(int)($client['id']??0)||!hash_equals((string)$current['auth_version'],(string)($client['auth_version']??'')))throw new RuntimeException('Current client authentication is required to decide this proposal.');
+        $row=proposal_client_row($id,$current,true);$version=proposal_version_row($row,(int)$row['current_version']);
+        if(!hash_equals((string)$version['id'],$versionId)||!hash_equals((string)$version['content_hash'],$contentHash))throw new RuntimeException('This proposal changed after you reviewed it. Reload and review the current version.');
+        $pv=proposal_model_version($version);
+        $verified=ProposalVersion::create($pv->id,$pv->number,$pv->deliverables,$pv->exclusions,$pv->scheduleNotes,$pv->milestones,$pv->authorId,$pv->createdAt);
+        if(!hash_equals($pv->contentHash,$verified->contentHash))throw new RuntimeException('Recorded proposal content is inconsistent. Contact the studio before deciding.');
+        $p=proposal_model($row);$kind=$kind==='approve'?ApprovalDecision::APPROVE:ApprovalDecision::REQUEST_CHANGES;
+        $decision=new ApprovalDecision(bin2hex(random_bytes(16)),$versionId,'client:'.$current['id'],$kind,substr(trim($note),0,2000),gmdate('Y-m-d\TH:i:s\Z'));
         $p->decide($decision,gmdate('Y-m-d\TH:i:s\Z'));
-        query('INSERT INTO '.table('proposal_decisions').' (id,proposal_id,version,decision,client_id,note,created_at) VALUES (?,?,?,?,?,?,?)',[$decision->id,$id,(int)$row['current_version'],$decision->kind==='approve'?'approved':'changes-requested',$client['id'],$decision->note,gmdate('Y-m-d H:i:s')]);
+        query('INSERT INTO '.table('proposal_decisions').' (id,proposal_id,version,decision,client_id,note,created_at) VALUES (?,?,?,?,?,?,?)',[$decision->id,$id,(int)$row['current_version'],$decision->kind==='approve'?'approved':'changes-requested',$current['id'],$decision->note,gmdate('Y-m-d H:i:s')]);
         query('UPDATE '.table('proposals').' SET status=?,decided_at=? WHERE id=?',[$decision->kind==='approve'?'approved':'changes-requested',gmdate('Y-m-d H:i:s'),$id]);
-        proposals_event($id,$decision->kind==='approve'?'approved':'changes-requested','client',(int)$client['id'],'v'.$row['current_version']);
+        proposals_event($id,$decision->kind==='approve'?'approved':'changes-requested','client',(int)$current['id'],'v'.$row['current_version']);
     });});
 }

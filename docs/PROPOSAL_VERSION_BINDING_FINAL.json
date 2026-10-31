@@ -1,0 +1,11 @@
+{
+  "base_commit": "97c8b71c1ac807ee9e71b62331f00d78386c0ac2",
+  "files": {
+    "site/app/marketing/proposals.php": "b9cc44793c8b1010e2139a9a3f3d4a65a0943cfd772b6a72fdf8dad3e39614a5",
+    "site/includes/layout/proposals.php": "a999eddef77aaf574bb3a4d1513b97716798827ad8e71220bcfcc044fe1f3e23",
+    "site/portal/controllers/actions.php": "c0c355e88465d6819a8f16f05ace512b82a28aef0a2c298ac87b3d3200a3dc3e",
+    "tests/proposals_native.php": "cfcaa9034269468b1aa0541d11cc1b0ea961283f110e79f6482426bd9e97c451",
+    "tests/proposals_cases.py": "5cb22428086f5878e4ac4fe28c7f0151077b2b5a028a2604c66dffc785e2e48e"
+  },
+  "scope": "Current exact application and fixture identities. Initial correction receipt retained as history. No native or browser success inferred."
+}
