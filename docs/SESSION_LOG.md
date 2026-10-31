@@ -3718,3 +3718,16 @@ Request: resolve the coordinator review finding that protected backup scope item
 Changed: `foundation/backups/BackupManifest.php` — `FORBIDDEN` rewritten component-aware (`(^|/)` anchors for exact names, extension and `storage`/`payment-master` rules at any depth); `tests/backups/run.php` — nested rejection cases (`includes/config.php`, `app/vars/.env`, `deploy/storage/keys`, `releases/v2/.installed.php`) plus retained collection-skip behavior.
 
 Verification and scope: `php tests/backups/run.php` — 37 checks on PHP 8.4.25; isolated manifest/restore-plan contract only. The deployed `site/includes/foundation/backups/BackupManifest.php` mirror carries the same pattern on the descendant runtime/drill/export branches. Next: descendant branches consume via merge; Codex owns integration. No deployment, provider call, merge or release.
+
+
+## Historical source entries retained while integrating PR #164
+
+## Port proposal/approval contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); proposal/approval workflow is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-proposals-foundation`.
+
+Actions: extracted the preserved `devin/proposals-foundation` slice — `Proposal`, `ProposalVersion`, `ApprovalDecision`, `tests/proposals/run.php`, `proposals.yml`, `docs/PROPOSALS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/proposals/run.php` → 35/35 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157; continue remaining contract ports then application layers.
