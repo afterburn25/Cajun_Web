@@ -1,0 +1,174 @@
+name: Reviewed backup runtime integration
+on:
+  push:
+    branches: [chatgpt/backups-review-driver-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: backup-reviewed-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/backups-review-driver-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      staged: ${{ steps.replay.outputs.staged_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reproduce reviewed tree and stage immutable Git objects only
+        id: replay
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tools/integration/backup_review.py --publish-object
+      - name: Preserve exact source identity without updating any remote branch
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: backup-source-${{ github.sha }}
+          path: qa/backup-review-source.json
+          if-no-files-found: warn
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.staged }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reconstruct exactly the staged tree without write credentials
+        id: replay
+        run: python3 tools/integration/backup_review.py
+      - name: Prepare disposable PHP and database
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+          SOURCE: ${{ steps.replay.outputs.source_dir }}
+        run: |
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-backup-review - <<'DOCKER'
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-backup-review php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/backup-bin"
+          cat > "$RUNNER_TEMP/backup-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run --rm --network host --user "$(id -u):$(id -g)" -v "$SOURCE:$SOURCE" -w "$SOURCE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-backup-review php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/backup-bin/php"
+          echo "SOURCE=$SOURCE" >> "$GITHUB_ENV"
+          echo "PHP_BINARY=$RUNNER_TEMP/backup-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/backup-bin" >> "$GITHUB_PATH"
+      - name: Complete pure archive and current-authority SQL suites
+        working-directory: ${{ steps.replay.outputs.source_dir }}
+        run: |
+          set -euo pipefail
+          mkdir -p qa/backup-integration
+          php tests/backups/run.php > qa/backup-integration/policy.log
+          php -n tests/backups/run.php > qa/backup-integration/policy-minimal.log
+          php tests/backups/archive_run.php > qa/backup-integration/archive.log
+          php tests/backups_installed_seed.php config
+          php -r 'register_shutdown_function(function(){$r=["passed"=>!empty($GLOBALS["backups_native_complete"])&&!array_filter($GLOBALS["checks"]??[],fn($c)=>!$c["passed"]),"source_sha"=>getenv("CWP_SOURCE_SHA"),"checks"=>$GLOBALS["checks"]??[]];file_put_contents("qa/backup-integration/native-results.json",json_encode($r,JSON_PRETTY_PRINT));});require "tests/backups_native.php";' > qa/backup-integration/native.stdout.log 2> qa/backup-integration/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          r=json.load(open('qa/backup-integration/native-results.json'))
+          assert r['passed'] is True and r['source_sha']==os.environ['CWP_SOURCE_SHA'] and len(r['checks'])>=40 and all(c['passed'] is True for c in r['checks'])
+          print('Completed native assertions:',len(r['checks']))
+          PY
+          git diff --exit-code
+      - name: Prepare installed browser dependencies
+        if: matrix.php == '8.4'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/backup-browser-venv"
+          "$RUNNER_TEMP/backup-browser-venv/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/backup-browser-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Retained owner forms restore consent private download and session denials
+        if: matrix.php == '8.4'
+        working-directory: ${{ steps.replay.outputs.source_dir }}
+        run: |
+          "$RUNNER_TEMP/backup-browser-venv/bin/python" tests/backups_installed_browser.py
+          git diff --exit-code
+      - name: Preserve complete reports including failures, without private archives
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: backup-php${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.staged }}
+          path: ${{ steps.replay.outputs.source_dir }}/qa/backup-integration/
+          if-no-files-found: warn
+          retention-days: 14
+  build:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reconstruct reviewed source
+        id: replay
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 tools/integration/backup_review.py
+      - name: Keep all predecessor checks and verify clean packaging
+        working-directory: ${{ steps.replay.outputs.source_dir }}
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          LOCAL_SHA: ${{ steps.replay.outputs.local_commit }}
+        run: |
+          mkdir -p qa/backup-integration
+          python3 tests/acceptance_artifacts_test.py --report qa/backup-integration/helpers.json
+          python3 tools/check_docs.py > qa/backup-integration/docs.log
+          python3 tests/build_guards.py > qa/backup-integration/build-guards.log
+          python3 tools/build.py --commit "$LOCAL_SHA" > qa/backup-integration/build.log
+          git diff --exit-code
+      - name: Preserve build evidence, never replace owner ZIPs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: backup-build-${{ needs.source.outputs.staged }}
+          path: ${{ steps.replay.outputs.source_dir }}/qa/backup-integration/
+          if-no-files-found: warn
+          retention-days: 14
+  checkpoint:
+    needs: [source,native,build]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Four isolated SQL/runtime lanes and both installed-browser journeys passed for the recorded source tree. No remote branch, main merge, deployment, payment, provider request or published ZIP was changed.' >> "$GITHUB_STEP_SUMMARY"
