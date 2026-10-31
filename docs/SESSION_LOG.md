@@ -3783,3 +3783,16 @@ Actions: extracted the preserved `devin/comparisons-foundation` slice — three 
 Tests: `php -l` clean; `php tests/comparisons/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #169
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-service-plans-foundation`.
+
+Actions: extracted the preserved `devin/service-plans` slice — `ServicePlan`/`PlanSubscription`, `tests/service-plans/run.php`, `service-plans.yml`, `docs/SERVICE_PLANS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording. `devin/service-desk` is already delivered inside the tickets branch's desk foundation, so no separate port is needed.
+
+Tests: `php -l` clean; `php tests/service-plans/run.php` → 76/76 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.

@@ -1648,3 +1648,11 @@ Devin non-20i increment on `devin/non20i-support-access-foundation` from main `5
 ## Port C-01 comparison-facts contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-comparisons-foundation` from main `595ac9c3`, continuing preserved `devin/comparisons-foundation`. Adds `foundation/comparisons/` — `ComparisonFact`, `ClaimRegistry`, `EvidenceSource` — sourced/date-stamped competitor claims with structural no-guarantee rules, 30 pure checks in `tests/comparisons/run.php`, PHP 8.2/8.4 workflow lane. No rendering, fetching, CMS or comparison content — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #169
+
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
