@@ -40,8 +40,10 @@ jobs:
             for source in foundation/backups/*.php tests/backups/*.php; do php -l "$source"; done
             php tests/backups/run.php
             php tests/backups/archive_run.php
+            php tests/backups/prune_atomicity.php
+            php -n tests/backups/archive_commit_policy.php
           '
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Manifest/restore-plan contract checks plus the archive-adapter filesystem suite on synthetic fixture trees. Database restore and application integration are covered by the native and browser lanes.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Manifest/restore-plan contract checks, the archive-adapter filesystem suite and archive/pruning failure-boundary regressions on synthetic fixture trees. Database restore and application integration require separate native and browser evidence.' >> "$GITHUB_STEP_SUMMARY"

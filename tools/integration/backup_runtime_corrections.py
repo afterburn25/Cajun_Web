@@ -6,9 +6,10 @@ ROOT=Path(__file__).resolve().parents[2]
 if os.environ.get('GITHUB_REF')!='refs/heads/chatgpt/backups-runtime-integration-20261030':raise SystemExit('Isolated backup candidate only')
 expected={'site/app/backups/archive.php','tests/backups_native.php','tools/acceptance-contract.json'}
 chains={path:[] for path in expected}
-for name in ['backup-runtime-corrections.json','backup-runtime-followup.json']:
+recipes=[('backup-runtime-corrections.json',expected),('backup-runtime-followup.json',expected),('backup-runtime-drill-fix.json',{'site/app/backups/archive.php'})]
+for name,scope in recipes:
  rows=json.loads((ROOT/'tools/integration'/name).read_text())
- if len(rows)!=3 or {r['path'] for r in rows}!=expected:raise SystemExit('Unexpected correction scope')
+ if len(rows)!=len(scope) or {r['path'] for r in rows}!=scope:raise SystemExit('Unexpected correction scope')
  for row in rows:
   chain=chains[row['path']]
   if chain and chain[-1]['after']!=row['before']:raise SystemExit('Broken correction chain')
