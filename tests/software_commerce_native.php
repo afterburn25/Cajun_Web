@@ -1,6 +1,7 @@
 <?php
 /** Native software checks, disposable MariaDB only; no gateway contact. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -132,7 +133,7 @@ try{
         'V2 recurring entitlement keeps paid-through update access and legacy two-install defaults');
     software_commerce_prepare($password);
     swok(software_commerce_ready(),'V3 preparation can be repeated safely');
-    swdenied(fn()=>software_commerce_prepare('wrong-password'),'Wrong owner password refused');
+    swdenied(fn()=>cwp_test_owner_revoked(fn()=>software_commerce_prepare('')),'Software setup refuses revoked owner authority without stored changes');
 
     $private=software_asset_private_root();
     $nonZip=$private.DIRECTORY_SEPARATOR.'synthetic-private.txt';
@@ -198,8 +199,7 @@ try{
     $privateBefore=one('SELECT sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at FROM '.table('software_assets').' WHERE id=?',[$privateAsset]);
     swok((int)$privateBefore['is_published']===0&&$privateBefore['released_at']===null,
         'Owner-private software release has no customer release timestamp');
-    swdenied(fn()=>software_asset_visibility($privateAsset,true,'wrong-password'),
-        'Software release visibility requires serialized owner reauthentication');
+    swdenied(fn()=>cwp_test_owner_revoked(fn()=>software_asset_visibility($privateAsset,true,'')),'Software release visibility rechecks owner role inside its mutation boundary');
     swok((int)one('SELECT is_published FROM '.table('software_assets').' WHERE id=?',[$privateAsset])['is_published']===0,
         'Rejected visibility change leaves owner-private release hidden');
     swok(software_asset_visibility($privateAsset,true,$password),
@@ -299,8 +299,7 @@ try{
         'Owner software product policy records module dependency updates and install limit');
     swdenied(fn()=>software_product_policy_save($product,0,'stale-write','',0,2,$password),
         'Stale software product policy revision cannot overwrite current policy');
-    swdenied(fn()=>software_product_policy_save($product,1,'bad-password','',0,2,'wrong-password'),
-        'Software product policy save reauthenticates the owner inside the serialized mutation');
+    swdenied(fn()=>cwp_test_owner_revoked(fn()=>software_product_policy_save($product,1,'bad-password','',0,2,'')),'Software policy save refuses revoked owner role inside serialized mutation');
     swdenied(fn()=>software_grant_create(2,'NEXUSCORE','trial','Other Buyer','manual-dependent.example.com',
         gmdate('Y-m-d H:i:s',time()+86400),1),
         'Owner-issued ordinary software grant cannot bypass missing dependency entitlement');
@@ -409,8 +408,7 @@ try{
     $reconcileCents=software_charge_prepare($reconcileInvoice,1,$reconcileRequest);
     swok($reconcileCents===4200,'Uncertain-charge fixture reserves the exact software invoice amount');
     software_charge_mark($reconcileInvoice,'uncertain','650000001');
-    swdenied(fn()=>software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,'wrong-password'),
-        'Paid reconciliation finalizer refuses incorrect owner password inside the mutation boundary');
+    swdenied(fn()=>cwp_test_owner_revoked(fn()=>software_charge_reconcile_finalize($reconcileInvoice,'650000001',$reconcileCents,'')),'Paid reconciliation finalizer refuses revoked owner role without financial changes');
     swok(one('SELECT status,transaction_id FROM '.table('software_charges').' WHERE invoice_id=?',[$reconcileInvoice])
         ===['status'=>'uncertain','transaction_id'=>'650000001']
         &&one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$reconcileInvoice])===['status'=>'issued']
@@ -770,8 +768,7 @@ try{
     software_grant_lifecycle_transition((int)$futureGrant['id'],'resume','Temporary owner hold cleared',1);
     swok((int)one('SELECT is_active FROM '.table('website_licenses').' WHERE id=?',[$futureGrant['id']])['is_active']===1,
         'Owner resume restores the same software entitlement');
-    swdenied(fn()=>software_grant_lifecycle_transition((int)$futureGrant['id'],'revoke','Owner revocation test',1,'wrong-password'),
-        'Software revocation requires correct owner reauthentication');
+    swdenied(fn()=>cwp_test_owner_revoked(fn()=>software_grant_lifecycle_transition((int)$futureGrant['id'],'revoke','Owner revocation test',1,'')),'Software revocation rechecks current owner role and preserves the entitlement');
     software_grant_lifecycle_transition((int)$futureGrant['id'],'revoke','Owner revocation test',1,$password);
     swok(software_grant_lifecycle((int)$futureGrant['id'])['state']==='revoked',
         'Owner can distinctly revoke a software license');
@@ -856,9 +853,8 @@ try{
     ]),'Cumulative one-time refunds cannot exceed the verified original payment');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_reversals').' WHERE original_transaction_id=?',['600000001'])->fetchColumn()===2,
         'Rejected over-refund creates no reversal receipt');
-    swdenied(fn()=>software_payment_dispute_record('600000001','MSP-CASE-001',
-        'Verified cardholder dispute received from merchant service provider','wrong-password'),
-        'Merchant dispute mutation refuses incorrect owner password inside the service');
+    swdenied(fn()=>cwp_test_owner_revoked(fn()=>software_payment_dispute_record('600000001','MSP-CASE-001',
+        'Verified cardholder dispute received from merchant service provider','')),'Merchant dispute mutation refuses revoked owner role without financial changes');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_payment_disputes').' WHERE case_reference=?',['MSP-CASE-001'])->fetchColumn()===0,
         'Rejected owner proof creates no merchant dispute evidence');
     swok(software_payment_dispute_record('600000001','MSP-CASE-001','Verified cardholder dispute received from merchant service provider',$password)==='one_time_dispute_review',
@@ -945,8 +941,7 @@ try{
     $reconcileMonthlyOrder=one('SELECT created_at FROM '.table('software_orders').' WHERE invoice_id=?',[$reconcileMonthly]);
     query('INSERT INTO '.table('software_subscriptions').' (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)',
         [$reconcileMonthly,1,1,(int)$reconcileMonthlyInvoice['amount_cents'],'review',$reconcileMonthlyOrder['created_at'],$now]);
-    swdenied(fn()=>software_subscription_reconcile_finalize($reconcileMonthly,'423456780','active',false,'wrong-password'),
-        'ARB reconciliation finalizer refuses incorrect owner password inside the mutation boundary');
+    swdenied(fn()=>cwp_test_owner_revoked(fn()=>software_subscription_reconcile_finalize($reconcileMonthly,'423456780','active',false,'')),'ARB reconciliation finalizer refuses revoked owner role without financial changes');
     swok(one('SELECT gateway_subscription_id,status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$reconcileMonthly])
         ===['gateway_subscription_id'=>null,'status'=>'review'],
         'Rejected ARB owner proof leaves local subscription identity and state unchanged');

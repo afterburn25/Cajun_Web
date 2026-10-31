@@ -1,6 +1,7 @@
 <?php
 /** Actual database/check orchestration with synthetic resolver/transport; no provider API. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/app/providers/checks.php';
 use CajunWebPro\Foundation\Provider\{ConnectionCheck,TransportException};
@@ -38,7 +39,7 @@ try {
     for($i=1;$i<=3;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Check staff '.$i,'check'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     pc_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'20i fixture',true,$secret,$password);
-    pc_deny('Wrong current password prevents DNS and check intent',fn()=>provider_checks_check($id,1,'wrong','pc_resolve','pc_transport'));
+    pc_deny('Revoked owner role prevents DNS and check intent with stored state unchanged',fn()=>cwp_test_owner_revoked(fn()=>provider_checks_check($id,1,'','pc_resolve','pc_transport')));
     pc_deny('Stale revision prevents DNS and check intent',fn()=>pc_check($id,null,null,2));
     pc_actor(2);pc_deny('Administrator cannot check provider',fn()=>pc_check($id));pc_deny('Administrator cannot read check history',fn()=>provider_checks_history($id));pc_actor();
     $_GET['support']='fixture';pc_deny('Client support cannot check provider',fn()=>pc_check($id));unset($_GET['support']);
