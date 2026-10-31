@@ -1,0 +1,82 @@
+name: Remaining PR dependency and conflict audit
+on:
+  push:
+    branches: [chatgpt/remaining-merge-audit-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: remaining-merge-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    if: github.ref == 'refs/heads/chatgpt/remaining-merge-audit-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record all open PRs and exact normal-merge results
+        env:
+          READ_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess,urllib.request
+          from pathlib import Path
+          out=Path('qa/remaining-merge-audit');out.mkdir(parents=True)
+          def git(*args,check=True):
+              p=subprocess.run(['git',*args],capture_output=True,text=True,timeout=90)
+              if check and p.returncode:raise RuntimeError('Git command failed: '+args[0]+': '+p.stderr[:500])
+              return p
+          def get(path):
+              req=urllib.request.Request('https://api.github.com/repos/afterburn25/Cajun_Web/'+path,headers={'Authorization':'Bearer '+os.environ['READ_TOKEN'],'Accept':'application/vnd.github+json','User-Agent':'CWP-readonly-merge-audit'})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          main=git('rev-parse','origin/main').stdout.strip()
+          candidate=git('rev-parse','origin/chatgpt/1261-main-reconcile-20261030').stdout.strip()
+          rows=[]
+          for page in range(1,11):
+              batch=get('pulls?state=open&sort=created&direction=asc&per_page=100&page='+str(page))
+              rows.extend(batch)
+              if len(batch)<100:break
+          else:raise RuntimeError('Incomplete pagination; audit refuses to truncate')
+          data=[]
+          for pr in rows:
+              if pr['head']['repo']['full_name']!='afterburn25/Cajun_Web':raise RuntimeError('External PR requires separate inspection')
+              sha=pr['head']['sha'];n=pr['number']
+              if git('cat-file','-e',sha+'^{commit}',check=False).returncode:git('fetch','origin',sha)
+              base=git('merge-base',candidate,sha,check=False)
+              contains=git('merge-base','--is-ancestor',sha,candidate,check=False).returncode==0
+              in_main=git('merge-base','--is-ancestor',sha,main,check=False).returncode==0
+              paths=git('diff','--name-only',base.stdout.strip(),sha).stdout.splitlines() if base.returncode==0 else []
+              item={'number':n,'title':pr['title'],'draft':pr['draft'],'head':pr['head']['ref'],'head_sha':sha,'base':pr['base']['ref'],'base_sha':pr['base']['sha'],'in_main':in_main,'in_candidate':contains,'unique_paths':paths,'common_ancestor':base.stdout.strip(),'body':pr['body'] or ''}
+              if not contains and base.returncode==0:
+                  test=git('merge-tree','--write-tree','--name-only',candidate,sha,check=False)
+                  if test.returncode not in (0,1):raise RuntimeError('Merge test failed for PR '+str(n))
+                  item['clean_merge']=test.returncode==0
+                  (out/('pr-'+str(n)+'-merge.txt')).write_text(test.stdout+test.stderr)
+              data.append(item)
+          report={'main':main,'candidate':candidate,'open_prs':len(data),'already_in_main':sum(x['in_main'] for x in data),'already_in_candidate':sum(x['in_candidate'] for x in data),'prs':data,'scope':'Read-only exact ancestry and hypothetical normal merge; not test or release approval'}
+          (out/'inventory.json').write_text(json.dumps(report,indent=2)+'\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## Open PR audit\n'+json.dumps({k:v for k,v in report.items() if k!='prs'})+'\n\n|PR|In main|In candidate|Clean merge|Title|\n|---|---|---|---|---|\n')
+              for x in data:f.write('|'+str(x['number'])+'|'+str(x['in_main'])+'|'+str(x['in_candidate'])+'|'+str(x.get('clean_merge','n/a'))+'|'+x['title'].replace('|','/')+'|\n')
+          print(json.dumps({k:v for k,v in report.items() if k!='prs'}))
+          PY
+      - name: Export tracked history for exact offline reconciliation
+        run: |
+          git bundle create qa/remaining-merge-audit/history.bundle --all
+          git bundle verify qa/remaining-merge-audit/history.bundle
+          sha256sum qa/remaining-merge-audit/history.bundle > qa/remaining-merge-audit/HISTORY-SHA256.txt
+      - name: Retain audit without installed data or repository credentials
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: remaining-merge-audit-${{ github.sha }}
+          path: qa/remaining-merge-audit/
+          if-no-files-found: error
+          retention-days: 14
