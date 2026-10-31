@@ -226,11 +226,22 @@ function backups_preview(array $row): RestorePlan {
 
 function backups_restore_phrase(array $row): string {return 'RESTORE '.strtoupper(substr($row['id'],0,8));}
 
+/** The indexed retention date and manifest must name the same UTC boundary. */
+function backups_restore_retention(array $row,BackupManifest $manifest): void {
+    $value=$row['retain_until']??null;
+    if(!is_string($value)||!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D',$value))
+        throw new RuntimeException('Recorded backup retention is invalid. No restore was authorized.');
+    $date=DateTimeImmutable::createFromFormat('!Y-m-d',$value,new DateTimeZone('UTC'));
+    if($date===false||$date->format('Y-m-d')!==$value||$date->getTimestamp()!==strtotime($manifest->retainUntil))
+        throw new RuntimeException('Recorded backup retention does not match its manifest. No restore was authorized.');
+}
+
 /** Deliberate restore: current owner authorization, exact phrase, atomic item writes, recorded outcome. Replaying an applied restore is naturally a no-op — every item verifies identical. */
 function backups_restore(string $id,string $confirmation,#[\SensitiveParameter] string $password=''): void {
     staff_locked(function() use($id,$confirmation,$password): void {
         $actor=backups_owner_session();$row=backups_row($id);
         $plan=backups_preview($row);
+        backups_restore_retention($row,$plan->manifest);
         $plan=$plan->authorize('staff:'.$actor['id'],$confirmation,backups_restore_phrase($row),time());
         staff_transaction(function() use($row,$actor): void {
             query('UPDATE '.table('backups').' SET status=? WHERE id=?',['restoring',$row['id']]);

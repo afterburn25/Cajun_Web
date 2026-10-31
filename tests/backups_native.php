@@ -140,7 +140,17 @@ try{
     $d3=backups_drill($id);b_ok('Drill flags a missing archive entry',$d3['result']==='incomplete'&&$d3['missing']===1);
     file_put_contents($archive,$bytes);
     query('UPDATE '.table('backups')." SET retain_until='2000-01-01' WHERE id=?",[$id]);file_put_contents($fixtureFile,'original fixture bytes');
+    $expiryState=b_backup_state();
     b_deny('Expired backup cannot be restored',fn()=>backups_restore($id,backups_restore_phrase(backups_row($id)),$password));
+    b_ok('Conflicting retention refusal preserves all rows and private archive bytes',b_backup_state()===$expiryState&&file_get_contents($archive)===$bytes);
+    // Exercise genuine expiration as well as mismatched indexed metadata.
+    $expired=json_decode(backups_row($id)['manifest'],true,64,JSON_THROW_ON_ERROR);
+    $expired['created_at']='1999-12-01T00:00:00Z';$expired['retain_until']='2000-01-01T00:00:00Z';
+    $expiredManifest=new BackupManifest($expired['id'],$expired['kind'],$expired['created_by'],$expired['created_at'],$expired['items'],$expired['retain_until'],$expired['notes']??'');
+    query('UPDATE '.table('backups').' SET manifest=?,manifest_hash=?,created_at=? WHERE id=?',[json_encode($expired,JSON_UNESCAPED_SLASHES),backups_manifest_integrity_hash($expiredManifest,$expired['database']??null),'1999-12-01 00:00:00',$id]);
+    $expiryState=b_backup_state();$expiredFailure=null;
+    try{backups_restore($id,backups_restore_phrase(backups_row($id)));}catch(Throwable $failure){$expiredFailure=$failure;}
+    b_ok('Consistently expired backup reaches the actual retention refusal',$expiredFailure instanceof LogicException&&$expiredFailure->getMessage()==='Backup is past its retention date; restore needs a fresh archive.'&&b_backup_state()===$expiryState&&file_get_contents($archive)===$bytes);
     b_deny('Prune refuses revoked owner authority without removing archives',fn()=>b_revoked(fn()=>backups_prune()));
     $pruneBefore=b_backup_state();
     b_ok('Prune audit failure preserves exact rows and private archive bytes',b_audit_failure(fn()=>backups_prune())&&b_backup_state()===$pruneBefore&&is_file($archive)&&file_get_contents($archive)===$bytes);
