@@ -96,7 +96,9 @@ jobs:
         run: |
           python3 tools/integration/foundation_batch.py --verify
           mkdir -p qa/foundation-batch
-          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:$PHP_VERSION-cli" sh -ec '
+          docker pull "php:$PHP_VERSION-cli" > qa/foundation-batch/runtime-acquisition.log 2>&1
+          docker image inspect "php:$PHP_VERSION-cli" --format '{{json .RepoDigests}}' > qa/foundation-batch/runtime-image.json
+          docker run --rm --pull never --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:$PHP_VERSION-cli" sh -ec '
             for area in backups pipeline proposals notifications revisions support-access comparisons service-plans; do
               for file in foundation/$area/*.php tests/$area/*.php; do php -l "$file"; done
               php "tests/$area/run.php" > "qa/foundation-batch/$area-default.txt"
