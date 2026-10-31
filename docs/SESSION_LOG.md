@@ -3757,3 +3757,16 @@ Actions: extracted the preserved `devin/revisions-foundation` slice — four `fo
 Tests: `php -l` clean; `php tests/revisions/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #167
+
+## Port A-09 support-access contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-support-access-foundation`.
+
+Actions: extracted the preserved `devin/support-access` slice — four `foundation/support-access/` classes, `tests/support-access/run.php`, `support-access.yml`, `docs/SUPPORT_ACCESS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/support-access/run.php` → 37/37 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.

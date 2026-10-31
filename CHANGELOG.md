@@ -1632,3 +1632,11 @@ Devin non-20i increment on `devin/non20i-notifications-foundation` from main `59
 ## Port A-02 content-revision contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-revisions-foundation` from main `595ac9c3`, continuing preserved `devin/revisions-foundation`. Adds `foundation/revisions/` — `ContentDocument`, `ContentRevision`, `RevisionDiff`, `ApprovalContext` — versioned content with computed diffs and deliberate approval/restore states, 30 pure checks in `tests/revisions/run.php`, PHP 8.2/8.4 workflow lane. No persistence, permissions or compare/restore UI — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #167
+
+
+## Port A-09 support-access contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-support-access-foundation` from main `595ac9c3`, continuing preserved `devin/support-access`. Adds `foundation/support-access/` — `SupportGrant`, `SupportScope`, `SupportBroker`, `ActionJournal` — auditable one-click portal access rules for staff acting on a client's behalf, 37 pure checks in `tests/support-access/run.php`, PHP 8.2/8.4 workflow lane. No real sessions, banner UI or application wiring — integration remains future work. No release or deployment.
