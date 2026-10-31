@@ -59,8 +59,8 @@ jobs:
           sudo update-alternatives --set php /usr/bin/php8.3
           test -s /usr/lib/apache2/modules/libphp8.3.so
           php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
-          python3 -m venv .owner-venv
-          .owner-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4
+          python3 -m venv "$RUNNER_TEMP/owner-venv"
+          "$RUNNER_TEMP/owner-venv/bin/pip" install --disable-pip-version-check requests beautifulsoup4
       - name: Build actual standalone packages from this clean commit
         run: |
           mkdir -p qa/owner-build
@@ -74,7 +74,7 @@ jobs:
       - name: Reconstruct the exact deployed RC without touching production
         run: python3 tools/integration/rc126_baseline.py --snapshot test-runtime/rc126-original
       - name: Test real Apache installs and populated financial upgrades
-        run: .owner-venv/bin/python tests/owner_release_apache.py
+        run: '"$RUNNER_TEMP/owner-venv/bin/python" tests/owner_release_apache.py'
       - name: Verify full financial lifecycle on the package source
         run: |
           mkdir -p qa/release-finance
