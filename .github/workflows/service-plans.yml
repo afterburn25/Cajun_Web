@@ -10,7 +10,7 @@ on:
       - tests/service-plans/**
       - .github/workflows/service-plans.yml
   push:
-    branches: [main, codex/service-plan-integration, codex/service-plan-records, codex/service-plan-screens]
+    branches: [main, codex/service-plan-integration, codex/service-plan-records, codex/service-plan-screens, 'devin/non20i-*']
   workflow_dispatch:
 
 permissions:
@@ -18,7 +18,7 @@ permissions:
 
 concurrency:
   group: service-plans-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   policy:

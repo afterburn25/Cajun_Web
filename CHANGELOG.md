@@ -204,6 +204,10 @@ Record reviewedcccf85bf, its first full38927120383, preserved2a/9779 failure evi
 
 Record exact2a focused3,020 checks, matching Windows/Linux packages and289 recovery checks alongside the original full run's tokenizer test-dependency failure and skipped HTTP. Preserve819c's terminal failure/99 missing reports and9779's newly canceled native-and-browser job with failed aggregate, pending diagnosis. Update current entry points and the159/161 correction priority; PRs163–170 are unaccepted proposals/foundations. This documentation-only descendant of82667afb imports no runtime and changes no installer, version, release or deployment.
 
+## Port A-03 backup/restore contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-backups-foundation` from main `595ac9c3`, continuing preserved `devin/backups-foundation`. Adds `foundation/backups/BackupManifest.php` (sealed sha256 item scopes; private/secret paths refused at construction; retention never born expired) and `RestorePlan.php` (preview→authorized→applied/abandoned; exact confirmation phrase, named actor, expired backups refused, newer formats rejected) with 33 pure contract checks in `tests/backups/run.php` and a PHP 8.2/8.4 workflow lane. No archive format, filesystem writes, database restore, scheduling or application integration — the adapter and restore drill remain future work. No release or deployment.
+
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
 Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
@@ -763,6 +767,9 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Unreleased — recurring billing calendar (Devin port)
+
+Ported `codex/billing-calendar` onto `devin/non20i-billing-calendar`. Canonical `foundation/billing-calendar/BillingCalendar.php` derives exact recurring periods (monthly/quarterly/annually × day-of-month/month-end) from an immutable anchor, with direct period/periodAt/window lookups, leap-day/century correctness and year-9999 bounds. Pure `tests/billing-calendar/calendar.php` contract + dedicated workflow. Canonical-only foundation; runtime wiring lands with recurring agreements. No live deployment or release.
 
 ## Synchronize release entry points after review — 2026-10-15
 
@@ -1596,3 +1603,59 @@ Owner request: continue full20i while Devin completes non-20i. Parent819c3ea3; c
 ## Main documentation synchronization
 
 Main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` publishes the same owner release freeze, canonical b98b96eb branch and scope/map to make them discoverable. Its12 Markdown-only changes add no runtime, installer, schema or version delta. The release branch normally merges that checkpoint; its existing release-specific status and all prior histories remain, rather than copying main's pre-integration runtime wording. Both sources agree on frozen capabilities, licensing corrections, complete supported acceptance, published1.24 and no live deployment.
+
+
+## Historical source entries retained while integrating PR #163
+
+
+## Port lead-pipeline contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-pipeline-foundation` from main `595ac9c3`, continuing preserved `devin/pipeline-foundation`. Adds `foundation/pipeline/PipelineBoard.php` (ordered stages, validated transitions, duplicate/dangling build errors, non-drag control parity), `PipelineStage.php` and `LeadRecord.php` with 31 pure checks in `tests/pipeline/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, permissions, notifications, search or board UI — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #164
+
+
+## Port proposal/approval contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-proposals-foundation` from main `595ac9c3`, continuing preserved `devin/proposals-foundation`. Adds `foundation/proposals/Proposal.php`, `ProposalVersion.php` and `ApprovalDecision.php` — immutable versioned proposals with deliberate approval/decline states — with 35 pure checks in `tests/proposals/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, mail, signature or UI — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #165
+
+
+## Port P-07 notification contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notifications-foundation` from main `595ac9c3`, continuing preserved `devin/notifications`. Adds `foundation/notifications/` — `Notification`, `NotificationFeed`, `NotificationPreferences`, `DeliveryAttempt`, `MetricSample` — with 65 pure checks in `tests/notifications/run.php` and a PHP 8.2/8.4 offline workflow lane. No persistence, delivery transport or UI — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #166
+
+
+## Port A-02 content-revision contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-revisions-foundation` from main `595ac9c3`, continuing preserved `devin/revisions-foundation`. Adds `foundation/revisions/` — `ContentDocument`, `ContentRevision`, `RevisionDiff`, `ApprovalContext` — versioned content with computed diffs and deliberate approval/restore states, 30 pure checks in `tests/revisions/run.php`, PHP 8.2/8.4 workflow lane. No persistence, permissions or compare/restore UI — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #167
+
+
+## Port A-09 support-access contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-support-access-foundation` from main `595ac9c3`, continuing preserved `devin/support-access`. Adds `foundation/support-access/` — `SupportGrant`, `SupportScope`, `SupportBroker`, `ActionJournal` — auditable one-click portal access rules for staff acting on a client's behalf, 37 pure checks in `tests/support-access/run.php`, PHP 8.2/8.4 workflow lane. No real sessions, banner UI or application wiring — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #168
+
+
+## Port C-01 comparison-facts contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-comparisons-foundation` from main `595ac9c3`, continuing preserved `devin/comparisons-foundation`. Adds `foundation/comparisons/` — `ComparisonFact`, `ClaimRegistry`, `EvidenceSource` — sourced/date-stamped competitor claims with structural no-guarantee rules, 30 pure checks in `tests/comparisons/run.php`, PHP 8.2/8.4 workflow lane. No rendering, fetching, CMS or comparison content — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #169
+
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.

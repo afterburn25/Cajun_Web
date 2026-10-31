@@ -1,0 +1,165 @@
+name: Reviewed foundation merge batch
+on:
+  push:
+    branches: [chatgpt/foundation-merge-group-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: foundation-batch-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assemble:
+    if: github.ref == 'refs/heads/chatgpt/foundation-merge-group-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: read
+    outputs:
+      source: ${{ steps.record.outputs.source }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require frozen sources and no outstanding change-request review
+        env:
+          READ_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 - <<'PY'
+          import importlib.util,json,os,urllib.request
+          spec=importlib.util.spec_from_file_location('batch','tools/integration/foundation_batch.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+          def get(path):
+              req=urllib.request.Request('https://api.github.com/repos/afterburn25/Cajun_Web/'+path,headers={'Authorization':'Bearer '+os.environ['READ_TOKEN'],'Accept':'application/vnd.github+json','User-Agent':'CWP-merge-review'})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          for number,sha in m.SOURCES:
+              pr=get('pulls/'+str(number))
+              if pr['head']['sha']!=sha:raise SystemExit('Source advanced: '+str(number))
+              states={}
+              for page in range(1,11):
+                  rows=get('pulls/'+str(number)+'/reviews?per_page=100&page='+str(page))
+                  for row in rows:
+                      if row['state'] in ('APPROVED','CHANGES_REQUESTED','DISMISSED'):states[row['user']['login']]=row['state']
+                  if len(rows)<100:break
+              else:raise SystemExit('Review pagination incomplete')
+              if 'CHANGES_REQUESTED' in states.values():raise SystemExit('Outstanding change request: '+str(number))
+              print('Frozen source/review check:',number,sha)
+          PY
+      - name: Normal-merge exact sources with reviewed bounded resolutions
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          git config user.name 'CajunWebPro integration builder'
+          git config user.email 'integration-builder@users.noreply.github.com'
+          python3 tools/integration/foundation_batch.py
+      - name: Record only the isolated candidate
+        id: record
+        env:
+          PUSH_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import base64,os,subprocess
+          def git(*a):return subprocess.check_output(['git',*a],text=True).strip()
+          branch='refs/heads/chatgpt/foundation-merge-group-20261030'
+          if git('ls-remote','origin',branch).split()[0]!=os.environ['EXPECTED_HEAD']:raise SystemExit('Candidate moved; refuse overwrite')
+          if git('ls-remote','origin','refs/heads/main').split()[0]!='551dd0dc1007711215fd83467ce814fe2f0f895e':raise SystemExit('Main moved; reconcile before push')
+          if git('status','--porcelain'):raise SystemExit('Dirty candidate')
+          auth=base64.b64encode(('x-access-token:'+os.environ['PUSH_TOKEN']).encode()).decode()
+          env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+          subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('source='+git('rev-parse','HEAD')+'\n')
+          PY
+  contracts:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2','8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and retained pure cases in both PHP modes
+        env:
+          SOURCE: ${{ needs.assemble.outputs.source }}
+          PHP_VERSION: ${{ matrix.php }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 tools/integration/foundation_batch.py --verify
+          mkdir -p qa/foundation-batch
+          docker pull "php:$PHP_VERSION-cli" > qa/foundation-batch/runtime-acquisition.log 2>&1
+          docker image inspect "php:$PHP_VERSION-cli" --format '{{json .RepoDigests}}' > qa/foundation-batch/runtime-image.json
+          docker run --rm --pull never --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:$PHP_VERSION-cli" sh -ec '
+            for area in backups pipeline proposals notifications revisions support-access comparisons service-plans; do
+              for file in foundation/$area/*.php tests/$area/*.php; do php -l "$file"; done
+              php "tests/$area/run.php" > "qa/foundation-batch/$area-default.txt"
+              php -n "tests/$area/run.php" > "qa/foundation-batch/$area-minimal.txt"
+            done
+            php tests/billing-calendar/calendar.php > qa/foundation-batch/calendar-default.json
+            php -n tests/billing-calendar/calendar.php > qa/foundation-batch/calendar-minimal.json
+          ' > qa/foundation-batch/lint.log 2> qa/foundation-batch/stderr.log
+          test ! -s qa/foundation-batch/stderr.log
+          python3 - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          p=Path('qa/foundation-batch');rows=[]
+          for f in sorted(p.glob('*.txt')):
+              m=re.search(r'^PASS: (\d+) ',f.read_text(),re.M)
+              assert m and int(m[1])>0 and 'FAIL' not in f.read_text(),str(f)
+              rows.append({'suite':f.name,'passed':True,'checks':int(m[1])})
+          assert len(rows)==16
+          for f in sorted(p.glob('calendar-*.json')):
+              d=json.loads(f.read_text());assert d['passed'] is True and d['checks'] and all(c['passed'] for c in d['checks'])
+              rows.append({'suite':f.name,'passed':True,'checks':len(d['checks'])})
+          assert len(rows)==18
+          (p/'results.json').write_text(json.dumps({'passed':True,'source':os.environ['SOURCE'],'php':os.environ['PHP_VERSION'],'scope':'Complete retained pure models in default/minimal PHP; no installed application or provider calls','suites':rows},indent=2)+'\n')
+          PY
+      - name: Retain original reports and exact source
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: foundation-contracts-${{ matrix.php }}-${{ needs.assemble.outputs.source }}
+          path: qa/foundation-batch/
+          if-no-files-found: error
+          retention-days: 14
+  build:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify no application change and exact-source packaging
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          SOURCE: ${{ needs.assemble.outputs.source }}
+        run: |
+          mkdir -p qa/foundation-build
+          python3 tools/integration/foundation_batch.py --verify
+          python3 tools/check_docs.py > qa/foundation-build/docs.log
+          python3 tools/build.py --refresh > qa/foundation-build/refresh.log
+          git diff --exit-code
+          python3 tests/build_guards.py > qa/foundation-build/guards.log
+          python3 tools/build.py --commit "$SOURCE" > qa/foundation-build/build.log
+          git diff --exit-code
+          printf '{"passed":true,"source":"%s","scope":"Nonshipping merge; original application and version retained; no release published"}\n' "$SOURCE" > qa/foundation-build/results.json
+      - name: Retain verification not replacement release ZIPs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: foundation-build-${{ needs.assemble.outputs.source }}
+          path: qa/foundation-build/
+          if-no-files-found: error
+          retention-days: 14

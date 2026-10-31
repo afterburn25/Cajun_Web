@@ -208,6 +208,15 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Port lead-pipeline contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); lead management is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-pipeline-foundation`.
+
+Actions: extracted the preserved `devin/pipeline-foundation` slice — `PipelineBoard`, `PipelineStage`, `LeadRecord`, `tests/pipeline/run.php`, `.github/workflows/pipeline.yml`, `docs/PIPELINE_FOUNDATION.md` — without the old branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters; corrected the doc's ownership line for current allocation.
+
+Tests: `php -l` clean; `php tests/backups/../pipeline/run.php` → 31/31 checks pass on local PHP 8.4; CI covers PHP 8.2/8.4 offline. No persistence/permissions/UI exists yet — pure contract layer.
+
+Next: commit, push, open bounded PR, update #157; continue with proposals/notifications/revisions contract ports, then application layers.
 
 ## Synchronize release entry points after review — 2026-10-15
 
@@ -3687,3 +3696,118 @@ ebebd533 run 39855317065 was cancelled as superseded.
 - Fix `f7f6b991`: `detail VARCHAR(400) COLLATE utf8mb4_bin` in `schema_statements`; `studio_migrate` applies the same guarded MODIFY for existing installs; installer inventory refreshed (280/280 verifier checks; build refresh green).
 - Run `40114885004` (push-triggered on `f7f6b991`) is the replacement run; the cancelled `40094584278` evidence is preserved.
 - Next: classify `40114885004`; if provider-settings renders drop, rerun the ceiling-hit nameserver/docroots lanes.
+
+
+## Historical source entries retained while integrating PR #162
+
+## Port A-03 backup/restore contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); backup/recovery is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-backups-foundation`.
+
+Actions: extracted the preserved `devin/backups-foundation` slice — `foundation/backups/BackupManifest.php`, `foundation/backups/RestorePlan.php`, `tests/backups/run.php`, `.github/workflows/backups.yml`, `docs/BACKUPS_FOUNDATION.md` — skipping that branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters to the workflow; corrected the doc's ownership line (application layers remain in Devin's scope) and check count (33, not 31).
+
+Tests: `php -l` clean on all three PHP files; `php tests/backups/run.php` → 33/33 checks pass on local PHP 8.4. CI runs the same suite in official PHP 8.2/8.4 images with `--network none`. No database, filesystem, archive or application paths exist yet — this is the pure contract layer only.
+
+Next: commit, push, open bounded PR, update issue #157; later roadmap work integrates the manifest/restore adapter and the isolated restore-drill acceptance.
+
+
+## 2026-10-19 — backup manifest depth exclusions (non-20i)
+
+Request: resolve the coordinator review finding that protected backup scope items matched only at the path root. Starting head: `385f3fed` on `devin/non20i-backups-foundation`; enclosing commit `66fe1439`.
+
+Changed: `foundation/backups/BackupManifest.php` — `FORBIDDEN` rewritten component-aware (`(^|/)` anchors for exact names, extension and `storage`/`payment-master` rules at any depth); `tests/backups/run.php` — nested rejection cases (`includes/config.php`, `app/vars/.env`, `deploy/storage/keys`, `releases/v2/.installed.php`) plus retained collection-skip behavior.
+
+Verification and scope: `php tests/backups/run.php` — 37 checks on PHP 8.4.25; isolated manifest/restore-plan contract only. The deployed `site/includes/foundation/backups/BackupManifest.php` mirror carries the same pattern on the descendant runtime/drill/export branches. Next: descendant branches consume via merge; Codex owns integration. No deployment, provider call, merge or release.
+
+
+## Historical source entries retained while integrating PR #164
+
+## Port proposal/approval contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); proposal/approval workflow is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-proposals-foundation`.
+
+Actions: extracted the preserved `devin/proposals-foundation` slice — `Proposal`, `ProposalVersion`, `ApprovalDecision`, `tests/proposals/run.php`, `proposals.yml`, `docs/PROPOSALS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/proposals/run.php` → 35/35 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157; continue remaining contract ports then application layers.
+
+
+## Historical source entries retained while integrating PR #165
+
+## Port P-07 notification contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.
+
+Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
+
+Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #166
+
+## Port A-02 content-revision contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-revisions-foundation`.
+
+Actions: extracted the preserved `devin/revisions-foundation` slice — four `foundation/revisions/` classes, `tests/revisions/run.php`, `revisions.yml`, `docs/REVISIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/revisions/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #167
+
+## Port A-09 support-access contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-support-access-foundation`.
+
+Actions: extracted the preserved `devin/support-access` slice — four `foundation/support-access/` classes, `tests/support-access/run.php`, `support-access.yml`, `docs/SUPPORT_ACCESS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/support-access/run.php` → 37/37 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #168
+
+## Port C-01 comparison-facts contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-comparisons-foundation`.
+
+Actions: extracted the preserved `devin/comparisons-foundation` slice — three `foundation/comparisons/` classes, `tests/comparisons/run.php`, `comparisons.yml`, `docs/COMPARISONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/comparisons/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #169
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-service-plans-foundation`.
+
+Actions: extracted the preserved `devin/service-plans` slice — `ServicePlan`/`PlanSubscription`, `tests/service-plans/run.php`, `service-plans.yml`, `docs/SERVICE_PLANS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording. `devin/service-desk` is already delivered inside the tickets branch's desk foundation, so no separate port is needed.
+
+Tests: `php -l` clean; `php tests/service-plans/run.php` → 76/76 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #172
+
+## Port billing calendar — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157, item 4 recurring/maintenance prerequisites).
+
+Starting commit: `origin/main` `c8382276` — foundation-only slice, no runtime dependencies on the financial stack.
+
+Files/actions: extracted `foundation/billing-calendar/BillingCalendar.php`, `tests/billing-calendar/calendar.php`, `docs/BILLING_CALENDAR_CONTRACT.md` (ownership line updated for the Devin port), `.github/workflows/billing-calendar.yml` (`devin/non20i-*` trigger added). No `site/` mirror or build wiring — runtime consumers land with the recurring-agreements integration slice.
+
+Tests/verification (local): `tests/billing-calendar/calendar.php` — all checks pass on PHP 8.4 (literal/clamped leap-day and century periods, index/window bounds, invalid-input refusals, immutability and timezone independence). `php -l` clean on the class.
+
+Next: commit, push, PR, #157 update; then recurring-billing storage/screens stack, ticket-screenshot-readiness.
