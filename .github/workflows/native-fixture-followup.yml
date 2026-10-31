@@ -1,0 +1,152 @@
+name: Native fixture follow-up validation
+on:
+  push:
+    branches: [chatgpt/native-fixture-followup-20261031]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-fixture-followup-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assemble:
+    if: github.ref == 'refs/heads/chatgpt/native-fixture-followup-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply exact fixture corrections and retain all historical assertions
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          git merge-base --is-ancestor 47d93ff55587195aa952ab7c56d0304c7029d672 HEAD
+          python3 tools/integration/native_fixture_followup.py
+          python3 tools/build.py --refresh
+          git diff --exit-code 47d93ff55587195aa952ab7c56d0304c7029d672 -- site foundation tools/structure tools/build.py VERSION START-HERE.txt
+          mkdir -p qa/followup-portable
+          python3 tests/acceptance_artifacts_test.py --report qa/followup-portable/helpers.json
+          php tests/current_staff_authority_contract.php > qa/followup-portable/staff.json
+          php tests/current_owner_authority_contract.php > qa/followup-portable/owner.json
+          php tests/checkout_authority_contract.php > qa/followup-portable/checkout.json
+          php tests/provider_workspace_focus.php > qa/followup-portable/focus.json
+          python3 tests/combined_repair_provenance.py > qa/followup-portable/source.json
+          git diff --check
+      - name: Record fixture source on this isolated branch only
+        id: record
+        env:
+          GH_SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git diff --exit-code -- .github/workflows
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- tests docs tools/acceptance-contract.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Retain delegated permissions and current prerequisites in complete native fixtures'
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/native-fixture-followup-20261031'
+          expected=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=expected:raise SystemExit('Follow-up branch moved; refuse to overwrite concurrent work')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=expected:
+              auth=base64.b64encode(('x-access-token:'+os.environ['GH_SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Exact fixture source:',head)
+          PY
+      - name: Preserve tracked source and diagnostics even on failure
+        if: always()
+        run: |
+          mkdir -p qa/followup-source
+          git archive --format=tar.gz HEAD > qa/followup-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/followup-source/identity.txt
+          git status --porcelain > qa/followup-source/working-tree.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-fixture-source-${{ github.sha }}
+          path: |
+            qa/followup-source/
+            qa/followup-portable/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306','43319:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_IMAGE: cwp-consolidation-php:8.4
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and disposable databases
+        run: |
+          docker build -t "$CWP_TEST_IMAGE" - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          WORKDIR /workspace
+          DOCKER
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");$p->exec("CREATE DATABASE cwp_checkout_test");$p->exec("GRANT ALL ON cwp_checkout_test.* TO ". $p->quote("cwp_test")."@".$p->quote("%"));exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Execute all six complete formerly failing suites
+        run: |
+          python3 tests/consolidation_native.py --shard 0 --only appointments_native,reviews_native,provider_inventory_native,provider_catalog_import_native,recurring_billing_native,recurring_billing_checkout_native
+          python3 - <<'PY'
+          import json,os
+          r=json.load(open('qa/consolidation-native/summary.json'))
+          expected={'appointments_native','reviews_native','provider_inventory_native','provider_catalog_import_native','recurring_billing_native','recurring_billing_checkout_native'}
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA'] and r['passed'] is True and r['expected_suites']==6
+          assert {s['suite'] for s in r['suites']}==expected and len(r['suites'])==6
+          assert all(s['passed'] is True and s['checks']>0 and s['stderr_empty'] is True for s in r['suites'])
+          print('Verified six complete suites:',sum(s['checks'] for s in r['suites']))
+          PY
+      - name: Preserve named reports and actual failures without private fixture bytes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-fixture-followup-${{ matrix.database }}-${{ needs.assemble.outputs.sha }}
+          path: qa/consolidation-native/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [assemble,native]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'The six complete native follow-up suites passed on both databases at the recorded source. This is not full installed browser/Apache acceptance, a main merge or a new release. Shipping application bytes are unchanged from47d93ff; the original full matrix remains separately preserved.' >> "$GITHUB_STEP_SUMMARY"
