@@ -139,7 +139,12 @@ PHPIniDir /etc/php/{PHP_VERSION}/apache2
             for route in ['admin.php','portal.php','index.php','assets/site.css']:
                 check(label+' maintenance denies old application '+route,requests.get(base+'/legacy/'+route).status_code==403)
             session=requests.Session();url=base+'/legacy/'+STAGE+'/owner-update.php';r=session.get(url)
-            check(label+' authenticated owner recovery page remains reachable in maintenance',r.status_code==200 and 'Current owner password' in r.text)
+            recovery_form=BeautifulSoup(r.text,'html.parser').select_one('form[method=post]')
+            check(label+' owner recovery sign-in remains reachable in maintenance',
+                  r.status_code==200 and recovery_form is not None
+                  and recovery_form.select_one('input[name=email][type=email]') is not None
+                  and recovery_form.select_one('input[name=owner_password][type=password]') is not None
+                  and recovery_form.select_one('input[name=csrf]') is not None)
             check(label+' staged payload is denied independently of rewriting',requests.get(base+'/legacy/'+STAGE+'/site/admin/index.php').status_code==403)
             r=session.post(url,data={'csrf':csrf(r),'email':'apache@example.invalid','owner_password':'Synthetic Apache owner passphrase','backup_confirm':'1','action':'apply'},timeout=90)
             (QA/('apache-'+label+'-owner-update.html')).write_text(r.text)

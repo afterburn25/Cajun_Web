@@ -631,7 +631,7 @@
       "tests/cloud_site_requests_ui_contract.php": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
       "tests/provider_cloud_site_requests_native.php": "23837d2606bb2a38ad45f513a7fb3aabefcf07f052182ba19fab731f8c17e9a8",
       "tests/provider_cloud_site_requests_cases.py": "4862727e170bcfaff792e70f557698a0109dd27202b3207f9a9bddca24861fc8",
-      "tests/cloud_site_requests_wiring.py": "df71ec091795b411d8e67b14769c1591fe9bfa1b5963a15abc07e2ac2cda6624",
+      "tests/cloud_site_requests_wiring.py": "2144ecd31944f8538b5de0ccc880d3585ca1179d765621afceb79dafa0801df6",
       "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
       "tests/provider_cloud_site_requests_upgrade_fixture.php": "b95a5562df22b2c5e242219ca2c911f160699a64f9ca3b15d0fbc0aeaa403da5",
       "tests/provider_cloud_site_requests_upgrade_test.py": "07c0c53741dd51652751a78744411c1c0717ad3a503dc011410d7b4723b945b3",
@@ -694,5 +694,11 @@
     "hook": "            from backups_cases import run_browser as backups_browser\n            backups_browser(globals(),browser)\n",
     "source_sha256": "0a1f1248faaef87afa5ce07c03118bd4f5163035f73e6fe3715cc5b8e36ef114",
     "predecessor_sha256": "254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10"
+  },
+  "owner_update_signin_test": {
+    "before_sha256": "c913995e424a4f4c979c42fef8b1a404c02c9080a54b6e261949846cd37182dc",
+    "after_sha256": "8b060b6148d79eecca96db3e4689a5f07db342e3fc57c843f5d93df4a20cad6f",
+    "before": "            check(label+' authenticated owner recovery page remains reachable in maintenance',r.status_code==200 and 'Current owner password' in r.text)",
+    "after": "            recovery_form=BeautifulSoup(r.text,'html.parser').select_one('form[method=post]')\n            check(label+' owner recovery sign-in remains reachable in maintenance',\n                  r.status_code==200 and recovery_form is not None\n                  and recovery_form.select_one('input[name=email][type=email]') is not None\n                  and recovery_form.select_one('input[name=owner_password][type=password]') is not None\n                  and recovery_form.select_one('input[name=csrf]') is not None)"
   }
 }

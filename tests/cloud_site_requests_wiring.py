@@ -6,6 +6,15 @@ import json
 
 def predecessor_bytes(root, path, contract):
     value = (root / path).read_bytes().replace(b'\r\n', b'\n')
+    if path == 'tests/apache_acceptance.py':
+        fix = contract.get('owner_update_signin_test')
+        if fix is not None:
+            before, after = fix['before'].encode(), fix['after'].encode()
+            if hashlib.sha256(value).hexdigest() != fix['after_sha256'] or value.count(after) != 1:
+                raise AssertionError('Owner-update sign-in correction changed beyond its reviewed extent')
+            value = value.replace(after, before, 1)
+            if hashlib.sha256(value).hexdigest() != fix['before_sha256']:
+                raise AssertionError('Owner-update correction lost predecessor Apache coverage')
     if path == 'tests/prepare_legacy.py':
         baseline = contract['cloud_site_requests']['published_baseline']
         appendix = baseline['preparation_appendix'].encode()
