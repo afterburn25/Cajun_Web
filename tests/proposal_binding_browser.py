@@ -18,7 +18,10 @@ subprocess.run([php,str(ROOT/'tests/proposal_binding_seed.php')],check=True,cwd=
 site=WEB/'existing'
 if site.exists():raise SystemExit('Refuse stale installed test fixture')
 shutil.copytree(ROOT/'site',site);shutil.copyfile(ROOT/'test-runtime/config-fixture.php',site/'config.php');(site/'.installed.php').write_text('<?php exit; ?>synthetic installed guard')
-log=(QA/'server.log').open('w');proc=subprocess.Popen([php,'-S','127.0.0.1:8091','-t',str(WEB)],cwd=ROOT,stdout=log,stderr=log,start_new_session=True)
+server_name='cwp-proposal-binding-http'
+server_args=['docker','run','--rm','--init','--name',server_name,'--network','host','--user',str(os.getuid())+':'+str(os.getgid()),'-v',str(ROOT)+':'+str(ROOT),'-w',str(ROOT)]
+for key in ['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD','CWP_SOURCE_SHA']:server_args+=['-e',key]
+log=(QA/'server.log').open('w');proc=subprocess.Popen(server_args+['cwp-proposal-review','php','-S','127.0.0.1:8091','-t',str(WEB)],cwd=ROOT,stdout=log,stderr=log,start_new_session=True)
 import release_cases
 release_cases.ROOT=ROOT;release_cases.php=php
 from release_cases import db
@@ -65,9 +68,26 @@ try:
   page.screenshot(path=str(QA/'proposal-approved-mobile.png'),full_page=True,animations='disabled')
   check('Browser had no external calls or JavaScript errors',not external and not errors)
   context.close();browser.close();owner.close()
-except Exception as exc:checks.append({'name':type(exc).__name__+': '+str(exc),'passed':False})
+except Exception as exc:
+ failure=type(exc).__name__+': '+str(exc);checks.append({'name':failure,'passed':False});print(failure,flush=True)
+ if isinstance(exc,subprocess.CalledProcessError) and exc.stderr:(QA/'fixture-command.stderr.log').write_text(exc.stderr)
 finally:
- proc.terminate();proc.wait(timeout=20);log.close();text=(QA/'server.log').read_text();checks.append({'name':'No PHP or handled application errors','passed':not any(x in text for x in ['PHP Fatal error','PHP Warning','PHP Notice','PHP Deprecated','CWP ['])})
+ # Stop this fixture container, not merely its attached docker client. Preserve
+ # the earlier assertion failure even if cleanup itself encounters an error.
+ try:
+  stopped=subprocess.run(['docker','stop','--time','5',server_name],capture_output=True,text=True,timeout=15)
+  if stopped.returncode!=0:checks.append({'name':'Fixture container cleanup failed: '+stopped.stderr.strip(),'passed':False})
+  proc.wait(timeout=10)
+ except (subprocess.TimeoutExpired,OSError) as exc:
+  checks.append({'name':'Fixture cleanup failure: '+str(exc),'passed':False})
+  try:subprocess.run(['docker','rm','-f',server_name],capture_output=True,text=True,timeout=15)
+  except (subprocess.TimeoutExpired,OSError) as cleanup:checks.append({'name':'Fixture removal failure: '+str(cleanup),'passed':False})
+  if proc.poll() is None:
+   proc.kill()
+   try:proc.wait(timeout=5)
+   except subprocess.TimeoutExpired:checks.append({'name':'Fixture docker client did not terminate','passed':False})
+ finally:log.close()
+ text=(QA/'server.log').read_text();checks.append({'name':'No PHP or handled application errors','passed':not any(x in text for x in ['PHP Fatal error','PHP Warning','PHP Notice','PHP Deprecated','CWP ['])})
  passed=bool(checks) and all(c['passed'] for c in checks)
  (QA/'browser-results.json').write_text(json.dumps({'passed':passed,'source_sha':os.environ.get('CWP_SOURCE_SHA'),'scope':'Actual installed synthetic SQL, authenticated forms and two-tab Chromium; no live customer or payment operation','checks':checks},indent=2)+'\n')
 print(json.dumps({'passed':passed,'checks':len(checks)}));raise SystemExit(0 if passed else 1)
