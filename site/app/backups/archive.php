@@ -82,11 +82,21 @@ function backups_write_archive(string $root,array $items,string $dest,?string $d
     $real=realpath($root);$zip=new ZipArchive();
     if($zip->open($dest,ZipArchive::CREATE|ZipArchive::EXCL)!==true)throw new RuntimeException('Backup archive could not be created.');
     try{
-        foreach($items as $name=>$hash)if(!$zip->addFile($real.'/'.$name,$name))throw new RuntimeException('A source file could not be archived: '.$name);
-        if($database!==null&&!$zip->addFile($database,'database/snapshot.sql'))throw new RuntimeException('The database export could not be archived.');
+        try{
+            foreach($items as $name=>$hash)if(!$zip->addFile($real.'/'.$name,$name))throw new RuntimeException('A source file could not be archived: '.$name);
+            if($database!==null&&!$zip->addFile($database,'database/snapshot.sql'))throw new RuntimeException('The database export could not be archived.');
+        }finally{
+            if(!$zip->close())throw new RuntimeException('Backup archive could not be finalized. No ready backup was recorded.');
+        }
+        clearstatcache(true,$dest);
+        $size=filesize($dest);if($size===false||$size===0)throw new RuntimeException('Backup archive was not written.');return $size;
+    }catch(Throwable $failure){
+        // Only this successfully opened EXCL destination belongs to this call.
+        // Finish releasing the writer before removing an incomplete private file.
+        unset($zip);
+        if(is_file($dest)&&!is_link($dest)&&!@unlink($dest))throw new RuntimeException('Backup archive failed and private cleanup is incomplete. Review protected backup storage.',0,$failure);
+        throw $failure;
     }
-    finally{$zip->close();}
-    $size=filesize($dest);if($size===false||$size===0)throw new RuntimeException('Backup archive was not written.');return $size;
 }
 
 /** Live hashes for the manifest's items, for honest restore previews. */

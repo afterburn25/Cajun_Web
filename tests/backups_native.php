@@ -1,6 +1,7 @@
 <?php
 /** Isolated MariaDB/private files, no customer data or provider calls. */
 declare(strict_types=1);
+use CajunWebPro\Foundation\Backups\BackupManifest;
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/app/backups/archive.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='backupci_';
