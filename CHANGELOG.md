@@ -1600,3 +1600,11 @@ Owner request: continue full20i while Devin completes non-20i. Parent819c3ea3; c
 ## Main documentation synchronization
 
 Main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` publishes the same owner release freeze, canonical b98b96eb branch and scope/map to make them discoverable. Its12 Markdown-only changes add no runtime, installer, schema or version delta. The release branch normally merges that checkpoint; its existing release-specific status and all prior histories remain, rather than copying main's pre-integration runtime wording. Both sources agree on frozen capabilities, licensing corrections, complete supported acceptance, published1.24 and no live deployment.
+
+
+## Historical source entries retained while integrating PR #163
+
+
+## Port lead-pipeline contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-pipeline-foundation` from main `595ac9c3`, continuing preserved `devin/pipeline-foundation`. Adds `foundation/pipeline/PipelineBoard.php` (ordered stages, validated transitions, duplicate/dangling build errors, non-drag control parity), `PipelineStage.php` and `LeadRecord.php` with 31 pure checks in `tests/pipeline/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, permissions, notifications, search or board UI — integration remains future work. No release or deployment.
