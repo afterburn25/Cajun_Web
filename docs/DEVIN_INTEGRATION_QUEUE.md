@@ -1,3 +1,7 @@
+## 2026-10-31 — isolate the remaining combined-baseline corrections
+
+Owner request: continue all pending integrations. PR317 already combines backups/licensing/master portal/20i. The isolated baseline repair restores focused cloud rendering, updates obsolete session-only expectations, retains complete test evidence and adds the omitted domain-search suite. Local regressions pass; exact-source native/installed acceptance remains pending. Main, live settings and delivered1.26.1 archives are unchanged. [Correction, actual evidence and next groups](COMBINED_BASELINE_REPAIR_2026_10_31.md).
+
 ## 2026-10-29 — keep software orchestration evidence inside its sealed partition
 
 PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](CODEX_PR266_APPLICATION_40820683270.md).

@@ -2,6 +2,11 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $record=provider_settings_profile();$profileId=$record['id']??'';
+$cloudAssignmentFocused=($_GET['focus']??null)==='cloud-assignment';
+if($cloudAssignmentFocused): ?>
+<section class="workspace-card" data-cloud-assignment-focus><h2>Cloud inventory and client assignments</h2><p><a class="btn outline" href="<?=esc(admin_url('provider-settings'))?>">Return to all 20i workspaces</a></p><p>Review saved cloud observations and client assignments here. Other provider tools remain in their dedicated workspaces.</p></section>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; return; endif; ?>
+<?php
 $values=$record??['label'=>'Studio 20i','revision'=>0,'enabled'=>0];$revision=(int)$values['revision'];
 require_once CWP_CODE_ROOT.'/app/providers/workspace.php';
 if(($_POST['action']??'')==='provider_settings_save'&&($_POST['profile_id']??'')===$profileId){

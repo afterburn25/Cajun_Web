@@ -18,7 +18,7 @@ $checks=[];$password='Synthetic upgrade owner passphrase';$profile=str_repeat('a
 function pu_ok(string $name,bool $ok):void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 function pu_deny(string $name,callable $fn):void {try{$fn();}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;pu_ok($name,true);return;}pu_ok($name,false);}
 function pu_version():string{return (string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');}
-function pu_render():string {ob_start();try{require CWP_CODE_ROOT.'/admin/views/providers.php';return ob_get_contents();}finally{ob_end_clean();}}
+function pu_render(string $section='services'):string {$saved=$_GET;$_GET=['section'=>$section];ob_start();try{require CWP_CODE_ROOT.'/admin/views/providers.php';return ob_get_contents();}finally{ob_end_clean();$_GET=$saved;}}
 function pu_snapshot():array {
     $out=[];foreach(['provider_profiles','provider_revisions','provider_refreshes','provider_refresh_results','provider_observation_packages','provider_package_links','provider_package_link_events'] as $name)$out[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');return $out;
 }
@@ -78,7 +78,7 @@ try {
         } finally {query('DELETE FROM '.table('audit').' WHERE id=?',[$witnessId]);}
     }
     pu_ok('Legacy StackCP readiness probes restore exact settings audits tables and inventory without key creation',all('SELECT * FROM '.table('settings').' ORDER BY name')===$accessSettings&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$accessAudit&&all('SHOW TABLES')===$accessTables&&pu_snapshot()===$before&&!is_file($private.'/provider-master.key'));
-    $tablesBeforeView=all('SHOW TABLES');$settingsBeforeView=all('SELECT * FROM '.table('settings').' ORDER BY name');$unpreparedHtml=pu_render();
+    $tablesBeforeView=all('SHOW TABLES');$settingsBeforeView=all('SELECT * FROM '.table('settings').' ORDER BY name');$unpreparedHtml=pu_render().pu_render('domains');
     pu_ok('Populated v1 owner view retains preparation without querying missing domain tables',str_contains($unpreparedHtml,'Prepare inventory storage'));
     pu_ok('Controller-rendered legacy view offers separate domain search preparation without schema-changing GET',str_contains($unpreparedHtml,'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView&&pu_snapshot()===$before);
     pu_deny('Revoked owner refuses: Populated v1 preparation requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_migrate('wrong')));

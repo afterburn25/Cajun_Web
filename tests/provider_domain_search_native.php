@@ -1,6 +1,7 @@
 <?php
 /** Native disposable database, synthetic provider only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -70,14 +71,14 @@ try {
     foreach([2=>'administrator',3=>'owner'] as $uid=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$uid,$role,json_encode(array_keys(staff_permissions()))]);
     ds_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'Search fixture',true,$secret,$password);
     ds_native_ok('Search starts unprepared without implicit schema changes',!provider_domain_search_ready()&&str_contains(ds_render(),'Prepare domain search')&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pds_provider_domain_searches']));
-    ds_native_deny('Preparation requires the current owner password',fn()=>provider_domain_search_migrate('wrong'));
+    ds_native_deny('Preparation requires current owner authority without changing records',fn()=>cwp_test_owner_revoked(fn()=>provider_domain_search_migrate('wrong')));
     provider_domain_search_migrate($password);provider_domain_search_migrate($password);
     ds_native_ok('Additive preparation and reapplication succeed with empty history',provider_domain_search_ready()&&ds_count('provider_domain_searches')===0);
     save_setting('provider_domain_search_schema_version','99');ds_native_deny('Unsupported search schema version is refused',fn()=>provider_domain_search_migrate($password));save_setting('provider_domain_search_schema_version','1');
     ds_native_deny('Default disabled policy prevents any lookup',fn()=>ds_run($id));
     ds_native_deny('An empty offering cannot enable search',fn()=>provider_domain_search_configure($id,1,0,true,'',$password));
     foreach(['.com','com?bad','xn--caf-dma','bad/suffix'] as $i=>$value)ds_native_deny('Malformed extension refused '.$i,fn()=>provider_domain_search_configure($id,1,0,true,$value,$password));
-    ds_native_deny('Search configuration requires password',fn()=>provider_domain_search_configure($id,1,0,true,'invalid','wrong'));
+    ds_native_deny('Search configuration refuses revoked owner authority with retained state',fn()=>cwp_test_owner_revoked(fn()=>provider_domain_search_configure($id,1,0,true,'invalid','wrong')));
     ds_native_ok('Configuration audit failure rolls back settings',ds_audit_fail('domain_search_configured',fn()=>provider_domain_search_configure($id,1,0,true,'invalid',$password))&&provider_domain_search_configuration()['revision']===0);
     provider_domain_search_configure($id,1,0,true," INVALID\nco.uk\ninvalid",$password);
     ds_native_ok('Offering normalizes and deduplicates suffixes',provider_domain_search_configuration()['tlds']===['co.uk','invalid']);

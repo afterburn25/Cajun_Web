@@ -392,6 +392,7 @@ def run(tmp):
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     from cloud_site_requests_wiring import predecessor_bytes
+    from baseline_followup_wiring import predecessor as followup_predecessor
     software_apache_appendix="""                software=session.get(url+'/portal/index.php?software=1')
                 check(label+suffix+' anonymous My Software route resolves safely at installed base path',
                       software.status_code==200 and 'Software & Licenses' not in software.text
@@ -414,6 +415,7 @@ def run(tmp):
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        retained=followup_predecessor(ROOT,path,retained)
         if path=='tests/apache_acceptance.py':
             appendix=software_apache_appendix.encode()
             check('Software Apache acceptance appendix is exact and additive',
@@ -459,7 +461,7 @@ def run(tmp):
     native_commands=[command for command in native_commands if command not in import_commands]
     check('Import additions preserve the exact149 predecessor commands',len(native_commands)==import_contract['predecessor_native_count']==149 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==import_contract['predecessor_native_sha256'])
     for path,expected_hash in import_contract['source_sha256'].items():
-        check('Import fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        check('Import fixture source retained '+path,hashlib.sha256(followup_predecessor(ROOT,path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))).hexdigest()==expected_hash)
     access_snapshot=contract['stackcp_access_snapshot_native_command_baseline'];access_snapshot_command='"$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php'
     check('All149 native commands equal the exact current selected-runtime recipe',len(native_commands)==149 and native_commands==[command for command in contract['native_commands'] if command not in import_commands])
     access_snapshot_position=native_commands.index(access_snapshot['additions_after'])+1

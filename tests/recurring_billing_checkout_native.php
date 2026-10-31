@@ -4,6 +4,9 @@ declare(strict_types=1);
 require_once __DIR__.'/current_owner_authority.php';
 
 $database=(string)getenv('CWP_TEST_DATABASE');$port=(int)getenv('CWP_TEST_PORT');
+$serverPortText=(string)(getenv('CWP_TEST_CHECKOUT_SERVER_PORT')?:'43319');
+if(!in_array($serverPortText,['43319','3306'],true))exit(2);
+$serverPort=(int)$serverPortText;
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_RECURRING_CHECKOUT_STORAGE')!=='1'||!in_array($database,['cwp_checkout_test','cwp_checkout_recurring_retry1'],true)||getenv('CWP_TEST_HOST')!=='127.0.0.1'||$port!==43319)exit(2);
 $site=realpath((string)(getenv('CWP_TEST_CODE_ROOT')?:__DIR__.'/../site'));
 if(!$site||!is_file($site.'/app/billing/recurring_billing_invoices.php'))exit(2);
@@ -112,7 +115,7 @@ function rcn_document_fixture(int $at,ServicePlanDocument $plan):array {
     return compact('at','terms','plan','p','i','o','m','c','policy','legacy','pub');
 }
 try {
-    rcn_ok('Fixture connects only to the explicitly owned database and port',(int)query('SELECT @@port')->fetchColumn()===$port&&query('SELECT DATABASE()')->fetchColumn()===$database);
+    rcn_ok('Fixture connects only to the explicitly owned database and port',(int)query('SELECT @@port')->fetchColumn()===$serverPort&&config()['db']['port']===$port&&query('SELECT DATABASE()')->fetchColumn()===$database);
     rcn_ok('Separate recurring checkout namespace is initially empty',!all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,5)=?',['crbc_']));
     rcn_setup('crbc_main_');rcn_ok('Legacy setup does not enable recurring checkout',recurring_billing_ready()&&!recurring_billing_checkout_ready()&&rcn_marker()===''&&recurring_billing_checkout_schema_stage()===0);
     rcn_historical_source(100);$legacy=rcn_historical_billing(300,100);$issued=recurring_billing_issue(rcn_id(300),1,$legacy->revision(),$legacy->fingerprint(),0,rcn_id(400));

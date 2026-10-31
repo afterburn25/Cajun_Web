@@ -85,6 +85,8 @@ function cwp_test_owner_revoked(callable $work): mixed {
         'An active owner account and prepared client workspace are required.',
         'A currently authorized owner account is required.',
         'Only an owner can verify administrator access.',
+        'Current website and inquiry permission is required.',
+        'Your current account does not have access to client administration.',
     ]:['Your administrator session is no longer valid. Sign in again.'];
     if(!($error instanceof RuntimeException||$error instanceof InvalidArgumentException)
         ||$error instanceof PDOException||!in_array($error->getMessage(),$messages,true)){
