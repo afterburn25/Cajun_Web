@@ -4,7 +4,7 @@ import json,os,re,subprocess
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'qa/legacy-authority';OUT.mkdir(parents=True,exist_ok=True)
 if os.environ.get('CWP_TEST_DATABASE')!='cwp_test' or os.environ.get('CWP_TEST_HOST')!='127.0.0.1':raise SystemExit('Disposable loopback fixtures only')
 # Keep all preexisting assertions. This runner does not select or skip cases within a suite.
-suites=[('mail_notices_native',1,'mail-notices-native-results.json'),('mail_drafts_native',1,'mail-drafts-native-results.json'),('provider_settings_native',3,'provider-settings-native-results.json'),('provider_checks_native',1,'provider-checks-native-results.json'),('staff_native',1,'staff-native-results.json'),('software_commerce_native',7,None)]
+suites=[('mail_notices_native',1,'mail-notices-native-results.json'),('mail_drafts_native',1,'mail-drafts-native-results.json'),('provider_settings_native',3,'provider-settings-native-results.json'),('provider_checks_native',1,'provider-checks-native-results.json'),('staff_native',1,'staff-native-results.json'),('software_commerce_native',8,None)]
 results=[]
 for name,expected,report in suites:
  env={**os.environ,'CWP_CURRENT_AUTHORITY_CASE':name}
