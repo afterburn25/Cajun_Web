@@ -35,15 +35,15 @@ jobs:
           path=Path('.github/workflows/1261-main-reconcile.yml')
           committed=path.read_bytes()
           if not Path('docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json').exists():
-              # Workflow changes are already committed by the authorized repository tool.
-              # Reconstruct the historical input only to record the same exact inverse.
               old=subprocess.check_output(['git','show','2f11bc1fa202020880ead9abc1ee72d19205cac5:'+str(path)])
               path.write_bytes(old)
           subprocess.run(['python3','tools/integration/combined_remaining_fixtures.py'],check=True)
           if path.read_bytes()!=committed:raise SystemExit('Reviewed workflow differs from the already committed version')
           PY
+          python3 tools/integration/combined_native_round2.py
           python3 tools/build.py --refresh
           python3 tests/combined_repair_provenance.py
+          php tests/current_staff_permission_contract.php
           git diff --exit-code -- .github/workflows
           git diff --check
       - name: Record ordinary expanded source on the isolated branch only
@@ -58,7 +58,7 @@ jobs:
           git diff --exit-code -- .github/workflows
           git add -- site tests docs tools/acceptance-contract.json
           if ! git diff --cached --quiet; then
-            git commit -m 'Repair combined acceptance fixtures and restore focused 20i routing'
+            git commit -m 'Preserve staff authority and reconcile remaining combined native fixtures'
           fi
           python3 - <<'PY'
           import base64,os,subprocess
@@ -111,6 +111,7 @@ jobs:
           python3 tools/integration/portable_checks.py --root . --out qa/repair-portable
           php tests/master_portal_policy.php
           php tests/current_owner_authority_contract.php > qa/repair-portable/authority.json
+          php tests/current_staff_permission_contract.php > qa/repair-portable/staff-authority.json
           php tests/checkout_authority_contract.php > qa/repair-portable/checkout.json
           php tests/provider_workspace_focus.php > qa/repair-portable/focus.json
           php tests/backups/run.php > qa/repair-portable/backups.log
@@ -134,7 +135,7 @@ jobs:
     timeout-minutes: 65
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 6
       matrix:
         database: [mysql,mariadb]
         shard: [0,1,2]
