@@ -86,6 +86,9 @@ try{
     pcbv_ok('Redirect uses returned next offset rather than a guessed batch size',$r['destination']===admin_url('catalog',['import_source'=>'package.types','batch_term'=>'year','batch_prefix'=>'HOST','import_offset'=>60]));
     pcbv_ok('Result text uses returned created preserved and remaining counts',$r['flashes']===[['7 draft(s) created. 3 existing product(s) preserved. 8 type(s) remain to import.','success']]);
     pcbv_ok('Response location and flash never carry password or preview hash',!str_contains($r['destination'],$password)&&!str_contains($r['destination'],$hash)&&!str_contains(json_encode($r['flashes'],JSON_THROW_ON_ERROR),'private password'));
+    $noPassword=$post;unset($noPassword['owner_password']);$sessionResult=pcbv_action($noPassword);
+    pcbv_ok('Actual batch controller accepts current owner session without password reentry',$sessionResult['calls']===[[$hash,'year','HOST','','package.types',50]]&&$sessionResult['destination']!==null);
+    $sessionRefused=pcbv_action($noPassword,owner:false);pcbv_ok('Session-only batch retains current-owner denial before any mutation',$sessionRefused['calls']===[]&&$sessionRefused['flashes']===[]&&$sessionRefused['destination']===null&&$sessionRefused['error']!==null);
     $r=pcbv_action($post,csrf:false);
     pcbv_ok('Invalid CSRF prevents owner and batch calls',$r['trace']===['csrf']&&$r['calls']===[]&&$r['destination']===null&&$r['flashes']===[]);
     $r=pcbv_action($post,owner:false);
@@ -112,7 +115,7 @@ try{
     $html=pcbv_render(['import_source'=>'package.types','batch_term'=>'month','batch_prefix'=>'NEXT','import_offset'=>'50']);$form=pcbv_form($html,'catalog_import_batch');
     pcbv_ok('Fresh batch form binds latest preview hash and selected source',pcbv_input($form,'preview_hash')===$freshHash&&pcbv_input($form,'import_source')==='package.types');
     pcbv_ok('Continuation URL retains batch choices in actual controls',pcbv_input($form,'import_offset')==='50'&&pcbv_input($form,'sku_prefix')==='NEXT'&&pcbv_selected($form,'term')==='month');
-    pcbv_ok('Fresh batch requires confirmation and an empty current password',pcbv_input($form,'owner_password')===''&&str_contains($form,'name="confirm" value="1" >')&&str_contains($form,'autocomplete="current-password"'));
+    pcbv_ok('Fresh batch requires explicit confirmation without a repeated password',!str_contains($form,'name="owner_password"')&&str_contains($form,'name="confirm" value="1" >')&&!str_contains($form,'type="password"'));
     pcbv_ok('Actual form includes CSRF and bounded batch action',pcbv_input($form,'csrf')==='synthetic-token'&&pcbv_input($form,'action')==='catalog_import_batch');
     pcbv_ok('Returned provider text is escaped in the actual renderer',str_contains($html,'Safe &lt;script&gt;alert(1)&lt;/script&gt; &amp; type')&&!str_contains($html,'<script>'));
     pcbv_ok('Batch scope states drafts across pages and preservation of earlier edits',str_contains($html,'batches of up to 50 types across all catalog pages')&&str_contains($html,'Already imported products keep their names, prices, terms and images.'));
@@ -139,7 +142,7 @@ try{
     $previewFailure=true;$html=pcbv_render(['import_source'=>'package.types']);
     pcbv_ok('Unavailable preview creates no actionable batch and escapes its error',!str_contains($html,'catalog_import_batch')&&str_contains($html,'Unavailable &lt;catalog&gt; &amp; private-shaped text.'));$previewFailure=false;
     $preview['total_types']=0;$preview['types']=[];$html=pcbv_render(['import_source'=>'package.types']);
-    pcbv_ok('Empty observed catalog has no batch form',!str_contains($html,'catalog_import_batch')&&str_contains($html,'No named hosting types'));
+    pcbv_ok('Empty observed catalog has no batch form',!str_contains($html,'catalog_import_batch')&&str_contains($html,'No named plans are available in this saved response.')&&str_contains($html,'existing customer hosting inventory is a separate source.'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected batch form/action failure: '.$e->getMessage(),'passed'=>false];}
 $passed=!array_filter($checks,static fn($row)=>$row['passed']!==true);
 echo json_encode(['passed'=>$passed,'scope'=>'Actual catalog import view and extracted controller action with modeled CSRF, authority, saved preview and batch service. Real form/URL/input helpers. No SQL, provider, HTTP, browser or importer mutation acceptance.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR).PHP_EOL;
