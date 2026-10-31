@@ -11,8 +11,8 @@ $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';
 $GLOBALS['cwp_config']['db']['prefix']='swci_';
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
 start_session();
-$n=0;
-function swok(bool $pass,string $name):void{global $n;if(!$pass)throw new RuntimeException($name);$n++;echo 'PASS '.$name.PHP_EOL;}
+$n=0;$checks=[];
+function swok(bool $pass,string $name):void{global $n,$checks;$checks[]=['name'=>$name,'passed'=>$pass];if(!$pass)throw new RuntimeException($name);$n++;echo 'PASS '.$name.PHP_EOL;}
 function swdenied(callable $work,string $name):void{try{$work();}catch(RuntimeException|InvalidArgumentException){swok(true,$name);return;}swok(false,$name);}
 try{
     foreach(schema_statements('swci_') as $sql)db()->exec($sql);

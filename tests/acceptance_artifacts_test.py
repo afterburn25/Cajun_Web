@@ -390,6 +390,8 @@ def run(tmp):
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
+    from combined_repair_provenance import validate as validate_repairs
+    for outcome in validate_repairs(ROOT):check(outcome['name'],outcome['passed'])
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     from cloud_site_requests_wiring import predecessor_bytes
     software_apache_appendix="""                software=session.get(url+'/portal/index.php?software=1')
@@ -415,6 +417,8 @@ def run(tmp):
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
         if path=='tests/apache_acceptance.py':
+            from combined_repair_provenance import predecessor as repaired_predecessor
+            retained=repaired_predecessor(ROOT,path,retained)
             appendix=software_apache_appendix.encode()
             check('Software Apache acceptance appendix is exact and additive',
                   retained.count(appendix)==1)

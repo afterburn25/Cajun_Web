@@ -119,7 +119,7 @@ function setup_expected_files(): array { return [
     'admin/views/provider_workspace/domains.php'=>'bc062c9f8e5a6cf77444ffb6ef6f26cb954a97202939a0f955f6de2c74482eac',
     'admin/views/provider_workspace/services.php'=>'0020e28e663890abfb47989d20fd4ca13eb4dfbf9b39f593c8e3302812ccc38e',
     'admin/views/provider_workspace/website.php'=>'a467c81c0e4b6f04b8d64fd53ba79c2d3d626b7a19bef33f061da97fe931bbbb',
-    'admin/views/providers.php'=>'b69c97a6f406de7f64ea92c6a8806fe5ed3a9c037629c3554af785e2462b49c5',
+    'admin/views/providers.php'=>'872b1481e2159b328f6e65fb525f3bffc600974d490c8a79aaa53550f9d936a6',
     'admin/views/reviews.php'=>'126793965131eaadf598853c8074e6fc82f6d9f28c8527f486b577b2a9bdfd00',
     'admin/views/security.php'=>'bb3ad107cbeaff5ff42eb5598df1f27bda6ad1bb976aeb2c03a316722f7d35c1',
     'admin/views/service.php'=>'02b8ed4ba94035fa42fbdcfe4ea669a9eaddd38938f2ad3fe2b9163d4d5dd932',
