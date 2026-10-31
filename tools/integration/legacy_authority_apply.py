@@ -14,6 +14,9 @@ def main():
   for r in json.loads(follow.read_text()):
    if r['path'] not in chains or chains[r['path']][-1]['after']!=r['before']:raise SystemExit('Invalid follow-up chain')
    chains[r['path']].append(r)
+ mail=json.loads((ROOT/'tools/integration/legacy_mail_submission.json').read_text())
+ if len(mail)!=1 or mail[0]['path']!='tests/mail_submissions_native.php' or mail[0]['path'] in chains:raise SystemExit('Unexpected mail test scope')
+ chains[mail[0]['path']]=mail
  out=[]
  for name,chain in chains.items():
   rel=Path(name);p=ROOT/rel
@@ -31,5 +34,5 @@ def main():
   if data!=raw:out.append((p,data))
  for p,data in out:p.write_bytes(data)
  subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
- print('Verified eight exact test files; changed',len(out))
+ print('Verified',len(chains),'exact test files; changed',len(out))
 if __name__=='__main__':main()
