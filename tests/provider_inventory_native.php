@@ -220,10 +220,13 @@ try {
     query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();
     pi_ok('Revoked owner cloud result is discarded',$code==='access_changed'&&pi_count('provider_observation_cloud')===$before);pi_cool();
     $tablesBeforeView=all('SHOW TABLES');$settingsBeforeView=all('SELECT * FROM '.table('settings').' ORDER BY name');
-    require_once CWP_CODE_ROOT.'/includes/layout/admin.php';ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();
-    pi_ok('Normal controller loads the unprepared search panel without schema-changing GET',str_contains($cloudHtml,'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView);
+    require_once CWP_CODE_ROOT.'/includes/layout/admin.php';
+    $renderWorkspace=static function(string $section):string{$saved=$_GET;$_GET=['section'=>$section];ob_start();try{require CWP_CODE_ROOT.'/admin/views/providers.php';return ob_get_contents();}finally{ob_end_clean();$_GET=$saved;}};
+    $checksBeforeRender=count($checks);$domainHtml=$renderWorkspace('domains');$cloudHtml=$renderWorkspace('cloud');
+    pi_ok('Workspace rendering retains every prior native assertion',count($checks)===$checksBeforeRender);
+    pi_ok('Normal controller loads the unprepared search panel without schema-changing GET',str_contains($domainHtml,'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView);
     pi_ok('Owner cloud screen renders sanitized facts and honest coverage',str_contains($cloudHtml,'cloud.synthetic.invalid')&&str_contains($cloudHtml,'Memory (MB)')&&str_contains($cloudHtml,'2048')&&str_contains($cloudHtml,'coverage is unknown')&&!str_contains($cloudHtml,'CLOUD_PRIVATE_MARKER'));
-    provider_settings_save($id,6,'Cloud context changed',true,'',$password);ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();
+    provider_settings_save($id,6,'Cloud context changed',true,'',$password);$cloudHtml=$renderWorkspace('cloud');
     pi_ok('Cloud screen hides metadata under changed saved settings',str_contains($cloudHtml,'earlier provider settings')&&!str_contains($cloudHtml,'cloud.synthetic.invalid'));
     require __DIR__.'/provider_inventory_cloud_link_cases.php';
     $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_cloud')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('provider_domain_links')),all('SELECT * FROM '.table('provider_domain_link_events')),all('SELECT * FROM '.table('audit'))]);

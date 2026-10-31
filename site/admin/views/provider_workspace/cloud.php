@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 ?>
 <div class="provider-hub-group-heading" id="twentyi-cloud"><span class="eyebrow">03 / CLOUD</span><h2>Cloud servers</h2><p>Review observed cloud servers and available client-assignment tools. This area is separate from shared-hosting plans and does not imply that cloud purchasing is enabled.</p></div>
+<p><a class="btn outline" href="<?=esc(admin_url('provider-settings',['focus'=>'cloud-assignment']))?>">Focus on cloud inventory and client assignments</a></p>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_providers.php'; ?>
 <section class="workspace-card provider-hub-limits"><h2>What the connection does not enable automatically</h2>

@@ -42,6 +42,12 @@ try {
  reset_fixture();$before=cwp_test_authority_snapshot();$correct=false;
  try{cwp_test_owner_revoked(function(){ok_fixture('Callback observes the same user without owner role',admin_user()===['id'=>1,'role'=>'administrator']);throw new RuntimeException('Your account does not have access to this action.');});}catch(RuntimeException $e){$correct=$e->getMessage()==='Your account does not have access to this action.';}
  ok_fixture('Only genuine authorization refusal is rethrown',$correct);ok_fixture('Successful denial restores exact fixture state',cwp_test_authority_snapshot()===$before);
+ foreach(['Current website and inquiry permission is required.','Your current account does not have access to client administration.'] as $message){
+  reset_fixture();$before=cwp_test_authority_snapshot();$refused=false;
+  try{cwp_test_owner_revoked(fn()=>throw new RuntimeException($message));}catch(RuntimeException $e){$refused=$e->getMessage()===$message;}
+  ok_fixture('Exact current permission boundary accepted: '.$message,$refused&&cwp_test_authority_snapshot()===$before);
+  reset_fixture();must_reject('Permission message cannot mask changed data: '.$message,function()use($message){$GLOBALS['rows']['authority_audit'][]=['id'=>1];throw new RuntimeException($message);});
+ }
  reset_fixture();must_reject('A callback that wrongly succeeds cannot pass',fn()=>null);
  reset_fixture();must_reject('An unrelated validation error cannot masquerade as denied access',fn()=>throw new InvalidArgumentException('Invalid product'));
  reset_fixture();must_reject('A PDO failure cannot masquerade as denied access',fn()=>throw new PDOException('Your account does not have access to this action.'));

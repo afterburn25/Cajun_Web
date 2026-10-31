@@ -4,6 +4,9 @@ declare(strict_types=1);
 require_once __DIR__.'/current_owner_authority.php';
 
 $database=(string)getenv('CWP_TEST_DATABASE');$port=(int)getenv('CWP_TEST_PORT');
+$serverPortText=(string)(getenv('CWP_TEST_CHECKOUT_SERVER_PORT')?:'43319');
+if(!in_array($serverPortText,['43319','3306'],true))exit(2);
+$serverPort=(int)$serverPortText;
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_CHECKOUT_STORAGE')!=='1'||!in_array($database,['cwp_checkout_test','cwp_checkout_retry1'],true)||getenv('CWP_TEST_HOST')!=='127.0.0.1'||$port!==43319)exit(2);
 $site=realpath((string)(getenv('CWP_TEST_CODE_ROOT')?:__DIR__.'/../site'));
 if(!$site||!is_file($site.'/app/plans/records.php'))exit(2);
@@ -81,7 +84,7 @@ function scn_document_fixture(int $at,ServicePlanDocument $plan):array {
     return compact('at','terms','plan','p','i','o','m','c','policy','legacy','pub');
 }
 try {
-    scn_ok('Fixture connects only to the explicitly owned database and port',(int)query('SELECT @@port')->fetchColumn()===$port&&query('SELECT DATABASE()')->fetchColumn()===$database);
+    scn_ok('Fixture connects only to the explicitly owned database and port',(int)query('SELECT @@port')->fetchColumn()===$serverPort&&config()['db']['port']===$port&&query('SELECT DATABASE()')->fetchColumn()===$database);
     scn_ok('Owned checkout table namespace is initially empty',!all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,5)=?',['cscp_']));
     scn_setup('cscp_main_');scn_ok('Legacy setup leaves checkout unprepared',service_plans_ready()&&!service_plans_checkout_ready()&&scn_marker()===''&&service_plans_checkout_schema_stage()===0);
     $p=service_plans_create(scn_id(1),$terms,$password);$p=service_plans_change(scn_id(1),0,scn_id(2),'activate',[],$password);

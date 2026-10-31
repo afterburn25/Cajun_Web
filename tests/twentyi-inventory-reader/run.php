@@ -91,7 +91,10 @@ ok('refuse_wrong_provider_no_send', (function (): bool {
 })());
 
 deny('refuse_documented_only_detail', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::PACKAGE_DETAIL, 7, 1700000000));
-deny('refuse_documented_only_types', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::PACKAGE_TYPES, '*', 1700000000));
+deny('refuse_catalog_outside_configured_reseller_self_scope', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::PACKAGE_TYPES, 42, 1700000000));
+$t=new ScriptedTransport([new TransportResponse(200,[],'[]')]);
+$types=InventoryReader::read($t,credential(),InventoryRead::PACKAGE_TYPES,'*',1700000000);
+ok('configured_catalog_read_is_implemented_and_bounded',count($t->sent)===1&&$t->sent[0]->method==='GET'&&$t->sent[0]->url==='https://api.20i.com/reseller/*/packageTypes'&&$t->sent[0]->body===null&&$types->scope==='twenty-i|reseller-42|package.types'&&!str_contains(json_encode($types),'test-key-material'));
 deny('refuse_documented_only_balance', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::ACCOUNT_BALANCE, '*', 1700000000));
 deny('refuse_unknown_op', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), 'packages.delete', null, 1700000000));
 ok('no_send_on_refusal', (function (): bool {

@@ -24,14 +24,14 @@ function ds_client_cases(string $profileId):void {
     $first=count($checks);ds_actor();provider_domain_search_configure($profileId,2,6,true,'invalid',$password);
     $ownersBefore=all('SELECT * FROM '.table('provider_domain_searches').' ORDER BY id');
     ds_native_ok('Client search starts unprepared and GET does not create tables',!provider_domain_client_family()&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pds_provider_domain_client_searches']));
-    ds_native_deny('Client search preparation needs owner password',fn()=>provider_domain_client_prepare('wrong'));
+    ds_native_deny('Client search preparation refuses revoked owner authority',fn()=>cwp_test_owner_revoked(fn()=>provider_domain_client_prepare('wrong')));
     ds_actor(2);ds_native_deny('Delegated administrator cannot prepare client searches',fn()=>provider_domain_client_prepare($password));ds_actor();
     ds_native_ok('Interrupted initial client preparation keeps empty tables without a marker',ds_audit_fail('domain_client_prepared',fn()=>provider_domain_client_prepare($password))&&!one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_domain_client_schema_version'])&&ds_count('provider_domain_client_policies')===0&&ds_count('provider_domain_client_searches')===0&&ds_count('provider_domain_client_results')===0);
     ds_native_deny('Interrupted initial client preparation refuses reads until completed',fn()=>provider_domain_client_family());
     provider_domain_client_prepare($password);provider_domain_client_prepare($password);
     ds_native_ok('Repeated additive client preparation preserves every staff lookup',provider_domain_client_family()&&$ownersBefore===all('SELECT * FROM '.table('provider_domain_searches').' ORDER BY id'));
     ds_native_ok('Client search starts disabled without an owner grant',provider_domain_client_policy()===null);
-    ds_native_deny('Client search policy requires owner password',fn()=>provider_domain_client_configure(0,true,'wrong'));
+    ds_native_deny('Client search policy refuses revoked owner authority',fn()=>cwp_test_owner_revoked(fn()=>provider_domain_client_configure(0,true,'wrong')));
     ds_native_ok('Client policy audit failure rolls back policy and pointer',ds_audit_fail('domain_client_configured',fn()=>provider_domain_client_configure(0,true,$password))&&provider_domain_client_policy()===null&&ds_count('provider_domain_client_policies')===0);
     $policy=dsc_enable();ds_native_deny('Stale client policy form cannot overwrite current approval',fn()=>provider_domain_client_configure(0,false,$password));
     $clients=[];

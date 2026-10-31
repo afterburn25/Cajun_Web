@@ -14,7 +14,11 @@ for r in receipt['fixture_files']:
 for name,count in [('mail_notices_native',1),('mail_drafts_native',1),('provider_settings_native',3),('provider_checks_native',1),('staff_native',1),('software_commerce_native',8),('mail_submissions_native',1)]:
  if name in cases:raise SystemExit('Unexpected overlapping predecessor case')
  cases[name]=count
-if len(cases)!=63 or sum(cases.values())!=122:raise SystemExit('Native suite inventory changed')
+# This mature domain-search suite was absent from the earlier 63-suite receipt.
+# Add it intact, including both owner and delegated-client setup/policy cases.
+if 'provider_domain_search_native' in cases:raise SystemExit('Unexpected duplicate domain-search suite')
+cases['provider_domain_search_native']=4
+if len(cases)!=64 or sum(cases.values())!=126:raise SystemExit('Native suite inventory changed')
 selected=sorted(cases)[a.shard::3]
 reset=r'''
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_HOST')!=='127.0.0.1')exit(2);
@@ -31,7 +35,7 @@ flags={'provider_cloud_site_requests_native':'CWP_TEST_CLOUD_SITE_REQUESTS','pro
 image=os.environ['CWP_TEST_IMAGE']
 if image!='cwp-consolidation-php:8.4':raise SystemExit('Unexpected runtime image')
 base=['docker','run','--rm','--init','-i','--network','host','--user',f'{os.getuid()}:{os.getgid()}','-v',str(ROOT)+':/workspace','-w','/workspace']
-keys=['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD','CWP_SOURCE_SHA','CWP_CONSOLIDATION_CASE',*flags.values()]
+keys=['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD','CWP_SOURCE_SHA','CWP_CONSOLIDATION_CASE','CWP_TEST_CHECKOUT_SERVER_PORT',*flags.values()]
 for key in keys:base+=['-e',key]
 results=[]
 for name in selected:
@@ -42,7 +46,7 @@ for name in selected:
  (runtime/'shared-private').mkdir(parents=True,mode=0o700)
  env={**os.environ,'CWP_CONSOLIDATION_CASE':name,**{flag:'0' for flag in flags.values()}}
  if name in flags:env[flags[name]]='1'
- if name in ('service_plans_checkout_native','recurring_billing_checkout_native'):env.update(CWP_TEST_DATABASE='cwp_checkout_test',CWP_TEST_PORT='43319')
+ if name in ('service_plans_checkout_native','recurring_billing_checkout_native'):env.update(CWP_TEST_DATABASE='cwp_checkout_test',CWP_TEST_PORT='43319',CWP_TEST_CHECKOUT_SERVER_PORT='3306')
  target=OUT/(name+'.php.json')
  if target.exists():raise SystemExit('Refuse stale fixture evidence')
  started=time.monotonic();code=125;error=None;container='cwp-consolidation-'+str(a.shard)+'-'+name.replace('_','-')
