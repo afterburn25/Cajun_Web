@@ -13,14 +13,17 @@ for name,expected,report in suites:
   except subprocess.TimeoutExpired:code=124
  stdout=(OUT/(name+'.stdout.log')).read_text();stderr=(OUT/(name+'.stderr.log')).read_text()
  evidence=OUT/(name+'.php.authority.json');d=json.loads(evidence.read_text()) if evidence.exists() else {};proof=d.get('checks',[])
- good=code==0 and stderr=='' and d.get('source_sha')==os.environ['CWP_SOURCE_SHA'] and len(proof)==expected and all(x['state_unchanged'] is True and x['tables']>0 for x in proof)
+ diagnostics=d.get('expected_diagnostics',[])
+ expected_diagnostics=3 if name=='software_commerce_native' else 0
+ good_diagnostics=len(diagnostics)==expected_diagnostics and all(x.get('expected') is True and x.get('status')=='pending' for x in diagnostics)
+ good=good_diagnostics and code==0 and stderr=='' and d.get('source_sha')==os.environ['CWP_SOURCE_SHA'] and len(proof)==expected and all(x['state_unchanged'] is True and x['tables']>0 for x in proof)
  if report:
   p=ROOT/'qa'/report;j=json.loads(p.read_text()) if p.exists() else {};checks=j.get('checks',[]);count=len(checks)
   good=good and j.get('passed') is True and count>0 and all(x['passed'] is True for x in checks)
  else:
   match=re.search(r'^Software commerce native: (\d+) checks passed$',stdout,re.M);count=int(match[1]) if match else 0
   good=good and count>100 and count==len(re.findall(r'^PASS ',stdout,re.M))
- result={'suite':name,'passed':bool(good),'exit_code':code,'checks':count,'authority_checks':len(proof),'expected_authority_checks':expected,'stderr_empty':stderr==''}
+ result={'suite':name,'passed':bool(good),'exit_code':code,'checks':count,'authority_checks':len(proof),'expected_authority_checks':expected,'stderr_empty':stderr=='','expected_diagnostics':len(diagnostics)}
  results.append(result);print(json.dumps(result),flush=True)
 passed=all(x['passed'] for x in results)
 (OUT/'results.json').write_text(json.dumps({'passed':passed,'source_sha':os.environ['CWP_SOURCE_SHA'],'scope':'Full existing isolated SQL suites; real owner-role revocation and exact stored-state comparison. No live account or provider action.','suites':results},indent=2)+'\n')
