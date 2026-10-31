@@ -11,9 +11,10 @@ $financingReady=license_financing_feature_state()===true;
 $financeOffersReady=license_finance_offers_ready();
 $financeGatewayReady=license_finance_gateway_ready();
 $ready = license_ready() && license_invoice_cutover_ready();
+require CWP_CODE_ROOT.'/admin/views/studio/license_overview.php';
 ?>
 <?php if(!$ready): ?>
-<section class="workspace-card"><h2>Prepare website licensing</h2><p>Prepare or upgrade licensing storage and preserve the boundary for older invoice reviews. Existing licenses, domains and bundles are retained. No external service is contacted.</p>
+<section class="workspace-card" id="licensing-setup"><h2>Prepare website licensing</h2><p>Prepare or upgrade licensing storage and preserve the boundary for older invoice reviews. Existing licenses, domains and bundles are retained. No external service is contacted.</p>
 <form method="post"><?php admin_action('studio_license_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Prepare licensing storage</button></form></section>
 <?php return; endif; ?>
 <?php
@@ -63,8 +64,9 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 ?>
 
 <?php if(!$softwareReady): ?>
-<section class="workspace-card"><h2>Enable advanced software licensing</h2><p>Add trial, temporary, master and paid software tracking, customer purchases, payment checks and private downloads. Existing licenses and invoices are retained.</p><form method="post"><?php admin_action('software_commerce_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare software commerce</button></form></section>
+<section class="workspace-card" id="software-setup"><h2>Enable advanced software licensing</h2><p>Add trial, temporary, master and paid software tracking, customer purchases, payment checks and private downloads. Existing licenses and invoices are retained.</p><?php if(catalog_ready()): ?><form method="post"><?php admin_action('software_commerce_setup');admin_input('current_password','Current owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare software commerce</button></form><?php else: ?><p>Prepare the service catalog first, then return here to enable software licensing.</p><a class="btn gold" href="<?=esc(admin_url('catalog'))?>">Prepare service catalog</a><?php endif; ?></section>
 <?php endif; ?>
+<div id="licensing-financing"></div>
 <?php if(!$financingReady): ?>
 <section class="workspace-card"><h2>Enable financed-site licensing</h2><p>Prepare website-license payment enforcement. Only issued unpaid installments beyond the agreed grace period may suspend a site; full payoff permanently removes the payment lock.</p>
 <?php if(recurring_billing_ready()): ?><form method="post"><?php admin_action('studio_license_financing_setup');admin_input('current_password','Owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare financed-site licensing</button></form><?php else: ?><p class="notice info">Prepare recurring billing and the invoice ledger first.</p><?php endif; ?></section>
@@ -145,7 +147,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 </section>
 <?php endif; ?>
 <?php if($softwareReady): ?>
-<section class="workspace-card">
+<section class="workspace-card" id="software-payments">
 <h2>Authorize.net payment configuration</h2>
 <p>Checkout uses the existing encrypted payment credentials. Sandbox transactions can be tested but will not unlock real licenses. Production charging remains disabled until reviewed and approved.</p>
 <p>Current checkout mode: <strong><?=esc((string)setting('software_gateway_mode','disabled'))?></strong></p>
@@ -184,7 +186,7 @@ Both must be present before production settings can be read; this page still off
 <button class="btn gold">Save domain policy</button></form>
 </section>
 <?php if(staff_can('staff.manage')): ?>
-<section class="workspace-card">
+<section class="workspace-card" id="software-policies">
 <h2>Software entitlement policies</h2>
 <p>Configure rights that are snapshotted when a new software license is issued. Changing a policy does not rewrite existing customer entitlements. Update months 0 means lifetime updates while the license itself remains valid.</p>
 <?php if(!$softwarePolicyProducts): ?><p class="muted">Create a software catalog product before defining entitlement policy.</p><?php endif; ?>
@@ -211,7 +213,7 @@ Both must be present before production settings can be read; this page still off
 <?php endif; ?>
 <?php endif; ?>
 <div class="workspace-grid">
-<section class="workspace-card">
+<section class="workspace-card" id="license-create">
 <h2>Create a license</h2>
 <form method="post">
 <?php admin_action('studio_license_create'); ?>
@@ -275,7 +277,7 @@ Both must be present before production settings can be read; this page still off
 </div>
 
 <?php if($softwareReady && staff_can('staff.manage')): ?>
-<section class="workspace-card"><h2>Publish a software download</h2>
+<section class="workspace-card" id="software-downloads"><h2>Publish a software download</h2>
 <p>Place a versioned release ZIP in the server's private storage first; never expose a direct public file path or ZIP-inside-ZIP. This form validates the archive and records its SHA-256.</p>
 <form method="post"><?php admin_action('software_asset_publish'); ?>
 <?php admin_input('sku','Registered software product SKU','','text','required maxlength="60"'); ?>
@@ -404,7 +406,7 @@ $subscriptionChargeCandidates=all('SELECT s.invoice_id,s.gateway_subscription_id
 <?php endforeach; ?>
 </section>
 <?php endif; ?>
-<h2>License register</h2>
+<h2 id="license-register">License register</h2>
 <div class="workspace-grid">
 <?php foreach($licenses as $lic): ?>
 <?php
@@ -503,7 +505,7 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 </form>
 
 <?php if($financePlan&&!$isSoftwareEntitlement&&!(int)($lic['is_master']??0)): ?><h3>Financing controls</h3><form method="post" style="display:inline"><?php admin_action('studio_license_financing_sync'); ?><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><button class="btn outline">Refresh financing state</button></form>
-<form method="post"><?php admin_action('studio_license_financing_rights'); ?><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><label class="check"><input type="checkbox" name="allow_resale" value="1" <?=(int)$financePlan['allow_resale']===1?'checked':''?>>Resale rights</label><label class="check"><input type="checkbox" name="allow_distribution" value="1" <?=(int)$financePlan['allow_distribution']===1?'checked':''?>>Distribution rights</label><label class="check"><input type="checkbox" name="exclusive_resale" value="1" <?=(int)$financePlan['exclusive_resale']===1?'checked':''?>>Exclusive resale</label><label class="check"><input type="checkbox" name="exclusive_distribution" value="1" <?=(int)$financePlan['exclusive_distribution']===1?'checked':''?>>Exclusive distribution</label><label>Separate paid commercial-rights invoice ID<input type="number" name="rights_invoice_id" min="1" required></label><label>Agreement/payment evidence<input name="evidence" minlength="10" maxlength="200" required placeholder="Invoice purpose / signed rights addendum / payment evidence"></label><p class="hint">The evidence invoice must belong to this customer, be fully paid, and be separate from normal financing installments or the original down payment.</p><label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label><button class="btn outline">Grant additional commercial rights</button></form><?php endif; ?>
+<form method="post"><?php admin_action('studio_license_financing_rights'); ?><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><label class="check"><input type="checkbox" name="allow_resale" value="1" <?=(int)$financePlan['allow_resale']===1?'checked':''?>>Resale rights</label><label class="check"><input type="checkbox" name="allow_distribution" value="1" <?=(int)$financePlan['allow_distribution']===1?'checked':''?>>Distribution rights</label><label class="check"><input type="checkbox" name="exclusive_resale" value="1" <?=(int)$financePlan['exclusive_resale']===1?'checked':''?>>Exclusive resale</label><label class="check"><input type="checkbox" name="exclusive_distribution" value="1" <?=(int)$financePlan['exclusive_distribution']===1?'checked':''?>>Exclusive distribution</label><label>Separate paid commercial-rights invoice ID<input type="number" name="rights_invoice_id" min="1" required></label><label>Agreement/payment evidence<input name="evidence" minlength="10" maxlength="200" required placeholder="Invoice purpose / signed rights addendum / payment evidence"></label><p class="hint">The evidence invoice must belong to this customer, be fully paid, and be separate from normal financing installments or the original down payment.</p><button class="btn outline">Grant additional commercial rights</button></form><?php endif; ?>
 <?php if($history): ?>
 <h3>License history</h3>
 <ul>
@@ -538,14 +540,14 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <?php endif; ?>
 
 <?php if($isSoftwareEntitlement&&$softwareReady&&$lifecycle): ?><h3>Software license lifecycle</h3>
-<?php if($lifecycle['state']==='active'): ?><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="suspend"><label>Suspension reason<input name="reason" minlength="5" maxlength="200" required></label><button class="btn outline">Suspend temporarily</button></form><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="revoke"><label>Revocation reason<input name="reason" minlength="5" maxlength="200" required></label><label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label><button class="btn outline">Revoke license</button></form>
-<?php elseif($lifecycle['state']==='suspended'): ?><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="resume"><label>Resume reason<input name="reason" minlength="5" maxlength="200" required></label><button class="btn gold">Resume license</button></form><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="revoke"><label>Revocation reason<input name="reason" minlength="5" maxlength="200" required></label><label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label><button class="btn outline">Revoke license</button></form>
-<?php else: ?><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="restore"><label>Restore reason<input name="reason" minlength="5" maxlength="200" required></label><label>Owner password<input type="password" name="current_password" required autocomplete="current-password"></label><button class="btn gold">Restore license</button></form><?php endif; ?><p class="hint">Suspension is reversible; revocation/restoration requires owner reauthentication. Key/domain/history are preserved.</p>
+<?php if($lifecycle['state']==='active'): ?><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="suspend"><label>Suspension reason<input name="reason" minlength="5" maxlength="200" required></label><button class="btn outline">Suspend temporarily</button></form><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="revoke"><label>Revocation reason<input name="reason" minlength="5" maxlength="200" required></label><button class="btn outline">Revoke license</button></form>
+<?php elseif($lifecycle['state']==='suspended'): ?><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="resume"><label>Resume reason<input name="reason" minlength="5" maxlength="200" required></label><button class="btn gold">Resume license</button></form><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="revoke"><label>Revocation reason<input name="reason" minlength="5" maxlength="200" required></label><button class="btn outline">Revoke license</button></form>
+<?php else: ?><form method="post"><?php admin_action('software_license_lifecycle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><input type="hidden" name="transition" value="restore"><label>Restore reason<input name="reason" minlength="5" maxlength="200" required></label><button class="btn gold">Restore license</button></form><?php endif; ?><p class="hint">Suspension is reversible; revocation/restoration requires a current owner session. Key/domain/history are preserved.</p>
 <?php else: ?>
 <?php if($lic['is_active']): ?><?php if(!(int)($lic['is_master']??0) && !$isSoftwareEntitlement): ?><form method="post"><?php admin_action('studio_license_bundle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><label>Create bundle<select name="industry" required><option value="">Choose industry…</option><option value="restaurant">Restaurant</option><option value="salon">Salon</option><option value="generic">Generic Business</option></select></label><button class="btn gold">Generate bundle</button></form><?php endif; ?>
 <?php if($financePlan&&$financePlan['paid_off_at']!==null): ?>
-<p class="hint"><strong>Financing permanently paid:</strong> payment status can no longer suspend this license. Owner deactivation, domain binding and commercial-rights restrictions still apply independently.</p>
-<?php endif; ?><form method="post"><?php admin_action('studio_license_deactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Deactivate license</button></form>
+<p class="hint"><strong>Financing permanently paid:</strong> payment status can no longer suspend this license, and owner deactivation is blocked. Domain binding and commercial-rights restrictions remain in effect.</p>
+<?php else: ?><form method="post"><?php admin_action('studio_license_deactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Deactivate license</button></form><?php endif; ?>
 <?php else: ?><form method="post"><?php admin_action('studio_license_reactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Reactivate license</button></form><?php endif; ?>
 <?php endif; ?></section>
 <?php endforeach; ?>

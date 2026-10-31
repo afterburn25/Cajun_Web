@@ -2,9 +2,24 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
-/** Only documented typeRef/packageTypeName from saved GET /package observations. */
+/** Named hosting types from one explicitly selected saved inventory or catalog observation. */
 final readonly class ProviderCatalogImportDocument {
     private function __construct(public array $types, public int $unnamed) {}
+
+    /** Exact packageTypes identities share the documented addWeb.type / typeRef namespace. */
+    public static function fromPackageTypes(array $rows): self {
+        require_once dirname(__DIR__,2).'/includes/foundation/twentyi-inventory/InventoryPackageType.php';
+        if (!array_is_list($rows) || count($rows)>8192) throw new InvalidArgumentException('The saved hosting catalog exceeds the supported bounds.');
+        $types=[];
+        foreach ($rows as $row) {
+            $record=\CajunWebPro\Foundation\TwentyIInventory\InventoryPackageType::fromStored($row);
+            $key='type:'.$record->id;
+            if (isset($types[$key])) throw new InvalidArgumentException('The saved hosting catalog has duplicate type identities.');
+            $types[$key]=['type_ref'=>$record->id,'name'=>$record->label];
+        }
+        ksort($types,SORT_STRING);
+        return new self(array_values($types),0);
+    }
 
     public static function fromRows(array $rows): self {
         if (!array_is_list($rows) || count($rows)>8192) throw new InvalidArgumentException('The saved hosting observation exceeds the supported bounds.');
@@ -27,6 +42,28 @@ final readonly class ProviderCatalogImportDocument {
     public function type(string $id): array {
         foreach ($this->types as $type) if ($type['type_ref']===$id) return $type;
         throw new InvalidArgumentException('Choose a named hosting type from the current saved observation.');
+    }
+
+    /** Pure work plan only. Existing identities must be authenticated by the caller. */
+    public function batchPlan(array $existing,string $term,string $skuPrefix,int $offset=0): array {
+        if (!in_array($term,['once','month','year'],true)) throw new InvalidArgumentException('Choose the local service period you intend to review.');
+        if (!preg_match('/\A[A-Z0-9][A-Z0-9_-]{0,39}\z/D',$skuPrefix)) throw new InvalidArgumentException('Use 1 to 40 uppercase letters, numbers, underscores or hyphens for the SKU prefix, starting with a letter or number.');
+        if ($offset<0||$offset>count($this->types)||!array_is_list($existing)) throw new InvalidArgumentException('Reload the saved catalog batch.');
+        $known=[];foreach($this->types as $type)$known['type:'.$type['type_ref']]=true;
+        $seen=[];
+        foreach($existing as $id){
+            if(!is_string($id)||!isset($known['type:'.$id])||isset($seen['type:'.$id]))throw new InvalidArgumentException('Existing catalog identities are inconsistent.');
+            $seen['type:'.$id]=true;
+        }
+        $missing=[];
+        foreach($this->types as $index=>$type)if(!isset($seen['type:'.$type['type_ref']]))$missing[]=['index'=>$index,'type_ref'=>$type['type_ref'],'sku'=>$skuPrefix.'-'.$type['type_ref']];
+        // A retry of the same reviewed window cannot import a previously unseen next batch.
+        $selected=array_values(array_filter($missing,static fn($row)=>$row['index']>=$offset&&$row['index']<$offset+50));$selectedIds=array_column($selected,'type_ref');
+        $remaining=array_values(array_filter($missing,static fn($row)=>!in_array($row['type_ref'],$selectedIds,true)));
+        $next=null;
+        foreach($remaining as $row)if($row['index']>=$offset+50){$next=$row['index'];break;}
+        if($next===null&&$remaining)$next=$remaining[0]['index'];
+        return ['missing'=>$missing,'selected'=>$selected,'existing_count'=>count($seen),'remaining_count'=>count($remaining),'next_offset'=>$next,'total_types'=>count($this->types)];
     }
 
     /** No inferred price, limits, tax, stock, image, entitlement, or provider billing term. */

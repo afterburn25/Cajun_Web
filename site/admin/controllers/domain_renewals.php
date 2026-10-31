@@ -8,5 +8,5 @@ function domain_renewals_admin_action(string $action):never {
     elseif($action==='provider_inventory_renewal_review'){
         $revision=posted('request_revision',10);if(!preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',$revision)||(int)$revision>4294967295)throw new InvalidArgumentException('Reload the review.');
         domain_renewals_change(posted('request_id',32),(int)$revision,posted('event_id',32),posted('command',12),posted('review_note',1000),null,$password);flash('Review saved. No renewal was placed.');
-    }else throw new InvalidArgumentException('Unknown renewal request action.');redirect(admin_url('provider-settings').'#domain-renewal-requests');
+    }else throw new InvalidArgumentException('Unknown renewal request action.');redirect(admin_url('provider-settings',['section'=>'domains']).'#domain-renewal-requests');
 }

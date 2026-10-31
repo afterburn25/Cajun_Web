@@ -12,5 +12,5 @@ function provider_force_ssl_controls_admin_action(string $action):never {
         if(posted('reviewed',1)!=='1')throw new InvalidArgumentException('Review this local dispatch recovery first.');
         provider_force_ssl_controls_recover_finished(posted('request_id',32),posted('ledger_sha256',64),$password);flash('Local dispatch record restored. The effect remains uncertain; read the flag separately.');
     }elseif($action==='provider_force_ssl_control_verify'){$view=provider_force_ssl_controls_verify(posted('request_id',32),$password);flash(provider_force_ssl_controls_label($view['status']),$view['status']==='observed'?'success':'error');}
-    else throw new InvalidArgumentException('Unknown Force SSL change action.');redirect(admin_url('provider-settings').'#force-ssl-changes');
+    else throw new InvalidArgumentException('Unknown Force SSL change action.');redirect(admin_url('provider-settings',['section'=>'website']).'#force-ssl-changes');
 }

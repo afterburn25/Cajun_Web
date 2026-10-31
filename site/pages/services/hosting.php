@@ -1,9 +1,17 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
-site_head('Hosting','hosting','Discuss hosting, moving an existing website, and ongoing care with CajunWebPro.');
+require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers.php';
+require_once CWP_CODE_ROOT.'/includes/layout/hosting_catalog.php';
+header('Cache-Control: no-store');
+try {$hostingBrowse=hosting_catalog_billing_query($_GET,'hosting_page');}
+catch(InvalidArgumentException) {fail_page('Hosting page not found.',404);}
+try {$hostingOffers=hosting_catalog_public($hostingBrowse['page'],$hostingBrowse['billing']);}
+catch(Throwable $error){report_error($error);$hostingOffers=['offers'=>[],'has_more'=>false,'unavailable'=>true];}
+site_head('Shared hosting','hosting','Compare shared hosting plans, published prices and support from CajunWebPro.');
 ?>
-<section class="page-hero"><div class="container"><span class="eyebrow">A HOME FOR YOUR WEBSITE</span><h1>Hosting shaped around<br><span class="gold-text">what you need.</span></h1><p>Your website, domain and email each need a clear plan. Tell us what you run today and what needs to change so we can review the right next step.</p><div class="button-row"><a class="btn gold" href="<?=esc(page_url('consultation'))?>">Discuss hosting <?=icon('arrow')?></a><a class="btn outline" href="<?=esc(site_url('portal/index.php'))?>">Client Portal <?=icon('user')?></a></div></div></section>
+<section class="page-hero"><div class="container"><span class="eyebrow">SHARED HOSTING</span><h1>A home for your website.<br><span class="gold-text">A plan you can compare.</span></h1><p>See the price, included services and support side by side. Choose the plan that fits, then review your exact terms in your client portal.</p><div class="button-row"><a class="btn gold" href="#hosting-plans">Compare plans <?=icon('arrow')?></a><a class="btn outline" href="<?=esc(site_url('portal/index.php'))?>">Client Portal <?=icon('user')?></a></div></div></section>
+<section class="section hosting-comparison-section" id="hosting-plans"><div class="container"><span class="eyebrow">YOUR WEBSITE, YOUR CHOICE</span><h2>Clear plans. Side by side.</h2><?php hosting_catalog_comparison($hostingOffers,$hostingBrowse); ?></div></section>
 <section class="section"><div class="container"><div class="three-cards">
 <article class="content-card"><span class="eyebrow">01 / REQUIREMENTS</span><h2>Start with the website.</h2><p>Share your website platform, storage needs, expected traffic and any applications or mailboxes you rely on. Availability, resource limits, included work and pricing are confirmed in your written proposal.</p></article>
 <article class="content-card"><span class="eyebrow">02 / MOVING A SITE</span><h2>Plan the changeover.</h2><p>Keep your current hosting, domain and email services active while we review access, backups and the move. Any migration, DNS changes and testing are agreed before work begins.</p></article>

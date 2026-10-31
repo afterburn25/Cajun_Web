@@ -94,6 +94,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   flash('Your software invoice was created. Your download and license will be available after payment confirmation.');
   redirect(studio_url(['software'=>1]));
  }
+ elseif(str_starts_with($action,'hosting_catalog_')){if(!$client)throw new RuntimeException('Sign in to continue.');hosting_catalog_portal_action($action,$client);}
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
  elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'cloud_website_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_cloud_site_requests_client_action($action,$client);}
@@ -107,7 +108,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif($action==='login'){
   studio_login(strtolower(posted('email',190)),posted('password',1000));
   if(array_key_exists('finance',$_GET)&&is_string($_GET['finance']))redirect(studio_url(['finance'=>$_GET['finance']]));
-  redirect(array_key_exists('software',$_GET)?studio_url(['software'=>1]):studio_url());
+  if(array_key_exists('software',$_GET))redirect(studio_url(['software'=>1]));
+  require_once CWP_CODE_ROOT.'/app/hosting/catalog_login.php';redirect(studio_url(hosting_catalog_login_destination($_GET)));
  }
  elseif($action==='logout'){unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['client_last'],$_SESSION['client_login']);session_regenerate_id(true);redirect(studio_url());}
  else{if(!$client)throw new RuntimeException('Sign in to continue.');

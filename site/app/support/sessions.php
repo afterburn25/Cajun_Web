@@ -21,6 +21,16 @@ function support_binding(): string {
 function support_can(string $permission): bool {
     return support_ready()&&in_array($permission,['support.login','support.write','support.download'],true)&&staff_can('support.login')&&staff_can($permission);
 }
+/** Owner access never turns a staff session into a customer login. */
+function support_owner_required(): array {
+    if(support_current() || array_key_exists('support',$_GET))throw new RuntimeException('Leave client support before changing support policies.');
+    $actor=staff_require('staff.manage');
+    if(($actor['role']??'')!=='owner')throw new RuntimeException('Only the active owner can change client support policies.');
+    return $actor;
+}
+function support_owner_review_allowed(?array $actor): bool {
+    return $actor!==null && ($actor['role']??'')==='owner' && staff_can('staff.manage',$actor) && staff_can('support.login',$actor);
+}
 function support_audit(array $row,string $action,string $type='',string $object='',string $outcome='allowed'): void {
     // Unlike best-effort general activity logging, support operations fail closed on audit failure.
     query('INSERT INTO '.table('support_events').' (support_id,actor_id,client_id,action,object_type,object_id,outcome,occurred_at) VALUES (?,?,?,?,?,?,?,?)',[$row['id']??null,$row['actor_id'],$row['client_id'],$action,$type,$object,$outcome,time()]);
@@ -44,9 +54,9 @@ function support_schema_check(string $name,string $sql): void {
     if(count($keys)!==1||$keys[0]['Column_name']!==$primary)throw new RuntimeException('Incompatible support primary key.');
 }
 require_once CWP_CODE_ROOT.'/database/migrations/support_migrate.php';
-function support_policy(int $clientId,bool $allowed,#[\SensitiveParameter] string $password): void {
-    staff_locked(fn()=>staff_transaction(function() use($clientId,$allowed,$password): void {
-        $actor=staff_owner($password);if(!support_ready())throw new RuntimeException('Enable client support first.');
+function support_policy(int $clientId,bool $allowed): void {
+    staff_locked(fn()=>staff_transaction(function() use($clientId,$allowed): void {
+        $actor=support_owner_required();if(!support_ready())throw new RuntimeException('Enable client support first.');
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? FOR UPDATE',[$clientId]))throw new InvalidArgumentException('Client not found.');
         query('INSERT INTO '.table('support_clients').' (client_id,allowed,updated_by,updated_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE allowed=VALUES(allowed),updated_by=VALUES(updated_by),updated_at=VALUES(updated_at)',[$clientId,(int)$allowed,$actor['id'],time()]);
         support_audit(['actor_id'=>$actor['id'],'client_id'=>$clientId],$allowed?'client.allowed':'client.restricted','client',(string)$clientId);
@@ -67,8 +77,11 @@ function support_check(string $id,bool $touch=true): ?array {
     $policy=one('SELECT allowed FROM '.table('support_clients').' WHERE client_id=? FOR UPDATE',[$row['client_id']]);
     $reason='';
     if(time()>=(int)$row['expires_at']||time()-(int)$row['last_seen_at']>=300)$reason='expired';
-    elseif(!$actor||(int)$actor['id']!==(int)$row['actor_id']||!hash_equals($row['actor_version'],$actor['auth_version'])||!staff_can('support.login',$actor)||setting('support_policy_confirmed')!=='1')$reason='staff-revoked';
-    elseif(!$client||(int)$client['active']!==1||!hash_equals($row['client_version'],$client['auth_version'])||(int)($policy['allowed']??0)!==1)$reason='client-revoked';
+    elseif(!$actor||(int)$actor['id']!==(int)$row['actor_id']||!hash_equals($row['actor_version'],$actor['auth_version'])||!staff_can('support.login',$actor)||setting('support_policy_confirmed')!=='1'
+        ||((string)$row['context']==='Owner account review'&&!support_owner_review_allowed($actor)))$reason='staff-revoked';
+    elseif(!$client||(int)$client['active']!==1||!hash_equals($row['client_version'],$client['auth_version'])
+        ||((string)$row['context']!=='Owner account review'&&(int)($policy['allowed']??0)!==1)
+        ||!in_array((string)$row['context'],['Owner account review','Client record'],true))$reason='client-revoked';
     if($reason!==''){support_end_row($row,$reason);return null;}
     if($touch)query('UPDATE '.table('support_sessions').' SET last_seen_at=? WHERE id=?',[time(),$id]);
     return ['session'=>$row,'actor'=>$actor,'client'=>$client];
@@ -78,16 +91,17 @@ function support_start(int $clientId): string {
     $id=staff_locked(fn()=>staff_transaction(function() use($clientId): string {
         if(!support_ready()||setting('support_policy_confirmed')!=='1')throw new RuntimeException('Enable and configure client support first.');
         $actor=staff_require('support.login');
+        $ownerReview=support_owner_review_allowed($actor);
         $client=one('SELECT * FROM '.table('studio_clients').' WHERE id=? FOR UPDATE',[$clientId]);
         $policy=one('SELECT allowed FROM '.table('support_clients').' WHERE client_id=? FOR UPDATE',[$clientId]);
-        if(!$client||(int)$client['active']!==1||(int)($policy['allowed']??0)!==1)throw new InvalidArgumentException('This client is unavailable for support access.');
+        if(!$client||(int)$client['active']!==1||(!$ownerReview&&(int)($policy['allowed']??0)!==1))throw new InvalidArgumentException('This client is unavailable for support access.');
         if(support_binding()==='')$_SESSION['support_binding']=bin2hex(random_bytes(32));
         foreach(all('SELECT * FROM '.table('support_sessions').' WHERE binding_hash=? AND ended_at IS NULL FOR UPDATE',[support_binding()]) as $row){
             if(support_check($row['id'],false))throw new RuntimeException('End the current support session before opening another client. Resume it from Client support.');
         }
         $id=bin2hex(random_bytes(16));$now=time();
-        query('INSERT INTO '.table('support_sessions').' (id,binding_hash,actor_id,actor_version,client_id,client_version,started_at,last_seen_at,expires_at,context) VALUES (?,?,?,?,?,?,?,?,?,?)',[$id,support_binding(),$actor['id'],$actor['auth_version'],$clientId,$client['auth_version'],$now,$now,$now+900,'Client record']);
-        support_audit(['id'=>$id,'actor_id'=>$actor['id'],'client_id'=>$clientId],'session.start','client',(string)$clientId);return $id;
+        query('INSERT INTO '.table('support_sessions').' (id,binding_hash,actor_id,actor_version,client_id,client_version,started_at,last_seen_at,expires_at,context) VALUES (?,?,?,?,?,?,?,?,?,?)',[$id,support_binding(),$actor['id'],$actor['auth_version'],$clientId,$client['auth_version'],$now,$now,$now+900,$ownerReview?'Owner account review':'Client record']);
+        support_audit(['id'=>$id,'actor_id'=>$actor['id'],'client_id'=>$clientId],$ownerReview?'owner.review.start':'session.start','client',(string)$clientId);return $id;
     }));
     session_regenerate_id(true);$_SESSION['csrf']=bin2hex(random_bytes(32));return $id;
 }

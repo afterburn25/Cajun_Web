@@ -14,6 +14,7 @@ use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 use CajunWebPro\Foundation\TwentyIInventory\InventorySnapshot;
 use InvalidArgumentException;
 use Throwable;
+require_once __DIR__.'/PackageTypes.php';
 
 /**
  * Callable authenticated read of one 20i inventory operation. The
@@ -47,7 +48,7 @@ final class InventoryReader
      * Documented list reads with bounded projections. Descriptor registration
      * alone never authorizes a call or demonstrates live account entitlement.
      */
-    private const EXECUTABLE = [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST];
+    private const EXECUTABLE = [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST, InventoryRead::PACKAGE_TYPES];
 
     /** True only for operations with evidence enough to execute. */
     public static function supports(string $operation): bool
@@ -80,6 +81,9 @@ final class InventoryReader
         }
         if (!self::supports($operation)) {
             throw new InvalidArgumentException('That inventory read is not an executable operation.');
+        }
+        if ($operation === InventoryRead::PACKAGE_TYPES && $id !== '*') {
+            throw new InvalidArgumentException('Hosting catalog reads require the configured reseller self scope.');
         }
         $account = $credential->accountIdentity;
         if ($account === '' || strlen($account) > self::MAX_ACCOUNT_BYTES
@@ -128,6 +132,7 @@ final class InventoryReader
             InventoryRead::CLOUD_PROVIDERS_LIST => InventoryProjector::cloudProvidersList($response, $observedAt, $scope),
             InventoryRead::DOMAINS_LIST => InventoryProjector::domainsList($response, $observedAt, $scope),
             InventoryRead::DOMAIN_REGISTRATION_PERIODS => RegistrationPeriods::project($response, $observedAt, $scope),
+            InventoryRead::PACKAGE_TYPES => PackageTypes::project($response, $observedAt, $scope),
         };
     }
 }

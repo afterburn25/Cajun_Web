@@ -96,6 +96,19 @@ function provider_checks_check(string $id,int $revision,#[\SensitiveParameter] s
         provider_checks_record($started,$code,(int)((hrtime(true)-$begin)/1e6));return $code;
     });
 }
+/** Saved current-settings success only; viewing the next step never checks the provider. */
+function provider_checks_current_success(string $id):bool {
+    provider_settings_manager();$profile=provider_settings_load($id);
+    if((int)$profile['enabled']!==1||$profile['credentials']==='')return false;
+    // Inspect intents, including unfinished ones, independently of the history page.
+    $attempts=all('SELECT c.profile_revision,c.started_epoch,r.state,r.result_code,r.finished_at FROM '.table('provider_checks').' c LEFT JOIN '.table('provider_check_results').' r ON r.id=c.id WHERE c.profile_id=? ORDER BY c.started_epoch DESC,c.id DESC LIMIT 2',[$id]);
+    if(!$attempts)return false;
+    $latest=$attempts[0];
+    // Normal starts are separated by the cooldown; an ambiguous retained tie is not success.
+    if(isset($attempts[1])&&(string)$latest['started_epoch']===(string)$attempts[1]['started_epoch'])return false;
+    return (int)$latest['profile_revision']===(int)$profile['revision']&&$latest['state']==='verified'
+        &&$latest['result_code']==='connected'&&$latest['finished_at']!==null;
+}
 function provider_checks_history(string $id,int $page=1):array {
     provider_settings_manager();provider_settings_load($id);$page=max(1,min($page,100000));
     return all('SELECT c.*,r.state,r.result_code,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_checks').' c LEFT JOIN '.table('provider_check_results').' r ON r.id=c.id LEFT JOIN '.table('users').' u ON u.id=c.actor_id WHERE c.profile_id=? ORDER BY c.started_epoch DESC,c.id DESC LIMIT 21 OFFSET '.(($page-1)*20),[$id]);

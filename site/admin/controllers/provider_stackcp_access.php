@@ -14,5 +14,5 @@ function provider_stackcp_access_admin_action(string $action):never {
         $result=provider_stackcp_access_refresh(posted('profile_id',32),(int)$package,$operation,posted('review_sha256',64),$password);
         flash($result['state']==='complete'?'The access observation was saved. Review its date and selected assignment below. No login was created.':'The latest access read is unavailable. Older results do not verify this assignment.');
     } else throw new InvalidArgumentException('Unknown StackCP access observation action.');
-    redirect(admin_url('provider-settings',['stackcp_page'=>$page,'stackcp_access_page'=>$page]).'#stackcp-access-observations');
+    redirect(admin_url('provider-settings',['section'=>'advanced','stackcp_page'=>$page,'stackcp_access_page'=>$page]).'#stackcp-access-observations');
 }

@@ -25,7 +25,7 @@ admin_input('package_label','New package label',$submitted&&is_string($_POST['pa
 <?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Approve one request</button>
 </form>
-<?php else: ?><p>Save and enable a General API key on the <a href="<?=esc(admin_url('provider-settings'))?>">20i connection page</a> before approving operations.</p><?php endif; ?>
+<?php else: ?><p>Save and enable a General API key on the <a href="<?=esc(admin_url('provider-settings',['section'=>'connection']))?>">20i connection page</a> before approving operations.</p><?php endif; ?>
 </section>
 <?php if($grants): ?>
 <section class="workspace-card"><h2>Approvals</h2>

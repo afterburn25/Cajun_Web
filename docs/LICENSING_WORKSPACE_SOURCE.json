@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "recipe_sha256": "edb7d43ab7950f4530b00562c3d00d1d32d269c79a57d68e5d75e77f7d9f59c8",
+  "files": [
+    {
+      "path": "site/admin/controllers/router.php",
+      "before": "9d2978909dd3e0a224f71df2ba5a44f96c2ad806",
+      "after": "d2c4d042f763b997297f89b195cb1d26056b9495"
+    },
+    {
+      "path": "site/admin/controllers/studio.php",
+      "before": "498f7021d06279b1440ac1e323be60188727628e",
+      "after": "cff1bd161d8783839d80f4572413863979b4cd74"
+    },
+    {
+      "path": "site/admin/views/studio/licenses.php",
+      "before": "ba57d6acb23fac4e18e6f2e21d428af0def390a0",
+      "after": "9bd0b6bb05933e1306ccfd2004e2f988e7df6455"
+    },
+    {
+      "path": "site/app/clients/master_portal.php",
+      "before": "8dc3a80b678f9750b2fa8fca40b5b6a2c987c2d1",
+      "after": "2f61a36ace88485e7721c53dd9b36c6066b2388f"
+    },
+    {
+      "path": "site/includes/layout/admin.php",
+      "before": "fa2a96801310bb3dfcb5be86863000523a04f7dd",
+      "after": "05298d149dd236eba2b94dc0a092bee530efd8fd"
+    },
+    {
+      "path": "site/portal/controllers/router.php",
+      "before": "1041df7229fa2a7fd4ff7734de77bb85a99c3a1a",
+      "after": "5854cda230f5381b82c1fbfea7a4f12891ef45e7"
+    },
+    {
+      "path": "tests/license_financing_native_cases.php",
+      "before": "193f4a8d7fffd90a088fef32d5f29f6cd9897aeb",
+      "after": "916456a92dce7535554b458a76c0b4a43fd7c3a6"
+    },
+    {
+      "path": "tests/release_finance_native.php",
+      "before": "0e29403f6b6b1861f9fd163063d5d02ba1eb9c8c",
+      "after": "d8bd7a852177c6502a0f0ec76a50deef891e4858"
+    }
+  ],
+  "status": "Connected source; exact-source SQL/browser acceptance required"
+}

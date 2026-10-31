@@ -3,6 +3,8 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/catalog_import.php';
 require_once CWP_CODE_ROOT.'/admin/views/catalog_import.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/catalog_variants.php';
+require_once CWP_CODE_ROOT.'/app/billing/catalog_browse.php';
 function catalog_selection(): array {
     $value=posted('product',40);if(!preg_match('/^([1-9][0-9]{0,8}):([1-9][0-9]{0,8})$/D',$value,$m))throw new InvalidArgumentException('Choose a current published service.');return [(int)$m[1],(int)$m[2]];
 }
@@ -10,13 +12,33 @@ function catalog_admin_action(string $action,array $user): never {
     check_csrf();
     if(str_starts_with($action,'catalog_import_')){
         provider_catalog_import_owner();
+        if(in_array($action,['catalog_import_variant_prepare','catalog_import_variant_create'],true))provider_catalog_variant_admin_action($action);
         if($action==='catalog_import_prepare'){
             if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current backup.');
-            provider_catalog_import_prepare(posted('owner_password',1000));flash('Observed hosting type imports enabled. Existing catalog products are unchanged.');redirect(admin_url('catalog'));
+            provider_catalog_import_prepare();flash('Observed hosting type imports enabled. Existing catalog products are unchanged.');redirect(admin_url('catalog'));
+        }
+        if($action==='catalog_import_catalog_prepare'){
+            provider_package_types_prepare(posted('owner_password',1000));flash('20i hosting catalog discovery enabled. Refresh the catalog to load its hosting types.');redirect(admin_url('catalog',['import_source'=>'package.types']));
+        }
+        if($action==='catalog_import_catalog_refresh'){
+            $revision=posted('profile_revision',10);
+            if(!preg_match('/^[1-9][0-9]{0,9}$/D',$revision)||(int)$revision>2147483647)throw new InvalidArgumentException('Reload the current hosting catalog form.');
+            $state=provider_inventory_refresh(posted('profile_id',32),(int)$revision,posted('owner_password',1000),null,null,\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::PACKAGE_TYPES);
+            flash($state==='complete'?'20i hosting types saved. Review them below before creating local drafts.':'The hosting catalog refresh could not be completed. Existing products are unchanged; refresh again before importing from this catalog.',$state==='complete'?'success':'error');
+            redirect(admin_url('catalog',['import_source'=>'package.types']));
+        }
+        if($action==='catalog_import_batch'){
+            if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm importing these hosting types as local drafts.');
+            $source=posted('import_source',20)?:'package.types';$term=posted('term',10);$prefix=posted('sku_prefix',40);
+            $result=provider_catalog_import_batch(posted('preview_hash',64),$term,$prefix,posted('owner_password',1000),$source,gint($_POST,'import_offset',0,8192,0));
+            flash($result['created_count'].' draft(s) created. '.$result['existing_count'].' existing product(s) preserved. '.$result['remaining_count'].' type(s) remain to import.');
+            $query=['import_source'=>$source,'batch_term'=>$term,'batch_prefix'=>$prefix];
+            if($result['next_offset']!==null)$query['import_offset']=$result['next_offset'];
+            redirect(admin_url('catalog',$query));
         }
         if($action==='catalog_import_create'){
             if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm creation of this local draft.');
-            $id=provider_catalog_import_create(posted('preview_hash',64),posted('type_ref',18),posted('sku',60),posted('term',10),posted('owner_password',1000));
+            $id=provider_catalog_import_create(posted('preview_hash',64),posted('type_ref',18),posted('sku',60),posted('term',10),posted('owner_password',1000),posted('import_source',20)?:'packages.list');
             flash('Observed hosting type saved as a local draft, or its existing draft retained. Review its price, terms and image. No product was published or ordered.');redirect(admin_url('catalog',['id'=>$id]));
         }
         if($action==='catalog_import_image'){
@@ -64,7 +86,23 @@ function catalog_admin_render(string $view,array $user,string $error): never {
         if($p=$GLOBALS['catalog_preview']??null){?><section class="workspace-card catalog-review"><h2>Confirm exact invoice</h2><?php catalog_snapshot_view($p);?><p><?=nl2br(esc($input['instructions']))?></p><form method="post"><?php admin_action('catalog_issue');studio_hidden('job_id',$jobId);studio_hidden('product',$p['id'].':'.$p['revision']);studio_hidden('quantity',$p['quantity']);studio_hidden('instructions',$input['instructions']);studio_hidden('request_key',bin2hex(random_bytes(32)));admin_check('confirm','I reviewed the price, service period and client agreement. Issue this manual invoice.',false);?><button class="btn gold">Issue reviewed invoice</button></form></section><?php }
         echo '<p><a href="'.esc(admin_url('studio-job',['id'=>$jobId])).'">Return to project</a></p>';admin_foot();exit;
     }
-    ?><p class="admin-intro">Manage approved service prices here. Published design, care and additional services appear on the Packages page. Provider-dependent products stay draft until their integration is verified. Service periods describe one invoice; automatic billing is not enabled.</p><p><a class="btn outline" href="<?=esc(admin_url('catalog'))?>">Add a product</a> <a class="btn outline" href="<?=esc(page_url('packages'))?>">View published services</a></p><?php
+    ?><p class="admin-intro">Manage approved service prices here. Published design, care, software and additional services appear in the public catalog. Hosting products connect to the storefront through Hosting offers, with a reviewed plan and provider mapping. Importing alone never publishes or places an order.</p><p><a class="btn outline" href="<?=esc(admin_url('catalog'))?>">Create a product</a> <a class="btn outline" href="<?=esc(admin_url('catalog',['import_source'=>'package.types']))?>#hosting-import">Import 20i plans</a> <a class="btn outline" href="<?=esc(admin_url('hosting-offers'))?>">Hosting offers &amp; publication</a> <a class="btn outline" href="<?=esc(page_url('packages'))?>">View published services</a></p><?php
+    $browseError='';
+    try{$productBrowse=catalog_admin_browse($_GET);}catch(InvalidArgumentException $e){$productBrowse=catalog_admin_browse([]);$browseError=$e->getMessage();}
+    $localProducts=all('SELECT * FROM '.table('catalog_products').$productBrowse['where'].' ORDER BY id DESC LIMIT 51 OFFSET '.$productBrowse['offset'],$productBrowse['params']);
+    $moreProducts=count($localProducts)>50;$localProducts=array_slice($localProducts,0,50);
+    ?><section class="workspace-card" id="catalog-products"><h2>Your products</h2><p>These are products saved in CajunWebPro, newest first. Plans created at 20i appear in the importer below until you import them.</p>
+    <?php if($browseError!=='')echo '<p class="notice warning">'.esc($browseError).'</p>'; ?>
+    <form method="get" class="catalog-filters"><input type="hidden" name="view" value="catalog">
+    <?php admin_input('product_search','Find by product name or SKU',$productBrowse['query']['product_search'],'search','maxlength="120"');
+    admin_select('product_family','Product type',[''=>'All types']+catalog_families(),$productBrowse['query']['product_family']);
+    admin_select('product_status','Status',[''=>'All statuses','draft'=>'Draft','published'=>'Published','retired'=>'Retired'],$productBrowse['query']['product_status']); ?>
+    <button class="btn outline">Find products</button><a href="<?=esc(admin_url('catalog'))?>#catalog-products">Clear filters</a></form>
+    <div class="table-wrap"><table><thead><tr><th>SKU / product</th><th>Status / period</th><th>Unit / setup USD</th><th>Revision</th></tr></thead><tbody>
+    <?php if(!$localProducts): ?><tr><td colspan="4"><?=array_filter($productBrowse['query'])||$productBrowse['page']>1?'No products match these filters. Clear filters or return to the first page.':'No local products yet. Import 20i plans below, or create a product.'?></td></tr><?php endif; ?>
+    <?php foreach($localProducts as $item): ?><tr><td><a href="<?=esc(admin_url('catalog',['id'=>$item['id']]))?>"><?=esc($item['sku'].' · '.$item['title'])?></a></td><td><?=esc($item['status'].' · '.(catalog_terms()[$item['term']]??$item['term']))?></td><td><?=esc($item['amount_cents']===null?'Not configured':gmoney((int)$item['amount_cents']))?> / <?=esc(gmoney((int)$item['setup_cents']))?></td><td><?=(int)$item['revision']?></td></tr><?php endforeach; ?>
+    </tbody></table></div><nav class="button-row" aria-label="Local product pages"><span>Page <?=$productBrowse['page']?></span><?php if($productBrowse['page']>1): ?><a href="<?=esc(catalog_admin_browse_url($productBrowse,$productBrowse['page']-1))?>">Previous products</a><?php endif; ?><?php if($moreProducts&&$productBrowse['page']<10000): ?><a href="<?=esc(catalog_admin_browse_url($productBrowse,$productBrowse['page']+1))?>">More products</a><?php endif; ?></nav>
+    <p class="hint">Hosting storefront visibility is managed in <a href="<?=esc(admin_url('hosting-offers'))?>">Hosting offers</a>. A hosting product may remain a draft here while its separately reviewed offer is published.</p></section><?php
     provider_catalog_import_admin_view($user);
     $id=is_string($_GET['id']??null)?(int)$_GET['id']:0;$p=$id?one('SELECT * FROM '.table('catalog_products').' WHERE id=?',[$id]):null;
     if($id&&!$p){http_response_code(404);echo '<p>Product not found.</p>';admin_foot();exit;}
@@ -72,8 +110,9 @@ function catalog_admin_render(string $view,array $user,string $error): never {
     if($p){$values['amount']=gmoney($p['amount_cents']===null?null:(int)$p['amount_cents']);$values['setup']=gmoney((int)$p['setup_cents']);$values['cost']=gmoney($p['cost_cents']===null?null:(int)$p['cost_cents']);}
     if($error&&($_POST['action']??'')==='catalog_save')foreach(array_keys($values) as $key)if(is_string($_POST[$key]??null))$values[$key]=$_POST[$key];
     ?><section class="workspace-card"><h2><?=$id?'Edit product':'New product'?></h2><form method="post"><?php admin_action('catalog_save');studio_hidden('id',$id);studio_hidden('revision',$values['revision']);?><div class="workspace-grid"><div><?php admin_input('sku','Unique SKU',$values['sku'],'text','required maxlength="60"');admin_input('title','Service name',$values['title'],'text','required maxlength="120"');admin_select('family','Product family',catalog_families(),$values['family']);admin_select('status','Visibility',['draft'=>'Draft','published'=>'Published','retired'=>'Retired'],$values['status']);admin_select('term','Service period',catalog_terms(),$values['term']);admin_input('currency','Currency','USD','text','readonly');admin_input('amount','Unit price in USD',$values['amount'],'text','inputmode="decimal" placeholder="Not configured"');admin_input('setup','One-time setup fee in USD',$values['setup'],'text','inputmode="decimal"');?></div><div><?php admin_textarea('summary','Public summary',$values['summary'],3,1000);admin_textarea('features','Public features (one per line)',$values['features'],4,4000);admin_textarea('terms','Public service terms / included period',$values['terms'],4,4000);admin_input('sort_order','Display order',$values['sort_order'],'number','min="0" max="9999"');?><details><summary>Internal product information</summary><p>Only administrators with catalog access see these values. Enter identifiers, never provider credentials.</p><?php admin_input('cost','Internal cost in USD (optional)',$values['cost'],'text','inputmode="decimal"');admin_input('provider_ref','Internal provider product reference (optional)',$values['provider_ref'],'text','maxlength="160"');?></details></div></div><button class="btn gold">Save product</button></form></section>
-    <section class="workspace-card"><h2>Products</h2><div class="table-wrap"><table><thead><tr><th>SKU / service</th><th>Status / period</th><th>Unit / setup USD</th><th>Revision</th></tr></thead><tbody><?php foreach(all('SELECT * FROM '.table('catalog_products').' ORDER BY sort_order,id LIMIT 200') as $item){?><tr><td><a href="<?=esc(admin_url('catalog',['id'=>$item['id']]))?>"><?=esc($item['sku'].' · '.$item['title'])?></a></td><td><?=esc($item['status'].' · '.(catalog_terms()[$item['term']]??$item['term']))?></td><td><?=esc($item['amount_cents']===null?'Not configured':gmoney((int)$item['amount_cents']))?> / <?=esc(gmoney((int)$item['setup_cents']))?></td><td><?=(int)$item['revision']?></td></tr><?php }?></tbody></table></div></section><?php
-    if($id){?><section class="workspace-card"><h2>Price and publication history</h2><p>Last 20 saved revisions. Issued invoices keep the price and service text they were issued with.</p><?php foreach(all('SELECT r.*,u.name FROM '.table('catalog_revisions').' r LEFT JOIN '.table('users').' u ON u.id=r.actor_id WHERE r.product_id=? ORDER BY r.revision DESC LIMIT 20',[$id]) as $r){$v=json_decode($r['snapshot'],true,32,JSON_THROW_ON_ERROR);echo '<p>Revision '.(int)$r['revision'].' · '.esc($r['created_at'].' UTC · '.$r['name'].' · '.$v['status'].' · '.($v['amount_cents']===null?'No price':'$'.gmoney((int)$v['amount_cents'])).' + $'.gmoney((int)$v['setup_cents']).' setup').'</p>';}?></section><?php }
+    <?php if($p)provider_catalog_variant_admin_view($p,$user); ?>
+
+    <?php if($id){?><section class="workspace-card"><h2>Price and publication history</h2><p>Last 20 saved revisions. Issued invoices keep the price and service text they were issued with.</p><?php foreach(all('SELECT r.*,u.name FROM '.table('catalog_revisions').' r LEFT JOIN '.table('users').' u ON u.id=r.actor_id WHERE r.product_id=? ORDER BY r.revision DESC LIMIT 20',[$id]) as $r){$v=json_decode($r['snapshot'],true,32,JSON_THROW_ON_ERROR);echo '<p>Revision '.(int)$r['revision'].' · '.esc($r['created_at'].' UTC · '.$r['name'].' · '.$v['status'].' · '.($v['amount_cents']===null?'No price':'$'.gmoney((int)$v['amount_cents'])).' + $'.gmoney((int)$v['setup_cents']).' setup').'</p>';}?></section><?php }
     if($p)provider_catalog_import_image_view($p,$user);
     admin_foot();exit;
 }

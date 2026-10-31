@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/app/providers/workspace.php';
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_password_reset_template.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_schedule.php';
@@ -76,14 +77,14 @@ function provider_inventory_admin_action(string $action):void {
         $number=static function(string $name):int {$value=posted($name,10);if(!preg_match('/^[1-9][0-9]{0,9}$/D',$value)||(int)$value>4294967295)throw new InvalidArgumentException('Reload the current cloud website form.');return (int)$value;};
         $extra=posted('extra_domains',5080);$extra=$extra===''?[]:preg_split('/\r\n|\n|\r/',$extra);
         $result=provider_cloud_sites_create(posted('request_id',32),posted('link_id',32),$number('link_revision'),$number('revision'),posted('refresh_id',32),posted('domain_name',253),$extra,posted('reviewed',1)==='1',$password);
-        flash($result->message,$result->status==='accepted_pending'?'success':'error');redirect(admin_url('provider-settings'));
+        flash($result->message,$result->status==='accepted_pending'?'success':'error');redirect(provider_workspace_url());
     }
 
     if($action==='provider_inventory_cloud_assignment_prepare'){
         provider_cloud_assignment_prepare($password);flash('Cloud assignment history is ready. Refresh cloud inventory before approving assignments.');redirect(admin_url('provider-settings',($_GET['focus']??null)==='cloud-assignment'?['focus'=>'cloud-assignment']:[]));
     }
     if($action==='provider_inventory_prepare'){
-        provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
+        provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(provider_workspace_url());
     }
     provider_settings_manager();$id=posted('profile_id',32);
     if($action==='provider_inventory_refresh'||$action==='provider_inventory_cloud_refresh'||$action==='provider_inventory_link'||$action==='provider_inventory_relink'){
@@ -91,7 +92,7 @@ function provider_inventory_admin_action(string $action):void {
     }
     if($action==='provider_inventory_refresh'){
         $code=provider_inventory_refresh($id,(int)$revision,$password);
-        flash(provider_inventory_message($code),$code==='complete'?'success':'error');redirect(admin_url('provider-settings'));
+        flash(provider_inventory_message($code),$code==='complete'?'success':'error');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_cloud_refresh'){
         $code=provider_inventory_refresh($id,(int)$revision,$password,null,null,\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::CLOUD_SERVERS_LIST);
@@ -100,24 +101,24 @@ function provider_inventory_admin_action(string $action):void {
     }
     if($action==='provider_inventory_link'){
         $client=(int)posted('client_id',10);$package=(int)posted('package_id',20);
-        provider_inventory_link($id,$package,$client,(int)$revision,$password);flash('Service linked to the client.');redirect(admin_url('provider-settings'));
+        provider_inventory_link($id,$package,$client,(int)$revision,$password);flash('Service linked to the client.');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_unlink'){
-        provider_inventory_unlink(posted('link_id',32),$password);flash('Service link removed.');redirect(admin_url('provider-settings'));
+        provider_inventory_unlink(posted('link_id',32),$password);flash('Service link removed.');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_relink'){
-        provider_inventory_relink(posted('link_id',32),(int)$revision,$password);flash('Service link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
+        provider_inventory_relink(posted('link_id',32),(int)$revision,$password);flash('Service link re-approved under the current provider settings.');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_domain_link'){
         $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
-        provider_inventory_domain_link($id,(int)posted('package_id',20),posted('domain',253),(int)posted('client_id',10),(int)$revision,$password);flash('Domain linked to the client.');redirect(admin_url('provider-settings'));
+        provider_inventory_domain_link($id,(int)posted('package_id',20),posted('domain',253),(int)posted('client_id',10),(int)$revision,$password);flash('Domain linked to the client.');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_domain_unlink'){
-        provider_inventory_domain_unlink(posted('link_id',32),$password);flash('Domain link removed.');redirect(admin_url('provider-settings'));
+        provider_inventory_domain_unlink(posted('link_id',32),$password);flash('Domain link removed.');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_domain_relink'){
         $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
-        provider_inventory_domain_relink(posted('link_id',32),(int)$revision,$password);flash('Domain link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
+        provider_inventory_domain_relink(posted('link_id',32),(int)$revision,$password);flash('Domain link re-approved under the current provider settings.');redirect(provider_workspace_url());
     }
     if(in_array($action,['provider_inventory_cloud_link','provider_inventory_cloud_relink','provider_inventory_cloud_unlink'],true)){
         $number=static function(string $name,int $max=4294967295):int {$value=posted($name,18);if(!preg_match('/^[1-9][0-9]{0,17}$/D',$value)||(int)$value>$max)throw new InvalidArgumentException('Reload the current cloud assignment form.');return (int)$value;};
@@ -132,12 +133,12 @@ function provider_inventory_admin_action(string $action):void {
 function provider_settings_admin_action(string $action):void {
     $password=posted('current_password',200);
     if($action==='provider_settings_setup'){
-        provider_settings_migrate($password);flash('20i settings and check history are ready.');redirect(admin_url('provider-settings'));
+        provider_settings_migrate($password);flash('20i settings and check history are ready.');redirect(provider_workspace_url());
     }
     provider_settings_manager();$id=posted('profile_id',32);$revision=posted('revision',10);
     if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
     if($action==='provider_settings_check'){
-        $code=provider_checks_check($id,(int)$revision,$password);flash(provider_checks_message($code),$code==='connected'?'success':'error');redirect(admin_url('provider-settings'));
+        $code=provider_checks_check($id,(int)$revision,$password);flash(provider_checks_message($code),$code==='connected'?'success':'error');redirect(provider_workspace_url());
     }
     if($action==='provider_settings_save'){
         // Preserve the exact raw key; posted() trims non-password values.
@@ -148,13 +149,13 @@ function provider_settings_admin_action(string $action):void {
         $operation=match($action){'provider_settings_enable'=>'enable','provider_settings_disable'=>'disable','provider_settings_clear'=>'clear',default=>throw new InvalidArgumentException('Unknown provider settings action.')};
         provider_settings_state($id,(int)$revision,$operation,$password);
     }
-    flash('20i settings saved. Check the saved connection when you are ready.');redirect(admin_url('provider-settings'));
+    flash('20i settings saved. Check the saved connection when you are ready.');redirect(provider_workspace_url());
 }
 function provider_settings_admin_render(string $error):void {
     header('Referrer-Policy: no-referrer');
     try{$actor=provider_settings_manager(false);}
     catch(RuntimeException $e){if($e instanceof PDOException)throw $e;http_response_code(403);admin_head('20i access unavailable','security',require_admin());echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';admin_foot();exit;}
-    admin_head('20i connection','provider-settings',$actor);
+    admin_head('20i workspace','provider-settings',$actor);
     if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
     if(!provider_settings_ready()){
         echo '<section class="workspace-card"><h2>Prepare your 20i connection</h2><p>Save a protected General API key and keep a history of explicit connection checks. Back up your database before adding this storage.</p><form method="post">';
@@ -231,7 +232,7 @@ function provider_operations_admin_render(string $error):void {
 function provider_domain_search_admin_action(string $action): void {
     provider_settings_manager();
     if($action==='provider_inventory_domain_search_prepare') {
-        provider_domain_search_migrate(posted('current_password',200));flash('Domain search history is ready.');redirect(admin_url('provider-settings'));
+        provider_domain_search_migrate(posted('current_password',200));flash('Domain search history is ready.');redirect(provider_workspace_url());
     }
     $number=static function(string $key,bool $zero=false):int {
         $raw=$_POST[$key]??null;
@@ -239,24 +240,24 @@ function provider_domain_search_admin_action(string $action): void {
         return (int)$raw;
     };
     if($action==='provider_inventory_domain_search_client_prepare'){
-        provider_domain_client_prepare(posted('current_password',200));flash('Client domain search history is ready.');redirect(admin_url('provider-settings'));
+        provider_domain_client_prepare(posted('current_password',200));flash('Client domain search history is ready.');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_domain_search_client_configure'){
         $enabled=$_POST['client_search_enabled']??'0';
         if(!is_string($enabled)||!in_array($enabled,['0','1'],true))throw new InvalidArgumentException('Reload the current client search form.');
         provider_domain_client_configure($number('client_search_revision',true),$enabled==='1',posted('current_password',200));
-        flash('Client domain search settings saved.');redirect(admin_url('provider-settings'));
+        flash('Client domain search settings saved.');redirect(provider_workspace_url());
     }
     $id=posted('profile_id',32);$profileRevision=$number('revision');$configRevision=$number('search_revision',true);
     if($action==='provider_inventory_domain_search_configure') {
         $enabled=$_POST['search_enabled']??'0';
         if(!is_string($enabled)||!in_array($enabled,['0','1'],true))throw new InvalidArgumentException('Reload the current domain search form.');
         provider_domain_search_configure($id,$profileRevision,$configRevision,$enabled==='1',$_POST['search_tlds']??'',posted('current_password',200));
-        flash('Domain search settings saved. No lookup or purchase was made.');redirect(admin_url('provider-settings'));
+        flash('Domain search settings saved. No lookup or purchase was made.');redirect(provider_workspace_url());
     }
     if($action==='provider_inventory_domain_search_run') {
         provider_domain_search_run($id,$profileRevision,$configRevision,$_POST['domain_query']??null);
-        flash('The lookup outcome is recorded in Domain search history. Availability is an observation, not a reservation.');redirect(admin_url('provider-settings'));
+        flash('The lookup outcome is recorded in Domain search history. Availability is an observation, not a reservation.');redirect(provider_workspace_url());
     }
     throw new InvalidArgumentException('Unknown domain search action.');
 }

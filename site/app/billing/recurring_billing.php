@@ -7,6 +7,7 @@ require_once CWP_CODE_ROOT.'/app/plans/records.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/recurring-billing/RecurringBillingSchedule.php';
 require_once CWP_CODE_ROOT.'/database/schema/recurring_billing_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/recurring_billing_migrate.php';
+require_once CWP_CODE_ROOT.'/database/migrations/recurring_billing_checkout_migrate.php';
 use CajunWebPro\Foundation\RecurringBilling\{RecurringBillingTerms,RecurringBillingSchedule};
 const RECURRING_BILLING_MAX_SCHEDULES=256;
 function recurring_billing_json(array $data):string{return json_encode($data,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);}
@@ -28,7 +29,10 @@ function recurring_billing_job(int $id,?int $client=null):array {
 function recurring_billing_ready():bool{
     if((one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version'])['value']??'')!=='1')return false;
     $names=array_map(fn($name)=>config()['db']['prefix'].$name,array_keys(recurring_billing_schema(config()['db']['prefix'])));
-    return count(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN (?,?,?,?)',$names))===count($names);
+    if(count(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN (?,?,?,?)',$names))!==count($names))return false;
+    $checkout=recurring_billing_checkout_schema_enabled();
+    if(recurring_billing_checkout_schema_stage()!==($checkout?2:0))throw new RuntimeException('Recurring schema differs from its explicit checkout preparation marker.');
+    return true;
 }
 function recurring_billing_require():void {if(!recurring_billing_ready()||!service_plans_ready()||!ledger_ready()||!payments_ready())throw new RuntimeException('An owner must prepare recurring billing first.');}
 function recurring_billing_staff(bool $ready=true):string {
@@ -60,6 +64,10 @@ function recurring_billing_source(RecurringBillingTerms $terms,bool $active=fals
     $d['events']=array_slice($d['events'],0,$pin['revision']);$prefix=ServiceSubscriptionDocument::fromJson(service_plans_json($d));$model=$prefix->model();
     if($createdAt!==null&&$d['events'][array_key_last($d['events'])]['at']>$createdAt)throw new RuntimeException('Recurring billing cannot precede the agreed active service.');
     if($prefix->fingerprint()!==$pin['sha256']||$model->state()!=='active'||$model->agreedPrice!==$t['amount_cents']||$model->plan->cadence!==$t['cadence']||$model->plan->currency!==$t['currency'])throw new RuntimeException('Recurring terms differ from the agreed service price or cadence.');
+    if($t['format']===2){
+        require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout_billing_document.php';
+        hosting_checkout_billing_assert($terms,$current);
+    }elseif($current->data()['format']!==1)throw new RuntimeException('Legacy billing cannot substitute for checkout-origin terms.');
     if($active&&$current->model()->state()!=='active')throw new RuntimeException('This service agreement is not currently active.');
     if($latest&&($current->revision()!==$pin['revision']||$current->fingerprint()!==$pin['sha256']))throw new RuntimeException('Review the current service agreement before offering billing.');
     return $current;
@@ -67,12 +75,19 @@ function recurring_billing_source(RecurringBillingTerms $terms,bool $active=fals
 /** Full native history validation; never use a displayed page as integrity evidence. */
 function recurring_billing_validate(array $row,?ServiceSubscriptionDocument $source=null):RecurringBillingSchedule {
     $initial=RecurringBillingSchedule::fromJson($row['initial_json']);$doc=RecurringBillingSchedule::fromJson($row['journal_json']);$data=$doc->data();$events=$data['events'];$data['events']=[];$terms=RecurringBillingTerms::fromArray($data['terms']);$t=$terms->data();
-    if($initial->revision()!==0||$initial->data()!==$data||$t['id']!==$row['id']||$t['source_subscription']['id']!==$row['subscription_id']||$t['client_id']!==(int)$row['client_id']||$t['project_id']!==(int)$row['job_id']||$data['created_by']!==(int)$row['created_by']||$data['created_at']!==(int)$row['created_epoch']||$doc->revision()!==(int)$row['revision']||$doc->fingerprint()!==$row['journal_sha256'])throw new RuntimeException('Retained recurring agreement is inconsistent.');
+    $checkout=$data['format']===2;$start=$data;
+    if($checkout){
+        if(!recurring_billing_checkout_schema_enabled())throw new RuntimeException('Checkout recurring attribution has not been prepared.');
+        $start['events']=array_slice($events,0,1);
+        $actorValid=$row['created_by']===null&&($row['created_by_client']??null)!==null&&$data['created_by_client']===(int)$row['created_by_client']&&$data['created_by_client']===$t['client_id'];
+    }else $actorValid=$row['created_by']!==null&&($row['created_by_client']??null)===null&&$data['created_by']===(int)$row['created_by'];
+    if($initial->revision()!==($checkout?1:0)||$initial->data()!==$start||!$actorValid||$t['id']!==$row['id']||$t['source_subscription']['id']!==$row['subscription_id']||$t['client_id']!==(int)$row['client_id']||$t['project_id']!==(int)$row['job_id']||$data['created_at']!==(int)$row['created_epoch']||$doc->revision()!==(int)$row['revision']||$doc->fingerprint()!==$row['journal_sha256'])throw new RuntimeException('Retained recurring agreement is inconsistent.');
     recurring_billing_source($terms,false,false,$source,$data['created_at']);
     $job=recurring_billing_job($t['project_id'],$t['client_id']);
     $saved=all('SELECT * FROM '.table('recurring_billing_events').' WHERE schedule_id=? ORDER BY revision LIMIT 257',[$row['id']]);
     if(count($events)!==count($saved))throw new RuntimeException('A recurring agreement event is missing.');
-    $before=$initial->fingerprint();$prefix=$data;
+    // The v2 zero-event skeleton is only a hash-chain witness, never a parseable schedule.
+    $before=$checkout?hash('sha256',recurring_billing_json($data)):$initial->fingerprint();$prefix=$data;
     foreach($events as $i=>$event){
         $r=$saved[$i];$prefix['events'][]=$event;$after=hash('sha256',recurring_billing_json($prefix));
         if(($r['actor_staff_id']===null)===($r['actor_client_id']===null))throw new RuntimeException('Recurring event attribution is ambiguous.');
@@ -80,6 +95,12 @@ function recurring_billing_validate(array $row,?ServiceSubscriptionDocument $sou
         $input=recurring_billing_json(['revision'=>$i,'command'=>$event['command'],'arguments'=>$event['arguments']]);
         if($r['id']!==$event['id']||$actor!==$event['actor']||(int)$r['revision']!==$i+1||(int)$r['recorded_epoch']!==$event['at']||$r['input_json']!==$input||$r['before_sha256']!==$before||$r['after_sha256']!==$after)throw new RuntimeException('Retained recurring event does not match its journal.');
         $before=$after;
+    }
+    if($checkout){
+        require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
+        $first=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=0',[$row['id']]);
+        if(!$first)throw new RuntimeException('Checkout first-invoice history is missing. Restore the original atomic checkout records.');
+        recurring_billing_invoice_validate($first,$doc); // Already parsed graph: never recurse into family/guard here.
     }
     return $doc;
 }
@@ -113,6 +134,7 @@ function recurring_billing_family(string $sourceId):array {
 }
 function recurring_billing_offer(array $fields,?string $previousId=null,?string $previousHash=null):RecurringBillingSchedule {
     $terms=RecurringBillingTerms::fromArray($fields);
+    if($terms->data()['format']!==1)throw new InvalidArgumentException('Checkout schedules require their atomic client confirmation path.');
     return recurring_billing_locked(function()use($terms,$previousId,$previousHash):RecurringBillingSchedule{
         $actor=recurring_billing_staff();$t=$terms->data();service_plans_client_row($t['client_id']);recurring_billing_job($t['project_id'],$t['client_id']);
         $family=recurring_billing_family($t['source_subscription']['id']);

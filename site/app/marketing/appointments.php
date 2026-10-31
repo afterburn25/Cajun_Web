@@ -114,7 +114,7 @@ function appointments_mutate(int $leadId,int $revision,string $action,mixed $sta
             if ((int)$row['starts_at']<=$now) throw new InvalidArgumentException('Past appointments cannot be confirmed or rescheduled.');
         }
         if ($action==='confirm') {
-            if (!password_verify($password,$actor['password_hash'])) throw new InvalidArgumentException('Your current password is not correct.');
+            if (!admin_session_matches($actor)) throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
             // Notice applies to a new request/reschedule, not to confirming an already held future slot.
             $confirmSettings=$settings;$confirmSettings['notice_minutes']=0;$calendar=appointments_calendar($confirmSettings,$rows,$now,$now+30*86400);
             if (!$calendar->isBookable($model->slot,$model->id,$now)) throw new InvalidArgumentException('The requested time no longer matches current availability or length. Reschedule before confirming.');

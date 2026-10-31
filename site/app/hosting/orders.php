@@ -22,7 +22,7 @@ function service_orders_require():void {
 function service_orders_owner(#[\SensitiveParameter] ?string $password=null,bool $ready=true):array {
     $actor=service_plans_owner();
     if(!staff_can('payments.manage',$actor))throw new RuntimeException('Current owner financial access is required.');
-    if($password!==null&&!password_verify($password,$actor['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
+    if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
     if(!ledger_ready()||!payments_ready())throw new RuntimeException('Prepare payments and receipt history before hosting orders.');
     if($ready)service_orders_require();return $actor;
 }
@@ -40,6 +40,15 @@ function service_orders_agreement(string $id,int $client,int $revision,string $h
     if($m->state()!=='active'||$m->consent()===null||$prefix->fingerprint()!==$hash||($termsHash!==null&&$m->plan->termsHash()!==$termsHash))throw new RuntimeException('Hosting order does not match its original accepted service terms.');
     return ['current'=>$current,'prefix'=>$prefix];
 }
+/** Checkout origin is retained native history, never a manual-payment override. */
+function service_orders_checkout_origin(ServiceSubscriptionDocument $source,int $invoice):?array {
+    $d=$source->data();
+    if($d['format']===1)return null;
+    require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers_storage.php';
+    $origin=hosting_catalog_agreement_origin($d['id'],$d['client_id']);
+    if($origin===null || ($origin['requires_verified_payment']??null)!==true || ($origin['invoice_id']??null)!==$invoice)throw new RuntimeException('The original checkout invoice and verified-payment policy need recovery.');
+    return $origin;
+}
 /** A future resume must not turn today's paused service into current purchase authority. */
 function service_orders_billing_eligible(\CajunWebPro\Foundation\RecurringBilling\RecurringBillingSchedule $billing,int $at):bool {
     $terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($billing->data()['terms']);$current=$terms->periodAt($at);
@@ -49,6 +58,7 @@ function service_orders_billing_eligible(\CajunWebPro\Foundation\RecurringBillin
 /** Inspect a specific existing invoice; matching amounts alone never create an order. */
 function service_orders_invoice(ServiceSubscriptionDocument $source,int $invoice,bool $active=true):array {
     if(!db()->inTransaction())throw new LogicException('Invoice binding needs its owning transaction.');
+    service_orders_checkout_origin($source,$invoice);
     require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch.php';domain_renewal_dispatch_exclude_invoice($invoice);
     $d=$source->data();$m=$source->model();
     $i=one('SELECT i.*,j.client_id FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE i.id=? FOR UPDATE',[$invoice]);
@@ -76,6 +86,7 @@ function service_orders_validate(array $row):ServiceOrderDocument {
     $d=$doc->data();$events=$d['events'];$d['events']=[];
     if($initial->revision()!==0||$initial->data()!==$d||$d['id']!==$row['id']||$d['agreement']['id']!==$row['agreement_id']||$d['invoice']['id']!==(int)$row['invoice_id']||$d['client_id']!==(int)$row['client_id']||$d['created_by']!==(int)$row['created_by']||$d['created_at']!==(int)$row['created_epoch']||$doc->revision()!==(int)$row['revision']||$doc->fingerprint()!==$row['journal_sha256'])throw new RuntimeException('Retained hosting order is inconsistent.');
     $pin=$d['agreement'];$source=service_orders_agreement($pin['id'],$d['client_id'],$pin['revision'],$pin['sha256'],$pin['terms_hash']);$model=$source['prefix']->model();
+    service_orders_checkout_origin($source['current'],$d['invoice']['id']);
     $sourceEvents=$source['prefix']->data()['events'];
     if($sourceEvents[array_key_last($sourceEvents)]['at']>$d['created_at']||$d['invoice']['amount_cents']!==$model->agreedPrice||$d['invoice']['currency']!==$model->plan->currency||($model->plan->cadence==='one-time')!==($d['invoice']['basis']==='one-time'))throw new RuntimeException('Hosting order price or period differs from its agreed service.');
     $detail='staff:'.$d['created_by'].'; Order '.$d['id'].' agreement '.$pin['id'].' invoice '.$d['invoice']['id'].' client '.$d['client_id'].' sha256 '.$initial->fingerprint();
@@ -121,7 +132,8 @@ function service_orders_offer(string $id,string $agreement,int $client,int $revi
 function service_orders_assess(ServiceOrderDocument $doc,int $at):array {
     service_plans_time($at);$d=$doc->data();$pin=$d['agreement'];
     $source=service_orders_agreement($pin['id'],$d['client_id'],$pin['revision'],$pin['sha256'],$pin['terms_hash']);
-    $blockers=[];$state=$doc->state();$manual=$doc->manualPolicy($at);
+    $checkout=service_orders_checkout_origin($source['current'],$d['invoice']['id']);
+    $blockers=[];$state=$doc->state();$manual=$checkout===null?$doc->manualPolicy($at):null;
     if($state['phase']!=='accepted')$blockers[]='client-acceptance-required';
     if($source['current']->model()->state()!=='active')$blockers[]='agreement-inactive';
     $invoice=service_orders_invoice($source['current'],$d['invoice']['id']);
@@ -138,6 +150,11 @@ function service_orders_append(array $row,int $revision,string $event,string $co
     if($revision<0||$revision>=ServiceOrderDocument::MAX_EVENTS)throw new InvalidArgumentException('Invalid order revision.');
     $fields=match($command){'accept'=>['domain_name','review_sha256'],'allow_manual'=>['reason','expires_at'],'cancel','withdraw','decline','revoke_manual'=>['reason'],default=>throw new InvalidArgumentException('Unknown order action.')};
     service_plans_keys($args,$fields);$ordered=[];foreach($fields as $key)$ordered[$key]=$args[$key];$args=$ordered;
+    // Refuse both a new bypass and replay of a previously retained bypass command.
+    if($command==='allow_manual'){
+        $d=$doc->data();$pin=$d['agreement'];$source=service_orders_agreement($pin['id'],$d['client_id'],$pin['revision'],$pin['sha256'],$pin['terms_hash']);
+        if(service_orders_checkout_origin($source['current'],$d['invoice']['id'])!==null)throw new RuntimeException('This checkout requires a verified payment receipt; a manual fulfillment policy is not allowed.');
+    }
     $input=service_plans_json(['revision'=>$revision,'command'=>$command,'arguments'=>$args]);
     $old=one('SELECT * FROM '.table('service_order_events').' WHERE id=?',[$event]);
     if($old){

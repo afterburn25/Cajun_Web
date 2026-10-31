@@ -18,9 +18,8 @@ function software_grant_create(int $clientId, string $sku, string $kind, string 
     $purpose=trim($purpose);
     if($kind===SoftwareLicensePolicy::MASTER){
         if(strlen($purpose)<10||strlen($purpose)>200)throw new InvalidArgumentException('Master license purpose is required (10–200 characters).');
-        if($masterPassword===null||$masterPassword==='')throw new InvalidArgumentException('Owner password is required for a master license.');
-        $owner=staff_owner($masterPassword);
-        if((int)$owner['id']!==$issuer)throw new RuntimeException('Master license issuer must be the reauthenticated owner.');
+        $owner=staff_owner($masterPassword??'');
+        if((int)$owner['id']!==$issuer)throw new RuntimeException('Master license issuer must be the currently authenticated owner.');
     }elseif($purpose!==''){
         throw new InvalidArgumentException('Purpose is reserved for internal master licenses.');
     }
@@ -241,7 +240,7 @@ function software_grant_lifecycle(int $licenseId):array{
     ];
 }
 
-/** Owner lifecycle control. Revocation/restoration require password reauthentication; suspension/resume preserve key/domain history. */
+/** Owner lifecycle control. Revocation/restoration require a current owner session; suspension/resume preserve key/domain history. */
 function software_grant_lifecycle_transition(int $licenseId,string $action,string $reason,int $actor,
     #[\SensitiveParameter]?string $ownerPassword=null):array{
     if(support_current())throw new RuntimeException('Software license lifecycle changes are unavailable during support access.');
@@ -255,9 +254,8 @@ function software_grant_lifecycle_transition(int $licenseId,string $action,strin
     $staff=staff_require('staff.manage');
     if((int)$staff['id']!==$actor)throw new RuntimeException('Software lifecycle actor does not match the current owner.');
     if(in_array($action,['revoke','restore'],true)){
-        if($ownerPassword===null||$ownerPassword==='')throw new InvalidArgumentException('Owner password is required for revocation changes.');
-        $owner=staff_owner($ownerPassword);
-        if((int)$owner['id']!==$actor)throw new RuntimeException('Software lifecycle actor does not match the reauthenticated owner.');
+        $owner=staff_owner($ownerPassword??'');
+        if((int)$owner['id']!==$actor)throw new RuntimeException('Software lifecycle actor does not match the currently authenticated owner.');
     }
     $result=[];
     license_transaction(function()use($licenseId,$action,$reason,$actor,&$result):void{
