@@ -20,7 +20,7 @@ try {
     rb_ok('Owner list identifies unprepared catalog without writing storage',provider_plan_catalog_summaries([$pcPlan->data()['id']])[$pcPlan->data()['id']]['code']==='storage_setup'&&!provider_plan_catalog_state()['exists']);
     rb_deny('Owner catalog list bounds one page',fn()=>provider_plan_catalog_summaries(array_fill(0,11,$pcPlan->data()['id'])));
     rb_deny('Owner catalog list rejects malformed plan identifiers',fn()=>provider_plan_catalog_summaries([['id'=>$pcPlan->data()['id']]]));
-    rb_deny('Catalog setup requires correct password',fn()=>provider_plan_catalog_prepare('wrong'));rb_staff(2);rb_deny('Catalog excludes delegated financial administrator',fn()=>provider_plan_catalog_prepare($password));rb_staff();
+    rb_deny('Catalog setup requires current owner authority and preserves all stored state',fn()=>cwp_test_owner_revoked(fn()=>provider_plan_catalog_prepare($password)));rb_staff(2);rb_deny('Catalog excludes delegated financial administrator',fn()=>provider_plan_catalog_prepare($password));rb_staff();
     provider_plan_catalog_prepare($password);provider_plan_catalog_prepare($password);rb_ok('Repeated catalog preparation preserves one setup audit',(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=?',['provider_catalog.setup'])->fetchColumn()===1);
     db()->exec('ALTER TABLE '.table('provider_plan_catalog').' ADD INDEX unexpected(created_epoch)');rb_deny('Catalog schema refuses extra index',fn()=>provider_plan_catalog_prepare($password));db()->exec('ALTER TABLE '.table('provider_plan_catalog').' DROP INDEX unexpected');
     rb_ok('Catalog audit failure rolls back new mapping',rb_fail(fn()=>pc_save(91100))&&rb_count('provider_plan_catalog')===0);
