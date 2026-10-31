@@ -324,7 +324,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
         submission_retention({**locals(),'token':token})
 
     if version=='1.24.0':
-        settings=url+'/admin/index.php?view=provider-settings'
+        settings=url+'/admin/index.php?view=provider-settings&section=services'
         response=session.get(settings)
         check(label+' old populated inventory offers explicit owner cloud migration',
               'Prepare' in response.text and BeautifulSoup(response.text,'html.parser').select_one('[name=action][value=provider_inventory_prepare]') is not None)

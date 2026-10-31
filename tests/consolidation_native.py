@@ -17,6 +17,9 @@ for name,count in [('mail_notices_native',1),('mail_drafts_native',1),('provider
 if len(cases)!=63 or sum(cases.values())!=122:raise SystemExit('Native suite inventory changed')
 # Additional actual owner-denial assertion replaces the obsolete inline password branch.
 cases['provider_password_reset_template_native']+=1
+# Retain the nested cloud/order/fulfillment refusals as actual authority checks.
+cases['provider_inventory_native']+=1
+cases['recurring_billing_native']+=7
 selected=sorted(cases)[a.shard::3]
 reset=r'''
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_HOST')!=='127.0.0.1')exit(2);
