@@ -140,7 +140,7 @@ try:
             config=work/'httpd.conf';config.write_text(conf)
             env={**os.environ,'PHP_INI_SCAN_DIR':f'/etc/php/{PHP}/apache2/conf.d:'+str(ini)}
             stderr=(work/'process.log').open('w')
-            proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],env=env,stdout=stderr,stderr=stderr)
+            proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],env=env,stdout=stderr,stderr=stderr,start_new_session=True)
             start=len(checks)
             try:
                 anon=LocalSession()
