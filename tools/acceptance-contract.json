@@ -678,7 +678,7 @@
     "predecessor_native_count": 160,
     "predecessor_native_sha256": "5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe",
     "source_sha256": {
-      "tests/backups_native.php": "5f4b3538ea2caeea2397a438f1d357d44ced023531c33aeb9e3f2925f57dd8db"
+      "tests/backups_native.php": "747ba0cb1a285d72d092838f4bade3962fc302ad4ba32d62c8bf736d163993c2"
     }
   },
   "backups_browser_extension": {

@@ -52,7 +52,13 @@ try{
     query('INSERT INTO '.table('backups')." (id,kind,manifest,manifest_hash,items,archive_file,bytes,request_key,request_hash,status,retain_until,created_by,created_at) VALUES ('".str_repeat('e',32)."','files','{}','".str_repeat('0',64)."',0,'x.zip',0,'".str_repeat('f',64)."','".str_repeat('0',64)."','unknown','2030-01-01',1,?)",[$now]);
     b_deny('Setup refuses unknown populated backup records',fn()=>backups_migrate($password));query('DELETE FROM '.table('backups'));
     b_ok('Setup audit failure rolls back readiness',b_audit_failure(fn()=>backups_migrate($password))&&!backups_ready());backups_migrate($password);b_ok('Setup is additive and prepares private storage',backups_ready()&&is_dir(backups_directory())&&(fileperms(backups_directory())&0777)===0700);backups_migrate($password);b_ok('Repeated setup is safe',backups_ready());
-    db()->exec('DROP TABLE '.table('backups'));b_deny('Setup refuses when recorded backup history is missing',fn()=>backups_migrate($password));b_ok('Missing-history refusal made no changes',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'backups']));
+    // Deliberately simulate lost history in this isolated namespace. Restore
+    // constraint enforcement before invoking the real fail-closed migration.
+    $fkChecks=(int)query('SELECT @@SESSION.FOREIGN_KEY_CHECKS')->fetchColumn();
+    db()->exec('SET SESSION FOREIGN_KEY_CHECKS=0');
+    try{db()->exec('DROP TABLE '.table('backups'));}finally{db()->exec('SET SESSION FOREIGN_KEY_CHECKS='.$fkChecks);}
+    b_ok('History-loss fixture restores foreign-key enforcement',(int)query('SELECT @@SESSION.FOREIGN_KEY_CHECKS')->fetchColumn()===$fkChecks&&$fkChecks===1);
+    b_deny('Setup refuses when recorded backup history is missing',fn()=>backups_migrate($password));b_ok('Missing-history refusal made no changes',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'backups']));
     db()->exec(backups_schema('backupci_')['backups']);
     db()->exec('DROP TABLE '.table('backup_drills'));b_deny('Setup refuses when recorded drill history is missing',fn()=>backups_migrate($password));
     save_setting('backups_schema_version','1');backups_migrate($password);b_ok('v1 to v2 upgrade adds the drill table additively',(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'backup_drills'])&&backups_ready());
@@ -86,7 +92,15 @@ try{
     b_deny('Database metadata is bound to manifest integrity',fn()=>backups_manifest($tamperedRow));
     $legacyManifest=json_decode($row['manifest'],true);unset($legacyManifest['database']);$legacyObj=new BackupManifest($legacyManifest['id'],$legacyManifest['kind'],$legacyManifest['created_by'],$legacyManifest['created_at'],$legacyManifest['items'],$legacyManifest['retain_until'],$legacyManifest['notes']??'');$legacyRow=$row;$legacyRow['manifest']=json_encode($legacyManifest,JSON_UNESCAPED_SLASHES);$legacyRow['manifest_hash']=$legacyObj->manifestHash();
     b_ok('Legacy pre-export manifests remain readable',backups_manifest($legacyRow)->id===$id&&backups_database($legacyRow)===null);
-    if(PHP_OS_FAMILY==='Linux'&&file_exists('/dev/full'))b_deny('Database export write failure fails closed',fn()=>backups_dump_database('/dev/full'));else b_ok('Database export write-failure coverage unavailable on this host',true);
+    if(PHP_OS_FAMILY!=='Linux'||!file_exists('/dev/full'))throw new RuntimeException('Required isolated disk-full fixture is unavailable.');
+    $writeDiagnostics=[];
+    set_error_handler(function(int $severity,string $message,string $file,int $line)use(&$writeDiagnostics):bool {
+        if($severity!==E_NOTICE||basename($file)!=='archive.php'||!preg_match('/^fwrite\(\): Write of [0-9]+ bytes failed with errno=28 No space left on device$/D',$message))throw new ErrorException($message,0,$severity,$file,$line);
+        $writeDiagnostics[]=['expected'=>true,'message'=>$message,'file'=>basename($file),'line'=>$line];return true;
+    });
+    try{b_deny('Database export write failure fails closed',fn()=>backups_dump_database('/dev/full'));}finally{restore_error_handler();}
+    b_ok('Disk-full diagnostic is explicit and bounded',count($writeDiagnostics)===1);
+    $GLOBALS['backups_expected_diagnostics']=$writeDiagnostics;
     b_ok('Database export contains real rows and skips transient state',str_contains($dump,"INSERT INTO `backupci_probe`")&&str_contains($dump,'MARKER-DATABASE-ROW')&&!str_contains($dump,'TRANSIENT-THROTTLE-ROW'));
     b_ok('Manifest excludes secrets and private storage structurally',!isset(backups_manifest($row)->items['config.php'],backups_manifest($row)->items['.env'])&&!array_filter(array_keys(backups_manifest($row)->items),fn($n)=>str_starts_with($n,'storage/')||str_contains($n,'payment-master')));
     b_ok('Same request returns same record and bytes',backups_create(['notes'=>'Synthetic snapshot','retain_days'=>30],$key)===$id&&(int)query('SELECT COUNT(*) FROM '.table('backups'))->fetchColumn()===1);
@@ -127,6 +141,8 @@ try{
     query('UPDATE '.table('backups')." SET retain_until='2000-01-01' WHERE id=?",[$id]);file_put_contents($fixtureFile,'original fixture bytes');
     b_deny('Expired backup cannot be restored',fn()=>backups_restore($id,backups_restore_phrase(backups_row($id)),$password));
     b_deny('Prune refuses revoked owner authority without removing archives',fn()=>b_revoked(fn()=>backups_prune()));
+    $pruneBefore=b_backup_state();
+    b_ok('Prune audit failure preserves exact rows and private archive bytes',b_audit_failure(fn()=>backups_prune())&&b_backup_state()===$pruneBefore&&is_file($archive)&&file_get_contents($archive)===$bytes);
     b_ok('Prune removes expired rows and archives only',backups_prune($password)===1&&!one('SELECT id FROM '.table('backups').' WHERE id=?',[$id])&&!is_file($archive));
     query('DELETE FROM '.table('backups'));b_ok('Prune with nothing expired is a no-op',backups_prune($password)===0);
     b_ok('Audit records setup, create and restore',(int)query("SELECT COUNT(*) FROM ".table('audit')." WHERE action IN ('backups.setup','backups.create','backups.restore')")->fetchColumn()>=3);

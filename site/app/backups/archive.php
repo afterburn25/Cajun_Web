@@ -291,6 +291,8 @@ function backups_drill(string $id): array {
     $elapsed=max(0,min((int)((hrtime(true)-$start)/1e6),2147483647));
     $result=$failure!==null?'corrupt':(($missing===0&&$mismatched===0)?'verified':'incomplete');
     $record=staff_locked(fn()=>staff_transaction(function()use($row,$actor,$result,$verified,$missing,$mismatched,$start,$elapsed):array {
+        $current=backups_require();
+        if((int)$current['id']!==(int)$actor['id'])throw new RuntimeException('Backup review ownership changed before the result could be recorded.');
         $drill=bin2hex(random_bytes(16));$now=gmdate('Y-m-d H:i:s');
         query('INSERT INTO '.table('backup_drills').' (id,backup_id,actor_id,result,verified,missing,mismatched,elapsed_ms,started_at,finished_at) VALUES (?,?,?,?,?,?,?,?,?,?)',[$drill,$row['id'],(int)$actor['id'],$result,$verified,$missing,$mismatched,$elapsed,$now,$now]);
         backups_audit((int)$actor['id'],'drill','Backup '.substr($row['id'],0,8).' drill '.$result.': '.$verified.' verified, '.$missing.' missing, '.$mismatched.' mismatched, '.$elapsed.'ms');
@@ -300,16 +302,28 @@ function backups_drill(string $id): array {
     return $record;
 }
 
-/** Remove expired backups (rows + archives). Owner re-authentication required. */
+/** Remove expired records and then archives after committed audit. Current owner session required. */
 function backups_prune(#[\SensitiveParameter] string $password=''): int {
     return staff_locked(function() use($password): int {
         $actor=backups_owner_session();$cutoff=gmdate('Y-m-d');
         $expired=all('SELECT * FROM '.table('backups').' WHERE retain_until < ?',[$cutoff]);$count=0;
+        $archives=[];
+        foreach($expired as $row){
+            if(!preg_match('/^[a-f0-9]{32}$/D',(string)$row['id'])||$row['archive_file']!=='backup-'.$row['id'].'.zip')throw new RuntimeException('An expired backup has an invalid archive identity. No changes were made.');
+            $path=backups_directory().'/'.$row['archive_file'];
+            if(is_link($path)||(file_exists($path)&&!is_file($path)))throw new RuntimeException('An expired backup archive is not a regular file. No changes were made.');
+            $archives[]=$path;
+        }
+        // Never unlink before the row deletion and its audit have committed:
+        // a SQL/audit rollback must retain the original recoverable archive.
         staff_transaction(function() use($expired,$actor,&$count): void {
-            foreach($expired as $row){$path=backups_directory().'/'.$row['archive_file'];if(is_file($path)&&!is_link($path))unlink($path);query('DELETE FROM '.table('backups').' WHERE id=?',[$row['id']]);$count++;}
-            foreach(glob(backups_directory().'/dump-*.sql')?:[] as $stale)if(is_file($stale)&&!is_link($stale))unlink($stale);
-            backups_audit((int)$actor['id'],'prune','Removed '.$count.' expired backups');
+            foreach($expired as $row){query('DELETE FROM '.table('backups').' WHERE id=?',[$row['id']]);$count++;}
+            backups_audit((int)$actor['id'],'prune','Removed '.$count.' expired backup records; private archive cleanup follows');
         });
+        $incomplete=false;
+        foreach($archives as $path)if(is_file($path)&&!@unlink($path))$incomplete=true;
+        foreach(glob(backups_directory().'/dump-*.sql')?:[] as $stale)if(is_file($stale)&&!is_link($stale)&&!@unlink($stale))$incomplete=true;
+        if($incomplete)throw new RuntimeException('Expired backup records were removed, but private archive cleanup is incomplete. Review protected backup storage before retrying.');
         return $count;
     });
 }
