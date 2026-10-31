@@ -274,9 +274,10 @@ function backups_drill(string $id): array {
     $scratch=backups_directory().'/drill-'.$id.'-'.bin2hex(random_bytes(6));
     if(!mkdir($scratch,0700))throw new RuntimeException('The isolated drill directory could not be created.');
     try {
-        $zip=new ZipArchive();
+        $zip=new ZipArchive();$opened=false;
         try {
             if($zip->open($archive,ZipArchive::RDONLY|ZipArchive::CHECKCONS)!==true)throw new RuntimeException('The stored backup archive is corrupt or unsupported.');
+            $opened=true;
             foreach($manifest->items as $name=>$hash) {
                 if(!backups_item_allowed($name))throw new RuntimeException('Manifest contains a path outside the restorable scope: '.$name);
                 $data=$zip->getFromName($name);
@@ -295,7 +296,7 @@ function backups_drill(string $id): array {
                 elseif(!hash_equals($db['sha256'],hash('sha256',$data))||!str_starts_with($data,"-- CajunWebPro database export\n")){$mismatched++;}
                 else{$verified++;}
             }
-        }finally{$zip->close();}
+        }finally{if($opened)$zip->close();}
     }catch(Throwable $e){$failure=$e;}
     finally{backups_scrub($scratch);}
     $elapsed=max(0,min((int)((hrtime(true)-$start)/1e6),2147483647));
