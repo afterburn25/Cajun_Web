@@ -1,6 +1,6 @@
-"""Finalize strict failure evidence and restored test sessions; never changes application code."""
+"""Finalize strict failure evidence and restored test sessions; retain source receipts."""
 from pathlib import Path
-import hashlib,json,os
+import hashlib,json,os,subprocess
 ROOT=Path(__file__).resolve().parents[1]
 if os.environ.get('GITHUB_REF')!='refs/heads/chatgpt/proposal-version-binding-20261031':raise SystemExit('Isolated proposal branch only')
 receipt=ROOT/'docs/PROPOSAL_VERSION_BINDING_FINAL.json'
@@ -32,4 +32,9 @@ if not receipt.exists():
 data=json.loads(receipt.read_text())
 for path,digest in data['files'].items():
  if sha((ROOT/path).read_bytes())!=digest:raise SystemExit('Recorded current proposal source differs: '+path)
-print('Verified current proposal source and strict fixture failure checks.')
+subprocess.run(['python3','tests/proposal_schema_repair.py'],cwd=ROOT,check=True)
+result=subprocess.run(['php','tests/proposals_schema_policy.php'],cwd=ROOT,capture_output=True,text=True)
+qa=ROOT/'qa/proposal-binding';qa.mkdir(parents=True,exist_ok=True)
+(qa/'schema-policy.json').write_text(result.stdout)
+if result.returncode or result.stderr:raise SystemExit('Proposal schema policy failed: '+result.stderr)
+print('Verified current proposal source and strict fixture/schema checks.')
