@@ -1,0 +1,16 @@
+{
+  "predecessors": {
+    "site/database/migrations/proposals_migrate.php": "4d83f2178e9f00abe52d774da91ea07ab8aa9193effb851fb6d1461ffd12caec",
+    "site/includes/layout/proposals.php": "a999eddef77aaf574bb3a4d1513b97716798827ad8e71220bcfcc044fe1f3e23",
+    "tests/proposals_native.php": "d2aba33d044e14b0914f1136f0e3ae191eb0033339ec79d4e834a8e570893bc0",
+    "tests/proposals_cases.py": "5cb22428086f5878e4ac4fe28c7f0151077b2b5a028a2604c66dffc785e2e48e"
+  },
+  "files": {
+    "site/database/migrations/proposals_migrate.php": "89def60c9a4ab5407af20c9542b14c29555c74997380f51d2e7dff62663daf73",
+    "site/includes/layout/proposals.php": "1f163e13ea9e206a841431d51e153070be79400418c31045207dce41bdb13164",
+    "tests/proposals_native.php": "5ef13d2b2ba0f9a9a9cf3edf458adc0ca03c95a25e7741c63eb6e36c4751d436",
+    "tests/proposals_cases.py": "c1368ad230b009f7f6e981b12ed22582f25992747980cb32bb3bb5cfae02479d",
+    "tests/proposals_owner_native_cases.php": "ef3188c8015f290ccccb7e0b51388e84d467e2ce5006f7924b485d8228b100bc"
+  },
+  "scope": "Owner-requested session-only proposal setup; retain first login, CSRF and explicit backup consent. Actual disabled/revoked/expired/delegated/anonymous/support denials are tested against disposable SQL. Display tests match the existing thousands-separated currency formatter."
+}

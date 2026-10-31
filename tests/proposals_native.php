@@ -30,7 +30,7 @@ try{
     $now=gmdate('Y-m-d H:i:s');for($id=1;$id<=3;$id++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Proposal staff '.$id,'proposal'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);staff_seed_owner(1);
     foreach([2=>['clients.manage'],3=>['website.manage']] as $id=>$grants)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($grants)]);p_actor();
     for($id=1;$id<=2;$id++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Proposal client '.$id,'proposal-client'.$id.'@example.invalid',str_repeat((string)$id,32),$now]);
-    p_deny('Setup requires owner reauthentication',fn()=>proposals_migrate('wrong'));
+    require __DIR__.'/proposals_owner_native_cases.php';
     p_deny('Setup requires the client workspace schema',function() use($password){save_setting('studio_schema_version','0');try{proposals_migrate($password);}finally{save_setting('studio_schema_version','2');}});
     proposals_migrate($password);p_ok('Setup creates additive proposal schema',proposals_ready());proposals_migrate($password);p_ok('Repeated setup is safe',proposals_ready());
     require __DIR__.'/proposals_schema_native_cases.php';

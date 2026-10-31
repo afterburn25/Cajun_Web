@@ -6,7 +6,7 @@ require_once CWP_CODE_ROOT.'/app/marketing/proposals.php';
 function proposals_admin_action(string $action): never {
     if($action==='proposal_setup'){
         if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you saved a current database and private-storage backup.');
-        proposals_migrate(posted('owner_password',72));flash('Proposals enabled.');redirect(admin_url('proposals'));
+        proposals_migrate();flash('Proposals enabled.');redirect(admin_url('proposals'));
     }
     if($action==='proposal_create'){
         $id=proposal_create(gint($_POST,'client_id',1,2147483647),$_POST,posted('request_key',64));flash('Draft proposal saved.');redirect(admin_url('proposal',['id'=>$id]));
@@ -48,7 +48,7 @@ function proposals_admin_render(string $view,array $user,string $error): never {
     admin_head($view==='proposal'?'Proposal details':'Client proposals',$view,$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     if(!proposals_ready()){
         echo '<section class="section"><div class="container"><div class="workspace-card"><h2>Enable proposals</h2><p>Proposals store versioned scope, deliverables, exclusions, milestones and schedules for a client workspace account. The client approves or requests changes against an exact version; every transition and decision is attributed in an append-only history. This is a commercial record — not a legal e-signature and not a payment authorization.</p><p>Setup adds proposal tables only and fails if unrecognized proposal records already exist.</p>';
-        if(staff_can('staff.manage')){echo '<form method="post">';admin_action('proposal_setup');admin_check('confirm','I saved a current database and private-storage backup.',false);admin_input('owner_password','Current owner password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Enable proposals</button></form>';}
+        if(staff_can('staff.manage')){echo '<form method="post">';admin_action('proposal_setup');admin_check('confirm','I saved a current database and private-storage backup.',false);echo '<p class="hint">Your current owner session authorizes setup. No second password is needed.</p>';echo '<button class="btn gold">Enable proposals</button></form>';}
         else echo '<p>An owner must enable proposals.</p>';
         echo '</div></div></section>';admin_foot();exit;
     }
