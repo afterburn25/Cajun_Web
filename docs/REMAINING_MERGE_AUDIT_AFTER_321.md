@@ -1,0 +1,5 @@
+# Consolidation after backup integration
+
+The owner requested continuing the integration of all listed remaining feature groups. Refresh the existing read-only, paginated source/ancestry inventory after PR321 merged at main `1c44ca120e7768998fafa720b3e1c4c85990c330`. The first integration priority is reconciling PR317 `bff7e8a01e218eb54a98a5f71b1e580d07aaec37` with that main without losing backup recovery corrections, administrator session authorization, licensing, financing payoff protection, master portal or the 20i catalog/storefront.
+
+Follow-on scope includes scoped company contacts and portal accounts, support tickets and notifications, email workspace additions, proposals, payment-link privacy and advanced hosting delegation. Existing branches must be classified by ancestry and actual changed source, not blindly merged based on their open status. This document triggers only the existing read-only dependency audit and tracked-history export. It does not deploy, enable payments, send email, invoke a provider, merge main or replace the immutable delivered1.26.1 archives.
