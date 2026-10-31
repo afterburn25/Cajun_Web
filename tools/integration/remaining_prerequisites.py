@@ -5,7 +5,7 @@ import hashlib,json,os,subprocess,tempfile,sys
 ROOT=Path(__file__).resolve().parents[2]
 MAIN='5f8efc3db5a8e3c24a1669e7ba1ca25cd9767443'
 BRANCH='refs/heads/chatgpt/remaining-prerequisites-20261030'
-EXPECTED_TREE='bc8f170b5bfb19d07643240d60884dad33a84ebc'
+EXPECTED_TREE='911c3082a816e9cac9be781c1fdc0f9f1f952e8a'
 VPS_WORKFLOW='9e4f133c46ebc779e235a3172b2e07f45144efd6'
 SOURCES=[(144,'fcf865891165510aae25f064346809c45eeb3cd0'),(154,'3bdf17f2358402186cdbaf5631ebba9bb26ba8c7'),(155,'8b257538af84aef6cec9c62d83619c53fe0ecde7'),(256,'fb39599806c6c135683f42ac66e6c02d7ea75f09')]
 CONTROLS=['tools/integration/remaining_prerequisites.py','.github/workflows/remaining-prerequisites.yml','docs/REMAINING_PREREQUISITES_RECEIPT.json']
@@ -62,7 +62,7 @@ def main():
             else:
                 if not name.endswith('.md'):raise RuntimeError('Unreviewed conflict: '+name)
                 current=git('show',before+':'+name).stdout;source=git('show',sha+':'+name).stdout
-                history.append({'pr':number,'source':sha,'base':base,'path':name,'retained_current_blob':blob(current),'source_blob':blob(source),'historical_source_delta':git('diff','--no-ext-diff','--no-renames',base,sha,'--',name).stdout.decode()})
+                history.append({'pr':number,'source':sha,'base':base,'path':name,'retained_current_blob':blob(current),'source_blob':blob(source),'historical_source_delta':git('diff','--no-ext-diff','--no-renames','--full-index',base,sha,'--',name).stdout.decode()})
                 data=current;reason='Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor.'
             path=ROOT/name
             if path.is_symlink() or any(x.is_symlink() for x in path.parents):raise RuntimeError('Symlink resolution refused')
