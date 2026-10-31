@@ -3770,3 +3770,16 @@ Actions: extracted the preserved `devin/support-access` slice — four `foundati
 Tests: `php -l` clean; `php tests/support-access/run.php` → 37/37 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #168
+
+## Port C-01 comparison-facts contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-comparisons-foundation`.
+
+Actions: extracted the preserved `devin/comparisons-foundation` slice — three `foundation/comparisons/` classes, `tests/comparisons/run.php`, `comparisons.yml`, `docs/COMPARISONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/comparisons/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.

@@ -1640,3 +1640,11 @@ Devin non-20i increment on `devin/non20i-revisions-foundation` from main `595ac9
 ## Port A-09 support-access contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-support-access-foundation` from main `595ac9c3`, continuing preserved `devin/support-access`. Adds `foundation/support-access/` — `SupportGrant`, `SupportScope`, `SupportBroker`, `ActionJournal` — auditable one-click portal access rules for staff acting on a client's behalf, 37 pure checks in `tests/support-access/run.php`, PHP 8.2/8.4 workflow lane. No real sessions, banner UI or application wiring — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #168
+
+
+## Port C-01 comparison-facts contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-comparisons-foundation` from main `595ac9c3`, continuing preserved `devin/comparisons-foundation`. Adds `foundation/comparisons/` — `ComparisonFact`, `ClaimRegistry`, `EvidenceSource` — sourced/date-stamped competitor claims with structural no-guarantee rules, 30 pure checks in `tests/comparisons/run.php`, PHP 8.2/8.4 workflow lane. No rendering, fetching, CMS or comparison content — integration remains future work. No release or deployment.
