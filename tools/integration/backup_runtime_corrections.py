@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]
 if os.environ.get('GITHUB_REF')!='refs/heads/chatgpt/backups-runtime-integration-20261030':raise SystemExit('Isolated backup candidate only')
 expected={'site/app/backups/archive.php','tests/backups_native.php','tools/acceptance-contract.json'}
 chains={path:[] for path in expected}
-recipes=[('backup-runtime-corrections.json',expected),('backup-runtime-followup.json',expected),('backup-runtime-drill-fix.json',{'site/app/backups/archive.php'}),('backup-runtime-retention-fix.json',expected)]
+recipes=[('backup-runtime-corrections.json',expected),('backup-runtime-followup.json',expected),('backup-runtime-drill-fix.json',{'site/app/backups/archive.php'}),('backup-runtime-retention-fix.json',expected),('backup-runtime-permissions-fix.json',{'site/app/backups/archive.php'})]
 for name,scope in recipes:
  rows=json.loads((ROOT/'tools/integration'/name).read_text())
  if len(rows)!=len(scope) or {r['path'] for r in rows}!=scope:raise SystemExit('Unexpected correction scope')
@@ -32,6 +32,6 @@ for name,chain in sorted(chains.items()):
  if data!=raw:pending.append((p,data))
 for p,data in pending:p.write_bytes(data)
 subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
-for test in ['archive_commit_policy.php','retention_policy.php']:
+for test in ['archive_commit_policy.php','retention_policy.php','restore_permissions.php']:
  subprocess.run(['php','-n','tests/backups/'+test],cwd=ROOT,check=True)
 print('Verified three reviewed correction chains; changed',len(pending))

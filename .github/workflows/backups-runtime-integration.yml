@@ -114,7 +114,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/backup-bin"
           cat > "$RUNNER_TEMP/backup-bin/php" <<'SH'
           #!/bin/sh
-          exec docker run --rm --network host --user "$(id -u):$(id -g)" -v "$SOURCE:$SOURCE" -w "$SOURCE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-backup-review php "$@"
+          exec docker run --rm --init -i --network host --user "$(id -u):$(id -g)" -v "$SOURCE:$SOURCE" -w "$SOURCE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-backup-review php "$@"
           SH
           chmod +x "$RUNNER_TEMP/backup-bin/php"
           echo "SOURCE=$PWD" >> "$GITHUB_ENV"
@@ -128,6 +128,9 @@ jobs:
           php -n tests/backups/run.php > qa/backup-integration/policy-minimal.log
           php tests/backups/archive_run.php > qa/backup-integration/archive.log
           php tests/backups/prune_atomicity.php > qa/backup-integration/prune-atomicity.json
+          php -n tests/backups/archive_commit_policy.php > qa/backup-integration/archive-commit-policy.json
+          php -n tests/backups/retention_policy.php > qa/backup-integration/retention-policy.json
+          php -n tests/backups/restore_permissions.php > qa/backup-integration/restore-permissions.json
           php tests/backups_installed_seed.php config
           php -r 'register_shutdown_function(function(){$r=["passed"=>!empty($GLOBALS["backups_native_complete"])&&!array_filter($GLOBALS["checks"]??[],fn($c)=>!$c["passed"]),"source_sha"=>getenv("CWP_SOURCE_SHA"),"checks"=>$GLOBALS["checks"]??[],"expected_diagnostics"=>$GLOBALS["backups_expected_diagnostics"]??[]];file_put_contents("qa/backup-integration/native-results.json",json_encode($r,JSON_PRETTY_PRINT));});require "tests/backups_native.php";' > qa/backup-integration/native.stdout.log 2> qa/backup-integration/native.stderr.log
           test ! -s qa/backup-integration/native.stderr.log

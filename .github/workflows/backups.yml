@@ -42,6 +42,8 @@ jobs:
             php tests/backups/archive_run.php
             php tests/backups/prune_atomicity.php
             php -n tests/backups/archive_commit_policy.php
+            php -n tests/backups/retention_policy.php
+            php -n tests/backups/restore_permissions.php
           '
       - name: Record verification scope
         if: always()

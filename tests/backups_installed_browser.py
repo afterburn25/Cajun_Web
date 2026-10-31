@@ -1,7 +1,7 @@
 """Execute retained backup HTTP cases and current-session denials in a real fixture."""
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
-import ast,json,os,shutil,subprocess,time
+import ast,json,os,shutil,subprocess,time,traceback,uuid
 import requests
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
@@ -26,12 +26,20 @@ subprocess.run([php,str(ROOT/'tests/backups_installed_seed.php')],check=True,cwd
 site=WEB/'existing'
 if site.exists():raise SystemExit('Stale installed fixture refused')
 shutil.copytree(ROOT/'site',site);shutil.copyfile(ROOT/'test-runtime/config-fixture.php',site/'config.php');(site/'.installed.php').write_text('<?php exit; ?>synthetic installed guard')
-log=(QA/'server.log').open('w');proc=subprocess.Popen([php,'-S','127.0.0.1:8091','-t',str(WEB)],cwd=ROOT,stdout=log,stderr=log,start_new_session=True)
+# Own one explicitly named fixture container; never terminate unrelated processes.
+server_name='cwp-backup-http-'+uuid.uuid4().hex[:12]
+server_args=['docker','run','--rm','--init','--name',server_name,'--network','host',
+             '--user',f'{os.getuid()}:{os.getgid()}','-v',f'{ROOT}:{ROOT}','-w',str(ROOT)]
+for name in ['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD','CWP_SOURCE_SHA']:
+ server_args+=['-e',name]
+server_args+=['cwp-backup-review','php','-S','127.0.0.1:8091','-t',str(WEB)]
+log=(QA/'server.log').open('w');proc=subprocess.Popen(server_args,cwd=ROOT,stdout=log,stderr=log,start_new_session=True)
 import release_cases
 release_cases.ROOT=ROOT;release_cases.php=php
 from release_cases import db
 from staff_cases import OWNER
 try:
+ check('SQL fixture bridge receives stdin and returns the exact value',db('SELECT ? AS bridge',['synthetic-input'])==[{'bridge':'synthetic-input'}])
  for _ in range(50):
   try:requests.get(BASE+'/existing/admin/index.php?view=login',timeout=1);break
   except requests.RequestException:time.sleep(.2)
@@ -66,11 +74,32 @@ try:
   check('Revoked owner session cannot create or retain archive access','view=login' in r.url and db('SELECT * FROM ci_backups ORDER BY id')==before)
   bid=before[0]['id'];r=owner.get(url+'&download='+bid,allow_redirects=False)
   check('Revoked archive download is denied',r.status_code in (302,303,403,404) and 'application/zip' not in r.headers.get('Content-Type',''))
-except Exception as exc:checks.append({'name':type(exc).__name__+': '+str(exc),'passed':False})
+except Exception as exc:
+ checks.append({'name':type(exc).__name__+': '+str(exc),'passed':False})
+ (QA/'browser-failure.log').write_text(traceback.format_exc())
 finally:
- proc.terminate();proc.wait(timeout=20);log.close();text=(QA/'server.log').read_text()
- check_logs=not any(x in text for x in ['PHP Fatal error','PHP Warning','PHP Notice','PHP Deprecated','CWP ['])
- checks.append({'name':'No unexpected PHP or handled application diagnostics','passed':check_logs})
- passed=bool(checks) and all(c['passed'] for c in checks)
- (QA/'browser-results.json').write_text(json.dumps({'passed':passed,'source_sha':os.environ.get('CWP_SOURCE_SHA'),'scope':'Real installed synthetic SQL/admin HTTP and Chromium; no production or external provider','checks':checks},indent=2)+'\n')
+ # Persist the actual failure before cleanup, so teardown cannot erase evidence.
+ def write_results():
+  result=bool(checks) and all(c['passed'] for c in checks)
+  (QA/'browser-results.json').write_text(json.dumps({'passed':result,'source_sha':os.environ.get('CWP_SOURCE_SHA'),'scope':'Real installed synthetic SQL/admin HTTP and Chromium; no production or external provider','checks':checks},indent=2)+'\n')
+  return result
+ write_results()
+ try:
+  stopped=subprocess.run(['docker','stop','--time','5',server_name],capture_output=True,text=True,timeout=15)
+  (QA/'server-cleanup.log').write_text(stopped.stdout+stopped.stderr)
+  if stopped.returncode!=0:
+   raise RuntimeError('Owned HTTP fixture container did not stop normally.')
+  proc.wait(timeout=10)
+  checks.append({'name':'Owned HTTP fixture server stopped cleanly','passed':True})
+ except Exception as cleanup:
+  checks.append({'name':'Fixture cleanup: '+type(cleanup).__name__+': '+str(cleanup),'passed':False})
+  # Bounded fallback targets only the UUID-named container created above.
+  subprocess.run(['docker','rm','-f',server_name],capture_output=True,timeout=15)
+  if proc.poll() is None:proc.kill();proc.wait(timeout=5)
+ finally:
+  log.close()
+  text=(QA/'server.log').read_text()
+  check_logs=not any(x in text for x in ['PHP Fatal error','PHP Warning','PHP Notice','PHP Deprecated','CWP ['])
+  checks.append({'name':'No unexpected PHP or handled application diagnostics','passed':check_logs})
+  passed=write_results()
 print(json.dumps({'passed':passed,'checks':len(checks)}));raise SystemExit(0 if passed else 1)

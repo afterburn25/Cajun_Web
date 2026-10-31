@@ -95,6 +95,7 @@ $plan = RestorePlan::preview('preview', $manifest, $current, BackupManifest::FOR
 check('preview marks all items identical', $plan->changedItems() === []);
 
 file_put_contents($fixture . '/index.php', 'changed bytes');
+chmod($fixture . '/index.php', 0640);
 unlink($fixture . '/app/service.php');
 $current = backups_current_hashes($fixture, $manifest->items);
 $plan = RestorePlan::preview('preview', $manifest, $current, BackupManifest::FORMAT_VERSION);
@@ -107,6 +108,10 @@ $authorized = $plan->authorize('staff:1', 'RESTORE AAAAAAAA', 'RESTORE AAAAAAAA'
 check('exact phrase authorizes the plan', $authorized->state() === RestorePlan::AUTHORIZED);
 $written = backups_apply($fixture, $manifest, $authorized, $archive);
 check('restore rewrote only the differing items', $written === 2 && file_get_contents($fixture . '/index.php') === 'site entry' && file_get_contents($fixture . '/app/service.php') === 'service code');
+clearstatcache(true, $fixture . '/index.php');
+clearstatcache(true, $fixture . '/app/service.php');
+check('actual ZIP restore retains existing deployment permissions', (fileperms($fixture . '/index.php') & 0777) === 0640);
+check('actual ZIP restore creates readable missing source files', (fileperms($fixture . '/app/service.php') & 0777) === 0644);
 $replan = RestorePlan::preview('again', $manifest, backups_current_hashes($fixture, $manifest->items), BackupManifest::FORMAT_VERSION);
 check('second apply is a verified no-op', backups_apply($fixture, $manifest, $replan->authorize('staff:1', 'RESTORE AAAAAAAA', 'RESTORE AAAAAAAA', time()), $archive) === 0);
 
