@@ -184,6 +184,8 @@ try:
         ledger_browser(globals(),browser)
         from delivery_cases import run_browser as delivery_browser
         delivery_browser(globals(),browser)
+        from backups_cases import run_browser as backups_browser
+        backups_browser(globals(),browser)
         from activity_cases import run_browser as activity_browser
         activity_browser(globals(),browser)
         from portfolio_cases import run_browser as portfolio_browser

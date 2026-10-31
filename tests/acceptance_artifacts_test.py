@@ -353,10 +353,22 @@ def run(tmp):
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     from cloud_site_requests_wiring import predecessor_bytes
     for path,expected_hash in contract['unchanged_test_sha256'].items():
-        check('Original test source retained '+path, hashlib.sha256(predecessor_bytes(ROOT,path,contract)).hexdigest()==expected_hash)
+        from backups_acceptance_wiring import predecessor_browser
+        retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        check('Original test source retained '+path, hashlib.sha256(retained).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    ext=contract.get('non20i_native_command_extension')
+    if ext:
+        additions=ext['additions']
+        check('Backup command is an exact additive extension',len(native_commands)==ext['predecessor_native_count']+len(additions) and native_commands==contract['native_commands'])
+        check('Backup command retains exact predecessor ordering',all(native_commands.count(command)==1 and native_commands.index(ext['after'][command])+1==native_commands.index(command) for command in additions))
+        native_commands=[command for command in native_commands if command not in additions]
+        check('All previous native commands are retained byte-for-byte',len(native_commands)==ext['predecessor_native_count'] and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==ext['predecessor_native_sha256'])
+        for path,expected_hash in ext['source_sha256'].items():
+            check('Backup fixture identity '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
     native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
     contract={**contract,'native_commands':native_commands}
