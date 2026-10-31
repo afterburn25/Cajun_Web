@@ -1,0 +1,201 @@
+name: Corrected backup runtime acceptance
+on:
+  push:
+    branches: [chatgpt/backups-runtime-integration-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: corrected-backups-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assemble:
+    if: github.ref == 'refs/heads/chatgpt/backups-runtime-integration-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      source: ${{ steps.record.outputs.source }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply exact reviewed corrections and canonical inventory
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 tools/integration/backup_runtime_corrections.py
+          php tests/backups/prune_atomicity.php
+          python3 tools/build.py --refresh
+          git diff --check
+      - name: Record source on the isolated candidate only
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          git config user.name 'CajunWebPro integration builder'
+          git config user.email 'integration-builder@users.noreply.github.com'
+          python3 - <<'PY'
+          import base64,json,os,subprocess
+          def git(*args):return subprocess.check_output(['git',*args],text=True).strip()
+          allowed={'site/app/backups/archive.php','tests/backups_native.php','tools/acceptance-contract.json','site/install/inventory.generated.php'}
+          if set(git('diff','--name-only').splitlines())-allowed:raise SystemExit('Unexpected assembly scope')
+          if git('ls-files','--others','--exclude-standard'):raise SystemExit('Untracked assembly source')
+          subprocess.run(['git','add','--',*sorted(allowed)],check=True)
+          if subprocess.run(['git','diff','--cached','--quiet']).returncode:
+              subprocess.run(['git','commit','-m','fix(backups): preserve recoverable archives on failed prune and recheck drill authority'],check=True)
+          branch='refs/heads/chatgpt/backups-runtime-integration-20261030'
+          if git('ls-remote','origin',branch).split()[0]!=os.environ['EXPECTED_HEAD']:raise SystemExit('Candidate moved; refuse concurrent overwrite')
+          if git('ls-remote','origin','refs/heads/main').split()[0]!='1f3e6dc7c424af74d407220fe71cf3f045ab2499':raise SystemExit('Main moved; reconcile before integration')
+          auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+          env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+          subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          source=git('rev-parse','HEAD')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('source='+source+'\n')
+          os.makedirs('qa/backup-source',exist_ok=True)
+          open('qa/backup-source/identity.json','w').write(json.dumps({'source':source,'tree':git('rev-parse','HEAD^{tree}'),'scope':'Exact source, not release approval'},indent=2))
+          subprocess.run(['git','archive','--format=tar.gz','-o','qa/backup-source/source.tar.gz',source],check=True)
+          PY
+      - name: Preserve exact tracked source for independent inspection
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: corrected-backup-source-${{ github.sha }}
+          path: qa/backup-source/
+          if-no-files-found: warn
+          retention-days: 14
+  native:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.source }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source }}
+          persist-credentials: false
+      - name: Build disposable PHP and wait for isolated SQL
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-backup-review - <<'DOCKER'
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-backup-review php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/backup-bin"
+          cat > "$RUNNER_TEMP/backup-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run --rm --init -i --network host --user "$(id -u):$(id -g)" -v "$SOURCE:$SOURCE" -w "$SOURCE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-backup-review php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/backup-bin/php"
+          echo "SOURCE=$PWD" >> "$GITHUB_ENV"
+          echo "PHP_BINARY=$RUNNER_TEMP/backup-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/backup-bin" >> "$GITHUB_PATH"
+      - name: Run complete SQL archive and refusal suites
+        run: |
+          set -euo pipefail
+          mkdir -p qa/backup-integration
+          php tests/backups/run.php > qa/backup-integration/policy.log
+          php -n tests/backups/run.php > qa/backup-integration/policy-minimal.log
+          php tests/backups/archive_run.php > qa/backup-integration/archive.log
+          php tests/backups/prune_atomicity.php > qa/backup-integration/prune-atomicity.json
+          php -n tests/backups/archive_commit_policy.php > qa/backup-integration/archive-commit-policy.json
+          php -n tests/backups/retention_policy.php > qa/backup-integration/retention-policy.json
+          php -n tests/backups/restore_permissions.php > qa/backup-integration/restore-permissions.json
+          php tests/backups_installed_seed.php config
+          php -r 'register_shutdown_function(function(){$r=["passed"=>!empty($GLOBALS["backups_native_complete"])&&!array_filter($GLOBALS["checks"]??[],fn($c)=>!$c["passed"]),"source_sha"=>getenv("CWP_SOURCE_SHA"),"checks"=>$GLOBALS["checks"]??[],"expected_diagnostics"=>$GLOBALS["backups_expected_diagnostics"]??[]];file_put_contents("qa/backup-integration/native-results.json",json_encode($r,JSON_PRETTY_PRINT));});require "tests/backups_native.php";' > qa/backup-integration/native.stdout.log 2> qa/backup-integration/native.stderr.log
+          test ! -s qa/backup-integration/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          r=json.load(open('qa/backup-integration/native-results.json'))
+          assert r['passed'] is True and r['source_sha']==os.environ['CWP_SOURCE_SHA'] and len(r['checks'])>=40 and all(c['passed'] is True for c in r['checks'])
+          assert len(r['expected_diagnostics'])==1
+          print('Verified complete SQL results:',len(r['checks']))
+          PY
+          git diff --exit-code
+      - name: Prepare Chromium
+        if: matrix.php == '8.4'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/backup-browser-venv"
+          "$RUNNER_TEMP/backup-browser-venv/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/backup-browser-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Actual administrator backup restore drill and private-download journey
+        if: matrix.php == '8.4'
+        run: |
+          "$RUNNER_TEMP/backup-browser-venv/bin/python" tests/backups_installed_browser.py
+          git diff --exit-code
+      - name: Preserve reports including failures without private database or backup bytes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: corrected-backups-php${{ matrix.php }}-${{ matrix.database }}-${{ needs.assemble.outputs.source }}
+          path: qa/backup-integration/
+          if-no-files-found: warn
+          retention-days: 14
+  build:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.source }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preserve complete historical acceptance and exact-source build checks
+        run: |
+          mkdir -p qa/backup-integration
+          python3 tools/build.py --refresh > qa/backup-integration/refresh.log
+          git diff --exit-code
+          python3 tests/acceptance_artifacts_test.py --report qa/backup-integration/helpers.json
+          python3 tools/check_docs.py > qa/backup-integration/docs.log
+          python3 tests/build_guards.py > qa/backup-integration/build-guards.log
+          python3 tools/build.py --commit "$CWP_SOURCE_SHA" > qa/backup-integration/build.log
+          git diff --exit-code
+          printf '{"passed":true,"source_sha":"%s","scope":"Canonical source and clean development package build; no published release"}\n' "$CWP_SOURCE_SHA" > qa/backup-integration/build-results.json
+      - name: Preserve verification without replacing owner ZIPs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: corrected-backups-build-${{ needs.assemble.outputs.source }}
+          path: qa/backup-integration/
+          if-no-files-found: warn
+          retention-days: 14
+  checkpoint:
+    needs: [assemble,native,build]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Recorded source passed four isolated SQL/runtime lanes, two installed Chromium journeys and retained build contracts. No main merge, release, deployment or external operation occurred.' >> "$GITHUB_STEP_SUMMARY"

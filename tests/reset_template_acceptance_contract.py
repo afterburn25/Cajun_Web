@@ -16,7 +16,8 @@ def predecessor_contract(root, contract, native_commands, check):
     predecessor = [command for command in native_commands if command not in expected]
     fingerprint = hashlib.sha256(json.dumps(predecessor, separators=(',', ':')).encode()).hexdigest()
     check('Template additions retain the exact 152 predecessor commands', len(predecessor) == addition['predecessor_count'] == 152 and fingerprint == addition['predecessor_sha256'])
-    driver = (root / 'tests/browser_acceptance.py').read_text()
+    from backups_acceptance_wiring import predecessor_browser
+    driver = predecessor_browser(root, contract)
     call = '        from provider_password_reset_template_cases import run_browser as reset_template_browser\n        reset_template_browser(globals(),browser)\n'
     check('Installed browser driver invokes template acceptance exactly once', driver.count(call) == 1)
     original = driver.replace(call, '')

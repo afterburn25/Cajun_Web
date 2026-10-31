@@ -31,6 +31,7 @@
     "\"$PHP_BINARY\" tests/ledger_native.php",
     "\"$PHP_BINARY\" tests/delivery_archive.php",
     "\"$PHP_BINARY\" tests/delivery_native.php",
+    "\"$PHP_BINARY\" tests/backups_native.php",
     "\"$PHP_BINARY\" tests/activity_native.php",
     "\"$PHP_BINARY\" tests/mail_templates_native.php",
     "\"$PHP_BINARY\" tests/mail_accounts_native.php",
@@ -666,5 +667,23 @@
       "predecessor_apache_sha256": "c4eea0a190c5e736dc44b5bc73002b22f4fa26e83c84d1e5c784b2b6642e10bf",
       "scope": "Actual published 1.25 subfolder installation followed by exact candidate UPDATE, complete-journal file rollback, reapply and missing request-head refusal. No interrupted-application or live provider claim."
     }
+  },
+  "non20i_native_command_extension": {
+    "additions": [
+      "\"$PHP_BINARY\" tests/backups_native.php"
+    ],
+    "after": {
+      "\"$PHP_BINARY\" tests/backups_native.php": "\"$PHP_BINARY\" tests/delivery_native.php"
+    },
+    "predecessor_native_count": 160,
+    "predecessor_native_sha256": "5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe",
+    "source_sha256": {
+      "tests/backups_native.php": "92ba3b341e3bae4b53c2372ce7aedc23065f6170095cbd0208e3adba5aaf54ce"
+    }
+  },
+  "backups_browser_extension": {
+    "hook": "        from backups_cases import run_browser as backups_browser\n        backups_browser(globals(),browser)\n",
+    "source_sha256": "a5686cb1a26f375eb656c938c1350033a054471ed6075c1266d6729efcb5e734",
+    "predecessor_sha256": "71dc6699f2e92b23af99b446f17de89ba9a7ad928af9e37283b802a2c01c7bf0"
   }
 }
