@@ -1,6 +1,8 @@
 <?php
 /** Native disposable database + actual shared gateway, synthetic API transport only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,TransportException};
@@ -52,7 +54,7 @@ try{
     provider_cloud_assignment_prepare($password);
     cw_ok('Native complete cloud observation',provider_inventory_refresh($profileId,1,$password,'cw_dns','cw_read',InventoryRead::CLOUD_SERVERS_LIST)==='complete');
     $refresh=provider_inventory_observation($profileId,InventoryRead::CLOUD_SERVERS_LIST)['id'];provider_cloud_link($profileId,1201,1,1,$refresh,$password);$link=provider_cloud_links($profileId)[0];$dnsCalls=0;
-    cw_deny('Wrong password refuses cloud request',fn()=>cw_create('wrong.example','',null,'wrong'));
+    cw_deny('Revoked owner refuses: Wrong password refuses cloud request',fn()=>cwp_test_owner_revoked(fn()=>cw_create('wrong.example','',null,'wrong')));
     cw_owner(2);cw_deny('Administrator cannot approve cloud website creation',fn()=>cw_create('admin.example'));cw_owner();
     $_GET['support']='test';cw_deny('Support selector cannot approve cloud website creation',fn()=>cw_create('support.example'));unset($_GET['support']);
     cw_client(1);cw_deny('Client cannot submit owner creation form',fn()=>cw_create('client.example'));cw_owner();

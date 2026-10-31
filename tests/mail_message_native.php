@@ -1,6 +1,8 @@
 <?php
 /** Disposable MySQL fixture; injected DNS/transport here, actual TLS in the separate receiving suite. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 use CajunWebPro\Foundation\MailReceiving\ReceivingFailure;
@@ -51,7 +53,7 @@ try {
     staff_seed_owner(1);
     foreach([2=>['mail.read'],3=>['mail.send'],4=>[]] as $user=>$permissions)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$user,$user===4?'owner':'administrator',json_encode($permissions)]);
     save_setting('mail_accounts_schema_version','1');mm_actor();$id=mm_create();mm_grant($id);
-    mm_deny('Message storage setup requires current owner password',fn()=>mail_messages_migrate('wrong'));
+    mm_deny('Revoked owner refuses: Message storage setup requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>mail_messages_migrate('wrong')));
     mm_actor(2);mm_deny('Reader cannot enable message storage',fn()=>mail_messages_migrate($password));mm_actor();
     mm_deny('Message reads require explicit storage setup',fn()=>mm_read($id));
     mm_ok('Setup audit failure preserves unready state',mm_audit_failure(fn()=>mail_messages_migrate($password),'message_setup')&&!mail_messages_ready());

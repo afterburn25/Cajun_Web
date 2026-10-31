@@ -1,6 +1,8 @@
 <?php
 /** Real additive migration and PHP rendering against isolated MySQL/MariaDB; no credential or network use. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -79,7 +81,7 @@ try {
     $tablesBeforeView=all('SHOW TABLES');$settingsBeforeView=all('SELECT * FROM '.table('settings').' ORDER BY name');$unpreparedHtml=pu_render();
     pu_ok('Populated v1 owner view retains preparation without querying missing domain tables',str_contains($unpreparedHtml,'Prepare inventory storage'));
     pu_ok('Controller-rendered legacy view offers separate domain search preparation without schema-changing GET',str_contains($unpreparedHtml,'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView&&pu_snapshot()===$before);
-    pu_deny('Populated v1 preparation requires current owner password',fn()=>provider_inventory_migrate('wrong'));
+    pu_deny('Revoked owner refuses: Populated v1 preparation requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_migrate('wrong')));
     pu_ok('Denied v1 preparation preserves schema version and records',pu_version()==='1'&&pu_snapshot()===$before);
     pu_audit_failure(1,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v1 preparation never stamps ready or rewrites retained facts',pu_version()==='1'&&!provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$before)===$before);
@@ -138,7 +140,7 @@ try {
     db()->exec('DROP TABLE '.table('provider_observation_cloud'));db()->exec('ALTER TABLE '.table('provider_refreshes').' DROP COLUMN operation');save_setting('provider_inventory_schema_version','3');
     $v3=pu_snapshot();$domainBefore=all('SELECT * FROM '.table('provider_domain_links'));$domainEventsBefore=all('SELECT * FROM '.table('provider_domain_link_events'));
     pu_ok('Populated v3 routes retain explicit owner upgrade and safe client state',!provider_inventory_ready()&&str_contains(pu_render(),'Prepare inventory storage')&&provider_inventory_client_services(1)===[]&&provider_inventory_client_domains(2)===[]&&pu_snapshot()===$v3);
-    pu_deny('Populated v3 migration rejects wrong current password',fn()=>provider_inventory_migrate('wrong'));
+    pu_deny('Revoked owner refuses: Populated v3 migration rejects wrong current password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_migrate('wrong')));
     pu_audit_failure(3,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v3 upgrade keeps original stamp and facts',pu_version()==='3'&&!provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$v3)===$v3);
     provider_inventory_migrate($password);
@@ -152,7 +154,7 @@ try {
     query('INSERT INTO '.table('provider_observation_cloud').' (id,refresh_id,server_id,metadata,unmapped_count) VALUES (?,?,4501,?,0)',[str_repeat('5',32),$cloudRefresh,json_encode(['id'=>4501,'name'=>'original-cloud.invalid'])]);
     $v4=pu_snapshot();$cloudBefore=all('SELECT * FROM '.table('provider_observation_cloud'));
     pu_ok('Populated v4 routes offer preparation without creating cloud links',!provider_inventory_ready()&&str_contains(pu_render(),'Prepare inventory storage')&&provider_cloud_client_services(1)===[]&&pu_snapshot()===$v4);
-    pu_deny('Populated v4 upgrade requires current owner password',fn()=>provider_inventory_migrate('wrong'));
+    pu_deny('Revoked owner refuses: Populated v4 upgrade requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_migrate('wrong')));
     pu_audit_failure(4,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v4 upgrade retains cloud observations and original stamp',pu_version()==='4'&&!provider_inventory_ready()&&pu_snapshot()===$v4&&all('SELECT * FROM '.table('provider_observation_cloud'))===$cloudBefore);
     provider_inventory_migrate($password);

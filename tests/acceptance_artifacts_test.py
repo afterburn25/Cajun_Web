@@ -412,7 +412,8 @@ def run(tmp):
                           protected.status_code in [403,404] and '<?php' not in protected.text)
 """
     for path,expected_hash in contract['unchanged_test_sha256'].items():
-        retained=predecessor_bytes(ROOT,path,contract)
+        from backups_acceptance_wiring import predecessor_browser
+        retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
         if path=='tests/apache_acceptance.py':
             appendix=software_apache_appendix.encode()
             check('Software Apache acceptance appendix is exact and additive',
@@ -422,6 +423,16 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    ext=contract.get('non20i_native_command_extension')
+    if ext:
+        additions=ext['additions']
+        check('Backup command is an exact additive extension',len(native_commands)==ext['predecessor_native_count']+len(additions) and native_commands==contract['native_commands'])
+        check('Backup command retains exact predecessor ordering',all(native_commands.count(command)==1 and native_commands.index(ext['after'][command])+1==native_commands.index(command) for command in additions))
+        native_commands=[command for command in native_commands if command not in additions]
+        check('All previous native commands are retained byte-for-byte',len(native_commands)==ext['predecessor_native_count'] and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==ext['predecessor_native_sha256'])
+        for path,expected_hash in ext['source_sha256'].items():
+            check('Backup fixture identity '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        contract={**contract,'native_commands':native_commands}
     software_native=contract['software_commerce_native_command']
     software_additions=software_native['additions']
     software_position=native_commands.index(software_native['additions_after'])+1

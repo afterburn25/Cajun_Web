@@ -1,6 +1,8 @@
 <?php
 /** Isolated native authorization/projection/read-state tests, synthetic records only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/delivery_fixture.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='activityci_';
@@ -24,7 +26,7 @@ try{
         query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Activity client '.$id,'activity-client'.$id.'@example.invalid',str_repeat((string)$id,32),$now]);
         query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,'Private project '.$id,'Preserve summary','Preserve milestones',$now,$now]);
     }
-    $original=all('SELECT * FROM '.table('studio_jobs'));a_admin();a_deny('Setup reauthenticates owner',fn()=>activity_migrate('wrong'));
+    $original=all('SELECT * FROM '.table('studio_jobs'));a_admin();a_deny('Revoked owner refuses: Setup reauthenticates owner',fn()=>cwp_test_owner_revoked(fn()=>activity_migrate('wrong')));
     a_admin(2);a_deny('Client staff cannot enable activity',fn()=>activity_migrate($password));a_admin();
     foreach(activity_schema('activityci_') as $sql)db()->exec($sql);
     db()->exec('ALTER TABLE '.table('activity_reads').' DROP INDEX read_event');a_deny('Migration rejects missing recipient-key uniqueness',fn()=>activity_migrate($password));db()->exec('ALTER TABLE '.table('activity_reads').' ADD UNIQUE read_event(actor_type,actor_id,event_key)');

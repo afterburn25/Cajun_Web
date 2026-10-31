@@ -1,6 +1,8 @@
 <?php
 /** Disposable native orders use the real gateway/adapter/ledger with an isolated in-memory transport. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 require_once __DIR__.'/../site/app/hosting/fulfillment.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,TransportRequest,TransportResponse,ProviderCredential,ProviderGateway,TransportException};
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationAdapter;
@@ -66,7 +68,7 @@ if(($argv[1]??'')==='fulfillment-worker'){
         rb_staff();hosting_reconciliation_migrate($password);provider_operations_migrate($password);
         rb_ok('Merged license administration cannot inherit ordinary website editing authority',staff_view_permission('studio-licenses')==='staff.manage'&&array_reduce(['studio_license_create','studio_license_deactivate','studio_license_bundle','studio_domain_add','studio_domain_deactivate'],static fn(bool $safe,string $action):bool=>$safe&&staff_action_permission($action)==='staff.manage',true));
         rb_ok('Fulfillment GET readiness never prepares storage',!hosting_storage_ready('fulfillment'));
-        rb_deny('Fulfillment preparation requires current owner password',fn()=>hosting_fulfillment_migrate('wrong'));
+        rb_deny('Revoked owner refuses: Fulfillment preparation requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>hosting_fulfillment_migrate('wrong')));
         rb_staff(2);rb_deny('Delegated financial access cannot prepare fulfillment',fn()=>hosting_fulfillment_migrate($password));rb_staff();
         hosting_fulfillment_migrate($password);rb_ok('Fulfillment uses additive existing native dependencies',hosting_storage_ready('fulfillment')&&rb_count('hosting_fulfillments')===0);
         db()->exec('ALTER TABLE '.table('hosting_fulfillments').' ADD INDEX unexpected(created_epoch)');
@@ -77,7 +79,7 @@ if(($argv[1]??'')==='fulfillment-worker'){
         $bad=$c;$bad['review']['confirmation']='CREATE foreign.example';rb_deny('Fulfillment confirmation must name the accepted domain',fn()=>hf_run($bad));
         rb_staff(2);rb_deny('Delegated staff cannot fulfill a provider order',fn()=>hf_run($c));rb_client();rb_deny('Client cannot supply owner provisioning authority',fn()=>hf_run($c));rb_staff();
         rb_deny('Fulfillment cannot substitute another client',fn()=>hosting_fulfillment_execute($o->data()['id'],2,$o->revision(),$o->fingerprint(),$c['link']['binding_sha256'],$c['request'],$c['review'],$password,static fn()=>'8.8.8.8','hf_perform'));
-        rb_deny('Fulfillment requires current owner password',fn()=>hosting_fulfillment_execute($o->data()['id'],1,$o->revision(),$o->fingerprint(),$c['link']['binding_sha256'],$c['request'],$c['review'],'wrong',static fn()=>'8.8.8.8','hf_perform'));
+        rb_deny('Revoked owner refuses: Fulfillment requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>hosting_fulfillment_execute($o->data()['id'],1,$o->revision(),$o->fingerprint(),$c['link']['binding_sha256'],$c['request'],$c['review'],'wrong',static fn()=>'8.8.8.8','hf_perform')));
         rb_ok('Authorization refusals mutate no order dispatch ledger or audit',hf_snapshot()===$before&&HfTransport::$calls===$calls);
         rb_ok('Final approval audit failure rolls back both approval and hosting fence',hf_audit_failure('fulfillment_approved',fn()=>hf_run($c))&&hf_snapshot()===$before&&HfTransport::$calls===$calls);
         rb_ok('Fulfillment insertion failure rolls back the same native hosting attempt',rb_fail(fn()=>hf_run($c),'hosting_fulfillments')&&hf_snapshot()===$before&&HfTransport::$calls===$calls);

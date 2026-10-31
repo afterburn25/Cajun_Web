@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "main": "5f8efc3db5a8e3c24a1669e7ba1ca25cd9767443",
+  "reviewed_tree": "911c3082a816e9cac9be781c1fdc0f9f1f952e8a",
+  "sources": [
+    {
+      "pr": 144,
+      "source": "fcf865891165510aae25f064346809c45eeb3cd0",
+      "merge_commit": "73273efe1226c6d8f307c303ff40ca1c11bec38f",
+      "resolutions": [
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "PROJECT_STATUS.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "SESSION_HANDOFF.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/AGENT_COORDINATION.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/ROADMAP.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/TWENTYI_PLAN_CATALOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/TWENTYI_REQUIREMENTS_EVIDENCE.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        }
+      ]
+    },
+    {
+      "pr": 154,
+      "source": "3bdf17f2358402186cdbaf5631ebba9bb26ba8c7",
+      "merge_commit": "af29a055b40f8a5f50a59c27155538ea5ef7328e",
+      "resolutions": [
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "PROJECT_STATUS.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "SESSION_HANDOFF.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/TWENTYI_CLOUD_PROVIDERS.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        }
+      ]
+    },
+    {
+      "pr": 155,
+      "source": "8b257538af84aef6cec9c62d83619c53fe0ecde7",
+      "merge_commit": "1e2e8322d63c965b4742941ed026d1bc1b54b176",
+      "resolutions": [
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "PROJECT_STATUS.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "SESSION_HANDOFF.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/AGENT_COORDINATION.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/ROADMAP.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        }
+      ]
+    },
+    {
+      "pr": 256,
+      "source": "fb39599806c6c135683f42ac66e6c02d7ea75f09",
+      "merge_commit": "9800da4e5616becf9adcc70b6ba7d76b58d1fcf8",
+      "resolutions": [
+        {
+          "path": ".github/workflows/vps.yml",
+          "reason": "Retain all original VPS test commands with main-exempt branch-scoped concurrency and pinned artifact action."
+        },
+        {
+          "path": "AGENTS.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "PROJECT_STATUS.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "README.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "SESSION_HANDOFF.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/AGENT_COORDINATION.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/HOSTING_AND_BILLING_ROADMAP.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/ROADMAP.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve newer main guidance; retain the exact incoming historical delta in the evidence JSON and original merge ancestor."
+        }
+      ]
+    }
+  ],
+  "scope": "Nonshipping source/model history only; exact-head supported PHP and clean build results required before main merge."
+}

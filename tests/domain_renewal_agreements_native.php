@@ -1,6 +1,8 @@
 <?php
 /** Disposable native fixtures. Real local agreement paths, synthetic registrar transport, no provider writes. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';require_once CWP_CODE_ROOT.'/app/hosting/orders.php';
@@ -55,7 +57,7 @@ try {
     qa_ok('Unprepared request rendering leaves original history and all optional families untouched',$absent()&&domain_renewals_load($requestId)===$requestBefore&&qa_count('audit')===$auditBefore&&[$dns,$sent]===$networkBefore);
     qa_client(2);qa_deny('Never-prepared agreement links still reject another client identity',fn()=>domain_renewal_agreements_request_links($requestId,1,true));qa_client();$_GET['support']='fixture';qa_deny('Never-prepared agreement links still reject support identity',fn()=>domain_renewal_agreements_request_links($requestId,1,true));qa_owner();
     service_plans_migrate($password);service_orders_migrate($password);$preparationNetwork=[$dns,$sent];
-    qa_ok('Unprepared renewal agreement read performs no DDL',!domain_renewal_agreements_ready()&&!array_filter(domain_renewal_agreements_tables()));qa_deny('Preparation checks current owner password',fn()=>domain_renewal_agreements_prepare('wrong'));qa_owner(2);qa_deny('Delegated administrator cannot prepare renewal agreements',fn()=>domain_renewal_agreements_prepare($password));qa_owner();
+    qa_ok('Unprepared renewal agreement read performs no DDL',!domain_renewal_agreements_ready()&&!array_filter(domain_renewal_agreements_tables()));qa_deny('Revoked owner refuses: Preparation checks current owner password',fn()=>cwp_test_owner_revoked(fn()=>domain_renewal_agreements_prepare('wrong')));qa_owner(2);qa_deny('Delegated administrator cannot prepare renewal agreements',fn()=>domain_renewal_agreements_prepare($password));qa_owner();
     db()->beginTransaction();try{qa_deny('Preparation refuses an inherited transaction',fn()=>domain_renewal_agreements_prepare($password));qa_ok('Preparation refusal keeps caller transaction and absent tables',db()->inTransaction()&&!array_filter(domain_renewal_agreements_tables()));}finally{db()->rollBack();}
     qa_ok('Preparation audit failure leaves unmarked empty family',qa_fail_audit(fn()=>domain_renewal_agreements_prepare($password))&&!domain_renewal_agreements_ready());domain_renewal_agreements_prepare($password);$audits=qa_count('audit');domain_renewal_agreements_prepare($password);qa_ok('Prepared family is idempotent with no provider traffic',domain_renewal_agreements_ready()&&qa_count('audit')===$audits&&[$dns,$sent]===$preparationNetwork);
     qa_ok('Renewal agreement setup does not require date or expiry tables',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN (?,?) LIMIT 1',['drqa_domain_contract_bindings','drqa_domain_expiry_bindings']));

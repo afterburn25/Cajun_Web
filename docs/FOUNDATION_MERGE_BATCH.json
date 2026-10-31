@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "baseline_main": "551dd0dc1007711215fd83467ce814fe2f0f895e",
+  "reviewed_tree_excluding_controls": "920be3f03da10b767711b4cb4cc27393cced33fb",
+  "source_merges": [
+    {
+      "pr": 162,
+      "source": "e71b353c1ac02a9f0f0a7e3fba6f3bd9c8b7f13b",
+      "merge_commit": "27fcfbae0a5b8495d967d878fc5af4300c20b77c",
+      "resolutions": [
+        {
+          "path": ".github/workflows/backups.yml",
+          "reason": "Workflow source was recorded via authorized GitHub connector before Actions; only reviewed main-evidence cancellation differs."
+        },
+        {
+          "path": "SESSION_HANDOFF.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 163,
+      "source": "ae6dda042ce8ed1ad97c00a2b0593edf3e646348",
+      "merge_commit": "0bbce9cf3591cd464faddd5ede0bc9d8b6753bbf",
+      "resolutions": [
+        {
+          "path": ".github/workflows/pipeline.yml",
+          "reason": "Workflow source was recorded via authorized GitHub connector before Actions; only reviewed main-evidence cancellation differs."
+        },
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 164,
+      "source": "e6999fcc0e3a73e30defe613cde23caa34059cad",
+      "merge_commit": "d4880fdcfdf1b60bcce6a6a0a7f7b177506427cd",
+      "resolutions": [
+        {
+          "path": ".github/workflows/proposals.yml",
+          "reason": "Workflow source was recorded via authorized GitHub connector before Actions; only reviewed main-evidence cancellation differs."
+        },
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 165,
+      "source": "494170072885f3a1342c6d2652f7c445c99eb683",
+      "merge_commit": "067bbb547ef0e859e8032be7b4157b200fa109ee",
+      "resolutions": [
+        {
+          "path": ".github/workflows/notifications.yml",
+          "reason": "Workflow source was recorded via authorized GitHub connector before Actions; only reviewed main-evidence cancellation differs."
+        },
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 166,
+      "source": "6d7d4daeb547aafeb4f354e35e3465f124d8080a",
+      "merge_commit": "da9cee3b4006a7b7aca9005b2512f96c06735084",
+      "resolutions": [
+        {
+          "path": ".github/workflows/revisions.yml",
+          "reason": "Workflow source was recorded via authorized GitHub connector before Actions; only reviewed main-evidence cancellation differs."
+        },
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 167,
+      "source": "02555724470045caa95c97d2bd4e9b83b949f438",
+      "merge_commit": "f080a52b679831d92c66bb2c1a68f113c823df73",
+      "resolutions": [
+        {
+          "path": ".github/workflows/support-access.yml",
+          "reason": "Workflow source was recorded via authorized GitHub connector before Actions; only reviewed main-evidence cancellation differs."
+        },
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 168,
+      "source": "a791eb17f9e5b74f00726c38fdced93716614361",
+      "merge_commit": "54c15424c8992d17a0e7fb88789c9b1349dd9333",
+      "resolutions": [
+        {
+          "path": ".github/workflows/comparisons.yml",
+          "reason": "Workflow source was recorded via authorized GitHub connector before Actions; only reviewed main-evidence cancellation differs."
+        },
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 169,
+      "source": "bb9d25a0a5a8e5a74e8427997acc065320e0345e",
+      "merge_commit": "d55070b0cdd77195c32075dcd450e235e70d0e72",
+      "resolutions": [
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    },
+    {
+      "pr": 172,
+      "source": "e2b29a0514584b28132470ab7b85a9ba60ff6916",
+      "merge_commit": "9bd65e1c0596bda2563d272729a5cfc76ae129d7",
+      "resolutions": [
+        {
+          "path": "docs/SESSION_LOG.md",
+          "reason": "Preserve all current bytes and each incoming historical addition under its PR heading."
+        },
+        {
+          "path": "tools/build.py",
+          "reason": "Source only adds ops area already present in current builder; preserve complete current implementation."
+        }
+      ]
+    }
+  ],
+  "scope": "Nonshipping pure models, source continuity and contract CI. No new application feature is enabled and no release assets change.",
+  "review": "Owner-authorized ChatGPT self-review; not independent audit approval.",
+  "verification": "Exact-source PHP8.2/8.4, documentation and clean builder checks required before main merge."
+}

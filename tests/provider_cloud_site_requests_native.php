@@ -1,6 +1,8 @@
 <?php
 /** Actual disposable SQL/client/owner/gateway journey; synthetic provider transport only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY==='Windows'||getenv('CWP_TEST_DATABASE')!=='cwp_test'
     ||getenv('CWP_TEST_CLOUD_SITE_REQUESTS')!=='1'||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1')exit(2);
 $worker=count($argv)===2&&$argv[1]==='--worker';if(count($argv)!==($worker?2:1))exit(2);
@@ -165,7 +167,7 @@ try{
     cwri_owner();provider_settings_migrate(CWRI_PASSWORD);$profile=provider_settings_save('',0,'Client cloud request fixture',true,CWRI_SECRET,CWRI_PASSWORD);
     provider_inventory_migrate(CWRI_PASSWORD);provider_operations_migrate(CWRI_PASSWORD);provider_cloud_assignment_prepare(CWRI_PASSWORD);provider_cloud_confirmation_prepare(CWRI_PASSWORD);
     $stage='preparation';$before=cwri_digest();$tables=all('SHOW TABLES');cwri_ok('Request readiness is local and does not silently prepare storage',!provider_cloud_site_requests_ready()&&all('SHOW TABLES')===$tables&&cwri_digest()===$before);
-    cwri_deny('Wrong owner password cannot enable client website requests',fn()=>provider_cloud_site_requests_prepare('wrong'));
+    cwri_deny('Revoked owner refuses: Wrong owner password cannot enable client website requests',fn()=>cwp_test_owner_revoked(fn()=>provider_cloud_site_requests_prepare('wrong')));
     cwri_owner(3);cwri_deny('Administrator cannot enable client website requests',fn()=>provider_cloud_site_requests_prepare(CWRI_PASSWORD));cwri_owner();
     db()->beginTransaction();save_setting('cwri_transaction_sentinel','pending');$refused=false;try{provider_cloud_site_requests_prepare(CWRI_PASSWORD);}catch(LogicException){$refused=true;}
     cwri_ok('Preparation refuses inherited transaction before DDL',$refused&&db()->inTransaction()&&all('SHOW TABLES')===$tables);db()->rollBack();unset($GLOBALS['cwp_settings']);
@@ -201,7 +203,7 @@ try{
     cwri_client();cwri_ok('Client receives actual owner decline and message',cwri_history($decline['id'],1)['stage']==='declined'&&str_contains(cwri_history($decline['id'],1)['note'],'domain permission'));cwri_deny('Client cannot cancel an already declined request',fn()=>provider_cloud_site_requests_change($decline['id'],$decline['id'],cwri_id(14),'cancel','',1));
     $first=cwri_create(20,$links[1],'first.client-cloud.example',1,$boundaryAliases);$args=cwri_dispatch_args($first,21,22);$stage='dispatch';
     $before=cwri_effects();cwri_owner(3);cwri_deny('Administrator cannot dispatch a client cloud website',fn()=>cwri_dispatch($args));cwri_client();cwri_deny('Client cannot dispatch its own provider write',fn()=>cwri_dispatch($args));cwri_owner();
-    cwri_deny('Wrong current owner password refuses dispatch',fn()=>provider_cloud_site_requests_dispatch(...[...$args,true,'wrong','cwri_dns','cwri_perform']));
+    cwri_deny('Revoked owner refuses: Wrong current owner password refuses dispatch',fn()=>cwp_test_owner_revoked(fn()=>provider_cloud_site_requests_dispatch(...[...$args,true,'wrong','cwri_dns','cwri_perform'])));
     cwri_deny('Missing owner capacity and domain review refuses dispatch',fn()=>provider_cloud_site_requests_dispatch(...[...$args,false,CWRI_PASSWORD,'cwri_dns','cwri_perform']));
     cwri_ok('Owner dispatch denials make no grant DNS or send',cwri_effects()===$before);
     cwri_fault('Dispatch audit failure rolls event head and grant back before DNS',$args,'provider.cloud_site_request_event');

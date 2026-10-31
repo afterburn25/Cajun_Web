@@ -1,6 +1,8 @@
 <?php
 /** Disposable native A-09 tests. Real PDO/InnoDB, no customer connection. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='supportci_';
@@ -19,7 +21,7 @@ try{
     }
     $original=all('SELECT * FROM '.table('studio_clients'));
     support_denied('Support unavailable until explicit migration',fn()=>support_start(1));
-    support_denied('Support migration requires owner current password',fn()=>support_migrate('wrong'));
+    support_denied('Revoked owner refuses: Support migration requires owner current password',fn()=>cwp_test_owner_revoked(fn()=>support_migrate('wrong')));
     db()->exec(support_schema('supportci_')['support_clients']);db()->exec('ALTER TABLE '.table('support_clients').' MODIFY allowed VARCHAR(3) NOT NULL');
     support_denied('Incompatible support schema rejected without replacement',fn()=>support_migrate($password));
     support_ok('Incompatible support data shape retained',one('SHOW COLUMNS FROM '.table('support_clients')." LIKE 'allowed'")['Type']==='varchar(3)');

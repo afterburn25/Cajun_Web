@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__.'/current_owner_authority.php';
+
 /** Included in the disposable native controls fixture after an actual terminal-audit rollback. */
 if(!defined('CWP_BOOT')||PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 function fc_recovery_sources(string $id):array {
@@ -33,7 +35,7 @@ function fc_recovery_worker(string $phase):array {
 $recoverySources=fc_recovery_sources($terminalId);$recoveryState=fc_recovery_state();$reviewHash=fc_summary($terminalId)['recovery_ledger_sha256'];
 fc_ok('Missing local witness with a durable finished ledger offers exact owner recovery',is_string($reviewHash)&&$reviewHash===provider_force_ssl_controls_ledger_digest($terminalLedger)&&fc_summary($terminalId)['status']==='interrupted');
 ob_start();provider_force_ssl_controls_admin_render();$recoveryHtml=(string)ob_get_clean();fc_ok('Owner GET offers reviewed recovery without creating evidence',str_contains($recoveryHtml,'data-force-ssl-control-recover')&&str_contains($recoveryHtml,'Restore local dispatch record')&&fc_recovery_state()===$recoveryState);
-fc_deny('Recovery requires the current owner password',fn()=>provider_force_ssl_controls_recover_finished($terminalId,$reviewHash,'wrong'));
+fc_deny('Revoked owner refuses: Recovery requires the current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_force_ssl_controls_recover_finished($terminalId,$reviewHash,'wrong')));
 fc_actor(2);fc_deny('Administrator cannot recover a completed dispatch',fn()=>fc_recover($terminalId,$reviewHash));fc_actor(3);fc_deny_message('Another owner cannot adopt original approval',fn()=>fc_recover($terminalId,$reviewHash),'The original Force SSL approval owner or context changed.');fc_ok('Other owner receives no recovery form hash',fc_summary($terminalId)['recovery_ledger_sha256']===null);fc_actor();
 $_GET['support']='fixture';fc_deny('Support context cannot recover a completed dispatch',fn()=>fc_recover($terminalId,$reviewHash));unset($_GET['support']);
 fc_deny_message('Changed reviewed ledger hash refuses locally',fn()=>fc_recover($terminalId,str_repeat('f',64)),'The reviewed dispatch completion changed. Reload its history.');

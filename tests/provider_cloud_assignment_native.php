@@ -1,6 +1,8 @@
 <?php
 /** Actual disposable SQL/authority/concurrency; every provider response is synthetic. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';require_once CWP_CODE_ROOT.'/app/providers/cloud_assignment.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
@@ -44,7 +46,7 @@ try{
     foreach([1,2,3] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Cloud approval '.$id,'cloud-approval'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);foreach([2=>'owner',3=>'administrator'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     foreach([1,2] as $id)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Cloud client '.$id,'ca-client'.$id.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);ca_owner();provider_settings_migrate($password);$profileId=provider_settings_save('',0,'Cloud assignment fixture',true,$secret,$password);provider_inventory_migrate($password);
     $tables=all('SHOW TABLES');ca_check('Never prepared status creates no tables or settings',!ca_ready()&&all('SHOW TABLES')===$tables&&!one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_assignment_head']));
-    ca_deny('Wrong owner password cannot prepare',fn()=>provider_cloud_assignment_prepare('wrong'));ca_owner(3);ca_deny('Administrator cannot prepare',fn()=>provider_cloud_assignment_prepare($password));ca_owner();
+    ca_deny('Revoked owner refuses: Wrong owner password cannot prepare',fn()=>cwp_test_owner_revoked(fn()=>provider_cloud_assignment_prepare('wrong')));ca_owner(3);ca_deny('Administrator cannot prepare',fn()=>provider_cloud_assignment_prepare($password));ca_owner();
     db()->beginTransaction();save_setting('cloud_assignment_transaction_sentinel','pending');$refused=false;try{try{provider_cloud_assignment_prepare($password);}catch(LogicException){$refused=true;}ca_check('Preparation refuses caller transaction before DDL',$refused&&db()->inTransaction()&&all('SHOW TABLES')===$tables);}finally{db()->rollBack();}ca_check('Caller rollback remains intact',!one('SELECT value FROM '.table('settings').' WHERE name=?',['cloud_assignment_transaction_sentinel']));
     $old=provider_inventory_refresh_attempt($profileId,1,$password,'ca_dns','ca_read',operation:InventoryRead::CLOUD_SERVERS_LIST);ca_check('Existing shared executor reads exact cloud route before preparation',$old['state']==='complete'&&$sends===1&&$dns===1);
     // Prior-installation fixture: exact old link/event shape, with genuine common audit.

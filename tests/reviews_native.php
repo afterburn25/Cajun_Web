@@ -1,6 +1,8 @@
 <?php
 /** Native L-02 acceptance against disposable synthetic tables only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if (PHP_SAPI!=='cli' || getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/app/marketing/growth.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='revci_';
@@ -50,7 +52,7 @@ try {
     staff_seed_owner(1);
     foreach ([2=>['website.manage'],3=>['clients.manage']] as $id=>$permissions) query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($permissions)]);
     r_actor();$lead=r_lead();$original=one('SELECT * FROM '.table('leads').' WHERE id=?',[$lead]);
-    r_deny('Setup needs owner current password',fn()=>reviews_migrate('wrong'));
+    r_deny('Revoked owner refuses: Setup needs owner current password',fn()=>cwp_test_owner_revoked(fn()=>reviews_migrate('wrong')));
     r_actor(2);r_deny('Website staff cannot initialize schema',fn()=>reviews_migrate($password));r_deny('Review unavailable before setup',fn()=>reviews_get($lead));r_actor();
     foreach (reviews_schema('revci_') as $sql) db()->exec($sql);
     db()->exec('ALTER TABLE '.table('website_review_revisions').' ADD INDEX fixture_parent(review_id)');
@@ -88,7 +90,7 @@ try {
     $results=[];foreach ($processes as [$process,$pipes]) {$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);r_ok('Concurrent worker exits cleanly',proc_close($process)===0&&$err==='');$results[]=$out;}sort($results);
     r_ok('Concurrent editors commit once and reject stale peer',$results===['saved','stale']&&reviews_row($lead)['revision']===6);
     reviews_stage($lead,6,'report-drafted');$report=reviews_report($rid);$now=gmdate('Y-m-d\TH:i:s');
-    r_deny('Delivery needs current password',fn()=>reviews_deliver($lead,7,$now,'email','Synthetic mail reference','wrong'));
+    r_deny('Revoked owner refuses: Delivery needs current password',fn()=>cwp_test_owner_revoked(fn()=>reviews_deliver($lead,7,$now,'email','Synthetic mail reference','wrong')));
     r_deny('Delivery cannot predate saved report',fn()=>reviews_deliver($lead,7,gmdate('Y-m-d\TH:i:s',(int)$report['prepared_at']-1),'email','Fixture',$password));
     r_deny('Delivery cannot claim a future time',fn()=>reviews_deliver($lead,7,gmdate('Y-m-d\TH:i:s',time()+3600),'email','Fixture',$password));
     query('UPDATE '.table('leads').' SET consent=0 WHERE id=?',[$lead]);r_deny('Current consent rechecked at delivery',fn()=>reviews_deliver($lead,7,$now,'email','Fixture',$password));query('UPDATE '.table('leads').' SET consent=1 WHERE id=?',[$lead]);

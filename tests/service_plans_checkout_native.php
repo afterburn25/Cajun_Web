@@ -1,6 +1,8 @@
 <?php
 /** Disposable SQL migration/retained-history test. No provider, vault or private-file fixture. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 $database=(string)getenv('CWP_TEST_DATABASE');$port=(int)getenv('CWP_TEST_PORT');
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_CHECKOUT_STORAGE')!=='1'||!in_array($database,['cwp_checkout_test','cwp_checkout_retry1'],true)||getenv('CWP_TEST_HOST')!=='127.0.0.1'||$port!==43319)exit(2);
 $site=realpath((string)(getenv('CWP_TEST_CODE_ROOT')?:__DIR__.'/../site'));
@@ -86,7 +88,7 @@ try {
     $s=service_plans_offer(scn_id(3),9,$p->data()['id'],$p->revision(),$p->fingerprint(),$password);
     scn_client();$s=service_plans_client_change(scn_id(3),9,0,scn_id(4),'consent',['terms_hash'=>$p->model()->termsHash()],true);scn_owner();
     $s=service_plans_subscription_change(scn_id(3),9,1,scn_id(5),'activate',[],$password);$legacyJson=$s->json();$old=scn_rows();
-    scn_bad('Wrong owner password cannot begin extension',fn()=>service_plans_checkout_migrate('wrong'));
+    scn_bad('Revoked owner refuses: Wrong owner password cannot begin extension',fn()=>cwp_test_owner_revoked(fn()=>service_plans_checkout_migrate('wrong')));
     $auth=one('SELECT auth_version FROM '.table('users').' WHERE id=1')['auth_version'];query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[str_repeat('f',32)]);scn_bad('Stale owner authorization cannot prepare extension',fn()=>service_plans_checkout_migrate($password));query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$auth]);scn_owner();
     query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');scn_bad('Disabled owner cannot prepare extension',fn()=>service_plans_checkout_migrate($password));query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');scn_owner();
     scn_owner(2);scn_bad('Delegated administrator cannot prepare extension',fn()=>service_plans_checkout_migrate($password));scn_owner();

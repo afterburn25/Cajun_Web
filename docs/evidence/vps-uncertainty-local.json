@@ -1,0 +1,1416 @@
+{
+  "schema": 1,
+  "scope": "Local PHP 8.4.25 pure component verification. No provider, native SQL, installed application, release or deployment acceptance.",
+  "parent": "8dcce53f8998915992a36475cb68f9a315a2b0c7",
+  "source_files": {
+    "foundation/vps/VpsServer.php": "325a7ce3ed061dc46e8ae1b3e4070687651d1ae7988711ef8f47c799e2a67f37",
+    "tests/vps/run.php": "bb8bedca96fcdb59bc7ebffa7d8202bf35eb522f88a6320cd7b181518fdda8a6",
+    "docs/VPS_FOUNDATION.md": "f35b3aedb06f13bf0e3571033ee48c45adc908f7ec40a2321b9f4abc288e8358"
+  },
+  "executions": [
+    {
+      "command": "php tests/vps/run.php",
+      "passed": true,
+      "report_sha256": "42383426f0609301383180f54b8dd9477e3db9bda99162fca0d610e62c69fe93",
+      "checks": "component_checks"
+    },
+    {
+      "command": "php -n tests/vps/run.php",
+      "passed": true,
+      "report_sha256": "42383426f0609301383180f54b8dd9477e3db9bda99162fca0d610e62c69fe93",
+      "checks": "component_checks"
+    },
+    {
+      "command": "independent adversarial.php, default PHP",
+      "passed": true,
+      "report_sha256": "23ca4e061def4f14b3381b81606385b80587618d40111b56d5bc162b323281d1",
+      "checks": "independent_checks"
+    },
+    {
+      "command": "independent adversarial.php, plain -n",
+      "passed": true,
+      "report_sha256": "23ca4e061def4f14b3381b81606385b80587618d40111b56d5bc162b323281d1",
+      "checks": "independent_checks"
+    }
+  ],
+  "component_checks": [
+    {
+      "name": "spec holds values",
+      "passed": true
+    },
+    {
+      "name": "vcpu lower bound",
+      "passed": true
+    },
+    {
+      "name": "vcpu upper bound",
+      "passed": true
+    },
+    {
+      "name": "ram lower bound",
+      "passed": true
+    },
+    {
+      "name": "disk lower bound",
+      "passed": true
+    },
+    {
+      "name": "region must be a slug",
+      "passed": true
+    },
+    {
+      "name": "os image required",
+      "passed": true
+    },
+    {
+      "name": "priced offering is orderable",
+      "passed": true
+    },
+    {
+      "name": "unpriced offering is not orderable",
+      "passed": true
+    },
+    {
+      "name": "slug must be lowercase",
+      "passed": true
+    },
+    {
+      "name": "label required",
+      "passed": true
+    },
+    {
+      "name": "negative price rejected",
+      "passed": true
+    },
+    {
+      "name": "quota percent computed",
+      "passed": true
+    },
+    {
+      "name": "quota not exhausted",
+      "passed": true
+    },
+    {
+      "name": "quota at limit is exhausted",
+      "passed": true
+    },
+    {
+      "name": "unknown entitlement yields null percent",
+      "passed": true
+    },
+    {
+      "name": "zero entitlement avoids division",
+      "passed": true
+    },
+    {
+      "name": "quota needs a metric",
+      "passed": true
+    },
+    {
+      "name": "quota rejects negative use",
+      "passed": true
+    },
+    {
+      "name": "server starts pending",
+      "passed": true
+    },
+    {
+      "name": "cannot activate without provisioning",
+      "passed": true
+    },
+    {
+      "name": "cannot suspend a pending server",
+      "passed": true
+    },
+    {
+      "name": "provisioning needs a provider ref",
+      "passed": true
+    },
+    {
+      "name": "provisioning records provider ref",
+      "passed": true
+    },
+    {
+      "name": "cannot re-provision in flight",
+      "passed": true
+    },
+    {
+      "name": "provisioning completes to active",
+      "passed": true
+    },
+    {
+      "name": "unconfirmed provisioning remains uncertain",
+      "passed": true
+    },
+    {
+      "name": "uncertain provisioning cannot retry",
+      "passed": true
+    },
+    {
+      "name": "uncertain provisioning cannot retry leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "definitive no-effect evidence establishes failed provisioning",
+      "passed": true
+    },
+    {
+      "name": "deliberate retry retains original provider ref",
+      "passed": true
+    },
+    {
+      "name": "retry reprovisions with new ref",
+      "passed": true
+    },
+    {
+      "name": "active server enters suspending",
+      "passed": true
+    },
+    {
+      "name": "in-flight suspension cannot re-suspend",
+      "passed": true
+    },
+    {
+      "name": "in-flight suspension cannot resume",
+      "passed": true
+    },
+    {
+      "name": "unconfirmed suspension remains uncertain",
+      "passed": true
+    },
+    {
+      "name": "terminal no-effect suspension evidence restores active",
+      "passed": true
+    },
+    {
+      "name": "suspension completes",
+      "passed": true
+    },
+    {
+      "name": "suspended server enters resuming",
+      "passed": true
+    },
+    {
+      "name": "unconfirmed resume remains uncertain",
+      "passed": true
+    },
+    {
+      "name": "terminal no-effect resume evidence restores suspended",
+      "passed": true
+    },
+    {
+      "name": "resume completes to active",
+      "passed": true
+    },
+    {
+      "name": "cannot approve without a request",
+      "passed": true
+    },
+    {
+      "name": "request needs an actor",
+      "passed": true
+    },
+    {
+      "name": "decommission recorded as request",
+      "passed": true
+    },
+    {
+      "name": "requester cannot approve own teardown",
+      "passed": true
+    },
+    {
+      "name": "cannot terminate without approval",
+      "passed": true
+    },
+    {
+      "name": "second actor approves teardown",
+      "passed": true
+    },
+    {
+      "name": "teardown completes as terminal",
+      "passed": true
+    },
+    {
+      "name": "terminal server cannot transition",
+      "passed": true
+    },
+    {
+      "name": "terminal server cannot re-decommission",
+      "passed": true
+    },
+    {
+      "name": "suspended server can be decommissioned",
+      "passed": true
+    },
+    {
+      "name": "withdrawn decommission returns to suspended",
+      "passed": true
+    },
+    {
+      "name": "unconfirmed teardown remains uncertain",
+      "passed": true
+    },
+    {
+      "name": "terminal no-effect teardown evidence restores prior state",
+      "passed": true
+    },
+    {
+      "name": "rolled-back teardown cannot complete",
+      "passed": true
+    },
+    {
+      "name": "active server cannot be silently cancelled",
+      "passed": true
+    },
+    {
+      "name": "suspended server cannot be silently cancelled",
+      "passed": true
+    },
+    {
+      "name": "pending order cancels",
+      "passed": true
+    },
+    {
+      "name": "cancelled order is terminal",
+      "passed": true
+    },
+    {
+      "name": "uncertain provisioning cannot cancel",
+      "passed": true
+    },
+    {
+      "name": "uncertain provisioning cannot cancel leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "failed order can be cancelled",
+      "passed": true
+    },
+    {
+      "name": "each transition appends history",
+      "passed": true
+    },
+    {
+      "name": "history records the actor",
+      "passed": true
+    },
+    {
+      "name": "history preserves order",
+      "passed": true
+    },
+    {
+      "name": "provision timeout stays nonterminal uncertain",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty preserves exact attempt and provider",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty retains the history prefix",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks retry",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks retry leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks cancel",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks cancel leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks provision",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks provision leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks suspend",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks suspend leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks resume",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks resume leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks request teardown",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks request teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks approve teardown",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks approve teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks withdraw teardown",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks withdraw teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks mark active",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks mark active leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks mark suspended",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks mark suspended leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks mark terminated",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks mark terminated leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks fail again",
+      "passed": true
+    },
+    {
+      "name": "provision uncertainty blocks fail again leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "provision exact applied evidence resolves target state",
+      "passed": true
+    },
+    {
+      "name": "provision resolution retains exact evidence and attempt",
+      "passed": true
+    },
+    {
+      "name": "provision terminal evidence replay refuses",
+      "passed": true
+    },
+    {
+      "name": "provision terminal evidence replay refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend timeout stays nonterminal uncertain",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty preserves exact attempt and provider",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty retains the history prefix",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks retry",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks retry leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks cancel",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks cancel leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks provision",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks provision leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks suspend",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks suspend leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks resume",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks resume leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks request teardown",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks request teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks approve teardown",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks approve teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks withdraw teardown",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks withdraw teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks mark active",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks mark active leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks mark suspended",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks mark suspended leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks mark terminated",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks mark terminated leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks fail again",
+      "passed": true
+    },
+    {
+      "name": "suspend uncertainty blocks fail again leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "suspend exact applied evidence resolves target state",
+      "passed": true
+    },
+    {
+      "name": "suspend resolution retains exact evidence and attempt",
+      "passed": true
+    },
+    {
+      "name": "suspend terminal evidence replay refuses",
+      "passed": true
+    },
+    {
+      "name": "suspend terminal evidence replay refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume timeout stays nonterminal uncertain",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty preserves exact attempt and provider",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty retains the history prefix",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks retry",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks retry leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks cancel",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks cancel leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks provision",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks provision leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks suspend",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks suspend leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks resume",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks resume leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks request teardown",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks request teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks approve teardown",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks approve teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks withdraw teardown",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks withdraw teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks mark active",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks mark active leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks mark suspended",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks mark suspended leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks mark terminated",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks mark terminated leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks fail again",
+      "passed": true
+    },
+    {
+      "name": "resume uncertainty blocks fail again leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "resume exact applied evidence resolves target state",
+      "passed": true
+    },
+    {
+      "name": "resume resolution retains exact evidence and attempt",
+      "passed": true
+    },
+    {
+      "name": "resume terminal evidence replay refuses",
+      "passed": true
+    },
+    {
+      "name": "resume terminal evidence replay refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission timeout stays nonterminal uncertain",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty preserves exact attempt and provider",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty retains the history prefix",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks retry",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks retry leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks cancel",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks cancel leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks provision",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks provision leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks suspend",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks suspend leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks resume",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks resume leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks request teardown",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks request teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks approve teardown",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks approve teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks withdraw teardown",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks withdraw teardown leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks mark active",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks mark active leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks mark suspended",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks mark suspended leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks mark terminated",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks mark terminated leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks fail again",
+      "passed": true
+    },
+    {
+      "name": "decommission uncertainty blocks fail again leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "decommission exact applied evidence resolves target state",
+      "passed": true
+    },
+    {
+      "name": "decommission resolution retains exact evidence and attempt",
+      "passed": true
+    },
+    {
+      "name": "decommission terminal evidence replay refuses",
+      "passed": true
+    },
+    {
+      "name": "decommission terminal evidence replay refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "mismatched server_id refuses",
+      "passed": true
+    },
+    {
+      "name": "mismatched server_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "mismatched client_ref refuses",
+      "passed": true
+    },
+    {
+      "name": "mismatched client_ref refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "mismatched attempt_id refuses",
+      "passed": true
+    },
+    {
+      "name": "mismatched attempt_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "mismatched provider_ref refuses",
+      "passed": true
+    },
+    {
+      "name": "mismatched provider_ref refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "mismatched operation refuses",
+      "passed": true
+    },
+    {
+      "name": "mismatched operation refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome absent refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome absent refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome not_found refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome not_found refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome unchanged refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome unchanged refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome timeout refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome timeout refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome failed refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome failed refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome accepted_pending refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome accepted_pending refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome pending refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome pending refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome empty refuses",
+      "passed": true
+    },
+    {
+      "name": "nonterminal outcome empty refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing server_id refuses",
+      "passed": true
+    },
+    {
+      "name": "missing server_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring server_id refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring server_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing client_ref refuses",
+      "passed": true
+    },
+    {
+      "name": "missing client_ref refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring client_ref refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring client_ref refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing attempt_id refuses",
+      "passed": true
+    },
+    {
+      "name": "missing attempt_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring attempt_id refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring attempt_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing provider_ref refuses",
+      "passed": true
+    },
+    {
+      "name": "missing provider_ref refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring provider_ref refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring provider_ref refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing operation refuses",
+      "passed": true
+    },
+    {
+      "name": "missing operation refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring operation refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring operation refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing outcome refuses",
+      "passed": true
+    },
+    {
+      "name": "missing outcome refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring outcome refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring outcome refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing resulting_state refuses",
+      "passed": true
+    },
+    {
+      "name": "missing resulting_state refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring resulting_state refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring resulting_state refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing evidence_id refuses",
+      "passed": true
+    },
+    {
+      "name": "missing evidence_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring evidence_id refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring evidence_id refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "missing evidence_sha256 refuses",
+      "passed": true
+    },
+    {
+      "name": "missing evidence_sha256 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "nonstring evidence_sha256 refuses",
+      "passed": true
+    },
+    {
+      "name": "nonstring evidence_sha256 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "extra state is not terminal evidence",
+      "passed": true
+    },
+    {
+      "name": "extra state is not terminal evidence leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "extra http_status is not terminal evidence",
+      "passed": true
+    },
+    {
+      "name": "extra http_status is not terminal evidence leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "extra unexpected is not terminal evidence",
+      "passed": true
+    },
+    {
+      "name": "extra unexpected is not terminal evidence leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "evidence_id malformed case 0 refuses",
+      "passed": true
+    },
+    {
+      "name": "evidence_id malformed case 0 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "evidence_id malformed case 1 refuses",
+      "passed": true
+    },
+    {
+      "name": "evidence_id malformed case 1 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "evidence_id malformed case 2 refuses",
+      "passed": true
+    },
+    {
+      "name": "evidence_id malformed case 2 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "evidence_sha256 malformed case 0 refuses",
+      "passed": true
+    },
+    {
+      "name": "evidence_sha256 malformed case 0 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "evidence_sha256 malformed case 1 refuses",
+      "passed": true
+    },
+    {
+      "name": "evidence_sha256 malformed case 1 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "evidence_sha256 malformed case 2 refuses",
+      "passed": true
+    },
+    {
+      "name": "evidence_sha256 malformed case 2 refuses leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "applied evidence must establish the expected resulting state",
+      "passed": true
+    },
+    {
+      "name": "applied evidence must establish the expected resulting state leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "not-applied evidence cannot assert a provisioned VPS",
+      "passed": true
+    },
+    {
+      "name": "not-applied evidence cannot assert a provisioned VPS leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "separate instances receive different attempt identities",
+      "passed": true
+    },
+    {
+      "name": "same order and resource cannot consume another instance attempt",
+      "passed": true
+    },
+    {
+      "name": "same order and resource cannot consume another instance attempt leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "new attempt retains the full old immutable attempt",
+      "passed": true
+    },
+    {
+      "name": "old and replacement provider references are both retained",
+      "passed": true
+    },
+    {
+      "name": "deliberate retry retains prior terminal history exactly",
+      "passed": true
+    },
+    {
+      "name": "prior attempt evidence cannot resolve a later attempt",
+      "passed": true
+    },
+    {
+      "name": "prior attempt evidence cannot resolve a later attempt leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "consumed evidence id cannot be rebound",
+      "passed": true
+    },
+    {
+      "name": "consumed evidence id cannot be rebound leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "consumed evidence digest cannot be rebound",
+      "passed": true
+    },
+    {
+      "name": "consumed evidence digest cannot be rebound leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "in-flight legacy markActive requires evidence",
+      "passed": true
+    },
+    {
+      "name": "in-flight legacy markActive requires evidence leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "markActive cannot reinterpret no-effect evidence",
+      "passed": true
+    },
+    {
+      "name": "markActive cannot reinterpret no-effect evidence leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "in-flight legacy markSuspended requires evidence",
+      "passed": true
+    },
+    {
+      "name": "in-flight legacy markSuspended requires evidence leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "in-flight legacy markTerminated requires evidence",
+      "passed": true
+    },
+    {
+      "name": "in-flight legacy markTerminated requires evidence leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "known-no-effect teardown still requires a new request",
+      "passed": true
+    },
+    {
+      "name": "known-no-effect teardown still requires a new request leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "retried teardown still requires a second actor",
+      "passed": true
+    },
+    {
+      "name": "retried teardown still requires a second actor leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "deliberate second teardown has a new attempt id",
+      "passed": true
+    },
+    {
+      "name": "returned history and attempts cannot mutate the server",
+      "passed": true
+    },
+    {
+      "name": "caller reference-valued evidence cannot alter retained history",
+      "passed": true
+    },
+    {
+      "name": "returned evidence history is detached from caller reference variables",
+      "passed": true
+    },
+    {
+      "name": "references added to returned history cannot affect retained evidence",
+      "passed": true
+    },
+    {
+      "name": "fail before admission cannot invent a failed remote attempt",
+      "passed": true
+    },
+    {
+      "name": "fail before admission cannot invent a failed remote attempt leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "pending cannot retry",
+      "passed": true
+    },
+    {
+      "name": "pending cannot retry leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "pending cannot accept reconciliation",
+      "passed": true
+    },
+    {
+      "name": "pending cannot accept reconciliation leaves all state unchanged",
+      "passed": true
+    },
+    {
+      "name": "cancelled cannot accept reconciliation",
+      "passed": true
+    },
+    {
+      "name": "cancelled cannot accept reconciliation leaves all state unchanged",
+      "passed": true
+    }
+  ],
+  "independent_checks": [
+    {
+      "name": "Terminal history detaches caller reference server_id",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference client_ref",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference attempt_id",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference provider_ref",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference operation",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference outcome",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference resulting_state",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference evidence_id",
+      "passed": true
+    },
+    {
+      "name": "Terminal history detaches caller reference evidence_sha256",
+      "passed": true
+    },
+    {
+      "name": "Returned history cannot mutate referenced terminal evidence",
+      "passed": true
+    },
+    {
+      "name": "Applied provision cannot establish the wrong resulting state",
+      "passed": true
+    },
+    {
+      "name": "Legacy confirmation cannot bypass uncertainty reconciliation",
+      "passed": true
+    },
+    {
+      "name": "Uncertain approved teardown cannot withdraw",
+      "passed": true
+    },
+    {
+      "name": "No-effect teardown cannot invent a different stable state",
+      "passed": true
+    },
+    {
+      "name": "Resolved teardown cannot reuse the old approval",
+      "passed": true
+    },
+    {
+      "name": "Fresh teardown still refuses the original requester",
+      "passed": true
+    },
+    {
+      "name": "Fresh teardown retains the previous attempt and mints a distinct identity",
+      "passed": true
+    },
+    {
+      "name": "Exact old no-effect evidence cannot resolve a newer teardown",
+      "passed": true
+    },
+    {
+      "name": "Success wrapper cannot rebind a consumed digest",
+      "passed": true
+    },
+    {
+      "name": "Terminal exact replay preserves state and refuses",
+      "passed": true
+    }
+  ],
+  "root_regressions": {
+    "parent-timeout": {
+      "source_sha256": "ad83a34f08e58efb901964a88c3ac6a21fee1295d6c84f43b39c5f0638de464c",
+      "php": "8.4.25",
+      "status_after_timeout": "failed",
+      "status_after_retry_and_new_provision_attempt": "provisioning",
+      "retry_blocked": false,
+      "new_provision_blocked": false,
+      "original_reference_retained": false,
+      "original_reference_in_history": false,
+      "scope": "Pure in-memory cross-version regression, no transport or persistence."
+    },
+    "corrected-timeout": {
+      "source_sha256": "325a7ce3ed061dc46e8ae1b3e4070687651d1ae7988711ef8f47c799e2a67f37",
+      "php": "8.4.25",
+      "status_after_timeout": "uncertain",
+      "status_after_retry_and_new_provision_attempt": "uncertain",
+      "retry_blocked": true,
+      "new_provision_blocked": true,
+      "original_reference_retained": true,
+      "original_reference_in_history": true,
+      "scope": "Pure in-memory cross-version regression, no transport or persistence."
+    },
+    "proposal-alias": {
+      "source_sha256": "d5ae30dd61a48489f5cf48b90a644dabe3f2618530c0458c2e9e9571fd43a6b6",
+      "input_detached": false,
+      "returned_history_detached": false
+    },
+    "corrected-alias": {
+      "source_sha256": "325a7ce3ed061dc46e8ae1b3e4070687651d1ae7988711ef8f47c799e2a67f37",
+      "input_detached": true,
+      "returned_history_detached": true
+    }
+  },
+  "independent_review": {
+    "passed": true,
+    "receipt_sha256": "62e2d921f1b2bc0fe6eea276513f7d8ea239aacbe2f2843794bc0fbd9f77432a",
+    "reviewed_final_sources": {
+      "foundation/vps/VpsServer.php": "325a7ce3ed061dc46e8ae1b3e4070687651d1ae7988711ef8f47c799e2a67f37",
+      "tests/vps/run.php": "bb8bedca96fcdb59bc7ebffa7d8202bf35eb522f88a6320cd7b181518fdda8a6",
+      "docs/VPS_FOUNDATION.md": "f35b3aedb06f13bf0e3571033ee48c45adc908f7ec40a2321b9f4abc288e8358"
+    },
+    "scope": "Independent proposal review. Twenty adversarial checks ran in each mode against 75e5 source; review verified the final 325a difference is exactly one comment-only trust clarification. Root separately ran the full 311-case suite on final 325a. Root-owned workflow and continuity changes are outside that proposal review."
+  },
+  "proposal_receipt_sha256": "9d35e8ecc81057651dbf5fe04d8329ba9be7fb10511cb3f9570c13b62fa9a985",
+  "shipping_scope": "site/ and tools/build.py unchanged; VPS remains outside the deployment foundation inventory.",
+  "known_local_environment_failure": "The first ordinary documentation check included an untracked retained support-StackCP PR body, whose link is unavailable on this historical companion. Verify the staged tracked tree separately; preserve the local diagnostic directory.",
+  "pending": [
+    "Hosted PHP 8.2/8.4 focused workflow",
+    "Normal current-main integration and its required acceptance",
+    "Durable/provider/application VPS integration"
+  ]
+}

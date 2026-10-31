@@ -1,6 +1,8 @@
 <?php
 /** Disposable native MariaDB fixtures. Synthetic journals are not provider evidence. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -96,7 +98,7 @@ try {
     $profileId=provider_settings_save('',0,'Synthetic deletion provider',true,'synthetic-local-only-key',$password);hosting_operations_migrate($password);
     $credential=provider_settings_load($profileId)['credentials'];$keyBytes=file_get_contents($private.'/provider-master.key');
     $claim=hr_deleted_failure(1,100);$id=hr_id(1);$revision=hr_load($id)->revision();$before=hr_all();
-    hr_deny('Deletion retry requires the current owner password',fn()=>hosting_operations_retry_deprovision($id,1,$revision,hr_id(103),$profileId,1,'wrong'));
+    hr_deny('Revoked owner refuses: Deletion retry requires the current owner password',fn()=>cwp_test_owner_revoked(fn()=>hosting_operations_retry_deprovision($id,1,$revision,hr_id(103),$profileId,1,'wrong')));
     hr_actor(2);hr_deny('Delegated full-grant administrator cannot retry deletion',fn()=>hr_delete_retry($id,103));
     hr_actor();hr_deny('Cancellation requester cannot substitute for the retained second approver',fn()=>hr_delete_retry($id,103));
     hr_actor(4);hr_deny('Unreviewed different owner cannot inherit deletion approval',fn()=>hr_delete_retry($id,103));hr_actor(3);

@@ -1,6 +1,8 @@
 <?php
 /** Disposable native plan/consent fixtures; no invoice, renewal, provider or charge. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/app/plans/records.php';require_once __DIR__.'/../site/app/plans/views.php';
 $private=__DIR__.'/../test-runtime/service-plans-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
@@ -43,13 +45,13 @@ try {
     foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     for($i=1;$i<=2;$i++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Plan client '.$i,'plan-client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     sn_owner();sn_ok('Existing installation does not silently activate service-plan storage',!service_plans_ready());
-    sn_deny('Plan setup needs the current owner password',fn()=>service_plans_migrate('wrong'));sn_owner(2);sn_deny('Fully delegated administrator cannot prepare owner plan storage',fn()=>service_plans_migrate($password));sn_owner();
+    sn_deny('Revoked owner refuses: Plan setup needs the current owner password',fn()=>cwp_test_owner_revoked(fn()=>service_plans_migrate('wrong')));sn_owner(2);sn_deny('Fully delegated administrator cannot prepare owner plan storage',fn()=>service_plans_migrate($password));sn_owner();
     $_GET['support']='';sn_deny('Support selector cannot prepare plan storage',fn()=>service_plans_migrate($password));unset($_GET['support']);
     db()->beginTransaction();sn_deny('Plan setup refuses an inherited transaction',fn()=>service_plans_migrate($password));db()->rollBack();
     sn_ok('Setup audit failure leaves additive tables unactivated',sn_fail_audit(fn()=>service_plans_migrate($password))&&!service_plans_ready());service_plans_migrate($password);sn_ok('Owner explicitly prepares empty plan and subscription storage',service_plans_ready());
     db()->exec('ALTER TABLE '.table('service_subscription_events').' ADD INDEX unexpected(recorded_epoch)');sn_deny('Unexpected subscription index fails strict setup',fn()=>service_plans_migrate($password));db()->exec('ALTER TABLE '.table('service_subscription_events').' DROP INDEX unexpected');
     db()->exec('ALTER TABLE '.table('service_plans').' MODIFY journal_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL');sn_deny('Case-folding journal hashes are refused',fn()=>service_plans_migrate($password));db()->exec('ALTER TABLE '.table('service_plans').' MODIFY journal_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');service_plans_migrate($password);
-    $before=sn_all();sn_deny('Draft creation requires the current password',fn()=>service_plans_create(sn_id(1),$terms,'wrong'));sn_owner(2);sn_deny('Administrator cannot author owner service plans',fn()=>sn_create(1));sn_owner();
+    $before=sn_all();sn_deny('Revoked owner refuses: Draft creation requires the current password',fn()=>cwp_test_owner_revoked(fn()=>service_plans_create(sn_id(1),$terms,'wrong')));sn_owner(2);sn_deny('Administrator cannot author owner service plans',fn()=>sn_create(1));sn_owner();
     $_GET['support']='';sn_deny('Support selector cannot author a plan',fn()=>sn_create(1));unset($_GET['support']);$GLOBALS['cwp_support']=['client'=>['id'=>1]];sn_deny('Active support context cannot author a plan',fn()=>sn_create(1));unset($GLOBALS['cwp_support']);
     db()->beginTransaction();sn_deny('Plan creation refuses an inherited transaction',fn()=>sn_create(1));sn_ok('Caller retains its transaction after refusal',db()->inTransaction());db()->rollBack();sn_ok('Denied plan writes preserve rows and audit',sn_all()===$before);
     sn_ok('Creation audit failure rolls back the entire plan',sn_fail_audit(fn()=>sn_create(1))&&sn_all()===$before);$beforePromise=sn_all();sn_deny('Owner cannot save an unsupported promise in a plan name',fn()=>sn_create(999,['name'=>'Unlimited support']));sn_ok('Rejected plan name preserves every term consent and audit record',sn_all()===$beforePromise);

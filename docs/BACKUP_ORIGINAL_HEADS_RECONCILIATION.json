@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "main": "1f3e6dc7c424af74d407220fe71cf3f045ab2499",
+  "sources": [
+    {"pr":176,"head":"7464c4ced2cf802da82bc7842c282e37e07aacb6","scope":"File backup/restore runtime and hardened file containment, preflight and recovery"},
+    {"pr":196,"head":"b2b039f5dcceb28da1f62aa2f0bc234531902bfc","scope":"Durable isolated restore drills and additive schema corrections"},
+    {"pr":197,"head":"24da7935ce591d94797e91e794804351dcbfa3a3","scope":"Private SQL export and checked metadata; already retained as the d028400a merge parent"}
+  ],
+  "resolution": "The final heads of176 and196 are not ancestors of197, although their reviewed file-safety and drill changes were also applied to197. Preserve their original histories as additional normal parents without reverting the reviewed197 extension or current main. The current assembled runtime is authoritative; older password-reentry behavior is replaced with current owner-session checks and all explicit confirmation/CSRF/private-storage boundaries retained. New prune, ZIP-close, retention and file-mode fixes remain in the corrected candidate.",
+  "preservation": "All160 predecessor native commands and the exact historical browser inverse remain. The backup fixture is expanded, not skipped. Obsolete workflow/docs conflicts use current main guidance; the historical deltas remain in BACKUPS_HISTORY_INTEGRATION.json and original ancestors.",
+  "sensitive_scope": "A file manifest excludes private config/key/storage paths. The separate SQL export DOES contain sensitive business/account data and potentially encrypted credentials; the archive is private and original encryption keys must be retained separately. File restore never imports the SQL export.",
+  "status": "Source consolidation only. Exact-source native/browser/build success is required before main merge. No deployment, payment, provider operation or delivered ZIP replacement."
+}

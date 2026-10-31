@@ -2,11 +2,26 @@
 /** Test-only current-owner denial fixture. Never loaded by the application. */
 declare(strict_types=1);
 
+/** Two legacy SQL-only checkout fixtures use a separately pinned loopback database. */
+function cwp_test_sql_only_checkout(array $cfg): bool {
+    $db=$cfg['db']??[];$name=$db['name']??'';$prefix=$db['prefix']??'';
+    $service=in_array($name,['cwp_checkout_test','cwp_checkout_retry1'],true)
+        &&getenv('CWP_TEST_CHECKOUT_STORAGE')==='1'
+        &&in_array($prefix,['cscp_main_','cscp_start_','cscp_partial_','cscp_reverse_','cscp_unknown_','cscp_missing_'],true);
+    $recurring=in_array($name,['cwp_checkout_test','cwp_checkout_recurring_retry1'],true)
+        &&getenv('CWP_TEST_RECURRING_CHECKOUT_STORAGE')==='1'
+        &&in_array($prefix,['crbc_main_','crbc_start_','crbc_partial_','crbc_reverse_','crbc_unknown_','crbc_missing_'],true);
+    return PHP_SAPI==='cli'&&($service||$recurring)
+        &&getenv('CWP_TEST_DATABASE')===$name&&getenv('CWP_TEST_HOST')==='127.0.0.1'
+        &&getenv('CWP_TEST_PORT')==='43319'&&($db['host']??'')==='127.0.0.1'&&($db['port']??0)===43319
+        &&($cfg['storage']??null)===''&&($cfg['key']??null)==='';
+}
+
 /** Hash all rows and table definitions in this disposable test's exact namespace. */
 function cwp_test_authority_snapshot(): array {
     $cfg=config();$prefix=$cfg['db']['prefix']??'';
-    if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'
-        ||($cfg['db']['name']??'')!=='cwp_test'||!in_array($cfg['db']['host']??'',['127.0.0.1','localhost'],true)
+    $sqlOnly=cwp_test_sql_only_checkout($cfg);
+    if(PHP_SAPI!=='cli'||(!$sqlOnly&&(getenv('CWP_TEST_DATABASE')!=='cwp_test'||($cfg['db']['name']??'')!=='cwp_test'))||!in_array($cfg['db']['host']??'',['127.0.0.1','localhost'],true)
         ||!is_string($prefix)||!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{0,39}$/D',$prefix)) {
         throw new AssertionError('Current-owner fixture requires disposable loopback SQL.');
     }
@@ -23,6 +38,7 @@ function cwp_test_authority_snapshot(): array {
     }
     if(!$tables)throw new AssertionError('Empty authority fixture cannot prove retained state.');
     ksort($tables);
+    if($sqlOnly)return ['tables'=>$tables,'files'=>[]];
     $storage=realpath((string)($cfg['storage']??''));$runtime=realpath(__DIR__.'/../test-runtime');
     if(!$storage||!$runtime||!str_starts_with($storage,$runtime.DIRECTORY_SEPARATOR))throw new AssertionError('Private test storage must remain under test-runtime.');
     $files=[];

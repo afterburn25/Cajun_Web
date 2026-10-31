@@ -383,3 +383,11 @@ Owner confirmed the `authorize-net-sandbox` GitHub environment (main-only restri
 ## 2026-10-29 integration candidate — published-upgrade suite version literals
 
 `b2fb53b3` on `devin/licensing-integration-candidate` (PR #307): the apache leg failed at `release_125_upgrade_cases.py` — `assert len(updates) == 1` on `dist/CajunWebPro-1.25.0-UPDATE.zip`. CWP_VERSION is 1.26.0 on the merged tree (Codex v1.26 rehearsal lane #288), so `tools/build.py` emits `CajunWebPro-1.26.0-UPDATE.zip` and stages it as `cwp-update-1.26.0/`. Hardcoded `1.25.0` literals in `release_125_upgrade_cases.py` (glob + updater path) and `release_125_upgrade_acceptance.py` (final-snapshot version, candidate_version report field) missed the package. Both files now read `VERSION`/`STAGE` from `tests/release_version.py` — the same binding `software_release_125_upgrade.py` already uses. The 1.24.0 published baseline and baseline SHA expectations stay literal.
+
+
+
+## Historical source entries retained while integrating PR #162
+
+## 2026-10-19 — backup manifest depth exclusions (non-20i)
+
+Coordinator review correction landed on `devin/non20i-backups-foundation` (`66fe1439`): the manifest `FORBIDDEN` pattern anchored exact secrets at the path root, so a manifest could describe nested secrets such as `includes/config.php`. All protected-path rules (`config.php`, `proxy-config.php`, `.installed.php`, `.env`, `*.key`/`*.pem`/`*.p12`, any `storage/` component, `payment-master` names) now apply per path component at any depth. Collection still skips real forbidden files rather than failing. Nested-depth rejection cases added to `tests/backups/run.php`; the isolated suite passes 37 checks on PHP 8.4.25. This branch is foundation-only — the deployed `site/includes` mirror receives the same pattern on the descendant branches. No merge, deployment, provider action or release.

@@ -1,6 +1,8 @@
 <?php
 /** Disposable InnoDB import and owner boundaries; synthetic saved inventory, no provider calls. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
@@ -28,7 +30,7 @@ try {
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Import staff '.$id,'import'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat((string)$id,32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,\'administrator\',1,?)',[2,json_encode(array_keys(staff_permissions()))]);pim_actor();catalog_migrate($password);
     $tables=all('SHOW TABLES');pim_ok('Unprepared import read creates no tables',provider_catalog_import_ready()===false&&all('SHOW TABLES')===$tables);
-    pim_deny('Import setup requires current owner password',fn()=>provider_catalog_import_prepare('wrong'));
+    pim_deny('Revoked owner refuses: Import setup requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_catalog_import_prepare('wrong')));
     pim_ok('Refused setup creates no import table',!provider_catalog_import_exists());
     db()->exec(provider_catalog_import_schema('pimci_')['catalog_provider_imports']);
     provider_catalog_import_prepare($password);$state=pim_state();provider_catalog_import_prepare($password);
@@ -47,7 +49,7 @@ try {
     $_GET['support']='invalid';pim_deny('Support selector cannot preview imports',fn()=>provider_catalog_import_preview());unset($_GET['support']);
     $GLOBALS['cwp_support']=['id'=>'synthetic'];pim_deny('Active support cannot create imported products',fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','month',$password));unset($GLOBALS['cwp_support']);
     $_SESSION=['client_id'=>1,'client_auth'=>'synthetic'];pim_deny('Client session cannot preview provider imports',fn()=>provider_catalog_import_preview());pim_actor();
-    pim_deny('Wrong owner password cannot create a draft',fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','month','wrong'));
+    pim_deny('Revoked owner refuses: Wrong owner password cannot create a draft',fn()=>cwp_test_owner_revoked(fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','month','wrong')));
     pim_deny('Captured stale preview cannot create a draft',fn()=>provider_catalog_import_create(str_repeat('0',64),'1','HOST-ONE','month',$password));
     pim_deny('Unknown provider type cannot create a draft',fn()=>provider_catalog_import_create($hash,'900','HOST-ONE','month',$password));
     pim_deny('Unselected local service period cannot create a draft',fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','',$password));

@@ -1,7 +1,7 @@
 name: Recurring billing calendar checks
 on:
   push:
-    branches: [main, codex/billing-calendar, codex/twentyi-recurring-eligibility]
+    branches: [main, codex/billing-calendar, codex/twentyi-recurring-eligibility, 'devin/non20i-*']
     paths: ['foundation/billing-calendar/**', 'tests/billing-calendar/**', '.github/workflows/billing-calendar.yml']
   pull_request:
     paths: ['foundation/billing-calendar/**', 'tests/billing-calendar/**', '.github/workflows/billing-calendar.yml']
@@ -10,7 +10,7 @@ permissions:
   contents: read
 concurrency:
   group: billing-calendar-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   calendar:
     runs-on: ubuntu-24.04

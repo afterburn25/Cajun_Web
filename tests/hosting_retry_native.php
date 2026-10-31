@@ -1,6 +1,8 @@
 <?php
 /** Disposable native MariaDB fixtures. Synthetic journals are not provider evidence. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -98,7 +100,7 @@ try {
     hr_deny('New pending account cannot be treated as failed retry',fn()=>hr_retry($id,101));
     $claim=hr_claim($id,100);$before=hr_all();hr_deny('Unresolved dispatch without a result cannot be retried',fn()=>hr_retry($id,101));hr_ok('Missing confirmation refusal preserves the first dispatch',hr_all()===$before);
     $definite=hr_result($claim,'failed',null,true);hr_record($claim,$definite);$before=hr_all();$revision=hr_load($id)->revision();
-    hr_deny('Retry requires current owner password',fn()=>hosting_operations_retry_provision($id,1,$revision,hr_id(101),'wrong'));
+    hr_deny('Revoked owner refuses: Retry requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>hosting_operations_retry_provision($id,1,$revision,hr_id(101),'wrong')));
     hr_actor(2);hr_deny('Full-grant administrator cannot request owner retry',fn()=>hr_retry($id,101));hr_actor();
     hr_deny('Retry cannot select another client',fn()=>hosting_operations_retry_provision($id,2,$revision,hr_id(101),$password));
     $_GET['support']='';hr_deny('Support selector cannot request retry',fn()=>hr_retry($id,101));unset($_GET['support']);

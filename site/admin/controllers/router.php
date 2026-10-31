@@ -21,11 +21,12 @@ require_once CWP_CODE_ROOT.'/admin/controllers/hosting_catalog.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/hosting_purchases.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/recurring_billing.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_registration_drafts.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/backups.php';
 header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,['hosting-purchases','hosting-offers','registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['hosting-purchases','hosting-offers','registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','backups','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 if(in_array($view,['studio-clients','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_plans_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='studio-licenses'||(is_string($_POST['action']??null)&&(str_starts_with($_POST['action'],'software_')||str_starts_with($_POST['action'],'studio_license_')||str_starts_with($_POST['action'],'studio_domain_')))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
@@ -65,6 +66,7 @@ if($view==='website-review')reviews_admin_render($error);
 if(in_array($view,['consultations','consultation','consultation-settings'],true))appointments_admin_render($view,$error);
 if(in_array($view,['mail-templates','mail-template'],true))mail_templates_admin_render($view,$error);
 if($view==='staff'){staff_admin_render($user,$error);exit;}
+if($view==='backups')backups_admin_render($user,$error);
 if($view==='support')support_admin_render($user,$error);
 if(in_array($view,['catalog','catalog-invoice'],true))catalog_admin_render($view,$user,$error);
 if(in_array($view,['payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],true))payments_admin_render($view,$user,$error);

@@ -1,6 +1,8 @@
 <?php
 /** Disposable recurring migration/history fixture; synthetic v2 rows are not a checkout writer. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 $database=(string)getenv('CWP_TEST_DATABASE');$port=(int)getenv('CWP_TEST_PORT');
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_RECURRING_CHECKOUT_STORAGE')!=='1'||!in_array($database,['cwp_checkout_test','cwp_checkout_recurring_retry1'],true)||getenv('CWP_TEST_HOST')!=='127.0.0.1'||$port!==43319)exit(2);
 $site=realpath((string)(getenv('CWP_TEST_CODE_ROOT')?:__DIR__.'/../site'));
@@ -116,7 +118,7 @@ try {
     rcn_historical_source(100);$legacy=rcn_historical_billing(300,100);$issued=recurring_billing_issue(rcn_id(300),1,$legacy->revision(),$legacy->fingerprint(),0,rcn_id(400));
     $old=rcn_rows();$oldOrigin=recurring_billing_invoice_origin($issued['invoice_id']);
     rcn_ok('Existing staff issuance retains exact legacy origin shape',array_keys($oldOrigin)===['staff_id','schedule_id','period_index','created_at']&&$oldOrigin['staff_id']===1&&$oldOrigin['schedule_id']===rcn_id(300)&&$oldOrigin['period_index']===0);
-    rcn_bad('Wrong owner password cannot begin extension',fn()=>recurring_billing_checkout_migrate('wrong'));
+    rcn_bad('Revoked owner refuses: Wrong owner password cannot begin extension',fn()=>cwp_test_owner_revoked(fn()=>recurring_billing_checkout_migrate('wrong')));
     rcn_owner(2);rcn_bad('Delegated financial administrator cannot prepare extension',fn()=>recurring_billing_checkout_migrate($password));rcn_owner();
     $auth=one('SELECT auth_version FROM '.table('users').' WHERE id=1')['auth_version'];query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[str_repeat('f',32)]);rcn_bad('Stale owner session cannot prepare extension',fn()=>recurring_billing_checkout_migrate($password));query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$auth]);rcn_owner();
     $_GET['support']='';rcn_bad('Support selector cannot prepare extension',fn()=>recurring_billing_checkout_migrate($password));unset($_GET['support']);

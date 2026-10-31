@@ -1,6 +1,8 @@
 <?php
 /** Native MariaDB fixtures; gateway responses are explicitly synthetic, no provider traffic. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='payci_';
@@ -19,7 +21,7 @@ try{
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[1,'Payment project','Existing project','Existing milestones',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
     query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['PAY-FIXTURE','Agreed synthetic milestone',12510,'Existing manual instructions',gmdate('Y-m-d H:i:s')]);
     $original=one('SELECT * FROM '.table('studio_invoices'));
-    pay_deny('Payment migration requires owner reauthentication',fn()=>payments_migrate('wrong'));
+    pay_deny('Revoked owner refuses: Payment migration requires owner reauthentication',fn()=>cwp_test_owner_revoked(fn()=>payments_migrate('wrong')));
     db()->exec(payments_schema('payci_')['payment_gateways']);db()->exec('ALTER TABLE '.table('payment_gateways').' MODIFY revision VARCHAR(10) NOT NULL');
     pay_deny('Incompatible payment schema rejected without adoption',fn()=>payments_migrate($password));
     pay_ok('Unknown incompatible column retained',one('SHOW COLUMNS FROM '.table('payment_gateways')." LIKE 'revision'")['Type']==='varchar(10)');
@@ -29,7 +31,7 @@ try{
     pay_deny('First setup requires all four fields',fn()=>payments_save('sandbox',0,[],$password));
     pay_deny('Invalid secret format rejected',fn()=>payments_save('sandbox',0,array_replace($creds,['signature_key'=>'not-a-signature']),$password));
     pay_deny('Unsupported environment rejected',fn()=>payments_save('test',0,$creds,$password));
-    pay_deny('Credential save requires current owner password',fn()=>payments_save('sandbox',0,$creds,'wrong'));
+    pay_deny('Revoked owner refuses: Credential save requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>payments_save('sandbox',0,$creds,'wrong')));
     $storage=config()['storage'];$GLOBALS['cwp_config']['storage']=CWP_ROOT;
     pay_deny('Credential master key cannot be under served site',fn()=>payments_save('sandbox',0,$creds,$password));$GLOBALS['cwp_config']['storage']=$storage;
     payments_save('sandbox',0,$creds,$password);$stored=one('SELECT credentials FROM '.table('payment_gateways')." WHERE environment='sandbox'")['credentials'];
