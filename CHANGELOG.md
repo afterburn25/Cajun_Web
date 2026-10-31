@@ -1616,3 +1616,11 @@ Devin non-20i increment on `devin/non20i-pipeline-foundation` from main `595ac9c
 ## Port proposal/approval contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-proposals-foundation` from main `595ac9c3`, continuing preserved `devin/proposals-foundation`. Adds `foundation/proposals/Proposal.php`, `ProposalVersion.php` and `ApprovalDecision.php` — immutable versioned proposals with deliberate approval/decline states — with 35 pure checks in `tests/proposals/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, mail, signature or UI — integration remains future work. No release or deployment.
+
+
+## Historical source entries retained while integrating PR #165
+
+
+## Port P-07 notification contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notifications-foundation` from main `595ac9c3`, continuing preserved `devin/notifications`. Adds `foundation/notifications/` — `Notification`, `NotificationFeed`, `NotificationPreferences`, `DeliveryAttempt`, `MetricSample` — with 65 pure checks in `tests/notifications/run.php` and a PHP 8.2/8.4 offline workflow lane. No persistence, delivery transport or UI — integration remains future work. No release or deployment.
