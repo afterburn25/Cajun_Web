@@ -59,7 +59,7 @@ jobs:
         run: |
           git merge-base --is-ancestor 0099b9190756c31e690b83b2cdf93c366de03f5c HEAD
           git merge-base --is-ancestor 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD
-          git diff --exit-code 771556e701103a3db9f757da05da9b2357a4247b HEAD -- site foundation tools/structure tools/build.py VERSION START-HERE.txt
+          python3 tests/combined_runtime_repair.py
           python3 tools/build.py --refresh
           git diff --exit-code
           python3 tools/check_docs.py
@@ -85,7 +85,7 @@ jobs:
           assert r['runtime_matches_delivered_release'] is True  # Historical immutable 1.26.1 receipt.
           combined=json.loads(Path('docs/CONSOLIDATION_AFTER_BACKUPS.json').read_text())
           assert combined['main']=='1c44ca120e7768998fafa720b3e1c4c85990c330'
-          report={'passed':True,'source_sha':os.environ['CWP_SOURCE_SHA'],'main_ancestor':combined['main'],'release_ancestor':r['release_sha'],'reviewed_combined_runtime':'771556e701103a3db9f757da05da9b2357a4247b','runtime_matches_reviewed_combination':True,'runtime_byte_identical_to_delivered_release':False,'scope':'Current combined runtime including reviewed backups; original delivered archive stays immutable. Sandbox isolation, portable policies and clean-source build; full native/installed checks remain separate. No live operations.'}
+          report={'passed':True,'source_sha':os.environ['CWP_SOURCE_SHA'],'main_ancestor':combined['main'],'release_ancestor':r['release_sha'],'reviewed_combined_runtime':'771556e701103a3db9f757da05da9b2357a4247b','runtime_matches_reviewed_combination':False,'runtime_matches_reviewed_cloud_focus_correction':True,'runtime_byte_identical_to_delivered_release':False,'scope':'Current combined runtime including reviewed backups; original delivered archive stays immutable. Sandbox isolation, portable policies and clean-source build; full native/installed checks remain separate. No live operations.'}
           Path('qa/main-reconciliation/results.json').write_text(json.dumps(report,indent=2)+'\n')
           PY
       - name: Preserve reports without replacing delivered ZIPs

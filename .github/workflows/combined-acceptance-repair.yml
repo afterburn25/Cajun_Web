@@ -29,9 +29,22 @@ jobs:
         run: |
           git merge-base --is-ancestor 4c4ebae721baf26e3b0340aadaec618bc9d6c0da HEAD
           python3 tools/integration/combined_acceptance_repair.py
-          python3 tools/integration/combined_remaining_fixtures.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          path=Path('.github/workflows/1261-main-reconcile.yml')
+          committed=path.read_bytes()
+          if not Path('docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json').exists():
+              # Workflow changes are already committed by the authorized repository tool.
+              # Reconstruct the historical input only to record the same exact inverse.
+              old=subprocess.check_output(['git','show','2f11bc1fa202020880ead9abc1ee72d19205cac5:'+str(path)])
+              path.write_bytes(old)
+          subprocess.run(['python3','tools/integration/combined_remaining_fixtures.py'],check=True)
+          if path.read_bytes()!=committed:raise SystemExit('Reviewed workflow differs from the already committed version')
+          PY
           python3 tools/build.py --refresh
           python3 tests/combined_repair_provenance.py
+          git diff --exit-code -- .github/workflows
           git diff --check
       - name: Record ordinary expanded source on the isolated branch only
         id: record
@@ -42,7 +55,8 @@ jobs:
           set -euo pipefail
           git config user.name 'CajunWebPro reviewed integration'
           git config user.email 'integration-review@users.noreply.github.com'
-          git add -- site tests docs tools/acceptance-contract.json .github/workflows/1261-main-reconcile.yml
+          git diff --exit-code -- .github/workflows
+          git add -- site tests docs tools/acceptance-contract.json
           if ! git diff --cached --quiet; then
             git commit -m 'Repair combined acceptance fixtures and restore focused 20i routing'
           fi
@@ -61,13 +75,16 @@ jobs:
           print('Recorded exact source:',head)
           PY
       - name: Preserve tracked source and identity
+        if: always()
         run: |
           mkdir -p qa/repair-source
           git archive --format=tar.gz HEAD > qa/repair-source/source.tar.gz
           git rev-parse HEAD HEAD^{tree} > qa/repair-source/identity.txt
+          git status --porcelain > qa/repair-source/uncommitted-status.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
-          name: combined-repair-source-${{ steps.record.outputs.sha }}
+          name: combined-repair-source-${{ github.sha }}
           path: qa/repair-source/
           if-no-files-found: error
           retention-days: 14
