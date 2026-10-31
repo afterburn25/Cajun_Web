@@ -27,7 +27,7 @@ function hv_submit(array $c,array $input,string $command='fulfill_service'):void
         rb_ok('Owner fulfillment GET changes no history and sends no request',hf_snapshot()===$before&&HfTransport::$calls===$calls);
         rb_client();rb_deny('Client cannot request the private fulfillment projection',fn()=>hosting_fulfillment_view($o->data()['id'],1));rb_staff(2);rb_deny('Financial delegate cannot open owner fulfillment controls',fn()=>hosting_fulfillment_view($o->data()['id'],1));rb_staff();
         rb_deny('Fulfillment view cannot substitute another client',fn()=>hosting_fulfillment_view($o->data()['id'],2));
-        rb_deny('Preparation wrapper requires owner password',fn()=>hosting_fulfillment_prepare('wrong'));
+        rb_deny('Preparation wrapper refuses revoked owner',fn()=>cwp_test_owner_revoked(fn()=>hosting_fulfillment_prepare('wrong')));
         $rows=hf_snapshot(false);hosting_fulfillment_prepare($password);rb_ok('Repeated native setup preserves existing orders and provider attempts',hf_snapshot(false)===$rows&&HfTransport::$calls===$calls);
         $input=hv_post($c);$before=hf_snapshot();
         foreach([['confirm'=>''],['review_account_type'=>''],['review_defaults'=>['1']],['review_costs'=>'true'],['provision_confirmation'=>'CREATE foreign.example'],['order_hash'=>str_repeat('a',64)],['link_hash'=>str_repeat('b',64)],['order_revision'=>'1']] as $i=>$bad)rb_deny('Typed approval form refuses unreviewed or stale intent '.$i,fn()=>hv_submit($c,array_replace($input,$bad)));

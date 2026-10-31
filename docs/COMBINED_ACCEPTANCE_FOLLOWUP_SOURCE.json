@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "base_tree": "2f11bc1fa202020880ead9abc1ee72d19205cac5",
+  "files": {
+    "tests/appointments_native.php": {
+      "before_sha256": "d506b2e897c9a547ebf9b26d928ce56e1db949a84ea04e3b136eaf8f558fbb9e",
+      "edits": [
+        [
+          "require_once __DIR__.'/current_owner_authority.php';",
+          "require_once __DIR__.'/current_owner_authority.php';\nrequire_once __DIR__.'/current_staff_authority.php';"
+        ],
+        [
+          "a_deny('Revoked owner refuses: Confirm needs current password',fn()=>cwp_test_owner_revoked(fn()=>appointments_mutate($lead,1,'confirm',null,null,'wrong')))",
+          "a_deny('Revoked delegated website permission refuses appointment confirmation',fn()=>cwp_test_website_staff_revoked(fn()=>appointments_mutate($lead,1,'confirm',null,null,'wrong')))"
+        ]
+      ],
+      "after_sha256": "e9d2e76183ff689dc7098fa7fa2e23ce5290c590f8cd49b3e0fc8cbb4f6df977"
+    },
+    "tests/reviews_native.php": {
+      "before_sha256": "0698aac6fc04affe02e53ce725bb5c5aa8dd2943d62272e5ed55bb564ae8795d",
+      "edits": [
+        [
+          "require_once __DIR__.'/current_owner_authority.php';",
+          "require_once __DIR__.'/current_owner_authority.php';\nrequire_once __DIR__.'/current_staff_authority.php';"
+        ],
+        [
+          "r_deny('Revoked owner refuses: Delivery needs current password',fn()=>cwp_test_owner_revoked(fn()=>reviews_deliver($lead,7,$now,'email','Synthetic mail reference','wrong')))",
+          "r_deny('Revoked delegated website permission refuses report delivery',fn()=>cwp_test_website_staff_revoked(fn()=>reviews_deliver($lead,7,$now,'email','Synthetic mail reference','wrong')))"
+        ]
+      ],
+      "after_sha256": "473622946b3c179655d7cfe0f64e8047774e06f8489f463fed408a20f0e98395"
+    },
+    "tests/provider_inventory_cloud_link_cases.php": {
+      "before_sha256": "af0ed0e1f02148637092ac5a2f10def21f9cfcab6203113f93b097b7060061c0",
+      "edits": [
+        [
+          "pi_deny('Cloud assignment refuses wrong current password',fn()=>provider_cloud_link($id,1201,1,7,$rid,'wrong'));",
+          "pi_deny('Cloud assignment refuses revoked current owner before any provider operation',fn()=>cwp_test_owner_revoked(fn()=>provider_cloud_link($id,1201,1,7,$rid,'wrong')));"
+        ]
+      ],
+      "after_sha256": "58e5f6f96080f10bd268b310f0ce75769e3f7d0fd0c61fb11cb343191dce3566"
+    },
+    "tests/service_orders_links_cases.php": {
+      "before_sha256": "337044530d213acf7de4fdf7ba1c85b9ac2a48ee190e22d51d4f2aa0fe8cdd1b",
+      "edits": [
+        [
+          "rb_deny('Order association setup requires owner password',fn()=>hosting_order_links_migrate('wrong'));",
+          "rb_deny('Order association setup refuses revoked owner',fn()=>cwp_test_owner_revoked(fn()=>hosting_order_links_migrate('wrong')));"
+        ],
+        [
+          "rb_deny('Association requires current owner password',fn()=>hosting_order_links_create($o->data()['id'],1,$o->revision(),$o->fingerprint(),rb_id(30100),$solPackage,$solProfile,1,42,'wrong'));",
+          "rb_deny('Association refuses revoked current owner',fn()=>cwp_test_owner_revoked(fn()=>hosting_order_links_create($o->data()['id'],1,$o->revision(),$o->fingerprint(),rb_id(30100),$solPackage,$solProfile,1,42,'wrong')));"
+        ]
+      ],
+      "after_sha256": "ae411c16364aad609c72e5e83e4fb8ae7bd88b41ad0b26790ebcf124a0e2d2c7"
+    },
+    "tests/hosting_fulfillment_view_cases.php": {
+      "before_sha256": "068dff2fde64d13e9c49f561f68fc353fac9b68752e455511e74e30062efc7fb",
+      "edits": [
+        [
+          "rb_deny('Preparation wrapper requires owner password',fn()=>hosting_fulfillment_prepare('wrong'));",
+          "rb_deny('Preparation wrapper refuses revoked owner',fn()=>cwp_test_owner_revoked(fn()=>hosting_fulfillment_prepare('wrong')));"
+        ]
+      ],
+      "after_sha256": "80bc41d38136e42c86eccac692092c3f13ef56a67629edcf5b46efeaca95de4b"
+    },
+    "tests/hosting_fulfillment_confirmation_cases.php": {
+      "before_sha256": "f726208dd231291d7c4cd5cf5786bf7af030ee24e51a9dff9ae1469356a20f84",
+      "edits": [
+        [
+          "rb_deny('Status history preparation requires the owner password',fn()=>hosting_fulfillment_confirmation_prepare('wrong'));",
+          "rb_deny('Status history preparation refuses revoked owner',fn()=>cwp_test_owner_revoked(fn()=>hosting_fulfillment_confirmation_prepare('wrong')));"
+        ],
+        [
+          "rb_deny('Confirmation refuses changed client attempt approval or password '.$index,fn()=>hosting_fulfillment_confirm(...$bad));",
+          "$attempt=fn()=>hosting_fulfillment_confirm(...$bad);rb_deny('Confirmation refuses changed client attempt approval or revoked owner '.$index,$index===4?fn()=>cwp_test_owner_revoked($attempt):$attempt);"
+        ]
+      ],
+      "after_sha256": "c44dfd63bd62af3f29fb97c88f7f073162606ce7975a1231e9fee8b1829da5ae"
+    },
+    "tests/provider_plan_catalog_cases.php": {
+      "before_sha256": "ff28a732b69272d5193787d17c9705a9810312b4e9c333512f3e2ec0a24fb348",
+      "edits": [
+        [
+          "rb_deny('Catalog setup requires correct password',fn()=>provider_plan_catalog_prepare('wrong'));",
+          "rb_deny('Catalog setup refuses revoked owner',fn()=>cwp_test_owner_revoked(fn()=>provider_plan_catalog_prepare('wrong')));"
+        ]
+      ],
+      "after_sha256": "dd3d1c0e52b6cfed89dd91bc760805c882ec8603efb6884774678d096a29029d"
+    },
+    "tests/service_orders_link_views_cases.php": {
+      "before_sha256": "c27bd0291f97480bbc3dd3c726444abecd58a794aec0f626eebe8e283f682152",
+      "edits": [
+        [
+          "rb_deny('Preparation form refuses stale or unconfirmed intent '.$i,fn()=>service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true));",
+          "$attempt=fn()=>service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true);rb_deny('Preparation form refuses stale unconfirmed or revoked intent '.$i,array_key_exists('current_password',$bad)?fn()=>cwp_test_owner_revoked($attempt):$attempt);"
+        ]
+      ],
+      "after_sha256": "048136f775ce4b382a7d549c2c6b699071d8d4631cd22c8c60551233df8667d5"
+    },
+    "tests/hosting_fulfillment_native_cases.php": {
+      "before_sha256": "25752325be124ac6201bee35d151ddfda6ca5f00fe3873a87f4112ca825e42c2",
+      "edits": [
+        [
+          "rb_deny('Local recovery rejects foreign or stale reviewed authority '.$field,fn()=>hosting_fulfillment_recover(...$bad));",
+          "$attempt=fn()=>hosting_fulfillment_recover(...$bad);rb_deny('Local recovery rejects foreign stale or revoked authority '.$field,$field===5?fn()=>cwp_test_owner_revoked($attempt):$attempt);"
+        ]
+      ],
+      "after_sha256": "6b67e15f9751e6aed014e02d5c6065c6d6ec95245b08e672d73c1dfe154879d3"
+    },
+    "tests/current_staff_authority.php": {
+      "before_sha256": null,
+      "edits": [],
+      "after_sha256": "f774566401e29645689f80accf4095c69e2303b277cc67482010ef520a4451f9"
+    },
+    "tests/current_staff_authority_contract.php": {
+      "before_sha256": null,
+      "edits": [],
+      "after_sha256": "3e5ed44f0a08ea502224b35d8d9dbdae78b381839c6a4c670995b19a41d531c5"
+    }
+  },
+  "scope": "Source-bound follow-up for delegated-staff authority and later legacy fixture branches; no production code changes."
+}

@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json
 ROOT=Path(__file__).resolve().parents[1]
-RECEIPTS=['docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json','docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json']
+RECEIPTS=['docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json','docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json','docs/COMBINED_ACCEPTANCE_FOLLOWUP_SOURCE.json']
 def predecessor(root,path,value):
     found=[]
     for name in RECEIPTS:

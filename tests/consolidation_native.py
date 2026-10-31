@@ -2,7 +2,7 @@
 from pathlib import Path
 import argparse,json,os,shutil,subprocess,time
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'qa/consolidation-native';OUT.mkdir(parents=True,exist_ok=True)
-p=argparse.ArgumentParser();p.add_argument('--shard',type=int,required=True);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--shard',type=int,required=True);p.add_argument('--only',help='Explicit focused suite names; omission retains all63 suites');a=p.parse_args()
 if a.shard not in range(3):raise SystemExit('Unknown test shard')
 if os.environ.get('CWP_TEST_DATABASE')!='cwp_test' or os.environ.get('CWP_TEST_HOST')!='127.0.0.1':raise SystemExit('Disposable loopback SQL only')
 receipt=json.loads((ROOT/'docs/CONSOLIDATION_AFTER_BACKUPS.json').read_text())
@@ -17,7 +17,13 @@ for name,count in [('mail_notices_native',1),('mail_drafts_native',1),('provider
 if len(cases)!=63 or sum(cases.values())!=122:raise SystemExit('Native suite inventory changed')
 # Additional actual owner-denial assertion replaces the obsolete inline password branch.
 cases['provider_password_reset_template_native']+=1
+cases['provider_inventory_native']+=1
+cases['recurring_billing_native']+=8
 selected=sorted(cases)[a.shard::3]
+if a.only is not None:
+ requested=a.only.split(',')
+ if a.shard!=0 or not requested or len(requested)!=len(set(requested)) or any(name not in cases for name in requested):raise SystemExit('Unknown or duplicated focused suite selection')
+ selected=sorted(requested)
 reset=r'''
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_HOST')!=='127.0.0.1')exit(2);
 $name=getenv('CWP_TEST_DATABASE');$port=(int)getenv('CWP_TEST_PORT');

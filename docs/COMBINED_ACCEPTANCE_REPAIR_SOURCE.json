@@ -60,9 +60,17 @@
         [
           "(int)query('SELECT @@port')->fetchColumn()===$port&&query('SELECT DATABASE()')->fetchColumn()===$database",
           "cwp_test_checkout_endpoint($port,(int)query('SELECT @@port')->fetchColumn())&&(int)config()['db']['port']===$port&&query('SELECT DATABASE()')->fetchColumn()===$database"
+        ],
+        [
+          "'payments_schema_version'=>'1'",
+          "'payments_schema_version'=>'2'"
+        ],
+        [
+          "    rcn_owner();service_plans_migrate($password);",
+          "    rcn_owner();rcn_ok('Checkout fixture uses current payment readiness in '.$prefix,payments_ready()&&setting('payments_schema_version')==='2');service_plans_migrate($password);"
         ]
       ],
-      "after_sha256": "0a8d49fa86c3f8ac69f6c5b0051d82da2536780c61ae22b1459e615c543b0142"
+      "after_sha256": "86a90a0359dd447094a3cc382c747802d21ef535fee9c8445fb45a97b1beea79"
     },
     "tests/consolidation_native.py": {
       "before_sha256": "c928e9994186e82ef6285668c194f0e22719c24666ccf18aaf95aef5b1653bb5",
@@ -78,9 +86,17 @@
         [
           "if len(cases)!=63 or sum(cases.values())!=122:raise SystemExit('Native suite inventory changed')",
           "if len(cases)!=63 or sum(cases.values())!=122:raise SystemExit('Native suite inventory changed')\n# Additional actual owner-denial assertion replaces the obsolete inline password branch.\ncases['provider_password_reset_template_native']+=1"
+        ],
+        [
+          "p=argparse.ArgumentParser();p.add_argument('--shard',type=int,required=True);a=p.parse_args()",
+          "p=argparse.ArgumentParser();p.add_argument('--shard',type=int,required=True);p.add_argument('--only',help='Explicit focused suite names; omission retains all63 suites');a=p.parse_args()"
+        ],
+        [
+          "selected=sorted(cases)[a.shard::3]",
+          "cases['provider_inventory_native']+=1\ncases['recurring_billing_native']+=8\nselected=sorted(cases)[a.shard::3]\nif a.only is not None:\n requested=a.only.split(',')\n if a.shard!=0 or not requested or len(requested)!=len(set(requested)) or any(name not in cases for name in requested):raise SystemExit('Unknown or duplicated focused suite selection')\n selected=sorted(requested)"
         ]
       ],
-      "after_sha256": "435c5e6c3e95855033367dabe3a2ae2272be0fd4cd27900cb802528731c8c82f"
+      "after_sha256": "a0f2fac54dc4e6431a02bd822cb4dc2722668a7d89b30a9a54663384472c5dae"
     },
     "tests/provider_workspace_render.php": {
       "before_sha256": null,

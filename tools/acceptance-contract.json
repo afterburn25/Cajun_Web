@@ -561,7 +561,7 @@
     ],
     "source_sha256": {
       "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
-      "tests/provider_catalog_import_native.php": "170251c615423372589b70c57833f8af8ce111f14e99761dd50963c142b18838",
+      "tests/provider_catalog_import_native.php": "38c06a24905e5f700937bc5116b468d38c0393efadd48f1d13fc99236928acbb",
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."

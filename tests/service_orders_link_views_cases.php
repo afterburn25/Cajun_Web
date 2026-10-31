@@ -19,7 +19,7 @@ try{
     rb_ok('Typed package form preserves explicit zero and omits unknown limits',$p->limits===['websites'=>1,'disk_mb'=>0]&&$p->providerPackageType==='811');
     foreach([['package_type'=>'*'],['package_type'=>'811/other'],['package_type'=>'0'],['package_websites'=>'-1'],['package_websites'=>'1.5'],['package_disk_mb'=>'2147483648'],['package_websites'=>'','package_disk_mb'=>''],['package_region'=>''],['package_label'=>['array']]] as $i=>$bad)rb_deny('Typed mapping rejects malformed fields '.$i,fn()=>hosting_order_links_form_package($viewOrder,array_replace($input,$bad)));
     $before=sol_snapshot();
-    foreach([['confirm'=>''],['mapping_only'=>''],['agreement_id'=>rb_id(99999)],['order_hash'=>str_repeat('a',64)],['profile_revision'=>'1'],['current_password'=>'wrong']] as $i=>$bad){$_POST=array_replace($input,$bad);rb_deny('Preparation form refuses stale or unconfirmed intent '.$i,fn()=>service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true));}
+    foreach([['confirm'=>''],['mapping_only'=>''],['agreement_id'=>rb_id(99999)],['order_hash'=>str_repeat('a',64)],['profile_revision'=>'1'],['current_password'=>'wrong']] as $i=>$bad){$_POST=array_replace($input,$bad);$attempt=fn()=>service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true);rb_deny('Preparation form refuses stale unconfirmed or revoked intent '.$i,array_key_exists('current_password',$bad)?fn()=>cwp_test_owner_revoked($attempt):$attempt);}
     rb_ok('Rejected mapping forms preserve native history',sol_snapshot()===$before);
     // Reproduce an orphan current revision left by the former browser fixture.
     // Missing original history must still roll back the entire service mapping.

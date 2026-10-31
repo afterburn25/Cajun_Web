@@ -8,7 +8,7 @@ pi_aged();$scripted=[new TransportResponse(200,[],json_encode([$cloudItem]))];
 pi_ok('Cloud assignment uses a current revision observation',$cloudRefresh(null,7)==='complete');pi_cool();
 $approved=provider_inventory_observation($id,InventoryRead::CLOUD_SERVERS_LIST);$rid=$approved['id'];
 $network=[$dnsCalls,$transportCalls];
-pi_deny('Cloud assignment refuses wrong current password',fn()=>provider_cloud_link($id,1201,1,7,$rid,'wrong'));
+pi_deny('Cloud assignment refuses revoked current owner before any provider operation',fn()=>cwp_test_owner_revoked(fn()=>provider_cloud_link($id,1201,1,7,$rid,'wrong')));
 pi_deny('Cloud assignment refuses missing client',fn()=>provider_cloud_link($id,1201,999,7,$rid,$password));
 pi_deny('Cloud assignment refuses another server',fn()=>provider_cloud_link($id,1202,1,7,$rid,$password));
 pi_deny('Cloud assignment refuses stale profile revision',fn()=>provider_cloud_link($id,1201,1,6,$rid,$password));

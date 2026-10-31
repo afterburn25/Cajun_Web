@@ -26,12 +26,12 @@ try{
     $solProfile=provider_settings_save('',0,'Synthetic order mapping',true,'synthetic-order-mapping-key',$password);
     $solPackage=new \CajunWebPro\Foundation\Hosting\HostingPackage('synthetic-hosting','Synthetic selected package','811','owner-selected-region',['websites'=>1]);
     rb_ok('Order association read does not prepare storage',!hosting_storage_ready('order_links'));
-    rb_deny('Order association setup requires owner password',fn()=>hosting_order_links_migrate('wrong'));
+    rb_deny('Order association setup refuses revoked owner',fn()=>cwp_test_owner_revoked(fn()=>hosting_order_links_migrate('wrong')));
     rb_staff(2);rb_deny('Financial administrator cannot prepare order associations',fn()=>hosting_order_links_migrate($password));rb_staff();
     hosting_order_links_migrate($password);rb_ok('Owner prepares empty additive order associations',hosting_storage_ready('order_links')&&rb_count('hosting_order_links')===0);
     db()->exec('ALTER TABLE '.table('hosting_order_links').' ADD INDEX unexpected(created_epoch)');rb_deny('Association schema refuses unexpected indexes',fn()=>hosting_order_links_migrate($password));db()->exec('ALTER TABLE '.table('hosting_order_links').' DROP INDEX unexpected');
     $o=sol_accepted(30000);rb_deny('Unpaid accepted order cannot create a local hosting service',fn()=>sol_create($o));$o=sol_manual($o,30012);
-    rb_deny('Association requires current owner password',fn()=>hosting_order_links_create($o->data()['id'],1,$o->revision(),$o->fingerprint(),rb_id(30100),$solPackage,$solProfile,1,42,'wrong'));
+    rb_deny('Association refuses revoked current owner',fn()=>cwp_test_owner_revoked(fn()=>hosting_order_links_create($o->data()['id'],1,$o->revision(),$o->fingerprint(),rb_id(30100),$solPackage,$solProfile,1,42,'wrong')));
     rb_staff(2);rb_deny('Delegated financial access cannot map provider hosting',fn()=>sol_create($o));rb_staff();
     rb_deny('Association refuses cross-client order selection',fn()=>hosting_order_links_create($o->data()['id'],2,$o->revision(),$o->fingerprint(),rb_id(30100),$solPackage,$solProfile,1,42,$password));
     rb_deny('Association rejects self alias without explicit reseller identity',fn()=>hosting_order_links_request($o,$solPackage,0));
