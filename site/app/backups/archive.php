@@ -161,12 +161,20 @@ function backups_apply(string $root,BackupManifest $manifest,RestorePlan $plan,s
             $dir=$s['dir'];
             if(!is_dir($dir)&&!mkdir($dir,0755,true))throw new RuntimeException('Restore directory could not be created for: '.$s['name']);
             if(is_link($dir))throw new RuntimeException('Restore refuses a linked parent directory: '.$s['name']);
-            $target=$s['target'];$original=null;
+            $target=$s['target'];$original=null;$mode=0644;
             if(file_exists($target)){
-                $original=tempnam($dir,'.orig-');if($original===false||!copy($target,$original))throw new RuntimeException('The original file could not be preserved for: '.$s['name']);
+                $permissions=fileperms($target);
+                if($permissions===false)throw new RuntimeException('The original file permissions could not be read for: '.$s['name']);
+                $mode=$permissions&0777;
+                $original=tempnam($dir,'.orig-');
+                if($original===false||!copy($target,$original)||!chmod($original,$mode)){
+                    if($original!==false)@unlink($original);
+                    throw new RuntimeException('The original file and permissions could not be preserved for: '.$s['name']);
+                }
             }
             $originals[]=['target'=>$target,'original'=>$original,'done'=>false];$oi=array_key_last($originals);
             $tmp=tempnam($dir,'.backup-');if($tmp===false||file_put_contents($tmp,$s['data'])!==strlen($s['data'])){@unlink($tmp);throw new RuntimeException('Restore write failed for: '.$s['name']);}
+            if(!chmod($tmp,$mode)){@unlink($tmp);throw new RuntimeException('Restore file permissions could not be set for: '.$s['name']);}
             if(!rename($tmp,$target)){@unlink($tmp);throw new RuntimeException('Restore replace failed for: '.$s['name']);}
             $originals[$oi]['done']=true;$touched[$s['name']]=$target;$written++;
         }

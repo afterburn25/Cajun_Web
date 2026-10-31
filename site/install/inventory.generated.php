@@ -142,7 +142,7 @@ function setup_expected_files(): array { return [
     'api/validate.php'=>'19aaad32fc70d8c0a49f14dc454e37cb1453239ac1e5b61acfc0658978af407a',
     'app/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'app/activity/events.php'=>'b498799c3a09eaacfe286cf9300f21e363690d0c23332fef3be8093d90b94873',
-    'app/backups/archive.php'=>'b21a8526869d70fc44d1ef17c27cdc022106131bdf80b4874676d483e52f8ed8',
+    'app/backups/archive.php'=>'8c02e5361957f16cf4e9196ad76491ae79838c17d6f1855a47900ae0fe05cd1e',
     'app/backups/records.php'=>'fa5a8c6968688c3ef566e8f1ffdc60704ff1db729ec5c2ea443bbbcc44fe0c38',
     'app/billing/attempts.php'=>'9493ebc24698c24cf14dad40f79706755f9cb02ccd140c72e6796fd690371c89',
     'app/billing/authorize.php'=>'72ae8bd186180f179f2c7d09f3f9248944ff4eab2227bcca79bf0e430a0641c4',
