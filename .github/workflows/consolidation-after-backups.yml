@@ -13,8 +13,6 @@ jobs:
     if: github.ref == 'refs/heads/chatgpt/1261-main-reconcile-20261030'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    permissions:
-      contents: write
     outputs:
       sha: ${{ steps.record.outputs.sha }}
     steps:
@@ -23,33 +21,19 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Reconcile only the pinned reviewed source and retain both histories
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
-        run: |
-          git config user.name 'CajunWebPro integration review'
-          git config user.email 'integration-review@users.noreply.github.com'
-          python3 tools/integration/after_backups_assemble.py
-      - name: Record source on this existing integration branch only
+      - name: Verify committed consolidation without rewriting branches
         id: record
         env:
-          SOURCE_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: '1'
           EXPECTED_HEAD: ${{ github.sha }}
         run: |
-          python3 - <<'PY'
-          import base64,os,subprocess
-          def git(*args):return subprocess.check_output(['git',*args],text=True).strip()
-          branch='refs/heads/chatgpt/1261-main-reconcile-20261030'
-          if git('ls-remote','origin',branch).split()[0]!=os.environ['EXPECTED_HEAD']:raise SystemExit('Concurrent candidate change; refuse overwrite')
-          if git('ls-remote','origin','refs/heads/main').split()[0]!='1c44ca120e7768998fafa720b3e1c4c85990c330':raise SystemExit('Main changed; reconcile before publication')
-          if subprocess.run(['git','diff','--cached','--quiet']).returncode:
-              subprocess.run(['git','commit','-m','Integrate reviewed backups with licensing portal and 20i; retain current-owner denial tests'],check=True)
-              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
-              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
-              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('sha='+git('rev-parse','HEAD')+'\n')
-          print('Exact combined source:',git('rev-parse','HEAD'))
-          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git merge-base --is-ancestor 771556e701103a3db9f757da05da9b2357a4247b HEAD
+          git merge-base --is-ancestor 1c44ca120e7768998fafa720b3e1c4c85990c330 HEAD
+          git merge-base --is-ancestor 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Preserve tracked source for independent inspection
         run: |
           mkdir -p qa/consolidation-source

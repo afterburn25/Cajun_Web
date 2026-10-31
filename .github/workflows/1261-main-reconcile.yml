@@ -1,4 +1,4 @@
-name: 1.26.1 main-history reconciliation
+name: Combined source provenance and release retention
 on:
   push:
     branches: [chatgpt/1261-main-reconcile-20261030]
@@ -13,8 +13,6 @@ jobs:
     if: github.ref == 'refs/heads/chatgpt/1261-main-reconcile-20261030'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    permissions:
-      contents: write
     outputs:
       source_sha: ${{ steps.record.outputs.source_sha }}
     env:
@@ -25,36 +23,17 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Reconcile only the reviewed main history without modifying runtime
-        env:
-          EXPECTED_HEAD: ${{ github.sha }}
-        run: |
-          git config user.name 'CajunWebPro reconciliation builder'
-          git config user.email 'reconciliation-builder@users.noreply.github.com'
-          python3 tools/integration/reconcile_main.py
-      - name: Record merge on isolated branch with concurrent-head checks
+      - name: Verify the recorded combined ancestry without source mutation
         id: record
         env:
           EXPECTED_HEAD: ${{ github.sha }}
-          SOURCE_TOKEN: ${{ github.token }}
         run: |
-          python3 - <<'PY'
-          import base64,os,subprocess
-          def git(*args):return subprocess.check_output(['git',*args],text=True).strip()
-          branch='refs/heads/chatgpt/1261-main-reconcile-20261030'
-          if git('ls-remote','origin','refs/heads/main').split()[0]!='0099b9190756c31e690b83b2cdf93c366de03f5c':
-              raise SystemExit('Main advanced; reconcile it before any push')
-          if git('ls-remote','origin',branch).split()[0]!=os.environ['EXPECTED_HEAD']:
-              raise SystemExit('Candidate branch moved; refuse overwrite')
-          if git('status','--porcelain'):raise SystemExit('Dirty merge candidate')
-          head=git('rev-parse','HEAD')
-          if head!=os.environ['EXPECTED_HEAD']:
-              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
-              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
-              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
-          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('source_sha='+head+'\n')
-          print('Exact reconciled source:',head)
-          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git merge-base --is-ancestor 771556e701103a3db9f757da05da9b2357a4247b HEAD
+          git merge-base --is-ancestor 1c44ca120e7768998fafa720b3e1c4c85990c330 HEAD
+          git merge-base --is-ancestor 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD
+          test -z "$(git status --porcelain)"
+          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Preserve exact reconciliation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -76,11 +55,11 @@ jobs:
           ref: ${{ needs.reconcile.outputs.source_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Require preserved main ancestry and exact delivered application
+      - name: Require preserved main ancestry and exact reviewed combined application
         run: |
           git merge-base --is-ancestor 0099b9190756c31e690b83b2cdf93c366de03f5c HEAD
           git merge-base --is-ancestor 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD
-          git diff --exit-code 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD -- site foundation tools/structure tools/build.py VERSION START-HERE.txt
+          git diff --exit-code 771556e701103a3db9f757da05da9b2357a4247b HEAD -- site foundation tools/structure tools/build.py VERSION START-HERE.txt
           python3 tools/build.py --refresh
           git diff --exit-code
           python3 tools/check_docs.py
@@ -103,8 +82,10 @@ jobs:
           import json,os,subprocess
           from pathlib import Path
           r=json.loads(Path('docs/MAIN_RECONCILIATION_1.26.1.json').read_text())
-          assert r['runtime_matches_delivered_release'] is True
-          report={'passed':True,'source_sha':os.environ['CWP_SOURCE_SHA'],'main_ancestor':r['main_sha'],'release_ancestor':r['release_sha'],'runtime_byte_identical':True,'scope':'Ancestry, exact shipping bytes, sandbox secret isolation, portable policies and clean-source build. Full main PR checks remain separate; no live operations.'}
+          assert r['runtime_matches_delivered_release'] is True  # Historical immutable 1.26.1 receipt.
+          combined=json.loads(Path('docs/CONSOLIDATION_AFTER_BACKUPS.json').read_text())
+          assert combined['main']=='1c44ca120e7768998fafa720b3e1c4c85990c330'
+          report={'passed':True,'source_sha':os.environ['CWP_SOURCE_SHA'],'main_ancestor':combined['main'],'release_ancestor':r['release_sha'],'reviewed_combined_runtime':'771556e701103a3db9f757da05da9b2357a4247b','runtime_matches_reviewed_combination':True,'runtime_byte_identical_to_delivered_release':False,'scope':'Current combined runtime including reviewed backups; original delivered archive stays immutable. Sandbox isolation, portable policies and clean-source build; full native/installed checks remain separate. No live operations.'}
           Path('qa/main-reconciliation/results.json').write_text(json.dumps(report,indent=2)+'\n')
           PY
       - name: Preserve reports without replacing delivered ZIPs

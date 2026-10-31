@@ -27,7 +27,16 @@ try{
     support_ok('Incompatible support data shape retained',one('SHOW COLUMNS FROM '.table('support_clients')." LIKE 'allowed'")['Type']==='varchar(3)');
     db()->exec('ALTER TABLE '.table('support_clients').' MODIFY allowed TINYINT NOT NULL');support_migrate($password);support_migrate($password);
     support_ok('Interrupted and repeated migration preserves client credentials',support_ready()&&all('SELECT * FROM '.table('studio_clients'))===$original);
-    support_denied('Unconfigured client policy denies access',fn()=>support_start(1));
+    $staff=staff_save(0,'Support viewer','viewer@example.invalid','administrator',true,['support.login'],$password);$link=staff_invite($staff,$password);parse_str((string)parse_url($link,PHP_URL_FRAGMENT),$parts);staff_activate($parts['token'],$password);support_actor($staff);
+    $beforeDenied=(int)query('SELECT COUNT(*) FROM '.table('support_sessions'))->fetchColumn();
+    support_denied('Unconfigured client policy denies delegated staff access',fn()=>support_start(1));
+    support_ok('Denied staff review creates no support session',(int)query('SELECT COUNT(*) FROM '.table('support_sessions'))->fetchColumn()===$beforeDenied);
+    support_actor(1);$ownerReview=support_start(1);$ownerContext=support_resolve($ownerReview);
+    support_ok('Owner can review an active client without delegating staff access',$ownerContext!==null&&$ownerContext['session']['context']==='Owner account review'&&(int)$ownerContext['actor']['id']===1&&(int)$ownerContext['client']['id']===1);
+    support_ok('Owner review is distinctly audited and preserves customer credentials',one('SELECT action FROM '.table('support_events').' WHERE support_id=? ORDER BY id LIMIT 1',[$ownerReview])['action']==='owner.review.start'&&all('SELECT * FROM '.table('studio_clients'))===$original);
+    support_end($ownerReview);support_actor($staff);
+    support_denied('Owner review does not grant delegated staff access',fn()=>support_start(1));
+    support_actor(1);
     support_policy(1,true,$password);support_policy(2,true,$password);
     $_SESSION['client_id']=2;$_SESSION['client_auth']=$original[1]['auth_version'];$_SESSION['client_login']=$_SESSION['client_last']=time();$clientKeys=array_intersect_key($_SESSION,array_flip(['client_id','client_auth','client_login','client_last']));
     $id=support_start(1);$binding=$_SESSION['support_binding'];$ctx=support_resolve($id);$GLOBALS['cwp_support']=$ctx;
@@ -53,7 +62,7 @@ try{
     $id=support_start(1);support_policy(1,false,$password);support_ok('Client policy revocation ends live context',support_resolve($id)===null);support_policy(1,true,$password);
     $id=support_start(1);query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=1',[str_repeat('d',32)]);support_ok('Client credential change revokes support',support_resolve($id)===null);
     $id=support_start(1);query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');support_ok('Disabled client revokes support',support_resolve($id)===null);query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
-    $staff=staff_save(0,'Support viewer','viewer@example.invalid','administrator',true,['support.login'],$password);$link=staff_invite($staff,$password);parse_str((string)parse_url($link,PHP_URL_FRAGMENT),$parts);staff_activate($parts['token'],$password);support_actor($staff);
+    support_actor($staff);
     support_denied('Non-owner cannot change client support authorization',fn()=>support_policy(1,true,$password));
     $id=support_start(1);support_denied('View permission does not grant troubleshooting writes',fn()=>support_message($id,1,'No write grant'));
     support_ok('View permission does not grant file download',!support_can('support.download'));
