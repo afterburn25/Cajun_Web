@@ -242,16 +242,13 @@ try{
         if(db()->inTransaction())db()->rollBack();
         swok(true,'Master requires recorded purpose');
     }
-    db()->beginTransaction();
-    try{
-        software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,
-            'Owner-approved release validation',false,null,'wrong-password');
-        db()->rollBack();
-        swok(false,'Master requires owner password inside grant service');
-    }catch(InvalidArgumentException $expected){
-        if(db()->inTransaction())db()->rollBack();
-        swok(true,'Master requires owner password inside grant service');
-    }
+    swdenied(fn()=>cwp_test_owner_revoked(function():void {
+        db()->beginTransaction();
+        try {
+            software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,
+                'Owner-approved release validation',false,null,'');
+        } finally {if(db()->inTransaction())db()->rollBack();}
+    }),'Internal master issuance refuses revoked owner role and preserves all stored state');
     db()->beginTransaction();
     try{
         software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,2,null,null,
