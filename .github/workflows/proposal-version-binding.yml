@@ -1,0 +1,163 @@
+name: Exact proposal version decision acceptance
+on:
+  push:
+    branches: [chatgpt/proposal-version-binding-20261031]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: proposal-version-binding-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/proposal-version-binding-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply exact reviewed proposal correction and strict fixture follow-up
+        run: |
+          git merge-base --is-ancestor 97c8b71c1ac807ee9e71b62331f00d78386c0ac2 HEAD
+          if test ! -f docs/PROPOSAL_VERSION_BINDING_FINAL.json; then
+            python3 tools/integration/proposal_version_binding_patch.py
+          fi
+          python3 tests/proposal_binding_fixture_patch.py
+          python3 tools/build.py --refresh
+          mkdir -p qa/proposal-binding
+          php tests/proposal_version_binding.php > qa/proposal-binding/modeled.json
+          php tests/proposals/run.php > qa/proposal-binding/foundation.log
+          git diff --check
+          git diff --exit-code -- .github/workflows
+      - name: Record expanded ordinary source without changing any other branch
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- site tests docs
+          if ! git diff --cached --quiet; then
+            git commit -m 'Bind customer proposal decisions to exact reviewed version and current identity'
+          fi
+          python3 - <<'PY'
+          import os,base64,subprocess
+          branch='refs/heads/chatgpt/proposal-version-binding-20261031'
+          old=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=old:raise SystemExit('Proposal branch advanced; do not overwrite concurrent work')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=old:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Exact proposal source',head)
+          PY
+      - name: Preserve tracked source and honest failure evidence
+        if: always()
+        run: |
+          mkdir -p qa/proposal-binding
+          git archive --format=tar.gz HEAD > qa/proposal-binding/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/proposal-binding/identity.txt
+          git status --porcelain > qa/proposal-binding/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: proposal-binding-source-${{ github.sha }}
+          path: qa/proposal-binding/
+          if-no-files-found: error
+          retention-days: 14
+  installed:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare disposable runtime, isolated database and browser
+        run: |
+          docker build -t cwp-proposal-review - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-proposal-review php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/proposal-bin" qa/proposal-binding
+          cat > "$RUNNER_TEMP/proposal-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-proposal-review php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/proposal-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/proposal-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/proposal-bin" >> "$GITHUB_PATH"
+          python3 -m venv "$RUNNER_TEMP/proposal-venv"
+          "$RUNNER_TEMP/proposal-venv/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/proposal-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Exercise real proposal SQL lifecycle and exact state retention
+        run: |
+          php tests/proposal_binding_seed.php config
+          php tests/proposals_native.php > qa/proposal-binding/native.stdout.log 2> qa/proposal-binding/native.stderr.log
+          test ! -s qa/proposal-binding/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path('qa/proposal-version-native.json');r=json.loads(p.read_text())
+          assert r['passed'] is True and len(r['checks'])>=40 and all(c['passed'] is True for c in r['checks'])
+          r['source_sha']=os.environ['CWP_SOURCE_SHA'];p.write_text(json.dumps(r,indent=2)+'\n')
+          print('Actual database checks passed',len(r['checks']))
+          PY
+      - name: Test installed HTTP and real stale browser tab followed by fresh approval
+        run: |
+          "$RUNNER_TEMP/proposal-venv/bin/python" tests/proposal_binding_browser.py
+          git diff --exit-code
+      - name: Preserve all test reports and synthetic browser captures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: proposal-binding-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: |
+            qa/proposal-binding/
+            qa/proposal-version-native.json
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,installed]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Exact proposal correction passed isolated native and installed-browser checks on both databases. This validates the pending proposal branch only: current main integration, current-session admin reconciliation and full release/upgrade checks remain separate. No real customer terms, payment, mail or deployment.' >> "$GITHUB_STEP_SUMMARY"
