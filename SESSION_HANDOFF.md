@@ -90,3 +90,11 @@ Do not deploy live, issue real provider writes/charges/refunds/customer mail/SSH
 ## Prior full handoff and evidence
 
 The complete earlier handoff, source pins, local evidence paths and dated run IDs remain at [pre-takeover SESSION_HANDOFF.md](https://github.com/afterburn25/Cajun_Web/blob/a86f6f4fa592e6f715a9420aec8de4622258642e/SESSION_HANDOFF.md). Also read [current continuation evidence](docs/ROADMAP_CONTINUATION_2026_10_19.md), [release workflow](docs/RELEASE_WORKFLOW.md), [whole roadmap](docs/ROADMAP.md) and [20i requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). Historical allocations do not override the new owner directive; historical results remain historical.
+
+
+## Historical source entries retained while integrating PR #162
+
+## 2026-10-19 — backup manifest depth exclusions (non-20i)
+
+Coordinator review correction landed on `devin/non20i-backups-foundation` (`66fe1439`): the manifest `FORBIDDEN` pattern anchored exact secrets at the path root, so a manifest could describe nested secrets such as `includes/config.php`. All protected-path rules (`config.php`, `proxy-config.php`, `.installed.php`, `.env`, `*.key`/`*.pem`/`*.p12`, any `storage/` component, `payment-master` names) now apply per path component at any depth. Collection still skips real forbidden files rather than failing. Nested-depth rejection cases added to `tests/backups/run.php`; the isolated suite passes 37 checks on PHP 8.4.25. This branch is foundation-only — the deployed `site/includes` mirror receives the same pattern on the descendant branches. No merge, deployment, provider action or release.
+

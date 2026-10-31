@@ -3687,3 +3687,25 @@ ebebd533 run 39855317065 was cancelled as superseded.
 - Fix `f7f6b991`: `detail VARCHAR(400) COLLATE utf8mb4_bin` in `schema_statements`; `studio_migrate` applies the same guarded MODIFY for existing installs; installer inventory refreshed (280/280 verifier checks; build refresh green).
 - Run `40114885004` (push-triggered on `f7f6b991`) is the replacement run; the cancelled `40094584278` evidence is preserved.
 - Next: classify `40114885004`; if provider-settings renders drop, rerun the ceiling-hit nameserver/docroots lanes.
+
+
+## Historical source entries retained while integrating PR #162
+
+## Port A-03 backup/restore contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); backup/recovery is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-backups-foundation`.
+
+Actions: extracted the preserved `devin/backups-foundation` slice — `foundation/backups/BackupManifest.php`, `foundation/backups/RestorePlan.php`, `tests/backups/run.php`, `.github/workflows/backups.yml`, `docs/BACKUPS_FOUNDATION.md` — skipping that branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters to the workflow; corrected the doc's ownership line (application layers remain in Devin's scope) and check count (33, not 31).
+
+Tests: `php -l` clean on all three PHP files; `php tests/backups/run.php` → 33/33 checks pass on local PHP 8.4. CI runs the same suite in official PHP 8.2/8.4 images with `--network none`. No database, filesystem, archive or application paths exist yet — this is the pure contract layer only.
+
+Next: commit, push, open bounded PR, update issue #157; later roadmap work integrates the manifest/restore adapter and the isolated restore-drill acceptance.
+
+
+## 2026-10-19 — backup manifest depth exclusions (non-20i)
+
+Request: resolve the coordinator review finding that protected backup scope items matched only at the path root. Starting head: `385f3fed` on `devin/non20i-backups-foundation`; enclosing commit `66fe1439`.
+
+Changed: `foundation/backups/BackupManifest.php` — `FORBIDDEN` rewritten component-aware (`(^|/)` anchors for exact names, extension and `storage`/`payment-master` rules at any depth); `tests/backups/run.php` — nested rejection cases (`includes/config.php`, `app/vars/.env`, `deploy/storage/keys`, `releases/v2/.installed.php`) plus retained collection-skip behavior.
+
+Verification and scope: `php tests/backups/run.php` — 37 checks on PHP 8.4.25; isolated manifest/restore-plan contract only. The deployed `site/includes/foundation/backups/BackupManifest.php` mirror carries the same pattern on the descendant runtime/drill/export branches. Next: descendant branches consume via merge; Codex owns integration. No deployment, provider call, merge or release.

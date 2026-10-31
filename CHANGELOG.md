@@ -204,6 +204,10 @@ Record reviewedcccf85bf, its first full38927120383, preserved2a/9779 failure evi
 
 Record exact2a focused3,020 checks, matching Windows/Linux packages and289 recovery checks alongside the original full run's tokenizer test-dependency failure and skipped HTTP. Preserve819c's terminal failure/99 missing reports and9779's newly canceled native-and-browser job with failed aggregate, pending diagnosis. Update current entry points and the159/161 correction priority; PRs163–170 are unaccepted proposals/foundations. This documentation-only descendant of82667afb imports no runtime and changes no installer, version, release or deployment.
 
+## Port A-03 backup/restore contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-backups-foundation` from main `595ac9c3`, continuing preserved `devin/backups-foundation`. Adds `foundation/backups/BackupManifest.php` (sealed sha256 item scopes; private/secret paths refused at construction; retention never born expired) and `RestorePlan.php` (preview→authorized→applied/abandoned; exact confirmation phrase, named actor, expired backups refused, newer formats rejected) with 33 pure contract checks in `tests/backups/run.php` and a PHP 8.2/8.4 workflow lane. No archive format, filesystem writes, database restore, scheduling or application integration — the adapter and restore drill remain future work. No release or deployment.
+
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
 Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
