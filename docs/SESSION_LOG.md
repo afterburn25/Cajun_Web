@@ -3744,3 +3744,16 @@ Actions: extracted the preserved `devin/notifications` slice — five `foundatio
 Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
 
 Next: commit, push, open bounded PR, update #157.
+
+
+## Historical source entries retained while integrating PR #166
+
+## Port A-02 content-revision contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-revisions-foundation`.
+
+Actions: extracted the preserved `devin/revisions-foundation` slice — four `foundation/revisions/` classes, `tests/revisions/run.php`, `revisions.yml`, `docs/REVISIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording.
+
+Tests: `php -l` clean; `php tests/revisions/run.php` → 30/30 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
