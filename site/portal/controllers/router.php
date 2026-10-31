@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
+// License and financing links must reach their authenticated views, not the project fallback.
+$softwareRequested=array_key_exists('software',$_GET);$financeRequested=array_key_exists('finance',$_GET);
+if($softwareRequested||$financeRequested){
+    header('Cache-Control: no-store, private');
+    if(($softwareRequested&&$financeRequested)||($softwareRequested&&($_GET['software']??null)!=='1')
+        ||($financeRequested&&(!is_string($_GET['finance'])||($_GET['finance']!=='1'&&!preg_match('/^[a-f0-9]{32}$/D',$_GET['finance']))))){
+        fail_page('Invalid software or financing request.',400);
+    }
+}
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
@@ -56,6 +65,9 @@ if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403)
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
 require CWP_CODE_ROOT.'/portal/views/auth.php';
+if($softwareRequested){require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);}
+if($financeRequested){require_once CWP_CODE_ROOT.'/portal/views/financing.php';license_finance_portal_render($client,$_GET['finance'],$error);}
+
 if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);
 if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);

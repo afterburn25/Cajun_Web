@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||!defined('CWP_BOOT')||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 
+require_once __DIR__.'/release_expected_fault.php';
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
@@ -37,21 +38,39 @@ rb_ok('Recognized empty interrupted financing setups resume and clear all durabl
     setting('license_financing_schema_pending')===''&&setting('license_finance_offers_schema_pending')===''
     &&setting('license_finance_gateway_schema_pending')==='');
 
-// A stale owner credential must be checked by the commit helper itself, before
-// looking up or mutating payment/subscription records after remote readback.
+// Commit helpers must recheck current owner authority after a remote readback.
+// Administrator passwords are no longer repeated; revoke the owner role instead.
 foreach([
-    'One-time finance reconciliation reauthenticates inside its paid transaction'=>
-        fn()=>license_finance_charge_record_paid(0,'810001',1,str_repeat('a',64),null,'Incorrect owner credential'),
-    'Initial finance subscription reconciliation reauthenticates inside finalization'=>
-        fn()=>license_finance_subscription_finalize(str_repeat('a',32),'810001',[],[],'pending_first_payment','Incorrect owner credential'),
-    'Replacement reconciliation reauthenticates inside finalization'=>
-        fn()=>license_finance_subscription_replacement_finalize(str_repeat('a',32),'810001','810002',[],[],'pending_first_payment','canceled','Incorrect owner credential'),
-    'Review-clearing recurring settlement requires current owner credentials'=>
-        fn()=>license_finance_subscription_settle([],'810001',true,'Incorrect owner credential'),
+    'One-time finance reconciliation rechecks current owner role inside its paid transaction'=>
+        fn()=>license_finance_charge_record_paid(0,'810001',1,str_repeat('a',64),null,''),
+    'Initial finance subscription reconciliation rechecks current owner role inside finalization'=>
+        fn()=>license_finance_subscription_finalize(str_repeat('a',32),'810001',[],[],'pending_first_payment',''),
+    'Replacement reconciliation rechecks current owner role inside finalization'=>
+        fn()=>license_finance_subscription_replacement_finalize(str_repeat('a',32),'810001','810002',[],[],'pending_first_payment','canceled',''),
+    'Review-clearing recurring settlement requires current owner authority'=>
+        fn()=>license_finance_subscription_settle([],'810001',true,''),
 ] as $reauthName=>$reauthAttempt){
+    rb_staff();
+    $reauthBefore=[];
+    foreach(['license_finance_charges','license_finance_charge_attempts','license_finance_subscriptions','license_finance_subscription_history','license_finance_subscription_receipts','studio_invoices','invoice_payments','audit'] as $reauthTable){
+        $reauthBefore[$reauthTable]=all('SELECT * FROM '.table($reauthTable));
+    }
+    // Keep the same authenticated user/session and revoke their current owner role.
+    query('UPDATE '.table('staff_profiles')." SET role='administrator',permissions='[]' WHERE user_id=1");
     $reauthDenied=false;
-    try{$reauthAttempt();}catch(InvalidArgumentException $e){$reauthDenied=str_contains($e->getMessage(),'current password');}
-    rb_ok($reauthName,$reauthDenied&&!db()->inTransaction());
+    try{
+        try{$reauthAttempt();}catch(RuntimeException $e){
+            if($e instanceof PDOException)throw $e;
+            $reauthDenied=$e->getMessage()==='Your account does not have access to this action.';
+        }
+        rb_ok($reauthName,$reauthDenied&&!db()->inTransaction());
+        $reauthAfter=[];
+        foreach(array_keys($reauthBefore) as $reauthTable)$reauthAfter[$reauthTable]=all('SELECT * FROM '.table($reauthTable));
+        rb_ok($reauthName.' leaves financial rows and audit unchanged',$reauthAfter===$reauthBefore);
+    }finally{
+        query('UPDATE '.table('staff_profiles')." SET role='owner',permissions='[]' WHERE user_id=1");
+        rb_staff();
+    }
 }
 
 db()->exec('ALTER TABLE '.table('license_financing_rights_grants').' DROP INDEX license_history, ADD INDEX license_history(license_id,created_at,id)');
@@ -161,7 +180,7 @@ $downOffer=license_finance_offer_create(
 );
 save_setting('payments_schema_version','');
 rb_client();
-$downSigned=license_finance_offer_sign((string)$downOffer['id'],1,'Recurring client 1',true,true);
+$downSigned=rb_expected_report(fn()=>license_finance_offer_sign((string)$downOffer['id'],1,'Recurring client 1',true,true),'financing_offers.php');
 rb_ok('Down-payment agreement stays signed when payment-link storage is temporarily unavailable',
     ($downSigned['offer']['status']??'')==='signed'
     &&($downSigned['payment']??null)===null
@@ -244,7 +263,7 @@ $recoverOffer=license_finance_offer_create(
 );
 save_setting('invoice_ledger_schema_version','');
 rb_client();
-$recoverSigned=license_finance_offer_sign((string)$recoverOffer['id'],1,'Recurring client 1',true,true);
+$recoverSigned=rb_expected_report(fn()=>license_finance_offer_sign((string)$recoverOffer['id'],1,'Recurring client 1',true,true),'payments.php');
 rb_staff();
 $recoverRow=license_finance_offer_row((string)$recoverOffer['id']);
 rb_ok('Committed financing signature survives later payment infrastructure failure',
