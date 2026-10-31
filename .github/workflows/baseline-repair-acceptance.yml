@@ -1,0 +1,178 @@
+name: Combined baseline repair acceptance
+on:
+  push:
+    branches: [chatgpt/combined-baseline-repair-20261031]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: baseline-repair-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assemble:
+    if: github.ref == 'refs/heads/chatgpt/combined-baseline-repair-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply only exact reviewed correction files
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          git merge-base --is-ancestor 4c4ebae721baf26e3b0340aadaec618bc9d6c0da HEAD
+          python3 tools/integration/baseline_followup_apply.py
+          python3 tools/build.py --refresh
+          python3 tools/integration/baseline_followup_apply.py
+          python3 - <<'PYTHON'
+          import json,subprocess
+          from pathlib import Path
+          allowed=set()
+          for i in range(3):
+              allowed.update(x['path'] for x in json.loads(Path(f'tools/integration/baseline-repair-{i}.json').read_text())['records'])
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          changed.update(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          assert changed<=allowed, sorted(changed-allowed)
+          PYTHON
+      - name: Record ordinary source on the isolated branch only
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro integration builder'
+          git config user.email 'integration-builder@users.noreply.github.com'
+          git add -- site tests docs PROJECT_STATUS.md SESSION_HANDOFF.md tools/integration/baseline-acceptance-inverses.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Apply reviewed combined-baseline cloud and acceptance corrections'
+          fi
+          python3 - <<'PYTHON'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/combined-baseline-repair-20261031'
+          expected=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=expected:raise SystemExit('Branch moved; do not overwrite concurrent changes')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=expected:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          PYTHON
+      - name: Preserve exact recorded source without installed state
+        run: |
+          mkdir -p qa/consolidation-source
+          git archive --format=tar.gz HEAD > qa/consolidation-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/consolidation-source/identity.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: baseline-repair-source-${{ steps.record.outputs.sha }}
+          path: qa/consolidation-source/
+          if-no-files-found: error
+          retention-days: 14
+  portable:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain all historical assertions and canonical source
+        run: |
+          mkdir -p qa/consolidation-portable
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          python3 tests/acceptance_artifacts_test.py --report qa/consolidation-portable/helpers.json
+          python3 tools/integration/portable_checks.py --root . --out qa/consolidation-portable
+          php tests/master_portal_policy.php
+          python3 tests/baseline_followup_contract.py > qa/consolidation-portable/inverses.json
+          php tests/provider_workspace_focus.php > qa/consolidation-portable/cloud-focus.json
+          php tests/stackcp_prerequisites_views.php qa/consolidation-portable/stackcp-prerequisites.json
+          php tests/stackcp_access_views.php qa/consolidation-portable/stackcp-access.json
+          php tests/twentyi-inventory-reader/run.php > qa/consolidation-portable/inventory-reader.json
+          php tests/current_owner_authority_contract.php > qa/consolidation-portable/authority.json
+          php tests/checkout_authority_contract.php > qa/consolidation-portable/checkout-authority.json
+          php tests/backups/run.php > qa/consolidation-portable/backups.log
+          php tests/backups/prune_atomicity.php > qa/consolidation-portable/prune.json
+          python3 tests/build_guards.py > qa/consolidation-portable/build-guards.log
+          python3 tools/check_docs.py > qa/consolidation-portable/docs.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: baseline-repair-portable-${{ needs.assemble.outputs.sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        database: [mysql,mariadb]
+        shard: [0,1,2]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306','43319:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_IMAGE: cwp-consolidation-php:8.4
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare isolated native runtime and strictly named disposable databases
+        run: |
+          docker build -t "$CWP_TEST_IMAGE" - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          WORKDIR /workspace
+          DOCKER
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");$p->exec("CREATE DATABASE cwp_checkout_test");$p->exec("GRANT ALL ON cwp_checkout_test.* TO ". $p->quote("cwp_test")."@".$p->quote("%"));exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Run complete existing suites and collect failures without calling them successes
+        run: python3 tests/consolidation_native.py --shard ${{ matrix.shard }}
+      - name: Preserve all named results and diagnostics, not private database bytes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: baseline-repair-native-${{ matrix.database }}-${{ matrix.shard }}-${{ needs.assemble.outputs.sha }}
+          path: qa/consolidation-native/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [assemble,portable,native]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'The exact combined baseline passed portable and64 full native suites per database. This is not deployment or approval of unintegrated feature groups. Full installed/upgrade/combined-release checks remain separate.' >> "$GITHUB_STEP_SUMMARY"
