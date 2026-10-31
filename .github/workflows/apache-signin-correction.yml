@@ -1,0 +1,67 @@
+name: Reviewed Apache sign-in test correction
+on:
+  push:
+    branches: [chatgpt/apache-signin-integration-20261031]
+permissions:
+  contents: read
+concurrency:
+  group: apache-signin-correction-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  record:
+    if: github.ref == 'refs/heads/chatgpt/apache-signin-integration-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply the exact reviewed three-file correction
+        run: |
+          git merge-base --is-ancestor 4c4ebae721baf26e3b0340aadaec618bc9d6c0da HEAD
+          python3 tools/integration/apache_signin_correction.py
+          git diff --check
+          python3 -m venv "$RUNNER_TEMP/signin-venv"
+          "$RUNNER_TEMP/signin-venv/bin/pip" install beautifulsoup4
+          mkdir -p qa/apache-signin-correction
+          "$RUNNER_TEMP/signin-venv/bin/python" tests/apache_owner_signin_policy.py > qa/apache-signin-correction/assertion-policy.json
+          python3 tests/acceptance_artifacts_test.py --report qa/apache-signin-correction/retained-helpers.json
+      - name: Record only verified test files on this isolated branch
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          git config user.name 'CajunWebPro reviewed test correction'
+          git config user.email 'integration-review@users.noreply.github.com'
+          python3 - <<'PY'
+          import base64,json,os,subprocess
+          from pathlib import Path
+          def git(*args):return subprocess.check_output(['git',*args],text=True).strip()
+          allowed={'tests/apache_acceptance.py','tests/cloud_site_requests_wiring.py','tools/acceptance-contract.json'}
+          if set(git('diff','--name-only').splitlines())-allowed:raise SystemExit('Unexpected correction scope')
+          if git('ls-files','--others','--exclude-standard'):raise SystemExit('Unexpected untracked source')
+          subprocess.run(['git','add','--',*sorted(allowed)],check=True)
+          if subprocess.run(['git','diff','--cached','--quiet']).returncode:
+              subprocess.run(['git','commit','-m','test(apache): verify actual signed-out recovery form and retain exact predecessor coverage'],check=True)
+          branch='refs/heads/chatgpt/apache-signin-integration-20261031'
+          if git('ls-remote','origin',branch).split()[0]!=os.environ['EXPECTED_HEAD']:raise SystemExit('Branch advanced; refuse overwrite')
+          auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+          env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+          subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          out={'passed':True,'source_sha':git('rev-parse','HEAD'),'tree':git('rev-parse','HEAD^{tree}'),'scope':'Exact test-only correction, retained helper and synthetic-HTML assertions; full Apache acceptance required on incorporation'}
+          Path('qa/apache-signin-correction/source.json').write_text(json.dumps(out,indent=2)+'\n')
+          PY
+      - name: Preserve actual results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: apache-signin-correction-${{ github.sha }}
+          path: qa/apache-signin-correction/
+          if-no-files-found: error
+          retention-days: 14
