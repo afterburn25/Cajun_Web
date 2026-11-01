@@ -21,7 +21,7 @@ function notification_feed_migrate(#[\SensitiveParameter] string $unused=''): vo
         foreach($schemas as $name=>$sql)catalog_validate_schema($name,$sql,$keys[$name]);
         staff_transaction(function()use($actor):void {
             notification_owner();save_setting('notification_feed_version','1');
-            log_event('notifications.setup','Notification storage verified by administrator '.$actor['id']);
+            notification_audit((int)$actor['id'],'notifications.setup','Notification storage verified by administrator '.$actor['id']);
         });
     });
 }

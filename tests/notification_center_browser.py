@@ -38,6 +38,7 @@ try:
     else:raise AssertionError('Installed server unavailable')
     r=submit(owner,admin+'?view=login','login',{'email':'owner@example.invalid','password':'Synthetic owner passphrase 2026'})
     check('Owner establishes actual administrator session',r.status_code==200 and 'view=login' not in r.url)
+    legacy=owner.get(admin+'?view=payment-notifications');check('Existing payment-notification page remains separately routed',legacy.status_code==200 and 'Sandbox notifications' in legacy.text and 'Controlled email delivery' not in legacy.text)
     original_clients=db('SELECT * FROM ci_studio_clients ORDER BY id');original_jobs=db('SELECT * FROM ci_studio_jobs ORDER BY id')
     r=owner.get(url);form=form_for(r,'notifications_setup')
     check('Setup is a CSRF-protected form without a repeated password',form.select_one('[name=csrf]') is not None and not form.select('input[type=password]'))

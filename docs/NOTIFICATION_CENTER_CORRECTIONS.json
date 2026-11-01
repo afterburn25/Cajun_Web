@@ -1,0 +1,276 @@
+{
+  "predecessor": "982c9bfeb5ae6f04c8c240c0bc5330ffff9e163f",
+  "initial_source_receipt": {
+    "base": "366d53b1ed6b367b32664f2b91ee073fc6813544",
+    "reviewed_original": "04457d25a6b577edadcb993f62986fd568033d15",
+    "shipping": {
+      "foundation/notifications/DeliveryAttempt.php": {
+        "before": "4a500efdbc892c49174c21726c27f994d171d874df0f15ca52c7efb8f886d798",
+        "after": "8c60ba6f020814f7d843f7c5066ede54068da6de8af9decd980ad55592996908"
+      },
+      "site/admin/controllers/actions.php": {
+        "before": "a843d78bdad8018ab3afd4041b0b385519ed3eb986930cf117946f72b057abc8",
+        "after": "ed65a76f25c2bf48571e799f8a89e469b3a1b377470dc8d78a93a2ea58bc77be"
+      },
+      "site/admin/controllers/router.php": {
+        "before": "c0f733638c485cdc947e1cd5746f0e195b9c6df483c3dcf247971e1d1a57547a",
+        "after": "32de96ec9d4a597d880b4274e4738d21b211782038c4137c285970c40d274fec"
+      },
+      "site/admin/controllers/studio.php": {
+        "before": "17aaf38b95c2ccdff5c3f8535c2e44eb1c1ef8e8c7c99ced1517e7b5df9dd8ba",
+        "after": "ef5aa79c4e6a12c470109b1823a4e738edb2202b63eff86b94875379b4c0b0e0"
+      },
+      "site/app/billing/attempts.php": {
+        "before": "9493ebc24698c24cf14dad40f79706755f9cb02ccd140c72e6796fd690371c89",
+        "after": "54a83bc2bafd6b5783d246ce01d0e4bdba3524595640b0da57959f1e05aebfd6"
+      },
+      "site/app/billing/catalog.php": {
+        "before": "2d9f051004da4de4c804fb30130fe3e5eb025908aab995b4e5c66d1ab7ccf3f9",
+        "after": "c02f13534979e35a59ec21eda3e11583d342915d749c7f156a4b2b9149a99bf2"
+      },
+      "site/app/marketing/growth.php": {
+        "before": "d9bfd1968fa6bf7700cb9f9a843805a03fc0d2e0c603016983b0913039ab160f",
+        "after": "76cf7570ce45c6157a2889395cd0aebffdb01b1e10de1a008b80e8138836edab"
+      },
+      "site/app/notifications/events.php": {
+        "before": null,
+        "after": "0f370991a4ae0eba1d9e933aed5e8972542e2f4267082898ef73ed4b0c6576e3"
+      },
+      "site/app/notifications/feed.php": {
+        "before": null,
+        "after": "9968652e7f6982cf858dcff4e18377a045a3b080223415a288cd331730a6ee22"
+      },
+      "site/app/notifications/metrics.php": {
+        "before": null,
+        "after": "a42dd6ee32dc3d4621562af5a2e3279daf70184c3247fcac59d1b63bf2fe3e15"
+      },
+      "site/app/notifications/outbox.php": {
+        "before": null,
+        "after": "5dde6c9b96924b0897f3c6d35e9078de1773e79c76a175e19fafb5225acb9612"
+      },
+      "site/app/projects/deliveries.php": {
+        "before": "cad3081076ee482808c66cdbb11a4be38e1c5a9bfeca439587bb92a89ba1b1b4",
+        "after": "b7b316ee9498b2bb6b67ebe69a01cc6ea6717926d8e73d7232ff5cf60c160c1f"
+      },
+      "site/app/staff/accounts.php": {
+        "before": "fdb9d77f4870891676bc69826af22353d37ec9faf736fe80a2e33fadbc6dfedd",
+        "after": "770a254a1be25310872ae0f591c2d9ffa17f3c02538ee0f92ff36b88488ce21d"
+      },
+      "site/database/migrations/notification_feed_migrate.php": {
+        "before": null,
+        "after": "87d081f6508c794190c2768d6c83d274ab9678fa6b3504648194b5f3900c6e9a"
+      },
+      "site/database/schema/notification_feed_schema.php": {
+        "before": null,
+        "after": "b308da2d48363a495219a109091d46e98173522e453fa560db550427f3b9f528"
+      },
+      "site/includes/foundation/notifications/DeliveryAttempt.php": {
+        "before": null,
+        "after": "8c60ba6f020814f7d843f7c5066ede54068da6de8af9decd980ad55592996908"
+      },
+      "site/includes/foundation/notifications/MetricSample.php": {
+        "before": null,
+        "after": "7c34cd89028913d277d631186ca0147c0d75420fe49cc31739c0e170da94c9c7"
+      },
+      "site/includes/foundation/notifications/Notification.php": {
+        "before": null,
+        "after": "39e21158e7a82a8ca2a33c9f9fe1bf7b9ec197e6a29090c9ee6d70e74f660d0f"
+      },
+      "site/includes/foundation/notifications/NotificationFeed.php": {
+        "before": null,
+        "after": "799517b3bac725c3a29bef72a3db4ec4471f849d101500ce8c9b56cc976c7219"
+      },
+      "site/includes/foundation/notifications/NotificationPreferences.php": {
+        "before": null,
+        "after": "93ce3255c86a38b7f4107a795e7b7557bb17eeb5d33bf553daf47dbbfc5b213f"
+      },
+      "site/includes/layout/admin.php": {
+        "before": "ae25c5ac834cf16da548ddd7db34864a5a579415dc338f966f55c657f8870b66",
+        "after": "4adb8bfeb1d90a102819933736ee912cc2ccc9b34610c73ea87cd17fc9c25b27"
+      },
+      "site/includes/layout/notifications.php": {
+        "before": null,
+        "after": "dbb4244f6f59763559f43dda56ab98e423ff5873e92b2aacf2a044f32021de46"
+      },
+      "site/install/inventory.generated.php": {
+        "before": "d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a",
+        "after": "0f7cd91b6ea4725ec4fbfaa9aaea56c6379e83ef26f2540ad19fc75e2b2b2f1b"
+      },
+      "site/portal/controllers/actions.php": {
+        "before": "e0c73a3679def7af53916ecbd6a41cccdbb73b1c05bf0897e2f9e755616c7a4e",
+        "after": "11d65b15c757de869d23ec75889b8c0940d7c53ce4cb9c1423c0bdb52adc52da"
+      },
+      "site/portal/controllers/router.php": {
+        "before": "f67d9b8c99ecb53ecd2efd0ff96fa950f3e895e5bddea5994018cd879528f0ed",
+        "after": "280fb297f489e2ce3f9c7acdaeae91c5040b085cf7ceabe886cb900dee1b080d"
+      },
+      "site/portal/views/workspace.php": {
+        "before": "32669a80a78767e539f3e7d06a0e05474722cf237fc2df37ce97c70a4ba50b20",
+        "after": "38a451e212875950a9f976063d1b733c942b8b5b2b0e50f9bfa11643f5348366"
+      },
+      "tools/build.py": {
+        "before": "62eeb12834aefe7c8769ba75d73c5f88d74922cf212d0e01ea4b566b0a540cbb",
+        "after": "a88a208e86e5522e0eefb8beb665ab5ac7c1d7fcbc47d7c033b54181ebf41772"
+      }
+    },
+    "scope": "Additive notification center and explicit owner-dispatched email queue; initial opt-in off, uncertain transport never auto-retried. Pending exact-source SQL/browser acceptance; no main merge, release or live operation."
+  },
+  "corrections": [
+    {
+      "path": "site/includes/layout/notifications.php",
+      "before": "dbb4244f6f59763559f43dda56ab98e423ff5873e92b2aacf2a044f32021de46",
+      "after": "3b1386919dbc055c906d2da7e1e6a09bb1af75dfc6022b707cfd2e0bfc09bb8f",
+      "edits": [
+        [
+          "notifications_admin_action(",
+          "notification_center_admin_action("
+        ],
+        [
+          "notifications_admin_render(",
+          "notification_center_admin_render("
+        ],
+        [
+          "notifications_portal_action(",
+          "notification_center_portal_action("
+        ],
+        [
+          "notifications_portal_render(",
+          "notification_center_portal_render("
+        ]
+      ]
+    },
+    {
+      "path": "site/admin/controllers/actions.php",
+      "before": "ed65a76f25c2bf48571e799f8a89e469b3a1b377470dc8d78a93a2ea58bc77be",
+      "after": "fbe10761428fe2bf618d3c1be8950fd3d221e4587f1806e5e61c558e79778c5d",
+      "edits": [
+        [
+          "notifications_admin_action(",
+          "notification_center_admin_action("
+        ]
+      ]
+    },
+    {
+      "path": "site/admin/controllers/router.php",
+      "before": "32de96ec9d4a597d880b4274e4738d21b211782038c4137c285970c40d274fec",
+      "after": "bfde0623d32483eb882451f40389366d426c62a4af1cc306352b24b79773c18a",
+      "edits": [
+        [
+          "notifications_admin_render(",
+          "notification_center_admin_render("
+        ]
+      ]
+    },
+    {
+      "path": "site/portal/controllers/actions.php",
+      "before": "11d65b15c757de869d23ec75889b8c0940d7c53ce4cb9c1423c0bdb52adc52da",
+      "after": "e59e33faa529c0fed60c6dfcfd032f93b4d663123220500781154fb133bf890d",
+      "edits": [
+        [
+          "notifications_portal_action(",
+          "notification_center_portal_action("
+        ]
+      ]
+    },
+    {
+      "path": "site/portal/controllers/router.php",
+      "before": "280fb297f489e2ce3f9c7acdaeae91c5040b085cf7ceabe886cb900dee1b080d",
+      "after": "f2f574e32984b20efabe7b712a70622e6bf8c60182c7f58cc9f8a27b2cf0b849",
+      "edits": [
+        [
+          "notifications_portal_render(",
+          "notification_center_portal_render("
+        ]
+      ]
+    },
+    {
+      "path": "site/app/notifications/outbox.php",
+      "before": "5dde6c9b96924b0897f3c6d35e9078de1773e79c76a175e19fafb5225acb9612",
+      "after": "4ed8d00ed7a4588c918df625ada0f9d024847ff87635a964bb0efe8536c61969",
+      "edits": [
+        [
+          "function notification_email_configure(bool $enabled):void {",
+          "/** Security-relevant notification mutations require a committed audit, not best-effort logging. */\nfunction notification_audit(int $actor,string $action,string $detail):void {\n    if(!db()->inTransaction()||$actor<1||!in_array($action,['notifications.setup','notifications.email.configure','notifications.email.claim'],true))throw new LogicException('Notification audit requires its authorized mutation transaction.');\n    query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,$action,substr($detail,0,400),gmdate('Y-m-d H:i:s')]);\n}\nfunction notification_email_configure(bool $enabled):void {"
+        ],
+        [
+          "log_event('notifications.email.configure',",
+          "notification_audit((int)$owner['id'],'notifications.email.configure',"
+        ],
+        [
+          "log_event('notifications.email.claim',",
+          "notification_audit((int)$owner['id'],'notifications.email.claim',"
+        ]
+      ]
+    },
+    {
+      "path": "site/database/migrations/notification_feed_migrate.php",
+      "before": "87d081f6508c794190c2768d6c83d274ab9678fa6b3504648194b5f3900c6e9a",
+      "after": "9ed8f7a87b1262bf496a754e652ea02587ac3e77d6f486f1f81b029614cdd866",
+      "edits": [
+        [
+          "log_event('notifications.setup',",
+          "notification_audit((int)$actor['id'],'notifications.setup',"
+        ]
+      ]
+    },
+    {
+      "path": "tests/notification_center_browser.py",
+      "before": "b702c38c6f6e9006676476ddd80d3b8e7de452272b2e4ef968f3f1c502541708",
+      "after": "65928e794dd2f255eb0b34610563b46bf658d280344c96a64cc80e13ff009088",
+      "edits": [
+        [
+          "    original_clients=db('SELECT * FROM ci_studio_clients ORDER BY id');",
+          "    legacy=owner.get(admin+'?view=payment-notifications');check('Existing payment-notification page remains separately routed',legacy.status_code==200 and 'Sandbox notifications' in legacy.text and 'Controlled email delivery' not in legacy.text)\n    original_clients=db('SELECT * FROM ci_studio_clients ORDER BY id');"
+        ]
+      ]
+    },
+    {
+      "path": "tests/notification_center_native.php",
+      "before": "6e13b97ba4870129360024ebff76d9c2bff4c0046271ef5ef152fc917e071c88",
+      "after": "85e707a0728272247667f4b2490c7730c6eb80ce353963814b291765556cb27b",
+      "edits": [
+        [
+          "    nc_owner();notification_email_configure(true);$queued=nc_emit('queued');",
+          "    nc_owner();$savedSettings=all('SELECT * FROM '.table('settings').' ORDER BY name');$auditError=null;\n    db()->exec(\"CREATE TRIGGER notifyci_fail_configure BEFORE INSERT ON notifyci_audit FOR EACH ROW BEGIN IF NEW.action='notifications.email.configure' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic configure failure'; END IF; END\");\n    try{notification_email_configure(true);}catch(PDOException $e){$auditError=$e;}finally{db()->exec('DROP TRIGGER notifyci_fail_configure');}\n    nc_ok('Failed configuration audit cannot enable email', $auditError!==null&&str_contains($auditError->getMessage(),'synthetic configure failure')&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$savedSettings&&!db()->inTransaction());\n    notification_email_configure(true);$queued=nc_emit('queued');"
+        ]
+      ]
+    }
+  ],
+  "after": {
+    "docs/NOTIFICATION_CENTER_INTEGRATION.md": "cd8d4c7dc405cb4cc1ff6d000ca0ee31d0f158e3f6b84fd82c34f65fb9bb1feb",
+    "docs/NOTIFICATION_CENTER_SOURCE.json": "071e7b5e47124b13cb247428100710d4186d95ad24f8ae03dcfbd5dd06ae3578",
+    "foundation/notifications/DeliveryAttempt.php": "8c60ba6f020814f7d843f7c5066ede54068da6de8af9decd980ad55592996908",
+    "site/admin/controllers/actions.php": "fbe10761428fe2bf618d3c1be8950fd3d221e4587f1806e5e61c558e79778c5d",
+    "site/admin/controllers/router.php": "bfde0623d32483eb882451f40389366d426c62a4af1cc306352b24b79773c18a",
+    "site/admin/controllers/studio.php": "ef5aa79c4e6a12c470109b1823a4e738edb2202b63eff86b94875379b4c0b0e0",
+    "site/app/billing/attempts.php": "54a83bc2bafd6b5783d246ce01d0e4bdba3524595640b0da57959f1e05aebfd6",
+    "site/app/billing/catalog.php": "c02f13534979e35a59ec21eda3e11583d342915d749c7f156a4b2b9149a99bf2",
+    "site/app/marketing/growth.php": "76cf7570ce45c6157a2889395cd0aebffdb01b1e10de1a008b80e8138836edab",
+    "site/app/notifications/events.php": "0f370991a4ae0eba1d9e933aed5e8972542e2f4267082898ef73ed4b0c6576e3",
+    "site/app/notifications/feed.php": "9968652e7f6982cf858dcff4e18377a045a3b080223415a288cd331730a6ee22",
+    "site/app/notifications/metrics.php": "a42dd6ee32dc3d4621562af5a2e3279daf70184c3247fcac59d1b63bf2fe3e15",
+    "site/app/notifications/outbox.php": "4ed8d00ed7a4588c918df625ada0f9d024847ff87635a964bb0efe8536c61969",
+    "site/app/projects/deliveries.php": "b7b316ee9498b2bb6b67ebe69a01cc6ea6717926d8e73d7232ff5cf60c160c1f",
+    "site/app/staff/accounts.php": "770a254a1be25310872ae0f591c2d9ffa17f3c02538ee0f92ff36b88488ce21d",
+    "site/database/migrations/notification_feed_migrate.php": "9ed8f7a87b1262bf496a754e652ea02587ac3e77d6f486f1f81b029614cdd866",
+    "site/database/schema/notification_feed_schema.php": "b308da2d48363a495219a109091d46e98173522e453fa560db550427f3b9f528",
+    "site/includes/layout/admin.php": "4adb8bfeb1d90a102819933736ee912cc2ccc9b34610c73ea87cd17fc9c25b27",
+    "site/includes/layout/notifications.php": "3b1386919dbc055c906d2da7e1e6a09bb1af75dfc6022b707cfd2e0bfc09bb8f",
+    "site/portal/controllers/actions.php": "e59e33faa529c0fed60c6dfcfd032f93b4d663123220500781154fb133bf890d",
+    "site/portal/controllers/router.php": "f2f574e32984b20efabe7b712a70622e6bf8c60182c7f58cc9f8a27b2cf0b849",
+    "site/portal/views/workspace.php": "38a451e212875950a9f976063d1b733c942b8b5b2b0e50f9bfa11643f5348366",
+    "tests/notification_center_browser.py": "65928e794dd2f255eb0b34610563b46bf658d280344c96a64cc80e13ff009088",
+    "tests/notification_center_native.php": "85e707a0728272247667f4b2490c7730c6eb80ce353963814b291765556cb27b",
+    "tests/notification_integration_contract.py": "1fdcdc9510ce438a2887b18259703b1189a7b4e12bc927671ff0a77fd0bb493d",
+    "tests/notifications/run.php": "ecd0df0b3d01dc9382940cd75a76a1f71cf0c57b5a61d9790c5437c07dafc4eb",
+    "tests/tickets_integration_contract.py": "343c65d241c60c519c2d89be1663e081b4cc94c1e7b694296009c723381e17f0",
+    "tools/build.py": "a88a208e86e5522e0eefb8beb665ab5ac7c1d7fcbc47d7c033b54181ebf41772",
+    "site/includes/foundation/notifications/DeliveryAttempt.php": "8c60ba6f020814f7d843f7c5066ede54068da6de8af9decd980ad55592996908",
+    "site/includes/foundation/notifications/MetricSample.php": "7c34cd89028913d277d631186ca0147c0d75420fe49cc31739c0e170da94c9c7",
+    "site/includes/foundation/notifications/Notification.php": "39e21158e7a82a8ca2a33c9f9fe1bf7b9ec197e6a29090c9ee6d70e74f660d0f",
+    "site/includes/foundation/notifications/NotificationFeed.php": "799517b3bac725c3a29bef72a3db4ec4471f849d101500ce8c9b56cc976c7219",
+    "site/includes/foundation/notifications/NotificationPreferences.php": "93ce3255c86a38b7f4107a795e7b7557bb17eeb5d33bf553daf47dbbfc5b213f",
+    "site/install/inventory.generated.php": "01e7eb86328607e3582bf40cd6af6ed3c50334cbbcdfc92ae6fb6d76084fdc05"
+  },
+  "scope": "Preserve existing payment inbox; fail closed before transport if notification audit fails. Initial failed41337802825 retained; no installed pass inferred."
+}

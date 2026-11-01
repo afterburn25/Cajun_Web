@@ -3,10 +3,15 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 use CajunWebPro\Foundation\Notifications\DeliveryAttempt;
+/** Security-relevant notification mutations require a committed audit, not best-effort logging. */
+function notification_audit(int $actor,string $action,string $detail):void {
+    if(!db()->inTransaction()||$actor<1||!in_array($action,['notifications.setup','notifications.email.configure','notifications.email.claim'],true))throw new LogicException('Notification audit requires its authorized mutation transaction.');
+    query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,$action,substr($detail,0,400),gmdate('Y-m-d H:i:s')]);
+}
 function notification_email_configure(bool $enabled):void {
     staff_locked(fn()=>staff_transaction(function()use($enabled):void {
         $owner=notification_owner();notifications_feed_require();save_setting('notification_email_enabled',$enabled?'1':'0');
-        log_event('notifications.email.configure',($enabled?'Enabled':'Paused').' future notification email queue by administrator '.$owner['id']);
+        notification_audit((int)$owner['id'],'notifications.email.configure',($enabled?'Enabled':'Paused').' future notification email queue by administrator '.$owner['id']);
     }));
 }
 function notification_outbox_pump(int $limit=3,?callable $transport=null):array {
@@ -32,7 +37,7 @@ function notification_outbox_one(string $id,?callable $transport=null):string {
                 query('UPDATE '.table('notification_deliveries')." SET state='skipped',next_at=NULL,last_error=?,updated_at=? WHERE id=?",['Recipient access or email preference no longer permits this notification.',gmdate('Y-m-d H:i:s'),$d['id']]);return null;
             }
             query('UPDATE '.table('notification_deliveries')." SET state='sending',attempts=attempts+1,next_at=NULL,last_error='',updated_at=? WHERE id=? AND state=? AND attempts=?",[gmdate('Y-m-d H:i:s'),$d['id'],$d['state'],(int)$d['attempts']]);
-            log_event('notifications.email.claim','Notification '.$id.' claimed by administrator '.$owner['id']);
+            notification_audit((int)$owner['id'],'notifications.email.claim','Notification '.$id.' claimed by administrator '.$owner['id']);
             $d['recipient_email']=$recipient['email'];$d['model']=$model;return $d;
         });
         if($claim===null)return 'not_due';

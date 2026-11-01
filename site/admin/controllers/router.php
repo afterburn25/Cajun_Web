@@ -70,7 +70,7 @@ if($view==='website-review')reviews_admin_render($error);
 if(in_array($view,['consultations','consultation','consultation-settings'],true))appointments_admin_render($view,$error);
 if(in_array($view,['mail-templates','mail-template'],true))mail_templates_admin_render($view,$error);
 if($view==='staff'){staff_admin_render($user,$error);exit;}
-if($view==='notifications')notifications_admin_render($user,$error);
+if($view==='notifications')notification_center_admin_render($user,$error);
 if($view==='backups')backups_admin_render($user,$error);
 if($view==='support')support_admin_render($user,$error);
 if(in_array($view,['catalog','catalog-invoice'],true))catalog_admin_render($view,$user,$error);

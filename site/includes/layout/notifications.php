@@ -24,7 +24,7 @@ function notification_prefs_save(string $audience,int $id):void {
         foreach(Notification::KINDS as $kind)query('INSERT INTO '.table('notification_prefs').' (audience,recipient_id,kind,email,updated_at) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE email=VALUES(email),updated_at=VALUES(updated_at)',[$audience,$id,$kind,posted('email_'.$kind,1)==='1'?1:0,gmdate('Y-m-d H:i:s')]);
     }));
 }
-function notifications_admin_action(string $action):never {
+function notification_center_admin_action(string $action):never {
     if($action==='notifications_setup'){
         if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you saved a database and private-storage backup.');
         notification_feed_migrate();flash('Notification center enabled. Email remains separately controlled.');redirect(admin_url('notifications'));
@@ -44,7 +44,7 @@ function notifications_admin_action(string $action):never {
     else throw new InvalidArgumentException('Unknown notification action.');
     flash('Notification preferences or read state saved.');redirect(admin_url('notifications'));
 }
-function notifications_portal_action(string $action,?array $client):never {
+function notification_center_portal_action(string $action,?array $client):never {
     if(!$client)throw new RuntimeException('Sign in to your notification center.');$id=(int)$client['id'];
     if($action==='notification_client_mark')notification_mark('client',$id,posted('id',32),posted('read',1)==='1');
     elseif($action==='notification_client_mark_all')notification_mark_all('client',$id);
@@ -52,7 +52,7 @@ function notifications_portal_action(string $action,?array $client):never {
     else throw new InvalidArgumentException('Unknown notification action.');
     flash('Saved.');redirect(studio_url(['notifications'=>1]));
 }
-function notifications_admin_render(array $user,string $error):never {
+function notification_center_admin_render(array $user,string $error):never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     if(support_current()||array_key_exists('support',$_GET))fail_page('Return to your own account before opening notifications.',403);
     admin_head('Notifications','notifications',$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
@@ -75,7 +75,7 @@ function notifications_admin_render(array $user,string $error):never {
     }
     admin_foot();exit;
 }
-function notifications_portal_render(string $error):never {
+function notification_center_portal_render(string $error):never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     if(!notifications_feed_ready())fail_page('Notifications are not enabled yet.',404);
     if(support_current()||array_key_exists('support',$_GET)||!($client=studio_client()))fail_page('Sign in to your own account to view notifications.',403);

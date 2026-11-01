@@ -67,7 +67,7 @@ if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['proposal']))proposals_portal_render($error);
-if(array_key_exists('notifications',$_GET))notifications_portal_render($error);
+if(array_key_exists('notifications',$_GET))notification_center_portal_render($error);
 if(isset($_GET['services']))provider_services_portal_render();
 if(array_key_exists('tickets',$_GET)||array_key_exists('ticket',$_GET)||array_key_exists('ticket_new',$_GET))support_tickets_portal_render($client,$error);
 require CWP_CODE_ROOT.'/portal/views/auth.php';
