@@ -122,4 +122,5 @@ function catalog_transition(int $jobId,int $invoiceId,string $status,string $not
         catalog_audit((int)$actor['id'],'invoice.'.$status,'Invoice '.$invoiceId.' project '.$jobId);
     }));
     if($status==='paid'){try{license_fulfill_invoice($invoiceId);}catch(Throwable){/* License fulfilment failure must not roll back the payment transition. Admin can retry from the license page. */}}
+    if($status==='paid'){require_once CWP_CODE_ROOT.'/app/notifications/events.php';notification_invoice_paid($invoiceId);}
 }

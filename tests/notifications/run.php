@@ -163,6 +163,38 @@ $portal = new DeliveryAttempt('n-3', DeliveryAttempt::CHANNEL_PORTAL, maxAttempt
 $portal->recordFailure(0, 'write failed');
 check('single-attempt channels fail immediately', $portal->state() === 'failed');
 
+// ── Persisted attempt restore ─────────────────────────────────────
+
+$restored = DeliveryAttempt::restore('n-4', DeliveryAttempt::CHANNEL_EMAIL, 3, 1, 'retrying', null, 'smtp refused', 300);
+check('restored retrying keeps state', $restored->state() === 'retrying' && $restored->attempts() === 1 && $restored->nextAttemptAt() === 300);
+check('restored retry is due at stored time', $restored->due(299) === false && $restored->due(300) === true);
+$restored->recordFailure(400, 'smtp refused again');
+check('restored attempt continues backoff', $restored->attempts() === 2 && $restored->nextAttemptAt() === 520);
+$sent = DeliveryAttempt::restore('n-5', DeliveryAttempt::CHANNEL_EMAIL, 3, 1, 'sent', 100, null, null);
+check('restored sent is terminal', $sent->state() === 'sent' && $sent->sentAt() === 100);
+throws('terminal restore cannot carry a retry time', fn () => DeliveryAttempt::restore('n-6', 'email', 3, 1, 'failed', null, 'done', 500));
+throws('retrying restore needs a next-attempt time', fn () => DeliveryAttempt::restore('n-7', 'email', 3, 1, 'retrying', null, 'e', null));
+throws('sent restore needs its sent time', fn () => DeliveryAttempt::restore('n-8', 'email', 3, 1, 'sent', null, null, null));
+throws('attempts beyond max rejected', fn () => DeliveryAttempt::restore('n-9', 'email', 3, 4, 'retrying', null, 'e', 500));
+throws('unknown persisted state rejected', fn () => DeliveryAttempt::restore('n-10', 'email', 3, 0, 'delivered', null, null, null));
+
+// Invalid persisted combinations must fail before any queue transport call.
+foreach ([
+    [0,'sent',100,null,null], [1,'pending',null,null,null],
+    [0,'retrying',null,'retry',200], [3,'retrying',null,'retry',200],
+    [1,'retrying',100,'retry',200], [1,'retrying',null,'',200],
+    [1,'failed',null,'error',null], [3,'failed',100,'error',null],
+    [3,'failed',null,'',null], [1,'sent',-1,null,null],
+    [1,'retrying',null,'error',-1], [0,'pending',null,'old error',100],
+] as $i => [$count,$state,$sent,$error,$next]) {
+    throws('impossible restored delivery combination '.$i, fn()=>DeliveryAttempt::restore('guard-'.$i,'email',3,$count,$state,$sent,$error,$next));
+}
+$exhausted=DeliveryAttempt::restore('guard-terminal','email',3,3,'failed',null,'Exhausted',null);
+check('exhausted restored delivery never becomes due',$exhausted->due(PHP_INT_MAX)===false);
+throws('exhausted restored delivery cannot record another send',fn()=>$exhausted->recordSent(1000));
+$pending=DeliveryAttempt::restore('guard-pending','email',3,0,'pending',null,null,1000);
+check('restored pending preserves exact first due time',!$pending->due(999)&&$pending->due(1000));
+
 // ── Metric freshness ──────────────────────────────────────────────
 
 $fresh = new MetricSample('disk-usage', '82%', 900);

@@ -130,6 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if($view==='notifications')return null; // Recipient identity and current resource access are checked by the feed.
     if(in_array($view,['hosting-offers','hosting-purchases'],true))return 'staff.manage';
     if($view==='activity')return null; // Current project/ticket actors independently authorize the activity controller.
     if(in_array($view,['tickets','ticket','ticket-new'],true))return 'support.tickets';
@@ -155,6 +156,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if(in_array($action,['notifications_setup','notification_email_configure','notification_dispatch'],true))return 'staff.manage';
+    if(in_array($action,['notification_mark','notification_mark_all','notification_prefs'],true))return null; // Current recipient checked inside mutation lock.
     if(str_starts_with($action,'provider_reset_template_'))return 'staff.manage';
     if(str_starts_with($action,'hosting_catalog_'))return 'staff.manage';
     if($action==='tickets_setup')return 'staff.manage';
