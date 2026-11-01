@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
+require_once CWP_CODE_ROOT.'/includes/layout/proposals.php';
+if(array_key_exists('proposal',$_GET)||(is_string($_POST['action']??null)&&$_POST['action']==='proposal_decide'))header('Cache-Control: no-store, private');
 // License and financing links must reach their authenticated views, not the project fallback.
 $softwareRequested=array_key_exists('software',$_GET);$financeRequested=array_key_exists('finance',$_GET);
 if($softwareRequested||$financeRequested){
@@ -63,6 +65,7 @@ if(isset($_GET['download_release']))delivery_download(is_string($_GET['download_
 if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
+if(isset($_GET['proposal']))proposals_portal_render($error);
 if(isset($_GET['services']))provider_services_portal_render();
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if($softwareRequested){require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);}

@@ -9,7 +9,13 @@ require_once CWP_CODE_ROOT.'/database/migrations/proposals_migrate.php';
 use CajunWebPro\Foundation\Proposals\{Proposal,ProposalVersion,ApprovalDecision};
 
 function proposals_ready(): bool {return staff_ready()&&studio_ready()&&setting('proposals_schema_version')==='1';}
-function proposals_require(): array {if(support_current())throw new RuntimeException('Leave support before managing proposals.');if(!proposals_ready())throw new RuntimeException('An owner must enable proposals first.');return staff_require('clients.manage');}
+function proposals_require(): array {if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Leave support before managing proposals.');if(!proposals_ready())throw new RuntimeException('An owner must enable proposals first.');return staff_require('clients.manage');}
+/** Recheck the same staff identity inside the mutation lock, including replay requests. */
+function proposals_revalidate_staff(array $expected): array {
+    $current=proposals_require();
+    if((int)$current['id']!==(int)$expected['id']||!hash_equals((string)$current['auth_version'],(string)$expected['auth_version']))throw new RuntimeException('Administrator identity changed; sign in and review this proposal again.');
+    return $current;
+}
 function proposals_event(string $proposal,string $event,string $actorType,int $actorId,string $detail=''): void {query('INSERT INTO '.table('proposal_events').' (proposal_id,event,actor_type,actor_id,detail,created_at) VALUES (?,?,?,?,?,?)',[$proposal,$event,$actorType,$actorId,substr($detail,0,500),gmdate('Y-m-d H:i:s')]);}
 
 /** Validate and normalize proposal form data into the model's structure. Milestone lines are "Label | amount". */
@@ -65,6 +71,7 @@ function proposal_create(int $clientId,array $data,string $key): string {
     if(!preg_match('/^[a-f0-9]{64}$/D',$key))throw new InvalidArgumentException('Reload the form before creating a proposal.');
     $request=hash('sha256',json_encode([$clientId,$input],JSON_THROW_ON_ERROR));
     return staff_locked(function() use($actor,$clientId,$input,$key,$request): string {
+        $actor=proposals_revalidate_staff($actor);
         $old=one('SELECT * FROM '.table('proposals').' WHERE request_key=?',[$key]);
         if($old){if((int)$old['created_by']!==(int)$actor['id']||!hash_equals($old['request_hash']??'',$request))throw new RuntimeException('This proposal request was already used with different details.');return $old['id'];}
         $id=bin2hex(random_bytes(16));
@@ -82,7 +89,8 @@ function proposal_revise(string $id,array $data): void {
     $actor=proposals_require();$input=proposal_input($data);
     staff_locked(function() use($id,$input,$actor): void {
         staff_transaction(function() use($id,$input,$actor): void {
-            $row=proposal_row($id);$p=proposal_model($row);$version=(int)$row['current_version']+1;
+            $actor=proposals_revalidate_staff($actor);
+            $row=proposal_row($id,true);$p=proposal_model($row);$version=(int)$row['current_version']+1;
             if(one('SELECT id FROM '.table('proposal_versions').' WHERE proposal_id=? AND content_hash=?',[$id,proposal_content_hash($input)]))throw new InvalidArgumentException('Revise the deliverables, exclusions, schedule or milestones before adding a new proposal version.');
             $vid=bin2hex(random_bytes(16));
             $pv=ProposalVersion::create($vid,$version,$input['deliverables'],$input['exclusions'],$input['schedule_notes'],$input['milestones'],'staff:'.$actor['id'],gmdate('Y-m-d\TH:i:s\Z'));
@@ -97,7 +105,8 @@ function proposal_revise(string $id,array $data): void {
 function proposal_send(string $id): void {
     $actor=proposals_require();
     staff_locked(function() use($id,$actor): void {staff_transaction(function() use($id,$actor): void {
-        $row=proposal_row($id);proposal_model($row)->send('staff:'.$actor['id'],gmdate('Y-m-d\TH:i:s\Z'));
+        $actor=proposals_revalidate_staff($actor);
+        $row=proposal_row($id,true);proposal_model($row)->send('staff:'.$actor['id'],gmdate('Y-m-d\TH:i:s\Z'));
         query('UPDATE '.table('proposals')." SET status='sent',sent_at=? WHERE id=?",[gmdate('Y-m-d H:i:s'),$id]);
         proposals_event($id,'sent','staff',(int)$actor['id'],'v'.$row['current_version']);
     });});
@@ -105,7 +114,8 @@ function proposal_send(string $id): void {
 function proposal_withdraw(string $id): void {
     $actor=proposals_require();
     staff_locked(function() use($id,$actor): void {staff_transaction(function() use($id,$actor): void {
-        proposal_model(proposal_row($id))->withdraw('staff:'.$actor['id'],gmdate('Y-m-d\TH:i:s\Z'));
+        $actor=proposals_revalidate_staff($actor);
+        proposal_model(proposal_row($id,true))->withdraw('staff:'.$actor['id'],gmdate('Y-m-d\TH:i:s\Z'));
         query('UPDATE '.table('proposals')." SET status='withdrawn' WHERE id=?",[$id]);
         proposals_event($id,'withdrawn','staff',(int)$actor['id']);
     });});

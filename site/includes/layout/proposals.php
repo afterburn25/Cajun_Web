@@ -82,12 +82,14 @@ function proposals_admin_render(string $view,array $user,string $error): never {
 
 /** Portal list of proposals on the workspace landing. */
 function proposals_portal_section(array $client): void {
+    if(support_current()||array_key_exists('support',$_GET))return;
     $rows=proposals_for_client((int)$client['id']);if(!$rows)return;
     echo '<div class="workspace-card"><h2>Studio proposals</h2>';foreach($rows as $r)echo '<p><a class="btn outline" href="'.esc(studio_url(['proposal'=>$r['id']])).'">'.esc($r['title']).' — '.esc(proposal_status($r['status'])).' →</a></p>';echo '</div>';
 }
 
 /** Portal detail + decision surface for the owning client. */
 function proposals_portal_render(string $error): never {
+    if(support_current()||array_key_exists('support',$_GET))fail_page('Leave client support before reviewing proposals.',403);
     if(!proposals_ready())fail_page('Proposal not found.',404);
     if(!$client=studio_client())fail_page('Sign in to review proposals.',403);
     try{$row=proposal_client_row(is_string($_GET['proposal']??null)?$_GET['proposal']:'',$client);}catch(InvalidArgumentException){fail_page('Proposal not found.',404);}

@@ -75,6 +75,7 @@ try{
     p_deny('Support sessions cannot decide proposals',function() use($id){$client=p_client(1);p_fresh_decide($id,'approve','',$client);});
     p_deny('Support sessions cannot manage proposals',fn()=>proposal_send($id));unset($GLOBALS['cwp_support']);p_actor(2);
     p_ok('History write failure rolls back proposal and version atomically',p_event_failure(fn()=>proposal_create(1,p_input('Atomic fail'),bin2hex(random_bytes(32))))&&!one('SELECT id FROM '.table('proposals')." WHERE title='Atomic fail'")&&(int)query('SELECT COUNT(*) FROM '.table('proposal_versions').' WHERE proposal_id NOT IN (SELECT id FROM '.table('proposals').')')->fetchColumn()===0);
+    require __DIR__.'/proposals_staff_native_cases.php';
     $kept=all('SELECT * FROM '.table('proposals'));p_actor();proposals_migrate($password);p_ok('Re-running setup preserves every proposal record',all('SELECT * FROM '.table('proposals'))===$kept&&all('SELECT * FROM '.table('proposal_decisions'))!==[]);
 }catch(Throwable $e){echo 'FAILED: '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine()."\n";exit(1);}
 $complete=true;echo 'proposals native: '.count($checks).' checks, 0 failures'."\n";
