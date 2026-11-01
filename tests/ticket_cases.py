@@ -96,7 +96,12 @@ def run_browser(env, browser):
     check('Exact opening replay never duplicates a ticket', snapshot()==saved)
     for outsider in [foreign, requests.Session()]:
         r = outsider.get(client_url)
-        check('Foreign or anonymous visitor cannot read ticket or composer', subject not in soup(r).get_text() and soup(r).select_one('[value=client_tickets_reply]') is None)
+        check('Foreign or anonymous visitor receives an intentional private ticket denial', r.status_code==403 and r.headers.get('Cache-Control')=='no-store, private' and r.headers.get('Referrer-Policy')=='no-referrer' and subject not in soup(r).get_text() and soup(r).select_one('[value=client_tickets_reply]') is None)
+    with requests.Session() as anonymous:
+        for route in ['?tickets=1','?ticket_new=1']:
+            denied=anonymous.get(portal+route)
+            check('Anonymous ticket route fails closed without a server error '+route, denied.status_code==403 and 'Sign in to view support tickets.' in denied.text and denied.headers.get('Cache-Control')=='no-store, private' and soup(denied).select_one('[name=body]') is None)
+    check('Denied anonymous and foreign ticket reads preserve exact records', snapshot()==saved)
     check('Foreign client list excludes the conversation', subject not in soup(foreign.get(portal+'?tickets=1')).get_text())
 
     original_reply = data(client, client_url, 'client_tickets_reply')
