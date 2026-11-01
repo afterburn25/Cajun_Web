@@ -56,10 +56,13 @@ try {
     foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(CWP_CODE_ROOT,FilesystemIterator::SKIP_DOTS)) as $p){
         if($p->getExtension()!=='php'||str_contains($p->getPathname(),'/foundation/')||str_contains($p->getPathname(),'/install/'))continue;
         $s=file_get_contents($p->getPathname());
-        if(preg_match('/<input\\b[^>]*\\bname=["\x27](?:current_password|owner_password)["\x27]/',$s))$raw[]=$p->getPathname();
+        if(preg_match('/<input\\b[^>]*\\bname=["\x27](?:current_password|owner_password)["\x27]/',$s))$raw[]=str_replace(CWP_CODE_ROOT.'/','',$p->getPathname());
         if(str_contains($s,'password_verify('))$backend[]=str_replace(CWP_CODE_ROOT.'/','',$p->getPathname());
     }
-    ns_check('No raw repeated-password fields remain in application views',$raw===[]);
-    sort($backend);ns_check('Password verification remains in administrator and client login only',$backend===['admin/controllers/auth.php','app/clients/identity.php']);
+    sort($raw);ns_check('Only deliberate customer credential change renders a current-password field',$raw===['portal/views/account.php']);
+    $accountView=file_get_contents(CWP_CODE_ROOT.'/portal/views/account.php');
+    ns_check('Customer credential exception is bound to its own action and CSRF',str_contains($accountView,'value="account_password"')&&str_contains($accountView,'csrf_field()')&&str_contains($accountView,'studio_account_identity()')&&str_contains($accountView,'name="confirm_password"'));
+    ns_check('No current-password exception is granted to administrator pages',!array_filter($raw,fn($path)=>str_starts_with($path,'admin/')));
+    sort($backend);ns_check('Password verification is limited to actual login and customer credential changes',$backend===['admin/controllers/auth.php','app/clients/account_security.php','app/clients/identity.php']);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected test failure: '.$e->getMessage(),'passed'=>false];}
 $pass=!array_filter($checks,fn($c)=>!$c['passed']);echo json_encode(['passed'=>$pass,'scope'=>'Actual PHP session/role/CSRF/field code; database reads modeled; no native SQL or production actions','checks'=>$checks],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES).PHP_EOL;exit($pass?0:1);

@@ -159,13 +159,14 @@ jobs:
           mkdir -p "$RUNNER_TEMP/account-bin" qa/account-security
           cat > "$RUNNER_TEMP/account-bin/php" <<'SH'
           #!/bin/sh
-          exec docker run --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-account-review php "$@"
+          exec docker run -i --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-account-review php "$@"
           SH
           chmod +x "$RUNNER_TEMP/account-bin/php"
           echo "PHP_BINARY=$RUNNER_TEMP/account-bin/php" >> "$GITHUB_ENV"
           echo "$RUNNER_TEMP/account-bin" >> "$GITHUB_PATH"
       - name: Actual account SQL rollback concurrency and session revocation
         run: |
+          printf '{"synthetic":"stdin"}' | php -r 'exit(stream_get_contents(STDIN)==="{\"synthetic\":\"stdin\"}"?0:1);'
           php tests/account_security_native.php > qa/account-security/native.stdout.log 2> qa/account-security/native.stderr.log
           test ! -s qa/account-security/native.stderr.log
           python3 - <<'PY'
