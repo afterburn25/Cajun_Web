@@ -1,0 +1,100 @@
+name: Isolated finance receipt runtime diagnosis
+on:
+  push:
+    branches: [chatgpt/finance-receipt-runtime-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: finance-receipt-runtime-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  receipts:
+    if: github.ref == 'refs/heads/chatgpt/finance-receipt-runtime-20261101'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require the original application and complete unchanged receipt test
+        run: |
+          git diff --exit-code a827fca40f5c056d249293b11f07e425f0b71600 HEAD -- site foundation tests tools/build.py tools/update tools/structure VERSION START-HERE.txt
+          docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-finance-runtime -f tests/invitations/Dockerfile tests/invitations
+          docker run --rm --network host cwp-finance-runtime php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Run original concurrency cases with bounded time and non-content SQL diagnostics
+        env:
+          DATABASE_CONTAINER: ${{ job.services.database.id }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,subprocess,time
+          root=Path.cwd();out=root/'qa/receipt-runtime';out.mkdir(parents=True,exist_ok=True)
+          envkeys=['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD']
+          command=['docker','run','--rm','--init','--name','cwp-receipt-runtime','--network','host','--user',f'{os.getuid()}:{os.getgid()}','-v',str(root)+':/workspace','-w','/workspace']
+          for key in envkeys:command+=['-e',key]
+          command+=['cwp-finance-runtime','php','tests/finance_initial_receipts_native.php','fep_iso_init_']
+          begun=time.monotonic();diagnostics=[];timed_out=False;returncode=None;failure=None
+          with (out/'native.json').open('wb') as stdout,(out/'native.stderr.log').open('wb') as stderr:
+              process=subprocess.Popen(command,stdout=stdout,stderr=stderr)
+              try:
+                  while process.poll() is None:
+                      elapsed=time.monotonic()-begun
+                      # Only IDs/states/timing for disposable cwp_test: no SQL text, keys or customer fields.
+                      query="SELECT ID,COMMAND,TIME,COALESCE(STATE,'') FROM information_schema.PROCESSLIST WHERE DB='cwp_test' ORDER BY ID"
+                      try:
+                          probe=subprocess.run(['docker','exec','-e','MYSQL_PWD=synthetic-root-only',os.environ['DATABASE_CONTAINER'],'mysql','-uroot','-N','-B','-e',query],capture_output=True,text=True,timeout=10)
+                          diagnostics.append({'elapsed_seconds':round(elapsed,2),'probe_exit':probe.returncode,'connections':probe.stdout.splitlines() if probe.returncode==0 else [],'probe_error':probe.stderr[:500] if probe.returncode else ''})
+                      except subprocess.TimeoutExpired:diagnostics.append({'elapsed_seconds':round(elapsed,2),'probe_timed_out':True})
+                      (out/'connection-states.json').write_text(json.dumps(diagnostics,indent=2)+'\n')
+                      if elapsed>=600:
+                          timed_out=True;subprocess.run(['docker','stop','--time','5','cwp-receipt-runtime'],capture_output=True,timeout=15);break
+                      try:process.wait(timeout=15)
+                      except subprocess.TimeoutExpired:pass
+                  returncode=process.wait(timeout=20)
+              except Exception as exc:
+                  failure=type(exc).__name__+': '+str(exc)
+              finally:
+                  if process.poll() is None:
+                      subprocess.run(['docker','rm','-f','cwp-receipt-runtime'],capture_output=True,timeout=15)
+                      process.wait(timeout=20)
+          try:
+              native=json.loads((out/'native.json').read_text())
+              passed=(returncode==0 and not timed_out and failure is None and native.get('passed') is True and len(native.get('checks',[]))>=358 and all(c.get('passed') is True for c in native['checks']))
+          except (ValueError,OSError):native={};passed=False
+          result={'passed':passed,'source_sha':os.environ['SOURCE_SHA'],'original_application':'a827fca40f5c056d249293b11f07e425f0b71600','elapsed_seconds':round(time.monotonic()-begun,2),'returncode':returncode,'timed_out':timed_out,'failure':failure,'native_assertions':len(native.get('checks',[])),'test_sha256':hashlib.sha256((root/'tests/finance_initial_receipts_native.php').read_bytes()).hexdigest(),'application_sha256':hashlib.sha256((root/'site/app/billing/finance_subscription.php').read_bytes()).hexdigest(),'scope':'Complete unchanged synthetic concurrency test alone in a fresh disposable database. Does not certify the cancelled original aggregate, real merchant operations, or whole-site acceptance.'}
+          (out/'result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));raise SystemExit(0 if passed else 1)
+          PY
+      - name: Retain source and every failure without publishing private fixture storage
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: receipt-runtime-${{ matrix.php }}-${{ matrix.database }}-${{ github.sha }}
+          path: qa/receipt-runtime/
+          if-no-files-found: warn
+          retention-days: 14
