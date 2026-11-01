@@ -70,7 +70,8 @@ function sap_status_counters():array {
     if (!isset($out['Questions'],$out['Com_select'])) throw new RuntimeException('Required SQL session counters are unavailable.');
     return $out;
 }
-/** Exact old functions/class, with identifier-only namespacing for side-by-side execution. */
+/** Exact old functions/class with bounded pagination-route compatibility and identifier-only namespacing. */
+require_once __DIR__.'/stackcp_legacy_workspace_routes.php';
 function sap_load_original():void {
     $raw=file_get_contents(__DIR__.'/fixtures/stackcp_access_read_original.json');
     if (!hash_equals('2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e',hash('sha256',$raw))) throw new RuntimeException('Changed original comparison baseline.');
@@ -79,7 +80,8 @@ function sap_load_original():void {
         if (!hash_equals($unit['sha256'],hash('sha256',$unit['code']))) throw new RuntimeException('Changed original comparison unit.');
         $local=$map;
         if ($name==='provider_stackcp_access_admin_render') $local['provider_stackcp_access_status']='sap_capture_legacy_status';
-        $code='';foreach (token_get_all('<?php '.$unit['code']) as $token) {
+        $retained=sap_reviewed_workspace_routes($name,$unit['code']);
+        $code='';foreach (token_get_all('<?php '.$retained) as $token) {
             if (is_array($token)) {if ($token[0]===T_OPEN_TAG) continue;$code.=($token[0]===T_STRING&&isset($local[$token[1]]))?$local[$token[1]]:$token[1];}
             else $code.=$token;
         }

@@ -3,14 +3,14 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')||PHP_SAPI!=='cli')exit(2);
 if(!function_exists('FinancePayoffRetirement\license_finance_subscription_payoff_retire'))return;
-foreach((($argv[3]??'')==='owner_exit'?['revoked_owner']:['unpaid','status_only','cross_customer','wrong_password','changed_snapshot']) as $guard){
+foreach((($argv[3]??'')==='owner_exit'?['revoked_owner']:['unpaid','status_only','cross_customer','role_revoked','changed_snapshot']) as $guard){
     $offer=fep_seed('guard-'.$guard,500);$license=(int)$offer['license_id'];
     query('UPDATE '.table('license_financing')." SET state='active' WHERE license_id=?",[$license]);
     $providerScenario='normal';$postReservation=null;$fepCalls=[];
     $created=\FinancePayoffRetirement\license_finance_subscription_create_profile($offer['id'],['customer_profile_id'=>'1001','payment_profile_id'=>'2001']);
     fep_ok($guard.' valid initial enrollment remains available',$created==='pending_first_payment');
     if($guard==='status_only')query('UPDATE '.table('license_financing')." SET state='paid_off' WHERE license_id=?",[$license]);
-    if(in_array($guard,['cross_customer','revoked_owner','wrong_password','changed_snapshot'],true)){
+    if(in_array($guard,['cross_customer','revoked_owner','role_revoked','changed_snapshot'],true)){
         // Set up verified historical payoff through canonical invoice/ledger
         // helpers, then compute the permanent projection with the real sync.
         $doc=recurring_billing_validate(recurring_billing_row($offer['schedule_id']));
@@ -25,7 +25,14 @@ foreach((($argv[3]??'')==='owner_exit'?['revoked_owner']:['unpaid','status_only'
     }
     if($guard==='cross_customer')query('UPDATE '.table('studio_jobs').' SET client_id=2 WHERE id=1');
     $secret=null;
-    if($guard==='wrong_password'){rb_staff();$secret='Incorrect synthetic owner password';}
+    $savedProfile=null;$savedSession=null;
+    if($guard==='role_revoked'){
+        rb_staff();$secret=$password;$savedSession=$_SESSION;
+        $savedProfile=one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1');
+        query('UPDATE '.table('staff_profiles')." SET role='administrator',permissions='[]' WHERE user_id=1");
+        $current=admin_user();
+        fep_ok('Role revocation retains the same enabled authenticated identity',$current&&(int)$current['id']===1&&$current['role']==='administrator'&&admin_session_matches($current)&&!staff_can('staff.manage',$current));
+    }
     if($guard==='revoked_owner'){rb_staff();$secret=$password;query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');}
     $retirementMutation=null;
     if($guard==='changed_snapshot')$retirementMutation=static function()use($offer):void{
@@ -53,7 +60,9 @@ foreach((($argv[3]??'')==='owner_exit'?['revoked_owner']:['unpaid','status_only'
         });
     }
 
-    $result=\FinancePayoffRetirement\license_finance_subscription_payoff_retire($offer['id'],$secret);
+    try{$result=\FinancePayoffRetirement\license_finance_subscription_payoff_retire($offer['id'],$secret);}
+    finally{if($savedProfile!==null){query('UPDATE '.table('staff_profiles').' SET role=?,permissions=? WHERE user_id=1',[$savedProfile['role'],$savedProfile['permissions']]);$_SESSION=$savedSession;}}
+    if($savedProfile!==null)fep_ok('Role-denial fixture restores exact staff profile and session',one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1')===$savedProfile&&$_SESSION===$savedSession&&!db()->inTransaction());
     $after=fep_snapshot();$newCalls=array_slice($fepCalls,$start);$sub=license_finance_subscription_row($offer['id']);
     fep_ok($guard.' cannot falsely finalize payoff retirement',$result==='review'&&$sub['status']!== 'paid_off');
     fep_ok($guard.' preserves ledger and financing',$before['invoice_payments']===$after['invoice_payments']&&$before['license_financing']===$after['license_financing']);

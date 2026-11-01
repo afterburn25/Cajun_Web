@@ -390,6 +390,8 @@ def run(tmp):
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
+    from standalone_repair_provenance import validate as validate_standalone_repairs
+    for outcome in validate_standalone_repairs(ROOT):check(outcome['name'],outcome['passed'])
     from combined_repair_provenance import validate as validate_repairs
     for outcome in validate_repairs(ROOT):check(outcome['name'],outcome['passed'])
     contract=a.load(ROOT/'tools/acceptance-contract.json')
@@ -416,6 +418,9 @@ def run(tmp):
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        if path=='tests/stackcp_access_read_snapshot_native.php':
+            from standalone_repair_provenance import predecessor as standalone_predecessor
+            retained=standalone_predecessor(ROOT,path,retained)
         if path=='tests/apache_acceptance.py':
             from combined_repair_provenance import predecessor as repaired_predecessor
             retained=repaired_predecessor(ROOT,path,retained)

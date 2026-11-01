@@ -260,7 +260,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
             return records('notices')==prior_notices and records('messages')==prior_messages and records('inbox')==prior_inbox and records('mail-checks')==prior_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key
     if version=='1.19.0':
         check(label+' update preserves nonempty notices and every earlier private record',len(prior_notices['items'])==2 and len(prior_notices['states'])==1 and prior_retained())
-        settings=url+'/admin/index.php?view=provider-settings'
+        settings=url+'/admin/index.php?view=provider-settings&section=connection'
         r=session.get(settings);check(label+' owner explicitly prepares provider storage after file update','Prepare 20i settings' in r.text and not (private/'provider-master.key').exists())
         r=session.post(settings,data={'csrf':token(r),'action':'provider_settings_setup','current_password':password})
         check(label+' additive provider setup creates empty storage','20i settings and check history are ready' in r.text and records('provider')=={'profiles':[],'history':[],'checks':[],'results':[]})
@@ -281,7 +281,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
     if version in ['1.20.0','1.21.0','1.22.0','1.23.0','1.24.0','1.25.0']:
         provider_key=prior_provider_key;restored=records('provider')
         check(label+' update and recovery preserve original provider profile check history and both keys',restored==prior_provider and prior_retained() and (private/'provider-master.key').read_bytes()==provider_key)
-        settings=url+'/admin/index.php?view=provider-settings';profile=restored['profiles'][0]
+        settings=url+'/admin/index.php?view=provider-settings&section=connection';profile=restored['profiles'][0]
         r=session.post(settings,data={'csrf':token(session.get(settings)),'action':'provider_settings_save','profile_id':profile['id'],'revision':profile['revision'],'current_password':password,'label':'Earlier 1.20 provider connection','general_key':'','enabled':'1'})
         restored=records('provider')
         check(label+' original 1.20 provider key still decrypts after update and recovery','20i settings saved' in r.text and restored['profiles'][0]['revision']==profile['revision']+1 and len(restored['history'])==2 and restored['checks']==prior_provider['checks'] and restored['results']==prior_provider['results'] and (private/'provider-master.key').read_bytes()==provider_key and prior_retained())

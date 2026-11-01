@@ -52,9 +52,17 @@
         [
           "    if version=='1.24.0':\n        settings=url+'/admin/index.php?view=provider-settings'\n        response=session.get(settings)",
           "    if version=='1.24.0':\n        settings=url+'/admin/index.php?view=provider-settings&section=services'\n        response=session.get(settings)"
+        ],
+        [
+          "settings=url+'/admin/index.php?view=provider-settings'\n",
+          "settings=url+'/admin/index.php?view=provider-settings&section=connection'\n"
+        ],
+        [
+          "settings=url+'/admin/index.php?view=provider-settings';profile=restored['profiles'][0]",
+          "settings=url+'/admin/index.php?view=provider-settings&section=connection';profile=restored['profiles'][0]"
         ]
       ],
-      "after_sha256": "e31a7ff9e16f444d151b35d0535ad73b266c53a3fcae63781245c8603e86bb11"
+      "after_sha256": "7ca3d3b3f2713aa1481da11bf6aa41494d9beb187e66a96801bf926475f4217b"
     },
     "tests/checkout_authority_contract.php": {
       "before_sha256": "06c3a0f4e6a405eaee0cdd694bd4f06ae3d93b14c062c4db3aac73d515c3b86d",
@@ -102,9 +110,17 @@
         [
           "        if path=='tests/apache_acceptance.py':\n            appendix=software_apache_appendix.encode()",
           "        if path=='tests/apache_acceptance.py':\n            from combined_repair_provenance import predecessor as repaired_predecessor\n            retained=repaired_predecessor(ROOT,path,retained)\n            appendix=software_apache_appendix.encode()"
+        ],
+        [
+          "    from combined_repair_provenance import validate as validate_repairs\n",
+          "    from standalone_repair_provenance import validate as validate_standalone_repairs\n    for outcome in validate_standalone_repairs(ROOT):check(outcome['name'],outcome['passed'])\n    from combined_repair_provenance import validate as validate_repairs\n"
+        ],
+        [
+          "        if path=='tests/apache_acceptance.py':\n",
+          "        if path=='tests/stackcp_access_read_snapshot_native.php':\n            from standalone_repair_provenance import predecessor as standalone_predecessor\n            retained=standalone_predecessor(ROOT,path,retained)\n        if path=='tests/apache_acceptance.py':\n"
         ]
       ],
-      "after_sha256": "3a8e8e313d29d677ccdb5123f5adfc4a03f4be6a2421b733b08903ff12e1266e"
+      "after_sha256": "545747d897dd0f4fe81c333ba864fcb546c1d6eb01fbd9bea202605f7b7d26e9"
     },
     "tests/combined_runtime_repair.py": {
       "before_sha256": null,

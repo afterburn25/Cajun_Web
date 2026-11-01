@@ -91,7 +91,23 @@ ok('refuse_wrong_provider_no_send', (function (): bool {
 })());
 
 deny('refuse_documented_only_detail', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::PACKAGE_DETAIL, 7, 1700000000));
-deny('refuse_documented_only_types', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::PACKAGE_TYPES, '*', 1700000000));
+ok('catalog_wrong_scope_refused_before_secret_or_send', (function (): bool {
+    $transport=new ScriptedTransport([]);$resolved=false;
+    $credential=new ProviderCredential('twenty-i','reseller-42',function()use(&$resolved):string{$resolved=true;return 'synthetic-catalog-key';});
+    try {InventoryReader::read($transport,$credential,InventoryRead::PACKAGE_TYPES,42,1700000000);}
+    catch (InvalidArgumentException $e) {return !$resolved&&$transport->sent===[]&&str_contains($e->getMessage(),'configured reseller self scope');}
+    return false;
+})());
+ok('supported_catalog_uses_only_fixed_self_scope_get', (function (): bool {
+    $transport=new ScriptedTransport([new TransportResponse(200,[],'[{"id":7,"label":"Synthetic hosting plan","price":999,"private":"DO_NOT_PROJECT"}]')]);
+    $snapshot=InventoryReader::read($transport,credential('synthetic-catalog-key'),InventoryRead::PACKAGE_TYPES,'*',1700000000);
+    $request=$transport->sent[0]??null;
+    return count($transport->sent)===1&&$request->method==='GET'&&$request->url==='https://api.20i.com/reseller/*/packageTypes'
+        &&$request->body===null&&$request->headers===['Authorization'=>'Bearer '.base64_encode('synthetic-catalog-key'),'Accept'=>'application/json']
+        &&$snapshot->state==='complete'&&count($snapshot->packages)===1
+        &&get_object_vars($snapshot->packages[0])===['id'=>'7','label'=>'Synthetic hosting plan']
+        &&!str_contains(json_encode($snapshot),'DO_NOT_PROJECT')&&!str_contains(json_encode($snapshot),'synthetic-catalog-key');
+})());
 deny('refuse_documented_only_balance', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::ACCOUNT_BALANCE, '*', 1700000000));
 deny('refuse_unknown_op', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), 'packages.delete', null, 1700000000));
 ok('no_send_on_refusal', (function (): bool {
