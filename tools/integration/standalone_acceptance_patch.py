@@ -61,4 +61,6 @@ def main():
     subprocess.run(['git','diff','--exit-code','--','site','foundation','tools/build.py','VERSION','START-HERE.txt','.github/workflows'],cwd=ROOT,check=True)
     subprocess.run(['python3','-B','tests/standalone_repair_provenance.py'],cwd=ROOT,check=True)
     print('Recorded thirteen exact test/receipt corrections; shipping source unchanged.')
-if __name__=='__main__':main()
+if __name__=='__main__':
+    main()
+    subprocess.run(['python3','-B','tools/integration/owner_http_authority_patch.py'],cwd=ROOT,check=True)
