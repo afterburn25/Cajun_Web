@@ -43,6 +43,18 @@ def main():
   for p,h in facts.items():
    if p not in allowed and sha((ROOT/p).read_bytes())!=h:raise SystemExit('Unrelated source changed: '+p)
   RECEIPT.write_text(json.dumps({'predecessor':BASE,'initial_source_receipt':json.loads(original),'corrections':rows,'after':{p:sha((ROOT/p).read_bytes())for p in facts},'scope':'Preserve existing payment inbox; fail closed before transport if notification audit fails. Initial failed41337802825 retained; no installed pass inferred.'},indent=2)+'\n')
+ # Capture the legitimate form before revocation; the revoked account must not be able to rediscover it.
+ path='tests/notification_center_browser.py';target=ROOT/path;before='65928e794dd2f255eb0b34610563b46bf658d280344c96a64cc80e13ff009088';after='1758d4d12416f166e30cd372d88d3693a4e22b062fa6cb9b87020a0a462f8d97'
+ old="    with revoked_owner(site,php):\n        bad=submit(owner,url,'notifications_setup',{'confirm':'1'})"
+ new="    captured_setup=form_data(form_for(owner.get(url),'notifications_setup'));captured_setup['confirm']='1'\n    with revoked_owner(site,php):\n        bad=owner.post(url,data=captured_setup)"
+ text=target.read_text();actual=sha(text.encode());final=json.loads(RECEIPT.read_text())
+ if actual==before:
+  if text.count(old)!=1 or final['after'][path]!=before:raise SystemExit('Captured-form predecessor changed')
+  text=text.replace(old,new,1)
+  if sha(text.encode())!=after:raise SystemExit('Captured-form correction mismatch')
+  target.write_text(text);final['captured_form_correction']={'path':path,'before':before,'after':after,'old':old,'new':new};final['after'][path]=after
+  RECEIPT.write_text(json.dumps(final,indent=2)+'\n')
+ elif actual!=after or final['after'][path]!=after:raise SystemExit('Captured-form output changed')
  subprocess.run(['php','tests/notification_namespace_contract.php'],cwd=ROOT,check=True)
  subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
  print('Exact notification runtime corrections verified.')
