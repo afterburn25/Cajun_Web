@@ -418,6 +418,9 @@ def run(tmp):
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        if path in ('tests/structure_helpers.py','tests/staff_cases.py'):
+            from browser_owner_fixture_provenance import predecessor as browser_owner_predecessor
+            retained=browser_owner_predecessor(ROOT,path,retained)
         if path=='tests/stackcp_access_read_snapshot_native.php':
             from standalone_repair_provenance import predecessor as standalone_predecessor
             retained=standalone_predecessor(ROOT,path,retained)

@@ -1,0 +1,66 @@
+{
+  "base": "a827fca40f5c056d249293b11f07e425f0b71600",
+  "scope": "Only updater and administrator acceptance fixtures. Preserve initial sign-in, backup consent, CSRF, current owner permission and every existing business assertion. Not a production change.",
+  "files": {
+    "tests/structure_helpers.py": {
+      "before_sha256": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
+      "edits": [
+        [
+          "import re, subprocess\n",
+          "import re, subprocess\nfrom owner_browser_forms import owner_update_form\n"
+        ],
+        [
+          "    check(destination.name+' staged update requires owner and backup',r.status_code==200 and 'Current owner password' in r.text and 'backup_confirm' in r.text)",
+          "    check(destination.name+' staged update requires initial owner sign-in and backup',owner_update_form(r,soup,authenticated=False))"
+        ],
+        [
+          "    r=session.post(url,data=data,timeout=30)\n    check(destination.name+' owner verifies immutable staged replacements',r.status_code==200 and '<h2>Planned</h2>' in r.text)",
+          "    wrong=dict(data,csrf=token(session.get(url)),owner_password='Incorrect synthetic owner password')\n    refused=session.post(url,data=wrong,timeout=30)\n    check(destination.name+' incorrect initial password cannot inspect or switch files','Owner authentication failed.' in refused.text and '<h2>Planned</h2>' not in refused.text and not (destination/'admin/index.php').exists())\n    no_backup=dict(data,csrf=token(session.get(url)),backup_confirm='0')\n    refused=session.post(url,data=no_backup,timeout=30)\n    check(destination.name+' authenticated owner still must confirm a backup','Confirm a recoverable backup' in refused.text and '<h2>Planned</h2>' not in refused.text and not (destination/'admin/index.php').exists())\n    check(destination.name+' signed-in updater removes only the repeated password field',owner_update_form(refused,soup,authenticated=True))\n    data.pop('owner_password');data.pop('email');data['csrf']=token(refused)\n    r=session.post(url,data=data,timeout=30)\n    check(destination.name+' owner verifies immutable staged replacements',r.status_code==200 and '<h2>Planned</h2>' in r.text)"
+        ],
+        [
+          "    fields=env['form_data'](env['form_for'](r,'account_save'));fields['current_password']='Incorrect synthetic password'\n    r=session.post(legacy,data=fields,allow_redirects=False,timeout=20)\n    check(destination.name+' legacy POST body and query reach canonical action without redirect',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers)",
+          "    fields=env['form_data'](env['form_for'](r,'account_save'));fields['email']='invalid-fixture-email'\n    r=session.post(legacy,data=fields,allow_redirects=False,timeout=20)\n    check(destination.name+' legacy POST body and query reach canonical action without redirect',r.status_code==200 and 'A name and valid email are required.' in r.text and 'Location' not in r.headers)"
+        ]
+      ],
+      "after_sha256": "eaaf9eb7575a1a0b4b2fa20acbae1c6c8f5560f4084295a2687a50dd00703990"
+    },
+    "tests/staff_cases.py": {
+      "before_sha256": "77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f",
+      "edits": [
+        [
+          "from release_cases import db, chosen_form\n",
+          "from release_cases import db, chosen_form\nfrom owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt\n"
+        ],
+        [
+          "    check('HTTP owner enables administrator access with reauthentication',",
+          "    check('HTTP owner enables administrator access using the current session',"
+        ],
+        [
+          "    r=submit(admin,url,'staff_save',dict(create,owner_password='incorrect'))\n    check('HTTP staff create requires current owner password','current password is not correct' in r.text and not db('SELECT id FROM ci_users WHERE email=?',[create['email']]))",
+          "    denied=dict(create);denied.pop('owner_password')\n    refuse_owner_action(globals(),admin,url,'staff_save',denied)\n    check('HTTP staff create preserves missing account after current owner permission is revoked',not db('SELECT id FROM ci_users WHERE email=?',[create['email']]))"
+        ],
+        [
+          "    create.locator('[name=name]').fill('Client support staff');create.locator('[name=email]').fill('client-staff@example.invalid');create.locator('[name=\"permissions[]\"][value=\"clients.manage\"]').check();create.locator('[name=owner_password]').fill(OWNER);create.locator('button').click()\n",
+          "    create.locator('[name=name]').fill('Client support staff');create.locator('[name=email]').fill('client-staff@example.invalid');create.locator('[name=\"permissions[]\"][value=\"clients.manage\"]').check();assert_no_owner_reprompt(check,create,'Create administrator');create.locator('button').click()\n"
+        ],
+        [
+          "    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value=\"'+str(cid)+'\"]'));invite.locator('[name=owner_password]').fill(OWNER);invite.locator('button').click()\n",
+          "    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value=\"'+str(cid)+'\"]'));assert_no_owner_reprompt(check,invite,'Invite staff client');invite.locator('button').click()\n"
+        ],
+        [
+          "    edit.locator('[name=enabled]').uncheck();edit.locator('[name=owner_password]').fill(OWNER);edit.locator('button').click();expect(edit.locator('[name=enabled]')).not_to_be_checked()\n",
+          "    edit.locator('[name=enabled]').uncheck();assert_no_owner_reprompt(check,edit,'Disable administrator');edit.locator('button').click();expect(edit.locator('[name=enabled]')).not_to_be_checked()\n"
+        ],
+        [
+          "    edit.locator('[name=enabled]').check();edit.locator('[name=owner_password]').fill(OWNER);edit.locator('button').click();expect(edit.locator('[name=enabled]')).to_be_checked()\n",
+          "    edit.locator('[name=enabled]').check();assert_no_owner_reprompt(check,edit,'Reenable administrator');edit.locator('button').click();expect(edit.locator('[name=enabled]')).to_be_checked()\n"
+        ],
+        [
+          "    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value=\"'+str(uid)+'\"]'));invite.locator('[name=owner_password]').fill(OWNER);invite.locator('button').click();expect(p.locator('[data-staff-invite]')).to_be_visible()\n",
+          "    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value=\"'+str(uid)+'\"]'));assert_no_owner_reprompt(check,invite,'Invite staff recovery');invite.locator('button').click();expect(p.locator('[data-staff-invite]')).to_be_visible()\n"
+        ]
+      ],
+      "after_sha256": "c658245940b3f0c36bee16f5f8f85fff5300fa5cccde222a7d079959eab7590c"
+    }
+  }
+}

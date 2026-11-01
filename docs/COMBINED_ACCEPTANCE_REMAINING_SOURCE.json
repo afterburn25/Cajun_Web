@@ -118,9 +118,13 @@
         [
           "        if path=='tests/apache_acceptance.py':\n",
           "        if path=='tests/stackcp_access_read_snapshot_native.php':\n            from standalone_repair_provenance import predecessor as standalone_predecessor\n            retained=standalone_predecessor(ROOT,path,retained)\n        if path=='tests/apache_acceptance.py':\n"
+        ],
+        [
+          "        if path=='tests/stackcp_access_read_snapshot_native.php':",
+          "        if path in ('tests/structure_helpers.py','tests/staff_cases.py'):\n            from browser_owner_fixture_provenance import predecessor as browser_owner_predecessor\n            retained=browser_owner_predecessor(ROOT,path,retained)\n        if path=='tests/stackcp_access_read_snapshot_native.php':"
         ]
       ],
-      "after_sha256": "545747d897dd0f4fe81c333ba864fcb546c1d6eb01fbd9bea202605f7b7d26e9"
+      "after_sha256": "49161ed3c0b4414d5a164caeaec446947f052b772a96f41ed1d37f39d0102254"
     },
     "tests/combined_runtime_repair.py": {
       "before_sha256": null,

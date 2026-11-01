@@ -4,6 +4,7 @@ from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 OWNER='Synthetic owner passphrase 2026'
 STAFF='Synthetic staff browser passphrase'
@@ -44,12 +45,13 @@ def run_http(env):
     url=BASE+'/existing/admin/index.php?view=staff'
     original=db('SELECT id,email,password_hash,auth_version FROM ci_users WHERE id=1')[0]
     r=submit(admin,url,'staff_migrate',{'owner_id':'1','owner_password':OWNER,'confirm':'1'})
-    check('HTTP owner enables administrator access with reauthentication','Administrator access is enabled' in r.text and db('SELECT id,email,password_hash,auth_version FROM ci_users WHERE id=1')[0]==original)
+    check('HTTP owner enables administrator access using the current session','Administrator access is enabled' in r.text and db('SELECT id,email,password_hash,auth_version FROM ci_users WHERE id=1')[0]==original)
     create={'id':'0','name':'Website staff','email':'website-staff@example.invalid','role':'administrator','enabled':'1','permissions[]':['website.manage'],'owner_password':OWNER}
     r=submit(admin,url,'staff_save',dict(create,csrf='bad'))
     check('HTTP staff create rejects bad CSRF','session expired' in r.text.lower() and not db('SELECT id FROM ci_users WHERE email=?',[create['email']]))
-    r=submit(admin,url,'staff_save',dict(create,owner_password='incorrect'))
-    check('HTTP staff create requires current owner password','current password is not correct' in r.text and not db('SELECT id FROM ci_users WHERE email=?',[create['email']]))
+    denied=dict(create);denied.pop('owner_password')
+    refuse_owner_action(globals(),admin,url,'staff_save',denied)
+    check('HTTP staff create preserves missing account after current owner permission is revoked',not db('SELECT id FROM ci_users WHERE email=?',[create['email']]))
     r=submit(admin,url,'staff_save',create);uid=db('SELECT id FROM ci_users WHERE email=?',[create['email']])[0]['id']
     check('HTTP creates pending administrator without a password',db('SELECT password_hash FROM ci_users WHERE id=?',[uid])[0]['password_hash']=='')
     capture=(QA/'mail-capture.txt').read_bytes()
@@ -79,11 +81,11 @@ def run_browser(env,browser):
     check('Administrator narrow mobile fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     # Create a client-workspace-only member entirely in the actual browser.
     create=p.locator('form').filter(has=p.locator('[name=action][value=staff_save]')).filter(has=p.locator('[name=id][value="0"]'))
-    create.locator('[name=name]').fill('Client support staff');create.locator('[name=email]').fill('client-staff@example.invalid');create.locator('[name="permissions[]"][value="clients.manage"]').check();create.locator('[name=owner_password]').fill(OWNER);create.locator('button').click()
+    create.locator('[name=name]').fill('Client support staff');create.locator('[name=email]').fill('client-staff@example.invalid');create.locator('[name="permissions[]"][value="clients.manage"]').check();assert_no_owner_reprompt(check,create,'Create administrator');create.locator('button').click()
     expect(p.locator('[name=email][value="client-staff@example.invalid"]')).to_be_visible()
     cid=db('SELECT id FROM ci_users WHERE email=?',['client-staff@example.invalid'])[0]['id']
     check('Browser administrator creation persists selected access',json.loads(db('SELECT permissions FROM ci_staff_profiles WHERE user_id=?',[cid])[0]['permissions'])==['clients.manage'])
-    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value="'+str(cid)+'"]'));invite.locator('[name=owner_password]').fill(OWNER);invite.locator('button').click()
+    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value="'+str(cid)+'"]'));assert_no_owner_reprompt(check,invite,'Invite staff client');invite.locator('button').click()
     expect(p.locator('[data-staff-invite]')).to_be_visible();client_link=p.locator('[data-staff-invite]').get_attribute('href')
     check('Long private link fits narrow mobile',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     # Activate website staff using the generated fragment and actual local script.
@@ -123,11 +125,11 @@ def run_browser(env,browser):
     check('Client-only account cannot forge website mutations',bool(db('SELECT id FROM ci_projects WHERE id=1')))
     # Profile changes in the browser invalidate existing server sessions.
     p.goto(url);edit=p.locator('form').filter(has=p.locator('[name=action][value=staff_save]')).filter(has=p.locator('[name=id][value="'+str(uid)+'"]'))
-    edit.locator('[name=enabled]').uncheck();edit.locator('[name=owner_password]').fill(OWNER);edit.locator('button').click();expect(edit.locator('[name=enabled]')).not_to_be_checked()
+    edit.locator('[name=enabled]').uncheck();assert_no_owner_reprompt(check,edit,'Disable administrator');edit.locator('button').click();expect(edit.locator('[name=enabled]')).not_to_be_checked()
     s.reload();expect(s.locator('[name=email]')).to_be_visible();check('Browser deactivation revokes existing administrator session',True)
     r=submit(web,BASE+'/existing/admin/index.php?view=login','login',{'email':'website-staff@example.invalid','password':STAFF});check('Disabled administrator password cannot sign in','email or password is not correct' in r.text)
-    edit.locator('[name=enabled]').check();edit.locator('[name=owner_password]').fill(OWNER);edit.locator('button').click();expect(edit.locator('[name=enabled]')).to_be_checked()
-    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value="'+str(uid)+'"]'));invite.locator('[name=owner_password]').fill(OWNER);invite.locator('button').click();expect(p.locator('[data-staff-invite]')).to_be_visible()
+    edit.locator('[name=enabled]').check();assert_no_owner_reprompt(check,edit,'Reenable administrator');edit.locator('button').click();expect(edit.locator('[name=enabled]')).to_be_checked()
+    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value="'+str(uid)+'"]'));assert_no_owner_reprompt(check,invite,'Invite staff recovery');invite.locator('button').click();expect(p.locator('[data-staff-invite]')).to_be_visible()
     recovered=p.locator('[data-staff-invite]').get_attribute('href');check('Recovery immediately retires previous password',db('SELECT password_hash FROM ci_users WHERE id=?',[uid])[0]['password_hash']=='')
     s.goto(recovered);s.locator('[name=password]').fill(STAFF);s.locator('[name=confirm_password]').fill(STAFF);s.get_by_role('button',name='Set up account').click();expect(s.locator('[name=email]')).to_be_visible()
     check('Owner-issued recovery restores completed setup',db('SELECT password_hash FROM ci_users WHERE id=?',[uid])[0]['password_hash']!='')
