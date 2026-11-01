@@ -259,7 +259,7 @@
     "site/portal/controllers/actions.php": "e59e33faa529c0fed60c6dfcfd032f93b4d663123220500781154fb133bf890d",
     "site/portal/controllers/router.php": "f2f574e32984b20efabe7b712a70622e6bf8c60182c7f58cc9f8a27b2cf0b849",
     "site/portal/views/workspace.php": "38a451e212875950a9f976063d1b733c942b8b5b2b0e50f9bfa11643f5348366",
-    "tests/notification_center_browser.py": "65928e794dd2f255eb0b34610563b46bf658d280344c96a64cc80e13ff009088",
+    "tests/notification_center_browser.py": "1758d4d12416f166e30cd372d88d3693a4e22b062fa6cb9b87020a0a462f8d97",
     "tests/notification_center_native.php": "85e707a0728272247667f4b2490c7730c6eb80ce353963814b291765556cb27b",
     "tests/notification_integration_contract.py": "1fdcdc9510ce438a2887b18259703b1189a7b4e12bc927671ff0a77fd0bb493d",
     "tests/notifications/run.php": "ecd0df0b3d01dc9382940cd75a76a1f71cf0c57b5a61d9790c5437c07dafc4eb",
@@ -272,5 +272,12 @@
     "site/includes/foundation/notifications/NotificationPreferences.php": "93ce3255c86a38b7f4107a795e7b7557bb17eeb5d33bf553daf47dbbfc5b213f",
     "site/install/inventory.generated.php": "01e7eb86328607e3582bf40cd6af6ed3c50334cbbcdfc92ae6fb6d76084fdc05"
   },
-  "scope": "Preserve existing payment inbox; fail closed before transport if notification audit fails. Initial failed41337802825 retained; no installed pass inferred."
+  "scope": "Preserve existing payment inbox; fail closed before transport if notification audit fails. Initial failed41337802825 retained; no installed pass inferred.",
+  "captured_form_correction": {
+    "path": "tests/notification_center_browser.py",
+    "before": "65928e794dd2f255eb0b34610563b46bf658d280344c96a64cc80e13ff009088",
+    "after": "1758d4d12416f166e30cd372d88d3693a4e22b062fa6cb9b87020a0a462f8d97",
+    "old": "    with revoked_owner(site,php):\n        bad=submit(owner,url,'notifications_setup',{'confirm':'1'})",
+    "new": "    captured_setup=form_data(form_for(owner.get(url),'notifications_setup'));captured_setup['confirm']='1'\n    with revoked_owner(site,php):\n        bad=owner.post(url,data=captured_setup)"
+  }
 }

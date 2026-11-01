@@ -46,8 +46,9 @@ try:
     check('Invalid CSRF cannot create notification schema','session expired' in bad.text.lower() and not db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='ci_notification_feed'"))
     bad=submit(owner,url,'notifications_setup',{})
     check('Explicit backup confirmation is required','Confirm that you saved' in bad.text and not db("SELECT value FROM ci_settings WHERE name='notification_feed_version'"))
+    captured_setup=form_data(form_for(owner.get(url),'notifications_setup'));captured_setup['confirm']='1'
     with revoked_owner(site,php):
-        bad=submit(owner,url,'notifications_setup',{'confirm':'1'})
+        bad=owner.post(url,data=captured_setup)
         check('Same-owner permission withdrawal blocks setup',('does not have access' in bad.text or 'current owner' in bad.text) and not db("SELECT value FROM ci_settings WHERE name='notification_feed_version'"))
     with sync_playwright() as pw:
         browser=pw.chromium.launch(headless=True);context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
