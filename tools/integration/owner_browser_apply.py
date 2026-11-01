@@ -17,11 +17,25 @@ def main():
  if len(raw)!=35270:raise SystemExit('Unexpected recipe size')
  data=json.loads(raw)
  if data['base']!=BASE or {r['path'] for r in data['records']}!=PATHS or len(data['records'])!=7 or set(data['derived'])!=DERIVED:raise SystemExit('Unreviewed correction scope')
- rows={r['path']:r for r in data['records']};facts={**rows,**data['derived']};current={}
+ rows={r['path']:r for r in data['records']}
+ # Preserve the immutable recipe; correct only the synthetic capture/session boundary.
+ capture=rows['tests/owner_session_installed.py']
+ if sha(capture['content'].encode())!='46303f4b6f264dd1cb1285a055d07bafac8a8d81f0a0279b291fe2e4e8fc1d55':raise SystemExit('Original capture fixture changed')
+ revised=capture['content']
+ for start,end,text in reversed([(7222, 7222, "ipient_context=browser.new_context();recipient_context.route('**/*',bounded);rec"), (7228, 7228, 'recipient_'), (7245, 7245, ");recovery.on('pageerror',lambda e:errors.append(str(e))"), (7788, 7788, 'recipient_context.close();response='), (7802, 7803, '\n  check(\'Owner remains authenticated after separate recipient activation\',response.status==200 and page.url==url and page.locator(\'form [name=action][value=staff_save]\').count()>=2 and page.locator(\'form [name=action][value=login]\').count()==0)\n  check(\'Desktop capture shows actual staff management\',page.locator(\'footer\').count()>0 and page.locator(\'form [name=email][value="\'+fields[\'email\']+\'"]\').count()==1)\n  '), (7926, 7927, "\n  check('Mobile capture retains actual staff-management forms',page.url==url and page.locator('form [name=action][value=staff_save]').count()>=2)\n  ")]):
+  revised=revised[:start]+text+revised[end:]
+ capture['content']=revised;capture['after']='f0a0f05ab2476f9c0a44b0847182ba00e7efcd4e4d1358c9f5aa883839bf0c07'
+ if sha(revised.encode())!=capture['after']:raise SystemExit('Capture correction differs')
+ facts={**rows,**data['derived']};current={}
  for path in facts:
   p=ROOT/path
   if p.is_symlink() or any(parent.is_symlink() for parent in p.parents):raise SystemExit('Symlink source refused')
   current[path]=p.read_bytes() if p.exists() else None
+ if (all(current[p] is not None and sha(current[p])==row['after'] for p,row in facts.items() if p!='tests/owner_session_installed.py')
+     and current['tests/owner_session_installed.py'] is not None
+     and sha(current['tests/owner_session_installed.py'])=='46303f4b6f264dd1cb1285a055d07bafac8a8d81f0a0279b291fe2e4e8fc1d55'):
+  (ROOT/'tests/owner_session_installed.py').write_text(revised)
+  current['tests/owner_session_installed.py']=revised.encode()
  if all(current[p] is not None and sha(current[p])==row['after'] for p,row in facts.items()):
   print('All ten reviewed test corrections already recorded.');return
  for path,row in facts.items():
