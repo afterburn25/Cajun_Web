@@ -132,6 +132,7 @@ jobs:
           echo "$RUNNER_TEMP/combined-bin" >> "$GITHUB_PATH"
       - name: Complete account and notification SQL suites with no external transport
         run: |
+          php tests/tickets_installed_seed.php config
           php tests/account_security_native.php > qa/account-security/native.stdout.log 2> qa/account-security/native.stderr.log
           test ! -s qa/account-security/native.stderr.log
           php tests/notification_center_native.php > qa/notification-center/native.stdout.log 2> qa/notification-center/native.stderr.log
@@ -146,7 +147,6 @@ jobs:
           PY
       - name: Retain client authority proposal ticket and no-repeated-admin-password checks
         run: |
-          php tests/tickets_installed_seed.php config
           for case in client_authority_native proposals_native support_tickets_native; do
             php "tests/$case.php" > "qa/combined-policies/$case.stdout.log" 2> "qa/combined-policies/$case.stderr.log"
             test ! -s "qa/combined-policies/$case.stderr.log"
