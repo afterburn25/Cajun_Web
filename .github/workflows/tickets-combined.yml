@@ -1,0 +1,230 @@
+name: Support tickets on combined application
+on:
+  push:
+    branches: [chatgpt/tickets-combined-20261031]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: tickets-combined-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/tickets-combined-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reconcile reviewed ticket source without replacing current shared controllers
+        run: |
+          git merge-base --is-ancestor cb2838df5336c0acca8274ce65c3cb614b8d4195 HEAD
+          python3 tools/integration/tickets_combined_apply.py
+          python3 tools/build.py --refresh
+          python3 tools/integration/tickets_combined_apply.py
+          mkdir -p qa/tickets-source
+          php tests/desk/run.php > qa/tickets-source/desk.log
+          php tests/desk/review_controls.php > qa/tickets-source/review.json
+          php tests/desk/review_controls.php --deployment > qa/tickets-source/deployed-review.json
+          php tests/desk/ticket_documents.php > qa/tickets-source/documents.json
+          php tests/desk/forms.php > qa/tickets-source/forms.json
+          php tests/tickets_setup_policy.php > qa/tickets-source/setup.json
+          php tests/access/run.php > qa/tickets-source/access.log
+          python3 tests/acceptance_artifacts_test.py --report qa/tickets-source/helpers.json
+          git diff --check
+          git diff --exit-code -- .github/workflows
+      - name: Record the resolved integration and preserve both histories
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- site foundation tests docs tools/build.py
+          incoming=9b1d45b1a830fcce287c93227e011c93df15aaaf
+          if ! git diff --cached --quiet || ! git merge-base --is-ancestor "$incoming" HEAD; then
+            tree=$(git write-tree)
+            if git merge-base --is-ancestor "$incoming" HEAD; then
+              commit=$(git commit-tree "$tree" -p HEAD -m 'Record reviewed support-ticket source corrections')
+            else
+              commit=$(git commit-tree "$tree" -p HEAD -p "$incoming" -m 'Integrate support tickets with current licensing portal proposals and backups')
+            fi
+            git reset --hard "$commit"
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/tickets-combined-20261031'
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          expected=os.environ['EXPECTED_HEAD']
+          if remote!=expected:raise SystemExit('Ticket branch advanced; refuse to overwrite concurrent work')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=expected:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Exact ticket integration source:',head)
+          PY
+      - name: Verify the exact shipping layers after recording source
+        run: |
+          python3 tests/tickets_integration_contract.py
+          python3 tests/combined_runtime_repair.py
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Preserve source identity and evidence, including failures
+        if: always()
+        run: |
+          mkdir -p qa/tickets-source
+          git archive --format=tar.gz HEAD > qa/tickets-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/tickets-source/identity.txt
+          git status --porcelain > qa/tickets-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: tickets-source-${{ github.sha }}
+          path: qa/tickets-source/
+          if-no-files-found: error
+          retention-days: 14
+  portable:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preserve previous application policies and exact reviewed shipping changes
+        run: |
+          mkdir -p qa/tickets-portable
+          python3 tests/combined_runtime_repair.py
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          python3 tests/acceptance_artifacts_test.py --report qa/tickets-portable/helpers.json
+          python3 tools/integration/portable_checks.py --root . --out qa/tickets-portable
+          php tests/master_portal_policy.php
+          python3 tests/sandbox_workflow_contract.py
+          python3 tests/anet_sandbox_runtime_contract.py
+          python3 tools/check_docs.py > qa/tickets-portable/docs.log
+          for mode in default minimal; do
+            if test "$mode" = minimal; then options=-n; else options=; fi
+            php $options tests/desk/run.php > "qa/tickets-portable/desk-$mode.log"
+            php $options tests/desk/review_controls.php > "qa/tickets-portable/review-$mode.json"
+            php $options tests/desk/review_controls.php --deployment > "qa/tickets-portable/deployed-review-$mode.json"
+            php $options tests/desk/ticket_documents.php > "qa/tickets-portable/documents-$mode.json"
+            php $options tests/desk/forms.php > "qa/tickets-portable/forms-$mode.json"
+            php $options tests/tickets_setup_policy.php > "qa/tickets-portable/setup-$mode.json"
+            php $options tests/access/run.php > "qa/tickets-portable/access-$mode.log"
+          done
+          git diff --exit-code
+      - name: Preserve portable evidence without customer data
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tickets-portable-${{ needs.source.outputs.sha }}
+          path: qa/tickets-portable/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare disposable PHP and loopback database only
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-tickets-review - <<'DOCKER'
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-tickets-review php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/tickets-bin" qa/tickets-integration
+          cat > "$RUNNER_TEMP/tickets-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run -i --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-tickets-review php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/tickets-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/tickets-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/tickets-bin" >> "$GITHUB_PATH"
+      - name: Execute complete ticket SQL authority privacy and concurrency cases
+        run: |
+          php tests/support_tickets_native.php > qa/tickets-integration/native.stdout.log 2> qa/tickets-integration/native.stderr.log
+          test ! -s qa/tickets-integration/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('qa/support-tickets-native-results.json').read_text())
+          assert r['passed'] is True and r['source_sha']==os.environ['CWP_SOURCE_SHA'] and len(r['checks'])>=100 and all(c['passed'] is True for c in r['checks'])
+          print('Complete actual ticket SQL assertions:',len(r['checks']))
+          PY
+          git diff --exit-code
+      - name: Prepare actual browser dependencies
+        if: matrix.php == '8.4'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/tickets-venv"
+          "$RUNNER_TEMP/tickets-venv/bin/pip" install requests beautifulsoup4 playwright cryptography
+          "$RUNNER_TEMP/tickets-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Real client staff owner and support ticket journeys
+        if: matrix.php == '8.4'
+        run: |
+          "$RUNNER_TEMP/tickets-venv/bin/python" tests/tickets_installed_browser.py
+          git diff --exit-code
+      - name: Preserve synthetic evidence and captures including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tickets-php${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: |
+            qa/tickets-integration/
+            qa/support-tickets-native-results.json
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,portable,native]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Support-ticket source, portable policies, four SQL combinations and two installed browser journeys passed for this recorded combined revision. Full historical application, packaged-upgrade and remaining-feature acceptance remain separate. No main merge, deployment, provider transaction, mail or charge was performed.' >> "$GITHUB_STEP_SUMMARY"
