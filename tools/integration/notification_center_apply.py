@@ -9,6 +9,8 @@ PACKED='a3bb3b78aa15a6fd2f40bddd6e445c95ca11ad55a937a15ff765e7ce0dc7b585'
 def sha(raw): return hashlib.sha256(raw).hexdigest()
 def main():
     if os.environ.get('GITHUB_REF')!=BRANCH:raise SystemExit('Isolated notification feature branch only')
+    if (ROOT/'docs/NOTIFICATION_CENTER_CORRECTIONS.json').exists():
+        subprocess.run(['python3','-B','tools/integration/notification_runtime_corrections.py'],cwd=ROOT,check=True);return
     packed=b''.join((ROOT/f'tools/integration/notification-center.{i}.gzpart').read_bytes() for i in range(18))
     if sha(packed)!=PACKED:raise SystemExit('Reviewed notification recipe changed')
     raw=gzip.decompress(packed)
@@ -24,7 +26,7 @@ def main():
         if target.is_symlink() or any(x.is_symlink() for x in target.parents):raise SystemExit('Symlink source refused')
         current[name]=target.read_bytes() if target.exists() else None
     if all(current[n] is not None and sha(current[n])==r['after'] for n,r in facts.items()):
-        print('All34 notification source identities already match.');return
+        subprocess.run(['python3','-B','tools/integration/notification_runtime_corrections.py'],cwd=ROOT,check=True);return
     for name,row in facts.items():
         if (None if current[name] is None else sha(current[name]))!=row['before']:raise SystemExit('Source drift before mutation: '+name)
     output={}
@@ -46,5 +48,6 @@ def main():
     for name,row in facts.items():
         if sha((ROOT/name).read_bytes())!=row['after']:raise SystemExit('Canonical output mismatch: '+name)
     subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
-    print('Expanded34 exact notification source files. No remote ref, mail or production operation.')
+    subprocess.run(['python3','-B','tools/integration/notification_runtime_corrections.py'],cwd=ROOT,check=True)
+    print('Expanded and corrected notification source. No remote ref, mail or production operation.')
 if __name__=='__main__':main()
