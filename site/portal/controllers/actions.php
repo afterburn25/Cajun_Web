@@ -106,9 +106,18 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}
  elseif(str_starts_with($action,'client_tickets_')){if(!$client)throw new RuntimeException('Sign in to continue.');support_tickets_portal_action($action,$client);}
  elseif($action==='activity_mark')activity_post('client');
+ elseif($action==='account_password'){
+  $account=studio_account_identity();
+  $allowedIp=consume_rate(ip_key('client-account-password'),10,900);
+  $allowedAccount=consume_rate(hash_hmac('sha256','client-account-password|'.$account['id'],config()['key']),5,900);
+  if(!$allowedIp||!$allowedAccount)throw new RuntimeException('Too many password-change attempts. Wait 15 minutes before trying again.');
+  studio_account_password_change(posted('current_password',1000),posted('password',72),posted('confirm_password',72));
+  flash('Password updated. Other client sessions and unused recovery invitations were revoked.');redirect(studio_url(['account'=>1]));
+ }
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
  elseif($action==='login'){
   studio_login(strtolower(posted('email',190)),posted('password',1000));
+  if(($_GET['account']??null)==='1')redirect(studio_url(['account'=>1]));
   if(array_key_exists('finance',$_GET)&&is_string($_GET['finance']))redirect(studio_url(['finance'=>$_GET['finance']]));
   if(array_key_exists('software',$_GET))redirect(studio_url(['software'=>1]));
   require_once CWP_CODE_ROOT.'/app/hosting/catalog_login.php';redirect(studio_url(hosting_catalog_login_destination($_GET)));

@@ -1,0 +1,30 @@
+{
+  "base": "a827fca40f5c056d249293b11f07e425f0b71600",
+  "scope": "Primary-client self-service account page only. Separate scoped company contacts remain unintegrated. No schema/provider/billing changes or production deployment. No historical feature PR is marked merged by this subset.",
+  "shipping": {
+    "site/app/clients/account_security.php": {
+      "before": null,
+      "after": "fe655b53e6df39acc2aaf1e04d17e4c8ad23e603bf10fe2e1bac8127de5aa4f2"
+    },
+    "site/portal/views/account.php": {
+      "before": null,
+      "after": "4b3e77f530ab7d0b11761b6168d5c77727c648ac5f659ea03ca744977bd6884e"
+    },
+    "site/portal/controllers/router.php": {
+      "before": "f67d9b8c99ecb53ecd2efd0ff96fa950f3e895e5bddea5994018cd879528f0ed",
+      "after": "3d48ed7afa1723469bee4a4eb55e02e3487235e3a7bd7db6398a39c455412dec"
+    },
+    "site/portal/controllers/actions.php": {
+      "before": "e0c73a3679def7af53916ecbd6a41cccdbb73b1c05bf0897e2f9e755616c7a4e",
+      "after": "98084c264fe427d250664026de088d865d0a6cf6c7cc6f0d9722b7146803e2aa"
+    },
+    "site/portal/views/workspace.php": {
+      "before": "32669a80a78767e539f3e7d06a0e05474722cf237fc2df37ce97c70a4ba50b20",
+      "after": "e0ce897d8757302ccb761ef510b30941db8d8def40d3ef4c6a40874c01cb80cf"
+    },
+    "site/install/inventory.generated.php": {
+      "before": "d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a",
+      "after": "37696d07757ac235508b5196ea00487b99780f51ba14237e60cedd05ac493ad7"
+    }
+  }
+}
