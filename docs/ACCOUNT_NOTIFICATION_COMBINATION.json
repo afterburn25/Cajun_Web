@@ -1,0 +1,31 @@
+{
+  "base": "3e66cb490bb8c6a93119a73209434535be365f44",
+  "account_source": "7d43444cf74ac30fd851b3b2c439606582667ca3",
+  "shipping": {
+    "site/app/clients/account_security.php": {
+      "before": null,
+      "after": "fe655b53e6df39acc2aaf1e04d17e4c8ad23e603bf10fe2e1bac8127de5aa4f2"
+    },
+    "site/portal/views/account.php": {
+      "before": null,
+      "after": "4b3e77f530ab7d0b11761b6168d5c77727c648ac5f659ea03ca744977bd6884e"
+    },
+    "site/portal/controllers/router.php": {
+      "before": "f2f574e32984b20efabe7b712a70622e6bf8c60182c7f58cc9f8a27b2cf0b849",
+      "after": "03d604fe2c411c3908aaddd3acb6d3d9510b1d2da9a80fb247149d61f17bd826"
+    },
+    "site/portal/controllers/actions.php": {
+      "before": "e59e33faa529c0fed60c6dfcfd032f93b4d663123220500781154fb133bf890d",
+      "after": "aa81e27ff965b2aad247f20ae01216de942f81fd809a43e82b9bf1246bf374ad"
+    },
+    "site/portal/views/workspace.php": {
+      "before": "38a451e212875950a9f976063d1b733c942b8b5b2b0e50f9bfa11643f5348366",
+      "after": "42f1fb62fac27ac6e989fe3ea1f17d1fc3bc35dfbdc1ccafeb0c141e2d9d8bd2"
+    },
+    "site/install/inventory.generated.php": {
+      "before": "01e7eb86328607e3582bf40cd6af6ed3c50334cbbcdfc92ae6fb6d76084fdc05",
+      "after": "32562a0bb8fa0b6cbf82539be91b95916b7d740ff5cd3d1681aee7781ab034fa"
+    }
+  },
+  "scope": "Exact tested account implementation integrated additively with notifications. Shared portal conflicts preserve both routes. Combined SQL/browser acceptance still required."
+}
