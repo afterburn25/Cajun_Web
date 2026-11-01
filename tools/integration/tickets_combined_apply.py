@@ -30,7 +30,7 @@ def main():
     rows=recipe['records']
     if len(rows)!=62 or len({row['path'] for row in rows})!=62:raise SystemExit('Unexpected ticket change scope')
     correction_bytes=(ROOT/'tools/integration/tickets-runtime-corrections.json').read_bytes()
-    if sha(correction_bytes)!='d44993b5c0a82eb260fe634d5b7f757e0b3b1381b4fe6430baebfaf5b8655757':raise SystemExit('Reviewed ticket corrections changed')
+    if sha(correction_bytes)!='ed4b5f738006b4ae9c6c16ea18825013bb07680d95fd2d67ca8b307fd58cea47':raise SystemExit('Reviewed ticket corrections changed')
     correction_doc=json.loads(correction_bytes)
     if correction_doc['predecessor']!='a96c671a8d5a21ecaa87be33aafc7065c063dccc':raise SystemExit('Unknown ticket correction predecessor')
     corrections={item['path']:item for item in correction_doc['records']}
@@ -44,7 +44,7 @@ def main():
         current=target.read_bytes() if target.exists() else None
         current_hash=sha(current) if current is not None else None
         correction=corrections.get(row['path'])
-        allowed=(row['target_before'],row['output'])+((correction['after'],) if correction else ())
+        allowed=(row['target_before'],row['output'])+((correction['after'],correction.get('previous_output',row['output'])) if correction else ())
         if current_hash not in allowed:raise SystemExit('Current target drift: '+row['path'])
         if 'content' in row:
             output=row['content'].encode('utf-8')
@@ -67,6 +67,7 @@ def main():
         if current!=output:outputs.append((target,output))
     for target,output in outputs:
         target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(output)
+    subprocess.run(['python3','tools/integration/upgrade_fixture_repairs.py'],cwd=ROOT,check=True)
     subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
     print('Verified all62 exact ticket source outputs; changed',len(outputs),'files. Database/browser acceptance remains separate.')
 if __name__=='__main__':main()

@@ -212,6 +212,21 @@ jobs:
         run: |
           "$RUNNER_TEMP/tickets-venv/bin/python" tests/tickets_installed_browser.py
           git diff --exit-code
+      - name: Retained licensing migration and same-owner permission refusals
+        if: ${{ !cancelled() && success() }}
+        run: |
+          php tests/tickets_installed_seed.php config
+          php tests/license_native.php > qa/tickets-integration/license.stdout.log 2> qa/tickets-integration/license.stderr.log
+          test ! -s qa/tickets-integration/license.stderr.log
+          python3 - <<'PYCODE'
+          import json,os
+          from pathlib import Path
+          path=Path('qa/license-native-results.json');doc=json.loads(path.read_text())
+          assert doc.get('failed')==0 and doc.get('passed')==len(doc['checks']) and len(doc['checks'])>0 and all(row['passed'] is True for row in doc['checks'])
+          doc['source_sha']=os.environ['CWP_SOURCE_SHA'];path.write_text(json.dumps(doc,indent=2)+'\n')
+          print('Complete retained licensing SQL assertions:',len(doc['checks']))
+          PYCODE
+          git diff --exit-code
       - name: Preserve synthetic evidence and captures including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -220,6 +235,7 @@ jobs:
           path: |
             qa/tickets-integration/
             qa/support-tickets-native-results.json
+            qa/license-native-results.json
           if-no-files-found: error
           retention-days: 14
   checkpoint:

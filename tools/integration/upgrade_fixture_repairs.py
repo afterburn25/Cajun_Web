@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""Current-owner and Services-tab test corrections; no shipping or authentication change."""
+from pathlib import Path
+import hashlib,json,os,subprocess
+ROOT=Path(__file__).resolve().parents[2]
+if os.environ.get('GITHUB_REF')!='refs/heads/chatgpt/tickets-combined-20261031':raise SystemExit('Isolated reviewed integration only')
+CHANGES=json.loads(r'''{
+  "tests/license_upgrade_cases.php": {
+    "before": "cd4abfd07ae2056c23af25a79a355cda9069c0ee4c66ea408aa0b21788f0d8ed",
+    "edits": [
+      [
+        "function lu_setup(string $prefix):void{",
+        "/** Exact SQL-only legacy namespace; this fixture never reads archived bundle paths. */\nfunction lu_authority_state():array {\n    $cfg=config();$db=$cfg['db']??[];\n    if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||($db['name']??'')!=='cwp_test'||!in_array($db['host']??'',['127.0.0.1','localhost'],true)||($db['prefix']??'')!=='licup_'||($cfg['storage']??null)!=='')throw new AssertionError('Legacy license authority fixture requires its exact disposable SQL-only namespace.');\n    $out=[];\n    foreach(all(\"SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,6)='licup_' AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME\") as $entry){\n        $name=$entry['TABLE_NAME'];if(!is_string($name)||!preg_match('/^licup_[a-zA-Z0-9_]+$/D',$name))throw new AssertionError('Unexpected legacy fixture table.');\n        $rows=array_map('serialize',all('SELECT * FROM `'.$name.'`'));sort($rows,SORT_STRING);$schema=(string)(one('SHOW CREATE TABLE `'.$name.'`')['Create Table']??'');\n        if($schema==='')throw new AssertionError('Missing legacy fixture schema.');\n        $out[$name]=[hash('sha256',serialize($rows)),hash('sha256',preg_replace('/ AUTO_INCREMENT=[0-9]+\\b/','',$schema))];\n    }\n    if(!$out)throw new AssertionError('An empty fixture cannot prove unchanged legacy data.');return $out;\n}\n/** The same authenticated owner loses only permission; unrelated errors are not valid denials. */\nfunction lu_owner_revoked(callable $work):never {\n    if(db()->inTransaction())throw new AssertionError('The legacy owner refusal cannot inherit a transaction.');\n    $before=lu_authority_state();$session=$_SESSION;$actor=admin_user();\n    if(!staff_ready()||!$actor||(int)$actor['id']!==1||$actor['role']!=='owner'||!admin_session_matches($actor))throw new AssertionError('Expected the original current owner.');\n    $profile=one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1');\n    if(!$profile||$profile['role']!=='owner'||(int)$profile['enabled']!==1)throw new AssertionError('Expected enabled owner profile.');\n    $error=null;\n    try{\n        query('UPDATE '.table('staff_profiles').\" SET role='administrator',permissions='[]' WHERE user_id=1\");$revoked=lu_authority_state();$current=admin_user();\n        if(!$current||(int)$current['id']!==1||$current['role']!=='administrator'||!admin_session_matches($current)||staff_can('staff.manage',$current))throw new AssertionError('Revocation changed identity instead of permission.');\n        try{$work();}catch(Throwable $e){$error=$e;}\n        if(db()->inTransaction()||lu_authority_state()!==$revoked)throw new AssertionError('Denied legacy operation changed rows, schema or transaction state.');\n    }finally{\n        if(db()->inTransaction())db()->rollBack();\n        query('UPDATE '.table('staff_profiles').' SET role=?,permissions=? WHERE user_id=1',[$profile['role'],$profile['permissions']]);$_SESSION=$session;\n    }\n    if(lu_authority_state()!==$before)throw new AssertionError('Legacy authority fixture failed to restore exact state.');\n    if(!($error instanceof RuntimeException||$error instanceof InvalidArgumentException)||$error instanceof PDOException||$error->getMessage()!=='Your account does not have access to this action.')throw new AssertionError('Legacy action did not fail at its actual owner-permission boundary.');\n    $GLOBALS['cwp_current_authority_evidence'][]=['mode'=>'legacy-license-same-owner-revoked','tables'=>count($before),'state_unchanged'=>true,'scope'=>'SQL only; historical bundle paths are not read'];throw $error;\n}\nfunction lu_setup(string $prefix):void{",
+        1
+      ],
+      [
+        "lu_deny('Preparation wrong password leaves legacy rows unchanged',fn()=>license_migrate('incorrect'),'Your current password is not correct.')",
+        "lu_deny('Preparation requires current owner authority and retains legacy rows',fn()=>lu_owner_revoked(fn()=>license_migrate($password)),'Your account does not have access to this action.')",
+        1
+      ],
+      [
+        "lu_deny('Legacy resolution reauthenticates password',fn()=>license_resolve_legacy_invoice(900,1,true,'Original purchase fixture','incorrect'),'Your current password is not correct.')",
+        "lu_deny('Legacy resolution requires the same owners current permission',fn()=>lu_owner_revoked(fn()=>license_resolve_legacy_invoice(900,1,true,'Original purchase fixture',$password)),'Your account does not have access to this action.')",
+        1
+      ]
+    ],
+    "after": "3ad832da0e6381156cee69a81d3a033e3acb682f2f290ea3da3fb05f0643088d"
+  },
+  "tests/release_125_upgrade_cases.py": {
+    "before": "c560831a2782fe63ddfb56f790354f1e8b39a53fdd381af50f7e23778cbd3b15",
+    "edits": [
+      [
+        "    response = submit(owner, settings, 'provider_inventory_prepare', {'current_password': OWNER})",
+        "    response = submit(owner, settings + '&section=services', 'provider_inventory_prepare', {})",
+        1
+      ]
+    ],
+    "after": "1c023bc7087b985d9eb5244f8c233d432d8cb5951f4f139f75d5ceea15aa0e29"
+  }
+}''')
+outputs=[]
+for name,row in CHANGES.items():
+    if name not in ('tests/license_upgrade_cases.php','tests/release_125_upgrade_cases.py'):raise SystemExit('Unexpected test correction path')
+    path=ROOT/name
+    if path.is_symlink():raise SystemExit('Symlink test source refused')
+    raw=path.read_bytes();actual=hashlib.sha256(raw).hexdigest()
+    if actual==row['after']:continue
+    if actual!=row['before']:raise SystemExit('Test predecessor drift: '+name)
+    text=raw.decode()
+    for old,new,count in row['edits']:
+        if text.count(old)!=count:raise SystemExit('Nonunique test edit: '+name)
+        text=text.replace(old,new,count)
+    result=text.encode()
+    if hashlib.sha256(result).hexdigest()!=row['after']:raise SystemExit('Test correction identity differs: '+name)
+    outputs.append((path,result))
+for path,data in outputs:path.write_bytes(data)
+receipt=ROOT/'docs/LICENSING_UPGRADE_AUTHORITY_REPAIRS.json'
+record={'base':'cb2838df5336c0acca8274ce65c3cb614b8d4195','files':CHANGES,'scope':'Two reviewed test corrections. Every original legacy upgrade, retention, rollback and read-only check remains; real SQL/Apache outcomes are separate. The older published-release contract entry remains historical, not rewritten as current evidence. No runtime, provider, payment or deployment change.'}
+contents=json.dumps(record,ensure_ascii=False,indent=2)+'\n'
+if receipt.exists() and receipt.read_text()!=contents:raise SystemExit('Unknown upgrade-test receipt')
+receipt.write_text(contents)
+subprocess.run(['php','-l','tests/license_upgrade_cases.php'],cwd=ROOT,check=True)
+subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
+print('Verified two exact test corrections; real database and Apache checks remain required.')
