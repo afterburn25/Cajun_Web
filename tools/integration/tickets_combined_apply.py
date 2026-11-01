@@ -29,6 +29,12 @@ def main():
     if (recipe['schema'],recipe['base'],recipe['incoming'])!=(1,BASE,INCOMING):raise SystemExit('Unreviewed ticket inputs')
     rows=recipe['records']
     if len(rows)!=62 or len({row['path'] for row in rows})!=62:raise SystemExit('Unexpected ticket change scope')
+    correction_bytes=(ROOT/'tools/integration/tickets-runtime-corrections.json').read_bytes()
+    if sha(correction_bytes)!='d44993b5c0a82eb260fe634d5b7f757e0b3b1381b4fe6430baebfaf5b8655757':raise SystemExit('Reviewed ticket corrections changed')
+    correction_doc=json.loads(correction_bytes)
+    if correction_doc['predecessor']!='a96c671a8d5a21ecaa87be33aafc7065c063dccc':raise SystemExit('Unknown ticket correction predecessor')
+    corrections={item['path']:item for item in correction_doc['records']}
+    if len(correction_doc['records'])!=6 or set(corrections)!={'docs/TICKETS_COMBINED_SOURCE.json','site/app/support/ticket_notifications.php','site/install/inventory.generated.php','site/portal/controllers/tickets.php','tests/support_ticket_screen_native_cases.php','tests/ticket_cases.py'}:raise SystemExit('Unexpected ticket correction scope')
     outputs=[]
     for row in rows:
         path=Path(row['path'])
@@ -37,7 +43,9 @@ def main():
         if target.is_symlink() or any(p.is_symlink() for p in target.parents):raise SystemExit('Symlink ticket input refused')
         current=target.read_bytes() if target.exists() else None
         current_hash=sha(current) if current is not None else None
-        if current_hash not in (row['target_before'],row['output']):raise SystemExit('Current target drift: '+row['path'])
+        correction=corrections.get(row['path'])
+        allowed=(row['target_before'],row['output'])+((correction['after'],) if correction else ())
+        if current_hash not in allowed:raise SystemExit('Current target drift: '+row['path'])
         if 'content' in row:
             output=row['content'].encode('utf-8')
         else:
@@ -49,6 +57,13 @@ def main():
                 if not 0<=start<=end<limit:raise SystemExit('Overlapping ticket edits')
                 output=output[:start]+text.encode('utf-8')+output[end:];limit=start
         if sha(output)!=row['output']:raise SystemExit('Reviewed ticket output differs: '+row['path'])
+        if correction:
+            if sha(output)!=correction['before']:raise SystemExit('Ticket correction predecessor differs: '+row['path'])
+            limit=len(output)+1
+            for start,end,text in reversed(correction['edits']):
+                if not 0<=start<=end<limit:raise SystemExit('Overlapping runtime correction')
+                output=output[:start]+text.encode('utf-8')+output[end:];limit=start
+            if sha(output)!=correction['after']:raise SystemExit('Ticket runtime correction differs: '+row['path'])
         if current!=output:outputs.append((target,output))
     for target,output in outputs:
         target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(output)
