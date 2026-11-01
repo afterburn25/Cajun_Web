@@ -1,0 +1,176 @@
+name: Remaining standalone and upgrade fixture acceptance
+on:
+  push:
+    branches: [chatgpt/standalone-acceptance-20261031]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: standalone-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/standalone-acceptance-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Expand bounded test corrections and retain every predecessor check
+        run: |
+          git merge-base --is-ancestor 60e35bd0e22872f1a9473c25b8f6a6ef67900ff0 HEAD
+          python3 tools/integration/standalone_acceptance_patch.py
+          mkdir -p qa/standalone-source
+          python3 tests/standalone_repair_provenance.py > qa/standalone-source/provenance.json
+          python3 tests/acceptance_artifacts_test.py --report qa/standalone-source/harness.json
+          php tests/twentyi-cloud-assignment/focused-view.php qa/standalone-source/cloud-default.json
+          php -n tests/twentyi-cloud-assignment/focused-view.php qa/standalone-source/cloud-minimal.json
+          php tests/twentyi-inventory-reader/run.php > qa/standalone-source/inventory-default.json
+          php -n tests/twentyi-inventory-reader/run.php > qa/standalone-source/inventory-minimal.json
+          php tests/stackcp_legacy_workspace_routes_contract.php > qa/standalone-source/routes-default.json
+          php -n tests/stackcp_legacy_workspace_routes_contract.php > qa/standalone-source/routes-minimal.json
+          git diff --check
+          git diff --exit-code -- site foundation tools/build.py VERSION START-HERE.txt .github/workflows
+      - name: Record ordinary corrected test source only on this branch
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- tests docs
+          if ! git diff --cached --quiet; then
+            git commit -m 'Reconcile remaining standalone fixtures without changing application security'
+          fi
+          python3 - <<'PY'
+          import os,base64,subprocess
+          branch='refs/heads/chatgpt/standalone-acceptance-20261031'
+          expected=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=expected:raise SystemExit('Branch advanced; refusing concurrent overwrite')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=expected:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Exact corrected source',head)
+          PY
+      - name: Record exact source and unchanged shipping code
+        if: always()
+        run: |
+          mkdir -p qa/standalone-source
+          git archive --format=tar.gz HEAD > qa/standalone-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/standalone-source/identity.txt
+          git status --porcelain > qa/standalone-source/uncommitted-status.txt
+          git diff --exit-code 60e35bd0e22872f1a9473c25b8f6a6ef67900ff0 HEAD -- site foundation tools/build.py VERSION START-HERE.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: standalone-source-${{ github.sha }}
+          path: qa/standalone-source/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare disposable PHP and loopback database
+        run: |
+          docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-standalone -f tests/invitations/Dockerfile tests/invitations
+          docker run --rm --network host cwp-standalone php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Execute targeted complete database suites and preserve every failure
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,os,subprocess
+          root=Path.cwd();out=root/'qa/standalone-native';out.mkdir(parents=True,exist_ok=True)
+          base=['docker','run','--rm','--network','host','--user',f'{os.getuid()}:{os.getgid()}','-v',str(root)+':/workspace','-w','/workspace']
+          for key in ['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD','CWP_SOURCE_SHA']:base+=['-e',key]
+          cases=[
+              ('domain-search',['tests/provider_domain_search_native.php'],'qa/provider-domain-search-native-results.json'),
+              ('stackcp-snapshot',['tests/stackcp_access_read_snapshot_native.php'],'qa/stackcp-access-read-snapshot-native-results.json'),
+              ('payoff-retirement',['tests/finance_payoff_retirement_native.php','fep_ci_retire_'],None),
+              ('payoff-owner-exit',['tests/finance_payoff_retirement_native.php','fep_ci_owner_','/workspace','owner_exit'],None),
+              ('payoff-settlement',['tests/finance_payoff_retirement_settlement.php','fep_ci_settle_'],None),
+              ('replacement-payoff',['tests/finance_replacement_payoff_native.php','fep_ci_replace_'],None),
+              ('replacement-receipts',['tests/finance_replacement_receipts_native.php','fep_ci_receipt_'],None),
+              ('replacement-pending',['tests/finance_replacement_pending_native.php','fep_ci_pending_'],None),
+              ('initial-receipts',['tests/finance_initial_receipts_native.php','fep_ci_initrc_'],None),
+          ]
+          results=[]
+          for name,args,report in cases:
+              stdout=out/(name+'.stdout');stderr=out/(name+'.stderr');error=None;code=None;doc=None
+              with stdout.open('w') as so,stderr.open('w') as se:
+                  try:code=subprocess.run(base+['cwp-standalone','php']+args,stdout=so,stderr=se,timeout=900).returncode
+                  except Exception as exc:error=type(exc).__name__+': '+str(exc)
+              try:
+                  doc=json.loads((root/report).read_text() if report else stdout.read_text())
+                  checks=doc.get('checks')
+                  if not isinstance(checks,list) or not checks or any(c.get('passed') is not True for c in checks) or doc.get('passed') is not True:raise ValueError('Nonempty complete successful assertions required')
+                  doc['source_sha']=os.environ['CWP_SOURCE_SHA'];(out/(name+'.json')).write_text(json.dumps(doc,indent=2)+'\n')
+              except Exception as exc:error=(error+'; ' if error else '')+type(exc).__name__+': '+str(exc)
+              if code!=0 and not error:error='PHP exit '+str(code)
+              item={'suite':name,'passed':code==0 and error is None,'exit_code':code,'checks':len(doc.get('checks',[])) if isinstance(doc,dict) else 0,'error':error}
+              results.append(item);print(json.dumps(item),flush=True)
+          passed=all(x['passed'] for x in results)
+          (out/'suites.json').write_text(json.dumps({'passed':passed,'source_sha':os.environ['CWP_SOURCE_SHA'],'scope':'Nine actual isolated database suites; synthetic provider boundaries, no live provider, mail, payment or deployment. Browser/Apache acceptance remains separate.','suites':results},indent=2)+'\n')
+          raise SystemExit(0 if passed else 1)
+          PY
+      - name: Preserve synthetic evidence and diagnostics, not private archives
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: standalone-native-${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: |
+            qa/standalone-native/
+            qa/provider-domain-search-native-results.json
+            qa/stackcp-access-read-snapshot-native-results.json
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,native]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Exact-source fixture checks and nine complete native suites passed in four PHP/database combinations. This is not full browser/Apache acceptance, main merge, deployment or release approval.' >> "$GITHUB_STEP_SUMMARY"
