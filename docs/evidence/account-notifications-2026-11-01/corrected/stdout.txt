@@ -1,0 +1,2 @@
+{"passed":true,"scope":"Synthetic loopback fixture with existing unrelated client project and support policy; tickets not prepared"}
+{"passed": true, "checks": 54}

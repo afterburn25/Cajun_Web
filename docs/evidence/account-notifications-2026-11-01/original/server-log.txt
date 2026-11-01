@@ -1,0 +1,265 @@
+[Sun Nov  1 18:31:03 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8091) started
+[Sun Nov  1 18:31:03 2026] 127.0.0.1:49678 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49678 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49678 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49694 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49694 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49694 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49698 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49698 [200]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49698 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49714 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49714 [400]: GET /existing/portal/index.php?account%5B%5D=1
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49714 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49724 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49724 [400]: GET /existing/portal/index.php?account=2
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49724 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49730 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49730 [400]: GET /existing/portal/index.php?account=1&software=1
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49730 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49736 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49736 [400]: GET /existing/portal/index.php?account=1&finance=1
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49736 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49738 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49738 [400]: GET /existing/portal/index.php?account=1&job=1
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49738 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49742 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49742 [404]: GET /existing/app/clients/account_security.php
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49742 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49750 Accepted
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49750 [404]: GET /existing/portal/views/account.php
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49750 Closing
+[Sun Nov  1 18:31:04 2026] 127.0.0.1:49758 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49758 [200]: GET /existing/admin/index.php?view=login
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49758 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49770 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49770 [303]: POST /existing/admin/index.php?view=login
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49770 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49780 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49780 [200]: GET /existing/admin/index.php?view=dashboard
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49780 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49784 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49784 [200]: GET /existing/admin/index.php?view=notifications
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49784 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49786 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49786 [303]: POST /existing/admin/index.php?view=notifications
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49786 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49792 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49792 [200]: GET /existing/admin/index.php?view=notifications
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49792 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49796 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49796 [200]: GET /existing/admin/index.php?view=studio-job&id=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49796 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49802 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49802 [303]: POST /existing/admin/index.php?view=studio-job&id=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49802 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49816 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49816 [200]: GET /existing/admin/index.php?view=studio-job&id=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49816 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49818 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49818 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49818 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49830 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49830 [303]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49830 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49838 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49838 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49838 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49842 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49842 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49842 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49854 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49854 [303]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49854 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49856 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49856 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49856 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49868 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49868 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49868 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49872 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49872 [303]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49872 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49876 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49876 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49876 Closing
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49892 Accepted
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49892 [200]: GET /existing/portal/index.php
+[Sun Nov  1 18:31:05 2026] 127.0.0.1:49892 Closing
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49900 Accepted
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49900 [200]: GET /existing/portal/index.php?notifications=1
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49900 Closing
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49908 Accepted
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49908 [200]: GET /existing/portal/index.php?notifications=1
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49908 Closing
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49920 Accepted
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49920 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49920 Closing
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49924 Accepted
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49924 [200]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49924 Closing
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49930 Accepted
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49930 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49930 Closing
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49942 Accepted
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49942 [200]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:06 2026] 127.0.0.1:49942 Closing
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49946 Accepted
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49946 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49946 Closing
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49960 Accepted
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49960 [200]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49960 Closing
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49972 Accepted
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49972 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49972 Closing
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49984 Accepted
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49984 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49984 Closing
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49996 Accepted
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49996 [303]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:49996 Closing
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:50000 Accepted
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:50000 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:07 2026] 127.0.0.1:50000 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50002 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50002 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50002 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50004 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50004 [403]: GET /existing/portal/index.php?notifications=1
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50004 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50010 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50010 [200]: GET /existing/portal/index.php?notifications=1
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50010 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50026 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50026 [200]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50026 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50036 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50036 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50036 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50052 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50052 [200]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50052 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50062 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50062 [200]: GET /existing/admin/index.php?view=login
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50062 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50074 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50074 [303]: POST /existing/admin/index.php?view=login
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50074 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50076 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50076 [200]: GET /existing/admin/index.php?view=dashboard
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50076 Closing
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50084 Accepted
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50084 [200]: GET /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:08 2026] 127.0.0.1:50084 Closing
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50098 Accepted
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50098 [200]: POST /existing/portal/index.php?account=1
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50098 Closing
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50112 Accepted
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50112 [200]: GET /existing/admin/index.php?view=support
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50112 Closing
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50128 Accepted
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50128 [303]: POST /existing/admin/index.php?view=support
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50128 Closing
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50136 Accepted
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50136 [200]: GET /existing/portal/index.php?support=5702740a28e9c3fb60786e7f866ca9cd
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50136 Closing
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50146 Accepted
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50146 [403]: GET /existing/portal/index.php?support=5702740a28e9c3fb60786e7f866ca9cd&account=1
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50146 Closing
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50160 Accepted
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50160 [403]: POST /existing/portal/index.php?support=5702740a28e9c3fb60786e7f866ca9cd
+[Sun Nov  1 18:31:09 2026] 127.0.0.1:50160 Closing
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50168 Accepted
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50168 [200]: GET /existing/admin/index.php?view=login
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50168 Closing
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50172 Accepted
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50188 Accepted
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50192 Accepted
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50172 [200]: GET /existing/assets/css/site.css?v=1.26.1
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50188 [200]: GET /existing/assets/css/admin.css?v=1.26.1
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50192 [200]: GET /existing/images/branding/logo.png?v=1.26.1
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50172 Closing
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50188 Closing
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50192 Closing
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50204 Accepted
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50204 [200]: GET /existing/images/branding/emblem.png?v=1.26.1
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50204 Closing
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50218 Accepted
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50218 [303]: POST /existing/admin/index.php?view=login
+[Sun Nov  1 18:31:11 2026] 127.0.0.1:50218 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50220 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50220 [200]: GET /existing/admin/index.php?view=dashboard
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50220 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50226 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50226 [200]: GET /existing/assets/css/site.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50226 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50230 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50242 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50252 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50266 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50282 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50284 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50230 [200]: GET /existing/assets/css/admin.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50230 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50242 [200]: GET /existing/assets/css/mail-notices.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50242 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50252 [200]: GET /existing/assets/css/growth.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50252 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50266 [200]: GET /existing/images/branding/logo.png?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50266 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50282 [200]: GET /existing/images/branding/emblem.png?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50282 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50284 [200]: GET /existing/assets/js/site.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50284 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50300 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50310 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50322 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50300 [200]: GET /existing/assets/js/admin.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50300 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50310 [200]: GET /existing/assets/js/activity.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50322 [200]: GET /existing/assets/js/mail-notices.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50310 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50322 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50336 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50336 [204]: GET /existing/api/activity.php?audience=admin
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50336 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50344 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50344 [204]: GET /existing/api/mail-notices.php
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:50344 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47530 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47530 [200]: GET /existing/admin/index.php?view=provider-settings
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47530 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47532 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47532 [200]: GET /existing/assets/css/site.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47532 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47538 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47548 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47556 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47562 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47576 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47538 [200]: GET /existing/assets/css/admin.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47548 [200]: GET /existing/assets/css/mail-notices.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47538 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47548 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47556 [200]: GET /existing/assets/css/growth.css?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47556 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47578 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47562 [200]: GET /existing/images/branding/logo.png?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47562 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47576 [200]: GET /existing/assets/js/site.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47576 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47588 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47598 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47578 [200]: GET /existing/assets/js/admin.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47578 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47588 [200]: GET /existing/assets/js/activity.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47598 [200]: GET /existing/assets/js/mail-notices.js?v=1.26.1
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47588 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47598 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47614 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47614 [204]: GET /existing/api/activity.php?audience=admin
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47614 Closing
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47618 Accepted
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47618 [204]: GET /existing/api/mail-notices.php
+[Sun Nov  1 18:31:12 2026] 127.0.0.1:47618 Closing
