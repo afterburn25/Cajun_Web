@@ -64,13 +64,13 @@ try:
     else:raise AssertionError('Installed fixture unavailable')
     before_clients=db('SELECT * FROM ci_studio_clients ORDER BY id')
     before_jobs=db('SELECT * FROM ci_studio_jobs ORDER BY id')
-    before_users=db('SELECT * FROM ci_users ORDER BY id')
     anonymous=requests.Session()
     bad=submit(anonymous,admin+'?view=login','login',{'email':'owner@example.invalid','password':'Deliberately incorrect initial login'})
     check('Wrong initial administrator password is still refused','view=login' in bad.url and soup(bad).select_one('[name=password]') is not None)
     anonymous.close()
     response=submit(owner,admin+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     check('Actual owner credentials establish the authenticated session',response.status_code==200 and 'view=login' not in response.url)
+    before_users=db('SELECT * FROM ci_users ORDER BY id')  # Initial sign-in legitimately records last_login.
     with sync_playwright() as pw:
         browser=pw.chromium.launch(headless=True)
         context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
