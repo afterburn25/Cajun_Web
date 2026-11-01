@@ -131,9 +131,23 @@ try{
             if($uncertain){
                 $providerScenario='normal';$start=count($fepCalls);$snapshot=fep_snapshot();$error=null;
                 if($fault==='readback_timeout'){
-                    $denied=false;rb_staff();try{\FinancePayoffRetirement\license_finance_subscription_reconcile($offer['id'],$new,'incorrect owner password');}catch(Throwable){$denied=true;}finally{rb_client();}
-                    fep_ok($name.' incorrect owner password never reaches gateway',$denied&&count($fepCalls)===$start);
-                    fep_ok($name.' denied owner preserves retained candidate',fep_snapshot()===$snapshot);
+                    // Revoke the same signed-in owner's permission, not a removed second-password prompt.
+                    rb_staff();$savedSession=$_SESSION;$savedProfile=one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1');
+                    if(!$savedProfile||$savedProfile['role']!=='owner'||!admin_session_matches(admin_user()))throw new RuntimeException('Expected current owner fixture.');
+                    $auditBefore=all('SELECT * FROM '.table('audit').' ORDER BY id');$refusal=null;
+                    query('UPDATE '.table('staff_profiles')." SET role='administrator',permissions='[]' WHERE user_id=1");
+                    try{
+                        $current=admin_user();
+                        fep_ok($name.' revocation preserves the same authenticated identity',$current&&(int)$current['id']===1&&$current['role']==='administrator'&&admin_session_matches($current)&&!staff_can('staff.manage',$current));
+                        try{\FinancePayoffRetirement\license_finance_subscription_reconcile($offer['id'],$new,$password);}catch(Throwable $caught){$refusal=$caught;}
+                        $denied=($refusal instanceof RuntimeException||$refusal instanceof InvalidArgumentException)&&!($refusal instanceof PDOException)&&$refusal->getMessage()==='Your account does not have access to this action.';
+                        fep_ok($name.' revoked owner never reaches gateway',$denied&&count($fepCalls)===$start);
+                        fep_ok($name.' denied owner preserves retained candidate and audit',fep_snapshot()===$snapshot&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$auditBefore&&!db()->inTransaction());
+                    }finally{
+                        query('UPDATE '.table('staff_profiles').' SET role=?,permissions=? WHERE user_id=1',[$savedProfile['role'],$savedProfile['permissions']]);$_SESSION=$savedSession;
+                        fep_ok($name.' authority fixture restores exact owner profile and session',one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1')===$savedProfile&&$_SESSION===$savedSession);
+                        rb_client();
+                    }
                 }
                 $automatic=in_array($fault,['cancel_error','lost_cancel_reply','still_active'],true);
                 if($automatic){
