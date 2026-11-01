@@ -8,13 +8,15 @@ from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 
 def run_browser(env, browser):
     base, qa, provider, check = (env[k] for k in ['BASE', 'QA', 'provider_server', 'check'])
     soup, token, submit, form_data, form_for = (env[k] for k in ['soup', 'token', 'submit', 'form_data', 'form_for'])
     admin, portal = base+'/fresh/admin/index.php', base+'/fresh/portal/index.php'
-    settings = admin+'?view=provider-settings'
+    settings = admin+'?view=provider-settings&section=domains'
+    installed_root = env['WEB']/'fresh'
     password = 'Fresh synthetic passphrase 2026'
     email = 'renewal-dispatch-owner@example.invalid'
     inherited_tables = ['provider_profiles', 'provider_refreshes', 'provider_refresh_results', 'provider_registrar_observations',
@@ -54,9 +56,9 @@ def run_browser(env, browser):
           and {k: v for k, v in before_owner.items() if k != 'last_login'} == {k: v for k, v in original_owner.items() if k != 'last_login'}
           and original_owner['last_login'] is not None and setup_evidence['login']['profile_unchanged'])
     check('Renewal dispatch dedicated owner starts absent', not db('SELECT id FROM fresh_users WHERE email=?', [email]))
-    submit(setup, admin+'?view=staff', 'staff_save', {'id': '0', 'name': 'Domain renewal approval owner', 'email': email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': password})
+    submit(setup, admin+'?view=staff', 'staff_save', {'id': '0', 'name': 'Domain renewal approval owner', 'email': email, 'role': 'owner', 'enabled': '1', 'permissions[]': []})
     actor = db('SELECT id FROM fresh_users WHERE email=?', [email])[0]['id']
-    invite = chosen_form(setup, admin+'?view=staff', 'staff_invite', 'id', actor, {'owner_password': password})
+    invite = chosen_form(setup, admin+'?view=staff', 'staff_invite', 'id', actor, {})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']
     activation = requests.Session(); sessions.append(activation)
     activation_page = activation.get(invitation)
@@ -84,6 +86,15 @@ def run_browser(env, browser):
     def snapshot():
         return digest({name: rows(name) for name in ['domain_renewal_invoices', 'domain_renewal_dispatches', 'domain_renewal_dispatch_ends', 'provider_operation_grants', 'provider_operations', 'invoice_payments', 'audit']})
 
+    def refuse(address, action, match, fields):
+        def selected_form(response, selected_action):
+            forms = [form for form in soup(response).select('form')
+                     if form.select_one('input[name=action][value="' + selected_action + '"]') is not None
+                     and all(form.select_one('input[name="' + name + '"][value="' + str(value) + '"]') is not None for name, value in match.items())]
+            if len(forms) != 1: raise AssertionError('Capture exactly one renewal dispatch form for the selected invoice or allocation')
+            return forms[0]
+        return refuse_owner_action({**env, 'form_for': selected_form}, setup, address, action, fields, installed_root=installed_root)
+
     try:
         clients = []
         for number in [1, 2]:
@@ -105,9 +116,9 @@ def run_browser(env, browser):
         check('Renewal payment project uses supported stage and exact client before invoices', project_created)
         job = jobs[0]['id']
         job_url = admin+'?view=studio-job&id='+str(job)
-        for view, action, fields in [('payments', 'payments_migrate', {'owner_password': password, 'confirm': '1'}),
-                                     ('invoice-payments', 'payments_ledger_setup', {'owner_password': password, 'confirm': '1'}),
-                                     ('provider-operations', 'provider_operations_setup', {'current_password': password})]:
+        for view, action, fields in [('payments', 'payments_migrate', {'confirm': '1'}),
+                                     ('invoice-payments', 'payments_ledger_setup', {'confirm': '1'}),
+                                     ('provider-operations', 'provider_operations_setup', {})]:
             target = admin+'?view='+view
             if soup(owner.get(target)).select('[name=action][value='+action+']'):
                 response = submit(owner, target, action, fields); evidence('Prepare '+view, response)
@@ -115,27 +126,27 @@ def run_browser(env, browser):
         provider.registrar_domains = original_domains+domains; provider.registrar_mode = 'success'
         last = db('SELECT MAX(started_epoch) AS epoch FROM fresh_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
         time.sleep(max(0, int(last or 0)+31-time.time()))
-        response = submit(owner, settings, 'provider_inventory_registrar_refresh', {'current_password': password}); evidence('Explicit current registered domains', response)
+        response = submit(owner, settings, 'provider_inventory_registrar_refresh', {}); evidence('Explicit current registered domains', response)
         check('Renewal payment setup makes exactly one explicit owner registrar GET', provider.calls == initial_calls+1 and provider.posts == initial_posts)
-        terms = {'name': 'Approved domain renewal service', 'cadence': 'one-time', 'price': '24.99', 'inclusions': 'Arrange only the displayed domain term and privacy choice', 'exclusions': 'Automatic future renewal', 'limits': '', 'support': 'Studio assistance', 'current_password': password}
+        terms = {'name': 'Approved domain renewal service', 'cadence': 'one-time', 'price': '24.99', 'inclusions': 'Arrange only the displayed domain term and privacy choice', 'exclusions': 'Automatic future renewal', 'limits': '', 'support': 'Studio assistance'}
         response = submit(owner, admin+'?view=service-plan', 'service_plans_create', terms)
         plan = parse_qs(urlparse(response.url).query)['record'][0]; plan_url = admin+'?view=service-plan&record='+plan
-        submit(owner, plan_url, 'service_plans_publish', {'confirm': '1', 'current_password': password})
+        submit(owner, plan_url, 'service_plans_publish', {'confirm': '1'})
         created = []
         for index, domain in enumerate(domains):
-            chosen_form(owner, settings, 'provider_inventory_registrar_link', 'domain_id', domain['id'], {'client_id': str(cid), 'current_password': password})
+            chosen_form(owner, settings, 'provider_inventory_registrar_link', 'domain_id', domain['id'], {'client_id': str(cid)})
             link = db('SELECT id FROM fresh_provider_registrar_links WHERE domain_id=?', [domain['id']])[0]['id']
             chosen_form(client, portal+'?domain_renewals=1', 'domain_renewal_create', 'link_id', link, {'requested_years': '2', 'renew_privacy': 'ask', 'request_confirm': '1'})
             rid = db('SELECT id FROM fresh_domain_renewal_requests WHERE link_id=?', [link])[0]['id']
-            response = submit(owner, plan_url, 'service_plans_offer', {'client_id': str(cid), 'confirm': '1', 'current_password': password})
+            response = submit(owner, plan_url, 'service_plans_offer', {'client_id': str(cid), 'confirm': '1'})
             agreement = parse_qs(urlparse(response.url).query)['record'][0]
             chosen_form(owner, admin+'?view=domain-renewal-agreements&request='+rid, 'provider_inventory_renewal_agreement_bind', 'agreement_id', agreement,
-                        {'renew_privacy': '0', 'offer_expires': (datetime.now(timezone.utc)+timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M'), 'confirm': '1', 'current_password': password})
+                        {'renew_privacy': '0', 'offer_expires': (datetime.now(timezone.utc)+timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M'), 'confirm': '1'})
             submit(client, portal+'?agreement='+agreement, 'service_agreements_consent', {'confirm': '1'})
-            submit(owner, admin+'?view=service-agreement&record='+agreement, 'service_plans_activate', {'confirm': '1', 'current_password': password})
+            submit(owner, admin+'?view=service-agreement&record='+agreement, 'service_plans_activate', {'confirm': '1'})
             target = admin+'?view=domain-renewal-dispatch&request='+rid
             if index == 0:
-                response = submit(owner, target, 'provider_renewal_dispatch_prepare', {'owner_password': password}); evidence('Prepare permanent purpose and approval history', response)
+                response = submit(owner, target, 'provider_renewal_dispatch_prepare', {}); evidence('Prepare permanent purpose and approval history', response)
                 check('Explicit renewal setup creates empty charging history without a POST', rows('domain_renewal_invoices') == rows('domain_renewal_dispatches') == rows('domain_renewal_dispatch_ends') == [] and provider.posts == initial_posts)
             title = 'Exact renewal fee '+str(index+1)
             submit(owner, job_url, 'studio_invoice', {'title': title, 'amount': '24.99', 'instructions': 'Synthetic instruction: pay the displayed exact renewal service only.'})
@@ -143,16 +154,19 @@ def run_browser(env, browser):
             form = form_data(form_for(owner.get(target), 'provider_renewal_dispatch_allocate'))
             if index == 0:
                 before = snapshot()
-                for label, changes in [('CSRF', {'csrf': 'bad'}), ('password', {'owner_password': 'wrong'}), ('terms', {'agreement_sha256': 'f'*64})]:
-                    response = owner.post(target, data={**form, 'allocation_confirmed': '1', 'owner_password': password, **changes})
+                for label, changes in [('CSRF', {'csrf': 'bad'}), ('revoked owner', {}), ('terms', {'agreement_sha256': 'f'*64})]:
+                    if label == 'revoked owner':
+                        response = refuse(target, 'provider_renewal_dispatch_allocate', {'invoice_id': invoice['id']}, {'allocation_confirmed': '1'})
+                    else:
+                        response = owner.post(target, data={**form, 'allocation_confirmed': '1', **changes})
                     check('Renewal invoice allocation rejects '+label+' before any mutation or send', snapshot() == before and provider.posts == initial_posts)
                 for label, bad in [('missing', None), ('stale', '999999999')]:
-                    fields = {**form, 'allocation_confirmed': '1', 'owner_password': password}
+                    fields = {**form, 'allocation_confirmed': '1'}
                     if bad is None: fields.pop('invoice_id')
                     else: fields['invoice_id'] = bad
                     response = owner.post(target, data=fields)
                     check('Actual allocation retry with '+label+' selector cannot adopt a fresh invoice review', snapshot() == before and not soup(response).select('.renewal-invoice-allocation') and 'Reload this page' in response.text)
-            response = chosen_form(owner, target, 'provider_renewal_dispatch_allocate', 'invoice_id', invoice['id'], {'allocation_confirmed': '1', 'owner_password': password}); evidence('Reserve unpaid invoice '+str(index+1), response)
+            response = chosen_form(owner, target, 'provider_renewal_dispatch_allocate', 'invoice_id', invoice['id'], {'allocation_confirmed': '1'}); evidence('Reserve unpaid invoice '+str(index+1), response)
             allocation = db('SELECT * FROM fresh_domain_renewal_invoices WHERE invoice_id=?', [invoice['id']])[0]
             check('Renewal invoice '+str(index+1)+' purpose precedes all payment and provider work', not db('SELECT id FROM fresh_invoice_payments WHERE invoice_id=?', [invoice['id']]) and len(provider.renewal_posts) == len(initial_renewals)+index and 'Approve and submit this renewal once' not in response.text)
             statement = portal+'?invoice='+str(invoice['id'])
@@ -168,11 +182,14 @@ def run_browser(env, browser):
             receipt = db('SELECT * FROM fresh_invoice_payments WHERE invoice_id=?', [invoice['id']])[0]
             check('Invoice '+str(index+1)+' payment alone never dispatches renewal', receipt['kind'] == 'manual' and db('SELECT status FROM fresh_studio_invoices WHERE id=?', [invoice['id']]) == [{'status': 'paid'}] and not db('SELECT id FROM fresh_domain_renewal_dispatches WHERE allocation_id=?', [allocation['id']]))
             approval = form_data(form_for(owner.get(target), 'provider_renewal_dispatch_send'))
-            fields = {'owner_password': password, **dict.fromkeys(['eligible_years', 'privacy_scope', 'provider_cost', 'balance_charge'], '1')}
+            fields = dict.fromkeys(['eligible_years', 'privacy_scope', 'provider_cost', 'balance_charge'], '1')
             if index == 0:
                 before = snapshot(); network = provider.calls
-                for label, changes in [('CSRF', {'csrf': 'bad'}), ('password', {'owner_password': 'wrong'}), ('scope', {'review_sha256': 'f'*64}), ('cost approval', {'provider_cost': ''}), ('stale selector', {'allocation_id': 'f'*32})]:
-                    response = owner.post(target, data={**approval, **fields, **changes})
+                for label, changes in [('CSRF', {'csrf': 'bad'}), ('revoked owner', {}), ('scope', {'review_sha256': 'f'*64}), ('cost approval', {'provider_cost': ''}), ('stale selector', {'allocation_id': 'f'*32})]:
+                    if label == 'revoked owner':
+                        response = refuse(target, 'provider_renewal_dispatch_send', {'allocation_id': allocation['id']}, fields)
+                    else:
+                        response = owner.post(target, data={**approval, **fields, **changes})
                     check('Captured renewal approval rejects '+label+' before DNS or journal mutation', snapshot() == before and provider.calls == network)
                     if label == 'stale selector': check('Actual stale approval selector does not receive refreshed authority', not soup(response).select('.renewal-dispatch-approval') and 'Reload this page' in response.text)
                 for session, url, audience in [(owner, target, 'Owner'), (client, statement, 'Client')]:
@@ -190,7 +207,7 @@ def run_browser(env, browser):
                             form = page.locator('.renewal-dispatch-approval')
                             approval = {name: form.locator('[name='+name+']').input_value() for name in ['csrf', 'action', 'dispatch_id', 'allocation_id', 'review_sha256']}
                             for name in ['eligible_years', 'privacy_scope', 'provider_cost', 'balance_charge']: form.locator('[name='+name+']').check()
-                            form.locator('[name=owner_password]').fill(password)
+                            assert_no_owner_reprompt(check, form, 'Approve and submit one domain renewal')
                             provider.renewal_mode = 'success'
                             with page.expect_navigation(wait_until='domcontentloaded'):
                                 form.get_by_role('button', name='Approve and submit this renewal once', exact=True).click()
@@ -210,7 +227,7 @@ def run_browser(env, browser):
             check('Client saved renewal '+str(index+1)+' outcome is honest without new provider traffic', ('20i reported this renewal successful.' if index == 0 else 'does not prove no balance charge occurred') in response.text and provider.calls == network)
             created.append({'request_id': rid, 'invoice_id': invoice['id'], 'allocation_id': allocation['id'], 'dispatch_id': dispatch['id']})
         failed = created[1]
-        chosen_form(owner, settings, 'provider_inventory_renewal_review', 'request_id', failed['request_id'], {'current_password': password, 'command': 'declined', 'review_note': 'Investigate the recorded provider failure before any further renewal.'})
+        chosen_form(owner, settings, 'provider_inventory_renewal_review', 'request_id', failed['request_id'], {'command': 'declined', 'review_note': 'Investigate the recorded provider failure before any further renewal.'})
         response = client.get(portal+'?domain_renewals=1')
         page = soup(response)
         failed_link = db('SELECT link_id FROM fresh_domain_renewal_requests WHERE id=?', [failed['request_id']])[0]['link_id']

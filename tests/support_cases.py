@@ -22,8 +22,24 @@ def run_upgrade():
     up=requests.Session();root=BASE+'/support-upgrade/admin/index.php'
     r=submit(up,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     check('Actual 1.2.0 owner signs in before support migration','Sales pipeline' in r.text)
-    r=submit(up,root+'?view=support','support_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
-    check('Actual 1.2.0 explicit support upgrade succeeds','Support access is ready' in r.text)
+    support=root+'?view=support'
+    def unprepared():
+        return (not db('SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN (?,?,?)',
+                       ['supportup_support_clients','supportup_support_sessions','supportup_support_events'])
+                and db('SELECT * FROM supportup_settings')==before['settings'])
+    check('Actual 1.2.0 support remains unprepared before explicit owner approval',unprepared())
+    r=submit(up,support,'support_migrate',{'confirm':'1','csrf':'invalid'})
+    check('Actual 1.2.0 support upgrade refuses invalid CSRF without preparation','session expired' in r.text.lower() and unprepared())
+    r=submit(up,support,'support_migrate',{})
+    check('Actual 1.2.0 support upgrade still requires backup and policy confirmation','Confirm the backup and your client support-access policy.' in r.text and unprepared())
+    refuse_owner_action(globals(),up,support,'support_migrate',{'confirm':'1'},installed_root=dest)
+    check('Actual 1.2.0 support upgrade requires current owner authority before preparation',unprepared())
+    r=submit(up,support,'support_migrate',{'confirm':'1'})
+    check('Actual 1.2.0 explicit support upgrade succeeds',r.status_code==200
+          and 'Owner account review is ready. Staff support access remains restricted until approved.' in r.text
+          and soup(r).select_one('[name=action][value=support_migrate]') is None
+          and db("SELECT name,value FROM supportup_settings WHERE name IN ('support_schema_version','support_policy_confirmed') ORDER BY name")==[{'name':'support_policy_confirmed','value':'1'},{'name':'support_schema_version','value':'1'}]
+          and db('SELECT action,outcome,actor_id,client_id FROM supportup_support_events')==[{'action':'policy.confirmed','outcome':'allowed','actor_id':1,'client_id':0}])
     for t in ['staff_profiles','staff_invitations','studio_clients','studio_jobs','leads','projects']:
         check('Actual 1.2.0 support update retains '+t,db('SELECT * FROM supportup_'+t)==before[t])
     after={r['name']:r['value'] for r in db('SELECT * FROM supportup_settings')}
@@ -52,10 +68,13 @@ def run_http(env):
     db('DELETE FROM ci_rate_limits');run_upgrade()
     check('Fresh installation includes support tables but no automatic client access',db("SELECT value FROM fresh_settings WHERE name='support_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_support_clients'))
     refuse_owner_action(globals(),admin,ADMIN+'?view=support','support_migrate',{'confirm':'1'})
-    r=submit(admin,ADMIN+'?view=support','support_migrate',{'owner_password':OWNER,'confirm':'1','csrf':'bad'})
+    r=submit(admin,ADMIN+'?view=support','support_migrate',{'confirm':'1','csrf':'bad'})
     check('HTTP support setup rejects forged CSRF','session expired' in r.text.lower())
-    r=submit(admin,ADMIN+'?view=support','support_migrate',{'owner_password':OWNER,'confirm':'1'})
-    check('Owner explicitly enables support schema and policy','Support access is ready' in r.text)
+    r=submit(admin,ADMIN+'?view=support','support_migrate',{'confirm':'1'})
+    check('Owner explicitly enables support schema and policy',r.status_code==200
+          and 'Owner account review is ready. Staff support access remains restricted until approved.' in r.text
+          and soup(r).select_one('[name=action][value=support_migrate]') is None
+          and db("SELECT name,value FROM ci_settings WHERE name IN ('support_schema_version','support_policy_confirmed') ORDER BY name")==[{'name':'support_policy_confirmed','value':'1'},{'name':'support_schema_version','value':'1'}])
     uid=db('SELECT id FROM ci_users WHERE email=?',['client-staff@example.invalid'])[0]['id']
     chosen_form(admin,ADMIN+'?view=staff','staff_save','id',uid,{'permissions[]':['support.login']})
     restricted=requests.Session();submit(restricted,ADMIN+'?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
@@ -64,18 +83,22 @@ def run_http(env):
     owner_review=start(admin,1)
     check('Owner can review an active unapproved client without granting staff access',db('SELECT context,actor_id,client_id FROM ci_support_sessions WHERE id=?',[owner_review])==[{'context':'Owner account review','actor_id':1,'client_id':1}] and not db('SELECT * FROM ci_support_clients'))
     end(admin,owner_review);restricted.close()
-    for cid in [1,2]:chosen_form(admin,ADMIN+'?view=support','support_policy','client_id',cid,{'allowed':'1','owner_password':OWNER})
+    for cid in [1,2]:chosen_form(admin,ADMIN+'?view=support','support_policy','client_id',cid,{'allowed':'1'})
     check('Client record exposes one-click support action',bool(soup(admin.get(ADMIN+'?view=studio-clients')).select_one('[name=action][value=support_start]')))
-    r=bob.get(PORTAL);r=bob.post(ADMIN+'?view=support',data={'csrf':token(r),'action':'support_start','client_id':'1'},allow_redirects=False)
+    r=bob.get(PORTAL);client_project=PORTAL+'?job=2'
+    check('Bob customer workspace exposes its project deep link',len(soup(r).find_all('a',href=client_project))==1)
+    r=bob.post(ADMIN+'?view=support',data={'csrf':token(r),'action':'support_start','client_id':'1'},allow_redirects=False)
     check('Client cannot start a staff support session',r.status_code==303 and 'login' in r.headers.get('Location',''))
-    # Actual customer login coexists with the owner in the same browser cookie jar.
-    submit(admin,PORTAL,'login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
+    r=admin.get(PORTAL)
+    check('Owner bare client portal opens the master workspace',r.status_code==200 and r.url==PORTAL+'?master=1' and soup(r).select_one('#master-client-accounts') is not None)
+    # The real customer project link preserves customer sign-in alongside the owner.
+    submit(admin,client_project,'login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
     credentials=db('SELECT id,password_hash,auth_version FROM ci_studio_clients')
     sid=start(admin,1);r=admin.get(portal(sid,job=1));support_token=token(r)
-    check('Support portal is scoped to Alice while normal portal stays Bob','Welcome, <span class="gold-text">Alice' in r.text and 'Welcome, <span class="gold-text">Bob' in admin.get(PORTAL).text)
+    check('Support portal is scoped to Alice while normal portal stays Bob','Welcome, <span class="gold-text">Alice' in r.text and 'Welcome, <span class="gold-text">Bob' in admin.get(client_project).text)
     r=admin.post(PORTAL+'?job=2',data={'csrf':support_token,'action':'message','body':'Stripped context must not mutate Bob'})
     check('Stripping support context cannot reuse form CSRF','session expired' in r.text.lower() and not db('SELECT id FROM ci_studio_messages WHERE body=?',['Stripped context must not mutate Bob']))
-    r=admin.post(portal(sid,job=1),data={'csrf':token(admin.get(PORTAL)),'action':'message','body':'Client token must not mutate support'})
+    r=admin.post(portal(sid,job=1),data={'csrf':token(admin.get(client_project)),'action':'message','body':'Client token must not mutate support'})
     check('Ordinary client token cannot authorize support form','support form expired' in r.text)
     r=chosen_form(admin,ADMIN+'?view=support','support_start','client_id',2,{})
     check('Second client cannot replace active support context','End the current support session' in r.text)
@@ -113,12 +136,12 @@ def run_http(env):
     check('Cross-client private file download is denied',admin.get(portal(sid2,file=file['id'])).status_code==404)
     db('UPDATE ci_support_sessions SET expires_at=0 WHERE id=?',[sid2])
     r=admin.get(portal(sid2));check('Expired support never falls back to logged-in customer',r.status_code==403 and 'Welcome,' not in r.text)
-    sid=start(admin,1);chosen_form(admin,ADMIN+'?view=support','support_policy','client_id',1,{'allowed':None,'owner_password':OWNER})
+    sid=start(admin,1);chosen_form(admin,ADMIN+'?view=support','support_policy','client_id',1,{'allowed':None})
     check('Client restriction immediately revokes open support URL',admin.get(portal(sid)).status_code==403)
-    chosen_form(admin,ADMIN+'?view=support','support_policy','client_id',1,{'allowed':'1','owner_password':OWNER})
+    chosen_form(admin,ADMIN+'?view=support','support_policy','client_id',1,{'allowed':'1'})
     # Reuse an existing, activated synthetic administrator with explicit view-only access.
     uid=db('SELECT id FROM ci_users WHERE email=?',['client-staff@example.invalid'])[0]['id']
-    chosen_form(admin,ADMIN+'?view=staff','staff_save','id',uid,{'permissions[]':['support.login'],'owner_password':OWNER})
+    chosen_form(admin,ADMIN+'?view=staff','staff_save','id',uid,{'permissions[]':['support.login']})
     viewer=requests.Session();r=submit(viewer,ADMIN+'?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
     check('Support-only administrator lands in client support','view=support' in r.url and viewer.get(ADMIN+'?view=studio-clients').status_code==403)
     vid=start(viewer,1);r=viewer.get(portal(vid,job=1));csrf=token(r)
@@ -127,7 +150,7 @@ def run_http(env):
         r=viewer.post(portal(vid,job=1),data={'csrf':csrf,'action':action,'body':'Denied viewer write'},files={'document':('denied.png',png,'image/png')} if action=='upload' else None)
         check('Forged view-only '+action+' is denied','notice error' in r.text and not db('SELECT id FROM ci_studio_messages WHERE body=?',['Denied viewer write']))
     check('View-only forged download returns no private bytes',viewer.get(portal(vid,file=file['id'])).status_code==403)
-    chosen_form(admin,ADMIN+'?view=staff','staff_save','id',uid,{'permissions[]':['support.login','support.write','support.download'],'owner_password':OWNER})
+    chosen_form(admin,ADMIN+'?view=staff','staff_save','id',uid,{'permissions[]':['support.login','support.write','support.download']})
     check('Permission change revokes open support context',viewer.get(portal(vid)).status_code==403)
     submit(viewer,ADMIN+'?view=login','login',{'email':'client-staff@example.invalid','password':STAFF});vid=start(viewer,1)
     check('Explicit support download grant works without client-management grant',viewer.get(portal(vid,file=file['id'])).content==png)
@@ -137,7 +160,7 @@ def run_http(env):
     check('Admin logout ends open support context',viewer.get(portal(vid)).status_code==403 and db('SELECT end_reason FROM ci_support_sessions WHERE id=?',[vid])[0]['end_reason']=='admin-logout')
     events=db('SELECT * FROM ci_support_events');check('HTTP audit covers start end write upload download and denial',all(a in [e['action'] for e in events] for a in ['session.start','session.end','message.send','file.upload','file.download','action.blocked']) and any(e['outcome']=='denied' for e in events))
     check('HTTP support audit excludes message bodies and passwords',not any(secret in json.dumps(events) for secret in ['HTTP attributed support update',OWNER,STAFF]))
-    check('Support leaves actual client login intact','Welcome, <span class="gold-text">Bob' in admin.get(PORTAL).text)
+    check('Support leaves actual client login intact','Welcome, <span class="gold-text">Bob' in admin.get(client_project).text)
     db('DELETE FROM ci_rate_limits')
 
 def run_browser(env,browser):
@@ -150,7 +173,7 @@ def run_browser(env,browser):
     p.set_viewport_size({'width':320,'height':800});p.screenshot(path=str(QA/'Client-Support-Narrow.png'),full_page=True)
     check('Support admin narrow viewport fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     p.goto(ADMIN+'?view=studio-clients')
-    form=p.locator('form').filter(has=p.locator('[name=action][value=support_start]')).filter(has=p.locator('[name=client_id][value="1"]'));form.locator('button').click();expect(p.locator('[aria-label="Support session"]')).to_be_visible()
+    form=p.locator('form').filter(has=p.locator('[name=action][value=support_start]')).filter(has=p.locator('[name=client_id][value="1"]'));assert_no_owner_reprompt(check,form,'Open client portal for owner review');form.locator('button').click();expect(p.locator('[aria-label="Support session"]')).to_be_visible()
     sid=parse_qs(urlparse(p.url).query)['support'][0];check('Browser client-record button opens correct support context',len(sid)==32 and 'Alice' in p.locator('[aria-label="Support session"]').inner_text())
     p.get_by_role('link',name='Open project').first.click();expect(p.locator('[aria-label="Support session"]')).to_be_visible()
     check('Browser project navigation retains support binding','support='+sid in p.url)

@@ -7,12 +7,14 @@ from urllib.parse import parse_qs, urlparse
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
     base, qa, check, provider = (env[k] for k in ['BASE', 'QA', 'check', 'provider_server'])
     soup, token, submit = (env[k] for k in ['soup', 'token', 'submit'])
-    admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings'
+    admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings&section=website'
+    inventory_url = admin + '?view=provider-settings&section=services'
     portal = base + '/existing/portal/index.php'
     db('DELETE FROM ci_rate_limits')
     # Give this workflow its own real owner budget; retain all prior intent/audit
@@ -38,9 +40,9 @@ def run_browser(env, browser):
           and setup_diagnostics['login']['profile_unchanged'])
     staff_url = admin + '?view=staff'; wp_installed_email = 'wordpress-installed-owner@example.invalid'
     check('WordPress installation fixture owner starts absent', not db('SELECT id FROM ci_users WHERE email=?', [wp_installed_email]))
-    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'WordPress installation observation owner', 'email': wp_installed_email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
+    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'WordPress installation observation owner', 'email': wp_installed_email, 'role': 'owner', 'enabled': '1', 'permissions[]': []})
     wp_installed_owner = db('SELECT id,password_hash FROM ci_users WHERE email=?', [wp_installed_email])[0]
-    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', wp_installed_owner['id'], {'owner_password': OWNER})
+    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', wp_installed_owner['id'], {})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']; code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = requests.Session(); form = activation.get(invitation)
     activated = activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
@@ -51,7 +53,7 @@ def run_browser(env, browser):
         'original_account_unchanged': db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner],
         'original_profile_unchanged': db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile]}
     (qa / 'package-wordpress-installed-setup-diagnostics.json').write_text(json.dumps(setup_diagnostics, indent=2))
-    activation.close(); setup.close()
+    activation.close()
     check('WordPress installation fixture activates a distinct authorized owner without changing original authority',
           activated.status_code == 200 and setup_diagnostics['activation']['login_page']
           and wp_installed_owner['id'] != original_owner['id'] and db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [wp_installed_owner['id']]) == [{'role': 'owner', 'enabled': 1}]
@@ -75,23 +77,33 @@ def run_browser(env, browser):
     profile = db('SELECT id,revision FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]
     client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']
     prepare = 'provider_inventory_wp_installed_prepare'; refresh = 'provider_inventory_wp_installed_refresh'; share = 'provider_inventory_wp_installed_share'
+    def refuse(action, match):
+        def selected_form(response, selected_action):
+            forms = [form for form in soup(response).select('form')
+                     if form.select_one('input[name=action][value="' + selected_action + '"]') is not None
+                     and all(form.select_one('input[name="' + name + '"][value="' + str(value) + '"]') is not None for name, value in match.items())]
+            if len(forms) != 1: raise AssertionError('Capture exactly one WordPress observation form for the selected resource')
+            return forms[0]
+        return refuse_owner_action({**env, 'form_for': selected_form}, setup, url, action, {})
     def post(action, **fields):
-        page = owner.get(url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'current_password': OWNER, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
+        action_url = inventory_url if action in ('provider_inventory_refresh', 'provider_inventory_link') else url
+        page = owner.get(action_url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
         for form in forms:
             if form.select_one('input[name=action][value="' + action + '"]'):
                 link = form.select_one('input[name=link_id]')
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
-        data.update({'current_password': OWNER, **fields})
+        data.update(fields)
         post.last = data
-        return owner.post(url, data=data)
+        return owner.post(action_url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
         time.sleep(max(0, int(last or 0) + 31 - time.time()))
     calls, posts = provider.calls, list(provider.posts)
     check('WordPress installation observation GET offers explicit preparation without DDL', prepare in owner.get(url).text and not db('SHOW TABLES LIKE "ci_provider_wp_installed_reads"') and provider.calls == calls)
-    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'})]:
-        post(prepare, **fields)
+    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('revoked owner', {})]:
+        if label == 'revoked owner': refuse(prepare, {})
+        else: post(prepare, **fields)
         check('WordPress installation observation preparation refuses invalid ' + label, not db('SHOW TABLES LIKE "ci_provider_wp_installed_reads"') and provider.calls == calls)
     post(prepare)
     check('WordPress installation observation preparation is local and explicit', db('SHOW TABLES LIKE "ci_provider_wp_installed_reads"') != [] and not db('SELECT * FROM ci_provider_wp_installed_reads') and provider.calls == calls)
@@ -105,8 +117,9 @@ def run_browser(env, browser):
     check('WordPress installation assignment alone does not share scalar', 'WordPress reported installed' not in client.get(target).text and 'sharing is off' in client.get(target).text)
     cool(); response = post('provider_inventory_refresh'); evidence('Hosting observation after assignment', response)
     calls = provider.calls
-    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'}), ('binding', {'binding_sha256': 'a' * 64})]:
-        post(refresh, link_id=link['id'], **fields)
+    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('revoked owner', {}), ('binding', {'binding_sha256': 'a' * 64})]:
+        if label == 'revoked owner': refuse(refresh, {'link_id': link['id']})
+        else: post(refresh, link_id=link['id'], **fields)
         check('WordPress installation refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_wp_installed_reads'))
     cool(); provider.wp_installed = True; response = post(refresh, link_id=link['id'])
     evidence('Complete WordPress installation observation', response)
@@ -178,4 +191,4 @@ def run_browser(env, browser):
     check('WordPress installation workflow preserves every inherited intent and original audit byte', retained == inherited and retained_audits == inherited_audits)
     check('WordPress installation workflow preserves the original owner account and role', db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner] and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile])
     (qa / 'package-wordpress-installed-history-preservation.json').write_text(json.dumps({'inherited_intents': len(inherited), 'inherited_audits': len(inherited_audits), 'intents_sha256': hashlib.sha256(json.dumps(inherited, sort_keys=True).encode()).hexdigest(), 'audits_sha256': hashlib.sha256(json.dumps(inherited_audits, sort_keys=True).encode()).hexdigest(), 'retained_intents_sha256': hashlib.sha256(json.dumps(retained, sort_keys=True).encode()).hexdigest(), 'retained_audits_sha256': hashlib.sha256(json.dumps(retained_audits, sort_keys=True).encode()).hexdigest(), 'dedicated_actor': wp_installed_owner['id'], 'dedicated_reads': len(diagnostics[-1]['actor_reads'])}, indent=2))
-    provider.wp_installed_mode = 'success'; owner.close(); member.close(); client.close()
+    provider.wp_installed_mode = 'success'; setup.close(); owner.close(); member.close(); client.close()

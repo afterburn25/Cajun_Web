@@ -29,4 +29,7 @@ def validate(root=ROOT):
             seen.add(path);predecessor(root,path,(root/path).read_bytes());checks.append({'name':'Exact repaired file and predecessor retained '+path,'passed':True})
     if not checks:raise AssertionError('Missing correction evidence')
     return checks
-if __name__=='__main__':print(json.dumps({'passed':True,'scope':'Exact source identities and predecessor inverses only','checks':validate()},indent=2))
+if __name__=='__main__':
+    from provider_browser_fixture_provenance import projected_validation
+    checks=projected_validation(ROOT,validate,RECEIPTS)
+    print(json.dumps({'passed':True,'scope':'Exact source identities and predecessor inverses only','checks':checks},indent=2))

@@ -390,11 +390,17 @@ def run(tmp):
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
+    from provider_browser_fixture_provenance import validate as validate_provider_fixtures, projected_validation, source as fixture_predecessor_source
+    for outcome in validate_provider_fixtures(ROOT):check(outcome['name'],outcome['passed'])
     from standalone_repair_provenance import validate as validate_standalone_repairs
-    for outcome in validate_standalone_repairs(ROOT):check(outcome['name'],outcome['passed'])
+    for outcome in projected_validation(ROOT,validate_standalone_repairs,('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)):check(outcome['name'],outcome['passed'])
     from combined_repair_provenance import validate as validate_repairs
-    for outcome in validate_repairs(ROOT):check(outcome['name'],outcome['passed'])
+    for outcome in projected_validation(ROOT,validate_repairs,('docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json','docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json')):check(outcome['name'],outcome['passed'])
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    recurring_path='tests/recurring_billing_cases.py'
+    check('Recurring browser correction retains its original live source binding',
+          hashlib.sha256(fixture_predecessor_source(ROOT,recurring_path)).hexdigest()
+          ==contract['release_acceptance_corrections']['source_sha256'][recurring_path])
     from cloud_site_requests_wiring import predecessor_bytes
     software_apache_appendix="""                software=session.get(url+'/portal/index.php?software=1')
                 check(label+suffix+' anonymous My Software route resolves safely at installed base path',

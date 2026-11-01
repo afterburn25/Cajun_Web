@@ -8,6 +8,7 @@ from urllib.parse import parse_qs, urlparse
 import requests
 from release_cases import db, chosen_form, fixture_command
 from staff_cases import OWNER
+from owner_browser_forms import assert_no_owner_reprompt, refuse_owner_action
 
 
 def run_browser(env, browser):
@@ -18,11 +19,14 @@ def run_browser(env, browser):
     listing = admin+'?view=recurring-billing'
     original_setup = form_data(form_for(owner.get(listing), 'recurring_setup'))
     check('Recurring staff entry is present before owner setup', 'Recurring billing' in owner.get(admin).text and 'Prepare recurring billing' in owner.get(listing).text)
-    for delta, label in [({'owner_password': OWNER, 'confirm': '1', 'csrf': 'bad'}, 'CSRF'), ({'owner_password': 'wrong', 'confirm': '1'}, 'owner password'), ({'owner_password': OWNER}, 'backup confirmation')]:
-        response = submit(owner, listing, 'recurring_setup', delta)
+    for delta, label in [({'confirm': '1', 'csrf': 'bad'}, 'CSRF'), ({'confirm': '1'}, 'owner authority'), ({}, 'backup confirmation')]:
+        if label == 'owner authority':
+            response = refuse_owner_action(env, owner, listing, 'recurring_setup', delta)
+        else:
+            response = submit(owner, listing, 'recurring_setup', delta)
         check('Recurring setup requires '+label, not db("SELECT value FROM ci_settings WHERE name='recurring_billing_schema_version'"))
         check('Failed recurring setup never echoes password '+label, OWNER not in response.text and 'value="wrong"' not in response.text)
-    submit(owner, listing, 'recurring_setup', {'owner_password': OWNER, 'confirm': '1'})
+    submit(owner, listing, 'recurring_setup', {'confirm': '1'})
     check('Explicit recurring owner setup is additive and enabled', db("SELECT value FROM ci_settings WHERE name='recurring_billing_schema_version'")==[{'value': '1'}])
     clients=[]
     for n in [1,2]:
@@ -36,13 +40,13 @@ def run_browser(env, browser):
     submit(owner,admin+'?view=studio-clients','studio_job',{'client_id':str(cid),'title':'Recurring browser project','summary':'Synthetic web care','stage':'design','milestones':''})
     job=db('SELECT id FROM ci_studio_jobs WHERE title=?',['Recurring browser project'])[0]['id']
     project=listing+'&job='+str(job)
-    terms={'name':'Recurring browser care','cadence':'monthly','price':'125.01','inclusions':'Agreed web care','exclusions':'New features','limits':'','support':'Business hours','current_password':OWNER}
+    terms={'name':'Recurring browser care','cadence':'monthly','price':'125.01','inclusions':'Agreed web care','exclusions':'New features','limits':'','support':'Business hours'}
     response=submit(owner,admin+'?view=service-plan','service_plans_create',terms);plan=parse_qs(urlparse(response.url).query)['record'][0]
     plan_url=admin+'?view=service-plan&record='+plan
-    submit(owner,plan_url,'service_plans_publish',{'confirm':'1','current_password':OWNER})
-    response=submit(owner,plan_url,'service_plans_offer',{'client_id':str(cid),'confirm':'1','current_password':OWNER});source=parse_qs(urlparse(response.url).query)['record'][0]
+    submit(owner,plan_url,'service_plans_publish',{'confirm':'1'})
+    response=submit(owner,plan_url,'service_plans_offer',{'client_id':str(cid),'confirm':'1'});source=parse_qs(urlparse(response.url).query)['record'][0]
     submit(client,portal+'?agreement='+source,'service_agreements_consent',{'confirm':'1'})
-    submit(owner,admin+'?view=service-agreement&record='+source,'service_plans_activate',{'confirm':'1','current_password':OWNER})
+    submit(owner,admin+'?view=service-agreement&record='+source,'service_plans_activate',{'confirm':'1'})
     offer_url=project+'&source='+source
     response=owner.get(offer_url);draft=form_data(form_for(response,'recurring_offer'))
     anchor=(datetime.date.today()+datetime.timedelta(days=4)).isoformat()
@@ -218,7 +222,7 @@ def run_browser(env, browser):
             check('Missing '+table+' owner view requires restoration without setup', 'Restore the original database' in response.text and soup(response).select_one('[name=action][value=recurring_setup]') is None)
             response = client.get(portal+'?recurring=1')
             check('Missing '+table+' client view hides billing records', 'Restore the original database' in response.text and 'Synthetic historical invoice agreement' not in response.text)
-            owner.post(listing, data={**original_setup, 'owner_password': OWNER, 'confirm': '1'})
+            owner.post(listing, data={**original_setup, 'confirm': '1'})
             check('Missing '+table+' stale setup cannot recreate retained billing history', not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?', ['ci_'+table]))
         finally:
             db('RENAME TABLE '+retained+' TO ci_'+table)
@@ -250,7 +254,7 @@ def run_browser(env, browser):
           and 'Synthetic service setup receipt' not in client.get(history_client).text)
     capture(owner, history_url, 'staff-payment-evidence')
     reverse = form_data(form_for(owner.get(owner_invoice), 'payments_ledger_reverse'))
-    reverse.update({'reason': 'Synthetic recorded payment was corrected', 'owner_password': OWNER, 'confirm': '1'})
+    reverse.update({'reason': 'Synthetic recorded payment was corrected', 'confirm': '1'})
     owner.post(owner_invoice, data=reverse)
     check('Actual reversal form retains the original receipt and blocks setup evidence',
           len(db('SELECT id FROM ci_invoice_payments WHERE invoice_id=?', [invoice])) == 2
@@ -263,19 +267,22 @@ def run_browser(env, browser):
     hosting_client = portal+'?agreement='+historical['source_id']
     hosting_setup = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_setup'))
     check('Hosting order GET does not prepare storage', not db("SELECT value FROM ci_settings WHERE name='service_orders_schema_version'"))
-    for values, label in [({'csrf': 'bad', 'confirm': '1', 'current_password': OWNER}, 'CSRF'),
-                          ({'confirm': '1', 'current_password': 'wrong'}, 'owner password'),
-                          ({'current_password': OWNER}, 'confirmation')]:
-        response = owner.post(hosting_owner, data={**hosting_setup, **values})
+    for values, label in [({'csrf': 'bad', 'confirm': '1'}, 'CSRF'),
+                          ({'confirm': '1'}, 'owner authority'),
+                          ({}, 'confirmation')]:
+        if label == 'owner authority':
+            response = refuse_owner_action(env, owner, hosting_owner, 'service_plans_order_setup', values)
+        else:
+            response = owner.post(hosting_owner, data={**hosting_setup, **values})
         check('Hosting order setup enforces '+label, not db("SELECT value FROM ci_settings WHERE name='service_orders_schema_version'") and OWNER not in response.text)
-    owner.post(hosting_owner, data={**hosting_setup, 'confirm': '1', 'current_password': OWNER})
+    owner.post(hosting_owner, data={**hosting_setup, 'confirm': '1'})
     check('Actual hosting setup creates additive empty order history', db("SELECT value FROM ci_settings WHERE name='service_orders_schema_version'")==[{'value': '1'}] and not db('SELECT id FROM ci_service_orders'))
     offer_response = owner.get(hosting_owner)
     offer_form = form_for(offer_response, 'service_plans_order_offer')
     hosting_offer = form_data(offer_form)
     options = [o for o in offer_form.select('[name=invoice_choice] option') if o.get('value', '').startswith(invoice+':')]
     check('Owner sees original first recurring invoice as initial hosting choice', len(options)==1)
-    hosting_offer.update({'invoice_choice': options[0]['value'], 'confirm': '1', 'current_password': OWNER})
+    hosting_offer.update({'invoice_choice': options[0]['value'], 'confirm': '1'})
     response = owner.post(hosting_owner, data=hosting_offer)
     order_row = db('SELECT * FROM ci_service_orders WHERE agreement_id=?', [historical['source_id']])[0]
     check('Actual owner offer pins existing client agreement invoice and original price',
@@ -308,7 +315,7 @@ def run_browser(env, browser):
     check('Browser form replay cannot duplicate hosting acceptance', len(db('SELECT id FROM ci_service_order_events WHERE order_id=?', [order_row['id']]))==1)
     before_manual = db('SELECT * FROM ci_invoice_payments WHERE invoice_id=? ORDER BY id', [invoice])
     policy = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_allow_manual'))
-    policy.update({'reason':'Synthetic private temporary hosting permission','confirm':'1','current_password':OWNER})
+    policy.update({'reason':'Synthetic private temporary hosting permission','confirm':'1'})
     owner.post(hosting_owner, data=policy)
     check('Actual manual fulfillment form preserves unpaid invoice and receipts',
           'Commercial review is ready.' in owner.get(hosting_owner).text and db('SELECT * FROM ci_invoice_payments WHERE invoice_id=? ORDER BY id',[invoice])==before_manual)
@@ -321,19 +328,26 @@ def run_browser(env, browser):
     service_setup = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_prepare_service'))
     check('Hosting service preparation GET performs no schema change', not db("SELECT value FROM ci_settings WHERE name='hosting_order_links_schema_version'"))
     check('Clients do not receive provider preparation forms', 'name="package_type"' not in client.get(hosting_client).text)
-    for delta, label in [({'csrf':'bad','confirm':'1','current_password':OWNER},'CSRF'),
-                         ({'confirm':'1','current_password':'wrong'},'owner password'),
-                         ({'current_password':OWNER},'confirmation')]:
-        response = owner.post(hosting_owner, data={**service_setup, **delta})
+    for delta, label in [({'csrf':'bad','confirm':'1'},'CSRF'),
+                         ({'confirm':'1'},'owner authority'),
+                         ({},'confirmation')]:
+        if label == 'owner authority':
+            response = refuse_owner_action(env, owner, hosting_owner, 'service_plans_order_prepare_service', delta)
+        else:
+            response = owner.post(hosting_owner, data={**service_setup, **delta})
         check('Hosting history preparation requires '+label, not db("SELECT value FROM ci_settings WHERE name='hosting_order_links_schema_version'") and OWNER not in response.text)
-    owner.post(hosting_owner, data={**service_setup,'confirm':'1','current_password':OWNER})
+    owner.post(hosting_owner, data={**service_setup,'confirm':'1'})
     check('Actual hosting preparation creates both native storage families', db("SELECT name,value FROM ci_settings WHERE name IN ('hosting_order_links_schema_version','hosting_records_schema_version') ORDER BY name")==[{'name':'hosting_order_links_schema_version','value':'1'},{'name':'hosting_records_schema_version','value':'1'}])
     mapping = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_map_service'))
     check('Hosting browser fixture retains enabled original provider revision',
           db('SELECT enabled,has_credentials FROM ci_provider_revisions WHERE profile_id=? AND revision=?',[mapping['profile_id'],int(mapping['profile_revision'])])==[{'enabled':1,'has_credentials':1}])
-    mapping.update({'reseller_id':'42','package_type':'811','package_label':'Synthetic <reviewed package>','package_region':'Synthetic location','package_websites':'1','package_disk_mb':'0','mapping_only':'1','confirm':'1','current_password':OWNER})
-    for delta,label in [({'csrf':'bad'},'CSRF'),({'current_password':'wrong'},'owner password'),({'confirm':''},'confirmation'),({'mapping_only':''},'local mapping review'),({'package_websites':'-1'},'negative limit'),({'profile_revision':'0'},'stale connection'),({'order_hash':'a'*64},'stale order')]:
-        response = owner.post(hosting_owner,data={**mapping,**delta})
+    mapping.update({'reseller_id':'42','package_type':'811','package_label':'Synthetic <reviewed package>','package_region':'Synthetic location','package_websites':'1','package_disk_mb':'0','mapping_only':'1','confirm':'1'})
+    for delta,label in [({'csrf':'bad'},'CSRF'),({},'owner authority'),({'confirm':''},'confirmation'),({'mapping_only':''},'local mapping review'),({'package_websites':'-1'},'negative limit'),({'profile_revision':'0'},'stale connection'),({'order_hash':'a'*64},'stale order')]:
+        if label == 'owner authority':
+            response = refuse_owner_action(env, owner, hosting_owner, 'service_plans_order_map_service',
+                {key: mapping[key] for key in ['reseller_id', 'package_type', 'package_label', 'package_region', 'package_websites', 'package_disk_mb', 'mapping_only', 'confirm']})
+        else:
+            response = owner.post(hosting_owner,data={**mapping,**delta})
         check('Actual hosting mapping rejects '+label, not db('SELECT id FROM ci_hosting_order_links') and not db('SELECT id FROM ci_hosting_records') and OWNER not in response.text)
     check('Failed mapping retains reviewed package text with HTML escaping', 'Synthetic &lt;reviewed package&gt;' in response.text and 'value="'+mapping['order_hash']+'"' not in response.text)
     foreign.post(hosting_client,data={**mapping,'action':'service_agreements_order_map_service'})
@@ -341,7 +355,8 @@ def run_browser(env, browser):
     capture(owner,hosting_owner,'staff-hosting-preparation')
     context=browser.new_context(viewport={'width':1440,'height':1000});context.add_cookies([{'name':c.name,'value':c.value,'url':BASE} for c in owner.cookies]);page=context.new_page();page.goto(hosting_owner)
     form=page.locator('form').filter(has=page.locator('[name=action][value=service_plans_order_map_service]'))
-    for key in ['reseller_id','package_type','package_label','package_region','package_websites','package_disk_mb','current_password']:
+    assert_no_owner_reprompt(check,form,'Prepare hosting service mapping')
+    for key in ['reseller_id','package_type','package_label','package_region','package_websites','package_disk_mb']:
         form.locator('[name='+key+']').fill(mapping[key])
     form.locator('[name=mapping_only]').check();form.locator('[name=confirm]').check();form.locator('button').click();page.wait_for_load_state('networkidle')
     (QA/'hosting-preparation-submit.json').write_text(json.dumps({'alerts':page.locator('.notice.error').all_text_contents(),'saved_associations':db('SELECT id,account_id,client_id FROM ci_hosting_order_links'),'saved_service_count':len(db('SELECT id FROM ci_hosting_records'))},indent=2))
@@ -358,7 +373,7 @@ def run_browser(env, browser):
     capture(owner, hosting_owner, 'staff-hosting-order')
     capture(client, hosting_client, 'client-hosting-order')
     revoke = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_revoke_manual'))
-    owner.post(hosting_owner, data={**revoke,'reason':'Revoke this temporary policy','confirm':'1','current_password':OWNER})
+    owner.post(hosting_owner, data={**revoke,'reason':'Revoke this temporary policy','confirm':'1'})
     check('Actual policy revocation restores unpaid commercial blocker', 'verified payment incomplete' in owner.get(hosting_owner).text)
     cancel = form_data(form_for(client.get(hosting_client), 'service_agreements_order_cancel'))
     client.post(hosting_client, data={**cancel,'reason':'Cancel this synthetic hosting request','confirm':'1'})
@@ -373,7 +388,7 @@ def run_browser(env, browser):
         for session,url in [(owner,hosting_owner),(client,hosting_client)]:
             response=session.get(url)
             check('Missing hosting association displays restoration without SQL/runtime error','Restore the original database' in response.text and 'Fatal error' not in response.text and 'SQLSTATE' not in response.text)
-        owner.post(hosting_owner,data={**service_setup,'confirm':'1','current_password':OWNER})
+        owner.post(hosting_owner,data={**service_setup,'confirm':'1'})
         check('Stale preparation cannot recreate missing service history',not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_hosting_order_links']))
     finally:
         db('RENAME TABLE ci_retained_ui_hosting_order_links TO ci_hosting_order_links')
@@ -387,7 +402,7 @@ def run_browser(env, browser):
             for session, url in [(owner,hosting_owner),(client,hosting_client)]:
                 response=session.get(url)
                 check('Missing '+name+' displays hosting restoration state', 'Restore the original database' in response.text and 'Fatal error' not in response.text)
-            owner.post(hosting_owner,data={**hosting_setup,'confirm':'1','current_password':OWNER})
+            owner.post(hosting_owner,data={**hosting_setup,'confirm':'1'})
             check('Stale hosting setup cannot recreate '+name, not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_'+name]))
         finally:
             db('RENAME TABLE '+retained+' TO ci_'+name)

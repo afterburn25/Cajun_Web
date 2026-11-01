@@ -9,6 +9,7 @@ from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER, STAFF
 from cloud_assignment_fixture import dedicated_cloud_owner
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
@@ -24,7 +25,7 @@ def run_browser(env, browser):
     check('Cloud assignment setup login preserves authority apart from expected login metadata',login.status_code==200 and urlparse(login.url).path==urlparse(admin).path and urlparse(login.url).query=='view=dashboard'
           and {k:v for k,v in original_owner.items() if k!='last_login'}=={k:v for k,v in before_owner.items() if k!='last_login'}
           and original_owner['last_login'] is not None and db('SELECT * FROM ci_staff_profiles WHERE user_id=?',[before_owner['id']])==original_staff)
-    owner,actor=dedicated_cloud_owner(env,setup,'cloud-assignment-owner@example.invalid','Cloud assignment evidence owner');setup.close()
+    owner,actor=dedicated_cloud_owner(env,setup,'cloud-assignment-owner@example.invalid','Cloud assignment evidence owner')
     member=requests.Session();submit(member,admin+'?view=login','login',{'email':'request-staff@example.invalid','password':STAFF})
     client=requests.Session();submit(client,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     other=requests.Session();submit(other,portal,'login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
@@ -36,7 +37,7 @@ def run_browser(env, browser):
     provider.cloud_servers=original_cloud+[item];provider.cloud_mode='success';diagnostics=[]
     def post(action,**fields):
         page=owner.get(url)
-        return owner.post(url,data={'csrf':token(page),'action':action,'profile_id':profile['id'],'revision':str(profile['revision']),'current_password':OWNER,**fields})
+        return owner.post(url,data={'csrf':token(page),'action':action,'profile_id':profile['id'],'revision':str(profile['revision']),**fields})
     def cool():
         epoch=db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?',[profile['id']])[0]['epoch']
         time.sleep(max(0,int(epoch or 0)+31-time.time()))
@@ -64,9 +65,16 @@ def run_browser(env, browser):
     cool();response=post('provider_inventory_cloud_refresh');evidence('Initial complete cloud read',response)
     refresh=diagnostics[-1]['read_results'][-1]['id'];check('Cloud assignment read uses the exact shared cloud GET',provider.calls==calls+1 and provider.get_paths[-1]=='/cloud_server' and diagnostics[-1]['read_results'][-1]['state']=='complete')
     form=soup(response).select_one('[data-cloud-link]');check('Fresh complete cloud observation exposes an explicit local client assignment',form is not None and '2601' in form.text)
-    fields=form_data(form);fields.update(server_id='2601',client_id=str(alice),current_password=OWNER)
-    for label,delta,reason in [('CSRF',{'csrf':'bad'},'session expired'),('password',{'current_password':'wrong'},'current password'),('old observation',{'refresh_id':'f'*32},'latest complete observation')]:
+    fields=form_data(form);fields.update(server_id='2601',client_id=str(alice))
+    for label,delta,reason in [('CSRF',{'csrf':'bad'},'session expired'),('old observation',{'refresh_id':'f'*32},'latest complete observation')]:
         denied=owner.post(url,data={**fields,**delta});check('Cloud assignment owner form refuses '+label,denied.status_code==200 and reason in denied.text.lower() and not db('SELECT id FROM ci_provider_cloud_links WHERE server_id=2601') and provider.calls==calls+1)
+    def assignment_form(response,action):
+        found=[f for f in soup(response).select('form[data-cloud-link]') if f.select_one('[name=action][value="'+action+'"]') is not None
+               and f.select_one('[name=server_id] option[value="2601"]') is not None]
+        if len(found)!=1:raise AssertionError('Expected one cloud assignment form containing server 2601')
+        return found[0]
+    refuse_owner_action({**env,'form_for':assignment_form},setup,url,'provider_inventory_cloud_link',{'server_id':'2601','client_id':str(alice)})
+    check('Cloud assignment requires current owner authority',not db('SELECT id FROM ci_provider_cloud_links WHERE server_id=2601') and provider.calls==calls+1)
     check('Cloud assignment administrator and support selectors remain blocked',member.get(url).status_code==403 and owner.get(url+'&support=fixture').status_code==403)
     response=owner.post(url,data=fields);evidence('Local client approval',response);link=db('SELECT * FROM ci_provider_cloud_links WHERE server_id=2601')[0]
     check('Cloud assignment saves one exact owner client read binding with no provider write',link['client_id']==alice and link['revision']==1 and link['refresh_id']==refresh and link['linked_by']==actor and provider.calls==calls+1 and provider.posts==posts)
@@ -110,4 +118,4 @@ def run_browser(env, browser):
         proof['inherited'][name]={'count':len(rows),'sha256':hashlib.sha256(json.dumps(rows,sort_keys=True).encode()).hexdigest(),'retained_sha256':hashlib.sha256(json.dumps(retained,sort_keys=True).encode()).hexdigest()}
     check('Cloud assignment preserves original owner account and role',db('SELECT * FROM ci_users WHERE id=?',[original_owner['id']])==[original_owner] and db('SELECT * FROM ci_staff_profiles WHERE user_id=?',[original_owner['id']])==original_staff)
     (qa/'cloud-assignment-history-preservation.json').write_text(json.dumps(proof,indent=2));provider.cloud_servers=original_cloud;provider.cloud_mode=original_mode
-    for session in (owner,member,client,other):session.close()
+    for session in (owner,member,client,other,setup):session.close()

@@ -27,4 +27,7 @@ def validate(root=ROOT):
         checks.append({'name':'Exact standalone correction retains predecessor '+path,'passed':True})
     if not checks:raise AssertionError('Empty corrections are not acceptance')
     return checks
-if __name__=='__main__':print(json.dumps({'passed':True,'scope':'Reviewed file hashes and exact inverses only; not SQL or browser acceptance','checks':validate()},indent=2))
+if __name__=='__main__':
+    from provider_browser_fixture_provenance import projected_validation
+    checks=projected_validation(ROOT,validate,('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',))
+    print(json.dumps({'passed':True,'scope':'Reviewed file hashes and exact inverses only; not SQL or browser acceptance','checks':checks},indent=2))

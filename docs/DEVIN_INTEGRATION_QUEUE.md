@@ -1,3 +1,22 @@
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+PR #317: reviewed local correction `77cdbc92` plus docs `be75116e` and this checkpoint await publication/current-source checks; the primary full browser run is still pending. Account/Notifications: base `fc14b841` plus its isolated fixture correction passes 54/54 local checks, with its own review, publication and hosted acceptance pending; it is not merged into the primary candidate. Main and PR #317 were not updated by the successful diagnostic-blob save. Preserve both lanes and combine only through reviewed integration. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — refreshed integration inventory
+
+| Candidate | Observed state | Next action |
+| --- | --- | --- |
+| PR319, PR320, PR321 | Already integrated into `main` through `1c44ca120e7768998fafa720b3e1c4c85990c330` | Preserve their foundation, provider-prerequisite and backup/runtime behavior in combined acceptance. |
+| PR317, initial head `366d53b1ed6b367b32664f2b91ee073fc6813544` | Current combined candidate; needs corrected acceptance and review | Retain this history, finish the installed fixture corrections and run the original complete journey before normal integration. |
+| PR322, older head `07da428` | Stale and conflicting with the newer combined candidate | Do not overwrite PR317 or claim it is a ready merge. Reuse only distinct reviewed work if later comparison identifies any. |
+| v1.25.0 | Latest published release observed | Preserve immutable assets; candidate 1.26.1 builds remain separate. |
+
+[Current exact sources, preserved failing runs, corrections and local evidence](CONTINUATION_2026_11_01.md). No candidate is promoted to ready-to-merge merely because focused tests pass.
+
 ## 2026-10-29 — keep software orchestration evidence inside its sealed partition
 
 PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](CODEX_PR266_APPLICATION_40820683270.md).

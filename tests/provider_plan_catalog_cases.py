@@ -5,6 +5,7 @@ from copy import deepcopy
 from bs4 import BeautifulSoup
 from release_cases import db
 from staff_cases import OWNER
+from owner_browser_forms import assert_no_owner_reprompt, refuse_owner_action
 
 
 def catalog_progress_privacy(progress, account_id, cost, provider_type, catalog_id):
@@ -58,15 +59,22 @@ def prepare(env, browser, owner, client, source_id, staff_url, client_url, captu
     response = owner.get(url)
     check('Catalog HTTP GET does not create storage', not db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='ci_provider_plan_catalog'"))
     setup = form_data(form_for(response, 'service_plans_catalog_setup'))
-    for delta, label in [({'csrf': 'bad', 'confirm': '1', 'current_password': OWNER}, 'CSRF'), ({'confirm': '1', 'current_password': 'wrong'}, 'password'), ({'current_password': OWNER}, 'confirmation')]:
-        rejected = owner.post(url, data={**setup, **delta})
+    for delta, label in [({'csrf': 'bad', 'confirm': '1'}, 'CSRF'), ({'confirm': '1'}, 'owner authority'), ({}, 'confirmation')]:
+        if label == 'owner authority':
+            rejected = refuse_owner_action(env, owner, url, 'service_plans_catalog_setup', delta)
+        else:
+            rejected = owner.post(url, data={**setup, **delta})
         check('Catalog setup rejects '+label, not db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='ci_provider_plan_catalog'") and OWNER not in rejected.text)
-    owner.post(url, data={**setup, 'confirm': '1', 'current_password': OWNER})
+    owner.post(url, data={**setup, 'confirm': '1'})
     fields = form_data(form_for(owner.get(url), 'service_plans_catalog_save'))
-    data = {**fields, 'reseller_id': '42', 'package_type': '811', 'package_label': 'Reviewed <catalog package>', 'package_region': 'Reviewed fixture location', 'review_days': '7', 'limit_websites': '1', 'cost_known': '1', 'cost_amount': '12.5000', 'cost_currency': 'GBP', 'cost_period': '12', 'cost_tax': 'excluded', 'cost_basis': 'shared-account', 'cost_reference': 'Synthetic account reference', 'catalog_enabled': '1', 'reviewed_defaults': '1', 'confirm': '1', 'current_password': OWNER}
-    for delta, label in [({'csrf': 'bad'}, 'CSRF'), ({'current_password': 'wrong'}, 'password'), ({'reviewed_defaults': ''}, 'defaults review'), ({'plan_hash': 'a'*64}, 'retail plan fingerprint'), ({'cost_amount': '12e2'}, 'ambiguous cost units'), ({'cost_reference': 'x'*1000}, 'oversized reference'), ({'package_label[]': 'array', 'package_label': ''}, 'array field')]:
-        rejected = owner.post(url, data={**data, **delta})
-        check('Catalog review refuses '+label, rejected.status_code==200 and not db('SELECT id FROM ci_provider_plan_catalog') and OWNER not in rejected.text and 'service_plans_catalog_save' in rejected.text)
+    data = {**fields, 'reseller_id': '42', 'package_type': '811', 'package_label': 'Reviewed <catalog package>', 'package_region': 'Reviewed fixture location', 'review_days': '7', 'limit_websites': '1', 'cost_known': '1', 'cost_amount': '12.5000', 'cost_currency': 'GBP', 'cost_period': '12', 'cost_tax': 'excluded', 'cost_basis': 'shared-account', 'cost_reference': 'Synthetic account reference', 'catalog_enabled': '1', 'reviewed_defaults': '1', 'confirm': '1'}
+    for delta, label in [({'csrf': 'bad'}, 'CSRF'), ({}, 'owner authority'), ({'reviewed_defaults': ''}, 'defaults review'), ({'plan_hash': 'a'*64}, 'retail plan fingerprint'), ({'cost_amount': '12e2'}, 'ambiguous cost units'), ({'cost_reference': 'x'*1000}, 'oversized reference'), ({'package_label[]': 'array', 'package_label': ''}, 'array field')]:
+        if label == 'owner authority':
+            rejected = refuse_owner_action(env, owner, url, 'service_plans_catalog_save',
+                {key: data[key] for key in ['reseller_id', 'package_type', 'package_label', 'package_region', 'review_days', 'limit_websites', 'cost_known', 'cost_amount', 'cost_currency', 'cost_period', 'cost_tax', 'cost_basis', 'cost_reference', 'catalog_enabled', 'reviewed_defaults', 'confirm']})
+        else:
+            rejected = owner.post(url, data={**data, **delta})
+        check('Catalog review refuses '+label, rejected.status_code==(403 if label=='owner authority' else 200) and not db('SELECT id FROM ci_provider_plan_catalog') and OWNER not in rejected.text and ('service_plans_catalog_save' not in rejected.text if label=='owner authority' else 'service_plans_catalog_save' in rejected.text))
     response = owner.post(url, data=data)
     row = db('SELECT * FROM ci_provider_plan_catalog WHERE id=?', [data['catalog_id']])[0]
     document = json.loads(row['binding_json'])
@@ -87,7 +95,7 @@ def prepare(env, browser, owner, client, source_id, staff_url, client_url, captu
     context.add_cookies([{'name': cookie.name, 'value': cookie.value, 'url': base} for cookie in owner.cookies])
     page = context.new_page(); errors = []; page.on('pageerror', lambda e: errors.append(str(e))); page.goto(staff_url)
     form = page.locator('form[data-catalog-preparation]')
-    form.locator('[name=confirm]').check(); form.locator('[name=current_password]').fill(OWNER)
+    form.locator('[name=confirm]').check(); assert_no_owner_reprompt(check, form, 'Prepare from saved mapping')
     with page.expect_navigation():
         form.get_by_role('button', name='Prepare from saved mapping', exact=True).click()
     page.wait_for_load_state('networkidle'); page.screenshot(path=str(qa/'provider-plan-catalog-prepared.png'), full_page=True)
@@ -104,7 +112,7 @@ def prepare(env, browser, owner, client, source_id, staff_url, client_url, captu
     check('Catalog client progress shows the exact public service reference', progress_response.status_code == 200 and privacy['progress_present'] and privacy['reference_matches'])
     check('Catalog client progress excludes private cost and provider type', privacy['progress_present'] and privacy['reference_matches'] and privacy['cost_absent'] and privacy['provider_type_absent'] and privacy['catalog_id_absent'])
     replacement = form_data(form_for(owner.get(url), 'service_plans_catalog_save'))
-    changed = {**data, **replacement, 'package_label': 'Replacement <review>', 'limit_websites': '2', 'limit_disk_mb': '0', 'cost_amount': '19.2500', 'reviewed_defaults': '1', 'confirm': '1', 'current_password': OWNER}
+    changed = {**data, **replacement, 'package_label': 'Replacement <review>', 'limit_websites': '2', 'limit_disk_mb': '0', 'cost_amount': '19.2500', 'reviewed_defaults': '1', 'confirm': '1'}
     changed.pop('catalog_enabled', None)
     owner.post(url, data=changed)
     revised = db('SELECT * FROM ci_provider_plan_catalog WHERE plan_id=? ORDER BY revision', [plan])

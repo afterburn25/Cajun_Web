@@ -1,0 +1,375 @@
+{
+  "passed": true,
+  "scope": "Actual disposable MySQL/MariaDB authority, retained history, original renderer equivalence, PDO query categories and separate-process lock entry. No provider request; timings are observations without speed-threshold assertions.",
+  "checks": [
+    {
+      "name": "No saved account preserves exact original UI and performs no optional setup",
+      "passed": true
+    },
+    {
+      "name": "Unprepared authentication preserves exact original form and absent families",
+      "passed": true
+    },
+    {
+      "name": "Unprepared assignment preserves exact original form and absence",
+      "passed": true
+    },
+    {
+      "name": "Zero linked packages with retained auth history actual original and snapshot HTML are identical",
+      "passed": true
+    },
+    {
+      "name": "Zero linked packages with retained auth history displays the expected exact package card count",
+      "passed": true
+    },
+    {
+      "name": "Zero linked packages with retained auth history performs each full physical family validation once",
+      "passed": true
+    },
+    {
+      "name": "Zero linked packages with retained auth history reduces actual SQL calls without a timing threshold",
+      "passed": true
+    },
+    {
+      "name": "Zero linked packages with retained auth history has no data writes and retains exact original history",
+      "passed": true
+    },
+    {
+      "name": "Zero linked packages with retained auth history releases owning mutex and transaction before return",
+      "passed": true
+    },
+    {
+      "name": "One linked package with retained signed history actual original and snapshot HTML are identical",
+      "passed": true
+    },
+    {
+      "name": "One linked package with retained signed history displays the expected exact package card count",
+      "passed": true
+    },
+    {
+      "name": "One linked package with retained signed history performs each full physical family validation once",
+      "passed": true
+    },
+    {
+      "name": "One linked package with retained signed history reduces actual SQL calls without a timing threshold",
+      "passed": true
+    },
+    {
+      "name": "One linked package with retained signed history has no data writes and retains exact original history",
+      "passed": true
+    },
+    {
+      "name": "One linked package with retained signed history releases owning mutex and transaction before return",
+      "passed": true
+    },
+    {
+      "name": "Twenty linked packages with retained signed histories actual original and snapshot HTML are identical",
+      "passed": true
+    },
+    {
+      "name": "Twenty linked packages with retained signed histories displays the expected exact package card count",
+      "passed": true
+    },
+    {
+      "name": "Twenty linked packages with retained signed histories performs each full physical family validation once",
+      "passed": true
+    },
+    {
+      "name": "Twenty linked packages with retained signed histories reduces actual SQL calls without a timing threshold",
+      "passed": true
+    },
+    {
+      "name": "Twenty linked packages with retained signed histories has no data writes and retains exact original history",
+      "passed": true
+    },
+    {
+      "name": "Twenty linked packages with retained signed histories releases owning mutex and transaction before return",
+      "passed": true
+    },
+    {
+      "name": "Out-of-page tamper selects the exact retained package and client",
+      "passed": true
+    },
+    {
+      "name": "Out-of-page indexed mutation changes exactly one original row",
+      "passed": true
+    },
+    {
+      "name": "Signed indexed corruption outside the selected page refuses all package projections",
+      "passed": true
+    },
+    {
+      "name": "Out-of-page corruption refusal releases lock",
+      "passed": true
+    },
+    {
+      "name": "Exact out-of-page restoration revives only a fresh read",
+      "passed": true
+    },
+    {
+      "name": "Paired loss selects one exact original actor and assignment audit",
+      "passed": true
+    },
+    {
+      "name": "Paired loss deletes exactly the original assignment row",
+      "passed": true
+    },
+    {
+      "name": "Paired loss deletes exactly the original matching audit",
+      "passed": true
+    },
+    {
+      "name": "Paired out-of-page history and audit loss still refuses independent count",
+      "passed": true
+    },
+    {
+      "name": "Exact paired-loss restoration retains all rows and next read is fresh",
+      "passed": true
+    },
+    {
+      "name": "Missing original vault preserves exact refusal HTML without replacement",
+      "passed": true
+    },
+    {
+      "name": "Missing original vault releases owning resources",
+      "passed": true
+    },
+    {
+      "name": "Exact original key restoration supports a new validated snapshot",
+      "passed": true
+    },
+    {
+      "name": "Actual separate connection cannot enter mutex during projection",
+      "passed": true
+    },
+    {
+      "name": "Projection return releases mutex to actual separate connection",
+      "passed": true
+    },
+    {
+      "name": "Synthetic SQL fault target starts physically absent",
+      "passed": true
+    },
+    {
+      "name": "Actual server PDO exception propagates",
+      "passed": true
+    },
+    {
+      "name": "PDO exception rolls back and releases mutex for another connection",
+      "passed": true
+    },
+    {
+      "name": "Next call rechecks inactive client for every package",
+      "passed": true
+    },
+    {
+      "name": "Fresh next call refuses changed session identity",
+      "passed": true
+    },
+    {
+      "name": "Supported credential rotation makes retained cards historical",
+      "passed": true
+    },
+    {
+      "name": "Captured prior form cannot authorize a later mutation",
+      "passed": true
+    },
+    {
+      "name": "Supported credential restoration does not revive old revision authority",
+      "passed": true
+    },
+    {
+      "name": "Separate owner reader reaches protected entry",
+      "passed": true
+    },
+    {
+      "name": "Waiting real reader revalidates owner after shared lock entry",
+      "passed": true
+    },
+    {
+      "name": "Rejected owner read releases lock to another connection",
+      "passed": true
+    },
+    {
+      "name": "Caller transaction is refused without consuming it",
+      "passed": true
+    },
+    {
+      "name": "Read profile never creates provider operation or access journals",
+      "passed": true
+    }
+  ],
+  "profiles": [
+    {
+      "case": "Zero linked packages with retained auth history",
+      "original": {
+        "count": 175,
+        "categories": {
+          "data": {
+            "count": 61,
+            "seconds": 0.009927005999999999
+          },
+          "mutex": {
+            "count": 18,
+            "seconds": 0.0006264119999999999
+          },
+          "schema": {
+            "count": 72,
+            "seconds": 1.04607414
+          },
+          "audit": {
+            "count": 24,
+            "seconds": 0.005972149000000002
+          }
+        },
+        "column_inventories": {
+          "auth": 8,
+          "assignment": 4
+        },
+        "non_read_queries": 0,
+        "seconds": 1.094391791
+      },
+      "snapshot": {
+        "count": 87,
+        "categories": {
+          "data": {
+            "count": 43,
+            "seconds": 0.004047591
+          },
+          "mutex": {
+            "count": 10,
+            "seconds": 0.000487481
+          },
+          "schema": {
+            "count": 26,
+            "seconds": 0.32074222900000005
+          },
+          "audit": {
+            "count": 8,
+            "seconds": 0.001763168
+          }
+        },
+        "column_inventories": {
+          "auth": 2,
+          "assignment": 2
+        },
+        "non_read_queries": 0,
+        "seconds": 0.341217153
+      }
+    },
+    {
+      "case": "One linked package with retained signed history",
+      "original": {
+        "count": 349,
+        "categories": {
+          "data": {
+            "count": 121,
+            "seconds": 0.018813886000000016
+          },
+          "mutex": {
+            "count": 34,
+            "seconds": 0.002839071
+          },
+          "schema": {
+            "count": 135,
+            "seconds": 1.9851355899999998
+          },
+          "audit": {
+            "count": 59,
+            "seconds": 0.013548173000000004
+          }
+        },
+        "column_inventories": {
+          "auth": 14,
+          "assignment": 8
+        },
+        "non_read_queries": 0,
+        "seconds": 2.092225155
+      },
+      "snapshot": {
+        "count": 145,
+        "categories": {
+          "data": {
+            "count": 77,
+            "seconds": 0.01663906599999999
+          },
+          "mutex": {
+            "count": 18,
+            "seconds": 0.0028639190000000004
+          },
+          "schema": {
+            "count": 30,
+            "seconds": 0.43635401599999996
+          },
+          "audit": {
+            "count": 20,
+            "seconds": 0.007172879
+          }
+        },
+        "column_inventories": {
+          "auth": 2,
+          "assignment": 2
+        },
+        "non_read_queries": 0,
+        "seconds": 0.499302619
+      }
+    },
+    {
+      "case": "Twenty linked packages with retained signed histories",
+      "original": {
+        "count": 3636,
+        "categories": {
+          "data": {
+            "count": 1280,
+            "seconds": 0.198117734
+          },
+          "mutex": {
+            "count": 338,
+            "seconds": 0.022366537999999995
+          },
+          "schema": {
+            "count": 1332,
+            "seconds": 19.507260885999962
+          },
+          "audit": {
+            "count": 686,
+            "seconds": 0.2932713300000002
+          }
+        },
+        "column_inventories": {
+          "auth": 128,
+          "assignment": 84
+        },
+        "non_read_queries": 0,
+        "seconds": 20.798772237
+      },
+      "snapshot": {
+        "count": 1228,
+        "categories": {
+          "data": {
+            "count": 723,
+            "seconds": 0.073510846
+          },
+          "mutex": {
+            "count": 170,
+            "seconds": 0.011116782
+          },
+          "schema": {
+            "count": 106,
+            "seconds": 0.6458801699999996
+          },
+          "audit": {
+            "count": 229,
+            "seconds": 0.038017160999999994
+          }
+        },
+        "column_inventories": {
+          "auth": 2,
+          "assignment": 2
+        },
+        "non_read_queries": 0,
+        "seconds": 0.916108238
+      }
+    }
+  ]
+}

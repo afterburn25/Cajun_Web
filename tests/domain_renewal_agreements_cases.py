@@ -8,13 +8,16 @@ from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
     check, soup, form_data, form_for, submit = (env[k] for k in ['check', 'soup', 'form_data', 'form_for', 'submit'])
     base, qa, provider = env['BASE'], env['QA'], env['provider_server']
     admin, portal = base+'/fresh/admin/index.php', base+'/fresh/portal/index.php'
-    settings, requests_url = admin+'?view=provider-settings', portal+'?domain_renewals=1'
+    settings, requests_url = admin+'?view=provider-settings&section=domains', portal+'?domain_renewals=1'
+    connection_url = admin+'?view=provider-settings&section=connection'
+    installed_root = env['WEB']/'fresh'
     password, secret = 'Fresh synthetic passphrase 2026', 'SYNTHETIC_RAW_GENERAL_KEY'
     domain, domain_id = 'renewal-terms.fixture.invalid', 19001
     inherited_tables = ['provider_profiles', 'provider_refreshes', 'provider_refresh_results',
@@ -60,14 +63,14 @@ def run_browser(env, browser):
              'optional_families_absent': optional_absent()}
     (qa/'domain-renewal-agreements-setup.json').write_text(json.dumps(setup, indent=2), encoding='utf-8')
     try:
-        editor = form_data(soup(owner.get(settings)).select_one('[data-provider-editor]'))
-        response = owner.post(settings, data={**editor, 'label': 'Renewal terms fixture', 'enabled': '1',
-                                            'general_key': secret, 'current_password': password})
+        editor = form_data(soup(owner.get(connection_url)).select_one('[data-provider-editor]'))
+        response = owner.post(connection_url, data={**editor, 'label': 'Renewal terms fixture', 'enabled': '1',
+                                                  'general_key': secret})
         profile = rows('provider_profiles')[0]
         check('Renewal terms connection is saved privately without provider traffic',
               profile['revision'] == 1 and profile['enabled'] == 1 and secret not in response.text and provider.calls == calls)
-        submit(owner, settings, 'provider_inventory_registrar_prepare', {'current_password': password})
-        submit(owner, settings, 'provider_inventory_renewal_prepare', {'current_password': password})
+        submit(owner, settings, 'provider_inventory_registrar_prepare', {})
+        submit(owner, settings, 'provider_inventory_renewal_prepare', {})
         clients = []
         for number in [1, 2]:
             email = 'renewal-terms-client'+str(number)+'@example.invalid'
@@ -91,11 +94,11 @@ def run_browser(env, browser):
             wait = max(0, int(last or 0)+31-int(time.time()))
             if wait:
                 time.sleep(wait)
-            return submit(owner, settings, 'provider_inventory_registrar_refresh', {'current_password': password})
+            return submit(owner, settings, 'provider_inventory_registrar_refresh', {})
 
         refresh()
         chosen_form(owner, settings, 'provider_inventory_registrar_link', 'domain_id', domain_id,
-                    {'client_id': str(cid), 'current_password': password})
+                    {'client_id': str(cid)})
         created = submit(client, requests_url, 'domain_renewal_create',
                          {'requested_years': '2', 'renew_privacy': 'ask', 'request_confirm': '1'})
         request = rows('domain_renewal_requests')[0]; rid = request['id']
@@ -123,40 +126,52 @@ def run_browser(env, browser):
               optional_absent() and digest(rows('domain_renewal_requests')+rows('domain_renewal_events')) == inherited_request
               and digest(rows('audit')) == audit and provider.calls == calls+1 and provider.posts == posts)
 
-        submit(owner, admin+'?view=service-plans', 'service_plans_setup', {'current_password': password})
+        submit(owner, admin+'?view=service-plans', 'service_plans_setup', {})
         offer_url = admin+'?view=domain-renewal-agreements&request='+rid
-        for change, label in [({'csrf': 'wrong', 'current_password': password}, 'CSRF'),
-                              ({'current_password': 'wrong'}, 'owner password')]:
-            submit(owner, offer_url, 'provider_inventory_renewal_agreements_prepare', change)
+        for change, label in [({'csrf': 'wrong'}, 'CSRF'), ({}, 'revoked owner')]:
+            if label == 'revoked owner':
+                refuse_owner_action(env, owner, offer_url, 'provider_inventory_renewal_agreements_prepare', {}, installed_root=installed_root)
+            else:
+                submit(owner, offer_url, 'provider_inventory_renewal_agreements_prepare', change)
             check('Renewal agreement preparation refuses '+label, not db('SHOW TABLES LIKE "fresh_domain_renewal_agreements"'))
-        submit(owner, offer_url, 'provider_inventory_renewal_agreements_prepare', {'current_password': password})
+        submit(owner, offer_url, 'provider_inventory_renewal_agreements_prepare', {})
         check('Renewal agreement preparation adds empty history without a provider read',
               not rows('domain_renewal_agreements') and provider.calls == calls+1)
         terms = {'name': 'Renewal service <review>', 'cadence': 'one-time', 'price': '24.99',
                  'inclusions': 'Arrange the reviewed domain renewal', 'exclusions': 'Automatic registry purchase',
-                 'limits': '', 'support': 'Studio assistance', 'current_password': password}
+                 'limits': '', 'support': 'Studio assistance'}
         new_plan = submit(owner, admin+'?view=service-plan', 'service_plans_create', terms)
         plan_id = parse_qs(urlparse(new_plan.url).query)['record'][0]
         plan_url = admin+'?view=service-plan&record='+plan_id
-        submit(owner, plan_url, 'service_plans_publish', {'confirm': '1', 'current_password': password})
+        submit(owner, plan_url, 'service_plans_publish', {'confirm': '1'})
 
         def offer():
             response = submit(owner, plan_url, 'service_plans_offer',
-                              {'client_id': str(cid), 'confirm': '1', 'current_password': password})
+                              {'client_id': str(cid), 'confirm': '1'})
             return parse_qs(urlparse(response.url).query)['record'][0]
 
         def bind(agreement):
             return chosen_form(owner, offer_url, 'provider_inventory_renewal_agreement_bind', 'agreement_id', agreement,
                                {'renew_privacy': '0', 'offer_expires': (datetime.now(timezone.utc)+timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M'),
-                                'confirm': '1', 'current_password': password})
+                                'confirm': '1'})
 
         agreement = offer(); client_url = portal+'?agreement='+agreement
         generic = captured(client, client_url, 'service_agreements_consent')
         before = agreement_snapshot()
         form = captured(owner, offer_url, 'provider_inventory_renewal_agreement_bind')
-        for changes, label in [({'csrf': 'bad'}, 'CSRF'), ({'current_password': 'wrong'}, 'owner password'),
+        def binding_form(response, action):
+            forms = [candidate for candidate in soup(response).select('form')
+                     if candidate.select_one('input[name=action][value="'+action+'"]') is not None
+                     and candidate.select_one('input[name=agreement_id][value="'+agreement+'"]') is not None]
+            if len(forms) != 1: raise AssertionError('Capture exactly one renewal binding form for the selected agreement')
+            return forms[0]
+        for changes, label in [({'csrf': 'bad'}, 'CSRF'), ({}, 'revoked owner'),
                                ({'renew_privacy': ''}, 'unresolved privacy'), ({'request_sha256': 'f'*64}, 'changed request')]:
-            owner.post(offer_url, data={**form, 'renew_privacy': '0', 'confirm': '1', 'current_password': password, **changes})
+            if label == 'revoked owner':
+                refuse_owner_action({**env, 'form_for': binding_form}, owner, offer_url, 'provider_inventory_renewal_agreement_bind',
+                                    {'renew_privacy': '0', 'confirm': '1'}, installed_root=installed_root)
+            else:
+                owner.post(offer_url, data={**form, 'renew_privacy': '0', 'confirm': '1', **changes})
             check('Renewal binding refuses '+label+' without side effects', agreement_snapshot() == before)
         bind(agreement)
         binding = rows('domain_renewal_agreements')[0]
@@ -235,7 +250,7 @@ def run_browser(env, browser):
               len(rows('domain_renewal_requests')) == 1 and len(rows('domain_renewal_agreements')) == 2
               and agreement_snapshot() == before and 'The renewal request or offer changed.' in stale.text)
         chosen_form(owner, settings, 'provider_inventory_renewal_review', 'request_id', rid,
-                    {'current_password': password, 'command': 'reviewed', 'review_note': 'Please review the revised request.'})
+                    {'command': 'reviewed', 'review_note': 'Please review the revised request.'})
         before = agreement_snapshot()
         stale = client.post(second_url, data={**second_consent, 'confirm': '1'})
         check('Changed request revision rejects captured renewal consent without an event',

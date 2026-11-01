@@ -2,10 +2,11 @@
 import ast
 import hashlib
 import json
+from provider_browser_fixture_provenance import source as fixture_predecessor_source
 
 
 def predecessor_bytes(root, path, contract):
-    value = (root / path).read_bytes().replace(b'\r\n', b'\n')
+    value = fixture_predecessor_source(root, path).replace(b'\r\n', b'\n')
     if path == 'tests/prepare_legacy.py':
         baseline = contract['cloud_site_requests']['published_baseline']
         appendix = baseline['preparation_appendix'].encode()
@@ -24,7 +25,7 @@ def verify(root, contract, workflow, commands, check):
     previous = [c for c in commands if c not in additions]
     check('Cloud requests preserve all155 prior native commands', len(previous) == item['predecessor_native_count'] == 155 and hashlib.sha256(json.dumps(previous, separators=(',', ':')).encode()).hexdigest() == item['predecessor_native_sha256'])
     for path, digest in item['source_sha256'].items():
-        check('Cloud request acceptance source bound ' + path, hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
+        check('Cloud request acceptance source bound ' + path, hashlib.sha256(fixture_predecessor_source(root, path).replace(b'\r\n', b'\n')).hexdigest() == digest)
     for path, digest in item['published_baseline']['source_sha256'].items():
         check('Published 1.25 acceptance input source bound ' + path, hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
     guard = item['published_baseline']['input_guard_correction']
@@ -43,8 +44,9 @@ def verify(root, contract, workflow, commands, check):
     check('Installed upgrade guard and real Apache fixture run exactly once in order', apache_commands[-2:] == upgrade['commands'] and all(apache_commands.count(command) == 1 for command in upgrade['commands']))
     check('Installed client request upgrade retains all original Apache commands', hashlib.sha256(json.dumps(apache_commands[:-2], separators=(',', ':')).encode()).hexdigest() == upgrade['predecessor_apache_sha256'])
     driver = (root / 'tests/provider_cloud_sites_cases.py').read_text()
-    original = driver.replace(item['browser_hook'], '', 1)
-    check('Browser continuation keeps original cloud creation and confirmation flow byte-for-byte', driver.count(item['browser_hook']) == 1 and hashlib.sha256(original.encode()).hexdigest() == item['browser_predecessor_sha256'])
+    retained_driver = fixture_predecessor_source(root, 'tests/provider_cloud_sites_cases.py').decode()
+    original = retained_driver.replace(item['browser_hook'], '', 1)
+    check('Browser continuation keeps original cloud creation and confirmation flow byte-for-byte', driver.count(item['browser_hook']) == 1 and retained_driver.count(item['browser_hook']) == 1 and hashlib.sha256(original.encode()).hexdigest() == item['browser_predecessor_sha256'])
     browser = (root / 'tests/provider_cloud_site_requests_cases.py').read_text()
     tree = ast.parse(browser)
     captures = [node for node in tree.body if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == 'CAPTURES' for target in node.targets)]

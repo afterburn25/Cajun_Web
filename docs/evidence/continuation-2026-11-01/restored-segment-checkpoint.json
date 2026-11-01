@@ -1,0 +1,67 @@
+{
+  "source": "5b4785284f1e937e2985a58f465c4d616dcb9116",
+  "scope": "22 unchanged remaining native commands after a preserved interrupted segment, then the unchanged full HTTP/Chromium driver. Segmented local evidence only.",
+  "original_native_run_passed": false,
+  "previous_native_suffix_interrupted": true,
+  "previous_recovery_attempt_failed": true,
+  "continuation_passed": false,
+  "runner_pid": 47660,
+  "commands_sha256": "16ad76d8bd2c577b8c4e2eb455d7d0f4acbfd0eead4b3ef94b53f01342f91e95",
+  "started_at_utc": "2026-11-01T23:34:35Z",
+  "stages": [
+    {
+      "name": "remaining_native_commands",
+      "state": "running",
+      "commands": [
+        {
+          "name": "native command 1",
+          "command": "\"$PHP_BINARY\" tests/stackcp_access_native.php",
+          "state": "passed",
+          "started_at_utc": "2026-11-01T23:34:35Z",
+          "pid": 47661,
+          "exit_code": 0,
+          "finished_at_utc": "2026-11-01T23:38:00Z",
+          "elapsed_seconds": 204.502
+        },
+        {
+          "name": "native command 2",
+          "command": "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
+          "state": "passed",
+          "started_at_utc": "2026-11-01T23:38:00Z",
+          "pid": 48465,
+          "exit_code": 0,
+          "finished_at_utc": "2026-11-01T23:39:17Z",
+          "elapsed_seconds": 77.196
+        },
+        {
+          "name": "native command 3",
+          "command": "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php",
+          "state": "passed",
+          "started_at_utc": "2026-11-01T23:39:17Z",
+          "pid": 48645,
+          "exit_code": 0,
+          "finished_at_utc": "2026-11-01T23:42:39Z",
+          "elapsed_seconds": 202.158
+        },
+        {
+          "name": "native command 4",
+          "command": "\"$PHP_BINARY\" tests/provider_domain_search_native.php",
+          "state": "passed",
+          "started_at_utc": "2026-11-01T23:42:39Z",
+          "pid": 50382,
+          "exit_code": 0,
+          "finished_at_utc": "2026-11-01T23:42:53Z",
+          "elapsed_seconds": 14.018
+        },
+        {
+          "name": "native command 5",
+          "command": "\"$PHP_BINARY\" tests/provider_mailboxes_native.php",
+          "state": "running",
+          "started_at_utc": "2026-11-01T23:42:53Z",
+          "pid": 50655
+        }
+      ]
+    }
+  ],
+  "updated_at_utc": "2026-11-01T23:42:53Z"
+}

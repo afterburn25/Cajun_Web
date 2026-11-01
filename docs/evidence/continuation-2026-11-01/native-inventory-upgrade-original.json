@@ -1,0 +1,230 @@
+{
+    "passed": false,
+    "scope": "Native MySQL\/MariaDB populated v1\/v2\/v3 upgrades and actual PHP owner view rendering with synthetic records; no network or browser",
+    "checks": [
+        {
+            "name": "Isolated prefix is unused",
+            "passed": true
+        },
+        {
+            "name": "Populated v1 is gated before domain queries",
+            "passed": true
+        },
+        {
+            "name": "Never-prepared StackCP observation readiness accepts genuine legacy v1 without mutation",
+            "passed": true
+        },
+        {
+            "name": "Missing operation column refuses nonlegacy inventory marker 4",
+            "passed": true
+        },
+        {
+            "name": "Missing operation column refuses nonlegacy inventory marker 5",
+            "passed": true
+        },
+        {
+            "name": "Missing operation column refuses nonlegacy inventory marker 99",
+            "passed": true
+        },
+        {
+            "name": "Missing operation column refuses nonlegacy inventory marker empty",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP setting witness starts absent provider_stackcp_access_proof",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP setting witness refuses before operation lookup provider_stackcp_access_proof",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP setting witness starts absent provider_stackcp_access_checkpoint",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP setting witness refuses before operation lookup provider_stackcp_access_checkpoint",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP setting witness starts absent provider_stackcp_access_checkpoint_proof",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP setting witness refuses before operation lookup provider_stackcp_access_checkpoint_proof",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP audit witness refuses before operation lookup provider.stackcp_access_prepared",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP audit witness refuses before operation lookup provider.stackcp_access_started",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP audit witness refuses before operation lookup provider.stackcp_access_finished",
+            "passed": true
+        },
+        {
+            "name": "Legacy StackCP readiness probes restore exact settings audits tables and inventory without key creation",
+            "passed": true
+        },
+        {
+            "name": "Populated v1 owner view retains preparation without querying missing domain tables",
+            "passed": true
+        },
+        {
+            "name": "Controller-rendered legacy view offers separate domain search preparation without schema-changing GET",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Populated v1 preparation requires current owner password",
+            "passed": true
+        },
+        {
+            "name": "Denied v1 preparation preserves schema version and records",
+            "passed": true
+        },
+        {
+            "name": "Migration audit failure is surfaced from v1",
+            "passed": true
+        },
+        {
+            "name": "Interrupted v1 preparation never stamps ready or rewrites retained facts",
+            "passed": true
+        },
+        {
+            "name": "Version-1 storage upgrades in place",
+            "passed": true
+        },
+        {
+            "name": "Pre-upgrade mappings load unverified and stay suppressed",
+            "passed": true
+        },
+        {
+            "name": "Legacy link does not inherit a credential fingerprint or revision",
+            "passed": true
+        },
+        {
+            "name": "Legacy link never leaks to another client",
+            "passed": true
+        },
+        {
+            "name": "Repeated v1 preparation preserves original rows revisions fingerprints and history",
+            "passed": true
+        },
+        {
+            "name": "Prepared v1 owner view renders without a setup form",
+            "passed": true
+        },
+        {
+            "name": "Only empty isolated domain table removed for v2 fixture provider_domain_link_events",
+            "passed": true
+        },
+        {
+            "name": "Only empty isolated domain table removed for v2 fixture provider_domain_links",
+            "passed": true
+        },
+        {
+            "name": "Populated v2 is gated before missing domain table reads",
+            "passed": true
+        },
+        {
+            "name": "Populated v2 owner can reach explicit preparation",
+            "passed": true
+        },
+        {
+            "name": "Unexpected VIRTUAL GENERATED package type is rejected before ordinary insert",
+            "passed": true
+        },
+        {
+            "name": "Incompatible generated schema cannot be marked prepared",
+            "passed": true
+        },
+        {
+            "name": "Incompatible preparation retains v2 gate",
+            "passed": true
+        },
+        {
+            "name": "Fixture repair restores every original v2 fact",
+            "passed": true
+        },
+        {
+            "name": "Migration audit failure is surfaced from v2",
+            "passed": true
+        },
+        {
+            "name": "Interrupted v2 upgrade retains old stamp and all original records",
+            "passed": true
+        },
+        {
+            "name": "Populated v2 upgrades with identical bindings revisions and history",
+            "passed": true
+        },
+        {
+            "name": "Upgraded v2 client 1 sees only its original approved service",
+            "passed": true
+        },
+        {
+            "name": "Upgraded v2 client 2 sees only its original approved service",
+            "passed": true
+        },
+        {
+            "name": "Repeated v2 preparation preserves every record and domain history",
+            "passed": true
+        },
+        {
+            "name": "V2 owner page renders current inventory after migration",
+            "passed": true
+        },
+        {
+            "name": "Domain projection uses the approved pair and excludes sibling names",
+            "passed": true
+        },
+        {
+            "name": "Moved-domain owner view identifies original and observed packages",
+            "passed": true
+        },
+        {
+            "name": "Moved-domain owner view requires unlink and new approval",
+            "passed": true
+        },
+        {
+            "name": "Moved domain discloses neither new package nor another customer primary name",
+            "passed": true
+        },
+        {
+            "name": "Moved-domain reapproval cannot change the approved package",
+            "passed": true
+        },
+        {
+            "name": "Rejected reapproval leaves binding and event journal untouched",
+            "passed": true
+        },
+        {
+            "name": "Approval presentation requires matching observation revision and credential context",
+            "passed": true
+        },
+        {
+            "name": "Populated v3 routes retain explicit owner upgrade and safe client state",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Populated v3 migration rejects wrong current password",
+            "passed": true
+        },
+        {
+            "name": "Migration audit failure is surfaced from v3",
+            "passed": true
+        },
+        {
+            "name": "Interrupted v3 upgrade keeps original stamp and facts",
+            "passed": true
+        },
+        {
+            "name": "Unexpected failure: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'cwp_test.pciu_provider_cloud_link_events' doesn't exist in engine",
+            "passed": false
+        }
+    ]
+}

@@ -10,6 +10,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER
+from owner_browser_forms import refuse_owner_action
 
 
 def _product_data():
@@ -104,26 +105,26 @@ def run_browser(env, browser):
     settings=lambda name: db('SELECT value FROM ci_settings WHERE name=?',[name])
     staff=base+'/existing/admin/index.php?view=staff'
     if settings('staff_schema_version') != [{'value':'1'}]:
-        response=submit(admin,staff,'staff_migrate',{'owner_id':'1','owner_password':OWNER,'confirm':'1'})
+        response=submit(admin,staff,'staff_migrate',{'owner_id':'1','confirm':'1'})
         check('Software browser prepares owner/staff authority through real admin form',
               response.status_code==200 and settings('staff_schema_version')==[{'value':'1'}]
               and 'Administrator access is enabled' in response.text)
     if settings('license_schema_version') != [{'value':'3'}]:
-        response=submit(admin,licenses,'studio_license_setup',{'current_password':OWNER})
+        response=submit(admin,licenses,'studio_license_setup',{})
         check('Software browser prepares website licensing through owner form',
               response.status_code==200 and settings('license_schema_version')==[{'value':'3'}])
     if settings('catalog_schema_version') != [{'value':'1'}]:
-        response=submit(admin,catalog,'catalog_migrate',{'owner_password':OWNER,'confirm':'1'})
+        response=submit(admin,catalog,'catalog_migrate',{'confirm':'1'})
         check('Software browser prepares catalog through owner form',
               response.status_code==200 and settings('catalog_schema_version')==[{'value':'1'}])
     payments=base+'/existing/admin/index.php?view=payments'
     if settings('payments_schema_version') != [{'value':'2'}]:
-        response=submit(admin,payments,'payments_migrate',{'owner_password':OWNER,'confirm':'1'})
+        response=submit(admin,payments,'payments_migrate',{'confirm':'1'})
         check('Software browser prepares payment settings through owner form',
               response.status_code==200 and settings('payments_schema_version')==[{'value':'2'}])
     ledger=base+'/existing/admin/index.php?view=invoice-payments'
     if settings('invoice_ledger_schema_version') != [{'value':'1'}]:
-        response=submit(admin,ledger,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1'})
+        response=submit(admin,ledger,'payments_ledger_setup',{'confirm':'1'})
         check('Software browser prepares invoice ledger through owner form',
               response.status_code==200 and settings('invoice_ledger_schema_version')==[{'value':'1'}])
 
@@ -157,7 +158,7 @@ def run_browser(env, browser):
     if settings('software_commerce_version') != [{'value':'3'}]:
         setup=_action_form(soup,before,'software_commerce_setup')
         check('Software commerce owner setup is explicit before use',True)
-        data=form_data(setup);data['current_password']=OWNER
+        data=form_data(setup)
         response=admin.post(licenses,data=data,timeout=40)
         check('Software commerce owner preparation succeeds through actual admin form',
               response.status_code==200
@@ -193,7 +194,7 @@ def run_browser(env, browser):
           and gateway_doc.select_one('select[name=gateway_mode] option[value=production]') is None)
     gateway_form=_action_form(soup,gateway_page,'software_gateway_select')
     forged_gateway=form_data(gateway_form)
-    forged_gateway.update({'gateway_mode':'production','current_password':OWNER})
+    forged_gateway.update({'gateway_mode':'production'})
     refused=admin.post(licenses,data=forged_gateway,timeout=25)
     check('Forged production software gateway activation is refused server-side',
           'Live payments remain gated' in refused.text
@@ -202,7 +203,7 @@ def run_browser(env, browser):
     review_page=admin.get(licenses,timeout=25)
     review_form=_action_form(soup,review_page,'software_gateway_production_review')
     review_data=form_data(review_form)
-    review_data.update({'confirm':'1','current_password':OWNER})
+    review_data.update({'confirm':'1'})
     review_refused=admin.post(licenses,data=review_data,timeout=25)
     check('Software production review cannot be recorded while the code gate is locked',
           'code-level software production-payment gate is still locked' in review_refused.text
@@ -261,7 +262,6 @@ def run_browser(env, browser):
         'dependencies':'',
         'update_months':'6',
         'max_installations':'2',
-        'current_password':OWNER,
     })
     policy_response=admin.post(licenses,data=policy_data,timeout=25)
     policy_rows=db('SELECT module_key,update_months,max_installations,revision FROM ci_software_product_policies WHERE product_id=?',[pid])
@@ -340,7 +340,6 @@ def run_browser(env, browser):
         'dependencies':'',
         'update_months':'6',
         'max_installations':'2',
-        'current_password':OWNER,
     })
     revised=admin.post(licenses,data=revised_policy,timeout=25)
     check('Owner can revise software policy while an unsubmitted customer form is open',
@@ -483,7 +482,7 @@ def run_browser(env, browser):
     fixture('mail-off')
     notice_page=admin.get(licenses,timeout=25)
     notice_form=_action_form(soup,notice_page,'software_notice_retry',invoice_id=invoice)
-    notice_data=form_data(notice_form);notice_data['current_password']=OWNER
+    notice_data=form_data(notice_form)
     notice_response=admin.post(licenses,data=notice_data,timeout=25)
     notice=db('SELECT status,attempts,sent_at,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
     check('Owner delivery retry keeps unaccepted disabled-mail notice retryable',
@@ -492,19 +491,22 @@ def run_browser(env, browser):
           and bool(notice['last_error']))
     db('UPDATE ci_software_notices SET attempts=10,last_attempt=? WHERE invoice_id=?',
        [datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),invoice])
-    exhausted_page=admin.get(licenses,timeout=25)
-    reset_form=_action_form(soup,exhausted_page,'software_notice_reset',invoice_id=invoice)
-    wrong_reset=form_data(reset_form);wrong_reset['current_password']='Incorrect owner passphrase'
-    wrong_response=admin.post(licenses,data=wrong_reset,timeout=25)
-    wrong_notice=db('SELECT status,attempts,last_attempt,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
-    check('Delivery retry reset rejects wrong owner password at the service boundary',
-          'current password is not correct' in wrong_response.text.lower()
-          and wrong_notice['attempts']==10
+    def notice_reset_form(response, action):
+        forms=[form for form in soup(response).select('form')
+               if form.select_one('input[name=action][value="'+action+'"]')
+               and form.select_one('input[name=invoice_id]')
+               and form.select_one('input[name=invoice_id]').get('value')==str(invoice)]
+        if len(forms)!=1:raise AssertionError('Expected one exact exhausted software notice reset form')
+        return forms[0]
+    refuse_owner_action({**env,'form_for':notice_reset_form},admin,licenses,'software_notice_reset',{})
+    denied_notice=db('SELECT status,attempts,last_attempt,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
+    check('Delivery retry reset preserves exhausted budget without owner authority',
+          denied_notice['attempts']==10
           and db("SELECT COUNT(*) AS n FROM ci_audit WHERE action='license.software.notice.reset' AND detail LIKE ?",
                  ['Software delivery retry budget reset for invoice '+str(invoice)+'%'])==[{'n':0}])
     exhausted_page=admin.get(licenses,timeout=25)
     reset_form=_action_form(soup,exhausted_page,'software_notice_reset',invoice_id=invoice)
-    reset_data=form_data(reset_form);reset_data['current_password']=OWNER
+    reset_data=form_data(reset_form)
     reset_response=admin.post(licenses,data=reset_data,timeout=25)
     reset_notice=db('SELECT status,attempts,last_attempt,last_error FROM ci_software_notices WHERE invoice_id=?',[invoice])[0]
     check('Owner can recover an exhausted software delivery retry budget through UI',
@@ -528,7 +530,6 @@ def run_browser(env, browser):
         'original_transaction_id':review['original_transaction_id'],
         'case_reference':'MSP-BROWSER-001',
         'evidence':'Verified synthetic browser dispute evidence for owner review',
-        'current_password':OWNER,
     })
     dispute_response=admin.post(licenses,data=dispute_data,timeout=25)
     check('Owner records merchant dispute through actual review form',
@@ -669,7 +670,7 @@ def run_browser(env, browser):
     cooldown_page=admin.get(licenses,timeout=25)
     cooldown_form=_action_form(soup,cooldown_page,'software_domain_policy')
     cooldown_data=form_data(cooldown_form)
-    cooldown_data.update({'domain_cooldown_hours':'0','current_password':OWNER})
+    cooldown_data.update({'domain_cooldown_hours':'0'})
     cooldown_response=admin.post(licenses,data=cooldown_data,timeout=25)
     check('Owner can disable customer domain-move cooldown through actual policy form',
           'cooldown updated' in cooldown_response.text.lower()
@@ -732,12 +733,15 @@ def run_browser(env, browser):
     support_admin=base+'/existing/admin/index.php?view=support'
     if (db("SELECT value FROM ci_settings WHERE name='support_schema_version'") != [{'value':'1'}]
             or db("SELECT value FROM ci_settings WHERE name='support_policy_confirmed'") != [{'value':'1'}]):
-        response=submit(admin,support_admin,'support_migrate',{'owner_password':OWNER,'confirm':'1'})
+        response=submit(admin,support_admin,'support_migrate',{'confirm':'1'})
         check('Software support acceptance prepares support storage when needed',
-              response.status_code==200 and 'Support access is ready' in response.text)
+              response.status_code==200
+              and 'Owner account review is ready. Staff support access remains restricted until approved.' in response.text
+              and soup(response).select_one('[name=action][value=support_migrate]') is None
+              and db("SELECT name,value FROM ci_settings WHERE name IN ('support_schema_version','support_policy_confirmed') ORDER BY name")==[{'name':'support_policy_confirmed','value':'1'},{'name':'support_schema_version','value':'1'}])
     allowed=db('SELECT allowed FROM ci_support_clients WHERE client_id=1')
     if allowed != [{'allowed':1}]:
-        chosen_form(admin,support_admin,'support_policy','client_id',1,{'allowed':'1','owner_password':OWNER})
+        chosen_form(admin,support_admin,'support_policy','client_id',1,{'allowed':'1'})
     started=chosen_form(admin,support_admin,'support_start','client_id',1,{})
     support_id=parse_qs(urlparse(started.url).query).get('support',[''])[0]
     check('Software support acceptance opens audited client context',
@@ -773,7 +777,7 @@ def run_browser(env, browser):
 
     visibility_page=admin.get(licenses,timeout=25)
     visibility_form=_action_form(soup,visibility_page,'software_asset_visibility',asset_id=asset_id)
-    visibility=form_data(visibility_form);visibility['current_password']=OWNER
+    visibility=form_data(visibility_form)
     hidden=admin.post(licenses,data=visibility,timeout=25)
     check('Owner can make an immutable release owner-private through actual admin form',
           hidden.status_code==200
@@ -792,7 +796,7 @@ def run_browser(env, browser):
           and private_validation.json()=={'authorized':False,'error':'Unknown software version'})
     restore_page=admin.get(licenses,timeout=25)
     restore_form=_action_form(soup,restore_page,'software_asset_visibility',asset_id=asset_id)
-    restore=form_data(restore_form);restore['current_password']=OWNER
+    restore=form_data(restore_form)
     restored=admin.post(licenses,data=restore,timeout=25)
     restored_asset=db('SELECT is_published,released_at,created_at FROM ci_software_assets WHERE id=?',[asset_id])[0]
     check('Owner can restore customer visibility without changing immutable release identity or first release time',

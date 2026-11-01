@@ -1,3 +1,15 @@
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Reviewed correction `77cdbc92` and preceding documentation `be75116e` remain pending publication to PR #317. A GitHub blob save succeeded with the exact reviewed object; no branch update or merge is implied. The interrupted local database and failed recovery are preserved. A fresh isolated database restored 4,051 completed fixture tables. At 23:40:50 UTC the remaining native segment had passed its first two commands (103/103 and 49/49 checks), with command 3 active; full browser acceptance remained pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](docs/CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — continue the current combined candidate
+
+Current integration work is [PR317](https://github.com/afterburn25/Cajun_Web/pull/317), initially `366d53b1ed6b367b32664f2b91ee073fc6813544`, containing the already-merged backup/prerequisite/foundation work from `main` `1c44ca120e7768998fafa720b3e1c4c85990c330`. This session repairs concrete licensing and full-browser acceptance failures after the approved session-based admin and seven-workspace 20i changes. Shipping application files and the full test driver remain unchanged. Corrected candidate acceptance and required review precede any main merge or publication. Latest observed publication remains v1.25.0. [Current source, preserved failures, actual evidence and next gates](docs/CONTINUATION_2026_11_01.md).
+
 ## 2026-10-29 — keep software orchestration evidence inside its sealed partition
 
 PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](docs/CODEX_PR266_APPLICATION_40820683270.md).

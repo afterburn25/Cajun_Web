@@ -1,3 +1,15 @@
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Record the interrupted local runner, retained database snapshots, original StackCP recreation failure, and logical restoration of 4,051 completed synthetic fixture tables. The resumed original StackCP commands pass 103 and 49 checks respectively at this checkpoint. This documentation/evidence update changes no product code or acceptance assertion. GitHub accepted one exact reviewed diagnostic blob; candidate publication, full acceptance, main integration and release remain pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](docs/CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — reconcile acceptance with current admin sessions and 20i workspaces
+
+Correct the actual owner navigation destination assertions and execute the real licensing support-refusal branch across all protected routes. Update installed provider, domain, hosting, scheduling and licensing browser fixtures to capture forms in their current workspaces and test withdrawn owner authority instead of removed repeated-password fields. Preserve initial authentication, CSRF, consent, client isolation, revisions, replay fences, provider budgets, data retention and the unchanged full browser journey. Historical support-upgrade success checks now inspect current owner-review output and durable migration state. Application bytes and published releases are unchanged. [Evidence and acceptance status](docs/CONTINUATION_2026_11_01.md).
+
 ## 2026-10-29 — keep software orchestration evidence inside its sealed partition
 
 PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](docs/CODEX_PR266_APPLICATION_40820683270.md).

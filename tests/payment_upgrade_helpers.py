@@ -1,13 +1,16 @@
 """Explicit owner preparation of retained payment schema before later upgrades."""
 import json
+from owner_browser_forms import refuse_owner_action
 
 
 def prepare_retained_payments(env, session, admin_url, prefix, before, settings, preserved):
     """Preserve original values while accepting only schema1's link-column addition."""
-    if prefix not in {'trialup_', 'notifyup_', 'ledgerup_', 'deliveryup_', 'activityup_', 'portfolioup_'}:
+    installations = {'trialup_': 'trial-upgrade', 'notifyup_': 'notification-upgrade',
+                     'ledgerup_': 'ledger-upgrade', 'deliveryup_': 'delivery-upgrade',
+                     'activityup_': 'activity-upgrade', 'portfolioup_': 'portfolio-upgrade'}
+    if prefix not in installations:
         raise ValueError('Unexpected retained payment fixture')
     check, db, submit = env['check'], env['db'], env['submit']
-    password = 'Synthetic upgrade passphrase 2026'
     label = prefix.rstrip('_') + ' payment prerequisite'
     original_settings = {row['name']: row['value'] for row in settings}
     check(label + ' starts at retained schema1',
@@ -26,14 +29,17 @@ def prepare_retained_payments(env, session, admin_url, prefix, before, settings,
                 and all(path.read_bytes() == value for path, value in preserved.items()))
 
     target = admin_url + '?view=payments'
-    denied = submit(session, target, 'payments_migrate', {'owner_password': 'wrong', 'confirm': '1'})
-    check(label + ' refuses wrong owner without retained mutation',
-          denied.status_code == 200 and 'current password' in denied.text.lower() and original_state())
+    refuse_owner_action(env, session, target, 'payments_migrate', {'confirm': '1'},
+                        installed_root=env['WEB'] / installations[prefix])
+    check(label + ' requires current owner authority without retained mutation', original_state())
     denied = submit(session, target, 'payments_migrate',
-                    {'owner_password': password, 'confirm': '1', 'csrf': 'invalid'})
+                    {'confirm': '1', 'csrf': 'invalid'})
     check(label + ' refuses invalid CSRF without retained mutation',
           'session expired' in denied.text.lower() and original_state())
-    prepared = submit(session, target, 'payments_migrate', {'owner_password': password, 'confirm': '1'})
+    denied = submit(session, target, 'payments_migrate', {})
+    check(label + ' requires a current backup without retained mutation',
+          denied.status_code == 200 and 'Confirm that you have a current backup.' in denied.text and original_state())
+    prepared = submit(session, target, 'payments_migrate', {'confirm': '1'})
     check(label + ' uses explicit owner preparation with checkout disabled',
           prepared.status_code == 200 and 'Payment preparation enabled' in prepared.text
           and 'Client checkout remains disabled' in prepared.text)

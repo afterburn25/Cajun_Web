@@ -1,0 +1,25 @@
+{
+  "recorded_at_utc": "2026-11-01T23:33:50Z",
+  "source": "5b4785284f1e937e2985a58f465c4d616dcb9116",
+  "old_database_retained": "<retained-interrupted-database>",
+  "fresh_database": "<fresh-local-database>",
+  "database_pid": 46804,
+  "port": 33307,
+  "completed_tables_restored": 4051,
+  "successful_inventory_retry_tables_restored": 78,
+  "retry_sql_sha256": "623b5a5c4edc1adacc640cf6ec09083c84e961e33d96a00b4bc0bcbd2e20cb17",
+  "database_fixture_row_counts_before": {
+    "ci_users": "1",
+    "ci_studio_clients": "2",
+    "ci_studio_jobs": "2",
+    "pimci_provider_profiles": "1"
+  },
+  "database_fixture_row_counts_after": {
+    "ci_users": "1",
+    "ci_studio_clients": "2",
+    "ci_studio_jobs": "2",
+    "pimci_provider_profiles": "1"
+  },
+  "excluded": "Original failed pciu_ tables except successful pciu_retry_; incomplete sca_ tables. Original physical/SQL snapshots remain private and retained.",
+  "scope": "Local synthetic fixture recovery, not application or release certification"
+}

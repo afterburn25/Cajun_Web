@@ -1,0 +1,16 @@
+{
+  "source": "5b4785284f1e937e2985a58f465c4d616dcb9116",
+  "scope": "Remaining unchanged native commands after preserved engine-error failure and a separate successful 72-check fresh-prefix inventory replay, followed by the unchanged full browser driver. Not a successful original workflow or release certification.",
+  "original_native_run_passed": false,
+  "continuation_passed": false,
+  "stages": [
+    {
+      "stage": "native_suffix",
+      "state": "interrupted",
+      "started_at_utc": "2026-11-01T22:57:44Z",
+      "exit_code": null
+    }
+  ],
+  "interruption_observed_at_utc": "2026-11-01T23:30:31Z",
+  "interruption_cause": "Unknown; runner and database processes were absent and no terminal report was written"
+}

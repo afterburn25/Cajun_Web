@@ -26,7 +26,10 @@ function pu_snapshot():array {
 function pu_old_fields(array $rows,array $before):array {foreach($rows as $name=>&$table)foreach($table as $i=>&$row)$row=array_intersect_key($row,$before[$name][$i]);unset($table,$row);return $rows;}
 function pu_audit_failure(int $version,callable $fn):void {
     $trigger=config()['db']['prefix'].'audit_fail';db()->exec('CREATE TRIGGER `'.$trigger.'` BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='provider.inventory_prepared' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic migration audit failure'; END IF; END");
-    try{$fn();pu_ok('Migration audit failure is surfaced from v'.$version,false);}catch(PDOException){pu_ok('Migration audit failure is surfaced from v'.$version,true);}finally{db()->exec('DROP TRIGGER `'.$trigger.'`');}
+    try{$fn();pu_ok('Migration audit failure is surfaced from v'.$version,false);}catch(PDOException $e){
+        if(($e->errorInfo[0]??null)!=='45000'||(int)($e->errorInfo[1]??0)!==1644||($e->errorInfo[2]??null)!=='Synthetic migration audit failure')throw $e;
+        pu_ok('Migration audit failure is surfaced from v'.$version,true);
+    }finally{db()->exec('DROP TRIGGER `'.$trigger.'`');}
 }
 try {
     pu_ok('Isolated prefix is unused',(int)query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,?)=?',[strlen($prefix),$prefix])->fetchColumn()===0);

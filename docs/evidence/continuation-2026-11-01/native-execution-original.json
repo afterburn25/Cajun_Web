@@ -1,0 +1,27 @@
+{
+  "scope": "Local unchanged native command sequence followed by the full unchanged HTTP/Chromium driver. Not hosted, release, real-provider, or production certification.",
+  "source_sha": "5b4785284f1e937e2985a58f465c4d616dcb9116",
+  "workflow_sha256": "9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c",
+  "native_commands_sha256": "d900ea0ade8ada0875a323cbd485627e6b25244bbfa8332c6c4c971da9cfc02e",
+  "native_nonempty_lines": 162,
+  "browser_command": ".ci-venv/bin/python tests/browser_acceptance.py",
+  "browser_driver_sha256": "0a1f1248faaef87afa5ce07c03118bd4f5163035f73e6fe3715cc5b8e36ef114",
+  "stages": [
+    {
+      "stage": "native",
+      "started_at_utc": "2026-11-01T22:35:25Z",
+      "log": "continuation-local-native.log",
+      "state": "failed",
+      "exit_code": 1,
+      "elapsed_seconds": 1059.836,
+      "finished_at_utc": "2026-11-01T22:53:05Z"
+    }
+  ],
+  "passed": false,
+  "runtime": {
+    "php_binary": "/usr/bin/php8.3",
+    "database": "cwp_test",
+    "host": "127.0.0.1",
+    "port": "33307"
+  }
+}

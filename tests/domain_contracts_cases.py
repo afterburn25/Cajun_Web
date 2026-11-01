@@ -3,19 +3,22 @@ import requests,time
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER
+from owner_browser_forms import assert_no_owner_reprompt, refuse_owner_action
 
 
 def run_browser(env,browser):
     check,soup,form_data,submit=(env[k] for k in ['check','soup','form_data','submit'])
-    base,qa,provider=env['BASE'],env['QA'],env['provider_server'];admin=base+'/existing/admin/index.php';portal=base+'/existing/portal/index.php';settings=admin+'?view=provider-settings';url=portal+'?domain_dates=1'
+    base,qa,provider=env['BASE'],env['QA'],env['provider_server'];admin=base+'/existing/admin/index.php';portal=base+'/existing/portal/index.php';settings=admin+'?view=provider-settings&section=domains';url=portal+'?domain_dates=1'
     owner=requests.Session();submit(owner,admin+'?view=login','login',{'email':'owner@example.invalid','password':OWNER});db('DELETE FROM ci_rate_limits')
     client=requests.Session();submit(client,portal,'login',{'email':'registrar-client1@example.invalid','password':OWNER});other=requests.Session();submit(other,portal,'login',{'email':'registrar-client2@example.invalid','password':OWNER})
     cid=db('SELECT id FROM ci_studio_clients WHERE email=?',['registrar-client1@example.invalid'])[0]['id'];profile=db('SELECT * FROM ci_provider_profiles')[0]
     calls,posts=provider.calls,list(provider.posts);prepare='provider_inventory_contract_prepare';refresh='provider_inventory_contract_refresh'
     check('Renewal dates GET creates no storage or provider read',prepare in owner.get(settings).text and not db('SHOW TABLES LIKE "ci_domain_contract_bindings"') and 'No renewal dates are available' in client.get(url).text and provider.calls==calls)
-    for fields,label in [({'csrf':'bad','current_password':OWNER},'CSRF'),({'current_password':'wrong'},'password')]:
-        submit(owner,settings,prepare,fields);check('Renewal dates preparation refuses '+label,not db('SHOW TABLES LIKE "ci_domain_contract_bindings"') and provider.calls==calls)
-    submit(owner,settings,prepare,{'current_password':OWNER});check('Renewal dates prepare is local and explicit',not db('SELECT * FROM ci_domain_contract_bindings') and provider.calls==calls)
+    for fields,label in [({'csrf':'bad'},'CSRF'),({},'owner authority')]:
+        if label=='owner authority':refuse_owner_action(env,owner,settings,prepare,{})
+        else:submit(owner,settings,prepare,fields)
+        check('Renewal dates preparation refuses '+label,not db('SHOW TABLES LIKE "ci_domain_contract_bindings"') and provider.calls==calls)
+    submit(owner,settings,prepare,{});check('Renewal dates prepare is local and explicit',not db('SELECT * FROM ci_domain_contract_bindings') and provider.calls==calls)
     old_domains=list(provider.registrar_domains);old_mode=provider.registrar_mode
     provider.registrar_mode='success';provider.registrar_domains=old_domains+[{'id':3701,'name':'dates-client.invalid'},{'id':3702,'name':'dates-sibling.invalid'}]
     # Earlier browser workflows have immutable evidence tied to their original read times.
@@ -27,24 +30,30 @@ def run_browser(env,browser):
         if remaining>0:time.sleep(remaining)
     wait_read()
     response=owner.get(settings);(qa/'Domain-Dates-before-registrar.html').write_text(response.text,encoding='utf-8')
-    response=submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER});(qa/'Domain-Dates-after-registrar.html').write_text(response.text,encoding='utf-8')
+    response=submit(owner,settings,'provider_inventory_registrar_refresh',{});(qa/'Domain-Dates-after-registrar.html').write_text(response.text,encoding='utf-8')
     check('Renewal date fixture preserves inherited observation epochs',all(db('SELECT started_epoch FROM ci_provider_refreshes WHERE id=?',[row['id']])==[{'started_epoch':row['started_epoch']}] for row in inherited))
     source=db('SELECT id FROM ci_provider_refreshes WHERE operation=? ORDER BY seq DESC LIMIT 1',['domains.list'])[0]['id']
     check('Renewal date fixture establishes one new complete registrar source',source not in {row['id'] for row in inherited} and db('SELECT state FROM ci_provider_refresh_results WHERE id=?',[source])==[{'state':'complete'}] and provider.get_paths[-1]=='/domain')
-    chosen_form(owner,settings,'provider_inventory_registrar_link','domain_id',3701,{'client_id':cid,'current_password':OWNER})
-    sibling=db('SELECT id FROM ci_studio_clients WHERE email=?',['registrar-client2@example.invalid'])[0]['id'];chosen_form(owner,settings,'provider_inventory_registrar_link','domain_id',3702,{'client_id':sibling,'current_password':OWNER})
+    chosen_form(owner,settings,'provider_inventory_registrar_link','domain_id',3701,{'client_id':cid})
+    sibling=db('SELECT id FROM ci_studio_clients WHERE email=?',['registrar-client2@example.invalid'])[0]['id'];chosen_form(owner,settings,'provider_inventory_registrar_link','domain_id',3702,{'client_id':sibling})
     link=db('SELECT * FROM ci_provider_registrar_links WHERE domain_id=3701')[0];calls=provider.calls
     provider.contract_dates={'dates-client.invalid':'2028-02-29','dates-sibling.invalid':'2029-01-01'}
-    def fields():return form_data(next(f for f in soup(owner.get(settings)).select('form') if f.select_one('[name=action][value='+refresh+']') and f.select_one('[name=link_id]')['value']==link['id']))
+    def refresh_form(response, action):
+        forms=[f for f in soup(response).select('form') if f.select_one('[name=action][value='+action+']') and f.select_one('[name=link_id]') and f.select_one('[name=link_id]')['value']==link['id']]
+        if len(forms)!=1:raise AssertionError('Expected one exact domain observation refresh form')
+        return forms[0]
+    def fields():return form_data(refresh_form(owner.get(settings),refresh))
     def read():
         wait_read()
-        return chosen_form(owner,settings,refresh,'link_id',link['id'],{'current_password':OWNER})
+        return chosen_form(owner,settings,refresh,'link_id',link['id'],{})
     stale=fields()
-    for changed,label in [({'csrf':'bad'},'CSRF'),({'current_password':'wrong'},'password'),({'link_revision':'999'},'assignment revision'),({'refresh_id':'f'*32},'source revision')]:
-        owner.post(settings,data={**stale,'current_password':OWNER,**changed});check('Renewal date refresh refuses '+label,not db('SELECT * FROM ci_domain_contract_bindings') and provider.calls==calls)
+    for changed,label in [({'csrf':'bad'},'CSRF'),({},'owner authority'),({'link_revision':'999'},'assignment revision'),({'refresh_id':'f'*32},'source revision')]:
+        if label=='owner authority':refuse_owner_action({**env,'form_for':refresh_form},owner,settings,refresh,{})
+        else:owner.post(settings,data={**stale,**changed})
+        check('Renewal date refresh refuses '+label,not db('SELECT * FROM ci_domain_contract_bindings') and provider.calls==calls)
     # Exercise the real shared cooldown without changing any retained observation or binding.
     wait_read()
-    context=browser.new_context(viewport={'width':1440,'height':1000});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in owner.cookies]);page=context.new_page();page.goto(settings);form=page.locator('form').filter(has=page.locator('[name=action][value='+refresh+']')).filter(has=page.locator('[name=link_id][value="'+link['id']+'"]'));form.locator('[name=current_password]').fill(OWNER)
+    context=browser.new_context(viewport={'width':1440,'height':1000});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in owner.cookies]);page=context.new_page();page.goto(settings);form=page.locator('form').filter(has=page.locator('[name=action][value='+refresh+']')).filter(has=page.locator('[name=link_id][value="'+link['id']+'"]'));assert_no_owner_reprompt(check,form,'Refresh renewal date')
     with page.expect_navigation(wait_until='domcontentloaded'):form.get_by_role('button',name='Refresh renewal date',exact=True).click()
     expect(page.locator('#domain-contracts')).to_contain_text('Provider renewal date: 2028-02-29')
     context.close();calls=provider.calls
@@ -66,10 +75,10 @@ def run_browser(env,browser):
     rows=db('SELECT * FROM ci_domain_contract_bindings ORDER BY id');db('RENAME TABLE ci_domain_contract_bindings TO ci_saved_contract_bindings')
     try:
         check('Lost date bindings return controlled client refusal','needs to review the saved renewal dates' in client.get(url).text)
-        owner.post(settings,data={'csrf':env['token'](owner.get(settings)),'action':prepare,'current_password':OWNER});check('Owner cannot recreate lost date authority',not db('SHOW TABLES LIKE "ci_domain_contract_bindings"'))
+        owner.post(settings,data={'csrf':env['token'](owner.get(settings)),'action':prepare});check('Owner cannot recreate lost date authority',not db('SHOW TABLES LIKE "ci_domain_contract_bindings"'))
     finally:db('RENAME TABLE ci_saved_contract_bindings TO ci_domain_contract_bindings')
     check('Exact restored bindings preserve latest failed state',db('SELECT * FROM ci_domain_contract_bindings ORDER BY id')==rows and 'latest renewal date is unavailable' in client.get(url).text)
-    provider.contract_mode='success';read();calls=provider.calls;chosen_form(owner,settings,'provider_inventory_registrar_relink','link_id',link['id'],{'current_password':OWNER})
+    provider.contract_mode='success';read();calls=provider.calls;chosen_form(owner,settings,'provider_inventory_registrar_relink','link_id',link['id'],{})
     check('Assignment reapproval removes prior-context dates','2028-02-29' not in client.get(url).text and 'refresh the date for this assignment' in client.get(url).text)
     read();calls=provider.calls;check('Explicit refresh after reapproval restores own date','Provider renewal date: 2028-02-29' in client.get(url).text)
     for path in ['app/providers/domain_contracts.php','app/providers/domain_contracts_storage.php','app/providers/domain_contracts_views.php','admin/controllers/domain_contracts.php','admin/views/domain_contracts.php','portal/controllers/domain_contracts.php','portal/views/domain_contracts.php','database/schema/domain_contracts_schema.php','includes/foundation/twentyi-domain-contracts/DomainContract.php','includes/foundation/twentyi-domain-contracts/DomainContractBinding.php','includes/foundation/twentyi-domain-contracts/DomainContractObservation.php']:

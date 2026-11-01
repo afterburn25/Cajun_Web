@@ -1,5 +1,9 @@
 # Current coordination - Devin sole-owner execution
 
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+The primary continuation publishes reviewed `77cdbc92` and its documentation/checkpoint to the existing PR #317 lane after checking the remote head. The frozen `5b478528` acceptance runtime remains separate and runs unchanged commands against restored synthetic fixtures. The Account/Notifications lane retains its own `fc14b841`-based fixture correction and 54/54 local browser evidence for separate review/publication before combination. No full acceptance, main merge, release or live operation is recorded here. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
 ## 2026-10-19 — bounded reset email template lane
 
 Root coordinates `codex/twentyi-reset-email-template` from maina86f6f4f. Domains owns the typed read/write contracts and offline tests; Catalog owns private storage and runtime admission; VPS owns native/installed-browser cases; root owns the editor, action routing, shared adapter wiring, evidence and sequential integration. [Scope and gates](TWENTYI_PASSWORD_RESET_TEMPLATE.md). These assignments use the owner's existing parallel20i authorization; Devin's non20i branches remain separate.

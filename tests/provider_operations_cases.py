@@ -4,6 +4,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit','provider_server']})
@@ -16,9 +17,9 @@ def run_browser(env,browser):
 
     def op_post(action,**values):
         current=db('SELECT revision FROM ci_provider_profiles')[0]['revision']
-        return owner.post(url,data={'csrf':token(owner.get(url)),'action':action,'profile_id':pid,'revision':str(current),'current_password':OWNER,**values})
-    def grant(operation,scope,key_ttl='3600',password=OWNER,csrf=None):
-        data={'csrf':csrf if csrf is not None else token(owner.get(url)),'action':'provider_operations_grant','profile_id':pid,'operation':operation,'scope_params':scope,'ttl_seconds':key_ttl,'current_password':password}
+        return owner.post(url,data={'csrf':token(owner.get(url)),'action':action,'profile_id':pid,'revision':str(current),**values})
+    def grant(operation,scope,key_ttl='3600',csrf=None):
+        data={'csrf':csrf if csrf is not None else token(owner.get(url)),'action':'provider_operations_grant','profile_id':pid,'operation':operation,'scope_params':scope,'ttl_seconds':key_ttl}
         return owner.post(url,data=data)
 
     def label_grant(label,package='910',**values):
@@ -42,8 +43,8 @@ def run_browser(env,browser):
     check('Anonymous visitor has no provider operations',soup(requests.get(url)).select_one('[data-provider-grant]') is None)
     r=owner.get(url+'&support=fixture');check('Support context refuses owner operations screen',r.status_code==403 and soup(r).select_one('[data-provider-grant]') is None)
 
-    r=op_post('provider_operations_setup',current_password='wrong')
-    check('Operation storage setup requires owner password','current password' in r.text.lower() and not db('SHOW TABLES LIKE "ci_provider_operations"'))
+    refuse_owner_action(env,owner,url,'provider_operations_setup',{})
+    check('Operation storage setup requires current owner authority',not db('SHOW TABLES LIKE "ci_provider_operations"'))
     r=op_post('provider_operations_setup',csrf='invalid')
     check('Operation setup rejects invalid CSRF','session expired' in r.text.lower())
     r=op_post('provider_operations_setup')
@@ -51,8 +52,8 @@ def run_browser(env,browser):
     r=owner.get(url);check('Operations page renders the approval form',r.status_code==200 and soup(r).select_one('[data-provider-grant]') is not None)
 
     scope=json.dumps({'resellerId':'*','id':[910],'labels':{'910':'Packaged label'}})
-    r=label_grant('Packaged label',current_password='wrong')
-    check('Grant approval requires owner password','current password' in r.text.lower() and not db('SELECT * FROM ci_provider_operation_grants'))
+    refuse_owner_action(env,owner,url,'provider_operations_label_grant',{'package_id':'910','package_label':'Packaged label','ttl_seconds':'3600'})
+    check('Grant approval requires current owner authority',not db('SELECT * FROM ci_provider_operation_grants'))
     r=label_grant('Packaged label',csrf='invalid')
     check('Grant approval rejects invalid CSRF','session expired' in r.text.lower() and not db('SELECT * FROM ci_provider_operation_grants'))
     r=grant('packages.update','not json')
@@ -132,8 +133,8 @@ def run_browser(env,browser):
     previous_revision=db('SELECT revision FROM ci_provider_profiles WHERE id=?',[pid])[0]['revision']
     previous_history=db('SELECT * FROM ci_provider_revisions WHERE profile_id=? ORDER BY revision',[pid])
     previous_calls=provider_server.calls;previous_posts=list(provider_server.posts)
-    settings_url=root+'?view=provider-settings'
-    r=submit(owner,settings_url,'provider_settings_save',{'label':'Revised operation fixture connection','enabled':'1','general_key':'','current_password':OWNER})
+    settings_url=root+'?view=provider-settings&section=connection'
+    r=submit(owner,settings_url,'provider_settings_save',{'label':'Revised operation fixture connection','enabled':'1','general_key':''})
     current_history=db('SELECT * FROM ci_provider_revisions WHERE profile_id=? ORDER BY revision',[pid])
     check('Changed operation context retains exact prior and current provider history',
           r.status_code==200 and db('SELECT revision,enabled FROM ci_provider_profiles WHERE id=?',[pid])==[{'revision':previous_revision+1,'enabled':1}]
@@ -170,9 +171,10 @@ def run_browser(env,browser):
 
     context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(root+'?view=login');page.locator('[name=email]').fill('owner@example.invalid');page.locator('[name=password]').fill(OWNER);page.locator('form button').first.click();page.wait_for_url(root+'?view=dashboard');page.goto(url)
-    form=page.locator('[data-provider-grant]');form.locator('[name=package_id]').fill('910');form.locator('[name=package_label]').fill('Browser package label');form.locator('[name=current_password]').fill(OWNER);form.get_by_role('button',name='Approve one request',exact=True).click()
+    form=page.locator('[data-provider-grant]');form.locator('[name=package_id]').fill('910');form.locator('[name=package_label]').fill('Browser package label');assert_no_owner_reprompt(check,form,'Approve one provider request');form.get_by_role('button',name='Approve one request',exact=True).click()
     expect(page.locator('[data-provider-grant]')).to_be_visible()
-    check('Chromium grant approval clears the password field',page.locator('[data-provider-grant] [name=current_password]').input_value()=='' and secret not in page.content())
+    assert_no_owner_reprompt(check,page.locator('[data-provider-grant]'),'Provider approval result')
+    check('Chromium grant approval returns without secret disclosure',secret not in page.content())
     page.screenshot(path=str(QA/'Provider-Operations-Desktop.png'),full_page=True);page.set_viewport_size({'width':320,'height':740});expect(page.locator('.admin-sidebar')).not_to_be_in_viewport();page.screenshot(path=str(QA/'Provider-Operations-Mobile.png'),full_page=True)
     check('Operations owner page fits 320px viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Operations browser has no script errors',not errors);context.close()

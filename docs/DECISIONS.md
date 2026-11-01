@@ -1,3 +1,15 @@
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Preserve interrupted physical/SQL fixtures and the failed recovery before restoring readable completed fixtures into a fresh local database on the same port. Exclude only the original failed `pciu_` fixture and partial `sca_` fixture; explicitly retain the successful `pciu_retry_` tables. Resume unchanged native commands with their original assertions. A successful GitHub blob creation establishes that bounded write only; it does not explain earlier bulk errors or establish a published branch update. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — preserve meaningful denials when repeated passwords are removed
+
+The approved administrator experience authorizes mutations through the current session. A negative test that supplies a wrong value to a removed repeated-password field no longer tests that boundary. Capture the actual valid form, withdraw the same original owner's current authority, submit with its real CSRF and bound identifiers, and prove exact database/schema/private-file/profile retention. Keep initial sign-in, actual credentials, consent, CSRF, tenant/revision/replay and provider-budget coverage. Reach each form in its actual allowlisted 20i workspace. Preserve earlier source hashes by explicit reversible fixture receipts; do not overwrite historical pins or weaken the full driver to obtain a pass. [Implementation and evidence](CONTINUATION_2026_11_01.md).
+
 ## 2026-10-19 — superseded component queue checkpoint
 
 The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).

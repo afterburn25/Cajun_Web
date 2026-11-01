@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
@@ -27,10 +28,11 @@ def run_browser(env, browser):
 
     r = owner.get(listing)
     check('Plan page requires explicit setup on an existing installation', 'Prepare service agreements' in r.text and not db("SELECT * FROM ci_settings WHERE name='service_plans_schema_version'"))
-    for changes in [{'current_password': OWNER, 'csrf': 'wrong'}, {'current_password': 'wrong'}]:
-        r = submit(owner, listing, 'service_plans_setup', changes)
-        check('Plan setup refuses '+('bad CSRF' if 'csrf' in changes else 'wrong password'), 'Prepare service agreements' in r.text and not db("SELECT * FROM ci_settings WHERE name='service_plans_schema_version'"))
-    r = submit(owner, listing, 'service_plans_setup', {'current_password': OWNER})
+    r = submit(owner, listing, 'service_plans_setup', {'csrf': 'wrong'})
+    check('Plan setup refuses bad CSRF', 'Prepare service agreements' in r.text and not db("SELECT * FROM ci_settings WHERE name='service_plans_schema_version'"))
+    refuse_owner_action(env, owner, listing, 'service_plans_setup', {})
+    check('Plan setup refuses withdrawn owner authority', not db("SELECT * FROM ci_settings WHERE name='service_plans_schema_version'"))
+    r = submit(owner, listing, 'service_plans_setup', {})
     check('Owner explicitly enables empty agreement storage over HTTP', 'Service agreements are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='service_plans_schema_version'")==[{'value': '1'}] and not db('SELECT * FROM ci_service_plans'))
     check('Agreement pages prohibit caching and referrer disclosure', r.headers.get('Cache-Control')=='no-store, private' and r.headers.get('Referrer-Policy')=='no-referrer')
 
@@ -52,7 +54,7 @@ def run_browser(env, browser):
     foreign_id, foreign = clients[1]
 
     new = admin+'?view=service-plan'
-    terms = {'name': 'Website care café <review>', 'cadence': 'monthly', 'price': '129.00', 'inclusions': 'Reviewed website updates\nMonthly report', 'exclusions': 'New features', 'limits': 'updates = 4', 'support': 'Response within two business days', 'current_password': OWNER}
+    terms = {'name': 'Website care café <review>', 'cadence': 'monthly', 'price': '129.00', 'inclusions': 'Reviewed website updates\nMonthly report', 'exclusions': 'New features', 'limits': 'updates = 4', 'support': 'Response within two business days'}
     creation = data(owner, new, 'service_plans_create')
     r = owner.post(new, data=dict(creation, **terms, csrf='bad'))
     check('Draft create requires session CSRF and preserves escaped unsaved fields', not db('SELECT * FROM ci_service_plans') and soup(r).select_one('[name=name]')['value']==terms['name'] and '<review>' not in r.text)
@@ -66,29 +68,29 @@ def run_browser(env, browser):
     submit(owner, detail, 'service_plans_edit', dict(terms, name='Reviewed care plan'))
     saved = snapshot()
     hostile = '</textarea><script>window.agreementInjected=true</script>'
-    r = owner.post(detail, data=dict(old_edit, name=hostile, current_password=OWNER))
+    r = owner.post(detail, data=dict(old_edit, name=hostile))
     check('Stale edit keeps unsaved escaped input and its original revision', snapshot()==saved and soup(r).select_one('[name=name]')['value']==hostile and form_data(form_for(r, 'service_plans_edit'))['revision']==old_edit['revision'] and '<script>window.agreementInjected' not in r.text)
-    owner.post(detail, data=dict(old_publish, confirm='1', current_password=OWNER))
+    owner.post(detail, data=dict(old_publish, confirm='1'))
     check('Stale publish cannot silently publish newer terms', snapshot()==saved)
     publish = data(owner, detail, 'service_plans_publish')
-    owner.post(detail, data=dict(publish, current_password=OWNER))
+    owner.post(detail, data=dict(publish))
     check('Publishing requires an explicit unchecked confirmation', snapshot()==saved)
-    r = owner.post(detail, data=dict(publish, confirm='1', current_password=OWNER))
+    r = owner.post(detail, data=dict(publish, confirm='1'))
     check('Published plan offers exact terms without an edit form', 'Offer these terms to a client' in r.text and soup(r).select_one('[name=action][value=service_plans_edit]') is None)
     published = snapshot()
-    r = owner.post(detail, data=dict(old_edit, name=hostile, current_password=OWNER))
+    r = owner.post(detail, data=dict(old_edit, name=hostile))
     check('Concurrent publication preserves unsaved draft text with save disabled', snapshot()==published and soup(r).select_one('[name=name]')['value']==hostile and form_for(r, 'service_plans_edit').select_one('button').has_attr('disabled'))
 
     def offer():
         request = data(owner, detail, 'service_plans_offer')
-        request.update(client_id=str(cid), confirm='1', current_password=OWNER)
+        request.update(client_id=str(cid), confirm='1')
         response = owner.post(detail, data=request)
         record = parse_qs(urlparse(response.url).query)['record'][0]
         check('Offering creates an agreement for the selected current client', record!=plan_id and db('SELECT client_id FROM ci_service_subscriptions WHERE id=?', [record])==[{'client_id': cid}])
         return record, request
 
     request = data(owner, detail, 'service_plans_offer')
-    owner.post(detail, data=dict(request, client_id=str(cid), confirm='1', current_password=OWNER, plan_hash='0'*64))
+    owner.post(detail, data=dict(request, client_id=str(cid), confirm='1', plan_hash='0'*64))
     check('Offer refuses a mismatched reviewed plan hash', snapshot()==published)
     agreement, original_offer = offer()
     offered = snapshot()
@@ -134,11 +136,11 @@ def run_browser(env, browser):
     agreed = snapshot()
     client.post(page_url, data=dict(consent, confirm='1'))
     check('Exact browser consent replay records no second event', snapshot()==agreed)
-    submit(owner, owner_url, 'service_plans_activate', {'confirm': '1', 'current_password': OWNER})
+    submit(owner, owner_url, 'service_plans_activate', {'confirm': '1'})
     check('Owner can activate only the separately agreed service', 'Active agreement' in client.get(page_url).text)
-    submit(owner, owner_url, 'service_plans_pause', {'confirm': '1', 'current_password': OWNER})
+    submit(owner, owner_url, 'service_plans_pause', {'confirm': '1'})
     check('Owner pause is visible to the bound client', 'Paused agreement' in client.get(page_url).text)
-    submit(owner, owner_url, 'service_plans_resume', {'confirm': '1', 'current_password': OWNER})
+    submit(owner, owner_url, 'service_plans_resume', {'confirm': '1'})
     r = submit(client, page_url, 'service_agreements_cancel', {'confirm': '1', 'reason': 'Project completed <end>'})
     check('Client can end with an escaped retained reason and no further action form', 'Ended agreement' in r.text and 'Project completed &lt;end&gt;' in r.text and soup(r).select_one('[name=action][value=service_agreements_cancel]') is None)
     second, _ = offer()
@@ -153,7 +155,7 @@ def run_browser(env, browser):
     r = owner.get(listing+'&support=fixture')
     check('Owner support selector excludes plan administration', r.status_code==403 and 'Reviewed care plan' not in r.text)
     # Enter real attributed support for this client, then prove agreements are excluded.
-    chosen_form(owner, admin+'?view=support', 'support_policy', 'client_id', cid, {'allowed': '1', 'owner_password': OWNER})
+    chosen_form(owner, admin+'?view=support', 'support_policy', 'client_id', cid, {'allowed': '1'})
     support = chosen_form(owner, admin+'?view=support', 'support_start', 'client_id', cid, {})
     sid = parse_qs(urlparse(support.url).query)['support'][0]
     r = owner.get(portal+'?support='+sid+'&agreement='+agreement)
@@ -189,7 +191,7 @@ def run_browser(env, browser):
             r = owner.get(listing)
             check('Missing '+missing+' owner page requires restore without setup action', r.status_code==200 and 'Restore the original database' in r.text and 'Enable service agreements' not in r.text and 'Reviewed care plan' not in r.text)
             csrf = soup(r).select_one('input[name="csrf"]')['value']
-            r = owner.post(listing, data={'action':'service_plans_setup','csrf':csrf,'current_password':OWNER})
+            r = owner.post(listing, data={'action':'service_plans_setup','csrf':csrf})
             check('Missing '+missing+' stale setup cannot recreate agreement history', 'Restore the original database' in r.text and db('SHOW TABLES LIKE "ci_'+missing+'"')==[])
             r = client.get(portal+'?agreement='+agreement)
             check('Missing '+missing+' client route fails closed without private terms', r.status_code==403 and 'Service agreements are unavailable' in r.text and 'Reviewed care plan' not in r.text)

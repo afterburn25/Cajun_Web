@@ -4,12 +4,13 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from cloud_assignment_fixture import age_unprotected_refreshes
+from owner_browser_forms import refuse_owner_action
 from staff_cases import OWNER
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','form_data','submit','provider_server']})
     db('DELETE FROM ci_rate_limits')
-    admin=BASE+'/existing/admin/index.php';url=admin+'?view=provider-settings';portal=BASE+'/existing/portal/index.php';services=portal+'?services=1'
+    admin=BASE+'/existing/admin/index.php';url=admin+'?view=provider-settings&section=cloud';portal=BASE+'/existing/portal/index.php';services=portal+'?services=1'
     owner=requests.Session();submit(owner,admin+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     client=requests.Session();submit(client,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     other=requests.Session();submit(other,portal,'login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
@@ -17,25 +18,35 @@ def run_browser(env,browser):
     provider_server.cloud_servers=[{'id':1401,'name':'cloud-create.synthetic.invalid','location':'dc_location-uk','packageIds':[]}];provider_server.cloud_mode='success';provider_server.write_mode='success'
     profile=db('SELECT id,revision FROM ci_provider_profiles')[0];cid=db('SELECT id FROM ci_studio_clients WHERE email=?',['alice@example.invalid'])[0]['id']
     def post(action,**fields):
-        return owner.post(url,data={'csrf':token(owner.get(url)),'action':action,'profile_id':profile['id'],'revision':str(profile['revision']),'current_password':OWNER,**fields})
+        return owner.post(url,data={'csrf':token(owner.get(url)),'action':action,'profile_id':profile['id'],'revision':str(profile['revision']),**fields})
     age_unprotected_refreshes(7200)
     post('provider_inventory_cloud_refresh')
     refresh=db('SELECT id FROM ci_provider_refreshes WHERE operation="cloudservers.list" ORDER BY seq DESC LIMIT 1')[0]['id']
     post('provider_inventory_cloud_link',server_id='1401',client_id=str(cid),refresh_id=refresh)
-    form=soup(owner.get(url)).select_one('[data-cloud-website-create]')
+    links=db('SELECT id FROM ci_provider_cloud_links WHERE profile_id=? AND server_id=1401',[profile['id']])
+    check('Cloud website creation has one explicit server assignment',len(links)==1)
+    def creation_form(response,action):
+        found=[f for f in soup(response).select('form[data-cloud-website-create]') if f.select_one('[name=action][value="'+action+'"]') is not None
+               and f.select_one('[name=link_id][value="'+links[0]['id']+'"]') is not None]
+        if len(found)!=1:raise AssertionError('Expected one creation form for assigned cloud server 1401')
+        return found[0]
+    create='provider_inventory_cloudsite_create'
+    form=creation_form(owner.get(url),create)
     check('Cloud website form requires a current explicitly linked server',form is not None and '1401' in form.text)
-    fields=form_data(form);fields.update(domain_name='cloud-website.example',extra_domains='www.cloud-website.example',reviewed='1',current_password=OWNER)
+    fields=form_data(form);fields.update(domain_name='cloud-website.example',extra_domains='www.cloud-website.example',reviewed='1')
     original_calls=provider_server.calls;original_links=db('SELECT * FROM ci_provider_package_links ORDER BY id')
-    for label,change in [('CSRF',{'csrf':'bad'}),('password',{'current_password':'wrong'}),('confirmation',{'reviewed':'0'}),('domain',{'domain_name':'bad/name.example'})]:
+    for label,change in [('CSRF',{'csrf':'bad'}),('confirmation',{'reviewed':'0'}),('domain',{'domain_name':'bad/name.example'})]:
         response=owner.post(url,data={**fields,**change})
         check('Cloud website form rejects invalid '+label,provider_server.calls==original_calls and not db('SELECT id FROM ci_provider_operation_grants WHERE operation="cloudsites.create"'))
+    refuse_owner_action({**env,'form_for':creation_form},owner,url,create,{'domain_name':'cloud-website.example','extra_domains':'www.cloud-website.example','reviewed':'1'})
+    check('Cloud website creation requires current owner authority',provider_server.calls==original_calls and not db('SELECT id FROM ci_provider_operation_grants WHERE operation="cloudsites.create"'))
     response=owner.post(url,data=fields)
     check('Cloud website form sends exactly the documented server request',provider_server.calls==original_calls+1 and provider_server.posts[-1]=={'path':'/cloud_server/1401/addWeb','body':{'domain_name':'cloud-website.example','extra_domain_names':['www.cloud-website.example']}})
     ledger=db('SELECT status,external_id FROM ci_provider_operations WHERE operation="cloudsites.create"')
     check('Accepted cloud website remains pending and not silently linked',len(ledger)==1 and ledger[0]['status']=='accepted_pending' and ledger[0]['external_id'] and db('SELECT * FROM ci_provider_package_links ORDER BY id')==original_links and 'Refresh hosting inventory' in response.text)
     owner.post(url,data=fields)
     check('Replaying the original cloud form cannot send twice',provider_server.calls==original_calls+1)
-    duplicate=form_data(soup(owner.get(url)).select_one('[data-cloud-website-create]'));duplicate.update(domain_name='cloud-website.example',reviewed='1',current_password=OWNER)
+    duplicate=form_data(creation_form(owner.get(url),create));duplicate.update(domain_name='cloud-website.example',reviewed='1')
     response=owner.post(url,data=duplicate)
     check('New form cannot recreate a domain with an accepted request',provider_server.calls==original_calls+1 and 'prior request' in response.text)
     own=client.get(services);foreign=other.get(services+'&client_id='+str(cid)+'&server_id=1401')

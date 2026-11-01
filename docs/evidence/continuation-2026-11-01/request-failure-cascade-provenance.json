@@ -1,0 +1,348 @@
+{
+  "standalone_repair_provenance": {
+    "passed": true,
+    "scope": "Reviewed file hashes and exact inverses only; not SQL or browser acceptance",
+    "checks": [
+      {
+        "name": "Exact standalone correction retains predecessor tests/provider_domain_search_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/provider_domain_client_cases.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/twentyi-cloud-assignment/focused-view.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/twentyi-inventory-reader/run.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/organized_update_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/stackcp_legacy_workspace_routes.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/stackcp_access_read_snapshot_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/stackcp_legacy_workspace_routes_contract.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/finance_payoff_retirement_guards.php",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/standalone_repair_provenance.py",
+        "passed": true
+      },
+      {
+        "name": "Exact standalone correction retains predecessor tests/acceptance_artifacts_test.py",
+        "passed": true
+      }
+    ]
+  },
+  "combined_repair_provenance": {
+    "passed": true,
+    "scope": "Exact source identities and predecessor inverses only",
+    "checks": [
+      {
+        "name": "Exact repaired file and predecessor retained tests/current_owner_authority.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/current_owner_authority_contract.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/software_commerce_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/checkout_endpoint.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/service_plans_checkout_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/recurring_billing_checkout_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/consolidation_native.py",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_workspace_render.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_inventory_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_inventory_upgrade_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_cloud_sites_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_mailboxes_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/domain_registration_drafts_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_password_reset_template_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained site/admin/views/providers.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_cloud_assignment_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/provider_catalog_import_native.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/apache_acceptance.py",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/organized_update_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/checkout_authority_contract.php",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tools/acceptance-contract.json",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/combined_repair_provenance.py",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/acceptance_artifacts_test.py",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained tests/combined_runtime_repair.py",
+        "passed": true
+      },
+      {
+        "name": "Exact repaired file and predecessor retained .github/workflows/1261-main-reconcile.yml",
+        "passed": true
+      }
+    ]
+  },
+  "core_browser_fixture_contract": {
+    "passed": true,
+    "scope": "Exact fixture identities and negative receipt checks only; not SQL, HTTP or browser results",
+    "checks": [
+      {
+        "name": "Original bytes reconstructed tests/activity_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/activity_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/activity_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/activity_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/activity_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/attempts_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/attempts_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/attempts_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/attempts_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/attempts_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/catalog_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/catalog_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/catalog_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/catalog_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/catalog_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/delivery_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/delivery_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/delivery_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/delivery_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/delivery_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/ledger_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/ledger_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/ledger_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/ledger_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/ledger_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/notifications_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/notifications_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/notifications_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/notifications_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/notifications_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/payments_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/payments_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/payments_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/payments_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/payments_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/provider_catalog_import_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/provider_catalog_import_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/provider_catalog_import_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/provider_catalog_import_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/provider_catalog_import_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Original bytes reconstructed tests/support_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-output tests/support_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject changed-predecessor tests/support_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject missing-edit tests/support_cases.py",
+        "passed": true
+      },
+      {
+        "name": "Reject wrong-base tests/support_cases.py",
+        "passed": true
+      }
+    ]
+  }
+}

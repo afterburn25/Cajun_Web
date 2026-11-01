@@ -3,6 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import copy,hashlib,json
 from core_browser_fixture_provenance import PATHS,predecessor
+from provider_browser_fixture_provenance import PATHS as provider_paths, predecessor as provider_predecessor
 ROOT=Path(__file__).resolve().parents[1]
 checks=[]
 def check(name,value):
@@ -13,6 +14,7 @@ with TemporaryDirectory(prefix='cwp-core-receipts-') as tmp:
     root=Path(tmp);(root/'docs').mkdir()
     for path in sorted(PATHS):
         current=(ROOT/path).read_bytes()
+        if path in provider_paths:current=provider_predecessor(ROOT,path,current)
         restored=predecessor(ROOT,path,current)
         check('Original bytes reconstructed '+path,hashlib.sha256(restored).hexdigest()==receipt['files'][path]['before_sha256'])
         for case in ('changed-output','changed-predecessor','missing-edit','wrong-base'):

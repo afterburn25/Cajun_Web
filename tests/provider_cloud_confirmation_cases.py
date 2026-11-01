@@ -3,21 +3,23 @@ import time
 from playwright.sync_api import expect
 from release_cases import db
 from cloud_assignment_fixture import age_unprotected_refreshes
-from staff_cases import OWNER
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser, owner, client, other, profile):
     base, qa, check = env['BASE'], env['QA'], env['check']
     soup, token, form_data, provider = (env[k] for k in ['soup', 'token', 'form_data', 'provider_server'])
-    url = base + '/existing/admin/index.php?view=provider-settings'
+    url = base + '/existing/admin/index.php?view=provider-settings&section=cloud'
+    inventory_url = base + '/existing/admin/index.php?view=provider-settings&section=services'
     services = base + '/existing/portal/index.php?services=1'
     request = db('SELECT id FROM ci_provider_operation_grants WHERE operation="cloudsites.create" ORDER BY seq DESC LIMIT 1')[0]['id']
     ledger = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['cloudsite:' + request])[0]
 
     def post(action, **fields):
-        return owner.post(url, data={'csrf': token(owner.get(url)), 'action': action,
+        target = inventory_url if action in ('provider_inventory_refresh', 'provider_inventory_unlink') else url
+        return owner.post(target, data={'csrf': token(owner.get(target)), 'action': action,
                                     'profile_id': profile['id'], 'revision': str(profile['revision']),
-                                    'current_password': OWNER, **fields})
+                                    **fields})
 
     calls = provider.calls
     check('Cloud confirmation preparation form is explicit and read-only', soup(owner.get(url)).select_one('[data-cloud-confirmation-prepare]') is not None and provider.calls == calls)
@@ -28,15 +30,25 @@ def run_browser(env, browser, owner, client, other, profile):
     age_unprotected_refreshes(60, profile['id'])
     time.sleep(1)
     post('provider_inventory_refresh')
-    form = soup(owner.get(url)).select_one('[data-cloud-confirmation]')
+    def confirmation_form(response, action):
+        found = [f for f in soup(response).select('form[data-cloud-confirmation]')
+                 if f.select_one('[name=action][value="' + action + '"]') is not None
+                 and f.select_one('[name=request_id][value="' + request + '"]') is not None]
+        if len(found) != 1:
+            raise AssertionError('Expected one confirmation form for the accepted cloud request')
+        return found[0]
+    confirm = 'provider_inventory_cloud_confirmation_confirm'
+    form = confirmation_form(owner.get(url), confirm)
     check('Fresh hosting read exposes exact allocated package confirmation', form is not None and ('#' + ledger['external_id']) in form.text and 'does not verify current server location' in form.text)
-    fields = form_data(form); fields.update(reviewed='1', current_password=OWNER)
+    fields = form_data(form); fields.update(reviewed='1')
     calls = provider.calls
-    for label, delta in [('CSRF', {'csrf': 'bad'}), ('password', {'current_password': 'wrong'}),
+    for label, delta in [('CSRF', {'csrf': 'bad'}),
                          ('explicit review', {'reviewed': '0'}), ('review fingerprint', {'review': 'a' * 64}),
                          ('refresh identity', {'refresh_id': 'b' * 32})]:
         owner.post(url, data={**fields, **delta})
         check('Cloud confirmation refuses invalid ' + label, not db('SELECT id FROM ci_provider_cloud_confirmations') and provider.calls == calls)
+    refuse_owner_action({**env, 'form_for': confirmation_form}, owner, url, confirm, {'reviewed': '1'})
+    check('Cloud confirmation requires current owner authority', not db('SELECT id FROM ci_provider_cloud_confirmations') and provider.calls == calls)
     response = owner.post(url, data=fields)
     check('Owner confirms exact package and client through actual form', 'Allocated package observed and assigned' in response.text and len(db('SELECT id FROM ci_provider_cloud_confirmations')) == 1)
     check('Confirmation keeps provider acknowledgement immutable without another provider call', db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['cloudsite:' + request])[0] == ledger and provider.calls == calls)

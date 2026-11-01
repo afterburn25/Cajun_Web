@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "scope": "Real action dispatcher with dependency doubles; installed HTTP tests separately prove persisted-state refusal",
+  "checks": [
+    {
+      "name": "studio_license_create retains ordinary authenticated dispatch",
+      "passed": true
+    },
+    {
+      "name": "studio_license_create refused before handler in support",
+      "passed": true
+    },
+    {
+      "name": "studio_domain_add retains ordinary authenticated dispatch",
+      "passed": true
+    },
+    {
+      "name": "studio_domain_add refused before handler in support",
+      "passed": true
+    },
+    {
+      "name": "software_license_lifecycle retains ordinary authenticated dispatch",
+      "passed": true
+    },
+    {
+      "name": "software_license_lifecycle refused before handler in support",
+      "passed": true
+    },
+    {
+      "name": "Array support marker is also refused",
+      "passed": true
+    },
+    {
+      "name": "Resolved support context is refused without query marker",
+      "passed": true
+    },
+    {
+      "name": "CSRF remains the first action check",
+      "passed": true
+    },
+    {
+      "name": "Permission check remains required",
+      "passed": true
+    }
+  ],
+  "failure": null
+}

@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from owner_browser_forms import refuse_owner_action
 from staff_cases import OWNER, STAFF
 
 
@@ -14,7 +15,8 @@ def run_browser(env, browser):
     base, qa, check, provider = (env[k] for k in ('BASE', 'QA', 'check', 'provider_server'))
     soup, token, submit = (env[k] for k in ('soup', 'token', 'submit'))
     admin = base + '/existing/admin/index.php'; portal = base + '/existing/portal/index.php'
-    url = admin + '?view=provider-settings&stackcp_page=1&stackcp_access_page=1'; staff_url = admin + '?view=staff'
+    url = admin + '?view=provider-settings&section=advanced&stackcp_page=1&stackcp_access_page=1'; staff_url = admin + '?view=staff'
+    inventory_url = admin + '?view=provider-settings&section=services'
     package, identity = 2501, 'stack-user:25001'
     secret = 'SYNTHETIC_STACKCP_ACCESS_AUTH_KEY'; prefix = 'provider_inventory_stackcp_access_'
     db('DELETE FROM ci_rate_limits')
@@ -36,14 +38,14 @@ def run_browser(env, browser):
           and baseline['last_login'] is not None and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original['id']]) == [staff])
     email = 'stackcp-access-owner@example.invalid'
     check('StackCP access dedicated owner and package are new', not db('SELECT id FROM ci_users WHERE email=?', [email]) and not db('SELECT id FROM ci_provider_package_links WHERE package_id=?', [package]))
-    response = submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'StackCP access owner', 'email': email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
+    response = submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'StackCP access owner', 'email': email, 'role': 'owner', 'enabled': '1', 'permissions[]': []})
     actors = db('SELECT id FROM ci_users WHERE email=?', [email]); check('StackCP access owner creation succeeds', response.status_code == 200 and len(actors) == 1)
-    actor = actors[0]['id']; invite = chosen_form(setup, staff_url, 'staff_invite', 'id', actor, {'owner_password': OWNER})
+    actor = actors[0]['id']; invite = chosen_form(setup, staff_url, 'staff_invite', 'id', actor, {})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']; code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = requests.Session(); form = activation.get(invitation)
     activated = activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
     check('StackCP access real owner activation succeeds', activated.status_code == 200 and urlparse(activated.url).query == 'view=login' and db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [actor]) == [{'role': 'owner', 'enabled': 1}])
-    setup.close(); activation.close(); owner = requests.Session(); login = submit(owner, admin + '?view=login', 'login', {'email': email, 'password': OWNER})
+    activation.close(); owner = requests.Session(); login = submit(owner, admin + '?view=login', 'login', {'email': email, 'password': OWNER})
     check('StackCP access dedicated owner logs in', login.status_code == 200 and urlparse(login.url).query == 'view=dashboard')
     member = requests.Session(); submit(member, admin + '?view=login', 'login', {'email': 'request-staff@example.invalid', 'password': STAFF})
     client = requests.Session(); submit(client, portal, 'login', {'email': 'alice@example.invalid', 'password': 'Synthetic client passphrase 2026'})
@@ -59,16 +61,28 @@ def run_browser(env, browser):
         diagnostics.append(item); (qa / 'stackcp-access-response-diagnostics.json').write_text(json.dumps(diagnostics, indent=2))
         check('StackCP access ' + label + ' has expected safe response', response.status_code == 200 and item['expected_refusal'] and item['private_values_absent'])
 
+    def action_url(action):
+        return inventory_url if action in ('provider_inventory_refresh', 'provider_inventory_link') else url
+
+    def exact_form(response, action):
+        forms = [f for f in soup(response).select('form') if f.select_one('input[name=action][value="' + action + '"]')]
+        package_action = action in ('provider_inventory_stackcp_assignment_save', prefix + 'membership', prefix + 'grants')
+        found = [f for f in forms if not package_action or f.select_one('input[name=package_id][value="' + str(package) + '"]') is not None]
+        if len(found) != 1:
+            raise AssertionError('Expected one StackCP form for the selected package and action')
+        return found[0]
+
     def form_data(action):
-        response = owner.get(url); forms = [f for f in soup(response).select('form') if f.select_one('input[name=action][value="' + action + '"]')]
-        chosen = next((f for f in forms if not f.select_one('input[name=package_id]') or f.select_one('input[name=package_id]').get('value') == str(package)), None)
-        check('StackCP access real form exists ' + action, response.status_code == 200 and chosen is not None)
+        response = owner.get(action_url(action)); chosen = exact_form(response, action)
+        check('StackCP access real form exists ' + action, response.status_code == 200
+              and not chosen.select('[name=current_password],[name=owner_password]')
+              and bool(chosen.select_one('input[name=csrf][type=hidden]').get('value')))
         return {n['name']: n.get('value', '') for n in chosen.select('input[name]')}
 
     def post(action, **fields):
-        data = form_data(action); data.update({'current_password': OWNER, **fields})
+        data = form_data(action); data.update(fields)
         if 'review_sha256[]' in fields: data.pop('review_sha256', None)
-        return owner.post(url, data=data)
+        return owner.post(action_url(action), data=data)
 
     def cool():
         latest = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
@@ -78,11 +92,11 @@ def run_browser(env, browser):
     response = post('provider_inventory_stackcp_auth_save', auth_client_key=secret); evidence('fresh separate local key', response)
     provider.mode = 'success'; provider.packages += [{'id': package, 'typeRef': 12, 'name': 'stackcp-access.synthetic.invalid', 'names': ['stackcp-access.synthetic.invalid'], 'enabled': True, 'created': '2000-01-01T00:00:00Z'}]
     cool(); response = post('provider_inventory_refresh'); evidence('initial hosting source', response)
-    page = owner.get(url); response = owner.post(url, data={'action': 'provider_inventory_link', 'csrf': token(page), 'profile_id': profile['id'], 'revision': str(profile['revision']), 'package_id': str(package), 'client_id': str(client_id), 'current_password': OWNER})
+    page = owner.get(inventory_url); response = owner.post(inventory_url, data={'action': 'provider_inventory_link', 'csrf': token(page), 'profile_id': profile['id'], 'revision': str(profile['revision']), 'package_id': str(package), 'client_id': str(client_id)})
     evidence('explicit hosting assignment', response); links = db('SELECT * FROM ci_provider_package_links WHERE profile_id=? ORDER BY package_id', [profile['id']])
     own_links = [r for r in links if r['package_id'] == package]; check('StackCP access selected package links to exact client', len(own_links) == 1 and own_links[0]['client_id'] == client_id)
     page_number = [r['package_id'] for r in links].index(package) // 20 + 1
-    url = admin + '?view=provider-settings&stackcp_page=' + str(page_number) + '&stackcp_access_page=' + str(page_number)
+    url = admin + '?view=provider-settings&section=advanced&stackcp_page=' + str(page_number) + '&stackcp_access_page=' + str(page_number)
     response = post('provider_inventory_stackcp_assignment_save', stack_identity=identity, acknowledged='1'); evidence('unverified assignment', response)
     own = '[data-stackcp-access-package="' + str(package) + '"]'
     before = owner.get(url)
@@ -93,10 +107,12 @@ def run_browser(env, browser):
     check('StackCP access excludes delegated and support identities', member.get(url).status_code == 403 and owner.get(url + '&support=fixture').status_code == 403)
     response = post(prefix + 'prepare'); evidence('explicit observation preparation', response)
     cool(); response = post('provider_inventory_refresh'); evidence('hosting source after link', response)
-    for label, fields, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired'), ('password', {'current_password': 'wrong'}, 'current password'), ('confirmation', {'confirmed': '0'}, 'Confirm this explicit access observation'), ('array review', {'review_sha256[]': 'bad'}, 'length and format')]:
+    for label, fields, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired'), ('confirmation', {'confirmed': '0'}, 'Confirm this explicit access observation'), ('array review', {'review_sha256[]': 'bad'}, 'length and format')]:
         response = post(prefix + 'membership', confirmed='1', **fields) if 'confirmed' not in fields else post(prefix + 'membership', **fields)
         evidence('invalid ' + label, response, refusal)
         check('StackCP access invalid form creates no read ' + label, not db('SELECT id FROM ci_provider_stackcp_reads') and provider.calls == start_calls + 2)
+    refuse_owner_action({**env, 'form_for': exact_form}, setup, url, prefix + 'membership', {'confirmed': '1'})
+    check('StackCP access observation requires current owner authority', not db('SELECT id FROM ci_provider_stackcp_reads') and provider.calls == start_calls + 2)
 
     def capture(title):
         context = browser.new_context(); context.add_cookies([{'name': c.name, 'value': c.value, 'domain': c.domain, 'path': c.path} for c in owner.cookies]); page = context.new_page(); errors = []
@@ -122,7 +138,7 @@ def run_browser(env, browser):
     section = soup(owner.get(url)).select_one(own); check('StackCP access empty is saved without implied permission or grant form', 'An empty response was saved; access is not verified' in section.text and not section.select('input[name=action][value="' + prefix + 'grants"]'))
     capture('StackCP-Access-Empty'); calls = provider.calls
     response = post('provider_inventory_stackcp_auth_disable'); evidence('local auth disable', response)
-    page = owner.get(url); captured.update({'csrf': token(page), 'current_password': OWNER, 'confirmed': '1'})
+    page = owner.get(url); captured.update({'csrf': token(page), 'confirmed': '1'})
     response = owner.post(url, data=captured); evidence('captured current authority refusal', response, 'Review a current protected StackCP assignment first.')
     current = owner.get(url); section = soup(current).select_one(own)
     check('StackCP access local revocation disables forms without remote session claim', current.status_code == 200 and 'A current local assignment' in section.text and not section.select('form') and provider.calls == calls)
@@ -138,4 +154,4 @@ def run_browser(env, browser):
     check('StackCP access uses six own reads with exact terminal sequence and no writes', reads == [{'operation': v} for v in ['packages.list', 'packages.list', 'stackcp.membership', 'stackcp.grants', 'stackcp.grants', 'stackcp.membership']] and outcomes == [{'state': v} for v in ['complete', 'complete', 'complete', 'complete', 'unavailable', 'complete']] and provider.calls == start_calls + 6 and provider.posts == start_posts and not provider.errors)
     check('StackCP access preserves inherited rows original actor and profile', all(retained.values()) and db('SELECT * FROM ci_provider_profiles WHERE id=?', [profile['id']]) == [profile] and db('SELECT * FROM ci_users WHERE id=?', [original['id']]) == [baseline] and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original['id']]) == [staff])
     (qa / 'stackcp-access-history-preservation.json').write_text(json.dumps({'actor_id': actor, 'retained': retained, 'inherited_sha256': {k: hashlib.sha256(json.dumps(v, sort_keys=True, separators=(',', ':')).encode()).hexdigest() for k, v in inherited.items()}, 'reads': reads, 'outcomes': outcomes}, indent=2))
-    owner.close(); member.close(); client.close()
+    owner.close(); member.close(); client.close(); setup.close()

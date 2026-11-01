@@ -1,0 +1,210 @@
+{
+    "passed": false,
+    "scope": "Actual extracted migration fixture helpers and real PDO failures on an isolated synthetic loopback database prefix. No application migration, preserved failing tables, browser, provider or engine-repair claim.",
+    "source_sha256": "b66b957270b95a3b32d7aee63660166ae18d67e0ad250b5f245406c7ca72a038",
+    "helper_sha256": {
+        "pu_ok": "c00ef9fa74531da6b6d0613e82f58be359f85aced090fce8156e39192f8efc7a",
+        "pu_audit_failure": "0f959b074ca394d0954d39f5933d847346e8996a283eef42847ae17f95e4e1b1"
+    },
+    "php": "8.3.6",
+    "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "synthetic_prefix": "puaf_1d905bf4efef_",
+    "count": 25,
+    "checks": [
+        {
+            "name": "Unique synthetic prefix has no existing tables or trigger",
+            "passed": true
+        },
+        {
+            "name": "Exact injected audit failure: helper finally removes its injected trigger",
+            "passed": true
+        },
+        {
+            "name": "Injected trigger produces the actual expected PDO error tuple",
+            "passed": true
+        },
+        {
+            "name": "Exact injected audit failure is accepted by the actual helper",
+            "passed": true
+        },
+        {
+            "name": "Exact injected failure retains the original successful assertion",
+            "passed": true
+        },
+        {
+            "name": "Missing table: helper finally removes its injected trigger",
+            "passed": true
+        },
+        {
+            "name": "Missing table: real PDO reports the intended unrelated error",
+            "passed": true
+        },
+        {
+            "name": "Missing table: identical PDO exception escapes the actual helper",
+            "passed": false
+        },
+        {
+            "name": "Missing table: unrelated failure never records audit-failure success",
+            "passed": false
+        },
+        {
+            "name": "Different SQLSTATE: helper finally removes its injected trigger",
+            "passed": true
+        },
+        {
+            "name": "Different SQLSTATE: real PDO reports the intended unrelated error",
+            "passed": true
+        },
+        {
+            "name": "Different SQLSTATE: identical PDO exception escapes the actual helper",
+            "passed": false
+        },
+        {
+            "name": "Different SQLSTATE: unrelated failure never records audit-failure success",
+            "passed": false
+        },
+        {
+            "name": "Different driver error: helper finally removes its injected trigger",
+            "passed": true
+        },
+        {
+            "name": "Different driver error: real PDO reports the intended unrelated error",
+            "passed": true
+        },
+        {
+            "name": "Different driver error: identical PDO exception escapes the actual helper",
+            "passed": false
+        },
+        {
+            "name": "Different driver error: unrelated failure never records audit-failure success",
+            "passed": false
+        },
+        {
+            "name": "Different error message: helper finally removes its injected trigger",
+            "passed": true
+        },
+        {
+            "name": "Different error message: real PDO reports the intended unrelated error",
+            "passed": true
+        },
+        {
+            "name": "Different error message: identical PDO exception escapes the actual helper",
+            "passed": false
+        },
+        {
+            "name": "Different error message: unrelated failure never records audit-failure success",
+            "passed": false
+        },
+        {
+            "name": "Successful callback without injected error: helper finally removes its injected trigger",
+            "passed": true
+        },
+        {
+            "name": "Missing injected error retains the original failing assertion",
+            "passed": true
+        },
+        {
+            "name": "Missing injected error still fails through the actual assertion helper",
+            "passed": true
+        },
+        {
+            "name": "Diagnostic removes only its own synthetic table and trigger",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "name": "Exact injected audit failure",
+            "pdo_error_info": [
+                "45000",
+                1644,
+                "Synthetic migration audit failure"
+            ],
+            "surfaced_type": null,
+            "same_exception": false,
+            "helper_assertions": [
+                {
+                    "name": "Migration audit failure is surfaced from v3",
+                    "passed": true
+                }
+            ]
+        },
+        {
+            "name": "Missing table",
+            "pdo_error_info": [
+                "42S02",
+                1146,
+                "Table 'cwp_test.puaf_1d905bf4efef_missing' doesn't exist"
+            ],
+            "surfaced_type": null,
+            "same_exception": false,
+            "helper_assertions": [
+                {
+                    "name": "Migration audit failure is surfaced from v3",
+                    "passed": true
+                }
+            ]
+        },
+        {
+            "name": "Different SQLSTATE",
+            "pdo_error_info": [
+                "45001",
+                1644,
+                "Synthetic migration audit failure"
+            ],
+            "surfaced_type": null,
+            "same_exception": false,
+            "helper_assertions": [
+                {
+                    "name": "Migration audit failure is surfaced from v3",
+                    "passed": true
+                }
+            ]
+        },
+        {
+            "name": "Different driver error",
+            "pdo_error_info": [
+                "45000",
+                1645,
+                "Synthetic migration audit failure"
+            ],
+            "surfaced_type": null,
+            "same_exception": false,
+            "helper_assertions": [
+                {
+                    "name": "Migration audit failure is surfaced from v3",
+                    "passed": true
+                }
+            ]
+        },
+        {
+            "name": "Different error message",
+            "pdo_error_info": [
+                "45000",
+                1644,
+                "Unrelated synthetic SQL failure"
+            ],
+            "surfaced_type": null,
+            "same_exception": false,
+            "helper_assertions": [
+                {
+                    "name": "Migration audit failure is surfaced from v3",
+                    "passed": true
+                }
+            ]
+        },
+        {
+            "name": "Successful callback without injected error",
+            "pdo_error_info": null,
+            "surfaced_type": "RuntimeException",
+            "same_exception": false,
+            "helper_assertions": [
+                {
+                    "name": "Migration audit failure is surfaced from v3",
+                    "passed": false
+                }
+            ]
+        }
+    ],
+    "errors": []
+}

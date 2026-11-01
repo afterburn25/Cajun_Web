@@ -1,3 +1,15 @@
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Keep PR #317's reviewed acceptance correction pending publication and complete acceptance. Local database recovery adds no completed product requirement: two resumed commands passed, while the full browser journey remains pending. The separate Account/Notifications correction passes 54/54 checks in its isolated PHP 8.3/MariaDB/Chromium run; hosted matrix, review and combination remain gates. No implemented/tested/integrated/released status is promoted from the interrupted primary run. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — acceptance of the combined owner-requested increment
+
+Continue the mature PR317 integration before starting another feature. The current work repairs acceptance for the already-implemented admin session flow, organized 20i workspaces and combined licensing/hosting/support behavior. It adds no newly completed product requirement and changes no published/live status. Full combined acceptance, required review, normal main integration, exact-main verification and immutable release/download checks remain distinct gates. [Current continuation](CONTINUATION_2026_11_01.md).
+
 ## 2026-10-26 — development-check superseding concurrency
 
 PR267 `devin/ci-concurrency-hygiene`: 32 development-check workflows regrouped from per-`github.sha` concurrency groups (which made `cancel-in-progress` a no-op and produced the ~1000-run backlog) to per-PR/per-branch groups with `main`-exempt cancellation; `mail-receiving`/`mail-transport` gained the same block. Release certification, acceptance and diagnostic workflows remain non-canceling. `tools/ci_health.py`, a weekly `ci-health` snapshot and `docs/CI_HEALTH.md` document queue diagnosis. Live evidence: two consecutive pushes each canceled 31 superseded queued runs while protected acceptance stayed queued. This scheduling correction completes no product feature and does not run or replace any acceptance gate; merge follows the normal green-check process.

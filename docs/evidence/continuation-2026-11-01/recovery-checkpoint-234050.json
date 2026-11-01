@@ -1,0 +1,120 @@
+{
+  "checkpoint_observed_at_utc": "2026-11-01T23:40:50Z",
+  "records_copied_at_utc": "2026-11-01T23:43:01Z",
+  "frozen_runtime_source": "5b4785284f1e937e2985a58f465c4d616dcb9116",
+  "reviewed_local_correction": "77cdbc92880c5f24c4942008fd5a8f4e67c4221b",
+  "preceding_local_documentation": "be75116ef1d3ff8b0a08a51e93c39b7ec5d97d8a",
+  "github_blob_write": {
+    "reported_by": "primary agent, successful create_blob response",
+    "path": "tests/provider_inventory_audit_failure_diagnostics.php",
+    "returned_blob_sha": "669e4a8f82ac831423479bc9cbfdc669a0071cb4",
+    "matches_reviewed_local_blob": true,
+    "branch_ref_updated": false,
+    "earlier_bulk_failure_cause": "unknown"
+  },
+  "host_process_observation": {
+    "runner_pid": 47660,
+    "active_php_pid": 48645,
+    "owner": "nobody",
+    "running_at_observation": true
+  },
+  "restored_segment_observed": {
+    "started_at_utc": "2026-11-01T23:34:35Z",
+    "command_count": 22,
+    "passed_commands": [
+      "tests/stackcp_access_native.php",
+      "tests/stackcp_read_snapshot_native.php"
+    ],
+    "passed_report_checks": [
+      103,
+      49
+    ],
+    "running_command": "tests/stackcp_access_read_snapshot_native.php",
+    "full_browser_started": false
+  },
+  "account_notification_lane": {
+    "branch": "chatgpt/account-notifications-combined-20261101",
+    "base_source": "fc14b84170407a0c30616fd278bab79a20657a24",
+    "tested_source_label": "fc14b84170407a0c30616fd278bab79a20657a24+uncommitted-fixture",
+    "corrected_browser_sha256": "aad7737422c97a95b59354987b76843cfe755e472b9169aa742587e6357c7367",
+    "passed_checks": 54,
+    "total_checks": 54,
+    "evidence_location_in_separate_lane": "docs/evidence/account-notifications-2026-11-01/corrected/browser-results.json",
+    "review_location_in_separate_lane": "docs/ACCOUNT_NOTIFICATION_SETUP_FIXTURE_20261101.md",
+    "scope": "Actual isolated PHP 8.3.6, MariaDB 10.11.14 and Chromium browser; not the hosted matrix or primary full acceptance",
+    "merged_into_primary": false
+  },
+  "sanitization": "Absolute private runtime and database directories replaced with descriptive placeholders; no SQL dumps, database files, keys or credentials copied.",
+  "records": [
+    {
+      "source_record": "continuation-native-suffix-interrupted-original.json",
+      "retained_record": "native-suffix-stale-original.json",
+      "original_sha256": "4674829e173a9571828f7d6a2cb51e2866fa8a09b0eb8f9a935ff720e0e381c4",
+      "retained_sha256": "4674829e173a9571828f7d6a2cb51e2866fa8a09b0eb8f9a935ff720e0e381c4",
+      "source_mtime_utc": "2026-11-01T23:30:31Z"
+    },
+    {
+      "source_record": "continuation-local-resumed-execution.json",
+      "retained_record": "native-suffix-interrupted.json",
+      "original_sha256": "1fbc3c28423fd562824175374df3e2faa773af9fc2f87d7e006dc5ab5d5f9e49",
+      "retained_sha256": "1fbc3c28423fd562824175374df3e2faa773af9fc2f87d7e006dc5ab5d5f9e49",
+      "source_mtime_utc": "2026-11-01T23:30:31Z"
+    },
+    {
+      "source_record": "runtime-interruption-recovery.json",
+      "retained_record": "local-runtime-interruption-recovery.json",
+      "original_sha256": "89b1a5b9cd69c0930a32bb676113708e235403ee1f5b2973e2a98b7a226f185b",
+      "retained_sha256": "df38dbc8960b8fcb9af63c01a764df1c7873c0d8bd98dff7fd504570fac39aba",
+      "source_mtime_utc": "2026-11-01T23:30:31Z"
+    },
+    {
+      "source_record": "continuation-local-final-segment.json",
+      "retained_record": "stackcp-recovery-failed-execution.json",
+      "original_sha256": "d26ede59788b621bf8a9a391fa7aaf609e063c82630e051a236595a31b9d5e9e",
+      "retained_sha256": "d26ede59788b621bf8a9a391fa7aaf609e063c82630e051a236595a31b9d5e9e",
+      "source_mtime_utc": "2026-11-01T23:31:37Z"
+    },
+    {
+      "source_record": "stackcp-access-native-before-clean-recovery.json",
+      "retained_record": "stackcp-access-native-before-clean-recovery.json",
+      "original_sha256": "357a1f7c0e5ccfa09736077be863f8fb66f08ba133801b0a7fbd4084ceab1d07",
+      "retained_sha256": "9b1d8524dd1bcc6e66ba7a8968c0c863b88a1cab71ce3cf64a4960517752502f",
+      "source_mtime_utc": "2026-11-01T23:34:35Z"
+    },
+    {
+      "source_record": "cwp-fresh-database-recovery.json",
+      "retained_record": "local-database-logical-recovery.json",
+      "original_sha256": "f4a4b40951eefd3084b405fad5ac665cebeb001129fecaae9dbe14e0ea0ebfb8",
+      "retained_sha256": "8487966eecada8d130bc6503cdcb2378c7f393e89eb767a97404fe32bbed4a49",
+      "source_mtime_utc": "2026-11-01T23:33:50Z"
+    },
+    {
+      "source_record": "continuation-local-restored-segment.json",
+      "retained_record": "restored-segment-checkpoint.json",
+      "original_sha256": "f17178e1b75639a5ec9cca7ba139744e78a2d325a0081ffb3227fae4a1f3a268",
+      "retained_sha256": "f17178e1b75639a5ec9cca7ba139744e78a2d325a0081ffb3227fae4a1f3a268",
+      "source_mtime_utc": "2026-11-01T23:42:53Z"
+    },
+    {
+      "source_record": "stackcp-access-native-results.json",
+      "retained_record": "stackcp-access-native-restored.json",
+      "original_sha256": "934fbf5ef2ec2b4a7e9a48235f1617c93aa30533d70c9b523ea1d522998a5963",
+      "retained_sha256": "c7f73da1bee261ee53f9ab3cd239add5ec63a5ae6bb7b4c1162c808a4ee351ab",
+      "source_mtime_utc": "2026-11-01T23:38:00Z"
+    },
+    {
+      "source_record": "stackcp-read-snapshot-native-results.json",
+      "retained_record": "stackcp-read-snapshot-native-restored.json",
+      "original_sha256": "e2229244f5118986edcf7757e593261457eb97c53b5b1d43e6eddbce695b8b96",
+      "retained_sha256": "f9eea8463a498c1080bed475097a9fea79cff66e4341da234a60f5720820033d",
+      "source_mtime_utc": "2026-11-01T23:39:17Z"
+    }
+  ],
+  "acceptance_limits": {
+    "original_full_native_passed": false,
+    "full_browser_passed": false,
+    "clean_current_source_hosted_acceptance": false,
+    "main_integrated": false,
+    "new_release_published": false
+  }
+}

@@ -1,3 +1,15 @@
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Latest observed publication remains v1.25.0. Reviewed local source `77cdbc92`, preceding docs `be75116e` and this recovery checkpoint await candidate publication; one successful GitHub blob write is not a release or branch integration. Segmented native passes on frozen `5b478528` and the separate Account/Notifications 54/54 local result do not replace clean current-source hosted acceptance, required review, exact-main verification or immutable asset checks. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — candidate acceptance checkpoint
+
+Latest observed published release remains v1.25.0 below. PR317 is the combined development candidate, initially at `366d53b1ed6b367b32664f2b91ee073fc6813544`; the current session changes acceptance fixtures and source contracts, not shipping application bytes. Existing 1.26.1 candidate archives are not promoted by these changes. Full accepted candidate, required review, normal main merge, exact-main verification and fresh immutable asset verification remain required. [Current evidence and remaining gates](CONTINUATION_2026_11_01.md).
+
 ## Verified publication — 1.25.0
 
 [CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.

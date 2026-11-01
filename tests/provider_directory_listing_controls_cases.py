@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, urlparse
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
@@ -15,7 +16,8 @@ def run_browser(env, browser):
     def check(name, passed):
         record_check('Directory controls: ' + name, passed)
     soup, token, submit = (env[k] for k in ['soup', 'token', 'submit'])
-    admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings'
+    admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings&section=website'
+    inventory_url = admin + '?view=provider-settings&section=services'
     portal = base + '/existing/portal/index.php'
     db('DELETE FROM ci_rate_limits')
     # Give this workflow its own real owner budget; retain all prior intent/audit
@@ -43,9 +45,9 @@ def run_browser(env, browser):
           and setup_diagnostics['login']['profile_unchanged'])
     staff_url = admin + '?view=staff'; directory_indexing_email = 'directory-listing-controls-owner@example.invalid'
     check('Directory listing fixture owner starts absent', not db('SELECT id FROM ci_users WHERE email=?', [directory_indexing_email]))
-    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'Directory listing control owner', 'email': directory_indexing_email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
+    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'Directory listing control owner', 'email': directory_indexing_email, 'role': 'owner', 'enabled': '1', 'permissions[]': []})
     directory_indexing_owner = db('SELECT id,password_hash FROM ci_users WHERE email=?', [directory_indexing_email])[0]
-    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', directory_indexing_owner['id'], {'owner_password': OWNER})
+    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', directory_indexing_owner['id'], {})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']; code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = requests.Session(); form = activation.get(invitation)
     activated = activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
@@ -56,7 +58,7 @@ def run_browser(env, browser):
         'original_account_unchanged': db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner],
         'original_profile_unchanged': db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile]}
     (qa / 'directory-listing-controls-setup-diagnostics.json').write_text(json.dumps(setup_diagnostics, indent=2))
-    activation.close(); setup.close()
+    activation.close()
     check('Directory listing fixture activates a distinct authorized owner without changing original authority',
           activated.status_code == 200 and setup_diagnostics['activation']['login_page']
           and directory_indexing_owner['id'] != original_owner['id'] and db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [directory_indexing_owner['id']]) == [{'role': 'owner', 'enabled': 1}]
@@ -80,22 +82,32 @@ def run_browser(env, browser):
     profile = db('SELECT id,revision FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]
     client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']
     prepare = 'provider_directory_indexing_control_prepare'; refresh = 'provider_inventory_directory_indexing_refresh'; share = 'provider_inventory_directory_indexing_share'
+    def refuse(action, match, **fields):
+        def selected_form(response, selected_action):
+            forms = [form for form in soup(response).select('form')
+                     if form.select_one('input[name=action][value="' + selected_action + '"]') is not None
+                     and all(form.select_one('input[name="' + name + '"][value="' + str(value) + '"]') is not None for name, value in match.items())]
+            if len(forms) != 1: raise AssertionError('Capture exactly one directory listing control form for the selected resource')
+            return forms[0]
+        return refuse_owner_action({**env, 'form_for': selected_form, 'check': check}, setup, url, action, fields)
     def post(action, **fields):
-        page = owner.get(url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'current_password': OWNER, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
+        action_url = inventory_url if action in ('provider_inventory_refresh', 'provider_inventory_link') else url
+        page = owner.get(action_url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
         for form in forms:
             if form.select_one('input[name=action][value="' + action + '"]'):
                 link = form.select_one('input[name=link_id]')
                 if not link or link.get('value') == fields.get('link_id'):
                     data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
-        data.update({'current_password': OWNER, **fields})
-        return owner.post(url, data=data)
+        data.update(fields)
+        return owner.post(action_url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
         time.sleep(max(0, int(last or 0) + 31 - time.time()))
     calls, posts = provider.calls, list(provider.posts)
     check('Directory listing control GET never prepares missing storage', prepare in owner.get(url).text and not db('SHOW TABLES LIKE "ci_provider_directory_changes"') and provider.calls == calls)
-    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'})]:
-        post(prepare, **fields)
+    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('revoked owner', {})]:
+        if label == 'revoked owner': refuse(prepare, {})
+        else: post(prepare, **fields)
         check('Directory listing control preparation refuses invalid ' + label, not db('SHOW TABLES LIKE "ci_provider_directory_changes"') and provider.calls == calls)
     response = post(prepare); evidence('Prepare local control storage', response)
     check('Directory listing control preparation is explicit and local', bool(db('SHOW TABLES LIKE "ci_provider_directory_changes"')) and provider.calls == calls)
@@ -113,8 +125,9 @@ def run_browser(env, browser):
     post(share, link_id=link['id'], sharing='enable')
     check('Control client sharing starts separately with reported disabled', 'Reported disabled' in client.get(target).text)
     action = 'provider_directory_indexing_control_change'; calls = provider.calls
-    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'}), ('confirmation', {'reviewed': '0'}), ('desired type', {'desired': '1'}), ('binding', {'binding_sha256': 'a' * 64})]:
-        post(action, link_id=link['id'], reviewed='1', **fields) if label != 'confirmation' else post(action, link_id=link['id'], **fields)
+    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('revoked owner', {}), ('confirmation', {'reviewed': '0'}), ('desired type', {'desired': '1'}), ('binding', {'binding_sha256': 'a' * 64})]:
+        if label == 'revoked owner': refuse(action, {'link_id': link['id']}, reviewed='1')
+        else: post(action, link_id=link['id'], reviewed='1', **fields) if label != 'confirmation' else post(action, link_id=link['id'], **fields)
         check('Directory listing control refuses invalid ' + label + ' before dispatch', provider.calls == calls and not db('SELECT * FROM ci_provider_directory_changes'))
     provider.write_mode = 'success'; response = post(action, link_id=link['id'], reviewed='1'); evidence('Requested flag change with unverified HTTP 200', response)
     request = db('SELECT * FROM ci_provider_directory_changes WHERE link_id=?', [link['id']])[0]
@@ -193,19 +206,24 @@ def run_browser(env, browser):
     recovery_count = db('SELECT * FROM ci_settings WHERE name=?', ['provider_directory_indexing_control_terminal_count'])
     recovery_page = owner.get(url)
     recovery_form = soup(recovery_page).select_one('[data-directory-listing-control-recover]')
-    check('Recovery GET offers only a local password-reviewed restore without repairing evidence',
+    check('Recovery GET offers only a local owner-reviewed restore without repairing evidence',
           recovery_form is not None and 'Restore saved request history' in recovery_page.text
           and provider.calls == calls and db('SELECT * FROM ci_provider_directory_dispatch_ends ORDER BY id') == terminals
           and db('SELECT * FROM ci_audit ORDER BY id') == recovery_audits)
     recovery_fields = {n['name']: n.get('value', '') for n in recovery_form.select('input[name]')}
-    recovery_fields.update(current_password=OWNER, reviewed='1')
+    recovery_fields.update(reviewed='1')
     for label, changed, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),
-                                    ('password', {'current_password': 'wrong'}, 'Your current password is not correct.'),
+                                    ('revoked owner', {}, None),
                                     ('confirmation', {'reviewed': '0'}, 'Review restoring this request’s saved history first.'),
                                     ('review hash', {'ledger_sha256': 'f' * 64}, 'The reviewed dispatch completion changed. Reload its history.')]:
-        response = owner.post(url, data={**recovery_fields, **changed})
+        if label == 'revoked owner':
+            response = refuse(recovery_action, {'request_id': interrupted['id']}, reviewed='1')
+            refused = response.status_code == 403 or (response.status_code == 200 and 'Your account does not have access to this action.' in response.text)
+        else:
+            response = owner.post(url, data={**recovery_fields, **changed})
+            refused = response.status_code == 200 and refusal in [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]
         check('Recovery HTTP refuses invalid ' + label + ' without a read write or local repair',
-              response.status_code == 200 and refusal in [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]
+              refused
               and provider.calls == calls and db('SELECT * FROM ci_provider_directory_dispatch_ends ORDER BY id') == terminals
               and db('SELECT * FROM ci_settings WHERE name=?', ['provider_directory_indexing_control_terminal_count']) == recovery_count)
     check('Client does not receive owner recovery metadata or action', recovery_action not in client.get(target).text
@@ -266,4 +284,4 @@ def run_browser(env, browser):
         check('Directory controls preserve exact prior evidence in ' + name, unchanged)
         isolation[name] = {'prior_count': len(original), 'unchanged': unchanged, 'before_sha256': hashlib.sha256(json.dumps(original, sort_keys=True).encode()).hexdigest(), 'retained_sha256': hashlib.sha256(json.dumps([current.get(r['id']) for r in original], sort_keys=True).encode()).hexdigest()}
     (qa / 'directory-listing-controls-isolation.json').write_text(json.dumps(isolation, indent=2))
-    owner.close(); member.close(); client.close()
+    setup.close(); owner.close(); member.close(); client.close()
