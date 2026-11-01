@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "base": "cb2838df5336c0acca8274ce65c3cb614b8d4195",
+  "ticket_source": "9b1d45b1a830fcce287c93227e011c93df15aaaf",
+  "shipping": {
+    "foundation/access/PermissionPolicy.php": {
+      "before": "800b44f481271b467bef5f2719aeba5608cc6fc6da57e90fd415de967fa58632",
+      "after": "a4da6d803ca930726742b991b00f746f473227dec7e045ca85be146f0d9b7e3c"
+    },
+    "foundation/desk/ApprovalRequest.php": {
+      "before": null,
+      "after": "b69b47393da5b7ab566e64f3d344a987c037dd75728eecc9e311081ec4597d71"
+    },
+    "foundation/desk/FulfillmentJob.php": {
+      "before": null,
+      "after": "043ff65675a4ae83da77646de8d58b1a288cba3ff9f120ab7e12e6b0b0300cb4"
+    },
+    "foundation/desk/SupportTicket.php": {
+      "before": null,
+      "after": "ce1926ea0af48f48b96b9cc70e431e04230d0d5887f640a6e202c08ca4d84818"
+    },
+    "foundation/desk/TicketMessage.php": {
+      "before": null,
+      "after": "6b233d5913e22ef9a9f478ab299cb013280764e1ff7d98c0fc3cf5f49ff540cf"
+    },
+    "foundation/desk/TraceLink.php": {
+      "before": null,
+      "after": "33a6677ef2fc24cf9d7433b0d29047d4639f34a9c6226858ae39a2c732ed038b"
+    },
+    "site/admin/controllers/actions.php": {
+      "before": "cff616fbefd3a2e050e6afa580ee7a59bdf86a2c77a8baf7093e78f72f7e738a",
+      "after": "a843d78bdad8018ab3afd4041b0b385519ed3eb986930cf117946f72b057abc8"
+    },
+    "site/admin/controllers/router.php": {
+      "before": "313077ebf0e29e9dfc6eff7f3485bf590c38d7309cee2b00baac70336c92fbb8",
+      "after": "c0f733638c485cdc947e1cd5746f0e195b9c6df483c3dcf247971e1d1a57547a"
+    },
+    "site/admin/controllers/tickets.php": {
+      "before": null,
+      "after": "8c1918824c4c78f1c53d110d1c53ba877525540daa85b50867df1c4af733f601"
+    },
+    "site/admin/views/tickets.php": {
+      "before": null,
+      "after": "9b02f92dff6fa751600221117f66efdc5c2b72bad4fccf301dfbd88fe36a3901"
+    },
+    "site/api/handlers/activity.php": {
+      "before": "d06746037aecd445fb81e3c8ab6e9bb12501f35da24c7b08c8329c19a0b5e56e",
+      "after": "9c942e409fbd33c0734245ca3e8caec3d2538afdaae635f1341a62a3a3e5eca4"
+    },
+    "site/app/staff/accounts.php": {
+      "before": "e20a53282c9f0997433d2db94a87a373d9fc8f7770f6777170bd6bb155e96ed1",
+      "after": "fdb9d77f4870891676bc69826af22353d37ec9faf736fe80a2e33fadbc6dfedd"
+    },
+    "site/app/support/ticket_choices.php": {
+      "before": null,
+      "after": "1a4cebe59c8e5c74ae7e7997fab32c81d672db5eca0c35e7e34d3467063d5322"
+    },
+    "site/app/support/ticket_documents.php": {
+      "before": null,
+      "after": "9af4cee990c6a3809cb5b4497978c74bcfed26dca5603e396cd6a2699f6f7e7f"
+    },
+    "site/app/support/ticket_forms.php": {
+      "before": null,
+      "after": "920ee5038cccf1bd486fbc6b29b5638d5c84b45bccefc8bd9915ad6de1e422a1"
+    },
+    "site/app/support/ticket_notifications.php": {
+      "before": null,
+      "after": "7f84e346a4a3ad8576de442c20a4167bbfc4259ee6dad6ab7f93e2a92fb74f5e"
+    },
+    "site/app/support/ticket_reads.php": {
+      "before": null,
+      "after": "1c4d1a41fdbaa523e00cb72ce8f9d0a6508a2540a90047decec912b3ee742d90"
+    },
+    "site/app/support/ticket_views.php": {
+      "before": null,
+      "after": "aeae905e28566b7bd87554a65cbe56ac96d93bb791edcbdee8d3766cd02c4435"
+    },
+    "site/app/support/tickets.php": {
+      "before": null,
+      "after": "6da8bedf17e6c140953c75931d36dc29fca738e252b8d1b6b914f5e904f6f377"
+    },
+    "site/assets/css/tickets.css": {
+      "before": null,
+      "after": "bd67fdf732fed0bf08f2b77721713bb3b75e2827bba97910264a2f8401f9e0c1"
+    },
+    "site/database/migrations/support_tickets_migrate.php": {
+      "before": null,
+      "after": "44700df3b93e80fb5e59fc5c5cbe2c29ec3948966e10970f8c04b7e40092ae2c"
+    },
+    "site/database/schema/support_tickets_schema.php": {
+      "before": null,
+      "after": "c05057f23235c72d0b5d465b97e4e5dce7fb3f7e71dd0bd25399a3b307da38ad"
+    },
+    "site/includes/foundation/access/PermissionPolicy.php": {
+      "before": "800b44f481271b467bef5f2719aeba5608cc6fc6da57e90fd415de967fa58632",
+      "after": "a4da6d803ca930726742b991b00f746f473227dec7e045ca85be146f0d9b7e3c"
+    },
+    "site/includes/foundation/desk/ApprovalRequest.php": {
+      "before": null,
+      "after": "b69b47393da5b7ab566e64f3d344a987c037dd75728eecc9e311081ec4597d71"
+    },
+    "site/includes/foundation/desk/FulfillmentJob.php": {
+      "before": null,
+      "after": "043ff65675a4ae83da77646de8d58b1a288cba3ff9f120ab7e12e6b0b0300cb4"
+    },
+    "site/includes/foundation/desk/SupportTicket.php": {
+      "before": null,
+      "after": "ce1926ea0af48f48b96b9cc70e431e04230d0d5887f640a6e202c08ca4d84818"
+    },
+    "site/includes/foundation/desk/TicketMessage.php": {
+      "before": null,
+      "after": "6b233d5913e22ef9a9f478ab299cb013280764e1ff7d98c0fc3cf5f49ff540cf"
+    },
+    "site/includes/foundation/desk/TraceLink.php": {
+      "before": null,
+      "after": "33a6677ef2fc24cf9d7433b0d29047d4639f34a9c6226858ae39a2c732ed038b"
+    },
+    "site/includes/layout/activity.php": {
+      "before": "73c060a3964eaf36640389bc643370bb2bc4c1c6c29553fbcd938801fabeecab",
+      "after": "16203247636fcb17c3f8c073bf0ba6eb1814f895a73d4e39ce51daa0df35b5e0"
+    },
+    "site/includes/layout/admin.php": {
+      "before": "fa8d92fdf5f7cd494c6b95552efb3c3104e4d8a29291e5e015aa3500963a7efa",
+      "after": "ae25c5ac834cf16da548ddd7db34864a5a579415dc338f966f55c657f8870b66"
+    },
+    "site/includes/layout/public.php": {
+      "before": "4a41b36885dd9da1f7da3f66f1d6a4c3936c7fe735e0d16e17d1a96e4562b14f",
+      "after": "87e3039981abc1764e851e10c0817b77bf8a881e4e8302a6c481004e7642f9a7"
+    },
+    "site/includes/layout/ticket_activity.php": {
+      "before": null,
+      "after": "7a918251a9c740d2791c4226b638d3e473c942dd9b42c94569f64db25d6a6149"
+    },
+    "site/includes/layout/tickets.php": {
+      "before": null,
+      "after": "bf12bf2b206e2095a4150c8553c89a89a9043777eea25f3624f4b1a5a9ee6956"
+    },
+    "site/includes/urls.php": {
+      "before": "4e5ed7e8926d8c7d51e55d558ac7ca05cbc628b63e889aa5cb365f655e55e68a",
+      "after": "d11d19a755f9bf9d7dbbdb763d4a49cdf1b739b838e87e3592101b4cbabaa0c0"
+    },
+    "site/install/bootstrap.generated.php": {
+      "before": "16094b1e795da4596bdf12bf5bc144e0d72e98fae1ce349a2ee9d02bf1da770d",
+      "after": "f7504c541b3bc5330cc4dee906bbbb2a4bc4839633aef284cc96a58e96b741ec"
+    },
+    "site/install/inventory.generated.php": {
+      "before": "27289a8898436adaf7692b79d64c096ee6ec328cb4722d2266a1268857bc5c40",
+      "after": "56ebede383e9650512c9d946f43df7d62fc2761a5d21ae2706d76ee2c25469e0"
+    },
+    "site/portal/controllers/actions.php": {
+      "before": "4efbf1a19f532e45a9abbbf6247335570ab57791f5650aa32b9cd1e9457b7f41",
+      "after": "e0c73a3679def7af53916ecbd6a41cccdbb73b1c05bf0897e2f9e755616c7a4e"
+    },
+    "site/portal/controllers/router.php": {
+      "before": "bb0d6c1b7e1eed9818b5999438a8f6f37995194288cff96c9d13798f7d6ad157",
+      "after": "f67d9b8c99ecb53ecd2efd0ff96fa950f3e895e5bddea5994018cd879528f0ed"
+    },
+    "site/portal/controllers/tickets.php": {
+      "before": null,
+      "after": "1ff5e9d69e5602f1e4e81fb61da51d6a12040e33f01adebbc063ada9169bab81"
+    },
+    "site/portal/views/tickets.php": {
+      "before": null,
+      "after": "e7b5553c5504f5153ad22021460ca0700bda930281cb17da904dea1a038802d6"
+    },
+    "site/portal/views/workspace.php": {
+      "before": "e5ad1b8c1f58b3a28e35862b99ead1fb40db3d74be4df6c0bd85757812d9a3f8",
+      "after": "32669a80a78767e539f3e7d06a0e05474722cf237fc2df37ce97c70a4ba50b20"
+    },
+    "tools/build.py": {
+      "before": "2efe0396b8fd62c518dc34dd668a01b795be536677ebe6ee279ad28d4634ee40",
+      "after": "62eeb12834aefe7c8769ba75d73c5f88d74922cf212d0e01ea4b566b0a540cbb"
+    }
+  },
+  "scope": "Support tickets, retained public/private history, current-session setup, current authorized staff/client flows; development source only. No deployment or completed native/browser claim."
+}

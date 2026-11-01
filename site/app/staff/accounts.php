@@ -12,7 +12,7 @@ foreach (['access/AuthorizationVersion','access/AccessContext','access/MailboxGr
 }
 function staff_ready(): bool { return setting('staff_schema_version') === '1'; }
 require_once CWP_CODE_ROOT.'/database/schema/staff_schema.php';
-function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Review and send saved drafts from explicitly assigned email accounts', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
+function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Review and send saved drafts from explicitly assigned email accounts', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.tickets'=>'Client support conversations and private staff notes','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -131,6 +131,8 @@ function staff_reset_token(string $email): ?array {
 }
 function staff_view_permission(string $view): ?string {
     if(in_array($view,['hosting-offers','hosting-purchases'],true))return 'staff.manage';
+    if($view==='activity')return null; // Current project/ticket actors independently authorize the activity controller.
+    if(in_array($view,['tickets','ticket','ticket-new'],true))return 'support.tickets';
     if($view==='registration-drafts')return 'staff.manage';
     if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
     if($view==='studio-licenses')return 'staff.manage';
@@ -155,6 +157,8 @@ function staff_view_permission(string $view): ?string {
 function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'provider_reset_template_'))return 'staff.manage';
     if(str_starts_with($action,'hosting_catalog_'))return 'staff.manage';
+    if($action==='tickets_setup')return 'staff.manage';
+    if(str_starts_with($action,'tickets_'))return 'support.tickets';
     if(str_starts_with($action,'registration_drafts_'))return 'staff.manage';
     if(str_starts_with($action,'software_'))return 'staff.manage';
     if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
@@ -199,5 +203,6 @@ function staff_action_permission(string $action): ?string {
     return 'website.manage';
 }
 function staff_home(array $user): string {
+    if(staff_can('support.tickets',$user)&&!staff_can('website.manage',$user)&&!staff_can('clients.manage',$user))return 'tickets';
     return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('catalog.manage',$user)?'catalog':(staff_can('mail.templates.manage',$user)?'mail-templates':(staff_can('support.login',$user)?'support':((function_exists('mail_accounts_access')&&mail_accounts_access($user))?'mailboxes':'security')))));
 }

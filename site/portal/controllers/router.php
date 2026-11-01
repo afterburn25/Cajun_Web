@@ -12,6 +12,7 @@ if($softwareRequested||$financeRequested){
         fail_page('Invalid software or financing request.',400);
     }
 }
+require_once CWP_CODE_ROOT.'/portal/controllers/tickets.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
@@ -67,6 +68,7 @@ if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403)
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['proposal']))proposals_portal_render($error);
 if(isset($_GET['services']))provider_services_portal_render();
+if(array_key_exists('tickets',$_GET)||array_key_exists('ticket',$_GET)||array_key_exists('ticket_new',$_GET))support_tickets_portal_render($client,$error);
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if($softwareRequested){require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);}
 if($financeRequested){require_once CWP_CODE_ROOT.'/portal/views/financing.php';license_finance_portal_render($client,$_GET['finance'],$error);}
