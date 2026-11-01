@@ -4,7 +4,7 @@ import hashlib
 import json
 PATHS=frozenset('tests/'+name+'_cases.py' for name in (
     'support','catalog','provider_catalog_import','payments','attempts',
-    'notifications','ledger','delivery','activity'))
+    'notifications','ledger','delivery','activity','release'))
 BASE='8ead3459fd458725c32f4a29dc36deefbce085ae'
 def predecessor(root,path,value):
     data=json.loads((root/'docs/CORE_BROWSER_FIXTURE_REPAIRS.json').read_text())
@@ -25,4 +25,4 @@ def predecessor(root,path,value):
 if __name__=='__main__':
     root=Path(__file__).resolve().parents[1]
     for path in sorted(PATHS):predecessor(root,path,(root/path).read_bytes())
-    print('All nine original browser families reconstruct exactly.')
+    print('All ten original browser families reconstruct exactly.')

@@ -92,6 +92,17 @@ try:
    u=urlsplit(req.request.url)
    if u.hostname!='127.0.0.1' or u.port!=8091:outside.append(u.hostname);req.abort()
    else:req.continue_()
+  # Reuse the exact full-release navigation assertion with a separate real owner browser.
+  admin_ctx=browser.new_context(viewport={'width':1440,'height':1050});admin_ctx.route('**/*',route);admin_page=admin_ctx.new_page();admin_page.on('pageerror',lambda e:errors.append(str(e)))
+  admin_page.goto(admin_url+'?view=login');admin_page.get_by_label('Email address',exact=True).fill('owner@example.invalid');admin_page.get_by_label('Password',exact=True).fill('Synthetic owner passphrase 2026')
+  with admin_page.expect_navigation():admin_page.locator('form button').first.click()
+  from owner_navigation_contract import core_admin_destinations
+  check('Actual owner navigation retains named same-origin destinations',core_admin_destinations(admin_page))
+  group=admin_page.locator('[data-admin-navigation] [data-nav-group=hosting]');group.locator('summary').click()
+  check('20i workspace remains visible in expanded Hosting and Domains',group.get_by_role('link',name='20i workspace',exact=True).is_visible())
+  with admin_page.expect_navigation():group.get_by_role('link',name='20i workspace',exact=True).click()
+  check('Actual 20i navigation opens the protected workspace',parse_qs(urlsplit(admin_page.url).query)=={'view':['provider-settings']} and admin_page.locator('[data-provider-hub]').count()==1 and core_admin_destinations(admin_page))
+  admin_page.screenshot(path=str(QA/'Owner-20i-Navigation.png'),full_page=True);admin_ctx.close()
   ctx.route('**/*',route);ctx.add_cookies([{'name':c.name,'value':c.value,'domain':'127.0.0.1','path':c.path} for c in alice.cookies]);page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));resp=page.goto(account)
   check('Account page renders actual customer identity in Chromium',resp.status==200 and page.locator('[data-client-account]').count()==1 and 'alice@example.invalid' in page.locator('body').inner_text())
   check('Password fields have explicit autocomplete and accessible labels',page.get_by_label('Current password',exact=True).get_attribute('autocomplete')=='current-password' and page.get_by_label('New password',exact=True).get_attribute('autocomplete')=='new-password')

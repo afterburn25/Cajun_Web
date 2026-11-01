@@ -260,7 +260,8 @@ def run_browser(env,browser,fixture):
     expect(p.locator('.studio-welcome')).to_be_visible()
     expect(p.locator('.metric-grid[aria-label="Website totals"]')).to_be_visible()
     admin_nav=p.locator('[data-admin-navigation]')
-    check('Grouped owner navigation retains core destinations',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).count()==1 for label in ['Overview','Service catalog','20i connection','Administrators']))
+    from owner_navigation_contract import core_admin_destinations
+    check('Grouped owner navigation retains core destinations',core_admin_destinations(p))
     billing_group=admin_nav.locator('[data-nav-group=billing]')
     billing_group.locator('summary').click()
     expect(billing_group).to_have_attribute('open','')
