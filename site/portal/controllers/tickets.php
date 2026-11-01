@@ -22,7 +22,13 @@ function support_tickets_portal_render(?array $client,string $error):never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     if($client===null)fail_page('Sign in to view support tickets.',403);
     $ctx=support_current();$support=$ctx?$ctx['session']['id']:null;
-    try{support_tickets_locked(fn()=>support_tickets_portal_identity((int)$client['id'],$support));}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;fail_page('Support tickets are unavailable for this session.',403);}
+    try{support_tickets_locked(function()use($client,$support):void {
+        support_tickets_portal_identity((int)$client['id'],$support);
+        if(!array_key_exists('ticket_new',$_GET)&&array_key_exists('ticket',$_GET)){
+            $row=support_tickets_row(support_tickets_form_id($_GET,'ticket'));
+            if((int)$row['client_id']!==(int)$client['id'])throw new RuntimeException('Ticket unavailable.');
+        }
+    });}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;fail_page('Support tickets are unavailable for this session.',403);}
     site_head('Your support conversations','portal');support_banner();echo '<section class="page-hero compact"><div class="container"><span class="eyebrow">YOUR CLIENT WORKSPACE</span><h1>Support <span class="gold-text">conversations</span></h1><div class="ticket-toolbar"><a class="btn outline" href="'.esc(studio_url()).'">All projects</a><a class="btn outline" href="'.esc(studio_url(['tickets'=>1])).'">All tickets</a>';if(!$support)echo '<a class="btn gold" href="'.esc(studio_url(['ticket_new'=>1])).'">Open a conversation</a>';echo '</div></div></section><section class="section"><div class="container">';show_flash();if($error!=='')echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     try{require CWP_CODE_ROOT.'/portal/views/tickets.php';}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo '<div class="notice error" role="alert">'.esc($e->getMessage()).'</div>';}
     echo '</div></section>';site_foot(false);exit;

@@ -145,7 +145,7 @@
     },
     "site/install/inventory.generated.php": {
       "before": "27289a8898436adaf7692b79d64c096ee6ec328cb4722d2266a1268857bc5c40",
-      "after": "03b20f968ece92c3f57995465ccc47984f645993e8ed71a54253e1879a9f8f41"
+      "after": "d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a"
     },
     "site/portal/controllers/actions.php": {
       "before": "4efbf1a19f532e45a9abbbf6247335570ab57791f5650aa32b9cd1e9457b7f41",
@@ -157,7 +157,7 @@
     },
     "site/portal/controllers/tickets.php": {
       "before": null,
-      "after": "bfefa6fd3b4db0f5fef6bcea085af056b5d182bb5a2b5426751381a7676c4b4c"
+      "after": "8092cfdaa8cc0c424db9212c110cca65a7cbb113a8cbf2b6dfe41fbb01a197f6"
     },
     "site/portal/views/tickets.php": {
       "before": null,
@@ -175,6 +175,6 @@
   "scope": "Support tickets, retained public/private history, current-session setup, current authorized staff/client flows; development source only. No deployment or completed native/browser claim.",
   "runtime_corrections": {
     "predecessor": "a96c671a8d5a21ecaa87be33aafc7065c063dccc",
-    "scope": "Explicit ASCII-binary event identity for opening/event notification union; deliberate private 403 before nullable client dereference; strict HTTP denial/status and exact ID regression cases. No database schema, permission or real customer changes."
+    "scope": "Explicit ASCII-binary event identity for opening/event notification union; deliberate private403 before missing-client or foreign-ticket rendering; strict HTTP denial/status and exact ID regressions. No database schema, permission or real customer changes."
   }
 }

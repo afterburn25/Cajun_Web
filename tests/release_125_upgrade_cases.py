@@ -293,7 +293,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     ok('First update retains every original table row column and private file', retained(initial, snapshot()))
     before_get = snapshot(); response = owner.get(settings, timeout=120)
     ok('Upgraded provider GET does not migrate or replace original history', response.status_code == 200 and exact_business(before_get, snapshot()))
-    response = submit(owner, settings, 'provider_inventory_prepare', {'current_password': OWNER})
+    response = submit(owner, settings + '&section=services', 'provider_inventory_prepare', {})
     ok('Explicit owner migrates original inventory', response.status_code == 200 and '20i inventory storage is ready' in response.text)
     marker = hashlib.sha256(json.dumps({'name': 'provider_inventory_schema_version'}, separators=(',', ':')).encode()).hexdigest()
     changed = [('settings', marker, 'value')]

@@ -3016,7 +3016,7 @@ function setup_expected_files(): array { return [
     'portal/controllers/recurring_billing.php'=>'7dd29b09617f490eca60e93137ae33d91d79db981822d9be109e94880a1e6ee3',
     'portal/controllers/router.php'=>'f67d9b8c99ecb53ecd2efd0ff96fa950f3e895e5bddea5994018cd879528f0ed',
     'portal/controllers/service_observations.php'=>'18fc9463d08585d85660d4d1a401c90a3988319b40d9595be326e0250782f18c',
-    'portal/controllers/tickets.php'=>'bfefa6fd3b4db0f5fef6bcea085af056b5d182bb5a2b5426751381a7676c4b4c',
+    'portal/controllers/tickets.php'=>'8092cfdaa8cc0c424db9212c110cca65a7cbb113a8cbf2b6dfe41fbb01a197f6',
     'portal/index.php'=>'2f2c2bdbb10a089c0853ad3b2102f0f9aeef5c9809fcf22e5e5e3f53586521a4',
     'portal/views/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'portal/views/auth.php'=>'6dcc6c059097d6fe9c1c245e168f1fdf2e86a1365b599ed7913b811b5e3443eb',
