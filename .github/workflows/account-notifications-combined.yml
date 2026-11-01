@@ -28,7 +28,10 @@ jobs:
       - name: Reconcile exact frozen feature sources without broad conflict replacement
         run: |
           python3 tools/integration/account_notification_merge.py
+          python3 tools/integration/owner_navigation_fix.py
           mkdir -p qa/account-notification-source
+          python3 tests/core_browser_fixture_contract.py > qa/account-notification-source/core-navigation-provenance.json
+          python3 tests/owner_navigation_contract_test.py > qa/account-notification-source/navigation-helper.json
           php tests/account_security_policy.php > qa/account-notification-source/account-policy.json
           php -n tests/account_security_policy.php > qa/account-notification-source/account-policy-minimal.json
           php tests/admin_session_no_reentry.php > qa/account-notification-source/admin-policy.json
@@ -45,9 +48,13 @@ jobs:
           git config user.email 'integration-review@users.noreply.github.com'
           git add -- site tests docs tools
           if ! git diff --cached --quiet; then
-            tree=$(git write-tree)
-            head=$(git commit-tree "$tree" -p HEAD -p 7d43444cf74ac30fd851b3b2c439606582667ca3 -m 'Integrate tested customer account security with private notification center')
-            git checkout --detach "$head"
+            if git merge-base --is-ancestor 7d43444cf74ac30fd851b3b2c439606582667ca3 HEAD; then
+              git commit -m 'Retain full release navigation assertion with current names and exact targets'
+            else
+              tree=$(git write-tree)
+              head=$(git commit-tree "$tree" -p HEAD -p 7d43444cf74ac30fd851b3b2c439606582667ca3 -m 'Integrate tested customer account security with private notification center')
+              git checkout --detach "$head"
+            fi
           fi
           python3 tests/account_notification_contract.py
           python3 tests/account_integration_contract.py
