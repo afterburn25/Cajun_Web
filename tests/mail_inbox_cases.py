@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit','inbox_server']})
@@ -13,7 +14,7 @@ def run_browser(env,browser):
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     before=inbox_server.connections
     r=submit(owner,library,'mail_inbox_setup',{'csrf':'bad','current_password':OWNER});check('Inbox preparation rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_inbox_schema_version'"))
-    r=submit(owner,library,'mail_inbox_setup',{'current_password':'wrong'});check('Inbox preparation requires current owner password','current password' in r.text and not db("SELECT value FROM ci_settings WHERE name='mail_inbox_schema_version'"))
+    refuse_owner_action(env,owner,library,'mail_inbox_setup',{})
     r=submit(owner,library,'mail_inbox_setup',{'current_password':OWNER});check('Inbox preparation persists without connecting','Inbox request history is ready' in r.text and inbox_server.connections==before)
     fields=form_data(soup(owner.get(new)).select_one('[data-mail-account-editor]'));fields.update(label='Staff inbox fixture',address='synthetic@example.net',imap_host='inbox-fixture.example.net',imap_port='993',imap_encryption='ssl',imap_username='synthetic@example.net',smtp_host='smtp.example.invalid',smtp_port='587',smtp_encryption='starttls',smtp_username='synthetic',imap_password='Synthetic receiving HTTP password',smtp_password='Synthetic outgoing unused password',current_password=OWNER,enabled='1')
     r=owner.post(new,data=fields);aid=parse_qs(urlparse(r.url).query)['account_id'][0];detail=root+'?view=mail-account&account_id='+aid;inbox=root+'?view=mail-inbox&account_id='+aid

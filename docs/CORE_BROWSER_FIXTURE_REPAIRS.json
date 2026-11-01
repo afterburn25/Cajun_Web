@@ -58,7 +58,7 @@
     },
     "tests/attempts_cases.py": {
       "before_sha256": "3f43bf6f031deff2781123d2fb83cc05db72a3a914086183d494e5eb3d5f0fa4",
-      "after_sha256": "ac6981554fee4f9fd4fa447a08672ed12ad3238ce7ba83f04baf1619deb7795a",
+      "after_sha256": "364e216e0502cf1de8e96041873402b0fd713e18c20caf46da0dbb7d0944a116",
       "edits": [
         [
           "from staff_cases import OWNER,STAFF\n",
@@ -67,6 +67,10 @@
         [
           "    r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'wrong','confirm':'1'});check('Trial upgrade refuses wrong owner password','current password' in r.text.lower())",
           "    refuse_owner_action(globals(),up,url+'?view=payment-trials','payments_trial_setup',{'confirm':'1'},installed_root=dest)"
+        ],
+        [
+          "p.locator('#sandbox-token-form [name=owner_password]').fill(OWNER)",
+          "assert_no_owner_reprompt(check,p.locator('#sandbox-token-form'),'Sandbox trial token submission')"
         ]
       ]
     },

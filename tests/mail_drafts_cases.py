@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit','inbox_server','provider_server']})
@@ -14,9 +15,9 @@ def run_browser(env,browser):
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     snapshot=db('SELECT * FROM ci_settings');jobs=db('SELECT * FROM ci_studio_jobs')
     connections=inbox_server.connections;provider_calls=provider_server.calls;capture=(QA/'mail-capture.txt').read_bytes()
-    for changes in [{'csrf':'invalid','current_password':OWNER},{'current_password':'wrong'}]:
-        r=submit(owner,library,'mail_drafts_setup',changes)
-        check('Draft preparation rejects invalid confirmation '+str(list(changes)),not db("SELECT value FROM ci_settings WHERE name='mail_drafts_schema_version'") and ('session expired' in r.text.lower() or 'current password' in r.text))
+    r=submit(owner,library,'mail_drafts_setup',{'csrf':'invalid'})
+    check('Draft preparation rejects invalid CSRF',not db("SELECT value FROM ci_settings WHERE name='mail_drafts_schema_version'") and 'session expired' in r.text.lower())
+    refuse_owner_action(env,owner,library,'mail_drafts_setup',{})
     r=submit(owner,library,'mail_drafts_setup',{'current_password':OWNER})
     check('Owner prepares drafts with all previous settings and projects retained','Local email drafts are ready' in r.text and db('SELECT * FROM ci_studio_jobs')==jobs and all(s in db('SELECT * FROM ci_settings') for s in snapshot))
     member_id=db("SELECT id FROM ci_users WHERE email='request-staff@example.invalid'")[0]['id']

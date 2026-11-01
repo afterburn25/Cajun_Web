@@ -65,7 +65,7 @@ def run_browser(env,browser):
         else:route.continue_()
     p.route('**/admin/index.php?view=payment-trials*',capture)
     for key,value in [('card','4111111111111111'),('month','12'),('year','2030'),('code','123')]:p.locator('#sandbox-'+key).fill(value)
-    p.locator('#sandbox-token-form [name=owner_password]').fill(OWNER);p.locator('#sandbox-token-form [name=confirm]').check();p.locator('#sandbox-send').click();expect(p.get_by_text('Simulated form boundary only')).to_be_visible()
+    assert_no_owner_reprompt(check,p.locator('#sandbox-token-form'),'Sandbox trial token submission');p.locator('#sandbox-token-form [name=confirm]').check();p.locator('#sandbox-send').click();expect(p.get_by_text('Simulated form boundary only')).to_be_visible()
     check('Simulated Accept.js callback submits only token once despite duplicate callback',len(posted)==1 and 'BrowserSyntheticNonce' in posted[0] and '4111111111111111' not in posted[0] and 'cardNumber' not in posted[0] and 'cardCode' not in posted[0])
     check('Sandbox browser ran intercepted provider script without external gateway traffic',len(scripts)==1 and not errors and db('SELECT * FROM ci_payment_attempts')==[])
     p.unroute('**/admin/index.php?view=payment-trials*',capture);response=p.goto(BASE+'/existing/admin/index.php?view=dashboard');check('Ordinary admin page keeps self-only payment CSP','authorize.net' not in response.headers['content-security-policy'])

@@ -4,6 +4,8 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from installed_owner_authority import revoked_owner
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit']})
@@ -18,8 +20,7 @@ def run_browser(env,browser):
         return owner.post(detail,data={'csrf':token(owner.get(detail)),'action':name,'account_id':aid,'revision':'1','current_password':OWNER,**values})
     r=action('mail_accounts_connections_setup',csrf='bad')
     check('Connection-check setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_connections_schema_version'"))
-    r=action('mail_accounts_connections_setup',current_password='wrong')
-    check('Connection-check setup verifies owner password','current password' in r.text.lower())
+    refuse_owner_action(env,owner,detail,'mail_accounts_connections_setup',{})
     r=action('mail_accounts_connections_setup')
     check('Owner prepares checks without connecting','Connection-check history is ready' in r.text and not db('SELECT * FROM ci_mail_connection_checks'))
     check('Unassigned owner sees requirement instead of test button','assign yourself Read access' in r.text and soup(r).select_one('[data-mail-check=imap] button') is None)
@@ -27,8 +28,8 @@ def run_browser(env,browser):
     r=owner.get(detail);check('Owner gets separate incoming and outgoing controls',soup(r).select_one('[data-mail-check=imap] button') is not None and soup(r).select_one('[data-mail-check=smtp] button') is not None and 'reads and sends no messages' in r.text)
     r=action('mail_accounts_check',target='imap',csrf='bad')
     check('Diagnostic action rejects CSRF before intent','session expired' in r.text.lower() and not db('SELECT * FROM ci_mail_connection_checks'))
-    r=action('mail_accounts_check',target='imap',current_password='wrong')
-    check('Diagnostic action rejects wrong password without echoing it','current password' in r.text.lower() and all(f.get('value','')=='' for f in soup(r).select('input[type=password]')) and not db('SELECT * FROM ci_mail_connection_checks'))
+    r=refuse_owner_action(env,owner,detail,'mail_accounts_check',{'target':'imap','account_id':aid,'revision':'1'})
+    check('Revoked diagnostic authority cannot save an attempt or expose credentials',all(f.get('value','')=='' for f in soup(r).select('input[type=password]')) and not db('SELECT * FROM ci_mail_connection_checks'))
     r=action('mail_accounts_check',target='imap',revision='99')
     check('Diagnostic action rejects stale saved settings','account changed' in r.text and not db('SELECT * FROM ci_mail_connection_checks'))
     r=action('mail_accounts_check',target='pop3')
@@ -55,10 +56,14 @@ def run_browser(env,browser):
         check('Mail-check internal HTTP denial '+path,requests.get(BASE+'/existing/'+path).status_code==404)
     context=browser.new_context(viewport={'width':1440,'height':1000});page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(root+'?view=login');page.locator('[name=email]').fill('owner@example.invalid');page.locator('[name=password]').fill(OWNER);page.locator('form button').first.click();page.wait_for_url(root+'?view=dashboard');page.goto(detail)
-    page.locator('[data-mail-check=imap] [name=current_password]').fill('wrong');page.get_by_role('button',name='Test incoming connection').click()
-    expect(page.locator('.notice.error').first).to_contain_text('current password')
-    check('Chromium rejects wrong password and clears it',page.locator('[data-mail-check=imap] [name=current_password]').input_value()=='')
-    page.locator('[data-mail-check=imap] [name=current_password]').fill(OWNER);page.get_by_role('button',name='Test incoming connection').click()
+    assert_no_owner_reprompt(check,page.locator('[data-mail-check=imap]'),'Test incoming connection')
+    with revoked_owner(env['WEB']/'existing',env['php']):
+        with page.expect_navigation(wait_until='domcontentloaded') as refused:
+            page.get_by_role('button',name='Test incoming connection').click()
+        check('Chromium refuses the same owner after diagnostic authority is withdrawn',refused.value is not None and (refused.value.status==403 or (refused.value.status==200 and 'Your account does not have access to this action.' in page.locator('body').inner_text())))
+    page.goto(detail)
+    assert_no_owner_reprompt(check,page.locator('[data-mail-check=imap]'),'Restored owner connection check')
+    page.get_by_role('button',name='Test incoming connection').click()
     expect(page.locator('.notice.error').first).to_contain_text('public server hostname')
     check('Chromium unsupported endpoint leaves synthetic history unchanged',len(db('SELECT * FROM ci_mail_connection_checks WHERE account_id=?',[aid]))==2)
     page.locator('[data-mail-checks]').screenshot(path=str(QA/'Mail-Connection-Checks-Desktop.png'))

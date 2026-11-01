@@ -130,9 +130,13 @@
         [
           "        check('Import fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\\r\\n',b'\\n')).hexdigest()==expected_hash)",
           "        retained=ROOT.joinpath(path).read_bytes().replace(b'\\r\\n',b'\\n')\n        if path in core_browser_paths:\n            retained=core_browser_predecessor(ROOT,path,retained)\n        check('Import fixture source retained '+path,hashlib.sha256(retained).hexdigest()==expected_hash)"
+        ],
+        [
+          "        from core_browser_fixture_provenance import PATHS as core_browser_paths, predecessor as core_browser_predecessor\n",
+          "        from communication_browser_fixture_provenance import PATHS as communication_paths, predecessor as communication_predecessor\n        if path in communication_paths:\n            retained=communication_predecessor(ROOT,path,retained)\n        from core_browser_fixture_provenance import PATHS as core_browser_paths, predecessor as core_browser_predecessor\n"
         ]
       ],
-      "after_sha256": "9454b32f4bb7c81215558f8a00a13e5253dc841be5e57ada65116b3b8eb3708d"
+      "after_sha256": "8cbfe069d9e66cda6b740e16eae56e51df0b7ca52cd941a065a841c283c383d3"
     },
     "tests/combined_runtime_repair.py": {
       "before_sha256": null,

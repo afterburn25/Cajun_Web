@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','form_data','submit','inbox_server']})
@@ -14,9 +15,9 @@ def run_browser(env,browser):
     before=inbox_server.connections
     check('Fresh notice setup is ready with no invented messages',db("SELECT value FROM fresh_settings WHERE name='mail_notices_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_notice_items'))
     check('Existing installation waits for explicit owner notice preparation','must prepare' in owner.get(center).text and owner.get(endpoint).status_code==204)
-    for changes in [{'csrf':'bad','current_password':OWNER},{'current_password':'wrong'}]:
-        r=submit(owner,library,'mail_notices_setup',changes)
-        check('Notice preparation denies invalid confirmation '+str(list(changes)),not db("SELECT value FROM ci_settings WHERE name='mail_notices_schema_version'") and ('session expired' in r.text.lower() or 'current password' in r.text))
+    r=submit(owner,library,'mail_notices_setup',{'csrf':'bad'})
+    check('Notice preparation rejects invalid CSRF',not db("SELECT value FROM ci_settings WHERE name='mail_notices_schema_version'") and 'session expired' in r.text.lower())
+    refuse_owner_action(env,owner,library,'mail_notices_setup',{})
     r=submit(owner,library,'mail_notices_setup',{'current_password':OWNER})
     check('Owner prepares notices without any mailbox connection','Email notice storage is ready' in r.text and inbox_server.connections==before and not db('SELECT * FROM ci_mail_notice_items'))
     aid=db("SELECT id FROM ci_mail_accounts WHERE label='Staff inbox fixture'")[0]['id'];inbox=root+'?view=mail-inbox&account_id='+aid

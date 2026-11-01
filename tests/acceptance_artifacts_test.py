@@ -418,6 +418,9 @@ def run(tmp):
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        from communication_browser_fixture_provenance import PATHS as communication_paths, predecessor as communication_predecessor
+        if path in communication_paths:
+            retained=communication_predecessor(ROOT,path,retained)
         from core_browser_fixture_provenance import PATHS as core_browser_paths, predecessor as core_browser_predecessor
         if path in core_browser_paths:
             retained=core_browser_predecessor(ROOT,path,retained)
