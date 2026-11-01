@@ -25,6 +25,18 @@ def main():
     facts.update({p:{'before':None,'after':v['sha256']} for p,v in data['additions'].items()})
     receipt=(json.dumps(data['communication_receipt'],indent=2)+'\n').encode()
     facts['docs/COMMUNICATION_BROWSER_FIXTURE_REPAIRS.json']={'before':None,'after':sha(receipt)}
+    original_facts={p:dict(v) for p,v in facts.items()}
+    installed='tests/communication_session_installed.py'
+    initial=data['additions'][installed]['content']
+    if sha(initial.encode())!='79ca5c6bf362de1e352111a8cce33c10183b36a9f500e2ae834fbaf2761bfe5e':raise SystemExit('Unreviewed installed fixture')
+    before_login="    before_users=db('SELECT * FROM ci_users ORDER BY id')\n"
+    browser_start="    with sync_playwright() as pw:\n"
+    if initial.count(before_login)!=1 or initial.count(browser_start)!=1:raise SystemExit('Nonunique login-timestamp correction')
+    fixed=initial.replace(before_login,'').replace(browser_start,"    before_users=db('SELECT * FROM ci_users ORDER BY id')  # Initial sign-in legitimately records last_login.\n"+browser_start)
+    if sha(fixed.encode())!='5aa4a57a60867b407d3ef35588e6cd6fe8f651f222e175a4def41cd6caf78ae5':raise SystemExit('Unexpected installed correction')
+    data['additions'][installed]['content']=fixed
+    data['additions'][installed]['sha256']=sha(fixed.encode())
+    facts[installed]['after']=sha(fixed.encode())
     current={}
     for p in facts:
         path=ROOT/p
@@ -32,6 +44,9 @@ def main():
         current[p]=path.read_bytes() if path.exists() else None
     if all(current[p] is not None and sha(current[p])==r['after'] for p,r in facts.items()):
         print('All19 exact corrections already recorded.');return
+    if all(current[p] is not None and sha(current[p])==r['after'] for p,r in original_facts.items()):
+        (ROOT/installed).write_bytes(fixed.encode())
+        print('Corrected only the installed retention baseline after real initial login.');return
     for p,r in facts.items():
         if (sha(current[p]) if current[p] is not None else None)!=r['before']:raise SystemExit('Source drift before mutation: '+p)
     outputs={}
