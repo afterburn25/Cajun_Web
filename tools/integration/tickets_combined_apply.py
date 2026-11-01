@@ -8,6 +8,17 @@ INCOMING='9b1d45b1a830fcce287c93227e011c93df15aaaf'
 DIGEST='95c7fa00218f1e6967a35f4c42753a4a07455d190259604eaf4eaf007879eed7'
 PARTS=['0','1','2a','2b','2c','3']
 def sha(raw):return hashlib.sha256(raw).hexdigest()
+def source_allowed(row):
+    # These two new fixtures intentionally derive from already-tested proposal
+    # helpers. Permit only those exact base/source/target tuples, not arbitrary
+    # cross-path reads. The packed recipe and every input/output hash still bind
+    # the complete contents.
+    derived={
+        'tests/tickets_installed_browser.py':'tests/proposal_binding_browser.py',
+        'tests/tickets_installed_seed.php':'tests/proposal_binding_seed.php',
+    }
+    return (row['source_ref'] in (BASE,INCOMING) and row['source_path']==row['path']) or (
+        row['source_ref']==BASE and derived.get(row['path'])==row['source_path'])
 def main():
     if os.environ.get('GITHUB_REF')!='refs/heads/chatgpt/tickets-combined-20261031':raise SystemExit('Isolated ticket integration branch only')
     packed=b''.join((ROOT/('tools/integration/tickets-source.'+part+'.gzpart')).read_bytes() for part in PARTS)
@@ -30,7 +41,7 @@ def main():
         if 'content' in row:
             output=row['content'].encode('utf-8')
         else:
-            if row['source_ref'] not in (BASE,INCOMING) or row['source_path']!=row['path']:raise SystemExit('Unexpected original source')
+            if not source_allowed(row):raise SystemExit('Unexpected original source: '+row['path'])
             output=subprocess.check_output(['git','show',row['source_ref']+':'+row['source_path']],cwd=ROOT)
             if sha(output)!=row['input']:raise SystemExit('Original source identity differs: '+row['path'])
             limit=len(output)+1
