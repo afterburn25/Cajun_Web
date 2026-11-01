@@ -58,9 +58,13 @@
         [
           "    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value=\"'+str(uid)+'\"]'));invite.locator('[name=owner_password]').fill(OWNER);invite.locator('button').click();expect(p.locator('[data-staff-invite]')).to_be_visible()\n",
           "    invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value=\"'+str(uid)+'\"]'));assert_no_owner_reprompt(check,invite,'Invite staff recovery');invite.locator('button').click();expect(p.locator('[data-staff-invite]')).to_be_visible()\n"
+        ],
+        [
+          "    create={'id':'0','name':'Website staff','email':'website-staff@example.invalid','role':'administrator','enabled':'1','permissions[]':['website.manage'],'owner_password':OWNER}",
+          "    marker=WEB/'existing/.installed.php'\n    check('SQL-seeded browser fixture begins without a fabricated installation marker',not marker.exists())\n    marker.write_bytes(b'<?php exit; ?>synthetic migrated browser fixture')\n    create={'id':'0','name':'Website staff','email':'website-staff@example.invalid','role':'administrator','enabled':'1','permissions[]':['website.manage'],'owner_password':OWNER}"
         ]
       ],
-      "after_sha256": "c658245940b3f0c36bee16f5f8f85fff5300fa5cccde222a7d079959eab7590c"
+      "after_sha256": "570d6d6d49a9b7b9bd693115c4996caedbad2beb112ae5b2784e39f4bffd8071"
     }
   }
 }

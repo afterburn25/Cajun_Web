@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 from payment_upgrade_helpers import prepare_retained_payments
 
 def archive(extra=None):
@@ -50,7 +51,7 @@ def run_browser(env,browser):
     check('Fresh installation enables empty delivery tables',db("SELECT value FROM fresh_settings WHERE name='delivery_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_website_releases')==[])
     admin=requests.Session();root=BASE+'/existing/admin/index.php';url=root+'?view=deliveries';portal=BASE+'/existing/portal/index.php';submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=submit(admin,url,'delivery_setup',{'owner_password':OWNER,'confirm':'1','csrf':'invalid'});check('Delivery setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='delivery_schema_version'"))
-    r=submit(admin,url,'delivery_setup',{'owner_password':'wrong','confirm':'1'});check('Delivery setup reauthenticates owner','current password' in r.text.lower())
+    refuse_owner_action(globals(),admin,url,'delivery_setup',{'confirm':'1'})
     r=submit(admin,url,'delivery_setup',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables deliveries','Website deliveries enabled' in r.text)
     check('Project links to website deliveries',url+'&job_id=1' in [a.get('href') for a in soup(admin.get(root+'?view=studio-job&id=1')).select('a')])
     check('Anonymous admin delivery view requires sign-in','Prepare a private draft' not in requests.get(url).text)
@@ -68,7 +69,9 @@ def run_browser(env,browser):
     check('Authorized staff review downloads exact draft ZIP',member.get(url+'&download_release='+rid).content==archive())
     form=form_data(form_for(admin.get(detail),'delivery_publish'));form.update(owner_password=OWNER,confirm='1',rights='1')
     r=member.post(detail,data=dict(form,csrf=token(member.get(detail))));check('Non-owner forged publication denied',db('SELECT status FROM ci_website_releases WHERE id=?',[rid])==[{'status':'draft'}])
-    for changed in [{'csrf':'bad'},{'owner_password':'wrong'},{'rights':'0'},{'confirm':'0'},{'review_hash':'f'*64}]:
+    refuse_owner_action(globals(),admin,detail,'delivery_publish',{k:v for k,v in form.items() if k not in ('csrf','action','owner_password')})
+    check('Revoked owner cannot publish the private delivery',db('SELECT status FROM ci_website_releases WHERE id=?',[rid])==[{'status':'draft'}])
+    for changed in [{'csrf':'bad'},{'rights':'0'},{'confirm':'0'},{'review_hash':'f'*64}]:
         r=admin.post(detail,data=dict(form,**changed));check('Publication rejects invalid '+next(iter(changed)),db('SELECT status FROM ci_website_releases WHERE id=?',[rid])==[{'status':'draft'}])
     db("CREATE TRIGGER ci_delivery_fail BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action LIKE 'deliveries.%' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic delivery audit failure'; END IF; END")
     try:

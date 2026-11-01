@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
@@ -45,7 +46,7 @@ def run_browser(env,browser):
     root=BASE+'/existing/admin/index.php';url=root+'?view=activity';portal=BASE+'/existing/portal/index.php';center=portal+'?activity=1';endpoint=BASE+'/existing/api/activity.php'
     admin=requests.Session();submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=submit(admin,url,'activity_setup',{'password':OWNER,'csrf':'wrong'});check('Activity setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='activity_schema_version'"))
-    r=submit(admin,url,'activity_setup',{'password':'wrong'});check('Activity setup requires owner password','current password' in r.text.lower())
+    refuse_owner_action(globals(),admin,url,'activity_setup',{})
     r=submit(admin,url,'activity_setup',{'password':OWNER});check('HTTP owner enables workspace activity','Workspace activity is enabled' in r.text)
     member=requests.Session();submit(member,root+'?view=login','login',{'email':'request-staff@example.invalid','password':STAFF})
     viewer=requests.Session();submit(viewer,root+'?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})

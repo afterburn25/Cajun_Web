@@ -418,6 +418,9 @@ def run(tmp):
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        from core_browser_fixture_provenance import PATHS as core_browser_paths, predecessor as core_browser_predecessor
+        if path in core_browser_paths:
+            retained=core_browser_predecessor(ROOT,path,retained)
         if path in ('tests/structure_helpers.py','tests/staff_cases.py'):
             from browser_owner_fixture_provenance import predecessor as browser_owner_predecessor
             retained=browser_owner_predecessor(ROOT,path,retained)
@@ -471,7 +474,10 @@ def run(tmp):
     native_commands=[command for command in native_commands if command not in import_commands]
     check('Import additions preserve the exact149 predecessor commands',len(native_commands)==import_contract['predecessor_native_count']==149 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==import_contract['predecessor_native_sha256'])
     for path,expected_hash in import_contract['source_sha256'].items():
-        check('Import fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        retained=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+        if path in core_browser_paths:
+            retained=core_browser_predecessor(ROOT,path,retained)
+        check('Import fixture source retained '+path,hashlib.sha256(retained).hexdigest()==expected_hash)
     access_snapshot=contract['stackcp_access_snapshot_native_command_baseline'];access_snapshot_command='"$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php'
     check('All149 native commands equal the exact current selected-runtime recipe',len(native_commands)==149 and native_commands==[command for command in contract['native_commands'] if command not in import_commands])
     access_snapshot_position=native_commands.index(access_snapshot['additions_after'])+1

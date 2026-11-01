@@ -46,6 +46,9 @@ def run_http(env):
     original=db('SELECT id,email,password_hash,auth_version FROM ci_users WHERE id=1')[0]
     r=submit(admin,url,'staff_migrate',{'owner_id':'1','owner_password':OWNER,'confirm':'1'})
     check('HTTP owner enables administrator access using the current session','Administrator access is enabled' in r.text and db('SELECT id,email,password_hash,auth_version FROM ci_users WHERE id=1')[0]==original)
+    marker=WEB/'existing/.installed.php'
+    check('SQL-seeded browser fixture begins without a fabricated installation marker',not marker.exists())
+    marker.write_bytes(b'<?php exit; ?>synthetic migrated browser fixture')
     create={'id':'0','name':'Website staff','email':'website-staff@example.invalid','role':'administrator','enabled':'1','permissions[]':['website.manage'],'owner_password':OWNER}
     r=submit(admin,url,'staff_save',dict(create,csrf='bad'))
     check('HTTP staff create rejects bad CSRF','session expired' in r.text.lower() and not db('SELECT id FROM ci_users WHERE email=?',[create['email']]))

@@ -5,6 +5,7 @@ from urllib.parse import parse_qs,urlparse
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def upgrade():
     dest=WEB/'payment-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.4.0',dest)
@@ -35,11 +36,11 @@ def run_http(env):
     CREDS={'api_login_id':'HttpFixtureLogin','transaction_key':'HttpFixtureKey12','signature_key':'b'*128,'public_client_key':'HttpFixturePublicKey'}
     db('DELETE FROM ci_rate_limits');upgrade()
     check('Fresh installer initializes payment schema without credentials',db("SELECT value FROM fresh_settings WHERE name='payments_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_payment_gateways'))
-    r=submit(admin,PAY,'payments_migrate',{'owner_password':'wrong','confirm':'1'});check('Payment setup HTTP reauthentication','current password is not correct' in r.text)
+    refuse_owner_action(globals(),admin,PAY,'payments_migrate',{'confirm':'1'})
     r=submit(admin,PAY,'payments_migrate',{'owner_password':OWNER,'confirm':'1','csrf':'bad'});check('Payment setup HTTP CSRF denial','session expired' in r.text.lower())
     r=submit(admin,PAY,'payments_migrate',{'owner_password':OWNER,'confirm':'1'});check('Owner enables payment preparation','Payment preparation enabled' in r.text)
     r=submit(admin,SETTINGS,'payments_save',dict(CREDS,owner_password=OWNER,csrf='bad'));check('Gateway save rejects CSRF without persistence',not db('SELECT * FROM ci_payment_gateways') and 'HttpFixture' not in r.text)
-    r=submit(admin,SETTINGS,'payments_save',dict(CREDS,owner_password='wrong'));check('Gateway save reauthenticates and never echoes secrets','current password is not correct' in r.text and 'HttpFixture' not in r.text and not db('SELECT * FROM ci_payment_gateways'))
+    r=refuse_owner_action(globals(),admin,SETTINGS,'payments_save',dict(CREDS));check('Gateway permission refusal never echoes secrets or stores credentials','HttpFixture' not in r.text and not db('SELECT * FROM ci_payment_gateways'))
     r=submit(admin,SETTINGS,'payments_save',dict(CREDS,owner_password=OWNER));check('Gateway values saved but remain blank in HTTP response','protected and saved' in r.text and 'HttpFixture' not in r.text and all(soup(r).select_one('[name='+k+']').get('value','')=='' for k in CREDS))
     row=db('SELECT * FROM ci_payment_gateways')[0];check('Gateway native record has encrypted values only','HttpFixture' not in row['credentials'] and row['validation']=='not_verified')
     production=SETTINGS+'&environment=production';r=submit(admin,production,'payments_save',dict(CREDS,api_login_id='ProductionHttpFixture',owner_password=OWNER));check('Sandbox production saved independently',len(db('SELECT * FROM ci_payment_gateways'))==2 and 'ProductionHttpFixture' not in r.text)
@@ -81,7 +82,7 @@ def run_browser(env,browser):
     p.goto(ADMIN+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');p.goto(SETTINGS)
     f=p.locator('form').filter(has=p.locator('[name=action][value=payments_save]'))
     for k,v in CREDS.items():f.locator('[name='+k+']').fill(v)
-    f.locator('[name=owner_password]').fill(OWNER);f.get_by_role('button').click();expect(p.get_by_text('Credentials protected and saved.',exact=False)).to_be_visible()
+    assert_no_owner_reprompt(check,f,'Save gateway credentials');f.get_by_role('button').click();expect(p.get_by_text('Credentials protected and saved.',exact=False)).to_be_visible()
     check('Browser credentials clear after successful save',all(p.locator('[name='+k+']').input_value()=='' for k in CREDS) and 'HttpFixture' not in p.content())
     p.screenshot(path=str(QA/'Payment-Settings-Desktop.png'),full_page=True);p.set_viewport_size({'width':320,'height':844});p.screenshot(path=str(QA/'Payment-Settings-Narrow.png'),full_page=True);check('Payment settings fit narrow screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     p.set_viewport_size({'width':1440,'height':1000});p.goto(PAY+'&invoice_id='+str(INVOICE['id']));p.locator('.payment-review [name=purpose]').select_option('deposit');p.locator('.payment-review [name=confirm]').check();p.screenshot(path=str(QA/'Payment-Request-Review.png'),full_page=True);p.get_by_role('button',name='Prepare request',exact=True).click();expect(p.get_by_text('Payment request prepared.',exact=False)).to_be_visible()

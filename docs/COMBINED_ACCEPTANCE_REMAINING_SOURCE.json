@@ -122,9 +122,17 @@
         [
           "        if path=='tests/stackcp_access_read_snapshot_native.php':",
           "        if path in ('tests/structure_helpers.py','tests/staff_cases.py'):\n            from browser_owner_fixture_provenance import predecessor as browser_owner_predecessor\n            retained=browser_owner_predecessor(ROOT,path,retained)\n        if path=='tests/stackcp_access_read_snapshot_native.php':"
+        ],
+        [
+          "        if path in ('tests/structure_helpers.py','tests/staff_cases.py'):",
+          "        from core_browser_fixture_provenance import PATHS as core_browser_paths, predecessor as core_browser_predecessor\n        if path in core_browser_paths:\n            retained=core_browser_predecessor(ROOT,path,retained)\n        if path in ('tests/structure_helpers.py','tests/staff_cases.py'):"
+        ],
+        [
+          "        check('Import fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\\r\\n',b'\\n')).hexdigest()==expected_hash)",
+          "        retained=ROOT.joinpath(path).read_bytes().replace(b'\\r\\n',b'\\n')\n        if path in core_browser_paths:\n            retained=core_browser_predecessor(ROOT,path,retained)\n        check('Import fixture source retained '+path,hashlib.sha256(retained).hexdigest()==expected_hash)"
         ]
       ],
-      "after_sha256": "49161ed3c0b4414d5a164caeaec446947f052b772a96f41ed1d37f39d0102254"
+      "after_sha256": "9454b32f4bb7c81215558f8a00a13e5253dc841be5e57ada65116b3b8eb3708d"
     },
     "tests/combined_runtime_repair.py": {
       "before_sha256": null,

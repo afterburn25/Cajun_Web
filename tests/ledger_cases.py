@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
@@ -21,7 +22,7 @@ def upgrade():
     check('Actual 1.7 update preserves configuration locks private media and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/ledger-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     before,settings=prepare_retained_payments(globals(),up,url,'ledgerup_',before,settings,preserved)
-    r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'wrong','confirm':'1'});check('Ledger upgrade requires owner reauthentication','current password' in r.text.lower())
+    refuse_owner_action(globals(),up,url+'?view=invoice-payments','payments_ledger_setup',{'confirm':'1'},installed_root=dest)
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.7 ledger upgrade succeeds','Invoice payment history enabled' in r.text)
     check('Actual 1.7 retains prior invoices requests trials notifications and data',all(db('SELECT * FROM ledgerup_'+t)==v for t,v in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings))
@@ -66,7 +67,8 @@ def run_browser(env,browser):
     member=requests.Session();submit(member,root+'?view=login','login',{'email':'request-staff@example.invalid','password':STAFF});check('Payment staff with client grant can read invoice ledger',member.get(target).status_code==200)
     reverse=form_data(form_for(admin.get(target),'payments_ledger_reverse'));reverse.update(reason='PrivateCorrectionReason recording mistake',owner_password=OWNER,confirm='1')
     forged=dict(reverse,csrf=token(member.get(target)));r=member.post(target,data=forged);check('Non-owner cannot forge recording reversal',not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]))
-    r=admin.post(target,data=dict(reverse,owner_password='wrong'));check('Reversal reauthenticates current owner',not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]) and 'current password' in r.text.lower())
+    refuse_owner_action(globals(),admin,target,'payments_ledger_reverse',{k:v for k,v in reverse.items() if k not in ('csrf','action','owner_password')})
+    check('Revoked owner cannot append a recording reversal',not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]))
     db("CREATE TRIGGER ci_ledger_fail BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action LIKE 'payments.ledger.%' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic ledger audit failure'; END IF; END")
     try:
         r=admin.post(target,data=reverse);check('HTTP reversal audit failure preserves payment and redacts SQL','could not be saved' in r.text and 'SQLSTATE' not in r.text and not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]))

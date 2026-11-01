@@ -4,6 +4,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
@@ -20,7 +21,7 @@ def upgrade():
     check('Original 1.5 update preserves config guard private files and external master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/trial-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     before,settings=prepare_retained_payments(globals(),up,url,'trialup_',before,settings,preserved)
-    r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'wrong','confirm':'1'});check('Trial upgrade refuses wrong owner password','current password' in r.text.lower())
+    refuse_owner_action(globals(),up,url+'?view=payment-trials','payments_trial_setup',{'confirm':'1'},installed_root=dest)
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Original 1.5 upgrade enables additive sandbox history','Sandbox trial history enabled' in r.text)
     check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(db('SELECT * FROM trialup_'+t)==v for t,v in before.items()))
     check('Upgraded trial schema empty and real payment remains disabled',db('SELECT * FROM trialup_payment_attempts')==[] and 'Production and client checkout remain disabled' in r.text)

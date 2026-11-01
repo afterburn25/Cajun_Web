@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_upgrade():
     dest=WEB/'support-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.2.0',dest)
@@ -50,14 +51,19 @@ def run_http(env):
     ADMIN=BASE+'/existing/admin/index.php';PORTAL=BASE+'/existing/portal/index.php'
     db('DELETE FROM ci_rate_limits');run_upgrade()
     check('Fresh installation includes support tables but no automatic client access',db("SELECT value FROM fresh_settings WHERE name='support_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_support_clients'))
-    r=submit(admin,ADMIN+'?view=support','support_migrate',{'owner_password':'wrong','confirm':'1'})
-    check('HTTP support setup requires current owner password','current password is not correct' in r.text)
+    refuse_owner_action(globals(),admin,ADMIN+'?view=support','support_migrate',{'confirm':'1'})
     r=submit(admin,ADMIN+'?view=support','support_migrate',{'owner_password':OWNER,'confirm':'1','csrf':'bad'})
     check('HTTP support setup rejects forged CSRF','session expired' in r.text.lower())
     r=submit(admin,ADMIN+'?view=support','support_migrate',{'owner_password':OWNER,'confirm':'1'})
     check('Owner explicitly enables support schema and policy','Support access is ready' in r.text)
-    r=admin.get(ADMIN+'?view=support');r=admin.post(r.url,data={'csrf':token(r),'action':'support_start','client_id':'1'})
-    check('Client support defaults to restricted','unavailable for support access' in r.text and not db('SELECT * FROM ci_support_sessions'))
+    uid=db('SELECT id FROM ci_users WHERE email=?',['client-staff@example.invalid'])[0]['id']
+    chosen_form(admin,ADMIN+'?view=staff','staff_save','id',uid,{'permissions[]':['support.login']})
+    restricted=requests.Session();submit(restricted,ADMIN+'?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
+    r=restricted.get(ADMIN+'?view=support');r=restricted.post(r.url,data={'csrf':token(r),'action':'support_start','client_id':'1'})
+    check('Ordinary support staff remains restricted without client approval','unavailable for support access' in r.text and not db('SELECT * FROM ci_support_sessions'))
+    owner_review=start(admin,1)
+    check('Owner can review an active unapproved client without granting staff access',db('SELECT context,actor_id,client_id FROM ci_support_sessions WHERE id=?',[owner_review])==[{'context':'Owner account review','actor_id':1,'client_id':1}] and not db('SELECT * FROM ci_support_clients'))
+    end(admin,owner_review);restricted.close()
     for cid in [1,2]:chosen_form(admin,ADMIN+'?view=support','support_policy','client_id',cid,{'allowed':'1','owner_password':OWNER})
     check('Client record exposes one-click support action',bool(soup(admin.get(ADMIN+'?view=studio-clients')).select_one('[name=action][value=support_start]')))
     r=bob.get(PORTAL);r=bob.post(ADMIN+'?view=support',data={'csrf':token(r),'action':'support_start','client_id':'1'},allow_redirects=False)

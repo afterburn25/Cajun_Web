@@ -8,6 +8,7 @@ import zlib
 import requests
 from playwright.sync_api import expect
 from release_cases import db
+from owner_browser_forms import refuse_owner_action
 
 
 def png(color):
@@ -36,7 +37,7 @@ def run_browser(env, browser):
         raise AssertionError('Import HTTP isolated configuration failed')
     (destination / 'config.php').write_bytes(configured.stdout)
     (destination / '.installed.php').write_bytes(b'<?php exit; ?>synthetic installed guard')
-    url = base + '/provider-catalog-import/admin/index.php?view=catalog'
+    url = base + '/provider-catalog-import/admin/index.php?view=catalog&import_source=packages.list'
     login = base + '/provider-catalog-import/admin/index.php?view=login'
     owner = requests.Session()
     response = submit(owner, login, 'login', {'email': 'import1@example.invalid', 'password': password})
@@ -54,13 +55,16 @@ def run_browser(env, browser):
 
     response = owner.get(url, timeout=15)
     fields = selected(response, '3')
-    fields.update(sku='HTTP-IMPORT-THREE', term='year', confirm='1', owner_password=password)
+    check('Observed inventory import has no repeated owner-password field', 'owner_password' not in fields and 'current_password' not in fields)
+    fields.update(sku='HTTP-IMPORT-THREE', term='year', confirm='1')
     before = state()
     response = owner.post(url, data=dict(fields, csrf='invalid'), timeout=25)
     check('Catalog import HTTP rejects invalid CSRF without changing records', response.status_code == 200 and 'session expired' in response.text.lower() and state() == before)
-    response = owner.post(url, data=dict(fields, owner_password='wrong'), timeout=25)
+    refuse_owner_action(env, owner, url, 'catalog_import_create', {k:v for k,v in fields.items() if k not in ('csrf','action')}, installed_root=destination)
+    stale = dict(fields, preview_hash='0' * 64)
+    response = owner.post(url, data=stale, timeout=25)
     retry = selected(response, '3')
-    check('Catalog import error preserves selected SKU period consent and captured preview', response.status_code == 200 and 'current password is not correct' in response.text and all(retry[k] == fields[k] for k in ('sku', 'term', 'confirm', 'preview_hash')) and retry['owner_password'] == '' and state() == before)
+    check('Catalog import error preserves selected SKU period consent and captured stale preview', response.status_code == 200 and 'Review the preview again before importing.' in response.text and all(retry[k] == stale[k] for k in ('sku', 'term', 'confirm', 'preview_hash')) and 'owner_password' not in retry and state() == before)
     response = owner.post(url, data=fields, timeout=25)
     imported, = db('SELECT * FROM pimci_catalog_provider_imports WHERE type_ref=?', ['3'])
     product_id = imported['product_id']
