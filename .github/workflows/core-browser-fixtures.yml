@@ -1,0 +1,83 @@
+name: Core browser fixture source verification
+on:
+  push:
+    branches: [chatgpt/core-browser-repairs-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: core-browser-fixtures-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/core-browser-repairs-20261101'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact core fixture corrections without changing shipping code
+        run: |
+          git merge-base --is-ancestor 8ead3459fd458725c32f4a29dc36deefbce085ae HEAD
+          python3 tools/integration/core_browser_apply.py
+          python3 -m venv "$RUNNER_TEMP/core-source-python"
+          "$RUNNER_TEMP/core-source-python/bin/pip" install beautifulsoup4 requests
+          mkdir -p qa/core-source
+          "$RUNNER_TEMP/core-source-python/bin/python" tests/owner_browser_forms_test.py > qa/core-source/form-contract.json
+          python3 tests/core_browser_fixture_contract.py > qa/core-source/source-contract.json
+          python3 tests/installed_owner_authority_test.py > qa/core-source/authority-contract.json
+          python3 tests/acceptance_artifacts_test.py --report qa/core-source/helpers.json
+          python3 tools/build.py --refresh
+          git diff --exit-code -- site foundation tools/build.py tools/update tools/structure VERSION START-HERE.txt .github/workflows
+          git diff --check
+      - name: Record ordinary corrected files on this isolated branch only
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- tests docs
+          if ! git diff --cached --quiet; then
+            git commit -m 'test(browser): reconcile core session authorization and saved inventory journeys'
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/core-browser-repairs-20261101'
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=os.environ['EXPECTED_HEAD']:raise SystemExit('Concurrent branch change; refusing overwrite')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=remote:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Exact ordinary source',head)
+          PY
+      - name: Preserve source identity and evidence even on failure
+        if: always()
+        run: |
+          mkdir -p qa/core-source
+          git archive --format=tar.gz HEAD > qa/core-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/core-source/identity.txt
+          git status --porcelain > qa/core-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: core-browser-source-${{ github.sha }}
+          path: qa/core-source/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record limited source-verification scope
+        run: echo 'Source receipts and retained portable helper tests passed. Installed SQL, HTTP and Chromium journeys still require the ordinary complete Application acceptance workflow. No main merge, release, production deployment, payment, email or provider operation.' >> "$GITHUB_STEP_SUMMARY"
