@@ -1,0 +1,46 @@
+name: Project planning record checks
+on:
+  push:
+    branches: [main, 'devin/non20i-*']
+    paths: ['foundation/project-planning/**', 'tests/project-planning/**', 'site/app/projects/**', 'site/includes/layout/project_planning*.php', 'site/assets/js/project-planning.js', '.github/workflows/project-planning.yml']
+  pull_request:
+    paths: ['foundation/project-planning/**', 'tests/project-planning/**', 'site/app/projects/**', 'site/includes/layout/project_planning*.php', 'site/assets/js/project-planning.js', '.github/workflows/project-planning.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: project-planning-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  records:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Pure planning and history in isolated official PHP
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/project-planning/*.php tests/project-planning/*.php; do php -l "$source"; done
+            php tests/project-planning/records.php > qa/project-planning-default.json
+            php -n tests/project-planning/records.php > qa/project-planning-no-ini.json
+            php tests/project-planning/forms.php > qa/project-planning-forms-default.json
+            php -n tests/project-planning/forms.php > qa/project-planning-forms-no-ini.json
+          '
+      - name: Preserve named evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-planning-${{ matrix.php }}-${{ github.sha }}
+          path: qa/project-planning-*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record scope
+        if: always()
+        run: echo 'Pure plan fields, dependency graphs, immutable events, bounded forms and actual HTML rendering. No native authority, HTTP/browser or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"

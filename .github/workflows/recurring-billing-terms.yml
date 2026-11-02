@@ -1,7 +1,7 @@
 name: Recurring invoice terms checks
 on:
   push:
-    branches: [main, codex/recurring-billing-terms, codex/twentyi-recurring-eligibility]
+    branches: [main, codex/recurring-billing-terms, codex/twentyi-recurring-eligibility, "devin/non20i-*"]
     paths: ['foundation/recurring-billing/**', 'tests/recurring-billing/**', 'foundation/billing-calendar/**', '.github/workflows/recurring-billing-terms.yml']
   pull_request:
     paths: ['foundation/recurring-billing/**', 'tests/recurring-billing/**', 'foundation/billing-calendar/**', '.github/workflows/recurring-billing-terms.yml']
