@@ -41,6 +41,16 @@ REPAIRS = frozenset((
     'tests/owner_browser_forms_test.py',
     'tests/provider_force_ssl_controls_cases.py',
     'tests/provider_directory_listing_controls_cases.py',
+    '.github/workflows/revisions.yml',
+    'docs/REVISIONS_FOUNDATION.md',
+    'site/admin/views/studio/history.php',
+    'site/app/settings/revisions.php',
+    'site/assets/css/admin.css',
+    'tests/apache_acceptance.py',
+    'tests/native.php',
+    'tests/release_cases.py',
+    'tools/acceptance-contract.json',
+    'tools/build.py',
     'tools/acceptance-reports.json',
     'tests/acceptance_artifacts_test.py',
     'tests/cloud_site_requests_wiring.py',
@@ -66,7 +76,7 @@ REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb7974680
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'tools/build.py': 'ff998be0160badce958c2c9d830be4754fe1a298ec2ff2cc75f671648b844aa2', 'tools/acceptance-contract.json': 'f6f1d67ff6fe9303e2b9863fb230a95eb36221982b028c6e4046050a76f4f95d', 'tests/release_cases.py': 'cfae5f665f439e05872586d6699b3c0aaa0c8e95c45cb1caa008ab337c67e66c', 'tests/native.php': '9a94761a1c1b4f23cd9deb2ea1fe798ce091aa89ce3c16459e25b45f7fb847ce', 'tests/apache_acceptance.py': '06c15f0bff73befff5347f9f5da8c0075356d4606cb1ced3f02e3cfe9fff84ee', 'site/assets/css/admin.css': '38a56f84d3529bbc03d42620986493833f0bc5b14138cfe987180a4d3c4feb7c', 'site/app/settings/revisions.php': '9feb4c4e45cdedd926ebef18ae2895cd29a92ba3e1e831f899b8d5f5e5ea113c', 'site/admin/views/studio/history.php': 'cc7b09fc422b1fc806d1ccf1d9b119903761de9283e0be8029ccb8e01886c3a3', 'docs/REVISIONS_FOUNDATION.md': 'c6a95dff903a01e663c788922978048818d4f0f5d6e06dd0ab5a296ba0e993db', 'CHANGELOG.md': '4861898f5ebf03b4ad553004b65ad4d80ffcca446a66d0b466b943e615a9f08e', '.github/workflows/revisions.yml': '88b90852c0e3aeab939db23ab892119377acc4b99cbc461d69c2999a05e38c91', 'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
