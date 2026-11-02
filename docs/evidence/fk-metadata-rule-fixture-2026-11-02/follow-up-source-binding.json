@@ -1,0 +1,29 @@
+{
+  "base_commit": "c2f62c9ce95d47dfea509d87a1baa0b315a0723b",
+  "base_tree": "a3e97b83b74d58c9b990795b1515552f5d3948b4",
+  "prior_local_checkpoint_preserved": "15b81cf9483755cf833de83d843dddd22e04d358",
+  "only_executable_source_change": "tests/foreign_key_metadata_native_cases.php",
+  "helper_before_sha256": "d67295f7d85c1b5b1acf51421ec5a0179011beb54af8162ca1a59c5d5ba206fb",
+  "helper_after_sha256": "431cf8674c71201d8fbb6a16be63b6f3a9663c8001df9d3bd85ede2215e88085",
+  "helper_patch_sha256": "af222bd04029fb54f0ebf27c32f0afaed5d41e61b48af2fd99d5836d1be66889",
+  "unchanged_files_sha256": {
+    "site/database/migrations/service_plans_migrate.php": "e85836146e1b4a15656fe22e10e64c2e8845d5b6e797571a288f7171e90c6b15",
+    "site/database/migrations/recurring_billing_migrate.php": "301208ac8439e037a2f527961181e572144127e4a24fa9bb9301ab348528b7f9",
+    "site/install/inventory.generated.php": "668be5ac0a961539bc7f7b37065f078b0a93e32f884b7c74ee739f2d685d3bba",
+    "tests/foreign_key_metadata_native.php": "09b9d1093ca74aa224d11bc4cba7dc8e58388c38bcc3100df36784df13efb3ec",
+    "tests/service_plans_native.php": "2a9d10bb7e9562551c68c46adc3f89ac035bf92a6f63b64a896a18404ece2bd3",
+    "tests/recurring_billing_native.php": "174418e3f057224efd8b40787beb870d997d0db35242a0f5a59f4b67e7e24849",
+    ".github/workflows/service-plan-records.yml": "64d28fba9513133e3d34c8c85278f502478cacd81d4c37631c3a3390986821ec",
+    ".github/workflows/recurring-billing-native.yml": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4"
+  },
+  "all_3051_shipping_files_identical_in_execution": true,
+  "wrapper_sha256": "bbd8cabe9aff8f1fb82edab76ddf7d3cf997794a00257d094405f7e4d1b3e713",
+  "launcher_sha256": "687a66a8cb2384177de637b4e0d80f9fa29f784ce733f126c1af2764cb1acaf3",
+  "local_supplement_result": "172/172 on PHP 8.3.6 / MariaDB 10.11.14",
+  "namespace": "fkrule_",
+  "original_ci_reports_preserved": true,
+  "mysql_current_helper_execution": "Pending maintained matrix; not executed locally",
+  "browser_replayed": false,
+  "historical_binding": "../fk-metadata-2026-11-02/final-source-binding.json",
+  "no_assertion_timeout_workflow_grant_or_application_change": true
+}

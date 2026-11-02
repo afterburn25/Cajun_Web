@@ -1,0 +1,363 @@
+{
+    "passed": true,
+    "source_sha": "3cc10c144e2cd4e78ff5952cee9f60710a07a9ff+settings-fix-uncommitted",
+    "scope": "Actual disposable SQL\/session\/privacy\/claim\/concurrency tests; only synthetic transport callbacks, no live email",
+    "checks": [
+        {
+            "name": "Disabled feature is a no-op without creating tables",
+            "passed": true
+        },
+        {
+            "name": "Owner prepares additive schema without another password",
+            "passed": true
+        },
+        {
+            "name": "Repeat setup preserves all records",
+            "passed": true
+        },
+        {
+            "name": "Delegated staff cannot prepare schema",
+            "passed": true
+        },
+        {
+            "name": "Delegated staff cannot prepare schema retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses anonymous",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses anonymous retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses expired",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses expired retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses support",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses support retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses revoked",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses revoked retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Current customer sees their notification",
+            "passed": true
+        },
+        {
+            "name": "Customer cannot request another account feed",
+            "passed": true
+        },
+        {
+            "name": "Customer cannot request another account feed retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Customer cannot impersonate staff",
+            "passed": true
+        },
+        {
+            "name": "Customer cannot impersonate staff retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Email is not queued by default",
+            "passed": true
+        },
+        {
+            "name": "Replayed business event does not duplicate notification",
+            "passed": true
+        },
+        {
+            "name": "Own read state persists",
+            "passed": true
+        },
+        {
+            "name": "Mark-recent includes the first item",
+            "passed": true
+        },
+        {
+            "name": "Other customer has no foreign notifications",
+            "passed": true
+        },
+        {
+            "name": "Other customer cannot mark foreign notification",
+            "passed": true
+        },
+        {
+            "name": "Other customer cannot mark foreign notification retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Reassigned resource disappears from previous customer feed",
+            "passed": true
+        },
+        {
+            "name": "Reassigned resource cannot be marked",
+            "passed": true
+        },
+        {
+            "name": "Reassigned resource cannot be marked retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Authorized staff sees their own notification",
+            "passed": true
+        },
+        {
+            "name": "Revoked resource permission hides retained notification",
+            "passed": true
+        },
+        {
+            "name": "Failed configuration audit cannot enable email",
+            "passed": true
+        },
+        {
+            "name": "Opt-in creates a durable unsent queue entry",
+            "passed": true
+        },
+        {
+            "name": "Unconfigured outbound delivery cannot process queue",
+            "passed": true
+        },
+        {
+            "name": "Unconfigured outbound delivery cannot process queue retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Batch size remains bounded",
+            "passed": true
+        },
+        {
+            "name": "Batch size remains bounded retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Independent connection sees committed send claim before transport",
+            "passed": true
+        },
+        {
+            "name": "Transport acceptance records sent timestamp",
+            "passed": true
+        },
+        {
+            "name": "Replayed accepted item never sends twice",
+            "passed": true
+        },
+        {
+            "name": "Known unsent outcome schedules bounded retry",
+            "passed": true
+        },
+        {
+            "name": "Retry time remains epoch integer and uses sixty-second backoff",
+            "passed": true
+        },
+        {
+            "name": "Early page\/dispatcher replay cannot consume a retry",
+            "passed": true
+        },
+        {
+            "name": "Retry 2 records exact attempt count",
+            "passed": true
+        },
+        {
+            "name": "Retry 3 records exact attempt count",
+            "passed": true
+        },
+        {
+            "name": "Exhausted known-unsent outcome has no next attempt",
+            "passed": true
+        },
+        {
+            "name": "Ambiguous transport failure stays uncertain without provider text",
+            "passed": true
+        },
+        {
+            "name": "Ambiguous outcome never automatically resends",
+            "passed": true
+        },
+        {
+            "name": "Opt-out after enqueue prevents transport",
+            "passed": true
+        },
+        {
+            "name": "Reassigned resource cannot email the old customer",
+            "passed": true
+        },
+        {
+            "name": "Captured dispatch rejects withdrawn owner permission",
+            "passed": true
+        },
+        {
+            "name": "Captured dispatch rejects withdrawn owner permission retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Exhausted corrupt retry record is refused before transport",
+            "passed": true
+        },
+        {
+            "name": "Failed final persistence leaves a non-retriable committed claim",
+            "passed": true
+        },
+        {
+            "name": "Accepted but unrecorded delivery cannot blindly resend",
+            "passed": true
+        },
+        {
+            "name": "Claim audit failure rolls back before external transport",
+            "passed": true
+        },
+        {
+            "name": "Concurrent worker 0 completes honestly",
+            "passed": true
+        },
+        {
+            "name": "Concurrent worker 1 completes honestly",
+            "passed": true
+        },
+        {
+            "name": "Two simultaneous dispatchers send the same item once",
+            "passed": true
+        },
+        {
+            "name": "Paused delivery retains queue records",
+            "passed": true
+        },
+        {
+            "name": "Paused delivery retains queue records retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Pausing does not discard queued history",
+            "passed": true
+        },
+        {
+            "name": "Missing schema marker cannot adopt unknown notification history",
+            "passed": true
+        },
+        {
+            "name": "Missing schema marker cannot adopt unknown notification history retains exact records and closes transactions",
+            "passed": true
+        },
+        {
+            "name": "Missing known history is not recreated as empty",
+            "passed": true
+        },
+        {
+            "name": "Existing project metadata remains unchanged",
+            "passed": true
+        },
+        {
+            "name": "Dispatch pause request starts with cached enabled delivery",
+            "passed": true
+        },
+        {
+            "name": "Separate pause request commits honestly",
+            "passed": true
+        },
+        {
+            "name": "Dispatch pause observes a committed change beyond its request cache",
+            "passed": true
+        },
+        {
+            "name": "Committed pause refuses dispatch before synthetic transport",
+            "passed": true
+        },
+        {
+            "name": "Committed pause preserves every delivery attempt and claim audit",
+            "passed": true
+        },
+        {
+            "name": "Explicit resume after pause retains the pending item and sends once",
+            "passed": true
+        },
+        {
+            "name": "Dispatch disable request starts with cached enabled delivery",
+            "passed": true
+        },
+        {
+            "name": "Separate disable request commits honestly",
+            "passed": true
+        },
+        {
+            "name": "Dispatch disable observes a committed change beyond its request cache",
+            "passed": true
+        },
+        {
+            "name": "Committed disable refuses dispatch before synthetic transport",
+            "passed": true
+        },
+        {
+            "name": "Committed disable preserves every delivery attempt and claim audit",
+            "passed": true
+        },
+        {
+            "name": "Explicit resume after disable retains the pending item and sends once",
+            "passed": true
+        },
+        {
+            "name": "Emission pause request starts with its original cached choice",
+            "passed": true
+        },
+        {
+            "name": "Separate pause request commits honestly",
+            "passed": true
+        },
+        {
+            "name": "Emission pause follows a separate committed owner choice",
+            "passed": true
+        },
+        {
+            "name": "Emission after pause preserves its private portal projection",
+            "passed": true
+        },
+        {
+            "name": "Emission after pause uses the current owner email choice",
+            "passed": true
+        },
+        {
+            "name": "Emission pause retains all earlier records and creates no send claim",
+            "passed": true
+        },
+        {
+            "name": "Emission resume request starts with its original cached choice",
+            "passed": true
+        },
+        {
+            "name": "Separate resume request commits honestly",
+            "passed": true
+        },
+        {
+            "name": "Emission resume follows a separate committed owner choice",
+            "passed": true
+        },
+        {
+            "name": "Emission after resume preserves its private portal projection",
+            "passed": true
+        },
+        {
+            "name": "Emission after resume uses the current owner email choice",
+            "passed": true
+        },
+        {
+            "name": "Emission resume retains all earlier records and creates no send claim",
+            "passed": true
+        }
+    ]
+}

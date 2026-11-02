@@ -1,0 +1,21 @@
+{
+  "browser_fixture_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "application_base_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "application_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "application_commit": null,
+  "source_state": "frozen Git tree before commit",
+  "source_file": "tests/provider_plan_catalog_cases.py",
+  "source_sha256": "b0c94879c1c2b6a913c3335e7bd54f4535e6160021bb1cb92b85166f4e604d02",
+  "source_lines": [
+    94,
+    103
+  ],
+  "selected_source_sha256": "5f909eeb04af7099fc73bcefd63ee037cb017b35a9a7f074f11a2ce2c419cbe1",
+  "selected_ast_sha256": "d69ba20b740783d9aaf981ebfd164d13eba4cfa7ffe9e3b98b39e628632fda2d",
+  "assertions_and_timeouts_modified": false,
+  "full_suite_execution": false,
+  "fixture_population_equivalent_to_hosted": false,
+  "python": "3.12.14",
+  "playwright": "1.56.0",
+  "chromium": "141.0.7390.37"
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_replacement_receipts_native.php",
+    "fep_freplay_",
+    "/tmp/cwp-finance-receipt-replay-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 295.525,
+  "stderr_bytes": 2423,
+  "report_passed": true,
+  "check_count": 232,
+  "failed_checks": []
+}

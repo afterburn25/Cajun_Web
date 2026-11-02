@@ -1,0 +1,1026 @@
+{
+    "scope": "Single local cross-schema metadata supplement with the reviewed rule-preserving helper; no provider I\/O",
+    "base_commit": "c2f62c9ce95d47dfea509d87a1baa0b315a0723b",
+    "helper_sha256": "431cf8674c71201d8fbb6a16be63b6f3a9663c8001df9d3bd85ede2215e88085",
+    "wrapper_sha256": "bbd8cabe9aff8f1fb82edab76ddf7d3cf997794a00257d094405f7e4d1b3e713",
+    "namespace": "fkrule_",
+    "passed": true,
+    "failure": null,
+    "checks": [
+        {
+            "name": "Connection selects only the explicit disposable native database",
+            "passed": true
+        },
+        {
+            "name": "Owned metadata prefix is empty in cwp_fk_metadata_test",
+            "passed": true
+        },
+        {
+            "name": "Owned metadata prefix is empty in cwp_fk_metadata_foreign",
+            "passed": true
+        },
+        {
+            "name": "Both validators expose the same source-bound metadata query",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plans preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plans passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plan_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plan_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscriptions preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscriptions passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscription_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscription_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_sources preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_sources passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_schedules preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_schedules passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_invoices preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring_billing_invoices passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy plans baseline preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans two named constraints on one column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans preserves both identical projected occurrences",
+            "passed": true
+        },
+        {
+            "name": "legacy plans actual validator refuses the extra named relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy plans duplicate removal is visible immediately",
+            "passed": true
+        },
+        {
+            "name": "legacy plans composite foreign key preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans keeps both composite-key column rows",
+            "passed": true
+        },
+        {
+            "name": "legacy plans actual validator refuses the extra composite relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy plans composite removal restores the current schema",
+            "passed": true
+        },
+        {
+            "name": "legacy plans missing relationship preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans second validation sees a removed relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy plans third validation sees the restored relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy plans wrong target table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans refuses wrong target table",
+            "passed": true
+        },
+        {
+            "name": "legacy plans restoration after wrong target table is current",
+            "passed": true
+        },
+        {
+            "name": "legacy plans wrong target column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans refuses wrong target column",
+            "passed": true
+        },
+        {
+            "name": "legacy plans restoration after wrong target column is current",
+            "passed": true
+        },
+        {
+            "name": "legacy plans wrong delete rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans refuses wrong delete rule",
+            "passed": true
+        },
+        {
+            "name": "legacy plans restoration after wrong delete rule is current",
+            "passed": true
+        },
+        {
+            "name": "legacy plans wrong update rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans refuses wrong update rule",
+            "passed": true
+        },
+        {
+            "name": "legacy plans restoration after wrong update rule is current",
+            "passed": true
+        },
+        {
+            "name": "legacy plans cross-schema referenced parent preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans cross-schema parent is still present",
+            "passed": true
+        },
+        {
+            "name": "legacy plans preserves existing cross-schema validator behavior",
+            "passed": true
+        },
+        {
+            "name": "legacy plans foreign child and other prefix preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans excludes same-name foreign child and other-prefix constraints",
+            "passed": true
+        },
+        {
+            "name": "legacy plans unrelated constraints do not contaminate validation",
+            "passed": true
+        },
+        {
+            "name": "legacy plans missing table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans missing table metadata remains empty",
+            "passed": true
+        },
+        {
+            "name": "legacy plans missing-table PDO failure propagates unchanged",
+            "passed": true
+        },
+        {
+            "name": "legacy plans restoring the missing table permits a fresh validation",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring baseline preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring two named constraints on one column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring preserves both identical projected occurrences",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring actual validator refuses the extra named relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring duplicate removal is visible immediately",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring composite foreign key preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring keeps both composite-key column rows",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring actual validator refuses the extra composite relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring composite removal restores the current schema",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring missing relationship preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring second validation sees a removed relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring third validation sees the restored relationship",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring wrong target table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring refuses wrong target table",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring restoration after wrong target table is current",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring wrong target column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring refuses wrong target column",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring restoration after wrong target column is current",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring wrong delete rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring refuses wrong delete rule",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring restoration after wrong delete rule is current",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring wrong update rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring refuses wrong update rule",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring restoration after wrong update rule is current",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring cross-schema referenced parent preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring cross-schema parent is still present",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring preserves existing cross-schema validator behavior",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring foreign child and other prefix preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring excludes same-name foreign child and other-prefix constraints",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring unrelated constraints do not contaminate validation",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring missing table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring missing table metadata remains empty",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring missing-table PDO failure propagates unchanged",
+            "passed": true
+        },
+        {
+            "name": "legacy recurring restoring the missing table permits a fresh validation",
+            "passed": true
+        },
+        {
+            "name": "checkout service_plans preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout service_plans passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout service_plan_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout service_plan_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout service_subscriptions preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout service_subscriptions passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout service_subscription_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout service_subscription_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_sources preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_sources passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_schedules preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_schedules passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_invoices preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring_billing_invoices passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "checkout plans baseline preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans two named constraints on one column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans preserves both identical projected occurrences",
+            "passed": true
+        },
+        {
+            "name": "checkout plans actual validator refuses the extra named relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout plans duplicate removal is visible immediately",
+            "passed": true
+        },
+        {
+            "name": "checkout plans composite foreign key preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans keeps both composite-key column rows",
+            "passed": true
+        },
+        {
+            "name": "checkout plans actual validator refuses the extra composite relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout plans composite removal restores the current schema",
+            "passed": true
+        },
+        {
+            "name": "checkout plans missing relationship preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans second validation sees a removed relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout plans third validation sees the restored relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout plans wrong target table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans refuses wrong target table",
+            "passed": true
+        },
+        {
+            "name": "checkout plans restoration after wrong target table is current",
+            "passed": true
+        },
+        {
+            "name": "checkout plans wrong target column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans refuses wrong target column",
+            "passed": true
+        },
+        {
+            "name": "checkout plans restoration after wrong target column is current",
+            "passed": true
+        },
+        {
+            "name": "checkout plans wrong delete rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans refuses wrong delete rule",
+            "passed": true
+        },
+        {
+            "name": "checkout plans restoration after wrong delete rule is current",
+            "passed": true
+        },
+        {
+            "name": "checkout plans wrong update rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans refuses wrong update rule",
+            "passed": true
+        },
+        {
+            "name": "checkout plans restoration after wrong update rule is current",
+            "passed": true
+        },
+        {
+            "name": "checkout plans cross-schema referenced parent preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans cross-schema parent is still present",
+            "passed": true
+        },
+        {
+            "name": "checkout plans preserves existing cross-schema validator behavior",
+            "passed": true
+        },
+        {
+            "name": "checkout plans foreign child and other prefix preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans excludes same-name foreign child and other-prefix constraints",
+            "passed": true
+        },
+        {
+            "name": "checkout plans unrelated constraints do not contaminate validation",
+            "passed": true
+        },
+        {
+            "name": "checkout plans missing table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout plans missing table metadata remains empty",
+            "passed": true
+        },
+        {
+            "name": "checkout plans missing-table PDO failure propagates unchanged",
+            "passed": true
+        },
+        {
+            "name": "checkout plans restoring the missing table permits a fresh validation",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring baseline preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring two named constraints on one column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring preserves both identical projected occurrences",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring actual validator refuses the extra named relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring duplicate removal is visible immediately",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring composite foreign key preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring keeps both composite-key column rows",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring actual validator refuses the extra composite relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring composite removal restores the current schema",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring missing relationship preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring second validation sees a removed relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring third validation sees the restored relationship",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring wrong target table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring refuses wrong target table",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring restoration after wrong target table is current",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring wrong target column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring refuses wrong target column",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring restoration after wrong target column is current",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring wrong delete rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring refuses wrong delete rule",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring restoration after wrong delete rule is current",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring wrong update rule preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring refuses wrong update rule",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring restoration after wrong update rule is current",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring cross-schema referenced parent preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring cross-schema parent is still present",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring preserves existing cross-schema validator behavior",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring foreign child and other prefix preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring excludes same-name foreign child and other-prefix constraints",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring unrelated constraints do not contaminate validation",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring missing table preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring missing table metadata remains empty",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring missing-table PDO failure propagates unchanged",
+            "passed": true
+        },
+        {
+            "name": "checkout recurring restoring the missing table permits a fresh validation",
+            "passed": true
+        }
+    ],
+    "coverage": {
+        "scope": "Actual native schema validators and original-query multiset equivalence",
+        "families": [
+            "plans",
+            "recurring"
+        ],
+        "legacy_and_checkout": true,
+        "cross_schema_executed": true,
+        "named_checks": 172,
+        "observations": [
+            {
+                "case": "legacy service_plans",
+                "rows": 1,
+                "rows_sha256": "fa388a50420ae03c42e205967c82de85ada011f46b19736b92c21ee467dba2c4"
+            },
+            {
+                "case": "legacy service_plan_events",
+                "rows": 2,
+                "rows_sha256": "7ff9d3607122efdd2cdf11efb662801df3014b06b40d84de4741a6a6ae08876c"
+            },
+            {
+                "case": "legacy service_subscriptions",
+                "rows": 3,
+                "rows_sha256": "59afcc84af78b8cc683850ad2494821367b30100d253402ab5d51a3d2232615f"
+            },
+            {
+                "case": "legacy service_subscription_events",
+                "rows": 3,
+                "rows_sha256": "8fa53d93aee2e73e8d45565c930b92edcab99d50ebf2b5d964da17cfaf43f2c9"
+            },
+            {
+                "case": "legacy recurring_billing_sources",
+                "rows": 1,
+                "rows_sha256": "d123ea8665c1d7d2fc01430d9afa918e65b8a77e3e69a9549c20ae99d0679319"
+            },
+            {
+                "case": "legacy recurring_billing_schedules",
+                "rows": 4,
+                "rows_sha256": "2555bd14004be3c8ef6c0cc76b6f0dbe944836c61fa0c9a104d9be534dd316f3"
+            },
+            {
+                "case": "legacy recurring_billing_events",
+                "rows": 3,
+                "rows_sha256": "20271a4a8871c39eee7b6509c2ceb86ad563a3679efd5c80748d7a8dd112a614"
+            },
+            {
+                "case": "legacy recurring_billing_invoices",
+                "rows": 3,
+                "rows_sha256": "b722c126228efe623d1bf0462e827b4c1d8f5cea11b4a8623347b7668aae5b19"
+            },
+            {
+                "case": "legacy plans baseline",
+                "rows": 1,
+                "rows_sha256": "fa388a50420ae03c42e205967c82de85ada011f46b19736b92c21ee467dba2c4"
+            },
+            {
+                "case": "legacy plans two named constraints on one column",
+                "rows": 2,
+                "rows_sha256": "68ebf5b3faf122ae1798e9b0d5a78e67b557fe3dad32b436ecd7d18194494139"
+            },
+            {
+                "case": "legacy plans composite foreign key",
+                "rows": 4,
+                "rows_sha256": "221c2a1387e70ff57fe012897d00933160ceee667dce7814df50ba9606f14420"
+            },
+            {
+                "case": "legacy plans missing relationship",
+                "rows": 0,
+                "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+                "case": "legacy plans wrong target table",
+                "rows": 1,
+                "rows_sha256": "f8cb274d01650e5682403629c5ac79046820ad08fd51727923636837e6461aea"
+            },
+            {
+                "case": "legacy plans wrong target column",
+                "rows": 1,
+                "rows_sha256": "d366837cdcec7236834465c3fedf8091159f9f005430abaab9547a871ceb94ab"
+            },
+            {
+                "case": "legacy plans wrong delete rule",
+                "rows": 1,
+                "rows_sha256": "f2954c2a30e210adeff4cd8dfb752c8506fac03d367339eded258f3ae217bf6a"
+            },
+            {
+                "case": "legacy plans wrong update rule",
+                "rows": 1,
+                "rows_sha256": "2a7332e6764963456470a3090826385d2beb587ca26437c9ad0a8bb7ed1b1e47"
+            },
+            {
+                "case": "legacy plans cross-schema referenced parent",
+                "rows": 1,
+                "rows_sha256": "fa388a50420ae03c42e205967c82de85ada011f46b19736b92c21ee467dba2c4"
+            },
+            {
+                "case": "legacy plans foreign child and other prefix",
+                "rows": 1,
+                "rows_sha256": "fa388a50420ae03c42e205967c82de85ada011f46b19736b92c21ee467dba2c4"
+            },
+            {
+                "case": "legacy plans missing table",
+                "rows": 0,
+                "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+                "case": "legacy recurring baseline",
+                "rows": 4,
+                "rows_sha256": "2555bd14004be3c8ef6c0cc76b6f0dbe944836c61fa0c9a104d9be534dd316f3"
+            },
+            {
+                "case": "legacy recurring two named constraints on one column",
+                "rows": 5,
+                "rows_sha256": "a6d2482665eae4dcc37ea5055fa329db4d7d23e548f64a713b4c75b300e6c437"
+            },
+            {
+                "case": "legacy recurring composite foreign key",
+                "rows": 5,
+                "rows_sha256": "699bbd0369ba3314a9bac32e1e10aa4ed63e403f179ee1010781323a8afed612"
+            },
+            {
+                "case": "legacy recurring missing relationship",
+                "rows": 3,
+                "rows_sha256": "63ad73601050e2fd6cbea543d113988720564f964a6aabd9c2c107d214082422"
+            },
+            {
+                "case": "legacy recurring wrong target table",
+                "rows": 4,
+                "rows_sha256": "10adcb3d0a9cafbe9135de325be3c25cafe6d472242cc17ccac5e170fae31ee4"
+            },
+            {
+                "case": "legacy recurring wrong target column",
+                "rows": 4,
+                "rows_sha256": "f63064cf5961afd8c3562f723e705a64ac1627e45287eef57c92842ef509e998"
+            },
+            {
+                "case": "legacy recurring wrong delete rule",
+                "rows": 4,
+                "rows_sha256": "8207724f88116e0cbc846b1345e589783e226b0e26c3843943a5a3d0d7aa5203"
+            },
+            {
+                "case": "legacy recurring wrong update rule",
+                "rows": 4,
+                "rows_sha256": "3e9cca5980f816735b9c04d9e5a7aa281d9b5100c11d091ad148ea61ee46600f"
+            },
+            {
+                "case": "legacy recurring cross-schema referenced parent",
+                "rows": 4,
+                "rows_sha256": "2555bd14004be3c8ef6c0cc76b6f0dbe944836c61fa0c9a104d9be534dd316f3"
+            },
+            {
+                "case": "legacy recurring foreign child and other prefix",
+                "rows": 4,
+                "rows_sha256": "2555bd14004be3c8ef6c0cc76b6f0dbe944836c61fa0c9a104d9be534dd316f3"
+            },
+            {
+                "case": "legacy recurring missing table",
+                "rows": 0,
+                "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+                "case": "checkout service_plans",
+                "rows": 1,
+                "rows_sha256": "5066755b4201b30fc28ab74a098bfe976439b9282fa4a6fc579a89af7869c42d"
+            },
+            {
+                "case": "checkout service_plan_events",
+                "rows": 2,
+                "rows_sha256": "5d17b97305a0fa8b60ddbe8bd0df0eacbd99fe6e8fd2fb3c072d6b9dbf7e4960"
+            },
+            {
+                "case": "checkout service_subscriptions",
+                "rows": 4,
+                "rows_sha256": "eb5c8429cded2e3f8ddd5cb46ebb125105862f40f901bb66899fe1722296cc8f"
+            },
+            {
+                "case": "checkout service_subscription_events",
+                "rows": 3,
+                "rows_sha256": "9d7fe14c155f030934887c1ae6eaf9ee7a080d7a7d26ef87b1b520a87277b7a6"
+            },
+            {
+                "case": "checkout recurring_billing_sources",
+                "rows": 1,
+                "rows_sha256": "7256e75f1dc2642abce8ec09f2778a272f9eb4a203616a05a701e29d5de9e8cd"
+            },
+            {
+                "case": "checkout recurring_billing_schedules",
+                "rows": 5,
+                "rows_sha256": "23e679e7007f64335413791f2ebde6d62f511332adda8d1f6411d653b9bac711"
+            },
+            {
+                "case": "checkout recurring_billing_events",
+                "rows": 3,
+                "rows_sha256": "dd389f6bbbef1f2b2ce0fa526cb8703a0f2b52c3f0c8e0cae333abaf70a4965f"
+            },
+            {
+                "case": "checkout recurring_billing_invoices",
+                "rows": 4,
+                "rows_sha256": "4458ca656d573a74aefb26f5d99d81cd8f74fbd1a048febcd419c94c03480946"
+            },
+            {
+                "case": "checkout plans baseline",
+                "rows": 1,
+                "rows_sha256": "5066755b4201b30fc28ab74a098bfe976439b9282fa4a6fc579a89af7869c42d"
+            },
+            {
+                "case": "checkout plans two named constraints on one column",
+                "rows": 2,
+                "rows_sha256": "01488b176f7666683d84df082dac80013112b9c65d55144dd5d61628f1abb00f"
+            },
+            {
+                "case": "checkout plans composite foreign key",
+                "rows": 4,
+                "rows_sha256": "9aa2ca829b2648360406ab3b28d024fb62d216460f73fab2b1a1fc60b267d628"
+            },
+            {
+                "case": "checkout plans missing relationship",
+                "rows": 0,
+                "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+                "case": "checkout plans wrong target table",
+                "rows": 1,
+                "rows_sha256": "ce306fef675e398ec68cca69457767adfa236cc51823df1f326de02c4859960b"
+            },
+            {
+                "case": "checkout plans wrong target column",
+                "rows": 1,
+                "rows_sha256": "aa396988a1a11393c9db18346358395f02b661e41a1e1b95ccaa30c711291f92"
+            },
+            {
+                "case": "checkout plans wrong delete rule",
+                "rows": 1,
+                "rows_sha256": "3dc07b6219e119d89cec6202c2aa826a4fffce0ccccf4784bc1863ec676edf96"
+            },
+            {
+                "case": "checkout plans wrong update rule",
+                "rows": 1,
+                "rows_sha256": "3d623e48d1bf804274ce7cebef8f18a122725caae66aa6da3837d7cf5f3b4c04"
+            },
+            {
+                "case": "checkout plans cross-schema referenced parent",
+                "rows": 1,
+                "rows_sha256": "5066755b4201b30fc28ab74a098bfe976439b9282fa4a6fc579a89af7869c42d"
+            },
+            {
+                "case": "checkout plans foreign child and other prefix",
+                "rows": 1,
+                "rows_sha256": "5066755b4201b30fc28ab74a098bfe976439b9282fa4a6fc579a89af7869c42d"
+            },
+            {
+                "case": "checkout plans missing table",
+                "rows": 0,
+                "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+                "case": "checkout recurring baseline",
+                "rows": 5,
+                "rows_sha256": "23e679e7007f64335413791f2ebde6d62f511332adda8d1f6411d653b9bac711"
+            },
+            {
+                "case": "checkout recurring two named constraints on one column",
+                "rows": 6,
+                "rows_sha256": "85ee9d5483a262b88c91509f00ea03f45165566870b45999113d324c9a31e539"
+            },
+            {
+                "case": "checkout recurring composite foreign key",
+                "rows": 5,
+                "rows_sha256": "a0f7dd06146a11ee876cd3e8357e9b968e42d25ddf54125584c76abff88906c2"
+            },
+            {
+                "case": "checkout recurring missing relationship",
+                "rows": 4,
+                "rows_sha256": "159414bea4188543f1f9c21e7ae997e41250974b9ad4e0bbcb8e95ce695eb839"
+            },
+            {
+                "case": "checkout recurring wrong target table",
+                "rows": 5,
+                "rows_sha256": "de249d167556782c85d522d576f10ee58da11363ded51b6505f5e7c3c5b6d207"
+            },
+            {
+                "case": "checkout recurring wrong target column",
+                "rows": 5,
+                "rows_sha256": "c303313ba27e244d362b98207b8a22b7e2d484c57ebb7ec6df11e2a67eb0fbdb"
+            },
+            {
+                "case": "checkout recurring wrong delete rule",
+                "rows": 5,
+                "rows_sha256": "d72d71a256b32b07a3906e85dd2e5474fbfca80de34b6ad5ec69adba0fe3da8b"
+            },
+            {
+                "case": "checkout recurring wrong update rule",
+                "rows": 5,
+                "rows_sha256": "78222e1c180660183e617cb5f80ca527f193ade7370120369b5982514f76baf2"
+            },
+            {
+                "case": "checkout recurring cross-schema referenced parent",
+                "rows": 5,
+                "rows_sha256": "23e679e7007f64335413791f2ebde6d62f511332adda8d1f6411d653b9bac711"
+            },
+            {
+                "case": "checkout recurring foreign child and other prefix",
+                "rows": 5,
+                "rows_sha256": "23e679e7007f64335413791f2ebde6d62f511332adda8d1f6411d653b9bac711"
+            },
+            {
+                "case": "checkout recurring missing table",
+                "rows": 0,
+                "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            }
+        ],
+        "source_sha256": {
+            "plans": "e85836146e1b4a15656fe22e10e64c2e8845d5b6e797571a288f7171e90c6b15",
+            "recurring": "301208ac8439e037a2f527961181e572144127e4a24fa9bb9301ab348528b7f9"
+        },
+        "query_sha256": {
+            "plans": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea",
+            "recurring": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea"
+        },
+        "original_query_sha256": "908694c8f4c53fad5f40675d4d7192595785c70710125a26b1a82f0960312592",
+        "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+        "configured_connection_port": 33316,
+        "server_port": 33316
+    },
+    "php": "8.3.6",
+    "database_port": 33316,
+    "completed_at_utc": "2026-11-02T03:26:21Z"
+}

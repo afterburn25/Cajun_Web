@@ -1,0 +1,39 @@
+{
+  "retained_at_utc": "2026-11-02T02:54:58.061375+00:00",
+  "source_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "native_reports": [
+    {
+      "report": "foreign-key-metadata-native.json",
+      "passed": true,
+      "named_checks": 172,
+      "false_named_checks": 0,
+      "sha256": "c21ddb3e740ba47d053e8c236c8b6ca72fdea7a569f86f63d943b65dfd6746c4"
+    },
+    {
+      "report": "service-plans-native-results.json",
+      "passed": true,
+      "named_checks": 219,
+      "false_named_checks": 0,
+      "sha256": "7495f0dd4482348e7439f77d48054005a4a225b9ccf07c8369a027764af7cf6e"
+    },
+    {
+      "report": "recurring-billing-native-results.json",
+      "passed": true,
+      "named_checks": 721,
+      "false_named_checks": 0,
+      "sha256": "9741f86091c0048832b4ed540d6da7749bb2fd31bfca853ebbcc74ee978b815f"
+    }
+  ],
+  "browser_checks": 3,
+  "shipping_instrumentation_differences": [
+    {
+      "path": "includes/database.php",
+      "source_sha256": "47d9fa7486fdfe579a6f503c88b9715f1ec27e96d30735db78d2e450bdb16cd0",
+      "diagnostic_sha256": "40ac2c2817dbaf6217720b8eadf5a07d86a9c0ad8b5b60d5da20b25bbf8ac3af"
+    }
+  ],
+  "raw_server_log_sha256": "a3c338ba9466f83e5f84a2b3f7e3e1272bd3204dd7ac4196e47cb0ca4eca0c08",
+  "raw_private_sql_keys_sessions_or_config_copied": false,
+  "runtime_mutated_during_retention": false,
+  "original_hosted_and_first_local_failures_preserved": true
+}

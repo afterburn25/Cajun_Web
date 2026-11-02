@@ -1,0 +1,110 @@
+[
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "site/app/billing/software_orders.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "site/app/billing/software_charge_guard.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "site/app/billing/software_subscription_enroll.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "site/app/billing/software_subscription_cancel.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "site/app/billing/software_client.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "site/install/inventory.generated.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "tests/software_commerce_native.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "tests/software_commerce_authority.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "tests/software_commerce_authority_boundaries.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "-l",
+      "tests/software_commerce_authority_worker.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "php8.3",
+      "tests/software_commerce_contract.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "passing_rows": 39
+  },
+  {
+    "command": [
+      "php8.3",
+      "tests/software_production_gate_contract.php"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "passing_rows": 6
+  }
+]

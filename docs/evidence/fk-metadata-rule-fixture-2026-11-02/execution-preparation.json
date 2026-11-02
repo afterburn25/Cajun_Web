@@ -1,0 +1,20 @@
+{
+  "created_at_utc": "2026-11-02T03:26:15.811022+00:00",
+  "owned_database_port": 33316,
+  "owned_database_pid": 152618,
+  "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "existing_table_counts": {
+    "cwp_fk_metadata_foreign": 6,
+    "cwp_fk_metadata_test": 184,
+    "cwp_test": 651
+  },
+  "fresh_namespace": "fkrule_",
+  "fresh_namespace_tables_before": 0,
+  "shipping_files_byte_equal_to_published_c2f": 3051,
+  "base_commit": "c2f62c9ce95d47dfea509d87a1baa0b315a0723b",
+  "helper_sha256": "431cf8674c71201d8fbb6a16be63b6f3a9663c8001df9d3bd85ede2215e88085",
+  "wrapper_sha256": "bbd8cabe9aff8f1fb82edab76ddf7d3cf997794a00257d094405f7e4d1b3e713",
+  "launcher_sha256": "687a66a8cb2384177de637b4e0d80f9fa29f784ce733f126c1af2764cb1acaf3",
+  "other_servers_accessed": false,
+  "owned_datadir_identity_verified": true
+}

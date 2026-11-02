@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "base": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "base_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "components": {
+    "account": {
+      "commit": "fb8b5627d8b18bf662a2dff5bce138365ac3285f",
+      "tree": "743eca5f6aacb30f2a74bd65ee0ebf7ff849f7a2"
+    },
+    "software": {
+      "commit": "8e93c2a782b34a2fd52537fb825911c672267c08",
+      "tree": "c44d522cdb2a83a27bc694e1e79748de19e83be2"
+    },
+    "performance": {
+      "commit": "4668c7d9e92127a97e92a5ea1c6f9bcf287107c9",
+      "tree": "7632498a7227e10fa2974c1fb840b4130cba49c4"
+    },
+    "finance": {
+      "commit": "2dfe76973de68e60b04da5343b75f3fbdedd4d59",
+      "tree": "5afec38a662307d073e2c54730af36971e177adb"
+    }
+  },
+  "verifier_sha256": "160e0c686365af222a6e61cf221a461a722665d87f855edb8647aa8fe4762561",
+  "regression_sha256": "131bb4e4b3ccd4344627dada4a3596e4cb79779924688b917556b442f906e410",
+  "adapters": {
+    "tests/tickets_integration_contract.py": {
+      "component": "account",
+      "original_sha256": "343c65d241c60c519c2d89be1663e081b4cc94c1e7b694296009c723381e17f0",
+      "current_sha256": "2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd",
+      "edits": [
+        [
+          "import hashlib,json,subprocess\n",
+          "import hashlib,json,subprocess\nimport combined_source_composition as composition\n"
+        ],
+        [
+          "def validate(root):\n",
+          "def validate(root):\n    if composition.present(root):\n        return composition.account_call(root,'tickets_integration_contract','validate')\n"
+        ]
+      ]
+    },
+    "tests/account_notification_contract.py": {
+      "component": "account",
+      "original_sha256": "8d7d5daab48f54f9eaf640ab3e9bb93ee86e54b303936f75424ed411cef5530c",
+      "current_sha256": "f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2",
+      "edits": [
+        [
+          "import hashlib,json,subprocess\n",
+          "import hashlib,json,subprocess\nimport combined_source_composition as composition\n"
+        ],
+        [
+          "def validate(root):\n",
+          "def validate(root):\n    if composition.present(root):\n        return composition.account_call(root,'account_notification_contract','validate')\n"
+        ]
+      ]
+    },
+    "tests/account_notification_fixture_provenance.py": {
+      "component": "account",
+      "original_sha256": "32a8f7ada37677c5cf80510438d1cb5361e60510cdd639a13bdf7e0ab0677ae4",
+      "current_sha256": "1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828",
+      "edits": [
+        [
+          "import json\n",
+          "import json\nimport combined_source_composition as composition\n"
+        ],
+        [
+          "def project(root, path, value, side):\n",
+          "def project(root, path, value, side):\n    if composition.present(root):\n        return composition.account_call(root,'account_notification_fixture_provenance','project',path=path,value=value,side=side)\n"
+        ],
+        [
+          "    if path != RELEASE:\n",
+          "    if composition.present(root):\n        return composition.account_call(root,'account_notification_fixture_provenance','core_input',path=path,value=value)\n    if path != RELEASE:\n"
+        ],
+        [
+          "def validate(root):\n",
+          "def validate(root):\n    if composition.present(root):\n        return composition.account_call(root,'account_notification_fixture_provenance','validate')\n"
+        ]
+      ]
+    },
+    "tests/provider_browser_fixture_provenance.py": {
+      "component": "account",
+      "original_sha256": "0dbc7ce034aac8283a8b92bd32396aafd4584438aceede12488d027022dc04ee",
+      "current_sha256": "ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386",
+      "edits": [
+        [
+          "import re\n",
+          "import re\nimport combined_source_composition as composition\n"
+        ],
+        [
+          "def predecessor(root, path, value):\n",
+          "def predecessor(root, path, value):\n    if composition.present(root):\n        return composition.account_call(root,'provider_browser_fixture_provenance','predecessor',path=path,value=value)\n"
+        ],
+        [
+          "def source(root, path):\n    \"\"\"Use only at an existing historical-source comparison, never to run fixtures.\"\"\"\n",
+          "def source(root, path):\n    \"\"\"Use only at an existing historical-source comparison, never to run fixtures.\"\"\"\n    if composition.present(root):\n        return composition.account_call(root,'provider_browser_fixture_provenance','source',path=path)\n"
+        ],
+        [
+          "    require(bool(receipt_paths) and set(receipt_paths) <= LEGACY_RECEIPTS,\n",
+          "    if composition.present(root):\n        return composition.projected_validation(root,validator,receipt_paths)\n    require(bool(receipt_paths) and set(receipt_paths) <= LEGACY_RECEIPTS,\n"
+        ],
+        [
+          "    data = receipt(root)\n    from account_notification_fixture_provenance import project, validate as validate_combination\n",
+          "    if composition.present(root):\n        return composition.validate(root)+composition.account_call(root,'provider_browser_fixture_provenance','validate')\n    data = receipt(root)\n    from account_notification_fixture_provenance import project, validate as validate_combination\n"
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,177 @@
+name: Customer account and notification current-source acceptance
+on:
+  push:
+    branches: [main, chatgpt/account-notifications-acceptance-20261101]
+    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', 'VERSION', 'START-HERE.txt', '.github/workflows/account-notifications-acceptance.yml', '.github/workflows/account-notifications-combined.yml', '.github/workflows/application-tests.yml']
+  pull_request:
+    branches: [main]
+    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', 'VERSION', 'START-HERE.txt', '.github/workflows/account-notifications-acceptance.yml', '.github/workflows/account-notifications-combined.yml', '.github/workflows/application-tests.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: account-notifications-acceptance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the exact integrated source and retained proof chains
+        run: |
+          mkdir -p qa/account-notification-source
+          git merge-base --is-ancestor 84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd HEAD
+          git merge-base --is-ancestor ebcbbb56336249fee2073c8f02e9d6998740b64e HEAD
+          python3 tests/account_notification_workflow_contract.py > qa/account-notification-source/workflow-contract.json
+          python3 tests/account_notification_fixture_provenance.py > qa/account-notification-source/fixture-combination.json
+          python3 tests/core_browser_fixture_contract.py > qa/account-notification-source/core-navigation-provenance.json
+          python3 tests/provider_browser_fixture_provenance.py > qa/account-notification-source/provider-provenance.json
+          python3 tests/owner_navigation_contract_test.py > qa/account-notification-source/navigation-helper.json
+          php tests/account_security_policy.php > qa/account-notification-source/account-policy.json
+          php -n tests/account_security_policy.php > qa/account-notification-source/account-policy-minimal.json
+          php tests/admin_session_no_reentry.php > qa/account-notification-source/admin-policy.json
+          python3 tests/acceptance_artifacts_test.py --report qa/account-notification-source/helpers.json
+          python3 tests/account_notification_contract.py > qa/account-notification-source/account-notification-contract.log
+          python3 tests/account_integration_contract.py > qa/account-notification-source/account-contract.log
+          python3 tests/notification_integration_contract.py > qa/account-notification-source/notification-contract.log
+          python3 tests/tickets_integration_contract.py > qa/account-notification-source/ticket-contract.log
+          python3 tests/combined_runtime_repair.py > qa/account-notification-source/runtime-contract.log
+          python3 tools/build.py --refresh > qa/account-notification-source/build.log
+          git diff --exit-code
+      - name: Admit only the immutable checked-out commit
+        id: record
+        run: |
+          actual=$(git rev-parse HEAD)
+          test "$actual" = "$CWP_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'sha=%s\n' "$actual" >> "$GITHUB_OUTPUT"
+      - name: Retain exact source and failure evidence
+        if: always()
+        run: |
+          mkdir -p qa/account-notification-source
+          git archive --format=tar.gz HEAD > qa/account-notification-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/account-notification-source/identity.txt
+          git status --porcelain > qa/account-notification-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: account-notification-current-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: qa/account-notification-source/
+          if-no-files-found: error
+          retention-days: 14
+  acceptance:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare disposable PHP and database
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-account-review - <<'DOCKER'
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-account-review php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/combined-bin" qa/account-security qa/notification-center qa/combined-policies
+          cat > "$RUNNER_TEMP/combined-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run -i --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-account-review php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/combined-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/combined-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/combined-bin" >> "$GITHUB_PATH"
+      - name: Complete account and notification SQL suites with no external transport
+        run: |
+          php tests/tickets_installed_seed.php config
+          php tests/account_security_native.php > qa/account-security/native.stdout.log 2> qa/account-security/native.stderr.log
+          test ! -s qa/account-security/native.stderr.log
+          php tests/notification_center_native.php > qa/notification-center/native.stdout.log 2> qa/notification-center/native.stderr.log
+          test ! -s qa/notification-center/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          for path,minimum in [('qa/account-security/native-results.json',47),('qa/notification-center/native.json',65)]:
+              r=json.loads(Path(path).read_text())
+              assert r['passed'] is True and r['source_sha']==os.environ['CWP_SOURCE_SHA'] and len(r['checks'])>=minimum and all(x['passed'] is True for x in r['checks'])
+              print(path,len(r['checks']))
+          PY
+      - name: Retain client authority proposal ticket and no-repeated-admin-password checks
+        run: |
+          for case in client_authority_native proposals_native support_tickets_native; do
+            php "tests/$case.php" > "qa/combined-policies/$case.stdout.log" 2> "qa/combined-policies/$case.stderr.log"
+            test ! -s "qa/combined-policies/$case.stderr.log"
+          done
+          cp qa/proposal-version-native.json qa/combined-policies/
+          php tests/notifications/run.php > qa/combined-policies/notification-model.log
+          php -n tests/notifications/run.php > qa/combined-policies/notification-model-minimal.log
+          php tests/account_security_policy.php > qa/combined-policies/account-policy.json
+          php tests/admin_session_no_reentry.php > qa/combined-policies/admin-policy.json
+          php tests/master_portal_policy.php > qa/combined-policies/master-portal.log
+          python3 tools/integration/portable_checks.py --root . --out qa/combined-policies/portable
+      - name: Prepare installed browser
+        if: matrix.php == '8.4'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/combined-browser"
+          "$RUNNER_TEMP/combined-browser/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/combined-browser/bin/python" -m playwright install --with-deps chromium
+      - name: Actual combined portal navigation credential rotation and notification revocation
+        if: matrix.php == '8.4'
+        run: |
+          "$RUNNER_TEMP/combined-browser/bin/python" tests/account_notification_browser.py
+          git diff --exit-code
+      - name: Preserve complete named evidence and synthetic screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: combined-account-notification-${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: |
+            qa/account-security/
+            qa/notification-center/
+            qa/combined-policies/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,acceptance]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'Combined account and notification checks passed. Full site/update acceptance and release remain separate. No main change, real email, provider operation, charge or deployment.' >> "$GITHUB_STEP_SUMMARY"

@@ -183,6 +183,7 @@ function software_subscription_enroll(array $client,int $invoice,string $descrip
     if(db()->inTransaction())throw new LogicException('Subscription enrollment must own its transaction.');
     db()->beginTransaction();
     try{
+        software_current_client((int)$client['id']);
         $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,(int)$client['id']]);
         if(!$order||!in_array($order['billing_term'],['month','year'],true))
             throw new RuntimeException('Only your approved monthly or annual software order can create a subscription.');

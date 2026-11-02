@@ -1,0 +1,172 @@
+name: Notification center and durable outbox acceptance
+on:
+  push:
+    branches: [chatgpt/notification-center-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: notification-center-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/notification-center-20261101'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reproduce exact reviewed additive notification source
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 366d53b1ed6b367b32664f2b91ee073fc6813544 HEAD
+          python3 tools/integration/notification_center_apply.py
+          mkdir -p qa/notification-source
+          php tests/notifications/run.php > qa/notification-source/model.log
+          php -n tests/notifications/run.php > qa/notification-source/model-minimal.log
+          python3 tests/acceptance_artifacts_test.py --report qa/notification-source/helpers.json
+          git diff --exit-code -- .github/workflows
+          git diff --check
+      - name: Record expanded source on this isolated branch only
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- site foundation tests docs tools/build.py
+          if ! git diff --cached --quiet; then
+            git commit -m 'Integrate private notification center with consent and durable bounded outbox'
+          fi
+          python3 tests/notification_integration_contract.py
+          python3 tests/combined_runtime_repair.py
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/notification-center-20261101'
+          old=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=old:raise SystemExit('Notification branch advanced; refusing concurrent overwrite')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=old:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Recorded exact notification source',head)
+          PY
+      - name: Preserve source and failure evidence without private data
+        if: always()
+        run: |
+          mkdir -p qa/notification-source
+          git archive --format=tar.gz HEAD > qa/notification-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/notification-source/identity.txt
+          git status --porcelain > qa/notification-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: notification-source-${{ github.sha }}
+          path: qa/notification-source/
+          if-no-files-found: error
+          retention-days: 14
+  acceptance:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare disposable PHP and synthetic database only
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-notification-center - <<'DOCKER'
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-notification-center php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/notification-bin" qa/notification-center
+          cat > "$RUNNER_TEMP/notification-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run -i --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-notification-center php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/notification-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/notification-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/notification-bin" >> "$GITHUB_PATH"
+      - name: Actual database permissions durable claims concurrency and failures
+        run: |
+          php tests/notifications/run.php > qa/notification-center/model.log
+          php -n tests/notifications/run.php > qa/notification-center/model-minimal.log
+          php tests/tickets_installed_seed.php config
+          php tests/notification_center_native.php > qa/notification-center/native.stdout.log 2> qa/notification-center/native.stderr.log
+          test ! -s qa/notification-center/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          r=json.load(open('qa/notification-center/native.json'))
+          assert r['passed'] is True and r['source_sha']==os.environ['CWP_SOURCE_SHA'] and len(r['checks'])>=50 and all(c['passed'] is True for c in r['checks'])
+          print('Completed native notification checks:',len(r['checks']))
+          PY
+      - name: Prepare real browser dependencies
+        if: matrix.php == '8.4'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/notification-browser"
+          "$RUNNER_TEMP/notification-browser/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/notification-browser/bin/python" -m playwright install --with-deps chromium
+      - name: Installed notifications and controlled queue with outbound mail disabled
+        if: matrix.php == '8.4'
+        run: |
+          "$RUNNER_TEMP/notification-browser/bin/python" tests/notification_center_browser.py
+          python3 tests/notification_integration_contract.py
+          git diff --exit-code
+      - name: Preserve complete named evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: notification-${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: qa/notification-center/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,acceptance]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Four isolated native lanes and both installed notification journeys completed. Only synthetic mail transports were used; actual browser mail remains disabled. This is feature acceptance, not whole-site upgrade acceptance or a main merge, deployment or release.' >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,55 @@
+PASS Finance agreement creator appears once
+PASS Finance agreement history appears once
+PASS Software gateway configuration appears once
+PASS License register appears once
+PASS No corrupted financing splice remains in licensing view
+PASS Owner reconciliation queue includes interrupted replacement, lifecycle and verified-reversal recovery states
+PASS Finance agreement sender list calls the retained mail-account reader without an undefined variable function
+PASS Initial finance agreement UI is site-use only and cannot pre-grant commercial rights
+PASS Owner licensing screen exposes missing, stale and recent financing scheduler health
+PASS Unsigned direct financing binding is blocked
+PASS Finance gateway setup action is wired
+PASS Finance one-time reconciliation is wired
+PASS Finance subscription reconciliation is wired
+PASS Finance-offer controller always creates site-use-only agreements
+PASS Website bundle endpoint follows financed-license payment access and fails closed on unknown state
+PASS Client workspace hides financed website bundles while payment access is locked
+PASS Published project release streaming rechecks financed-license access before file delivery
+PASS Project release UI hides financed downloads while payment access is locked or uncertain
+PASS Online checkout is scoped to financing payment requests
+PASS Financing checkout uses tokenized card fields
+PASS Raw card/CVV fields have no submitted names
+PASS Financing payment links use dedicated idempotent request preparation
+PASS Finance production charging requires code and owner-review gates
+PASS Finance cadence policy defines monthly interval
+PASS Finance ARB request is finite
+PASS Generic recurring lifecycle detects finance-managed schedules
+PASS Generic recurring invoice path cannot issue financing installments
+PASS Down-payment agreements begin payment-locked
+PASS Electronic signature binds exact finance terms and evidence hash
+PASS Service boundary and signature path refuse unpaid commercial rights in finance offers
+PASS Public validation checks product/domain authority before evaluating private financing state
+PASS Initial-payment and delinquency states expose separate definitive payment-lock reasons
+PASS Paid-off state is retained as a one-way financing boundary
+PASS Permanent payoff cannot override an explicit owner license deactivation
+PASS Post-sale commercial rights require a separate single-use paid invoice
+PASS Financing v2 stores immutable single-use commercial-rights payment evidence
+PASS Core financed-license storage upgrades v1 additively to v2 rights evidence
+PASS Core financing and agreement setup retain explicit interrupted-preparation markers
+PASS Finance gateway v3 retains replacement identities and original-transaction reversal history
+PASS Finance gateway storage upgrades existing v1 or v2 data additively to v3
+PASS Finance gateway setup retains an explicit interrupted-preparation marker
+PASS Finance gateway readiness requires complete v3 replacement and reversal metadata
+PASS Suspended financing subscriptions can be replaced without replaying earlier installments
+PASS Client finance portal exposes caught-up replacement enrollment under payment CSP
+PASS Client finance portal separates immutable signed rights from later paid current rights
+PASS Client paid-rights evidence remains compatible with readable financing v1 storage
+PASS Client financing replacement action is wired through authenticated portal handling
+PASS Shared Authorize.Net webhook routes active and archived finance subscription IDs through finance history
+PASS Shared Authorize.Net webhook routes verified refund and void events by original payment ownership
+PASS Financing reversal review keeps partial refunds in review and full reversals tied to original gateway payment
+PASS Finance worker is CLI-only and argument-free
+PASS Existing shared-host cron automatically runs financing after explicit preparation while preserving legacy output before setup
+PASS Finance worker uses a retained cursor instead of starving agreements after a fixed batch
+PASS Finance worker persists bounded scheduler health evidence for owner review
+License financing source contract: PASS

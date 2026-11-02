@@ -396,6 +396,9 @@ try{
     $hash=hash('sha256','synthetic software order');
     $buyer=['id'=>1,'name'=>'Synthetic Buyer'];
     $otherBuyer=['id'=>2,'name'=>'Other Buyer'];
+    // Customer entrypoints require their real current session, alongside the owner fixture.
+    $_SESSION['client_id']=1;$_SESSION['client_auth']=str_repeat('b',32);
+    $_SESSION['client_last']=$_SESSION['client_login']=time();
 
     query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         ['SOFTWARE-RECONCILE','Charge reconciliation test','software','published','once','USD',4200,0,null,'','Synthetic charge reconciliation','','Terms',0,1,$now,$now]);
@@ -571,9 +574,11 @@ try{
         &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$ambInvoice])->fetchColumn()===0,
         'Ambiguous paid upgrade leaves both original trials untouched and mints no paid key');
 
+    $_SESSION['client_id']=2;$_SESSION['client_auth']=str_repeat('c',32);
     swdenied(fn()=>software_order_place($otherBuyer,$product,1,1,'other.example.com',
         hash('sha256','missing dependency order'),false,1),
         'Customer without required software dependency cannot create the order');
+    $_SESSION['client_id']=1;$_SESSION['client_auth']=str_repeat('b',32);
     $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false,1);
     $ordered=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);
     $orderedPolicy=software_order_policy_snapshot($ordered);
@@ -1028,5 +1033,7 @@ try{
         'Recurring reversal review state is persisted');
     require __DIR__.'/software_domain_lifecycle_concurrency.php';
     software_domain_lifecycle_concurrency_checks(1,'SOFTWARE-TEST',1,'swok');
+    require __DIR__.'/software_commerce_authority.php';
+    software_commerce_authority_checks('swok');
     echo 'Software commerce native: '.$n.' checks passed'.PHP_EOL;
 }catch(Throwable $e){fwrite(STDERR,'FAIL: '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);}

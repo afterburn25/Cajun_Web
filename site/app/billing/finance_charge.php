@@ -31,6 +31,7 @@ function license_finance_charge_prepare(array $request,string $attemptKey):array
             }
             $invoice=(int)$saved['invoice_id'];$offer=license_finance_offer_for_invoice($invoice,true);
             if((int)$offer['client_id']!==(int)$saved['client_id'])throw new RuntimeException('Financing payment ownership changed.');
+            license_finance_recovery_charge_guard($offer,$invoice);
             $i=ledger_invoice($invoice);$balance=ledger_balance($i);
             if($i['status']!=='issued'||$balance['due_cents']!==(int)$saved['amount_cents']||(int)$saved['amount_cents']<1){
                 throw new RuntimeException('Financing invoice amount changed. Reload the current payment request.');
@@ -94,6 +95,7 @@ function license_finance_charge_record_paid(int $invoice,string $transactionId,i
         $now=gmdate('Y-m-d H:i:s');
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',['paid','Verified financing gateway receipt '.$entry,$now,$invoice]);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
+        license_finance_recovery_receipt($invoice,(int)$entry,0);
         query('UPDATE '.table('license_finance_charge_attempts').' SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status IN (?,?,?)',
             ['paid',$transactionId,$now,$charge['request_key'],'processing','uncertain','review']);
         query('UPDATE '.table('license_finance_charges').' SET status=?,transaction_id=?,customer_profile_id=?,payment_profile_id=?,updated_at=? WHERE id=?',

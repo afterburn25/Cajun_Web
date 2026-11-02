@@ -1,0 +1,214 @@
+{
+    "passed": true,
+    "scope": "Actual lifecycle service with strict in-memory database doubles; not native SQL, gateway, or installed acceptance",
+    "checks": [
+        {
+            "name": "review survives delayed failed",
+            "passed": true
+        },
+        {
+            "name": "review survives delayed suspended",
+            "passed": true
+        },
+        {
+            "name": "review survives delayed terminated",
+            "passed": true
+        },
+        {
+            "name": "review survives delayed cancelled",
+            "passed": true
+        },
+        {
+            "name": "review survives delayed expired",
+            "passed": true
+        },
+        {
+            "name": "paid_off survives delayed failed",
+            "passed": true
+        },
+        {
+            "name": "paid_off survives delayed suspended",
+            "passed": true
+        },
+        {
+            "name": "paid_off survives delayed terminated",
+            "passed": true
+        },
+        {
+            "name": "paid_off survives delayed cancelled",
+            "passed": true
+        },
+        {
+            "name": "paid_off survives delayed expired",
+            "passed": true
+        },
+        {
+            "name": "cancelled survives delayed failed",
+            "passed": true
+        },
+        {
+            "name": "cancelled survives delayed suspended",
+            "passed": true
+        },
+        {
+            "name": "cancelled survives delayed terminated",
+            "passed": true
+        },
+        {
+            "name": "cancelled survives delayed cancelled",
+            "passed": true
+        },
+        {
+            "name": "cancelled survives delayed expired",
+            "passed": true
+        },
+        {
+            "name": "reversal_recovery survives delayed failed",
+            "passed": true
+        },
+        {
+            "name": "reversal_recovery survives delayed suspended",
+            "passed": true
+        },
+        {
+            "name": "reversal_recovery survives delayed terminated",
+            "passed": true
+        },
+        {
+            "name": "reversal_recovery survives delayed cancelled",
+            "passed": true
+        },
+        {
+            "name": "reversal_recovery survives delayed expired",
+            "passed": true
+        },
+        {
+            "name": "replacing survives delayed failed",
+            "passed": true
+        },
+        {
+            "name": "replacing survives delayed suspended",
+            "passed": true
+        },
+        {
+            "name": "replacing survives delayed terminated",
+            "passed": true
+        },
+        {
+            "name": "replacing survives delayed cancelled",
+            "passed": true
+        },
+        {
+            "name": "replacing survives delayed expired",
+            "passed": true
+        },
+        {
+            "name": "retirement_pending survives delayed failed",
+            "passed": true
+        },
+        {
+            "name": "retirement_pending survives delayed suspended",
+            "passed": true
+        },
+        {
+            "name": "retirement_pending survives delayed terminated",
+            "passed": true
+        },
+        {
+            "name": "retirement_pending survives delayed cancelled",
+            "passed": true
+        },
+        {
+            "name": "retirement_pending survives delayed expired",
+            "passed": true
+        },
+        {
+            "name": "Pending retirement cannot accept automatic or owner settlement",
+            "passed": true
+        },
+        {
+            "name": "Pending retirement cannot create a parallel recovery link",
+            "passed": true
+        },
+        {
+            "name": "Confirmed suspension survives a delayed failure and keeps catch-up eligibility",
+            "passed": true
+        },
+        {
+            "name": "Active subscription accepts failed",
+            "passed": true
+        },
+        {
+            "name": "Active subscription accepts suspended",
+            "passed": true
+        },
+        {
+            "name": "Active subscription accepts terminated",
+            "passed": true
+        },
+        {
+            "name": "Active subscription accepts cancelled",
+            "passed": true
+        },
+        {
+            "name": "Active subscription accepts expired",
+            "passed": true
+        },
+        {
+            "name": "Payment failure can advance to billing_suspended",
+            "passed": true
+        },
+        {
+            "name": "Payment failure can advance to cancelled",
+            "passed": true
+        },
+        {
+            "name": "Payment failure can advance to review",
+            "passed": true
+        },
+        {
+            "name": "Suspension can advance to cancelled",
+            "passed": true
+        },
+        {
+            "name": "Suspension can advance to review",
+            "passed": true
+        },
+        {
+            "name": "Duplicate failure is idempotent",
+            "passed": true
+        },
+        {
+            "name": "Unknown event does not mutate",
+            "passed": true
+        },
+        {
+            "name": "Archived gateway identity cannot mutate its replacement",
+            "passed": true
+        },
+        {
+            "name": "Unknown gateway identity cannot mutate another agreement",
+            "passed": true
+        },
+        {
+            "name": "Malformed identity cannot mutate another agreement",
+            "passed": true
+        },
+        {
+            "name": "Unprepared storage is not queried",
+            "passed": true
+        },
+        {
+            "name": "reversal_recovery retains its ordinary settlement fence after delayed suspension",
+            "passed": true
+        },
+        {
+            "name": "replacing retains its ordinary settlement fence after delayed suspension",
+            "passed": true
+        },
+        {
+            "name": "Cancellation remains cancelled when a later verified payment settles",
+            "passed": true
+        }
+    ]
+}

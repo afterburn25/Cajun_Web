@@ -1,0 +1,60 @@
+{
+  "port": 33313,
+  "datadir": "/tmp/cwp-finance-recovery-final-8cc2b4f257ab/data/",
+  "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "uid": 65534,
+  "source_sha256": {
+    "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+    "site/app/billing/finance_subscription.php": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/app/licenses/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+    "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+    "site/app/staff/accounts.php": "fdb9d77f4870891676bc69826af22353d37ec9faf736fe80a2e33fadbc6dfedd",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+    "tests/finance_enrollment_payoff_boundaries.php": "3d574b75e84586c69542681a365ed18df800c6ece61d0ffb600ee7e1d6788655",
+    "tests/finance_initial_receipts_boundaries.php": "3985468cc782231e10a120dc27908b45e2519c3a57bb83529f95d8415dd7354a",
+    "tests/finance_payoff_retirement_boundaries.php": "567eaaed4b7723ddeaf8c52443395a58377729a3605e24d134ea937713a22b8b",
+    "tests/finance_payoff_retirement_native.php": "622a08903c74e2ee471bbef15ccfb896d960ddf2115f41e7f770439d58824cec",
+    "tests/finance_replacement_payoff_boundaries.php": "3e33ec5d79aeb3af7446c97a1b33075e9432cba6068e58824275d88f847e691d",
+    "tests/finance_replacement_pending_native.php": "4c6596b46ed19d2ad0612979ab3fea859f97cb6eb5e6c053203156bba9e59240",
+    "tests/finance_replacement_receipts_native.php": "fcd673714810f5978cce053c47a423dd365522226dc3cfe7e0e06ab13921016a"
+  },
+  "results": [
+    {
+      "command": [
+        "tests/finance_replacement_receipts_native.php",
+        "fep_fretryrcpt_",
+        "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 638.975,
+      "stderr_bytes": 2423,
+      "report_passed": true,
+      "check_count": 232,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/finance_replacement_pending_native.php",
+        "fep_fretrypend_",
+        "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 18.545,
+      "stderr_bytes": 221,
+      "report_passed": true,
+      "check_count": 25,
+      "failed_checks": []
+    }
+  ],
+  "previous_infrastructure_failure": "adjacent-compatibility02: own mariadbd signal11 in metadata query; numeric2006 then2002; exact logs retained in compatibility-server-exit01.",
+  "restart": "owned-server-recovery01: same data and options, new PID134795; idle owned33311 cleanly stopped.",
+  "scope": "Only incomplete232/25 suites, once, from the exact immutable frozen04 runtime/source snapshot after an owned server restart. Already-passing292 was not repeated. No application retry, assertion or timeout change."
+}

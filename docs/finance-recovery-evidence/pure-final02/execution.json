@@ -1,0 +1,83 @@
+{
+  "results": [
+    {
+      "path": "tests/license_finance_source_contract.php",
+      "source_sha256": "eab797ada4a051236e950d01b884451f0f246ef100ccfff4f9c018d7912541bb",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": null,
+      "check_count": 54
+    },
+    {
+      "path": "tests/license_finance_replacement_contract.php",
+      "source_sha256": "0a4e540ddc50e807dc387101088ddd22ab718caeac52b46bd57a956d91696278",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": null,
+      "check_count": 9
+    },
+    {
+      "path": "tests/finance_subscription_lifecycle.php",
+      "source_sha256": "5dfbc58f2340483d43e5a89ebaf9ba365507e06e8fd5c4526c9880ebc0013534",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 52
+    },
+    {
+      "path": "tests/finance_charge_attempt_bindings.php",
+      "source_sha256": "528f2f27e41cfbee6563c1c245e6aa1e3728fa5ea98935e692130a738b9bc2ff",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 26
+    },
+    {
+      "path": "tests/finance_initial_enrollment_handler.php",
+      "source_sha256": "a739420f11b75bf9b419388cd4f8137800b1cb267ac18b36e4367b4f8393bd27",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 22
+    },
+    {
+      "path": "tests/finance_enrollment_sandbox_boundary.php",
+      "source_sha256": "3501501ee50314803b95aa1733499591ec42d6c140e68a6949365b5bd6b5a0fe",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 6
+    },
+    {
+      "path": "tests/finance_replacement_outcomes.php",
+      "source_sha256": "5b2146f3b6c3da735176af82e97bd1a5a599c734cd605ff7e014f1c1d3d4c913",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 100
+    },
+    {
+      "path": "tests/finance_reconcile_snapshot.php",
+      "source_sha256": "6205354b5252cee7387eff560a14b049163ee8838efa17a3c051d9094aba8daa",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 112
+    }
+  ],
+  "application_sha256": {
+    "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+    "site/app/billing/finance_subscription.php": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/app/licenses/financing.php": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f"
+  },
+  "scope": "The same eight retained pure/source gates on the final frozen02 application after the bounded initial-enrollment adjustment; no SQL or transport."
+}

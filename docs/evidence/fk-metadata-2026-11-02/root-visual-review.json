@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reviewer": "root (independent of browser_continuation implementation)",
+  "reviewed_at_utc": "2026-11-02T03:01:55.118364+00:00",
+  "method": "Actual view_image rendering inspected in the preceding root context; receipt records that inspection without claiming another viewing.",
+  "image": {
+    "path": "catalog-fk-implementation/attempt2/retained-runtime/provider-plan-catalog-prepared.png",
+    "bytes": 665314,
+    "sha256": "6d46a3fbc51d2faa1aee53a6188955263b360b00023137db9ff926cdacf41bf5"
+  },
+  "observations": [
+    "Original navy/gold horizontal CajunWebPro logo and sidebar are present.",
+    "Synthetic historical service agreement is visible.",
+    "Hosting order updated confirmation and HOSTING RECORD PREPARED state are visible.",
+    "Provider setup has not started; screenshot does not claim activated hosting.",
+    "Separate provider setup acknowledgement and Prepare setup history control are visible.",
+    "Existing installer-blocked warning remains visible.",
+    "No obvious desktop layout break is visible in this single captured viewport."
+  ],
+  "scope": "One actual desktop fixture capture from the bounded saved-mapping browser replay. Not full visual, mobile, hosted, deployment, or whole-site acceptance.",
+  "source_binding": "Execution uses retained attempt2 manifests at staged tree c453b0eb96955e3a09cbb1fee4f784d170dfa2fb. The later fixture-only forwarded-port correction was not a new browser execution."
+}

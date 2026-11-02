@@ -18,19 +18,26 @@ function license_finance_anet_settings():array{
     if($mode==='production'&&(!software_anet_production_enabled()||!license_finance_anet_production_enabled())){
         throw new RuntimeException('Production financing checkout is locked until explicit code-level and owner-reviewed activation.');
     }
-    $row=one('SELECT credentials,validation FROM '.table('payment_gateways').' WHERE environment=?',[$mode]);
+    $row=one('SELECT credentials,validation,revision FROM '.table('payment_gateways').' WHERE environment=?',[$mode]);
     if(!$row||!is_string($row['credentials'])||$row['credentials']==='')throw new RuntimeException('Save Authorize.Net credentials for this environment first.');
     $secrets=payments_unseal($mode,$row['credentials']);
     if($secrets['api_login_id']===''||$secrets['transaction_key']===''||$secrets['public_client_key']===''){
         throw new RuntimeException('Authorize.Net financing configuration is incomplete.');
     }
-    return ['mode'=>$mode,'login'=>$secrets['api_login_id'],'key'=>$secrets['transaction_key'],'client_key'=>$secrets['public_client_key']];
+    return ['mode'=>$mode,'login'=>$secrets['api_login_id'],'key'=>$secrets['transaction_key'],'client_key'=>$secrets['public_client_key'],'revision'=>(int)$row['revision']];
 }
-function license_finance_anet_execute(string $method,array $request):array{
+function license_finance_anet_execute(string $method,array $request,#[\SensitiveParameter]?array $context=null):array{
     $allowed=['createTransactionRequest','getTransactionDetailsRequest','ARBCreateSubscriptionRequest',
         'ARBGetSubscriptionRequest','ARBCancelSubscriptionRequest','createCustomerProfileFromTransactionRequest'];
     if(!in_array($method,$allowed,true))throw new InvalidArgumentException('Unsupported financing gateway method.');
+    // A retained account context binds identity; it never grants permission to
+    // bypass a disable, production gate, or account change committed meanwhile.
+    if($context!==null)unset($GLOBALS['cwp_settings']);
     $cfg=license_finance_anet_settings();
+    if($context!==null&&(($context['mode']??null)!==$cfg['mode']
+        ||!is_string($context['login']??null)||!hash_equals($context['login'],$cfg['login']))){
+        throw new RuntimeException('Financing gateway account or environment changed before transport.');
+    }
     if(!function_exists('curl_init'))throw new RuntimeException('cURL is required for financing payments.');
     $url=$cfg['mode']==='sandbox'?'https://apitest.authorize.net/xml/v1/request.api':'https://api.authorize.net/xml/v1/request.api';
     $payload=json_encode([$method=>['merchantAuthentication'=>['name'=>$cfg['login'],'transactionKey'=>$cfg['key']]]+$request],JSON_THROW_ON_ERROR);

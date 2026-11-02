@@ -1,0 +1,9 @@
+{
+  "port": 33317,
+  "bind": "127.0.0.1",
+  "datadir": "/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/data",
+  "pid": 130960,
+  "socket": "/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/mysql.sock",
+  "uid": 65534,
+  "scope": "Root-authorized new reviewer-owned synthetic database. No other runtime accessed."
+}

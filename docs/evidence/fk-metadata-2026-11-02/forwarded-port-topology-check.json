@@ -1,0 +1,60 @@
+{
+  "scope": "Immutable maintained workflow topology and exact fixture-only source check; no forwarded SQL execution or browser rerun",
+  "base_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "local_execution_tree_preserved": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "workflow_topologies": [
+    {
+      "path": ".github/workflows/service-plan-records.yml",
+      "sha256": "64d28fba9513133e3d34c8c85278f502478cacd81d4c37631c3a3390986821ec",
+      "unchanged_from_source84": true,
+      "connection_port": 33306,
+      "server_port_from_published_mapping": 3306,
+      "connection_and_server_ports_are_intentionally_distinct": true,
+      "php_matrix": [
+        "8.2",
+        "8.4"
+      ],
+      "database_matrix": [
+        {
+          "image": "mariadb:10.11",
+          "label": "mariadb-10.11"
+        },
+        {
+          "image": "mysql:8.4",
+          "label": "mysql-8.4"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/recurring-billing-native.yml",
+      "sha256": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4",
+      "unchanged_from_source84": true,
+      "connection_port": 33306,
+      "server_port_from_published_mapping": 3306,
+      "connection_and_server_ports_are_intentionally_distinct": true,
+      "php_matrix": [
+        "8.2",
+        "8.4"
+      ],
+      "database_matrix": [
+        {
+          "image": "mariadb:10.11",
+          "label": "mariadb-10.11"
+        },
+        {
+          "image": "mysql:8.4",
+          "label": "mysql-8.4"
+        }
+      ]
+    }
+  ],
+  "helper_before_sha256": "3f1b9170cd64710dbd28f326579286bd65b8f188d742b586c73faa4da97f9df4",
+  "helper_after_sha256": "d67295f7d85c1b5b1acf51421ec5a0179011beb54af8162ca1a59c5d5ba206fb",
+  "patch_sha256": "07263c2e05d3b080be3b4a1fbe472f5e46a6021098b964eb32ef9fdf80b04a4b",
+  "selected_database_guard_retained": true,
+  "port_equality_removed_only_from_new_environment_assertion": true,
+  "both_ports_recorded_separately": true,
+  "external_local_pid_port_datadir_verification_unchanged": true,
+  "runtime_or_application_modified": false,
+  "php_lint_exit_code": 0
+}

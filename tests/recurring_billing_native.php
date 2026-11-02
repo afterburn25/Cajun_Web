@@ -112,5 +112,7 @@ try {
     require __DIR__.'/hosting_fulfillment_view_cases.php';
     require __DIR__.'/hosting_fulfillment_confirmation_cases.php';
     require __DIR__.'/provider_plan_catalog_cases.php';
+    require_once __DIR__.'/foreign_key_metadata_native_cases.php';
+    fkm_run_native_cases(['recurring'],null,'fkmr_');
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e.PHP_EOL);}
 $passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/recurring-billing-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB native recurring consent/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native recurring checks'.PHP_EOL;exit($passed?0:1);

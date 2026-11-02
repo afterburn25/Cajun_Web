@@ -1,0 +1,39 @@
+{
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "source_sha256": {
+    "site/app/billing/software_orders.php": "d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397",
+    "site/app/billing/software_charge_guard.php": "41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a",
+    "site/app/billing/software_subscription_enroll.php": "b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025",
+    "site/app/billing/software_subscription_cancel.php": "74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f",
+    "site/app/billing/software_client.php": "bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7",
+    "tests/software_commerce_native.php": "e416abbf2c10a12260ad42a9752c0148a2cf15e4b868d3d1b310d62f9d16ef99",
+    "tests/software_commerce_authority.php": "6eb139ba00638fea501c9a0a86670bf58f9888ef0e1ee0f66519a00eb6e7f6e7",
+    "tests/software_commerce_authority_boundaries.php": "53c23873ac815634ba3d93d70065fec0f66fe5c805d36944ba914baebd3af057",
+    "tests/software_commerce_authority_worker.php": "f68f4a9a62cbcf6df16d2aa5e3cd7ebaad1e9faf366e58bfbde636a6c22c26da"
+  },
+  "inventory_sha256": "1e8dc8d47f401036c815003e2a6b2fb9fee64a25352eee8d0ce6a16c7dc2201c",
+  "php_version": "8.3.6",
+  "canonical_refresh": {
+    "command": [
+      "python3",
+      "tools/build.py",
+      "--refresh"
+    ],
+    "exit_code": 0,
+    "output": [
+      "PASS: 40 locked packages; 2188 exact dependency/license files; no drift.",
+      "PASS: 2201 receiving runtime files match the canonical bundle byte-for-byte.",
+      "PASS:6 pinned original PHPMailer7.1.1 source/license/metadata files match recorded hashes",
+      "PASS:15 submission runtime files match the canonical bundle byte-for-byte",
+      "Refreshed and checked canonical installer; no release built from uncommitted files."
+    ]
+  },
+  "scope": "Exact tested application/helper bytes; canonical inventory regenerated afterward. No release or full acceptance claim.",
+  "unchanged_native_partition_report_contract": {
+    "passed": true,
+    "executions": 194,
+    "unique_names": 194,
+    "sha256": "c82bfe0ca921c4728a83c57fd03ccd7f0a59622bbedbcb96f558cc32ca4e484b",
+    "failed_names": []
+  }
+}

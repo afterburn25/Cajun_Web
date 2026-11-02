@@ -1,0 +1,642 @@
+{
+    "passed": true,
+    "count": 100,
+    "checks": [
+        {
+            "name": "success_missing_id records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "success_missing_id retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "success_missing_id gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "success_missing_id preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "success_invalid_id records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "success_invalid_id retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "success_invalid_id gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "success_invalid_id preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "success_nonscalar_id records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "success_nonscalar_id retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "success_nonscalar_id gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "success_nonscalar_id preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "empty_response records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "empty_response retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "empty_response gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "empty_response preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "unknown_result records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "unknown_result retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "unknown_result gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "unknown_result preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "error_response records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "error_response retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "error_response gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "error_response preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "transport_exception records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "transport_exception retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "transport_exception gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "transport_exception preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "valid_id records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "valid_id retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "valid_id gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "valid_id preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "valid_integer_id records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "valid_integer_id retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "valid_integer_id gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "valid_integer_id preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "oversized_id records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "oversized_id retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "oversized_id gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "oversized_id preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "float_id records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "float_id retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "float_id gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "float_id preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "error_with_candidate records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "error_with_candidate retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "error_with_candidate gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "error_with_candidate preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "duplicate_error records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "duplicate_error retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "duplicate_error gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "duplicate_error preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "empty_errors records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "empty_errors retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "empty_errors gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "empty_errors preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "mixed_errors records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "mixed_errors retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "mixed_errors gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "mixed_errors preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "nonscalar_error records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "nonscalar_error retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "nonscalar_error gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "nonscalar_error preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_with_candidate records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_with_candidate retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_with_candidate gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_with_candidate preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00003 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00003 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00003 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00003 preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00013 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00013 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00013 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00013 preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00014 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00014 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00014 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00014 preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00015 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00015 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00015 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00015 preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00016 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00016 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00016 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00016 preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00017 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00017 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00017 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00017 preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00018 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00018 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00018 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00018 preserves the authoritative subscription identity",
+            "passed": true
+        },
+        {
+            "name": "validation_E00019 records a safe first result",
+            "passed": true
+        },
+        {
+            "name": "validation_E00019 retains the correct durable state",
+            "passed": true
+        },
+        {
+            "name": "validation_E00019 gates another create by certainty of prior rejection",
+            "passed": true
+        },
+        {
+            "name": "validation_E00019 preserves the authoritative subscription identity",
+            "passed": true
+        }
+    ],
+    "php": "8.3.6",
+    "source_sha256": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "function_sha256": {
+        "license_finance_subscription_replacement_reserve": "acbcd461f4957b5c86f3f470a12c3c09155513a64c0130206756d8aa3c4fa9f1",
+        "license_finance_subscription_replacement_review": "9e75c1f246a4fe1bcc7589dda5eabee05e5a4c68396dfcd8909e6fe0f14d6853",
+        "license_finance_subscription_replacement_declined": "48ed74bb26c97f06a974e29991bcdb7f6c3bf2bcff35efe869e50e2b524b945a",
+        "license_finance_subscription_reenroll_opaque": "18269c78ed1db0ec90c02e194f4b6770108b48c446436dd67bcdd7ec6e2e4a8d"
+    },
+    "results": [
+        {
+            "case": "success_missing_id",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "success_invalid_id",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "success_nonscalar_id",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "empty_response",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "unknown_result",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "error_response",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "transport_exception",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "valid_id",
+            "first_result": "sandbox_test",
+            "first_state": "sandbox_test",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810002"
+        },
+        {
+            "case": "valid_integer_id",
+            "first_result": "sandbox_test",
+            "first_state": "sandbox_test",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810002"
+        },
+        {
+            "case": "oversized_id",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "float_id",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "error_with_candidate",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "duplicate_error",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "empty_errors",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "mixed_errors",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "nonscalar_error",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_with_candidate",
+            "first_result": "review",
+            "first_state": "review",
+            "second_denied": true,
+            "second_attempt_created": false,
+            "create_calls": 1,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00003",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00013",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00014",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00015",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00016",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00017",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00018",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        },
+        {
+            "case": "validation_E00019",
+            "first_result": "billing_suspended",
+            "first_state": "billing_suspended",
+            "second_denied": false,
+            "second_attempt_created": true,
+            "create_calls": 2,
+            "gateway_id": "810001"
+        }
+    ],
+    "scope": "Exact orchestration function bodies extracted without edits and executed with synthetic gateway\/state doubles. No real PDO, HTTP, credentials or provider operations. Verifies uncertainty fences and positive finalization, not actual gateway transactions or native database persistence."
+}

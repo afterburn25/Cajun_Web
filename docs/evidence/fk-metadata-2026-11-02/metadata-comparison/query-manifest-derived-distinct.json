@@ -1,0 +1,56 @@
+{
+  "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "source_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "source_files": [
+    {
+      "path": "site/database/migrations/service_plans_migrate.php",
+      "sha256": "f2795bd9d83d15dc00afdcc5e88a1d7d617a45d0378d31cee2e9782d98cf5e57"
+    },
+    {
+      "path": "site/database/migrations/recurring_billing_migrate.php",
+      "sha256": "9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9"
+    }
+  ],
+  "queries_identical_at_both_hotspots": true,
+  "variants": {
+    "original": "SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL",
+    "filtered_distinct_relation": "SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN (SELECT DISTINCT CONSTRAINT_SCHEMA,CONSTRAINT_NAME,TABLE_NAME,DELETE_RULE,UPDATE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME=?) r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL"
+  },
+  "scope": "Read-only metadata comparison; no application or schema change",
+  "warmup_pairs": 1,
+  "measured_pairs": 7,
+  "table_suffixes": [
+    "service_plans",
+    "service_plan_events",
+    "service_subscriptions",
+    "service_subscription_events",
+    "recurring_billing_sources",
+    "recurring_billing_schedules",
+    "recurring_billing_events",
+    "recurring_billing_invoices"
+  ],
+  "logical_equivalence": "Filter the owning-schema/table relation before joining; keep complete constraint identity and rule columns in DISTINCT. Distinct named constraints and composite-key COLUMN_NAME multiplicity are preserved by the unchanged join. Sorted result comparison is multiset equality, not set equality.",
+  "no_other_server_access": true,
+  "primary_metadata_definitions": [
+    "https://mariadb.com/docs/server/reference/system-tables/information-schema/information-schema-tables/information-schema-key_column_usage-table",
+    "https://mariadb.com/docs/server/reference/system-tables/information-schema/information-schema-tables/information-schema-referential_constraints-table",
+    "https://dev.mysql.com/doc/refman/8.4/en/information-schema-referential-constraints-table.html"
+  ],
+  "distinct_columns": [
+    "CONSTRAINT_SCHEMA",
+    "CONSTRAINT_NAME",
+    "TABLE_NAME",
+    "DELETE_RULE",
+    "UPDATE_RULE"
+  ],
+  "parameter_order": {
+    "original": [
+      "same bound table"
+    ],
+    "filtered_distinct_relation": [
+      "derived r.TABLE_NAME: same bound table",
+      "outer k.TABLE_NAME: same bound table"
+    ]
+  },
+  "last_authorized_candidate": true
+}

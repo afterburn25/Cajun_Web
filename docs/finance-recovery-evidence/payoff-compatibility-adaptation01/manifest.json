@@ -1,0 +1,22 @@
+{
+  "site/app/licenses/financing.php": {
+    "before_sha256": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "after_sha256": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+    "before_evidence": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/adjacent-full01/source/site/app/licenses/financing.php"
+  },
+  "tests/finance_payoff_retirement_native.php": {
+    "before_sha256": "64bb7e8997a7b26995ed52e72930ccc252f9c36431303f37c154395412272de4",
+    "after_sha256": "622a08903c74e2ee471bbef15ccfb896d960ddf2115f41e7f770439d58824cec",
+    "before_evidence": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/adjacent-full01/source/tests/finance_payoff_retirement_native.php"
+  },
+  "tests/finance_payoff_retirement_boundaries.php": {
+    "before_sha256": "c38497be0de914b060356e113cdc99da0632798dcda9199c64dd8e23365cf237",
+    "after_sha256": "567eaaed4b7723ddeaf8c52443395a58377729a3605e24d134ea937713a22b8b",
+    "before_evidence": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/adjacent-full01/source/tests/finance_payoff_retirement_boundaries.php"
+  },
+  "tests/finance_replacement_payoff_recovery_safety.php": {
+    "before_sha256": "2c174b592d5410919cc8f6e8cbcc692e27659906707aaa2edaa50e24f0731fc7",
+    "after_sha256": "bd284178430c6c49b40d0402da67aef49f6270b531a3eecaedf12ad60d1aa6c2",
+    "before_evidence": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/final-native03/source/tests/finance_replacement_payoff_recovery_safety.php"
+  }
+}

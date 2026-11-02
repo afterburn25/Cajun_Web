@@ -1,0 +1,1471 @@
+{
+  "review_kind": "independent bounded read-only implementation review",
+  "reviewer": "/root/github_status_review/primary_finance_review",
+  "date_utc": "2026-11-02",
+  "baseline": "1c44ca120e7768998fafa720b3e1c4c85990c330",
+  "target": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "target_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "decision": "Do not clear financing integration:2 confirmed retained P1 defects. No whole-PR or release approval.",
+  "actions": {
+    "application_mutations": 0,
+    "db_runs": 0,
+    "provider_calls": 0,
+    "actions_queries": 0,
+    "new_test_runs": 0,
+    "source_files_edited": 0,
+    "local_receipt_files_only": true
+  },
+  "findings": [
+    {
+      "id": "FIN-01",
+      "priority": "P1",
+      "title": "Unknown replacement-create outcome is stranded when payoff retires the predecessor",
+      "status": "confirmed in exact84 source; retained historical failing probe documented, not rerun",
+      "locations": [
+        {
+          "path": "site/app/billing/finance_subscription.php",
+          "lines": [
+            154,
+            189
+          ]
+        },
+        {
+          "path": "site/app/billing/finance_subscription.php",
+          "lines": [
+            342,
+            350
+          ]
+        },
+        {
+          "path": "site/app/billing/finance_subscription.php",
+          "lines": [
+            452,
+            562
+          ]
+        },
+        {
+          "path": "site/app/licenses/finance_installments.php",
+          "lines": [
+            117,
+            138
+          ]
+        }
+      ],
+      "original_reproduction": {
+        "document": "docs/CODEX_FINANCE_ENROLLMENT_RECEIPTS.md",
+        "lines": [
+          32,
+          32
+        ],
+        "url": "https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6487669759",
+        "reported_failed": 4,
+        "reported_total": 8,
+        "raw_probe_recovered": false,
+        "note": "Retrieved original comment4/8 refers to intermediate ac883d... source. Final ebe20e9/e3b05e... receipt carries the finding forward. Exact84 path is independently traced here; no original probe executable/report was supplied by the comment.",
+        "original_source_sha256": "ac883dedd0564162f1b4d06f9f7238b83b3210acda3d644750b1034b11608d89"
+      },
+      "correction_invariants": [
+        "Commit a durable replacement attempt and original signed remaining contract before provider creation; predecessor terminal state cannot imply that an unresolved successor is terminal.",
+        "Keep unresolved successor creation visible and block duplicate creation even after permanent financing payoff.",
+        "Let authenticated owner recovery bind the recovered candidate to the originally reserved exact contract after payoff; do not require new unpaid periods or active/grace finance state.",
+        "Verify identity and contract before cancellation, require terminal readback, keep failed/unknown retirement pending for owner/scheduler.",
+        "Never reverse committed receipts, change license/domain/rights history, or reopen paid_off_at to recover billing.",
+        "Keep audit, predecessor history and retained candidate identity atomic; delayed events and audit failures must not erase recovery obligations."
+      ]
+    },
+    {
+      "id": "FIN-02",
+      "priority": "P1",
+      "title": "Manual receipts after completed enrollment leave a full-amount ARB collecting against reduced installments",
+      "status": "confirmed in exact84 source; retained historical failing probe documented, not rerun",
+      "locations": [
+        {
+          "path": "site/app/billing/ledger.php",
+          "lines": [
+            33,
+            59
+          ]
+        },
+        {
+          "path": "site/app/licenses/financing.php",
+          "lines": [
+            323,
+            373
+          ]
+        },
+        {
+          "path": "site/app/licenses/finance_installments.php",
+          "lines": [
+            128,
+            157
+          ]
+        },
+        {
+          "path": "site/app/billing/finance_subscription.php",
+          "lines": [
+            729,
+            788
+          ]
+        }
+      ],
+      "original_reproduction": {
+        "document": "docs/CODEX_FINANCE_ENROLLMENT_RECEIPTS.md",
+        "lines": [
+          34,
+          34
+        ],
+        "url": "https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6487933023",
+        "reported_failed": 6,
+        "reported_total": 30,
+        "raw_probe_recovered": false,
+        "note": "Retrieved original comment6/30 directly identifies e3b05e... source.3 returned pending_first_payment cases and3 synthetic active projections; exact raw probe/report is not supplied. Adjacent native suites do not cover this timing.",
+        "original_source_sha256": "e3b05ecaaec95653ae8a9b63e68e11eb1769d11b9db6e37e451d6e7b0450b8e1"
+      },
+      "correction_invariants": [
+        "Durably detect that a committed external/manual receipt changed any installment still covered by a retained full-amount ARB.",
+        "Preserve the authoritative receipt and put the obsolete automatic contract into a sticky recovery/retirement state under the existing financial serialization; gateway failure cannot roll back the receipt.",
+        "Retire only the exact retained contract and require verified terminal readback before permitting a replacement or another collection path.",
+        "Replacement eligibility must inspect every remaining installment and respect partial, nonconsecutive and fully-paid receipts; never silently reschedule their original full balances.",
+        "Preserve permanent payoff, license identity, domain records, signed terms and prior gateway history.",
+        "Keep scheduler/owner retries idempotent and duplicate-create fenced; separately handle a verified provider receipt arriving after manual payment as an accounting/reconciliation fact, not a second full local settlement."
+      ]
+    }
+  ],
+  "bounded_observation": {
+    "id": "OBS-03",
+    "severity": "unresolved provenance/design gap; not a demonstrated live failure",
+    "summary": "New software/finance gateway rows omit original environment/account/revision, and adapters reread current credentials for each request. Software cancellation sends cancel before verifying returned contract. Sandbox credentials can change through payments_save.",
+    "current_guards": "Current UI permits only disabled/sandbox. Code-level and reviewed-production gates remain.",
+    "not_claimed": [
+      "No current-UI sandbox-to-production transition.",
+      "No cross-merchant gateway-ID collision or actual wrong-customer cancellation.",
+      "No provider semantics or real sandbox behavior established."
+    ],
+    "next_review": "Bind stored gateway state to original provider environment/account before I/O and verify one immutable transport context across each operation; test credential changes with synthetic providers before live activation."
+  },
+  "file_coverage": [
+    {
+      "path": "site/app/billing/finance_subscription.php",
+      "git_blob": "74cae87cc76aa8f6f9663f4159786832d8a02229",
+      "sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9",
+      "bytes": 59574,
+      "lines": 789,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/finance_charge.php",
+      "git_blob": "e2e23c8541913b92a2cae17d60c69e881d6b676b",
+      "sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "bytes": 17709,
+      "lines": 222,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/finance_authorize_net.php",
+      "git_blob": "9f0b210a99c2dac05b2ab709a96a32534978d9de",
+      "sha256": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+      "bytes": 14452,
+      "lines": 204,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/authorize_net_contract.php",
+      "git_blob": "8b7fb20623749666879329f0381b14b34071ca25",
+      "sha256": "1f54b01aeb7df7e991c472953e90bef42e27c047a895db198b92c6c2faa01bbc",
+      "bytes": 11312,
+      "lines": 217,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/authorize_net_client.php",
+      "git_blob": "d27371e1ffbf4d30118ee9eec8866fc1a6343c46",
+      "sha256": "86174161c124842d72f2917fedd708f1e27aa143f08c07954947313a429aeebc",
+      "bytes": 3359,
+      "lines": 53,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/software_charge.php",
+      "git_blob": "2d83a2da371ff44a7e7d7f0bdee39e501a1a36d5",
+      "sha256": "6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c",
+      "bytes": 15945,
+      "lines": 253,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/software_charge_guard.php",
+      "git_blob": "99897bc744652ea58db76f6acf55c74228f6b108",
+      "sha256": "71a4f180ee4ee7d0f92e69adb50c58cfd4e15c3c3d1923fea635d435abe47ce0",
+      "bytes": 4465,
+      "lines": 62,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/software_subscription_enroll.php",
+      "git_blob": "cc6b61d62b6cd69f2e7835ab3318978b430e8462",
+      "sha256": "b85fa4d80084874385cd5a100cc71d9dc298b945d15f7ba400f1214bd026f07f",
+      "bytes": 15253,
+      "lines": 228,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/billing/software_subscription_cancel.php",
+      "git_blob": "2ac1a3601ed81180292dd896d009c12aa7d8632c",
+      "sha256": "cf76198fd005b9c281aef7fe375dc5a07085f7fb468e521fe1a7f3eb26d9b5d5",
+      "bytes": 5868,
+      "lines": 97,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/licenses/financing.php",
+      "git_blob": "e92dc8b63bb50a0aa0b8a919ae14b83f4686a86e",
+      "sha256": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+      "bytes": 24832,
+      "lines": 373,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/licenses/finance_installments.php",
+      "git_blob": "ba385ce59a95d4e401f366117cb19fb6064bd721",
+      "sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+      "bytes": 12572,
+      "lines": 175,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/licenses/software_asset_access.php",
+      "git_blob": "3171b08f57cb525e445c0a0e0167ce303510da8a",
+      "sha256": "145c3fdd9de18dbd6ab313e4ef5d7695cd7c3c487acad5ed58c903d58715844e",
+      "bytes": 1849,
+      "lines": 31,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/api/software-download.php",
+      "git_blob": "b2ee577cbc3e614efb548252892bdfa1b9332164",
+      "sha256": "851c1e4fa0d8db327a392681f03b33751739de24281c8207f5777f6ee79222cd",
+      "bytes": 2320,
+      "lines": 41,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/database/schema/software_commerce_schema.php",
+      "git_blob": "1c1058b3116ffdfe9decd1c73c3d512f037ba14c",
+      "sha256": "e8a22be1e07ed59a2b194425801d2aae57f090dd57e2d9759bea4d90b9eadd29",
+      "bytes": 6261,
+      "lines": 26,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/database/migrations/software_commerce_migrate.php",
+      "git_blob": "06754b4250fc6e812493a1b81b8be36955703771",
+      "sha256": "bde75d9b4ee23bc2170781ab47bd8c05acf2bc576d450bcdabd1bca94ea272e9",
+      "bytes": 13084,
+      "lines": 238,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/database/schema/license_finance_gateway_schema.php",
+      "git_blob": "2cbf2646c12c2b551791da76e0b3954d45dd9a84",
+      "sha256": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+      "bytes": 6385,
+      "lines": 105,
+      "coverage": "Full source read; bounded read-only implementation review, no new test execution."
+    },
+    {
+      "path": "site/app/licenses/financing_offers.php",
+      "git_blob": "ac12043b957a4122bff1883a806a3d03dfbf36ef",
+      "sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+      "bytes": 27378,
+      "lines": 335,
+      "coverage": "Source lines1-284: canonical terms, initial ledger binding, offer creation/signing/withdrawal/decline and initial invoice preparation. Email sender/listing tail excluded."
+    },
+    {
+      "path": "site/app/licenses/software_grants.php",
+      "git_blob": "e21b7bed6c7b5e576765d345376c5607f76af496",
+      "sha256": "85b0ba3825d3f02e30694212c72033c68910fbf925ae13f536602b908aac144d",
+      "bytes": 29427,
+      "lines": 475,
+      "coverage": "Source lines1-145 and235-475: issuance/paid upgrade/dependencies, lifecycle mutation, customer domain locking, paid-order/unit verification and update-version verdict. Classification/staff-domain helper span146-234 not fully reviewed."
+    },
+    {
+      "path": "site/app/licenses/financing_policy.php",
+      "git_blob": "7d28b93a67ecdda0ebdf11d3a2ca8dae4ce502ac",
+      "sha256": "696a21991d9392efae18ed2bbb6a02f225b28b3034e75c8e63cb4905046ec1d4",
+      "bytes": 8014,
+      "lines": 138,
+      "coverage": "Source lines90-138, signed period offsets, settlement status and manual recovery admission; other policy bodies only source-hash inventory."
+    },
+    {
+      "path": "site/database/migrations/license_finance_gateway_migrate.php",
+      "git_blob": "a8f006c5ecd04a6002f640cd862658f0d132143f",
+      "sha256": "c3661c16c4c6e25fa567c236820764409a610c08be4ac4b671e87646d85520d2",
+      "bytes": 9761,
+      "lines": 163,
+      "coverage": "Setup/readiness, version/partial-state refusal and additive upgrade logic inspected; exact validator39-61 not fully re-reviewed."
+    },
+    {
+      "path": "site/app/billing/ledger.php",
+      "git_blob": "0003ac4732d12e0b7ac457bd7085ba1f1d27da6f",
+      "sha256": "d2e144b11747ad2ea51e3a6c425b75dd3133f54f58e14a210110dc1ff0f1714a",
+      "bytes": 11526,
+      "lines": 96,
+      "coverage": "Complete main-to84 delta and manual-receipt/sync seam33-82; no new independent review of unrelated pre-existing helpers."
+    },
+    {
+      "path": "site/app/billing/payments.php",
+      "git_blob": "dc7036b2a2b36eea631b69aa9e5b46bbed1459be",
+      "sha256": "c41ff35d04b5f87baccdc0ecada491a510540ffc2a91342cd405d3ca8bab2ecb",
+      "bytes": 26250,
+      "lines": 267,
+      "coverage": "Main-to84 financing link/encryption/request changes and lines54-104,204-267; payment page and credential replacement authority traced. Not a complete review of every legacy payment helper."
+    },
+    {
+      "path": "site/app/billing/recurring_billing.php",
+      "git_blob": "87d308b76a64327966f0e87d0ff393fbf4f3599a",
+      "sha256": "3138e9b796cdc6bea96b6a7dc82b4c4357f4fc1cf5e04ccc0e79c02e1eb625ab",
+      "bytes": 21264,
+      "lines": 205,
+      "coverage": "Main-to84 delta: finance-management fences, checkout-origin attribution/journal witness. Not full foundation proof."
+    },
+    {
+      "path": "site/app/billing/recurring_billing_actions.php",
+      "git_blob": "7010456c30a6a3de4d56afef5eb8f7191186d468",
+      "sha256": "6c41c833544af448350cf7c8a817bf0c35b36ec5ebf5ab3da070a57963e6e18b",
+      "bytes": 4842,
+      "lines": 53,
+      "coverage": "Main-to84 two-line setup-form contract delta only."
+    },
+    {
+      "path": "site/app/billing/recurring_billing_invoices.php",
+      "git_blob": "27031f0812310ef679ca6971d21271ecb2df4067",
+      "sha256": "a49fa4f6bfdc00fd6afad867b2a3867f622a759217ce40bf0a0616a31ad6dbc0",
+      "bytes": 16293,
+      "lines": 142,
+      "coverage": "Main-to84 delta: exact invoice-origin witness, staff/client attribution, financed schedule issuance fence; no fresh native execution."
+    },
+    {
+      "path": "site/admin/controllers/studio.php",
+      "git_blob": "cff1bd161d8783839d80f4572413863979b4cd74",
+      "sha256": "17aaf38b95c2ccdff5c3f8535c2e44eb1c1ef8e8c7c99ced1517e7b5df9dd8ba",
+      "bytes": 37471,
+      "lines": 434,
+      "coverage": "Lines145-222, especially gateway mode/prod review181-214. Other finance/software branches require remaining review."
+    },
+    {
+      "path": "site/admin/views/studio/licenses.php",
+      "git_blob": "9bd0b6bb05933e1306ccfd2004e2f988e7df6455",
+      "sha256": "ecb1ed274ab43b72a442f288d107e4def377b7f3cdf87db8010d112bf17e055a",
+      "bytes": 56542,
+      "lines": 567,
+      "coverage": "Lines150-180 gateway activation UI only; receipts evidence maps earlier recovery filter but target entire view changed."
+    },
+    {
+      "path": "site/portal/controllers/actions.php",
+      "git_blob": "d55f1f04b6a788642981845519f455d7213916f4",
+      "sha256": "e0c73a3679def7af53916ecbd6a41cccdbb73b1c05bf0897e2f9e755616c7a4e",
+      "bytes": 15321,
+      "lines": 145,
+      "coverage": "Finance branches13-62 and software checkout/enrollment/cancellation63-94, outer CSRF/support dispatch1-12; other action branches excluded."
+    },
+    {
+      "path": "site/app/billing/attempts.php",
+      "git_blob": "a22d3edd05026dc5de11c0c82874fed2dfa2e064",
+      "sha256": "9493ebc24698c24cf14dad40f79706755f9cb02ccd140c72e6796fd690371c89",
+      "bytes": 11188,
+      "lines": 107,
+      "coverage": "Unchanged contrast dependency lines16-92: existing sandbox attempts retain and check original account hash; not new application clearance."
+    },
+    {
+      "path": "site/app/billing/finance_payment_review.php",
+      "git_blob": "270a62e5d8dfeb1ba20788ed4a03a58604914d55",
+      "sha256": "490728d01e5d0d04363b2f0ce48b314f55fa942a427e10da30dfe6bfb63b7295",
+      "bytes": 10804,
+      "lines": 165,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/portal/views/financing.php",
+      "git_blob": "928bfab3810a0534401fbb53a6e3fb9170f6cd24",
+      "sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8",
+      "bytes": 16970,
+      "lines": 173,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/portal/views/software.php",
+      "git_blob": "56c3b97ad0fba4b9a5df916687dd95b830d9681e",
+      "sha256": "22dae8e23a0ae0be7bfcdcec6d45cb062c427a6db558817600d24c7c1e624ac0",
+      "bytes": 19744,
+      "lines": 229,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/api/handlers/license.php",
+      "git_blob": "87688abaf2cdda6eddc7e719f26b9f0bd17dda93",
+      "sha256": "88ff844f836af932450b1c99e56f91b9de1376750deac8cb06d51fef1ea594cd",
+      "bytes": 6000,
+      "lines": 145,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/software_notices.php",
+      "git_blob": "8b8e9363ba07f198d96680381cf91f4bb210cb2e",
+      "sha256": "d031ff86c3562d5feb06d646029b49065308592bcc59d72733080b2d84d35bef",
+      "bytes": 4925,
+      "lines": 76,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/software_assets.php",
+      "git_blob": "84d1e4db8ce872d412b51500c0a8126468616244",
+      "sha256": "53a38bb3b51e321f7a50c9e43a96372702f6eb8618536ecf7e87b72d883892fe",
+      "bytes": 9088,
+      "lines": 146,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/software_products.php",
+      "git_blob": "b73464d30da915cc334e70c0fd5316e5b4d58c4b",
+      "sha256": "38f39e2610f750fb09fc9ba868cf770894d561c74a43ff470801ac0a02b1ad7d",
+      "bytes": 11414,
+      "lines": 197,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/software_fulfill.php",
+      "git_blob": "d139c6b60113c6806585e51934d32973abf09b09",
+      "sha256": "c161360a58cf994c884b00cde78f091487c1d8f70ad186a2e2d6fb4bb1a43a63",
+      "bytes": 4243,
+      "lines": 67,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/billing/software_orders.php",
+      "git_blob": "c3e3f9a4420d1ac011522e726ca04ee0107e73d7",
+      "sha256": "f5cc28db4b6aa06752ba04ce35e55ce9e7064d11126cb9e68563592b4932acdf",
+      "bytes": 5601,
+      "lines": 77,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/billing/software_subscription_settle.php",
+      "git_blob": "298a92028345a77d7123010ec19144ccc452e845",
+      "sha256": "072fb05aeb15189eee3f9e5d546a04c3fd172517265a056f68bbccbf12e04246",
+      "bytes": 19337,
+      "lines": 300,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/billing/software_payment_review.php",
+      "git_blob": "aa309b865617f38eb95935e3aaa4d6d74c900279",
+      "sha256": "cefeae82a989caaaf17212aa6c40bcc714bf2ef6ae81818761dbc4fac0c7d41c",
+      "bytes": 10799,
+      "lines": 161,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/billing/software_subscriptions.php",
+      "git_blob": "79f505411f59aab8cb0f31037513c1e5ffd03bc5",
+      "sha256": "c7f559a7a483e3621aa313de1b5d7d3e283a204e506ed19098a9e1afd59b1627",
+      "bytes": 4827,
+      "lines": 99,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/billing/authorize_net_webhooks.php",
+      "git_blob": "5d2b2bda7d934ff149e345b8b0bed17f12b61431",
+      "sha256": "15fa2b306517e103a1e9e323f0503ede4ebddf62710d9a21931bbf38a91a243f",
+      "bytes": 1426,
+      "lines": 24,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/api/software-webhook.php",
+      "git_blob": "7d666275cbaeeae052a3bf66dcdfa454de832a9e",
+      "sha256": "1619d2408b8fd78504f75ae2d1daa06fbf5baf9a798577c6edd85a7d0f949658",
+      "bytes": 942,
+      "lines": 24,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/api/bundle-download.php",
+      "git_blob": "ebdedf8a3b82ae57e649eb1a22c8a9791cf90b49",
+      "sha256": "c7264b4cb4731d7f1679df20238c9bdb81899ae90560190077a19541906d6ec4",
+      "bytes": 4163,
+      "lines": 116,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/bundle.php",
+      "git_blob": "d79fb7fd407b8cb9956f33a91343a30ea1a4bc59",
+      "sha256": "2a6f62734654d42230918f98bfdf3c05a010f0b839ee1e003364f328aa305ce7",
+      "bytes": 6692,
+      "lines": 140,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/fulfill.php",
+      "git_blob": "c37e6616591122a2f57c54d10be790baf823ed02",
+      "sha256": "bdfa8e208c01e07281b560c306ac44127068e5df65747dd6dceaa11249b1e978",
+      "bytes": 6628,
+      "lines": 150,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/legacy.php",
+      "git_blob": "ecdf5a9070e6028af50e5722849fe7a9ad0a7cec",
+      "sha256": "875542e05b93685659f0be81115b143c5ef224dde1515f4cbf9cf021272ee5dd",
+      "bytes": 4192,
+      "lines": 41,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/app/licenses/service.php",
+      "git_blob": "26f4d721561d9c1d04107c8b8764678132e568e9",
+      "sha256": "bba380cb430d7bb8b8a3ece2fbba47be7ce67d7d9ef48cef10dae8dbeb97da43",
+      "bytes": 14652,
+      "lines": 322,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/migrations/license_finance_offers_migrate.php",
+      "git_blob": "3a1ccfe0c729d4f7be1872f9938a06d6b00a3f10",
+      "sha256": "ae77078078e1f5cc9e443e9f76920e086376d4d06c5b221f401a52816d6052ab",
+      "bytes": 4763,
+      "lines": 66,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/migrations/license_financing_migrate.php",
+      "git_blob": "943a954e2fd8b4c06f57515f65dd8a1e5f8cfa05",
+      "sha256": "470a01c0ab9bc0c32f97097250b181efdcaa07738ed315b74882d60261f23fb0",
+      "bytes": 6542,
+      "lines": 94,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/migrations/payments_migrate.php",
+      "git_blob": "7f8a72515fbdaef1779589fd14bcb6c50660775a",
+      "sha256": "b4be1d49fb7d88d1c6cea8035e1ecf357c8f926a20e8e205f678a896f722c48a",
+      "bytes": 2336,
+      "lines": 25,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/migrations/recurring_billing_migrate.php",
+      "git_blob": "d7afb692200d586328c9636a41aec691ba083391",
+      "sha256": "9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9",
+      "bytes": 4766,
+      "lines": 49,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/migrations/recurring_billing_checkout_migrate.php",
+      "git_blob": "b032f0902707f78af4f629c361c180ef1f8b4dd9",
+      "sha256": "188e8df9b32489866936bbb6f6870bb5caddd0012f6ddfeb080819d4ef5927de",
+      "bytes": 8973,
+      "lines": 106,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/schema/license_finance_offers_schema.php",
+      "git_blob": "8cc400aaff47cce612d2858fa0527b4fd91343f7",
+      "sha256": "24d20ddda12ba3203ca50b94adeeb2ff8a379955a84f3cdb9ee016b6a85992a7",
+      "bytes": 3169,
+      "lines": 53,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/schema/license_financing_schema.php",
+      "git_blob": "3cc498a288868eb7010b059f63d073d6596b527b",
+      "sha256": "5a0cfab75cd96686f6dc81ea519182cfce39c0f03ae2b4a5c45ffe482b679e2a",
+      "bytes": 2993,
+      "lines": 52,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/schema/payments_schema.php",
+      "git_blob": "13d4de6c09b94d004daed8641919ffecc10de38f",
+      "sha256": "4d06ce6118eb0a4ddf61a38e7925d4ece597ef5f12852ec4b586172f4d36806d",
+      "bytes": 1530,
+      "lines": 11,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    },
+    {
+      "path": "site/database/schema/recurring_billing_schema.php",
+      "git_blob": "bfe28928882d0ce028ec9c127cfb5d2426fc474d",
+      "sha256": "0e884f4aa68621121a23ecc5f08aaad8f33f184040d82a125a94902aa69cc8aa",
+      "bytes": 4595,
+      "lines": 39,
+      "coverage": "Inventoried and/or retained-evidence hash compared only; no claim of complete independent source review in this bounded pass."
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "tests/finance_replacement_payoff_native.php",
+      "git_blob": "d669653686a57326f0d03f7bd86fd00f8d797c8a",
+      "sha256": "eaae47960f586f6b9aef01d744e56e05bfe4b5ac78350d620a361e597d928464",
+      "bytes": 15756,
+      "lines": 152,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_replacement_payoff_boundaries.php",
+      "git_blob": "309de852d52aadc7c55c438d235415d36a2167b4",
+      "sha256": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514",
+      "bytes": 4648,
+      "lines": 54,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_replacement_receipts_native.php",
+      "git_blob": "398a26c48d68757264d5d3521008af2e754fa1c0",
+      "sha256": "2aac58b0831628f4c420afbd52a16f262d3b6445d8f6cfc6c7cc1bb75bbe18da",
+      "bytes": 17192,
+      "lines": 169,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_initial_receipts_native.php",
+      "git_blob": "550fe63f4f265b01479b6649d648a0691443b906",
+      "sha256": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef",
+      "bytes": 15937,
+      "lines": 150,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_initial_receipts_boundaries.php",
+      "git_blob": "7e67f07d815e22370482cdb5397acd2edc9fdac9",
+      "sha256": "587c3590d6cfcb4af4d5313cb2b26a5f6bd1215d0710e0b906a3e9aeb23f7d06",
+      "bytes": 5216,
+      "lines": 62,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_payoff_retirement_native.php",
+      "git_blob": "2686ba1697f2d21cb095480ee4e5aae85ac92ba7",
+      "sha256": "64bb7e8997a7b26995ed52e72930ccc252f9c36431303f37c154395412272de4",
+      "bytes": 12684,
+      "lines": 127,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_payoff_retirement_settlement.php",
+      "git_blob": "35a7b919a7dc12f4c3d4f46fb09f834d87e18456",
+      "sha256": "1aceebbaa10726d56384f81ea0201a5039cd58cf508bf48e1f957779cc2aa8eb",
+      "bytes": 10644,
+      "lines": 106,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_replacement_pending_native.php",
+      "git_blob": "e058bc137fb2080b850a397d4fbcd4ce78dca98e",
+      "sha256": "a50d417723e0bcb2bbc008bd5ad7a20f00295865d63dc4745c108cb478e5297e",
+      "bytes": 17642,
+      "lines": 150,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    },
+    {
+      "path": "tests/finance_replacement_outcomes.php",
+      "git_blob": "c2f2518ebed2ffcff2ad71dfbc3a4aef9feef091",
+      "sha256": "a01812e1c886868b49a0ade2439d874de5df9b6fa924e50206844c4f7b7c1b19",
+      "bytes": 7838,
+      "lines": 90,
+      "coverage": "Executable source retained. Scenario sets inspected for the first5 paths; not run. These are adjacent regressions/extension points, not the missing4/8 and6/30 original probes."
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/CODEX_FINANCE_ENROLLMENT_PAYOFF_GUARD.md",
+      "git_blob": "0f91b74357c6eec5b2ca4fd46bf2c641425a0885",
+      "sha256": "fe5cad382cc39e8bc0cd32936fde22758068edc8984f6c2f04307266b510e1bd",
+      "bytes": 5255,
+      "lines": 30,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_ENROLLMENT_RECEIPTS.md",
+      "git_blob": "7bb10021105c37e6b9713bf19ba0e9b17151500f",
+      "sha256": "be846248c62db3b00417b4b1d623c2ff5699f9a61eb230699bc6ebf6129d8e8f",
+      "bytes": 8535,
+      "lines": 38,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_INITIAL_ENROLLMENT_REVIEW.md",
+      "git_blob": "e4409cd584783fb193ff64917e9a46410d4b1bc9",
+      "sha256": "cb2f6c53394bccafa5d36760e46e90d97d3a24715320228dbc9b1fffff55b156",
+      "bytes": 5818,
+      "lines": 28,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_INITIAL_SYNC_REVIEW.md",
+      "git_blob": "e11f3e40eced6bf7a99d75c5cb1538040ef0723b",
+      "sha256": "d8b6365eb7c3aeb960c8f1a6b7d6ec55a2590ffe9698c4d6cf6f13568aca185a",
+      "bytes": 5402,
+      "lines": 29,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_MAIL_DRAFT_APACHE_REVIEW.md",
+      "git_blob": "29bb35774f729a7578e7f0d6995f022c3ce6b01e",
+      "sha256": "abd914cf494a4685f34b58ad2feb90977682166dc2de7f21135ca56324afde8f",
+      "bytes": 1803,
+      "lines": 36,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_PAYOFF_RETIREMENT.md",
+      "git_blob": "65c41fafb5b4fded45961285735fafe5bec59dae",
+      "sha256": "22f99da9f67876d9a5560b70fba9c9a78428d05e18c55cbc128481d0c84a8fde",
+      "bytes": 6475,
+      "lines": 34,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_RECONCILE_AUDIT.md",
+      "git_blob": "0fc49045cce4353b2c917167ee87fa6269a4b5fd",
+      "sha256": "a75ad05485e304717922e7ae30f67bea0ed75d614c09c056d7623f5d18b9d19e",
+      "bytes": 3706,
+      "lines": 21,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_RECONCILE_FIXTURES.md",
+      "git_blob": "eccf2bba485cd89050d1f9448e4debed62ff9366",
+      "sha256": "a7b2c771e293e773f268cda181a38a0ac0a3d7def7ca388c89964612263d1d01",
+      "bytes": 2320,
+      "lines": 11,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_RECONCILE_SNAPSHOT_REVIEW.md",
+      "git_blob": "ce54e4979a428e9d9e6b1919b68e675eaf9dba3e",
+      "sha256": "d052d0c679cc8a0af2f420371510faf22e1482c5e3a1fdf9d70d6b79ec99623f",
+      "bytes": 3016,
+      "lines": 21,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_REPLACEMENT_OUTCOME_REVIEW.md",
+      "git_blob": "27831d1d0396608b331b6452eaad4cb478f1045f",
+      "sha256": "84e9fa11c6e780ae7e219ee4c36a79ea83b6da6f9a15988aeed42bb0faa1b32b",
+      "bytes": 4143,
+      "lines": 25,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_REPLACEMENT_PAYOFF.md",
+      "git_blob": "5a6fb9822473f96d2a39d054510afeeac2ba2948",
+      "sha256": "014e88089571772eec3be91f91440a9a3685b8196983c2dad49aa2694e63b5d3",
+      "bytes": 5583,
+      "lines": 31,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_FINANCE_SANDBOX_PROFILE_REVIEW.md",
+      "git_blob": "29517834bd788d5799c470303ca28a2bdb0e937b",
+      "sha256": "a6af6007d8b9716d4b6bb1ae50f09e24c266542dbef4313513e9d2028eb0df01",
+      "bytes": 4316,
+      "lines": 28,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_LICENSING_REVIEW_2026_10_28.md",
+      "git_blob": "14aa915d8084aaedb527be55fe11d7807c4013cf",
+      "sha256": "5c9dee06058ad84915ad212e06ea9094793856acc82995b6325870aaf92da2f8",
+      "bytes": 23648,
+      "lines": 208,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_SOFTWARE_DOMAIN_LOCK_REVIEW.md",
+      "git_blob": "420c5c79b36dd037961e49fb2f4ca1d6079e6a2b",
+      "sha256": "93bfe324d0ef1a663252e976c937126b68800580054f2feed471ac1078a67181",
+      "bytes": 4449,
+      "lines": 27,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_SOFTWARE_DOWNLOAD_SOURCE_REVIEW.md",
+      "git_blob": "3619ca5e517a8ccd80d7ed48299ce863ef49c8e3",
+      "sha256": "ad1e87464c4211eae2d7faf111407145c055a0cfeabf242ea3261b43a02037ca",
+      "bytes": 4903,
+      "lines": 35,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_SOFTWARE_PRODUCT_VALIDATION_REVIEW.md",
+      "git_blob": "8db3249aa1520d3a54762c2d8759bf71212d9b79",
+      "sha256": "1c626548f8caa01fa40c6da801829f8d6b7d315577f5834181f1ef389e8fe416",
+      "bytes": 2186,
+      "lines": 47,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/CODEX_SOFTWARE_SEAT_ACCEPTANCE_REVIEW.md",
+      "git_blob": "c3d2cbbc52f835a222727e5296294c39761aaa8a",
+      "sha256": "8d6a87eabf71fad15ab62aadd7f2f886f1acb21ceb7a7636c0e9e8d97bcc46b2",
+      "bytes": 5200,
+      "lines": 17,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/LICENSING_INTEGRATION_REVIEW.md",
+      "git_blob": "51650675bcd744b61878e21651db30d04299691b",
+      "sha256": "f34e7d7459b0984f52e2ee01abe2eef20987673f84de20d4d1dae21e8708973f",
+      "bytes": 23872,
+      "lines": 127,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/OWNER_RELEASE_REVIEW_1.26.1.md",
+      "git_blob": "d3c06be83ece67905add13fb16c3626ded083891",
+      "sha256": "f7987414cf4ba4e06bb4ff92be60d7e19931a1357183f7c6536ce3a71cf208e6",
+      "bytes": 2750,
+      "lines": 11,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/evidence/finance-enrollment-receipts.json",
+      "git_blob": "886db12b269ba802513040c89c47234a78083d43",
+      "sha256": "791dfb80bf082603a710e9cf2af8acc88f3c0e3b922ff2c2975d9c74212a7299",
+      "bytes": 113654,
+      "lines": 3428,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    },
+    {
+      "path": "docs/evidence/finance-payoff-retirement.json",
+      "git_blob": "230299d830009f7f811370ae04b707f392dda628",
+      "sha256": "38f904af705c40364667ef00177c74f07d4adba1c05050fb77b313e6ab75a727",
+      "bytes": 64543,
+      "lines": 2152,
+      "coverage": "Retained evidence/source-receipt classification; historical claims remain bounded to their named source and runtime."
+    }
+  ],
+  "historical_function_equivalence": {
+    "target": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "historical": "ebe20e9f8ee606f167116edae07840e89b9f58d5",
+    "path": "site/app/billing/finance_subscription.php",
+    "method": "Complete top-level PHP function declaration ending at a column-zero closing brace, excluding surrounding comments and final newline; validated25 unique declarations each.",
+    "functions": [
+      {
+        "name": "license_finance_subscription_contract",
+        "unchanged": true,
+        "historical_sha256": "132b5f8dae0f229e6895419d4f589c9a56fc9377280aee31eea74c7faf7ba20c",
+        "target_sha256": "132b5f8dae0f229e6895419d4f589c9a56fc9377280aee31eea74c7faf7ba20c",
+        "start_line": 9,
+        "end_line": 13
+      },
+      {
+        "name": "license_finance_subscription_replacement_contract",
+        "unchanged": true,
+        "historical_sha256": "9e777eaea2f88ecc6c65d203406fa2f38e592312e496e6b88097c7a9a060619c",
+        "target_sha256": "9e777eaea2f88ecc6c65d203406fa2f38e592312e496e6b88097c7a9a060619c",
+        "start_line": 14,
+        "end_line": 56
+      },
+      {
+        "name": "license_finance_subscription_history_row",
+        "unchanged": true,
+        "historical_sha256": "5bc11c43726f0190f0232cfd0c86ef49c424f68ddd41ce22dfb693b6b2a199b3",
+        "target_sha256": "5bc11c43726f0190f0232cfd0c86ef49c424f68ddd41ce22dfb693b6b2a199b3",
+        "start_line": 57,
+        "end_line": 61
+      },
+      {
+        "name": "license_finance_subscription_known_gateway_id",
+        "unchanged": true,
+        "historical_sha256": "bfca0699b2d5aeaf92952d902e13700e7e54d369739cbb99ba1a475a5498789c",
+        "target_sha256": "bfca0699b2d5aeaf92952d902e13700e7e54d369739cbb99ba1a475a5498789c",
+        "start_line": 62,
+        "end_line": 66
+      },
+      {
+        "name": "license_finance_subscription_row",
+        "unchanged": true,
+        "historical_sha256": "f8ed8990bac2ba146dbd5f468279fb66baee5e8f1fafd785961b58ef3bd54d20",
+        "target_sha256": "f8ed8990bac2ba146dbd5f468279fb66baee5e8f1fafd785961b58ef3bd54d20",
+        "start_line": 68,
+        "end_line": 72
+      },
+      {
+        "name": "license_finance_subscription_mark_review",
+        "unchanged": true,
+        "historical_sha256": "d0f7bd1b559d1e4b57336ba765f2d1bea9d130d87a9c3634afc559681561a315",
+        "target_sha256": "d0f7bd1b559d1e4b57336ba765f2d1bea9d130d87a9c3634afc559681561a315",
+        "start_line": 73,
+        "end_line": 89
+      },
+      {
+        "name": "license_finance_subscription_finalize",
+        "unchanged": true,
+        "historical_sha256": "221d166ad7d057f8b54211336e99768f65a9f30cac25417d3903a10d0a1f4004",
+        "target_sha256": "221d166ad7d057f8b54211336e99768f65a9f30cac25417d3903a10d0a1f4004",
+        "start_line": 90,
+        "end_line": 128
+      },
+      {
+        "name": "license_finance_subscription_payoff_due",
+        "unchanged": true,
+        "historical_sha256": "ce6b7ec30d65ee8b926943549d9c5a403ab3dd77e868bfb093ba6402fdf666a6",
+        "target_sha256": "ce6b7ec30d65ee8b926943549d9c5a403ab3dd77e868bfb093ba6402fdf666a6",
+        "start_line": 130,
+        "end_line": 152
+      },
+      {
+        "name": "license_finance_subscription_payoff_retire",
+        "unchanged": false,
+        "historical_sha256": "2edc39325127d86de3f2cfd9047f2713eb28775874c1e20f5e27c7625715ca81",
+        "target_sha256": "c8110e060e45094a9c4a50ab1518c7107423e563a98d0046d4f4703bcbf1f5cc",
+        "start_line": 154,
+        "end_line": 190
+      },
+      {
+        "name": "license_finance_subscription_sandbox_initial",
+        "unchanged": true,
+        "historical_sha256": "53a1f9b9aa9bcb7ff2b2599e8930624306428069079881a6aaf9c0c331b6f2da",
+        "target_sha256": "53a1f9b9aa9bcb7ff2b2599e8930624306428069079881a6aaf9c0c331b6f2da",
+        "start_line": 192,
+        "end_line": 204
+      },
+      {
+        "name": "license_finance_subscription_enrollment_offer",
+        "unchanged": true,
+        "historical_sha256": "c97f4dcd13f300e2c0e5c6ff09ff974709765e70b4f1048f948333b32e592c52",
+        "target_sha256": "c97f4dcd13f300e2c0e5c6ff09ff974709765e70b4f1048f948333b32e592c52",
+        "start_line": 206,
+        "end_line": 246
+      },
+      {
+        "name": "license_finance_subscription_reserve",
+        "unchanged": true,
+        "historical_sha256": "c28f90187092bf12366be6ccc80f29ab0c995a6fcc2b250c7301c081257ff486",
+        "target_sha256": "c28f90187092bf12366be6ccc80f29ab0c995a6fcc2b250c7301c081257ff486",
+        "start_line": 247,
+        "end_line": 264
+      },
+      {
+        "name": "license_finance_subscription_create_profile",
+        "unchanged": true,
+        "historical_sha256": "9441feaab75c065b57df833e2d0fcc6235d9156f9c4979c583b23c4b6f61a985",
+        "target_sha256": "9441feaab75c065b57df833e2d0fcc6235d9156f9c4979c583b23c4b6f61a985",
+        "start_line": 265,
+        "end_line": 295
+      },
+      {
+        "name": "license_finance_subscription_enroll_opaque",
+        "unchanged": true,
+        "historical_sha256": "50702f3231f4d855f92a92cb6adc3b6b38e16335420924aab12eddda1ef21684",
+        "target_sha256": "50702f3231f4d855f92a92cb6adc3b6b38e16335420924aab12eddda1ef21684",
+        "start_line": 296,
+        "end_line": 327
+      },
+      {
+        "name": "license_finance_subscription_replacement_reserve",
+        "unchanged": true,
+        "historical_sha256": "6a873fe67fe9d9e414b33307bc619efebb937cbfc553c28a25986250a92a897a",
+        "target_sha256": "6a873fe67fe9d9e414b33307bc619efebb937cbfc553c28a25986250a92a897a",
+        "start_line": 328,
+        "end_line": 341
+      },
+      {
+        "name": "license_finance_subscription_replacement_review",
+        "unchanged": true,
+        "historical_sha256": "e1df25bc36274305c8298a84d21800c84e1c131d7711651d3e1fb8d04f121af6",
+        "target_sha256": "e1df25bc36274305c8298a84d21800c84e1c131d7711651d3e1fb8d04f121af6",
+        "start_line": 342,
+        "end_line": 353
+      },
+      {
+        "name": "license_finance_subscription_replacement_declined",
+        "unchanged": true,
+        "historical_sha256": "a5a7ad99a477505deb74e78c8ad24b73b5137a00cf24ee7134a55ebed22ae16d",
+        "target_sha256": "a5a7ad99a477505deb74e78c8ad24b73b5137a00cf24ee7134a55ebed22ae16d",
+        "start_line": 354,
+        "end_line": 362
+      },
+      {
+        "name": "license_finance_subscription_signed_remaining_contract",
+        "unchanged": true,
+        "historical_sha256": "de9fdd9a8fc80a79de92aabffab1b9af3116c5afdc1e9bb87dfed33b0b77768b",
+        "target_sha256": "de9fdd9a8fc80a79de92aabffab1b9af3116c5afdc1e9bb87dfed33b0b77768b",
+        "start_line": 364,
+        "end_line": 374
+      },
+      {
+        "name": "license_finance_subscription_replacement_finalize",
+        "unchanged": true,
+        "historical_sha256": "8daaebcce03e1118894abb92513a4ab429381be07dc37db2e665e539901d26e0",
+        "target_sha256": "8daaebcce03e1118894abb92513a4ab429381be07dc37db2e665e539901d26e0",
+        "start_line": 375,
+        "end_line": 426
+      },
+      {
+        "name": "license_finance_subscription_replacement_retire",
+        "unchanged": false,
+        "historical_sha256": "018374f3edc72de04aedb41e63ad793658d4d6c92bc02b39c515b1ecd15be453",
+        "target_sha256": "300df0336d9b5bd84b9026f077b991b6aa27639062d34aadfcf4b734c87121b8",
+        "start_line": 428,
+        "end_line": 451
+      },
+      {
+        "name": "license_finance_subscription_reenroll_opaque",
+        "unchanged": false,
+        "historical_sha256": "c1f7ed26e50e377672d1f64f9d433256ca6f70f657cdad8afdc52e87afeb6845",
+        "target_sha256": "53652e71e677847bc809f290c407255f2bf5b910d06ab8b0afcb9f47a1ec0c8e",
+        "start_line": 452,
+        "end_line": 532
+      },
+      {
+        "name": "license_finance_subscription_reconcile",
+        "unchanged": false,
+        "historical_sha256": "7665800a144a511cab76561576ba678cc27c302076e7ff6519f2a3662f8c670f",
+        "target_sha256": "fb65650803c5f23a6877fe7be0e41add80f1e14dca96ed29e09c9c1e94112180",
+        "start_line": 534,
+        "end_line": 682
+      },
+      {
+        "name": "license_finance_subscription_charge_reconcile",
+        "unchanged": true,
+        "historical_sha256": "d78f4c53844c8b59f63d94c340aaea31680ca0cbd8e7c0d4a71dabb61f4a4cfe",
+        "target_sha256": "d78f4c53844c8b59f63d94c340aaea31680ca0cbd8e7c0d4a71dabb61f4a4cfe",
+        "start_line": 684,
+        "end_line": 697
+      },
+      {
+        "name": "license_finance_subscription_lifecycle_review",
+        "unchanged": true,
+        "historical_sha256": "c030c5525ffc80c18fecbcb6153b7df4c4a1d5b8ae545a7abcd0e4029b9ceccf",
+        "target_sha256": "c030c5525ffc80c18fecbcb6153b7df4c4a1d5b8ae545a7abcd0e4029b9ceccf",
+        "start_line": 699,
+        "end_line": 728
+      },
+      {
+        "name": "license_finance_subscription_settle",
+        "unchanged": true,
+        "historical_sha256": "9e1fdd663525e1470f1f395ba01be8f50dbe66ca00e359e31df7f8995d2ffce2",
+        "target_sha256": "9e1fdd663525e1470f1f395ba01be8f50dbe66ca00e359e31df7f8995d2ffce2",
+        "start_line": 729,
+        "end_line": 789
+      }
+    ]
+  },
+  "retained_evidence_source_map": {
+    "target": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "baseline": "1c44ca120e7768998fafa720b3e1c4c85990c330",
+    "records": [
+      {
+        "document": "docs/evidence/continuation-2026-11-01/licensing-action-boundary-local.json",
+        "matches": [],
+        "mismatches": []
+      },
+      {
+        "document": "docs/evidence/continuation-2026-11-01/licensing-workspace-local.json",
+        "matches": [],
+        "mismatches": []
+      },
+      {
+        "document": "docs/evidence/finance-capture-snapshot-native.json",
+        "matches": [],
+        "mismatches": [
+          {
+            "path": "site/app/billing/finance_charge.php",
+            "recorded_sha256": "a0fc47eee4511a382df9f0a634c16150743a6a5c31f42a6e8c8bff799c880b7f",
+            "target_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-charge-attempt-results.json",
+        "matches": [],
+        "mismatches": [
+          {
+            "path": "site/app/billing/finance_charge.php",
+            "recorded_sha256": "89101ddc2446f20d655f8e1b5dda02f1d4ffe0c43044fae20d219daf2d44ad6e",
+            "target_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-enrollment-payoff-guard.json",
+        "matches": [
+          {
+            "path": "tests/finance_enrollment_payoff_native.php",
+            "recorded_sha256": "7071014608d6c5ff9fb9d20d47ef85e6df9e486d64f16b0de2c0fe4935bc0d03",
+            "target_sha256": "7071014608d6c5ff9fb9d20d47ef85e6df9e486d64f16b0de2c0fe4935bc0d03"
+          },
+          {
+            "path": "tests/finance_enrollment_payoff_boundaries.php",
+            "recorded_sha256": "3d574b75e84586c69542681a365ed18df800c6ece61d0ffb600ee7e1d6788655",
+            "target_sha256": "3d574b75e84586c69542681a365ed18df800c6ece61d0ffb600ee7e1d6788655"
+          },
+          {
+            "path": "tests/finance_enrollment_sandbox_boundary.php",
+            "recorded_sha256": "3501501ee50314803b95aa1733499591ec42d6c140e68a6949365b5bd6b5a0fe",
+            "target_sha256": "3501501ee50314803b95aa1733499591ec42d6c140e68a6949365b5bd6b5a0fe"
+          }
+        ],
+        "mismatches": [
+          {
+            "path": "site/app/billing/finance_subscription.php",
+            "recorded_sha256": "28ecafb8c6f4d9c397f784dada845d68451e67b739ee7fbca3037a0dafb9049f",
+            "target_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9"
+          },
+          {
+            "path": ".github/workflows/recurring-billing-native.yml",
+            "recorded_sha256": "f4b9237bc6a5f1b6bf5b583917d76f2ecab9abfd0fc0fec0e4430398628bc218",
+            "target_sha256": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-enrollment-receipts.json",
+        "matches": [
+          {
+            "path": "site/app/billing/finance_payment_review.php",
+            "recorded_sha256": "490728d01e5d0d04363b2f0ce48b314f55fa942a427e10da30dfe6bfb63b7295",
+            "target_sha256": "490728d01e5d0d04363b2f0ce48b314f55fa942a427e10da30dfe6bfb63b7295"
+          },
+          {
+            "path": "site/app/licenses/finance_installments.php",
+            "recorded_sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+            "target_sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae"
+          },
+          {
+            "path": "site/app/licenses/financing_policy.php",
+            "recorded_sha256": "696a21991d9392efae18ed2bbb6a02f225b28b3034e75c8e63cb4905046ec1d4",
+            "target_sha256": "696a21991d9392efae18ed2bbb6a02f225b28b3034e75c8e63cb4905046ec1d4"
+          },
+          {
+            "path": "site/portal/views/financing.php",
+            "recorded_sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8",
+            "target_sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8"
+          },
+          {
+            "path": "tests/finance_subscription_lifecycle.php",
+            "recorded_sha256": "5dfbc58f2340483d43e5a89ebaf9ba365507e06e8fd5c4526c9880ebc0013534",
+            "target_sha256": "5dfbc58f2340483d43e5a89ebaf9ba365507e06e8fd5c4526c9880ebc0013534"
+          },
+          {
+            "path": "tests/finance_replacement_pending_native.php",
+            "recorded_sha256": "a50d417723e0bcb2bbc008bd5ad7a20f00295865d63dc4745c108cb478e5297e",
+            "target_sha256": "a50d417723e0bcb2bbc008bd5ad7a20f00295865d63dc4745c108cb478e5297e"
+          },
+          {
+            "path": "tests/finance_replacement_payoff_boundaries.php",
+            "recorded_sha256": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514",
+            "target_sha256": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514"
+          },
+          {
+            "path": "tests/finance_initial_receipts_native.php",
+            "recorded_sha256": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef",
+            "target_sha256": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef"
+          },
+          {
+            "path": "tests/finance_initial_receipts_boundaries.php",
+            "recorded_sha256": "587c3590d6cfcb4af4d5313cb2b26a5f6bd1215d0710e0b906a3e9aeb23f7d06",
+            "target_sha256": "587c3590d6cfcb4af4d5313cb2b26a5f6bd1215d0710e0b906a3e9aeb23f7d06"
+          }
+        ],
+        "mismatches": [
+          {
+            "path": "site/app/billing/finance_subscription.php",
+            "recorded_sha256": "e3b05ecaaec95653ae8a9b63e68e11eb1769d11b9db6e37e451d6e7b0450b8e1",
+            "target_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9"
+          },
+          {
+            "path": "tests/finance_replacement_receipts_native.php",
+            "recorded_sha256": "2094d912d1bb9d57397a8f76334c84288e4aa1696a0a2be5e12d398891e58b98",
+            "target_sha256": "2aac58b0831628f4c420afbd52a16f262d3b6445d8f6cfc6c7cc1bb75bbe18da"
+          },
+          {
+            "path": ".github/workflows/recurring-billing-native.yml",
+            "recorded_sha256": "0d057f30d503a9a45a64ac3b0fc05acb3eada370b5ac71d78c7004dc09954ebe",
+            "target_sha256": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4"
+          },
+          {
+            "path": "site/admin/views/studio/licenses.php",
+            "recorded_sha256": "c83d686397b7b7dea178ec8c0b954441826f5de2c902449c25410081f7872b18",
+            "target_sha256": "ecb1ed274ab43b72a442f288d107e4def377b7f3cdf87db8010d112bf17e055a"
+          },
+          {
+            "path": "site/portal/controllers/actions.php",
+            "recorded_sha256": "5a8aabf03b887243345a0bf1b571b868a59b7f64b0ab78a4a3889e063df7a630",
+            "target_sha256": "e0c73a3679def7af53916ecbd6a41cccdbb73b1c05bf0897e2f9e755616c7a4e"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-initial-enrollment-review.json",
+        "matches": [
+          {
+            "path": "tests/finance_initial_enrollment_handler.php",
+            "recorded_sha256": "a739420f11b75bf9b419388cd4f8137800b1cb267ac18b36e4367b4f8393bd27",
+            "target_sha256": "a739420f11b75bf9b419388cd4f8137800b1cb267ac18b36e4367b4f8393bd27"
+          }
+        ],
+        "mismatches": [
+          {
+            "path": "site/app/billing/finance_subscription.php",
+            "recorded_sha256": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+            "target_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9"
+          },
+          {
+            "path": "site/portal/views/financing.php",
+            "recorded_sha256": "63566ba0f23f70b645f4f1a56f30f0f0058ad7e7a3edcec3d648b69fd854db21",
+            "target_sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8"
+          },
+          {
+            "path": "tests/finance_initial_enrollment_native.php",
+            "recorded_sha256": "036ecb11d7b9ec7c88e957394067b46d7a4e1113e3e62ae828b0dc3872609618",
+            "target_sha256": "0632b77c78a78992c81505d9ec30e142373d4c42c2a1608dbb38f8e312d05de3"
+          },
+          {
+            "path": ".github/workflows/recurring-billing-native.yml",
+            "recorded_sha256": "386bc2ae8857abaf0ae2c0a5b2384ec3978442f00e95ea6e58b21a99a4d880a5",
+            "target_sha256": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-initial-sync-review.json",
+        "matches": [
+          {
+            "path": "site/app/licenses/financing_offers.php",
+            "recorded_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+            "target_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4"
+          },
+          {
+            "path": "tests/finance_initial_enrollment_native.php",
+            "recorded_sha256": "0632b77c78a78992c81505d9ec30e142373d4c42c2a1608dbb38f8e312d05de3",
+            "target_sha256": "0632b77c78a78992c81505d9ec30e142373d4c42c2a1608dbb38f8e312d05de3"
+          },
+          {
+            "path": "tests/finance_initial_sync_native_cases.php",
+            "recorded_sha256": "24eec6661f9da8345cddaab186d1ada888c8f2364de0765894262d1267eda483",
+            "target_sha256": "24eec6661f9da8345cddaab186d1ada888c8f2364de0765894262d1267eda483"
+          }
+        ],
+        "mismatches": [
+          {
+            "path": "site/app/licenses/financing.php",
+            "recorded_sha256": "9f6160301f95f65d39449c63d4e8e8ad2f0d023902f5b91be972c206a61f45cd",
+            "target_sha256": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb"
+          },
+          {
+            "path": "site/app/billing/finance_subscription.php",
+            "recorded_sha256": "9e1b9ad14db035c8227e228f82780d0410e682ad3cccc1a938b5f02193aa1f1d",
+            "target_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9"
+          },
+          {
+            "path": "site/portal/views/financing.php",
+            "recorded_sha256": "0b253351603b887cf76055769364135cfd037f08bdcf8452dfe2e2970817faa9",
+            "target_sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-payoff-retirement.json",
+        "matches": [
+          {
+            "path": "tests/finance_payoff_retirement_boundaries.php",
+            "recorded_sha256": "6f67a369ba62c6adca3baedec6dca2da7ec9392e6f4c127246d16bf272483452",
+            "target_sha256": "6f67a369ba62c6adca3baedec6dca2da7ec9392e6f4c127246d16bf272483452"
+          },
+          {
+            "path": "tests/finance_payoff_retirement_native.php",
+            "recorded_sha256": "64bb7e8997a7b26995ed52e72930ccc252f9c36431303f37c154395412272de4",
+            "target_sha256": "64bb7e8997a7b26995ed52e72930ccc252f9c36431303f37c154395412272de4"
+          },
+          {
+            "path": "tests/finance_payoff_retirement_settlement.php",
+            "recorded_sha256": "1aceebbaa10726d56384f81ea0201a5039cd58cf508bf48e1f957779cc2aa8eb",
+            "target_sha256": "1aceebbaa10726d56384f81ea0201a5039cd58cf508bf48e1f957779cc2aa8eb"
+          },
+          {
+            "path": "site/app/billing/finance_authorize_net.php",
+            "recorded_sha256": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+            "target_sha256": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f"
+          },
+          {
+            "path": "site/app/licenses/financing.php",
+            "recorded_sha256": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+            "target_sha256": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb"
+          }
+        ],
+        "mismatches": [
+          {
+            "path": "tests/finance_payoff_retirement_guards.php",
+            "recorded_sha256": "52a554ba1714cb802075fe02dce8f7c78fd4b004453395cf75b963a76e6a8ad4",
+            "target_sha256": "ec4ac48775871bc4bec323b8e3ccd5f07f8b9f087edd1dc5071a221e8992ed16"
+          },
+          {
+            "path": "site/app/billing/finance_subscription.php",
+            "recorded_sha256": "90e15054e3e82a86cb599e7e016f643735314fcd0a653128201a974e41c11b80",
+            "target_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9"
+          },
+          {
+            "path": "site/app/licenses/finance_installments.php",
+            "recorded_sha256": "95940e92727463cc7cde1d2b614c6bbb2121f1c3182220b44ff07c91c1716fb9",
+            "target_sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae"
+          },
+          {
+            "path": ".github/workflows/recurring-billing-native.yml",
+            "recorded_sha256": "cac42d6c26d5bbca47d82e23df6d3db0d6ce672428fced19a5c9e120e96d338d",
+            "target_sha256": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-reconcile-audit-native.json",
+        "matches": [],
+        "mismatches": []
+      },
+      {
+        "document": "docs/evidence/finance-reconcile-payoff-fixtures.json",
+        "matches": [],
+        "mismatches": []
+      },
+      {
+        "document": "docs/evidence/finance-replacement-payoff.json",
+        "matches": [
+          {
+            "path": "tests/finance_replacement_payoff_native.php",
+            "recorded_sha256": "eaae47960f586f6b9aef01d744e56e05bfe4b5ac78350d620a361e597d928464",
+            "target_sha256": "eaae47960f586f6b9aef01d744e56e05bfe4b5ac78350d620a361e597d928464"
+          }
+        ],
+        "mismatches": [
+          {
+            "path": "site/app/billing/finance_subscription.php",
+            "recorded_sha256": "4c640ccdfe269f3d463edcf3a35bac5c4e0dccb7089f5ba303679bc3dd1e8241",
+            "target_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9"
+          },
+          {
+            "path": "tests/finance_replacement_payoff_boundaries.php",
+            "recorded_sha256": "d64c5793c01b675638e8d360c8db054cf84c725736eb845601eba39a73edfbdc",
+            "target_sha256": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514"
+          },
+          {
+            "path": ".github/workflows/recurring-billing-native.yml",
+            "recorded_sha256": "95b587655d2af76d66ec002d152a85d3b1a7c5c4dc211514c5a1ffecfcda299a",
+            "target_sha256": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/finance-sandbox-profile-review.json",
+        "matches": [
+          {
+            "path": "site/app/billing/finance_charge.php",
+            "recorded_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+            "target_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003"
+          },
+          {
+            "path": "tests/finance_charge_response_native.php",
+            "recorded_sha256": "fc033f1970ada2277fb2cf7e36b12dd6982ee137ace2d9816a269df59f779374",
+            "target_sha256": "fc033f1970ada2277fb2cf7e36b12dd6982ee137ace2d9816a269df59f779374"
+          },
+          {
+            "path": "tests/finance_charge_attempt_bindings.php",
+            "recorded_sha256": "528f2f27e41cfbee6563c1c245e6aa1e3728fa5ea98935e692130a738b9bc2ff",
+            "target_sha256": "528f2f27e41cfbee6563c1c245e6aa1e3728fa5ea98935e692130a738b9bc2ff"
+          },
+          {
+            "path": "site/app/billing/finance_charge.php",
+            "recorded_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+            "target_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003"
+          }
+        ],
+        "mismatches": []
+      },
+      {
+        "document": "docs/evidence/pr266-software-guard-order.json",
+        "matches": [],
+        "mismatches": [
+          {
+            "path": ".github/workflows/application-tests.yml",
+            "recorded_sha256": "53b8a9dc999bb7fbf67e09e8c468d5d84a1f961dc71d8c55f8ee794e3307cd7a",
+            "target_sha256": "9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c"
+          },
+          {
+            "path": "tests/acceptance_artifacts_test.py",
+            "recorded_sha256": "3f884c782892e6123e278f8c1820fcd354206b25faa3e59f11edd5392ed703ad",
+            "target_sha256": "683ff6d60c867cdb0d61ffd019b8e69e6cc7da08a86604fc28fa0e65b1a34e6e"
+          }
+        ]
+      },
+      {
+        "document": "docs/evidence/software-native-review-admission.json",
+        "matches": [],
+        "mismatches": []
+      }
+    ]
+  },
+  "software_source_reuse": [
+    {
+      "document": "docs/CODEX_SOFTWARE_PRODUCT_VALIDATION_REVIEW.md",
+      "source": "14008290deb933fc97049c1ca2602a19e35ab8b7",
+      "identical_paths": [
+        "site/api/handlers/license.php"
+      ],
+      "changed_paths": [
+        "site/app/licenses/software_grants.php"
+      ],
+      "limit": "Exact handler source reusable; full grant helper changed; not broad approval."
+    },
+    {
+      "document": "docs/CODEX_SOFTWARE_DOWNLOAD_SOURCE_REVIEW.md",
+      "source": "220cab22ca299f114e486983a098554072d271ce",
+      "identical_paths": [
+        "site/portal/views/software.php",
+        "site/api/software-download.php",
+        "site/app/licenses/software_asset_access.php"
+      ],
+      "limit": "Retained focused HTTP/SQL source scope can be reused; no fresh gateway/Apache/full acceptance claim."
+    },
+    {
+      "document": "docs/CODEX_SOFTWARE_SEAT_ACCEPTANCE_REVIEW.md",
+      "source": "0bf2c5d543b77bf333f4315a663f5bab5b45c850",
+      "identical_paths": [
+        "site/portal/views/software.php",
+        "site/api/software-download.php"
+      ],
+      "limit": "Retained scoped UI/endpoint evidence; no whole-PR approval."
+    },
+    {
+      "document": "docs/CODEX_SOFTWARE_DOMAIN_LOCK_REVIEW.md",
+      "source": "81ae93c945c5d6b941c6dcbae6c230fcf14472d6",
+      "identical_paths": [],
+      "changed_paths": [
+        "site/app/licenses/software_grants.php"
+      ],
+      "limit": "Current post-lock active/expiry checks read directly, but whole historical helper differs; no wholesale source-equivalence assertion."
+    }
+  ],
+  "coverage_gaps": [
+    "Two exact original separate failing probe executables/raw report bodies not recovered in this pass; do not relabel adjacent passing matrices as closure.",
+    "Other software settlement/reversal/webhook/product-asset/notices flows and several finance/recurring migrations were inventoried but not exhaustively source-reviewed after the P1 blockers established non-clearance.",
+    "Shared admin license actions and portal rendering received only stated partial coverage; do not infer full independent approval from prior producer reports.",
+    "Recurring foundation/checkout schema and migration integration requires separate coverage from the parent/hosting lane or a follow-up.",
+    "No fresh native SQL, installed HTTP/Chromium, Apache, upgrade, runtime-matrix, real gateway, release or exact-main acceptance was performed."
+  ],
+  "retained_blocking_comments": {
+    "file": "/workspace/scratch/8cc2b4f257ab/primary-finance-blocking-comments.json",
+    "sha256": "e841ef56df313db3a8918eefb9c986c3f8910b448957e8e9d5dda61a5ff1a7db",
+    "scope": "Read-only retrieval of existing PR268 coordination comments, not new runtime reproduction. Neither comment supplies an executable or report artifact path."
+  },
+  "preserved_successor_work": {
+    "comment_id": 6488739430,
+    "url": "https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6488739430",
+    "created_at": "2026-10-29T05:24:07Z",
+    "retained_file": "/workspace/scratch/8cc2b4f257ab/primary-finance-blocking-comments-extended.json",
+    "retained_file_sha256": "9aa9b77cf3ba94c5fd066037b42c99313caf4a8323a223c6a610a62c9aa7e005",
+    "claim": "Unknown replacement/payoff recovery on an owned branch had an expanded454-check suite passing all four PHP/database combinations; security/compatibility matrix still completing. Post-enrollment overlap remained separately claimed.",
+    "review_disposition": "Locate and reuse preserved successor source/evidence before new implementation. This comment neither identifies an accepted84 repair nor proves exact current-source acceptance; no claim the defect was never fixed anywhere.",
+    "discovery_owner": "Root assigned a separate successor-discovery lane."
+  }
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "test": "license_finance_source_contract.php",
+    "exit_code": 255,
+    "test_sha256": "eab797ada4a051236e950d01b884451f0f246ef100ccfff4f9c018d7912541bb",
+    "stdout_tail": "tes site-use-only agreements\nPASS Website bundle endpoint follows financed-license payment access and fails closed on unknown state\nPASS Client workspace hides financed website bundles while payment access is locked\nPASS Published project release streaming rechecks financed-license access before file delivery\nPASS Project release UI hides financed downloads while payment access is locked or uncertain\nPASS Online checkout is scoped to financing payment requests\nPASS Financing checkout uses tokenized card fields\nPASS Raw card/CVV fields have no submitted names\nPASS Financing payment links use dedicated idempotent request preparation\nPASS Finance production charging requires code and owner-review gates\nPASS Finance cadence policy defines monthly interval\nPASS Finance ARB request is finite\nPASS Generic recurring lifecycle detects finance-managed schedules\nPASS Generic recurring invoice path cannot issue financing installments\nPASS Down-payment agreements begin payment-locked\nPASS Electronic signature binds exact finance terms and evidence hash\nPASS Service boundary and signature path refuse unpaid commercial rights in finance offers\nPASS Public validation checks product/domain authority before evaluating private financing state\nPASS Initial-payment and delinquency states expose separate definitive payment-lock reasons\nPASS Paid-off state is retained as a one-way financing boundary\n",
+    "stderr": "PHP Fatal error:  Uncaught RuntimeException: FAIL Permanent payoff cannot override an explicit owner license deactivation in /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/license_finance_source_contract.php:11\nStack trace:\n#0 /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/license_finance_source_contract.php(107): fc_ok()\n#1 {main}\n  thrown in /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/license_finance_source_contract.php on line 11\n"
+  },
+  {
+    "test": "license_finance_replacement_contract.php",
+    "exit_code": 0,
+    "test_sha256": "0a4e540ddc50e807dc387101088ddd22ab718caeac52b46bd57a956d91696278",
+    "stdout_tail": "unt prevents cancellation and replacement\nPASS Uncertain gateway transport prevents replacement billing\nFinance replacement retirement contract: PASS\n",
+    "stderr": ""
+  },
+  {
+    "test": "finance_replacement_outcomes.php",
+    "exit_code": 255,
+    "test_sha256": "a01812e1c886868b49a0ade2439d874de5df9b6fa924e50206844c4f7b7c1b19",
+    "stdout_tail": "",
+    "stderr": "PHP Fatal error:  Uncaught Error: Call to undefined function service_plans_current_client() in /tmp/cwp-finance-outcome-EufY20:55\nStack trace:\n#0 /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/finance_replacement_outcomes.php(75): license_finance_subscription_reenroll_opaque()\n#1 {main}\n  thrown in /tmp/cwp-finance-outcome-EufY20 on line 55\n"
+  },
+  {
+    "test": "finance_reconcile_snapshot.php",
+    "exit_code": 255,
+    "test_sha256": "33440173ad595bd029408e9ea8b56131dc31e0b0e25e314c2515d57a5534c4ed",
+    "stdout_tail": "",
+    "stderr": "PHP Fatal error:  Uncaught Error: Call to undefined function license_finance_recovery_open() in /tmp/cwp-reconcile-R2dkZN:17\nStack trace:\n#0 /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/finance_reconcile_snapshot.php(49): license_finance_subscription_reconcile()\n#1 {main}\n  thrown in /tmp/cwp-reconcile-R2dkZN on line 17\n"
+  },
+  {
+    "test": "finance_subscription_lifecycle.php",
+    "exit_code": 0,
+    "test_sha256": "5dfbc58f2340483d43e5a89ebaf9ba365507e06e8fd5c4526c9880ebc0013534",
+    "stdout_tail": "},\n        {\n            \"name\": \"Cancellation remains cancelled when a later verified payment settles\",\n            \"passed\": true\n        }\n    ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "test": "finance_payoff_retirement_guards.php",
+    "exit_code": 2,
+    "test_sha256": "ec4ac48775871bc4bec323b8e3ccd5f07f8b9f087edd1dc5071a221e8992ed16",
+    "stdout_tail": "",
+    "stderr": ""
+  },
+  {
+    "test": "finance_charge_attempt_bindings.php",
+    "exit_code": 0,
+    "test_sha256": "528f2f27e41cfbee6563c1c245e6aa1e3728fa5ea98935e692130a738b9bc2ff",
+    "stdout_tail": ": \"Actual checkout and reconciliation functions; synthetic provider, owner and mutation doubles. No gateway, SQL, payment or license-access claim.\"\n}\n",
+    "stderr": ""
+  },
+  {
+    "test": "finance_initial_enrollment_handler.php",
+    "exit_code": 0,
+    "test_sha256": "a739420f11b75bf9b419388cd4f8137800b1cb267ac18b36e4367b4f8393bd27",
+    "stdout_tail": "er with synthetic admission, reservation and provider boundaries; native companion verifies real SQL and ledger admission. No gateway\\/HTTP claim.\"\n}\n",
+    "stderr": ""
+  },
+  {
+    "test": "finance_enrollment_sandbox_boundary.php",
+    "exit_code": 0,
+    "test_sha256": "3501501ee50314803b95aa1733499591ec42d6c140e68a6949365b5bd6b5a0fe",
+    "stdout_tail": "    \"scope\": \"Exact sandbox exception function with synthetic mode and unavailable-ledger boundaries; no production setting or gateway is changed.\"\n}\n",
+    "stderr": ""
+  }
+]

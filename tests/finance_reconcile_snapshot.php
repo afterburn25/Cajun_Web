@@ -9,6 +9,8 @@ try{file_put_contents($module,"<?php\ndeclare(strict_types=1);\n".$body);require
 $fixture=[];
 function support_current():bool{return false;}
 function license_finance_gateway_ready():bool{return true;}
+// These retained-current-ID fixtures predate replacement reservations.
+function license_finance_recovery_open(string $offer,bool $lock=false):?array{return null;}
 function license_finance_offer_id(string $id):void{if($id!==str_repeat('a',32))throw new LogicException('Unexpected offer');}
 function staff_owner(string $password):array{if($password!=='synthetic-password')throw new LogicException('Unexpected password');return ['id'=>1];}
 function license_finance_offer_row(string $id):array{return ['status'=>'signed','installments'=>6,'license_id'=>7];}

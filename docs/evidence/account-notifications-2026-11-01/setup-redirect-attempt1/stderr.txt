@@ -1,0 +1,79 @@
+Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:231>>) at /tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:466
+handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:231>>) at /tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:466>
+Traceback (most recent call last):
+  File "/workspace/cwp-account-8cc2b4f257ab/corrected/tests/account_notification_browser.py", line 115, in <module>
+    check('Actual 20i navigation opens the protected workspace',parse_qs(urlsplit(admin_page.url).query)=={'view':['provider-settings']} and admin_page.locator('[data-provider-hub]').count()==1 and core_admin_destinations(admin_page))
+  File "/workspace/cwp-account-8cc2b4f257ab/corrected/tests/account_notification_browser.py", line 16, in check
+    if not ok:raise AssertionError(name)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Actual 20i navigation opens the protected workspace
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 467, in _done_callback
+    exc = future.exception()
+          ^^^^^^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_browser_context.py", line 246, in _on_route
+    handled = await route_handler.handle(route)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_helper.py", line 424, in handle
+    return await self._handle_internal(route)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_helper.py", line 460, in _handle_internal
+    await handler_finished_future
+asyncio.exceptions.CancelledError
+Exception in callback SyncBase._sync.<locals>.<lambda>(<Task cancell...twork.py:493>>) at /tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py:111
+handle: <Handle SyncBase._sync.<locals>.<lambda>(<Task cancell...twork.py:493>>) at /tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py:111>
+Traceback (most recent call last):
+  File "/workspace/cwp-account-8cc2b4f257ab/corrected/tests/account_notification_browser.py", line 115, in <module>
+    check('Actual 20i navigation opens the protected workspace',parse_qs(urlsplit(admin_page.url).query)=={'view':['provider-settings']} and admin_page.locator('[data-provider-hub]').count()==1 and core_admin_destinations(admin_page))
+  File "/workspace/cwp-account-8cc2b4f257ab/corrected/tests/account_notification_browser.py", line 16, in check
+    if not ok:raise AssertionError(name)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Actual 20i navigation opens the protected workspace
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 111, in <lambda>
+    task.add_done_callback(lambda _: g_self.switch())
+                                     ^^^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_helper.py", line 451, in _handler
+    self.handler(route, route.request)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 123, in wrapper_func
+    return handler(
+           ^^^^^^^^
+  File "/workspace/cwp-account-8cc2b4f257ab/corrected/tests/account_notification_browser.py", line 94, in route
+    else:req.continue_()
+         ^^^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 963, in continue_
+    self._sync(
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_network.py", line 506, in continue_
+    return await self._handle_route(_inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_network.py", line 452, in _handle_route
+    await callback()
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_network.py", line 504, in _inner
+    await self._inner_continue(False)
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_network.py", line 510, in _inner_continue
+    await self._race_with_page_close(
+  File "/tmp/cwp-venv/lib/python3.12/site-packages/playwright/_impl/_network.py", line 546, in _race_with_page_close
+    await asyncio.wait(
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/tasks.py", line 464, in wait
+    return await _wait(fs, timeout, return_when, loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/tasks.py", line 550, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed

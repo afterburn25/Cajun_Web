@@ -1,0 +1,1899 @@
+{
+    "passed": true,
+    "count": 232,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "untouched-before-normal admits only the untouched remaining contract",
+            "passed": true
+        },
+        {
+            "name": "untouched-before-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "untouched-before-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "untouched-before-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "untouched-before-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "untouched-before-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "prefix_one-before-normal admits only the untouched remaining contract",
+            "passed": true
+        },
+        {
+            "name": "prefix_one-before-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "prefix_one-before-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "prefix_one-before-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "prefix_one-before-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "prefix_one-before-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "prefix_two-before-normal admits only the untouched remaining contract",
+            "passed": true
+        },
+        {
+            "name": "prefix_two-before-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "prefix_two-before-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "prefix_two-before-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "prefix_two-before-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "prefix_two-before-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-before-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "partial_first-before-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-before-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-before-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-before-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-before-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_later-before-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "paid_later-before-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_later-before-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_later-before-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_later-before-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_later-before-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_later-before-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "partial_later-before-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_later-before-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_later-before-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_later-before-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_later-before-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-reservation-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "partial_first-reservation-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-reservation-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-reservation-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-reservation-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-reservation-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_later-reservation-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "paid_later-reservation-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_later-reservation-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_later-reservation-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_later-reservation-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_later-reservation-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_later-reservation-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "partial_later-reservation-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_later-reservation-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_later-reservation-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_later-reservation-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_later-reservation-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_first-reservation-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "paid_first-reservation-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_first-reservation-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_first-reservation-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_first-reservation-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_first-reservation-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-after_retirement-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "partial_first-after_retirement-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-after_retirement-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-after_retirement-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-after_retirement-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-after_retirement-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_later-after_retirement-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "paid_later-after_retirement-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_later-after_retirement-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_later-after_retirement-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_later-after_retirement-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_later-after_retirement-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_later-after_retirement-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "partial_later-after_retirement-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_later-after_retirement-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_later-after_retirement-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_later-after_retirement-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_later-after_retirement-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_first-after_retirement-normal refuses create when remaining receipts changed",
+            "passed": true
+        },
+        {
+            "name": "paid_first-after_retirement-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_first-after_retirement-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_first-after_retirement-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_first-after_retirement-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_first-after_retirement-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-normal prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_create-normal prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_create-normal prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_create-normal corrected next contract excludes paid prefix",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_readback-normal prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "paid_later-during_readback-normal prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_later-during_readback-normal prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "paid_first-during_readback-normal corrected next contract excludes paid prefix",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout revocation preserves the same authenticated identity",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout revoked owner never reaches gateway",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout denied owner preserves retained candidate and audit",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout authority fixture restores exact owner profile and session",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout owner can finish known-candidate retirement",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout retry preserves receipts and payoff state",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-readback_timeout retry does not create another subscription",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback owner can finish known-candidate retirement",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback retry preserves receipts and payoff state",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-wrong_readback retry does not create another subscription",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error scheduler can finish known-candidate retirement",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error retry preserves receipts and payoff state",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_error retry does not create another subscription",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout owner can finish known-candidate retirement",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout retry preserves receipts and payoff state",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-cancel_timeout retry does not create another subscription",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply scheduler can finish known-candidate retirement",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply retry preserves receipts and payoff state",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-lost_cancel_reply retry does not create another subscription",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active retires or visibly retains the obsolete candidate",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active retains actual owner receipts",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active preserves license and domains",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active does not invent permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active never performs provider calls in a transaction",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active retains candidate identity and predecessor history",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active original subscription remains terminal",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active prevents duplicate create",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active scheduler can finish known-candidate retirement",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active retry preserves receipts and payoff state",
+            "passed": true
+        },
+        {
+            "name": "partial_first-during_create-still_active retry does not create another subscription",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "case": "untouched-before-normal",
+            "result": "pending_first_payment",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "prefix_one-before-normal",
+            "result": "pending_first_payment",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "prefix_two-before-normal",
+            "result": "pending_first_payment",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "partial_first-before-normal",
+            "result": null,
+            "error": "RuntimeException: A remaining financing installment has payment history. Reconcile it before restoring automatic billing.",
+            "calls": []
+        },
+        {
+            "case": "paid_later-before-normal",
+            "result": null,
+            "error": "RuntimeException: A later financing installment already has payment. Reconcile the remaining schedule before restoring automatic billing.",
+            "calls": []
+        },
+        {
+            "case": "partial_later-before-normal",
+            "result": null,
+            "error": "RuntimeException: A remaining financing installment has payment history. Reconcile it before restoring automatic billing.",
+            "calls": []
+        },
+        {
+            "case": "partial_first-reservation-normal",
+            "result": null,
+            "error": "RuntimeException: A remaining financing installment has payment history. Reconcile it before restoring automatic billing.",
+            "calls": []
+        },
+        {
+            "case": "paid_later-reservation-normal",
+            "result": null,
+            "error": "RuntimeException: A later financing installment already has payment. Reconcile the remaining schedule before restoring automatic billing.",
+            "calls": []
+        },
+        {
+            "case": "partial_later-reservation-normal",
+            "result": null,
+            "error": "RuntimeException: A remaining financing installment has payment history. Reconcile it before restoring automatic billing.",
+            "calls": []
+        },
+        {
+            "case": "paid_first-reservation-normal",
+            "result": null,
+            "error": "RuntimeException: Remaining financing periods changed before replacement reservation.",
+            "calls": []
+        },
+        {
+            "case": "partial_first-after_retirement-normal",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "paid_later-after_retirement-normal",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_later-after_retirement-normal",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "paid_first-after_retirement-normal",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_create-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "paid_later-during_create-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_later-during_create-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "paid_first-during_create-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_readback-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "paid_later-during_readback-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860029",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860029",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860029",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_later-during_readback-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860031",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860031",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860031",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "paid_first-during_readback-normal",
+            "result": "billing_suspended",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860033",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860033",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860033",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_create-readback_timeout",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860036",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860036",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860036",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860037",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860037",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_create-wrong_readback",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860038",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860038",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860038",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860039",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860039",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_create-cancel_error",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860040",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860040",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860040",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860041",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860041",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860041",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_create-cancel_timeout",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860042",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860042",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860042",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860043",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860043",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860043",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_create-lost_cancel_reply",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860044",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860044",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860044",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860045",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860045",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860045",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "partial_first-during_create-still_active",
+            "result": "review",
+            "error": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860046",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860046",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860046",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860047",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860047",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860047",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860047",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        }
+    ],
+    "owner_commits": 28,
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "source_sha256": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+    "scope": "Actual owner ledger receipts before reservation and at synthetic provider boundaries. Real native transactions, signed schedules, readback validation and cancellation. No real gateway, production settings, HTTP or independent approval."
+}

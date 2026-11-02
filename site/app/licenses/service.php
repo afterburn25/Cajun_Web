@@ -268,6 +268,8 @@ function license_deactivate_domain_tx(int $licenseId, string $domain, int $actor
 }
 
 /** A fully paid plan cannot lose its last domain through the ordinary domain-removal path. */
+// Financing payoff removes only payment-based restrictions; it does not
+// reactivate a license already deactivated before payoff.
 function license_paid_off_lock(int $licenseId): bool {
     if ($licenseId < 1) return false;
     $table = one(

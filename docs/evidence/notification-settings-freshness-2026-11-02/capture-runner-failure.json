@@ -1,0 +1,8 @@
+{
+  "error": "TypeError: object of type int has no len()",
+  "location": "execute() result metadata, after subprocess completed and stdout/stderr were saved",
+  "source": "run_notification_pause_source_checks.py:50",
+  "cause": "The helper suite reports checks as an integer; the capture wrapper expected a list.",
+  "application_or_assertion_change": false,
+  "resolution": "Retain original logs. Recheck only the helper command for an independently captured exit status, then execute the pending canonical refresh."
+}

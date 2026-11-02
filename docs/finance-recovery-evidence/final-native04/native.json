@@ -1,0 +1,4874 @@
+{
+    "passed": true,
+    "count": 387,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "normal expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "normal exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "normal correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "normal preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "normal verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "normal owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "normal retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "normal retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "normal does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "normal rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "before_create expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "before_create exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "before_create correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "before_create preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "before_create verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "before_create owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "before_create avoids creating an unnecessary replacement",
+            "passed": true
+        },
+        {
+            "name": "before_create retains original history without invented replacement",
+            "passed": true
+        },
+        {
+            "name": "before_create does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "before_create rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "before_create releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "during_create expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "during_create exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "during_create correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "during_create preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "during_create verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "during_create owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "during_create retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "during_create retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "during_create does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "during_create rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "during_create releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "during_readback expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "during_readback exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "during_readback correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "during_readback preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "during_readback verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "during_readback owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "during_readback retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "during_readback retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "during_readback does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "during_readback rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "during_readback releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout owner can reconcile the retained candidate",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout reconciliation preserves payments and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "readback_timeout reconciliation never creates another subscription",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback owner can reconcile the retained candidate",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback reconciliation preserves payments and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "wrong_readback reconciliation never creates another subscription",
+            "passed": true
+        },
+        {
+            "name": "cancel_error expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "cancel_error exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "cancel_error correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "cancel_error preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "cancel_error verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "cancel_error owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "cancel_error retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "cancel_error retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "cancel_error does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "cancel_error rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "cancel_error releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "cancel_error owner can reconcile the retained candidate",
+            "passed": true
+        },
+        {
+            "name": "cancel_error reconciliation preserves payments and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "cancel_error reconciliation never creates another subscription",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout owner can reconcile the retained candidate",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout reconciliation preserves payments and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout reconciliation never creates another subscription",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply owner can reconcile the retained candidate",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply reconciliation preserves payments and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply reconciliation never creates another subscription",
+            "passed": true
+        },
+        {
+            "name": "still_active expected replacement outcome",
+            "passed": true
+        },
+        {
+            "name": "still_active exact retained gateway identity",
+            "passed": true
+        },
+        {
+            "name": "still_active correct old-subscription retirement",
+            "passed": true
+        },
+        {
+            "name": "still_active preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "still_active verified payoff remains permanent",
+            "passed": true
+        },
+        {
+            "name": "still_active owner payments remain committed",
+            "passed": true
+        },
+        {
+            "name": "still_active retains verifiable predecessor history",
+            "passed": true
+        },
+        {
+            "name": "still_active retains the exact signed replacement contract",
+            "passed": true
+        },
+        {
+            "name": "still_active does not claim cancellation without proof",
+            "passed": true
+        },
+        {
+            "name": "still_active rejects a second create",
+            "passed": true
+        },
+        {
+            "name": "still_active releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "still_active owner can reconcile the retained candidate",
+            "passed": true
+        },
+        {
+            "name": "still_active reconciliation preserves payments and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "still_active reconciliation never creates another subscription",
+            "passed": true
+        },
+        {
+            "name": "pending_first_payment outside-transaction reader verifies unpaid ledger",
+            "passed": true
+        },
+        {
+            "name": "pending_first_payment read leaves financial and license records unchanged",
+            "passed": true
+        },
+        {
+            "name": "pending_first_payment reader reuses caller transaction",
+            "passed": true
+        },
+        {
+            "name": "pending_first_payment ordinary owner reconciliation stays available",
+            "passed": true
+        },
+        {
+            "name": "pending_first_payment owner read releases locks",
+            "passed": true
+        },
+        {
+            "name": "review outside-transaction reader verifies unpaid ledger",
+            "passed": true
+        },
+        {
+            "name": "review read leaves financial and license records unchanged",
+            "passed": true
+        },
+        {
+            "name": "review reader reuses caller transaction",
+            "passed": true
+        },
+        {
+            "name": "review ordinary owner reconciliation stays available",
+            "passed": true
+        },
+        {
+            "name": "review owner read releases locks",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control reports an unresolved create honestly",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control retains a visible unresolved successor obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control preserves the permanent payoff boundary",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control refuses any second create",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control owner recovers the existing successor using its original contract",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control verifies the required successor terminal state",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control retains predecessor identity and terminal history",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control preserves exact committed receipts and financing state during recovery",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id unpaid control performs no network boundary under a transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff reports an unresolved create honestly",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff retains a visible unresolved successor obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff preserves the permanent payoff boundary",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff refuses any second create",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff owner recovers the existing successor using its original contract",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff verifies the required successor terminal state",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff retains predecessor identity and terminal history",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff preserves exact committed receipts and financing state during recovery",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 missing_create_id with committed payoff performs no network boundary under a transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control reports an unresolved create honestly",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control retains a visible unresolved successor obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control preserves the permanent payoff boundary",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control refuses any second create",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control owner recovers the existing successor using its original contract",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control verifies the required successor terminal state",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control retains predecessor identity and terminal history",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control preserves exact committed receipts and financing state during recovery",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply unpaid control performs no network boundary under a transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff reports an unresolved create honestly",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff retains a visible unresolved successor obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff preserves the permanent payoff boundary",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff refuses any second create",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff owner recovers the existing successor using its original contract",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff verifies the required successor terminal state",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff retains predecessor identity and terminal history",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff preserves exact committed receipts and financing state during recovery",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 lost_create_reply with committed payoff performs no network boundary under a transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_next keeps the actual separately committed receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_next retains or completes exact automatic-contract retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_next stops collecting the original full amount",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_next retains license identity domains and original signed terms",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_next does not invent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_next separates retirement I\/O from receipt transactions",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending paid_later keeps the actual separately committed receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending paid_later retains or completes exact automatic-contract retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending paid_later stops collecting the original full amount",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending paid_later retains license identity domains and original signed terms",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending paid_later does not invent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending paid_later separates retirement I\/O from receipt transactions",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_later keeps the actual separately committed receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_later retains or completes exact automatic-contract retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_later stops collecting the original full amount",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_later retains license identity domains and original signed terms",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_later does not invent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 returned pending partial_later separates retirement I\/O from receipt transactions",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_next keeps the actual separately committed receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_next retains or completes exact automatic-contract retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_next stops collecting the original full amount",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_next retains license identity domains and original signed terms",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_next does not invent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_next separates retirement I\/O from receipt transactions",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active paid_later keeps the actual separately committed receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active paid_later retains or completes exact automatic-contract retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active paid_later stops collecting the original full amount",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active paid_later retains license identity domains and original signed terms",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active paid_later does not invent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active paid_later separates retirement I\/O from receipt transactions",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_later keeps the actual separately committed receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_later retains or completes exact automatic-contract retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_later stops collecting the original full amount",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_later retains license identity domains and original signed terms",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_later does not invent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 established active partial_later separates retirement I\/O from receipt transactions",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 ordinary recurring settlement 0 remains healthy",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 ordinary recurring settlement 1 remains healthy",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 legitimate ordinary settlements do not retire a healthy contract",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 durable reservation exists before external create reply",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 reservation retains exact original signed contract and predecessor",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 reservation retains only nonsecret provider context",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 committed payoff cannot close unknown successor reservation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 scheduler reports unresolved successor after permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 delayed predecessor events preserve independent unknown obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 recovery rejects a different merchant before gateway I\/O",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 same-account key revision permits exact post-payoff recovery",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 recovery retains original reservation and committed accounting",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.replacement.observed rollback retains unresolved reservation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.replacement.observed rollback preserves independently committed payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.replacement.observed retains known ID whenever its observation committed",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.replacement.observed rollback prevents another create",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.replacement.observed owner or scheduler finishes exact successor recovery",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.replacement.observed recovery never duplicates payoff receipts",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.subscription.replaced rollback retains unresolved reservation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.subscription.replaced rollback preserves independently committed payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.subscription.replaced retains known ID whenever its observation committed",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.subscription.replaced rollback prevents another create",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.subscription.replaced owner or scheduler finishes exact successor recovery",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 financing.subscription.replaced recovery never duplicates payoff receipts",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 scheduler safely closes only a proven unsent reservation",
+            "passed": true
+        },
+        {
+            "name": "FIN-01 unsent recovery performs no create",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_timeout keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_timeout never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_timeout delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_timeout forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_timeout owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_timeout retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_error keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_error never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_error delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_error forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_error owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 cancel_error retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 lost_cancel_reply keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 lost_cancel_reply never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 lost_cancel_reply delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 lost_cancel_reply forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 lost_cancel_reply owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 lost_cancel_reply retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 still_active keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 still_active never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 still_active delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 still_active forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 still_active owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 still_active retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 readback_timeout keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 readback_timeout never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 readback_timeout delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 readback_timeout forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 readback_timeout owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 readback_timeout retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 wrong_readback keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 wrong_readback never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 wrong_readback delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 wrong_readback forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 wrong_readback owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 wrong_readback retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled settings retain hold without transport",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 disabled repeated scheduler recovery is idempotent",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 audit_retirement keeps committed receipt and exact retirement obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 audit_retirement never attempts I\/O in the receipt transaction or staff mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 audit_retirement delayed lifecycle cannot clear retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 audit_retirement forbids replacement while retirement is unresolved",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 audit_retirement owner or scheduler retries exact terminal verification",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 audit_retirement retry preserves original receipts and license state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated cancel_timeout first receipt attempts immediate retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated cancel_timeout later receipt uses a fresh truthful readback",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated cancel_timeout final payoff retains the truthful terminal or review state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated cancel_timeout records exactly three receipts without another create",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated cancel_timeout all retirement I\/O stays outside transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated cancel_timeout explicit recovery preserves receipts and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated lost_cancel_reply first receipt attempts immediate retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated lost_cancel_reply later receipt uses a fresh truthful readback",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated lost_cancel_reply final payoff retains the truthful terminal or review state",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated lost_cancel_reply records exactly three receipts without another create",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated lost_cancel_reply all retirement I\/O stays outside transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 repeated lost_cancel_reply explicit recovery preserves receipts and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 receipt audit failure rolls back receipt and hold atomically",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 receipt audit rollback leaves healthy provider contract unchanged",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 complete paid prefix 0 admits only the reduced remaining contract",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 complete paid prefix 0 retains retired predecessor and receipts",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 complete paid prefix 1 admits only the reduced remaining contract",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 complete paid prefix 1 retains retired predecessor and receipts",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 existing healthy ARB fences a previously prepared separate charge",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 unresolved retirement fences an unchanged later-period payment link",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 terminal readback permits an otherwise legitimate separate charge",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 an admitted separate charge prevents a competing replacement create",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 before_lock preserves a verified full external collection for accounting",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 before_lock never double counts the partial receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 before_lock verified event replay is idempotent",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 before_lock retirement preserves the separate accounting obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 before_lock unresolved external collection prevents another charge",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 before_lock unresolved external collection fences replacement admission",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 already_committed preserves a verified full external collection for accounting",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 already_committed never double counts the partial receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 already_committed verified event replay is idempotent",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 already_committed retirement preserves the separate accounting obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 already_committed unresolved external collection prevents another charge",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 already_committed unresolved external collection fences replacement admission",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 collection audit rollback leaves no partial accounting observation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 collection audit rollback preserves the committed external receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 accounting_audit preserves a verified full external collection for accounting",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 accounting_audit never double counts the partial receipt",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 accounting_audit verified event replay is idempotent",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 accounting_audit retirement preserves the separate accounting obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 accounting_audit unresolved external collection prevents another charge",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 accounting_audit unresolved external collection fences replacement admission",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 paid_prefix preserves a verified full external collection for accounting",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 paid_prefix preserves the fully paid prefix",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 paid_prefix verified event replay is idempotent",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 paid_prefix retirement preserves the separate accounting obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 paid_prefix unresolved external collection prevents another charge",
+            "passed": true
+        },
+        {
+            "name": "FIN-02 paid_prefix unresolved external collection fences replacement admission",
+            "passed": true
+        },
+        {
+            "name": "FIN recovery preparation requires current owner authority before any schema or marker write",
+            "passed": true
+        },
+        {
+            "name": "FIN recovery preparation refuses an inherited transaction without DDL or history mutation",
+            "passed": true
+        },
+        {
+            "name": "FIN recovery preparation resumes only explicitly marked empty additive storage",
+            "passed": true
+        },
+        {
+            "name": "FIN migration adds recovery v1 to populated gateway v3 without changing history",
+            "passed": true
+        },
+        {
+            "name": "FIN migration never fabricates a legacy replacement contract",
+            "passed": true
+        },
+        {
+            "name": "FIN legacy ambiguous replacement requires explicit manual reconciliation",
+            "passed": true
+        },
+        {
+            "name": "FIN repeated owner preparation preserves populated recovery and original v3 history",
+            "passed": true
+        },
+        {
+            "name": "FIN migration unknown_version refuses adoption and preserves established finance data",
+            "passed": true
+        },
+        {
+            "name": "FIN migration unmarked_tables refuses adoption and preserves established finance data",
+            "passed": true
+        },
+        {
+            "name": "FIN migration populated_interruption refuses adoption and preserves established finance data",
+            "passed": true
+        },
+        {
+            "name": "FIN migration missing_table refuses adoption and preserves established finance data",
+            "passed": true
+        },
+        {
+            "name": "FIN actual adapter disabled refuses before even synthetic curl",
+            "passed": true
+        },
+        {
+            "name": "FIN actual adapter mode_changed refuses before even synthetic curl",
+            "passed": true
+        },
+        {
+            "name": "FIN actual adapter gate_disabled refuses before even synthetic curl",
+            "passed": true
+        },
+        {
+            "name": "FIN actual adapter account_changed refuses before even synthetic curl",
+            "passed": true
+        },
+        {
+            "name": "FIN actual adapter accepts current credentials for the retained same account",
+            "passed": true
+        },
+        {
+            "name": "FIN disabled between retirement and dispatch prevents create",
+            "passed": true
+        },
+        {
+            "name": "FIN disabled retains unsent reservation and actual predecessor retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN disabled owner can recover the exact unsent obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN mode_changed between retirement and dispatch prevents create",
+            "passed": true
+        },
+        {
+            "name": "FIN mode_changed retains unsent reservation and actual predecessor retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN mode_changed owner can recover the exact unsent obligation",
+            "passed": true
+        },
+        {
+            "name": "FIN second replacement preserves the prior bound account before reservation or I\/O",
+            "passed": true
+        },
+        {
+            "name": "FIN second replacement permits same-account credential rotation",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 healthy retains a legitimately admitted external outcome",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 healthy releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 stale_version refuses before any provider request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 stale_version preserves financial reservation and license records",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 stale_version releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 deactivated refuses before any provider request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 deactivated preserves financial reservation and license records",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 deactivated releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 zero_down_deactivated refuses before any provider request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 zero_down_deactivated preserves financial reservation and license records",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 zero_down_deactivated releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 idle_expired refuses before any provider request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 idle_expired preserves financial reservation and license records",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 idle_expired releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 login_expired refuses before any provider request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 login_expired preserves financial reservation and license records",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 login_expired releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 foreign_session refuses before any provider request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 foreign_session preserves financial reservation and license records",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 foreign_session releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 revocation before create stops the successor request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 revocation retains already completed predecessor retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 before_dispatch_revoked releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 after_dispatch_revoked retains a legitimately admitted external outcome",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 after_dispatch_revoked releases native financial lock and transaction",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "scenario": "normal",
+            "outcome": "pending_first_payment",
+            "old": "860001",
+            "new": "860002",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "scenario": "before_create",
+            "outcome": "paid_off",
+            "old": "860003",
+            "new": "860003",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "during_create",
+            "outcome": "paid_off",
+            "old": "860004",
+            "new": "860005",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "during_readback",
+            "outcome": "paid_off",
+            "old": "860006",
+            "new": "860007",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "readback_timeout",
+            "outcome": "review",
+            "old": "860008",
+            "new": "860009",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "wrong_readback",
+            "outcome": "review",
+            "old": "860010",
+            "new": "860011",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "cancel_error",
+            "outcome": "review",
+            "old": "860012",
+            "new": "860013",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "cancel_timeout",
+            "outcome": "review",
+            "old": "860014",
+            "new": "860015",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "lost_cancel_reply",
+            "outcome": "review",
+            "old": "860016",
+            "new": "860017",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "still_active",
+            "outcome": "review",
+            "old": "860018",
+            "new": "860019",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "family": "FIN source binding",
+            "files": {
+                "app\/billing\/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+                "app\/billing\/finance_subscription.php": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+                "app\/billing\/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+                "app\/licenses\/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+                "app\/licenses\/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+                "app\/billing\/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+                "app\/billing\/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8"
+            },
+            "scope": "Actual function bodies and PDO; synthetic transport\/mode and future invoice timing; separate real receipt processes."
+        },
+        {
+            "family": "FIN-01",
+            "case": "FIN-01 missing_create_id unpaid control",
+            "result": "review",
+            "state_after_reply": "review",
+            "old": "9600001",
+            "new": "9600002",
+            "writer": null,
+            "recovery": "pending_first_payment",
+            "recovery_error": null,
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600001",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600001",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "9600001",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600001",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600002",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600001",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                }
+            ],
+            "diagnostics": []
+        },
+        {
+            "family": "FIN-01",
+            "case": "FIN-01 missing_create_id with committed payoff",
+            "result": "review",
+            "state_after_reply": "review",
+            "old": "9600003",
+            "new": "9600004",
+            "writer": {
+                "pid": 121793,
+                "connection": 47,
+                "committed": true,
+                "entries": [
+                    42,
+                    43,
+                    44
+                ],
+                "provider": {
+                    "9600003": {
+                        "name": "CajunWebPro finance 3d89e5b408afc0e9a8017fb8d41d84",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-3d89e5b408afc0e9",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    },
+                    "9600004": {
+                        "name": "CajunWebPro finance 3d89e5b408afc0e9a8017fb8d41d84",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "order": {
+                            "invoiceNumber": "FIN-3d89e5b408afc0e9",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600003",
+                        "pid": 121793,
+                        "connection": 47,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "recovery": "paid_off",
+            "recovery_error": null,
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600003",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600003",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "9600003",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600003",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600003",
+                    "pid": 121793,
+                    "connection": 47,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600004",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600003",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600004",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "9600004",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600004",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                }
+            ],
+            "diagnostics": []
+        },
+        {
+            "family": "FIN-01",
+            "case": "FIN-01 lost_create_reply unpaid control",
+            "result": "review",
+            "state_after_reply": "review",
+            "old": "9600005",
+            "new": "9600006",
+            "writer": null,
+            "recovery": "pending_first_payment",
+            "recovery_error": null,
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600005",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600005",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "9600005",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600005",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600006",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600005",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                }
+            ],
+            "diagnostics": [
+                "RuntimeException: Synthetic lost replacement-create reply."
+            ]
+        },
+        {
+            "family": "FIN-01",
+            "case": "FIN-01 lost_create_reply with committed payoff",
+            "result": "review",
+            "state_after_reply": "review",
+            "old": "9600007",
+            "new": "9600008",
+            "writer": {
+                "pid": 122008,
+                "connection": 48,
+                "committed": true,
+                "entries": [
+                    47,
+                    48,
+                    49
+                ],
+                "provider": {
+                    "9600007": {
+                        "name": "CajunWebPro finance 9dd7eb91b1d453f7f5c7f9601a66d0",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-9dd7eb91b1d453f7",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    },
+                    "9600008": {
+                        "name": "CajunWebPro finance 9dd7eb91b1d453f7f5c7f9601a66d0",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "order": {
+                            "invoiceNumber": "FIN-9dd7eb91b1d453f7",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600007",
+                        "pid": 122008,
+                        "connection": 48,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "recovery": "paid_off",
+            "recovery_error": null,
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600007",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600007",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "9600007",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600007",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600007",
+                    "pid": 122008,
+                    "connection": 48,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600008",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600007",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600008",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "9600008",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "9600008",
+                    "pid": 121051,
+                    "connection": 46,
+                    "transaction": false,
+                    "mutex_owned": false
+                }
+            ],
+            "diagnostics": [
+                "RuntimeException: Synthetic lost replacement-create reply."
+            ]
+        },
+        {
+            "family": "FIN-02",
+            "case": "FIN-02 returned pending partial_next",
+            "writer": {
+                "pid": 122279,
+                "connection": 49,
+                "committed": true,
+                "entries": [
+                    51
+                ],
+                "provider": {
+                    "9600009": {
+                        "name": "CajunWebPro finance 1de6873eb775fe6eff091427047761",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-1de6873eb775fe6e",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600009",
+                        "pid": 122279,
+                        "connection": 49,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600009",
+                        "pid": 122279,
+                        "connection": 49,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600009",
+                        "pid": 122279,
+                        "connection": 49,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "subscription_state": "billing_suspended",
+            "provider_state": "canceled"
+        },
+        {
+            "family": "FIN-02",
+            "case": "FIN-02 returned pending paid_later",
+            "writer": {
+                "pid": 122303,
+                "connection": 50,
+                "committed": true,
+                "entries": [
+                    53
+                ],
+                "provider": {
+                    "9600010": {
+                        "name": "CajunWebPro finance df8516b823ce15a558f8c5d59f977d",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-df8516b823ce15a5",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600010",
+                        "pid": 122303,
+                        "connection": 50,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600010",
+                        "pid": 122303,
+                        "connection": 50,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600010",
+                        "pid": 122303,
+                        "connection": 50,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "subscription_state": "billing_suspended",
+            "provider_state": "canceled"
+        },
+        {
+            "family": "FIN-02",
+            "case": "FIN-02 returned pending partial_later",
+            "writer": {
+                "pid": 122370,
+                "connection": 51,
+                "committed": true,
+                "entries": [
+                    55
+                ],
+                "provider": {
+                    "9600011": {
+                        "name": "CajunWebPro finance 895de5b24381d459f3021addee5440",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-895de5b24381d459",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600011",
+                        "pid": 122370,
+                        "connection": 51,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600011",
+                        "pid": 122370,
+                        "connection": 51,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600011",
+                        "pid": 122370,
+                        "connection": 51,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "subscription_state": "billing_suspended",
+            "provider_state": "canceled"
+        },
+        {
+            "family": "FIN-02",
+            "case": "FIN-02 established active partial_next",
+            "writer": {
+                "pid": 122385,
+                "connection": 52,
+                "committed": true,
+                "entries": [
+                    58
+                ],
+                "provider": {
+                    "9600012": {
+                        "name": "CajunWebPro finance d38c63af0b37ea3634109cf78c3f8e",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-d38c63af0b37ea36",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600012",
+                        "pid": 122385,
+                        "connection": 52,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600012",
+                        "pid": 122385,
+                        "connection": 52,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600012",
+                        "pid": 122385,
+                        "connection": 52,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "subscription_state": "billing_suspended",
+            "provider_state": "canceled"
+        },
+        {
+            "family": "FIN-02",
+            "case": "FIN-02 established active paid_later",
+            "writer": {
+                "pid": 122475,
+                "connection": 53,
+                "committed": true,
+                "entries": [
+                    61
+                ],
+                "provider": {
+                    "9600013": {
+                        "name": "CajunWebPro finance 3155f819a22337dc2bb1704495c120",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-3155f819a22337dc",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600013",
+                        "pid": 122475,
+                        "connection": 53,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600013",
+                        "pid": 122475,
+                        "connection": 53,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600013",
+                        "pid": 122475,
+                        "connection": 53,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "subscription_state": "billing_suspended",
+            "provider_state": "canceled"
+        },
+        {
+            "family": "FIN-02",
+            "case": "FIN-02 established active partial_later",
+            "writer": {
+                "pid": 122652,
+                "connection": 54,
+                "committed": true,
+                "entries": [
+                    64
+                ],
+                "provider": {
+                    "9600014": {
+                        "name": "CajunWebPro finance 6bdb7cc57b9c3949d78329363b69a2",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-6bdb7cc57b9c3949",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600014",
+                        "pid": 122652,
+                        "connection": 54,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600014",
+                        "pid": 122652,
+                        "connection": 54,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600014",
+                        "pid": 122652,
+                        "connection": 54,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "subscription_state": "billing_suspended",
+            "provider_state": "canceled"
+        },
+        {
+            "family": "FIN durable reservation",
+            "dispatch": {
+                "id": "be699093d8da70f1f53f2e83c6625c9d",
+                "offer_id": "1db103dbecbd11356c4361efb53e50ac",
+                "open_offer_id": "1db103dbecbd11356c4361efb53e50ac",
+                "old_gateway_subscription_id": "9600016",
+                "gateway_subscription_id": null,
+                "contract_json": "{\"months\":1,\"amount_cents\":1000,\"occurrences\":3,\"start_date\":\"2026-11-06\",\"period_offset\":0}",
+                "contract_sha256": "a62640db131021fe50c86c2c975cfbb0775281904528bb59e73a7b675fe0c9ee",
+                "predecessor_json": "{\"id\":24,\"offer_id\":\"1db103dbecbd11356c4361efb53e50ac\",\"gateway_subscription_id\":\"9600016\",\"customer_profile_id\":\"1001\",\"payment_profile_id\":\"2001\",\"interval_months\":1,\"amount_cents\":1000,\"total_occurrences\":3,\"period_offset\":0,\"replacement_count\":0,\"start_date\":\"2026-11-06\"}",
+                "predecessor_sha256": "eee3a408e6ee851cb3d0dfc1dfaaceb389f89769e5f958c5824c81657a1ce780",
+                "agreement_sha256": "0747b6170b065f9140d882c571bcaa554520f228a64beaffd48df2cf93bf89a7",
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "state": "dispatching",
+                "predecessor_terminal_status": "canceled",
+                "retirement_required": 0,
+                "dispatched_at": "2026-11-02 02:38:13",
+                "created_at": "2026-11-02 02:38:11",
+                "updated_at": "2026-11-02 02:38:13"
+            },
+            "writer": {
+                "pid": 122991,
+                "connection": 55,
+                "committed": true,
+                "entries": [
+                    69,
+                    70,
+                    71
+                ],
+                "provider": {
+                    "9600016": {
+                        "name": "CajunWebPro finance 1db103dbecbd11356c4361efb53e50",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-1db103dbecbd1135",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    },
+                    "9600017": {
+                        "name": "CajunWebPro finance 1db103dbecbd11356c4361efb53e50",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "order": {
+                            "invoiceNumber": "FIN-1db103dbecbd1135",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600016",
+                        "pid": 122991,
+                        "connection": 55,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "closed": {
+                "id": "be699093d8da70f1f53f2e83c6625c9d",
+                "offer_id": "1db103dbecbd11356c4361efb53e50ac",
+                "open_offer_id": null,
+                "old_gateway_subscription_id": "9600016",
+                "gateway_subscription_id": "9600017",
+                "contract_json": "{\"months\":1,\"amount_cents\":1000,\"occurrences\":3,\"start_date\":\"2026-11-06\",\"period_offset\":0}",
+                "contract_sha256": "a62640db131021fe50c86c2c975cfbb0775281904528bb59e73a7b675fe0c9ee",
+                "predecessor_json": "{\"id\":24,\"offer_id\":\"1db103dbecbd11356c4361efb53e50ac\",\"gateway_subscription_id\":\"9600016\",\"customer_profile_id\":\"1001\",\"payment_profile_id\":\"2001\",\"interval_months\":1,\"amount_cents\":1000,\"total_occurrences\":3,\"period_offset\":0,\"replacement_count\":0,\"start_date\":\"2026-11-06\"}",
+                "predecessor_sha256": "eee3a408e6ee851cb3d0dfc1dfaaceb389f89769e5f958c5824c81657a1ce780",
+                "agreement_sha256": "0747b6170b065f9140d882c571bcaa554520f228a64beaffd48df2cf93bf89a7",
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "state": "bound",
+                "predecessor_terminal_status": "canceled",
+                "retirement_required": 1,
+                "dispatched_at": "2026-11-02 02:38:13",
+                "created_at": "2026-11-02 02:38:11",
+                "updated_at": "2026-11-02 02:38:29"
+            },
+            "scheduler": {
+                "state": "partial",
+                "offers": 13,
+                "invoices": 0,
+                "suspended": 0,
+                "paid_off": 1,
+                "errors": 1
+            }
+        },
+        {
+            "family": "FIN-01 audit rollback",
+            "action": "financing.replacement.observed",
+            "writer": {
+                "pid": 124070,
+                "connection": 56,
+                "committed": true,
+                "entries": [
+                    73,
+                    74,
+                    75
+                ],
+                "provider": {
+                    "9600018": {
+                        "name": "CajunWebPro finance 094ac09a1743a8926f902de9208d03",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-094ac09a1743a892",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    },
+                    "9600019": {
+                        "name": "CajunWebPro finance 094ac09a1743a8926f902de9208d03",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "order": {
+                            "invoiceNumber": "FIN-094ac09a1743a892",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600018",
+                        "pid": 124070,
+                        "connection": 56,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "retained_attempt": {
+                "id": "eba276ba2ccdabf28aa2c291808c6650",
+                "offer_id": "094ac09a1743a8926f902de9208d0350",
+                "open_offer_id": "094ac09a1743a8926f902de9208d0350",
+                "old_gateway_subscription_id": "9600018",
+                "gateway_subscription_id": null,
+                "contract_json": "{\"months\":1,\"amount_cents\":1000,\"occurrences\":3,\"start_date\":\"2026-11-06\",\"period_offset\":0}",
+                "contract_sha256": "a62640db131021fe50c86c2c975cfbb0775281904528bb59e73a7b675fe0c9ee",
+                "predecessor_json": "{\"id\":25,\"offer_id\":\"094ac09a1743a8926f902de9208d0350\",\"gateway_subscription_id\":\"9600018\",\"customer_profile_id\":\"1001\",\"payment_profile_id\":\"2001\",\"interval_months\":1,\"amount_cents\":1000,\"total_occurrences\":3,\"period_offset\":0,\"replacement_count\":0,\"start_date\":\"2026-11-06\"}",
+                "predecessor_sha256": "ef4b35f58917bda22d93bdd804c05f5ddfb4ebd4fc635abc033d01a8e80e918a",
+                "agreement_sha256": "011c81db828d0ae9d0e4db06138d0ca97d7b0d61d04ceae6ddf084e3ff43b026",
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "state": "unknown",
+                "predecessor_terminal_status": "canceled",
+                "retirement_required": 1,
+                "dispatched_at": "2026-11-02 02:38:38",
+                "created_at": "2026-11-02 02:38:36",
+                "updated_at": "2026-11-02 02:38:43"
+            },
+            "recovered": "paid_off"
+        },
+        {
+            "family": "FIN-01 audit rollback",
+            "action": "financing.subscription.replaced",
+            "writer": {
+                "pid": 124636,
+                "connection": 57,
+                "committed": true,
+                "entries": [
+                    77,
+                    78,
+                    79
+                ],
+                "provider": {
+                    "9600020": {
+                        "name": "CajunWebPro finance f8472f0d0f1f1422a8965e908f8e55",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-f8472f0d0f1f1422",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    },
+                    "9600021": {
+                        "name": "CajunWebPro finance f8472f0d0f1f1422a8965e908f8e55",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "order": {
+                            "invoiceNumber": "FIN-f8472f0d0f1f1422",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600020",
+                        "pid": 124636,
+                        "connection": 57,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": []
+            },
+            "retained_attempt": {
+                "id": "6ba1f4580ebc38f20e77998ed84a7577",
+                "offer_id": "f8472f0d0f1f1422a8965e908f8e5578",
+                "open_offer_id": "f8472f0d0f1f1422a8965e908f8e5578",
+                "old_gateway_subscription_id": "9600020",
+                "gateway_subscription_id": "9600021",
+                "contract_json": "{\"months\":1,\"amount_cents\":1000,\"occurrences\":3,\"start_date\":\"2026-11-06\",\"period_offset\":0}",
+                "contract_sha256": "a62640db131021fe50c86c2c975cfbb0775281904528bb59e73a7b675fe0c9ee",
+                "predecessor_json": "{\"id\":26,\"offer_id\":\"f8472f0d0f1f1422a8965e908f8e5578\",\"gateway_subscription_id\":\"9600020\",\"customer_profile_id\":\"1001\",\"payment_profile_id\":\"2001\",\"interval_months\":1,\"amount_cents\":1000,\"total_occurrences\":3,\"period_offset\":0,\"replacement_count\":0,\"start_date\":\"2026-11-06\"}",
+                "predecessor_sha256": "eba4c2ec8f461a36279cc6021696c3d818f1f05538d27511c4aa0850509eafdb",
+                "agreement_sha256": "c11fc58e818336b43b8b79ccc0ad3865d48539e27dae2eb5c2192ee6841e9cb3",
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "state": "observed",
+                "predecessor_terminal_status": "canceled",
+                "retirement_required": 1,
+                "dispatched_at": "2026-11-02 02:38:50",
+                "created_at": "2026-11-02 02:38:48",
+                "updated_at": "2026-11-02 02:38:54"
+            },
+            "recovered": "paid_off"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "cancel_timeout",
+            "writer": {
+                "pid": 126557,
+                "connection": 58,
+                "committed": true,
+                "entries": [
+                    83
+                ],
+                "provider": {
+                    "9600023": {
+                        "name": "CajunWebPro finance c3dec69610e6c87541979496600033",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-c3dec69610e6c875",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600023",
+                        "pid": 126557,
+                        "connection": 58,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600023",
+                        "pid": 126557,
+                        "connection": 58,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": [
+                    "RuntimeException: Synthetic cancellation timeout."
+                ]
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "cancel_error",
+            "writer": {
+                "pid": 126880,
+                "connection": 59,
+                "committed": true,
+                "entries": [
+                    86
+                ],
+                "provider": {
+                    "9600024": {
+                        "name": "CajunWebPro finance aa14e1901a0f162a24312a879b16c5",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-aa14e1901a0f162a",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600024",
+                        "pid": 126880,
+                        "connection": 59,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600024",
+                        "pid": 126880,
+                        "connection": 59,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": [
+                    "RuntimeException: Paid-off financing subscription cancellation needs reconciliation."
+                ]
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "lost_cancel_reply",
+            "writer": {
+                "pid": 127176,
+                "connection": 60,
+                "committed": true,
+                "entries": [
+                    89
+                ],
+                "provider": {
+                    "9600025": {
+                        "name": "CajunWebPro finance d0c9430b92c8e5eff31dbdd8949cc7",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-d0c9430b92c8e5ef",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600025",
+                        "pid": 127176,
+                        "connection": 60,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600025",
+                        "pid": 127176,
+                        "connection": 60,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": [
+                    "RuntimeException: Synthetic lost cancellation reply."
+                ]
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "still_active",
+            "writer": {
+                "pid": 127469,
+                "connection": 61,
+                "committed": true,
+                "entries": [
+                    92
+                ],
+                "provider": {
+                    "9600026": {
+                        "name": "CajunWebPro finance b89dde310a4dde5a32a56334ab1867",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-b89dde310a4dde5a",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600026",
+                        "pid": 127469,
+                        "connection": 61,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600026",
+                        "pid": 127469,
+                        "connection": 61,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600026",
+                        "pid": 127469,
+                        "connection": 61,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": [
+                    "RuntimeException: Paid-off financing subscription may still collect payments."
+                ]
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "readback_timeout",
+            "writer": {
+                "pid": 127526,
+                "connection": 62,
+                "committed": true,
+                "entries": [
+                    95
+                ],
+                "provider": {
+                    "9600027": {
+                        "name": "CajunWebPro finance 2f0462621428eafb9151d97e6982d3",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-2f0462621428eafb",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600027",
+                        "pid": 127526,
+                        "connection": 62,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": [
+                    "RuntimeException: Synthetic subscription readback timeout."
+                ]
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "wrong_readback",
+            "writer": {
+                "pid": 127607,
+                "connection": 63,
+                "committed": true,
+                "entries": [
+                    98
+                ],
+                "provider": {
+                    "9600028": {
+                        "name": "CajunWebPro finance 91afa44dd294c6367df80c4a5e5a98",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-91afa44dd294c636",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600028",
+                        "pid": 127607,
+                        "connection": 63,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": [
+                    "RuntimeException: Gateway financing subscription does not match the signed agreement."
+                ]
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "disabled",
+            "writer": {
+                "pid": 127726,
+                "connection": 64,
+                "committed": true,
+                "entries": [
+                    101
+                ],
+                "provider": {
+                    "9600029": {
+                        "name": "CajunWebPro finance 6505cc19232118befb6d9a47feda1e",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-6505cc19232118be",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [],
+                "diagnostics": []
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 cancellation failure",
+            "fault": "audit_retirement",
+            "writer": {
+                "pid": 128562,
+                "connection": 65,
+                "committed": true,
+                "entries": [
+                    104
+                ],
+                "provider": {
+                    "9600030": {
+                        "name": "CajunWebPro finance b9576f906f270c9096c56b9fffab1e",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-b9576f906f270c90",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "canceled"
+                    }
+                },
+                "calls": [
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600030",
+                        "pid": 128562,
+                        "connection": 65,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBCancelSubscriptionRequest",
+                        "id": "9600030",
+                        "pid": 128562,
+                        "connection": 65,
+                        "transaction": false,
+                        "mutex_owned": false
+                    },
+                    {
+                        "method": "ARBGetSubscriptionRequest",
+                        "id": "9600030",
+                        "pid": 128562,
+                        "connection": 65,
+                        "transaction": false,
+                        "mutex_owned": false
+                    }
+                ],
+                "diagnostics": [
+                    "PDOException: SQLSTATE[45000]: <<Unknown error>>: 1644 Synthetic finance recovery audit rollback"
+                ]
+            },
+            "recovered": "billing_suspended"
+        },
+        {
+            "family": "FIN-02 repeated receipt retirement",
+            "fault": "cancel_timeout",
+            "writers": [
+                {
+                    "pid": 128953,
+                    "connection": 66,
+                    "committed": true,
+                    "entries": [
+                        107
+                    ],
+                    "provider": {
+                        "9600031": {
+                            "name": "CajunWebPro finance 40a785ad9a2088fbe8734ae7d63ece",
+                            "paymentSchedule": {
+                                "interval": {
+                                    "length": 1,
+                                    "unit": "months"
+                                },
+                                "startDate": "2026-11-06",
+                                "totalOccurrences": 3
+                            },
+                            "amount": "10.00",
+                            "profile": {
+                                "customerProfileId": "1001",
+                                "customerPaymentProfileId": "2001"
+                            },
+                            "order": {
+                                "invoiceNumber": "FIN-40a785ad9a2088fb",
+                                "description": "CajunWebPro financed website installments"
+                            },
+                            "status": "active"
+                        }
+                    },
+                    "calls": [
+                        {
+                            "method": "ARBGetSubscriptionRequest",
+                            "id": "9600031",
+                            "pid": 128953,
+                            "connection": 66,
+                            "transaction": false,
+                            "mutex_owned": false
+                        },
+                        {
+                            "method": "ARBCancelSubscriptionRequest",
+                            "id": "9600031",
+                            "pid": 128953,
+                            "connection": 66,
+                            "transaction": false,
+                            "mutex_owned": false
+                        }
+                    ],
+                    "diagnostics": [
+                        "RuntimeException: Synthetic cancellation timeout."
+                    ]
+                },
+                {
+                    "pid": 128989,
+                    "connection": 67,
+                    "committed": true,
+                    "entries": [
+                        108
+                    ],
+                    "provider": {
+                        "9600031": {
+                            "name": "CajunWebPro finance 40a785ad9a2088fbe8734ae7d63ece",
+                            "paymentSchedule": {
+                                "interval": {
+                                    "length": 1,
+                                    "unit": "months"
+                                },
+                                "startDate": "2026-11-06",
+                                "totalOccurrences": 3
+                            },
+                            "amount": "10.00",
+                            "profile": {
+                                "customerProfileId": "1001",
+                                "customerPaymentProfileId": "2001"
+                            },
+                            "order": {
+                                "invoiceNumber": "FIN-40a785ad9a2088fb",
+                                "description": "CajunWebPro financed website installments"
+                            },
+                            "status": "active"
+                        }
+                    },
+                    "calls": [
+                        {
+                            "method": "ARBGetSubscriptionRequest",
+                            "id": "9600031",
+                            "pid": 128989,
+                            "connection": 67,
+                            "transaction": false,
+                            "mutex_owned": false
+                        },
+                        {
+                            "method": "ARBCancelSubscriptionRequest",
+                            "id": "9600031",
+                            "pid": 128989,
+                            "connection": 67,
+                            "transaction": false,
+                            "mutex_owned": false
+                        }
+                    ],
+                    "diagnostics": [
+                        "RuntimeException: Synthetic cancellation timeout."
+                    ]
+                },
+                {
+                    "pid": 129040,
+                    "connection": 68,
+                    "committed": true,
+                    "entries": [
+                        109
+                    ],
+                    "provider": {
+                        "9600031": {
+                            "name": "CajunWebPro finance 40a785ad9a2088fbe8734ae7d63ece",
+                            "paymentSchedule": {
+                                "interval": {
+                                    "length": 1,
+                                    "unit": "months"
+                                },
+                                "startDate": "2026-11-06",
+                                "totalOccurrences": 3
+                            },
+                            "amount": "10.00",
+                            "profile": {
+                                "customerProfileId": "1001",
+                                "customerPaymentProfileId": "2001"
+                            },
+                            "order": {
+                                "invoiceNumber": "FIN-40a785ad9a2088fb",
+                                "description": "CajunWebPro financed website installments"
+                            },
+                            "status": "active"
+                        }
+                    },
+                    "calls": [
+                        {
+                            "method": "ARBGetSubscriptionRequest",
+                            "id": "9600031",
+                            "pid": 129040,
+                            "connection": 68,
+                            "transaction": false,
+                            "mutex_owned": false
+                        },
+                        {
+                            "method": "ARBCancelSubscriptionRequest",
+                            "id": "9600031",
+                            "pid": 129040,
+                            "connection": 68,
+                            "transaction": false,
+                            "mutex_owned": false
+                        }
+                    ],
+                    "diagnostics": [
+                        "RuntimeException: Synthetic cancellation timeout."
+                    ]
+                }
+            ],
+            "recovered": "paid_off"
+        },
+        {
+            "family": "FIN-02 repeated receipt retirement",
+            "fault": "lost_cancel_reply",
+            "writers": [
+                {
+                    "pid": 129233,
+                    "connection": 69,
+                    "committed": true,
+                    "entries": [
+                        112
+                    ],
+                    "provider": {
+                        "9600032": {
+                            "name": "CajunWebPro finance 88810e4a17aef6706722f705f00184",
+                            "paymentSchedule": {
+                                "interval": {
+                                    "length": 1,
+                                    "unit": "months"
+                                },
+                                "startDate": "2026-11-06",
+                                "totalOccurrences": 3
+                            },
+                            "amount": "10.00",
+                            "profile": {
+                                "customerProfileId": "1001",
+                                "customerPaymentProfileId": "2001"
+                            },
+                            "order": {
+                                "invoiceNumber": "FIN-88810e4a17aef670",
+                                "description": "CajunWebPro financed website installments"
+                            },
+                            "status": "canceled"
+                        }
+                    },
+                    "calls": [
+                        {
+                            "method": "ARBGetSubscriptionRequest",
+                            "id": "9600032",
+                            "pid": 129233,
+                            "connection": 69,
+                            "transaction": false,
+                            "mutex_owned": false
+                        },
+                        {
+                            "method": "ARBCancelSubscriptionRequest",
+                            "id": "9600032",
+                            "pid": 129233,
+                            "connection": 69,
+                            "transaction": false,
+                            "mutex_owned": false
+                        }
+                    ],
+                    "diagnostics": [
+                        "RuntimeException: Synthetic lost cancellation reply."
+                    ]
+                },
+                {
+                    "pid": 129236,
+                    "connection": 70,
+                    "committed": true,
+                    "entries": [
+                        113
+                    ],
+                    "provider": {
+                        "9600032": {
+                            "name": "CajunWebPro finance 88810e4a17aef6706722f705f00184",
+                            "paymentSchedule": {
+                                "interval": {
+                                    "length": 1,
+                                    "unit": "months"
+                                },
+                                "startDate": "2026-11-06",
+                                "totalOccurrences": 3
+                            },
+                            "amount": "10.00",
+                            "profile": {
+                                "customerProfileId": "1001",
+                                "customerPaymentProfileId": "2001"
+                            },
+                            "order": {
+                                "invoiceNumber": "FIN-88810e4a17aef670",
+                                "description": "CajunWebPro financed website installments"
+                            },
+                            "status": "canceled"
+                        }
+                    },
+                    "calls": [
+                        {
+                            "method": "ARBGetSubscriptionRequest",
+                            "id": "9600032",
+                            "pid": 129236,
+                            "connection": 70,
+                            "transaction": false,
+                            "mutex_owned": false
+                        }
+                    ],
+                    "diagnostics": []
+                },
+                {
+                    "pid": 129264,
+                    "connection": 71,
+                    "committed": true,
+                    "entries": [
+                        114
+                    ],
+                    "provider": {
+                        "9600032": {
+                            "name": "CajunWebPro finance 88810e4a17aef6706722f705f00184",
+                            "paymentSchedule": {
+                                "interval": {
+                                    "length": 1,
+                                    "unit": "months"
+                                },
+                                "startDate": "2026-11-06",
+                                "totalOccurrences": 3
+                            },
+                            "amount": "10.00",
+                            "profile": {
+                                "customerProfileId": "1001",
+                                "customerPaymentProfileId": "2001"
+                            },
+                            "order": {
+                                "invoiceNumber": "FIN-88810e4a17aef670",
+                                "description": "CajunWebPro financed website installments"
+                            },
+                            "status": "canceled"
+                        }
+                    },
+                    "calls": [
+                        {
+                            "method": "ARBGetSubscriptionRequest",
+                            "id": "9600032",
+                            "pid": 129264,
+                            "connection": 71,
+                            "transaction": false,
+                            "mutex_owned": false
+                        }
+                    ],
+                    "diagnostics": []
+                }
+            ],
+            "recovered": "paid_off"
+        },
+        {
+            "family": "FIN-02 late collection",
+            "timing": "before_lock",
+            "writer": {
+                "pid": 130042,
+                "connection": 75,
+                "committed": true,
+                "entries": [
+                    126
+                ],
+                "provider": {
+                    "9600039": {
+                        "name": "CajunWebPro finance e2238d2d67dd530141639c3b916f96",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-e2238d2d67dd5301",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [],
+                "diagnostics": []
+            },
+            "collection": {
+                "id": 1,
+                "offer_id": "e2238d2d67dd530141639c3b916f96fd",
+                "gateway_subscription_id": "9600039",
+                "gateway_transaction_id": "995000161",
+                "period_index": 1,
+                "invoice_id": 161,
+                "amount_cents": 1000,
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "contract_sha256": "c5fa6aa7ecc1ce886e076860a7ef4fc1539f13a42b92bef6ee8c82c859be96dd",
+                "reason": "subscription_recovery_pending",
+                "state": "needs_accounting",
+                "created_at": "2026-11-02 02:42:37"
+            },
+            "result": "finance_subscription_review_required"
+        },
+        {
+            "family": "FIN-02 late collection",
+            "timing": "already_committed",
+            "writer": {
+                "pid": 130179,
+                "connection": 76,
+                "committed": true,
+                "entries": [
+                    129
+                ],
+                "provider": {
+                    "9600040": {
+                        "name": "CajunWebPro finance 059f16fcd281f281197340bdc3467c",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-059f16fcd281f281",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [],
+                "diagnostics": []
+            },
+            "collection": {
+                "id": 2,
+                "offer_id": "059f16fcd281f281197340bdc3467cb9",
+                "gateway_subscription_id": "9600040",
+                "gateway_transaction_id": "995000165",
+                "period_index": 1,
+                "invoice_id": 165,
+                "amount_cents": 1000,
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "contract_sha256": "1cad6fa24bda45906e60619a4d7f0c7e330fac94f74cf18eb319da1555bcf7fa",
+                "reason": "subscription_recovery_pending",
+                "state": "needs_accounting",
+                "created_at": "2026-11-02 02:42:44"
+            },
+            "result": "finance_subscription_review_required"
+        },
+        {
+            "family": "FIN-02 late collection",
+            "timing": "accounting_audit",
+            "writer": {
+                "pid": 130308,
+                "connection": 77,
+                "committed": true,
+                "entries": [
+                    132
+                ],
+                "provider": {
+                    "9600041": {
+                        "name": "CajunWebPro finance d1602c62df1499a332520b4b56ea48",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-d1602c62df1499a3",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [],
+                "diagnostics": []
+            },
+            "collection": {
+                "id": 4,
+                "offer_id": "d1602c62df1499a332520b4b56ea487d",
+                "gateway_subscription_id": "9600041",
+                "gateway_transaction_id": "995000169",
+                "period_index": 1,
+                "invoice_id": 169,
+                "amount_cents": 1000,
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "contract_sha256": "7ecb7b85c3b9e2e7911bd3bb52097b3abb58644b5f2be87a30db9b1c000a785d",
+                "reason": "subscription_recovery_pending",
+                "state": "needs_accounting",
+                "created_at": "2026-11-02 02:42:51"
+            },
+            "result": "finance_subscription_review_required"
+        },
+        {
+            "family": "FIN-02 late collection",
+            "timing": "paid_prefix",
+            "writer": {
+                "pid": 130488,
+                "connection": 78,
+                "committed": true,
+                "entries": [
+                    135
+                ],
+                "provider": {
+                    "9600042": {
+                        "name": "CajunWebPro finance 7cab06f09302345fc0ea060df297d0",
+                        "paymentSchedule": {
+                            "interval": {
+                                "length": 1,
+                                "unit": "months"
+                            },
+                            "startDate": "2026-11-06",
+                            "totalOccurrences": 3
+                        },
+                        "amount": "10.00",
+                        "profile": {
+                            "customerProfileId": "1001",
+                            "customerPaymentProfileId": "2001"
+                        },
+                        "order": {
+                            "invoiceNumber": "FIN-7cab06f09302345f",
+                            "description": "CajunWebPro financed website installments"
+                        },
+                        "status": "active"
+                    }
+                },
+                "calls": [],
+                "diagnostics": []
+            },
+            "collection": {
+                "id": 5,
+                "offer_id": "7cab06f09302345fc0ea060df297d09a",
+                "gateway_subscription_id": "9600042",
+                "gateway_transaction_id": "995000173",
+                "period_index": 1,
+                "invoice_id": 173,
+                "amount_cents": 1000,
+                "environment": "production",
+                "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                "gateway_revision": 1,
+                "contract_sha256": "31d44ee11e2195eac83a4b258fcd8fb26fa4a4f3842a223e1f0963dcb495a190",
+                "reason": "subscription_recovery_pending",
+                "state": "needs_accounting",
+                "created_at": "2026-11-02 02:42:58"
+            },
+            "result": "finance_subscription_review_required"
+        },
+        {
+            "family": "FIN populated migration",
+            "prefix": "frg_m_22ab6ba8_",
+            "legacy_subscription": [
+                {
+                    "id": 1,
+                    "offer_id": "9189eeeb07fb86e2b51da212dccd1b8b",
+                    "gateway_subscription_id": "9600043",
+                    "customer_profile_id": "1001",
+                    "payment_profile_id": "2001",
+                    "interval_months": 1,
+                    "amount_cents": 1000,
+                    "total_occurrences": 3,
+                    "period_offset": 0,
+                    "replacement_count": 0,
+                    "start_date": "2026-11-06",
+                    "status": "review",
+                    "created_at": "2026-11-02 02:43:02",
+                    "updated_at": "2026-11-02 02:43:04"
+                }
+            ],
+            "retained_attempts": [
+                {
+                    "id": "2eed270f9ea9522337ca75708abf8cb1",
+                    "offer_id": "19340d64dffc9b2fe5555747188ee3bd",
+                    "open_offer_id": "19340d64dffc9b2fe5555747188ee3bd",
+                    "old_gateway_subscription_id": "9600044",
+                    "gateway_subscription_id": null,
+                    "contract_json": "{\"months\":1,\"amount_cents\":1000,\"occurrences\":3,\"start_date\":\"2026-11-06\",\"period_offset\":0}",
+                    "contract_sha256": "a62640db131021fe50c86c2c975cfbb0775281904528bb59e73a7b675fe0c9ee",
+                    "predecessor_json": "{\"id\":2,\"offer_id\":\"19340d64dffc9b2fe5555747188ee3bd\",\"gateway_subscription_id\":\"9600044\",\"customer_profile_id\":\"1001\",\"payment_profile_id\":\"2001\",\"interval_months\":1,\"amount_cents\":1000,\"total_occurrences\":3,\"period_offset\":0,\"replacement_count\":0,\"start_date\":\"2026-11-06\"}",
+                    "predecessor_sha256": "a254c45df5de1828267d4f681517e27adb9e2af65d6f0805271241fe84e7a4d8",
+                    "agreement_sha256": "37f031eab6273e232c1de31736cb94b5770e9dfe2a9bb871d7d0e289a970cb6b",
+                    "environment": "production",
+                    "account_hash": "14a8c36f55ff3bebcb4fd50a64e5ff1b926976708d331e21a1c8f189718af412",
+                    "gateway_revision": 1,
+                    "state": "prepared",
+                    "predecessor_terminal_status": null,
+                    "retirement_required": 0,
+                    "dispatched_at": null,
+                    "created_at": "2026-11-02 02:43:09",
+                    "updated_at": "2026-11-02 02:43:09"
+                }
+            ]
+        },
+        {
+            "family": "FIN actual adapter admission",
+            "change": "disabled",
+            "writer": {
+                "pid": 130806,
+                "connection": 79,
+                "committed": true
+            },
+            "synthetic_curl_count": 0,
+            "error": "RuntimeException: Authorize.Net checkout is disabled.",
+            "source_sha256": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba"
+        },
+        {
+            "family": "FIN actual adapter admission",
+            "change": "mode_changed",
+            "writer": {
+                "pid": 130807,
+                "connection": 80,
+                "committed": true
+            },
+            "synthetic_curl_count": 0,
+            "error": "RuntimeException: Financing gateway account or environment changed before transport.",
+            "source_sha256": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba"
+        },
+        {
+            "family": "FIN actual adapter admission",
+            "change": "gate_disabled",
+            "writer": {
+                "pid": 130808,
+                "connection": 81,
+                "committed": true
+            },
+            "synthetic_curl_count": 0,
+            "error": "RuntimeException: Production financing checkout is locked until explicit code-level and owner-reviewed activation.",
+            "source_sha256": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba"
+        },
+        {
+            "family": "FIN actual adapter admission",
+            "change": "account_changed",
+            "writer": {
+                "pid": 130809,
+                "connection": 82,
+                "committed": true
+            },
+            "synthetic_curl_count": 0,
+            "error": "RuntimeException: Financing gateway account or environment changed before transport.",
+            "source_sha256": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba"
+        },
+        {
+            "family": "FIN actual adapter admission",
+            "change": "credential_rotated",
+            "writer": {
+                "pid": 130810,
+                "connection": 83,
+                "committed": true
+            },
+            "synthetic_curl_count": 1,
+            "error": null,
+            "source_sha256": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba"
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "healthy",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000002",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 49,
+                "offer_id": "5d03443db7b546b592d79793ceecbed0",
+                "gateway_subscription_id": "87000002",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 02:43:40",
+                "updated_at": "2026-11-02 02:43:41"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "stale_version",
+            "result": null,
+            "error": "RuntimeException: Your client session is no longer current. Sign in again.",
+            "writer": {
+                "pid": 131707,
+                "connection": 84,
+                "committed": true
+            },
+            "calls": [],
+            "retained_subscription": {
+                "id": 50,
+                "offer_id": "144fd73795e07ed2d9aa8900bdb3a6e3",
+                "gateway_subscription_id": "87000003",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "billing_suspended",
+                "created_at": "2026-11-02 02:43:42",
+                "updated_at": "2026-11-02 02:43:42"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "deactivated",
+            "result": null,
+            "error": "InvalidArgumentException: Client unavailable.",
+            "writer": {
+                "pid": 131734,
+                "connection": 85,
+                "committed": true
+            },
+            "calls": [],
+            "retained_subscription": {
+                "id": 51,
+                "offer_id": "7c96c4520c5cc8676e6ee51ff66d937d",
+                "gateway_subscription_id": "87000004",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "billing_suspended",
+                "created_at": "2026-11-02 02:43:43",
+                "updated_at": "2026-11-02 02:43:43"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "zero_down_deactivated",
+            "result": null,
+            "error": "InvalidArgumentException: Client unavailable.",
+            "writer": {
+                "pid": 131773,
+                "connection": 86,
+                "committed": true
+            },
+            "calls": [],
+            "retained_subscription": {
+                "id": 52,
+                "offer_id": "2d333a6fa658f435724d60419b407b71",
+                "gateway_subscription_id": "87000005",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "billing_suspended",
+                "created_at": "2026-11-02 02:43:43",
+                "updated_at": "2026-11-02 02:43:43"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "idle_expired",
+            "result": null,
+            "error": "RuntimeException: Your client session is no longer current. Sign in again.",
+            "writer": null,
+            "calls": [],
+            "retained_subscription": {
+                "id": 53,
+                "offer_id": "068aedf0e7bdb4f747db9799f20cef15",
+                "gateway_subscription_id": "87000006",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "billing_suspended",
+                "created_at": "2026-11-02 02:43:44",
+                "updated_at": "2026-11-02 02:43:44"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "login_expired",
+            "result": null,
+            "error": "RuntimeException: Your client session is no longer current. Sign in again.",
+            "writer": null,
+            "calls": [],
+            "retained_subscription": {
+                "id": 54,
+                "offer_id": "955cf4968356f31a8e68b667050c33ef",
+                "gateway_subscription_id": "87000007",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "billing_suspended",
+                "created_at": "2026-11-02 02:43:45",
+                "updated_at": "2026-11-02 02:43:45"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "foreign_session",
+            "result": null,
+            "error": "RuntimeException: Sign in as the selected client outside support access.",
+            "writer": null,
+            "calls": [],
+            "retained_subscription": {
+                "id": 55,
+                "offer_id": "e2c7adf4ca12b6b0e76dc28085a6ade7",
+                "gateway_subscription_id": "87000008",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "billing_suspended",
+                "created_at": "2026-11-02 02:43:45",
+                "updated_at": "2026-11-02 02:43:45"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "before_dispatch_revoked",
+            "result": "review",
+            "error": null,
+            "writer": {
+                "pid": 131878,
+                "connection": 87,
+                "committed": true
+            },
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000009",
+                    "transaction": false,
+                    "retained": true
+                }
+            ],
+            "retained_subscription": {
+                "id": 56,
+                "offer_id": "cf6a2bb5013effa7480bee21f28d305a",
+                "gateway_subscription_id": "87000009",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "review",
+                "created_at": "2026-11-02 02:43:46",
+                "updated_at": "2026-11-02 02:43:47"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "after_dispatch_revoked",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": {
+                "pid": 131924,
+                "connection": 88,
+                "committed": true
+            },
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000011",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 57,
+                "offer_id": "dab1b66d96cfa589177e607c7e67445b",
+                "gateway_subscription_id": "87000011",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 02:43:47",
+                "updated_at": "2026-11-02 02:43:48"
+            }
+        },
+        {
+            "family": "FIN retained diagnostic expectation",
+            "payment_link_preparation_failures": 58,
+            "original_synthetic_readback_cancellation_failures": 6,
+            "scope": "Each synthetic nonzero-initial-payment seed intentionally signs while payment-link storage is disabled; its retained RuntimeException originates at financing_offers.php:261. The original six readback\/cancellation negatives remain explicit. FinanceRecovery exceptions are captured separately in case diagnostics."
+        }
+    ],
+    "owner_commits": 27,
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+    "scope": "Exact caller\/finalizer\/retirement\/reconciliation functions and canonical native storage. Actual owner ledger_receive commits at synthetic provider boundaries; real readback validation. Synthetic signed future invoices, initial receipts and provider transport\/mode. No real gateway, production flag, HTTP or external approval."
+}

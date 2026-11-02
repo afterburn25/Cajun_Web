@@ -1,0 +1,1941 @@
+{
+    "scope": "Read-only original-versus-filtered-distinct-relation metadata comparison; no product edit",
+    "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "snapshot": "authorized-idle-finance-snapshot",
+    "database_port": 33311,
+    "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "database_table_count": 984,
+    "prefix": "fep_finsafe2_",
+    "warmup_pairs": 1,
+    "measured_pairs": 7,
+    "timing_order": "Alternating original\/candidate then candidate\/original by pair; preparation and execution use native PDO prepares",
+    "tables": [
+        {
+            "table": "fep_finsafe2_service_plans",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_plans' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_plans' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_service_plans'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 26.234334,
+                            "fetch_ms": 0.004231,
+                            "total_ms": 26.238565
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.637312,
+                            "fetch_ms": 0.002489,
+                            "total_ms": 0.639801
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.303213,
+                            "fetch_ms": 0.00133,
+                            "total_ms": 0.304543
+                        },
+                        "original": {
+                            "prepare_execute_ms": 16.51787,
+                            "fetch_ms": 0.003853,
+                            "total_ms": 16.521723
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 13.027608,
+                            "fetch_ms": 0.003917,
+                            "total_ms": 13.031525
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.496612,
+                            "fetch_ms": 0.001258,
+                            "total_ms": 0.49787
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.319443,
+                            "fetch_ms": 0.001041,
+                            "total_ms": 0.320484
+                        },
+                        "original": {
+                            "prepare_execute_ms": 13.469231,
+                            "fetch_ms": 0.004182,
+                            "total_ms": 13.473413
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 15.395515,
+                            "fetch_ms": 0.003884,
+                            "total_ms": 15.399399
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.523714,
+                            "fetch_ms": 0.001476,
+                            "total_ms": 0.52519
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.397036,
+                            "fetch_ms": 0.001132,
+                            "total_ms": 0.398168
+                        },
+                        "original": {
+                            "prepare_execute_ms": 14.505628,
+                            "fetch_ms": 0.003975,
+                            "total_ms": 14.509603
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 14.311065,
+                            "fetch_ms": 0.003699,
+                            "total_ms": 14.314764
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.530457,
+                            "fetch_ms": 0.001433,
+                            "total_ms": 0.53189
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "created_by",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 1,
+            "sorted_rows_sha256": "e057dc11fe063278392e0f9fa15440c2f8c2769c8106c4a9f38da638eaf4ae60"
+        },
+        {
+            "table": "fep_finsafe2_service_plan_events",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_plan_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_plan_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_service_plan_events'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 21.096235,
+                            "fetch_ms": 0.004675,
+                            "total_ms": 21.10091
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 2.189619,
+                            "fetch_ms": 0.00372,
+                            "total_ms": 2.193339
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.913803,
+                            "fetch_ms": 0.001883,
+                            "total_ms": 0.915686
+                        },
+                        "original": {
+                            "prepare_execute_ms": 12.235187,
+                            "fetch_ms": 0.004025,
+                            "total_ms": 12.239212
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 14.736982,
+                            "fetch_ms": 0.00474,
+                            "total_ms": 14.741722
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.645597,
+                            "fetch_ms": 0.001498,
+                            "total_ms": 0.647095
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.25767,
+                            "fetch_ms": 0.001056,
+                            "total_ms": 0.258726
+                        },
+                        "original": {
+                            "prepare_execute_ms": 21.314082,
+                            "fetch_ms": 0.004626,
+                            "total_ms": 21.318708
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 13.553925,
+                            "fetch_ms": 0.00479,
+                            "total_ms": 13.558715
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.392164,
+                            "fetch_ms": 0.001768,
+                            "total_ms": 0.393932
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.443841,
+                            "fetch_ms": 0.001699,
+                            "total_ms": 0.44554
+                        },
+                        "original": {
+                            "prepare_execute_ms": 16.192923,
+                            "fetch_ms": 0.004459,
+                            "total_ms": 16.197382
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 15.076258,
+                            "fetch_ms": 0.004549,
+                            "total_ms": 15.080807
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.562782,
+                            "fetch_ms": 0.001968,
+                            "total_ms": 0.56475
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "actor_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "plan_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_service_plans",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 2,
+            "sorted_rows_sha256": "3308d4510b13d00528de2234d04ecf2573340a27701035f48bb5b35514fce07c"
+        },
+        {
+            "table": "fep_finsafe2_service_subscriptions",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_subscriptions' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_subscriptions' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_service_subscriptions'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 76.692332,
+                            "fetch_ms": 0.009106,
+                            "total_ms": 76.701438
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.976422,
+                            "fetch_ms": 0.005632,
+                            "total_ms": 0.982054
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.491914,
+                            "fetch_ms": 0.005568,
+                            "total_ms": 1.497482
+                        },
+                        "original": {
+                            "prepare_execute_ms": 31.361983,
+                            "fetch_ms": 0.006902,
+                            "total_ms": 31.368885
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 28.738002,
+                            "fetch_ms": 0.006823,
+                            "total_ms": 28.744825
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.966035,
+                            "fetch_ms": 0.005237,
+                            "total_ms": 0.971272
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.773603,
+                            "fetch_ms": 0.005193,
+                            "total_ms": 0.778796
+                        },
+                        "original": {
+                            "prepare_execute_ms": 34.174001,
+                            "fetch_ms": 0.007054,
+                            "total_ms": 34.181055
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 24.868968,
+                            "fetch_ms": 0.007352,
+                            "total_ms": 24.87632
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.460513,
+                            "fetch_ms": 0.005539,
+                            "total_ms": 1.466052
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.972622,
+                            "fetch_ms": 0.004745,
+                            "total_ms": 0.977367
+                        },
+                        "original": {
+                            "prepare_execute_ms": 24.2229,
+                            "fetch_ms": 0.006645,
+                            "total_ms": 24.229545
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 16.886517,
+                            "fetch_ms": 0.006507,
+                            "total_ms": 16.893024
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.692814,
+                            "fetch_ms": 0.092588,
+                            "total_ms": 0.785402
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "client_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "created_by",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "plan_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_service_plans",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "aff86db98cc0c1dc012aec3336005d92c651cffa271635d5e83392fcf4712301"
+        },
+        {
+            "table": "fep_finsafe2_service_subscription_events",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_subscription_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_service_subscription_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_service_subscription_events'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 16.562278,
+                            "fetch_ms": 0.023827,
+                            "total_ms": 16.586105
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.671463,
+                            "fetch_ms": 0.005314,
+                            "total_ms": 0.676777
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.601163,
+                            "fetch_ms": 0.004427,
+                            "total_ms": 0.60559
+                        },
+                        "original": {
+                            "prepare_execute_ms": 18.135638,
+                            "fetch_ms": 0.006668,
+                            "total_ms": 18.142306
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 15.542262,
+                            "fetch_ms": 0.006504,
+                            "total_ms": 15.548766
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.850672,
+                            "fetch_ms": 0.005304,
+                            "total_ms": 0.855976
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.496842,
+                            "fetch_ms": 0.058441,
+                            "total_ms": 0.555283
+                        },
+                        "original": {
+                            "prepare_execute_ms": 188.037748,
+                            "fetch_ms": 0.010483,
+                            "total_ms": 188.048231
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 15.955436,
+                            "fetch_ms": 0.008975,
+                            "total_ms": 15.964411
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.498465,
+                            "fetch_ms": 0.00383,
+                            "total_ms": 0.502295
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.293224,
+                            "fetch_ms": 0.00292,
+                            "total_ms": 0.296144
+                        },
+                        "original": {
+                            "prepare_execute_ms": 14.170937,
+                            "fetch_ms": 0.006478,
+                            "total_ms": 14.177415
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 13.538319,
+                            "fetch_ms": 0.341508,
+                            "total_ms": 13.879827
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.437372,
+                            "fetch_ms": 0.019229,
+                            "total_ms": 0.456601
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "actor_client_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "actor_staff_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "subscription_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_service_subscriptions",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "09c614f6a54a6fe4fbc2e6845a6636e8c044d28bc849b807dc7062d9a63a4de3"
+        },
+        {
+            "table": "fep_finsafe2_recurring_billing_sources",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_sources' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_sources' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_sources'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 31.536709,
+                            "fetch_ms": 0.00529,
+                            "total_ms": 31.541999
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.575394,
+                            "fetch_ms": 0.004476,
+                            "total_ms": 1.57987
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.435442,
+                            "fetch_ms": 0.002834,
+                            "total_ms": 0.438276
+                        },
+                        "original": {
+                            "prepare_execute_ms": 14.89134,
+                            "fetch_ms": 0.004377,
+                            "total_ms": 14.895717
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 14.329353,
+                            "fetch_ms": 0.004928,
+                            "total_ms": 14.334281
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.488818,
+                            "fetch_ms": 0.003052,
+                            "total_ms": 0.49187
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.260699,
+                            "fetch_ms": 0.001762,
+                            "total_ms": 0.262461
+                        },
+                        "original": {
+                            "prepare_execute_ms": 12.728722,
+                            "fetch_ms": 0.00558,
+                            "total_ms": 12.734302
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 12.894326,
+                            "fetch_ms": 0.005009,
+                            "total_ms": 12.899335
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.49366,
+                            "fetch_ms": 0.002636,
+                            "total_ms": 0.496296
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.344406,
+                            "fetch_ms": 0.002022,
+                            "total_ms": 0.346428
+                        },
+                        "original": {
+                            "prepare_execute_ms": 14.571824,
+                            "fetch_ms": 0.193851,
+                            "total_ms": 14.765675
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 21.134551,
+                            "fetch_ms": 0.004823,
+                            "total_ms": 21.139374
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.704513,
+                            "fetch_ms": 0.004265,
+                            "total_ms": 0.708778
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_service_subscriptions",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 1,
+            "sorted_rows_sha256": "92e308bf819428360efcbc5af14e9ef0278c4626e753161245f3596db2a74c55"
+        },
+        {
+            "table": "fep_finsafe2_recurring_billing_schedules",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_schedules' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_schedules' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_schedules'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 17.587708,
+                            "fetch_ms": 0.007183,
+                            "total_ms": 17.594891
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 3.938762,
+                            "fetch_ms": 0.00542,
+                            "total_ms": 3.944182
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.575091,
+                            "fetch_ms": 0.005457,
+                            "total_ms": 0.580548
+                        },
+                        "original": {
+                            "prepare_execute_ms": 17.058126,
+                            "fetch_ms": 0.007094,
+                            "total_ms": 17.06522
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 14.957591,
+                            "fetch_ms": 0.007007,
+                            "total_ms": 14.964598
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.786168,
+                            "fetch_ms": 0.005337,
+                            "total_ms": 0.791505
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.417223,
+                            "fetch_ms": 0.005361,
+                            "total_ms": 0.422584
+                        },
+                        "original": {
+                            "prepare_execute_ms": 13.402825,
+                            "fetch_ms": 0.006786,
+                            "total_ms": 13.409611
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 16.69782,
+                            "fetch_ms": 0.006947,
+                            "total_ms": 16.704767
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 3.617729,
+                            "fetch_ms": 0.006704,
+                            "total_ms": 3.624433
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.816278,
+                            "fetch_ms": 0.005803,
+                            "total_ms": 0.822081
+                        },
+                        "original": {
+                            "prepare_execute_ms": 13.415917,
+                            "fetch_ms": 0.032489,
+                            "total_ms": 13.448406
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 12.693053,
+                            "fetch_ms": 0.006665,
+                            "total_ms": 12.699718
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.383582,
+                            "fetch_ms": 0.004253,
+                            "total_ms": 0.387835
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "client_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "created_by",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "job_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_studio_jobs",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "subscription_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_recurring_billing_sources",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 4,
+            "sorted_rows_sha256": "f99f2eaa0bb38abadcc4b0ac65ee4f06524731e0c9a11e87d99b2de072d7110a"
+        },
+        {
+            "table": "fep_finsafe2_recurring_billing_events",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_events'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 12.991248,
+                            "fetch_ms": 0.006402,
+                            "total_ms": 12.99765
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.601423,
+                            "fetch_ms": 0.004713,
+                            "total_ms": 0.606136
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.34697,
+                            "fetch_ms": 0.00361,
+                            "total_ms": 0.35058
+                        },
+                        "original": {
+                            "prepare_execute_ms": 11.180807,
+                            "fetch_ms": 0.006402,
+                            "total_ms": 11.187209
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 12.654304,
+                            "fetch_ms": 0.006498,
+                            "total_ms": 12.660802
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.052881,
+                            "fetch_ms": 0.005095,
+                            "total_ms": 1.057976
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.697686,
+                            "fetch_ms": 0.004127,
+                            "total_ms": 0.701813
+                        },
+                        "original": {
+                            "prepare_execute_ms": 17.307757,
+                            "fetch_ms": 0.005921,
+                            "total_ms": 17.313678
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 14.153386,
+                            "fetch_ms": 0.005767,
+                            "total_ms": 14.159153
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 2.437639,
+                            "fetch_ms": 0.004795,
+                            "total_ms": 2.442434
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.343017,
+                            "fetch_ms": 0.003849,
+                            "total_ms": 0.346866
+                        },
+                        "original": {
+                            "prepare_execute_ms": 17.809241,
+                            "fetch_ms": 0.005584,
+                            "total_ms": 17.814825
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 15.26603,
+                            "fetch_ms": 0.006166,
+                            "total_ms": 15.272196
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.5024,
+                            "fetch_ms": 0.004468,
+                            "total_ms": 0.506868
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "actor_client_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "actor_staff_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "schedule_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_recurring_billing_schedules",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "566b60fb72524178687bdd8c265e4a8a1b24479f5adaf79f5aba23ce3f7be569"
+        },
+        {
+            "table": "fep_finsafe2_recurring_billing_invoices",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_invoices' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_invoices' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'fep_finsafe2_recurring_billing_invoices'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 16.530307,
+                            "fetch_ms": 0.006923,
+                            "total_ms": 16.53723
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.452668,
+                            "fetch_ms": 0.004218,
+                            "total_ms": 0.456886
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.552602,
+                            "fetch_ms": 0.003741,
+                            "total_ms": 0.556343
+                        },
+                        "original": {
+                            "prepare_execute_ms": 19.615749,
+                            "fetch_ms": 0.006709,
+                            "total_ms": 19.622458
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 14.148285,
+                            "fetch_ms": 0.005944,
+                            "total_ms": 14.154229
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.411493,
+                            "fetch_ms": 0.00383,
+                            "total_ms": 0.415323
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.274778,
+                            "fetch_ms": 0.002596,
+                            "total_ms": 0.277374
+                        },
+                        "original": {
+                            "prepare_execute_ms": 12.279794,
+                            "fetch_ms": 0.007259,
+                            "total_ms": 12.287053
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 15.225717,
+                            "fetch_ms": 0.006601,
+                            "total_ms": 15.232318
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.607958,
+                            "fetch_ms": 0.004729,
+                            "total_ms": 0.612687
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.313113,
+                            "fetch_ms": 0.003075,
+                            "total_ms": 0.316188
+                        },
+                        "original": {
+                            "prepare_execute_ms": 14.182414,
+                            "fetch_ms": 0.006108,
+                            "total_ms": 14.188522
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 16.097648,
+                            "fetch_ms": 0.006767,
+                            "total_ms": 16.104415
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.859524,
+                            "fetch_ms": 0.004688,
+                            "total_ms": 0.864212
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "invoice_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_studio_invoices",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "schedule_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_recurring_billing_schedules",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "staff_id",
+                    "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "3e95118fbfeda89aa8b70cfdce8c736d3a840cf01b4270a75bf57e0e8595919d"
+        }
+    ],
+    "row_equality": true,
+    "started_at_utc": "2026-11-02T02:29:06Z",
+    "completed_at_utc": "2026-11-02T02:29:07Z"
+}

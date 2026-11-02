@@ -1,3 +1,47 @@
+## 2026-11-01 continuation — reviewed four-component integration
+
+The current candidate combines PR #317 at `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd` with account/notifications #323 (`fb8b5627`), current software-customer authority #324 (`8e93c2a7`), metadata query scope #325 (`4668c7d9`), and corrected finance recovery #326 (`2dfe76973de68e60b04da5343b75f3fbdedd4d59`). All 47 non-inventory shipping changes match their exact component blobs; the complete installer inventory remains canonical. The application version remains the development candidate `1.26.1`; this is not a new released download.
+
+The finance follow-up is published and independently reviewed: its inherited recurring fixture now prepares synthetic gateway authority and records durable dispatch/observation before finalization. All 640 original checks remain, with eight additional admission/retention checks. [Correction, original failures and exact local evidence](docs/FINANCE_RECURRING_FIXTURE_20261102.md). All shipping/workflow bytes in that follow-up are unchanged.
+
+Local combined PHP 8.3.6 / MariaDB 10.11.14 checks passed: installation/upgrade 65, account security 47, notifications 89, software commerce/current authority 466, service plans 219, finance replacement/payoff 413, initial receipts 358, and corrected recurring/metadata 729. These are assertion executions in distinct maintained drivers, not a complete-site pass. Application hashes stayed unchanged throughout. Finance native stderr retains deliberate seed/fault diagnostics; empty stderr is not claimed for those two finance drivers.
+
+The finite composition proof preserves each standalone source validator and receipt, and admits four reversible historical-comparison adapters. Native, browser, migration and packaging commands continue to execute the actual combined files. Protected workflows, timeouts, assertion bodies and provider/payment activation settings remain unchanged. Current hosted component matrices, full installed application/Apache/update/recovery acceptance, final integration review, normal main merge, exact-main verification and immutable release packaging remain separate gates. Last observed main is `1c44ca120e7768998fafa720b3e1c4c85990c330`.
+
+The shallow-checkout correction is now independently reviewed and verified: a genuine depth-one clone passes the unchanged 2,724-check acceptance helper and 12 history-hydration checks, preserving HEAD, refs, index and actual source. The final composition proof passes 2,149 checks and its actual-filesystem regression suite passes 32 checks. Independent combined HTTP/Chromium execution passes all 54 account/notification/20i checks, with all four real screenshots inspected. Browser evidence uses PHP 8.3.6, MariaDB 10.11.14, Playwright 1.55 and Chromium 140; hosted PHP 8.2/8.4 and full-site results remain separate.
+
+Next action: publish this reviewed exact tree to the existing PR #317 integration lane and inspect its normally triggered complete checks. Do not duplicate queued runs. Keep the earlier full-site failure, the original shallow-source failure, and previous published assets intact. Normal main integration follows successful required combined acceptance and review.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+PR #325 source c2f passed both MariaDB service-plan lanes and failed the new identical-occurrence fixture assertion in both MySQL lanes after the original 138 checks passed. The reviewed fixture-only follow-up preserves original FK actions and passes one local 172/172 supplement. Current-source maintained matrices and integration acceptance remain pending. [Current source, evidence and next gates](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+The exact-primary84 component narrows two repeated foreign-key metadata queries. Local results are 172/172 metadata, 219/219 service-plan native, 721/721 recurring native, and 3/3 for the saved-mapping browser block. The original hosted timeout remains preserved. Maintained matrices and integration acceptance remain pending; no full-site, merge, release or deployment claim is made. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — software correction reviewed for hosted acceptance
+
+The software customer-authority correction now has separate application/native and additive-proof reviews. Its466 native checks pass on exact tested bytes; the89-check source proof and628 maintained helpers pass with empty stderr. Root independently confirmed seven actual malformed-source/receipt refusals, and all original failures remain retained. The documentation record adds no application or fixture changes. [Review receipts and bounded decisions](docs/evidence/software-client-authority-20261102/reviews/README.md).
+
+Publish the reviewed isolated source through its normal stacked PR event, then require actual hosted acceptance and the separately reviewed finance/account combination before main integration or release. Keep PR317's protected full run frozen while it is active. Existing published assets and live deployment are unchanged.
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — notification settings correction after focused acceptance
+
+Draft PR #323 at `3cc10c1` passed the four-lane focused matrix, including 65 notification native checks per lane and 54 browser checks on both PHP 8.4 lanes. Independent review then reproduced a request-cache gap: a completed owner pause could still allow dispatch or queue a future email. The isolated correction reloads settings under the dispatch mutex and directly reads the emission-time flag, retaining the portal event and all existing delivery logic.
+
+Original failure evidence is preserved. The corrected PHP 8.3/MariaDB native suite passes 89/89 with all original 65 checks intact, and current-source proofs/canonical refresh pass. Separate final review, commit admission and corrected hosted acceptance remain pending; PR #317, main and published releases are unchanged. [Correction, evidence and next gates](docs/NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+GitHub writes are now verified: PR #317 is published at `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd`, and the reviewed Account/Notifications fixture is published at `ebcbbb56336249fee2073c8f02e9d6998740b64e`. Their exact trees match the retained reviewed snapshots. The cause of the earlier connection/UI failure remains unknown. At the 2026-11-01 23:55 UTC observation, [primary full acceptance 41363630471](https://github.com/afterburn25/Cajun_Web/actions/runs/41363630471) had started; it was not complete. Main remains `1c44ca120e7768998fafa720b3e1c4c85990c330`.
+
+The reviewed local two-parent candidate preserves both sources and adds read-only current-source focused CI. Its exact local admission commands pass. If `chatgpt/account-notifications-acceptance-20261101` is absent, publish it there; otherwise verify its tree and continue the existing acceptance run. Keep PR #317 stable. Hosted focused/full combined acceptance, main integration, exact-main verification and release publication remain pending. [Current source, proofs, review and next steps](docs/ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Reviewed correction `77cdbc92` and preceding documentation `be75116e` remain pending publication to PR #317. A GitHub blob save succeeded with the exact reviewed object; no branch update or merge is implied. The interrupted local database and failed recovery are preserved. A fresh isolated database restored 4,051 completed fixture tables. At 23:40:50 UTC the remaining native segment had passed its first two commands (103/103 and 49/49 checks), with command 3 active; full browser acceptance remained pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

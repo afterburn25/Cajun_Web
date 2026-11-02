@@ -21,6 +21,7 @@ foreach(['rb_id','rb_staff','rb_client','rb_fields','rb_historical_source'] as $
 }
 eval(implode("\n",$bodies));
 $checks=[];$cases=[];require __DIR__.'/finance_initial_receipts_boundaries.php';
+require __DIR__.'/finance_replacement_payoff_initial_admission.php';
 function fep_ok(string $name,bool $passed):void{global $checks;$checks[]=['name'=>$name,'passed'=>$passed];}
 function fep_snapshot():array{
     $r=[];foreach(['website_licenses','license_domains','license_financing','license_finance_offers','studio_invoices','invoice_payments','recurring_billing_schedules','recurring_billing_events','license_finance_subscriptions','license_finance_subscription_history'] as $t)$r[$t]=all('SELECT * FROM '.table($t).' ORDER BY id');return $r;
@@ -109,7 +110,29 @@ try{
         if($kind!=='none'){
             if($timing==='during_create')$postReservation=$work;else $afterCandidateRead=$work;
         }
-        $before=fep_snapshot();$result=$caller==='opaque'
+        if($kind==='prepared_gateway'){
+            // Historical already-admitted outcomes remain recoverable. New
+            // initial admission now rejects this unresolved one-time attempt.
+            // Seed only its canonical prior creating row and existing remote
+            // candidate; all verification/finalization below is current code.
+            $legacyContract=license_finance_subscription_contract($offer);
+            $legacyProfiles=$caller==='profile'?['customer_profile_id'=>'1001','payment_profile_id'=>'2001']:[];
+            frg_legacy_initial_reservation($offer,$legacyContract,$legacyProfiles);
+            $legacyRequest=$caller==='opaque'
+                ?license_finance_anet_arb_opaque_request($offer['id'],$legacyContract['amount_cents'],$legacyContract['start_date'],$legacyContract['months'],$legacyContract['occurrences'],'COMMON.ACCEPT.INAPP.PAYMENT','synthetic')
+                :license_finance_anet_arb_profile_request($offer['id'],$legacyContract['amount_cents'],$legacyContract['start_date'],$legacyContract['months'],$legacyContract['occurrences'],'1001','2001');
+            unset($legacyRequest['subscription']['payment']);
+            $legacyGateway=(string)++$fepGatewayId;$provider[$legacyGateway]=$legacyRequest['subscription']+['status'=>'active'];
+        }
+        $before=fep_snapshot();
+        if($kind==='prepared_gateway'){
+            // The old timing labels now denote receipt before recovery readback
+            // or during that readback, never admission of a competing new ARB.
+            if($timing==='during_create'){$postReservation=null;$work();}
+            $session=$_SESSION;rb_staff();
+            try{$result=\FinancePayoffRetirement\license_finance_subscription_reconcile($offer['id'],$legacyGateway,$password);}
+            finally{$_SESSION=$session;}
+        }else $result=$caller==='opaque'
             ?\FinancePayoffRetirement\license_finance_subscription_enroll_opaque($offer['id'],1,'COMMON.ACCEPT.INAPP.PAYMENT','synthetic')
             :\FinancePayoffRetirement\license_finance_subscription_create_profile($offer['id'],['customer_profile_id'=>'1001','payment_profile_id'=>'2001']);
         $sub=license_finance_subscription_row($offer['id']);$new=(string)$fepGatewayId;$after=fep_snapshot();$plan=license_financing_plan($license);
@@ -142,9 +165,10 @@ try{
             $afterRetry=fep_snapshot();fep_ok($name.' recovery preserves financial and license records',$snapshot['invoice_payments']===$afterRetry['invoice_payments']&&$snapshot['license_financing']===$afterRetry['license_financing']&&$snapshot['website_licenses']===$afterRetry['website_licenses']);
             fep_ok($name.' recovery never creates an additional ARB',!array_filter(array_slice($fepCalls,$start),fn($c)=>$c['method']==='ARBCreateSubscriptionRequest'));
         }
-        $writerProofs[]=['case'=>$name,'parent_connection'=>$connection,'writer'=>$proof,'result'=>$result,'calls'=>$fepCalls];
+        $writerProofs[]=['case'=>$name,'parent_connection'=>$connection,'writer'=>$proof,'result'=>$result,'calls'=>$fepCalls,
+            'entry_scope'=>$kind==='prepared_gateway'?'historical admitted-result recovery':'current initial caller'];
     }
 }catch(Throwable $e){fep_ok('fixture exception: '.get_class($e).' '.$e->getMessage(),false);}
 $failed=count(array_filter($checks,fn($c)=>!$c['passed']));
-echo json_encode(['passed'=>$failed===0,'count'=>count($checks),'failed'=>$failed,'checks'=>$checks,'writers'=>$writerProofs,'php'=>PHP_VERSION,'database'=>query('SELECT VERSION()')->fetchColumn(),'source_sha256'=>hash_file('sha256',$root.'/site/app/billing/finance_subscription.php'),'scope'=>'Actual initial callers, separate PHP processes/native connections, real owner ledger_receive and prepared charge_record_paid commits, native transaction rollback under injected audit failure. Synthetic provider transport/mode, signed future invoice and request-token metadata.'],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR).PHP_EOL;
+echo json_encode(['passed'=>$failed===0,'count'=>count($checks),'failed'=>$failed,'checks'=>$checks,'writers'=>$writerProofs,'php'=>PHP_VERSION,'database'=>query('SELECT VERSION()')->fetchColumn(),'source_sha256'=>hash_file('sha256',$root.'/site/app/billing/finance_subscription.php'),'scope'=>'Current initial callers except four explicitly historical prepared-gateway result recoveries through current owner reconciliation/finalization. Separate PHP processes/native connections, real owner ledger_receive and prepared charge_record_paid commits, native transaction rollback under injected audit failure. Synthetic provider transport/mode, signed future invoice and request-token metadata.'],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR).PHP_EOL;
 exit($failed===0?0:1);

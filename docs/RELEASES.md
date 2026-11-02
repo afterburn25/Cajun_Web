@@ -1,3 +1,31 @@
+## 2026-11-01 continuation — current component composition
+
+The current integration combines exact PR #317 `84e1f4c6`, account/notifications #323 `fb8b5627`, software authority #324 `8e93c2a7`, metadata performance #325 `4668c7d9`, and corrected finance #326 `2dfe7697`. The 47 non-inventory shipping differences equal their component sources. Local native installation/account/notification/software/service-plan/finance suites pass, including 729 combined recurring checks. See [current status](../PROJECT_STATUS.md) and [the bounded finance fixture correction](FINANCE_RECURRING_FIXTURE_20261102.md) for exact results and limits.
+
+Historical source comparisons use a finite exact-component composition; actual runtime tests continue on current files. Full hosted application/update/recovery, main integration and release gates remain pending. No new version, published asset or live-operation completion is claimed.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+The c2f performance component and its new fixture follow-up remain unreleased. Local 172/172 coverage does not replace current-source MySQL/MariaDB matrices, integrated-main acceptance, publication checks or authorized deployment. Original hosted failures remain open evidence. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+This is an unreleased component checkpoint on exact primary84. Local query/native/browser evidence and a source-reviewed fixture correction do not replace maintained-matrix acceptance, reviewed main integration, exact-main verification or publication checks. No release or live deployment is established by this record. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — notification settings correction remains unreleased
+
+The successful focused result on published `3cc10c1` is retained as a pre-fix checkpoint. A later independent review found a stale request-cache pause defect; its isolated correction passes 89 local native checks while preserving the original suite. This changes development source only. Final review, clean-source admission, corrected hosted/full combined acceptance, main integration and immutable release verification remain required. Existing release artifacts and live deployments are unchanged. [Source and evidence](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Latest observed publication remains v1.25.0. GitHub branch writes succeeded for reviewed development sources `84e1f4c6` and `ebcbbb56`; this supersedes earlier write-unverified notes but does not explain the prior connection error or constitute a release. The primary full application run has started, and the combined candidate's exact local source admission passes.
+
+The combined source still requires hosted focused/full acceptance, required review, normal main integration, exact-main verification and fresh immutable asset verification before a new version is published. Existing downloads are unchanged; no live deployment is implied. [Candidate source and remaining delivery gates](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Latest observed publication remains v1.25.0. Reviewed local source `77cdbc92`, preceding docs `be75116e` and this recovery checkpoint await candidate publication; one successful GitHub blob write is not a release or branch integration. Segmented native passes on frozen `5b478528` and the separate Account/Notifications 54/54 local result do not replace clean current-source hosted acceptance, required review, exact-main verification or immutable asset checks. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

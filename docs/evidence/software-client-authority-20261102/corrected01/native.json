@@ -1,0 +1,1209 @@
+{
+    "passed": true,
+    "original_checks_passed": 272,
+    "checks": [
+        {
+            "name": "Current order positive control reaches its expected local outcome",
+            "passed": true
+        },
+        {
+            "name": "Current order positive control contacts only synthetic transport after commit",
+            "passed": true
+        },
+        {
+            "name": "Current charge positive control reaches its expected local outcome",
+            "passed": true
+        },
+        {
+            "name": "Current charge positive control contacts only synthetic transport after commit",
+            "passed": true
+        },
+        {
+            "name": "Current enroll positive control reaches its expected local outcome",
+            "passed": true
+        },
+        {
+            "name": "Current enroll positive control contacts only synthetic transport after commit",
+            "passed": true
+        },
+        {
+            "name": "Current cancel positive control reaches its expected local outcome",
+            "passed": true
+        },
+        {
+            "name": "Current cancel positive control contacts only synthetic transport after commit",
+            "passed": true
+        },
+        {
+            "name": "Version revoked order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Version revoked order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Version revoked order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Version revoked order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Version revoked charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Version revoked charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Version revoked charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Version revoked charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Version revoked enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Version revoked enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Version revoked enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Version revoked enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Version revoked cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Version revoked cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Version revoked cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Version revoked cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Account disabled order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Account disabled order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Account disabled order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Account disabled order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Account disabled charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Account disabled charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Account disabled charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Account disabled charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Account disabled enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Account disabled enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Account disabled enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Account disabled enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Account disabled cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "Account disabled cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "Account disabled cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "Account disabled cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "wrong_client order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "wrong_client order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "wrong_client order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "wrong_client order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "wrong_client charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "wrong_client charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "wrong_client charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "wrong_client charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "wrong_client enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "wrong_client enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "wrong_client enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "wrong_client enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "wrong_client cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "wrong_client cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "wrong_client cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "wrong_client cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "missing_version order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "missing_version order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "missing_version order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "missing_version order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "missing_version charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "missing_version charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "missing_version charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "missing_version charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "missing_version enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "missing_version enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "missing_version enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "missing_version enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "missing_version cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "missing_version cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "missing_version cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "missing_version cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "idle_expired order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "idle_expired order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "idle_expired order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "idle_expired order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "idle_expired charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "idle_expired charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "idle_expired charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "idle_expired charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "idle_expired enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "idle_expired enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "idle_expired enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "idle_expired enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "idle_expired cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "idle_expired cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "idle_expired cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "idle_expired cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "absolute_expired cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_selector order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_selector order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_selector order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_selector order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_selector charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_selector charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_selector charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_selector charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_selector enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_selector enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_selector enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_selector enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_selector cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_selector cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_selector cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_selector cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_context order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_context order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_context order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_context order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_context charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_context charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_context charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_context charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_context enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_context enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_context enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_context enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "support_context cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "support_context cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "support_context cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "support_context cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_id order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_id order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_id order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_id order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_id charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_id charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_id charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_id charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_id enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_id enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_id enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_id enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_id cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_id cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_id cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_id cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_auth order refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_auth order makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_auth order leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_auth order preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_auth charge refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_auth charge makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_auth charge leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_auth charge preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_auth enroll refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_auth enroll makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_auth enroll leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_auth enroll preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "contact_auth cancel refuses the stale or ineligible customer",
+            "passed": true
+        },
+        {
+            "name": "contact_auth cancel makes no gateway request",
+            "passed": true
+        },
+        {
+            "name": "contact_auth cancel leaves no transaction open",
+            "passed": true
+        },
+        {
+            "name": "contact_auth cancel preserves all stored rows, schema and private bytes",
+            "passed": true
+        },
+        {
+            "name": "Locked order waits for the actual client row lock",
+            "passed": true
+        },
+        {
+            "name": "Locked order refuses after the revocation commits",
+            "passed": true
+        },
+        {
+            "name": "Locked order closes its transaction without a gateway request",
+            "passed": true
+        },
+        {
+            "name": "Locked order preserves the committed account and every other row",
+            "passed": true
+        },
+        {
+            "name": "Locked order observes the independently committed version change",
+            "passed": true
+        },
+        {
+            "name": "Locked charge waits for the actual client row lock",
+            "passed": true
+        },
+        {
+            "name": "Locked charge refuses after the revocation commits",
+            "passed": true
+        },
+        {
+            "name": "Locked charge closes its transaction without a gateway request",
+            "passed": true
+        },
+        {
+            "name": "Locked charge preserves the committed account and every other row",
+            "passed": true
+        },
+        {
+            "name": "Locked charge observes the independently committed version change",
+            "passed": true
+        },
+        {
+            "name": "Locked enroll waits for the actual client row lock",
+            "passed": true
+        },
+        {
+            "name": "Locked enroll refuses after the revocation commits",
+            "passed": true
+        },
+        {
+            "name": "Locked enroll closes its transaction without a gateway request",
+            "passed": true
+        },
+        {
+            "name": "Locked enroll preserves the committed account and every other row",
+            "passed": true
+        },
+        {
+            "name": "Locked enroll observes the independently committed version change",
+            "passed": true
+        },
+        {
+            "name": "Locked cancel waits for the actual client row lock",
+            "passed": true
+        },
+        {
+            "name": "Locked cancel refuses after the revocation commits",
+            "passed": true
+        },
+        {
+            "name": "Locked cancel closes its transaction without a gateway request",
+            "passed": true
+        },
+        {
+            "name": "Locked cancel preserves the committed account and every other row",
+            "passed": true
+        },
+        {
+            "name": "Locked cancel observes the independently committed version change",
+            "passed": true
+        },
+        {
+            "name": "Admitted charge retains its actual synthetic gateway outcome after later revocation",
+            "passed": true
+        },
+        {
+            "name": "Admitted charge preserves the committed revocation and closes all transactions",
+            "passed": true
+        },
+        {
+            "name": "Admitted enroll retains its actual synthetic gateway outcome after later revocation",
+            "passed": true
+        },
+        {
+            "name": "Admitted enroll preserves the committed revocation and closes all transactions",
+            "passed": true
+        },
+        {
+            "name": "Admitted cancel retains its actual synthetic gateway outcome after later revocation",
+            "passed": true
+        },
+        {
+            "name": "Admitted cancel preserves the committed revocation and closes all transactions",
+            "passed": true
+        }
+    ],
+    "source": {
+        "app/billing/software_charge.php": {
+            "file_sha256": "6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c",
+            "function": "software_charge_run",
+            "function_sha256": "16856e8747a000bf343c30161df46e46f4553e13eef4664eb388ed52e98276f0"
+        },
+        "app/billing/software_subscription_enroll.php": {
+            "file_sha256": "b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025",
+            "function": "software_subscription_enroll",
+            "function_sha256": "243ccce7d9759fed11e6d2c18c9ec6931e365032efc68a6834bbc8642485fb03"
+        },
+        "app/billing/software_subscription_cancel.php": {
+            "file_sha256": "74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f",
+            "function": "software_subscription_cancel",
+            "function_sha256": "844147be43b3aadeff3c98eb8c4be7578448208b2e1f432e9d428fcb2198013e"
+        },
+        "app/billing/software_orders.php": {
+            "file_sha256": "d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397"
+        },
+        "app/billing/software_charge_guard.php": {
+            "file_sha256": "41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a"
+        },
+        "app/billing/software_client.php": {
+            "file_sha256": "bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7"
+        },
+        "app/clients/identity.php": {
+            "file_sha256": "42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9"
+        },
+        "app/clients/accounts.php": {
+            "file_sha256": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e"
+        }
+    },
+    "owner_workers": [
+        {
+            "connection": 58,
+            "changed": true,
+            "active": 1,
+            "transaction": false
+        },
+        {
+            "connection": 59,
+            "changed": true,
+            "active": 1,
+            "transaction": false
+        },
+        {
+            "connection": 60,
+            "changed": true,
+            "active": 1,
+            "transaction": false
+        },
+        {
+            "connection": 61,
+            "changed": true,
+            "active": 1,
+            "transaction": false
+        },
+        {
+            "connection": 62,
+            "changed": true,
+            "active": 0,
+            "transaction": false
+        },
+        {
+            "connection": 63,
+            "changed": true,
+            "active": 0,
+            "transaction": false
+        },
+        {
+            "connection": 64,
+            "changed": true,
+            "active": 0,
+            "transaction": false
+        },
+        {
+            "connection": 65,
+            "changed": true,
+            "active": 0,
+            "transaction": false
+        },
+        {
+            "connection": 70,
+            "changed": true,
+            "active": 0,
+            "transaction": false
+        },
+        {
+            "connection": 71,
+            "changed": true,
+            "active": 0,
+            "transaction": false
+        },
+        {
+            "connection": 72,
+            "changed": true,
+            "active": 0,
+            "transaction": false
+        }
+    ],
+    "outcomes": [
+        {
+            "label": "Version revoked order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "Version revoked charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "Version revoked enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "Version revoked cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "Account disabled order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "Account disabled charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "Account disabled enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "Account disabled cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "wrong_client order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "wrong_client charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "wrong_client enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "wrong_client cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "missing_version order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "missing_version charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "missing_version enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "missing_version cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "idle_expired order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "idle_expired charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "idle_expired enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "idle_expired cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "absolute_expired order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "absolute_expired charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "absolute_expired enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "absolute_expired cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again."
+        },
+        {
+            "label": "support_selector order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "support_selector charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "support_selector enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "support_selector cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "support_context order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Purchases cannot be made in support mode."
+        },
+        {
+            "label": "support_context charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Payment is unavailable during support access."
+        },
+        {
+            "label": "support_context enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Subscription changes are blocked in support mode."
+        },
+        {
+            "label": "support_context cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Subscription cancellation unavailable."
+        },
+        {
+            "label": "contact_id order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "contact_id charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "contact_id enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "contact_id cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "contact_auth order",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "contact_auth charge",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "contact_auth enroll",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "contact_auth cancel",
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Sign in as the selected primary client outside support access."
+        },
+        {
+            "label": "Locked order",
+            "observed_wait": true,
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again.",
+            "connection": 66,
+            "calls": [],
+            "transaction": false
+        },
+        {
+            "label": "Locked charge",
+            "observed_wait": true,
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again.",
+            "connection": 67,
+            "calls": [],
+            "transaction": false
+        },
+        {
+            "label": "Locked enroll",
+            "observed_wait": true,
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again.",
+            "connection": 68,
+            "calls": [],
+            "transaction": false
+        },
+        {
+            "label": "Locked cancel",
+            "observed_wait": true,
+            "allowed": false,
+            "result": null,
+            "exception": "RuntimeException",
+            "message": "Your client session is no longer current. Sign in again.",
+            "connection": 69,
+            "calls": [],
+            "transaction": false
+        }
+    ],
+    "scope": "Native SQL and actual separate-process studio_client_save; actual function bodies with only gateway transport/configuration synthetic. Four held-row-lock cases use an explicit SQL version transition. No HTTP, real merchant or external provider evidence."
+}

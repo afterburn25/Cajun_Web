@@ -1,0 +1,211 @@
+name: Client account security integration
+on:
+  push:
+    branches: [chatgpt/client-account-security-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: client-account-security-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/client-account-security-20261101'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Expand reviewed account source without modifying other feature stacks
+        run: |
+          git merge-base --is-ancestor a827fca40f5c056d249293b11f07e425f0b71600 HEAD
+          python3 tools/integration/account_security_apply.py
+          python3 tools/build.py --refresh
+          mkdir -p qa/account-source
+          php tests/account_security_policy.php > qa/account-source/policy.json
+          php -n tests/account_security_policy.php > qa/account-source/policy-minimal.json
+          python3 tests/acceptance_artifacts_test.py --report qa/account-source/helpers.json
+          git diff --check
+          git diff --exit-code -- .github/workflows
+      - name: Record ordinary source only on this isolated branch
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- site tests docs
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add primary-client account security with current-session and exact identity protection'
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/client-account-security-20261101'
+          previous=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=previous:raise SystemExit('Account branch advanced; refuse concurrent overwrite')
+          current=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if current!=previous:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+current+'\n')
+          print('Recorded account source:',current)
+          PY
+      - name: Verify the bounded shipping layer and preserved ticket/proposal source
+        run: |
+          python3 tests/account_integration_contract.py
+          python3 tests/tickets_integration_contract.py
+          python3 tests/combined_runtime_repair.py
+          git diff --exit-code
+      - name: Preserve source and failure identity without release publication
+        if: always()
+        run: |
+          mkdir -p qa/account-source
+          git archive --format=tar.gz HEAD > qa/account-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/account-source/identity.txt
+          git status --porcelain > qa/account-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: account-security-source-${{ github.sha }}
+          path: qa/account-source/
+          if-no-files-found: error
+          retention-days: 14
+  portable:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain earlier application policies and source contracts
+        run: |
+          mkdir -p qa/account-portable
+          python3 tests/combined_runtime_repair.py
+          python3 tests/acceptance_artifacts_test.py --report qa/account-portable/helpers.json
+          python3 tools/integration/portable_checks.py --root . --out qa/account-portable/policies
+          php tests/account_security_policy.php > qa/account-portable/account.json
+          php -n tests/account_security_policy.php > qa/account-portable/account-minimal.json
+          php tests/master_portal_policy.php > qa/account-portable/master-portal.log
+          python3 tests/build_guards.py > qa/account-portable/build-guards.log
+          python3 tools/check_docs.py > qa/account-portable/docs.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: account-security-portable-${{ needs.source.outputs.sha }}
+          path: qa/account-portable/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2','8.4']
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare disposable PHP and loopback database
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-account-review - <<'DOCKER'
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-account-review php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/account-bin" qa/account-security
+          cat > "$RUNNER_TEMP/account-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run -i --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-account-review php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/account-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/account-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/account-bin" >> "$GITHUB_PATH"
+      - name: Actual account SQL rollback concurrency and session revocation
+        run: |
+          printf '{"synthetic":"stdin"}' | php -r 'exit(stream_get_contents(STDIN)==="{\"synthetic\":\"stdin\"}"?0:1);'
+          php tests/account_security_native.php > qa/account-security/native.stdout.log 2> qa/account-security/native.stderr.log
+          test ! -s qa/account-security/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          r=json.load(open('qa/account-security/native-results.json'))
+          assert r['passed'] is True and r['source_sha']==os.environ['CWP_SOURCE_SHA'] and len(r['checks'])>=40 and all(c['passed'] is True for c in r['checks'])
+          print('Verified actual account SQL checks:',len(r['checks']))
+          PY
+      - name: Retained client authority proposal and support-ticket SQL
+        run: |
+          php tests/tickets_installed_seed.php config
+          for case in client_authority_native proposals_native support_tickets_native; do
+            php "tests/$case.php" > "qa/account-security/$case.stdout.log" 2> "qa/account-security/$case.stderr.log"
+            test ! -s "qa/account-security/$case.stderr.log"
+          done
+          cp qa/proposal-version-native.json qa/account-security/proposal-version-native.json
+          git diff --exit-code
+      - name: Prepare actual browser dependencies
+        if: matrix.php == '8.4'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/account-venv"
+          "$RUNNER_TEMP/account-venv/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/account-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Actual customer admin review and password-change browser journey
+        if: matrix.php == '8.4'
+        run: |
+          "$RUNNER_TEMP/account-venv/bin/python" tests/account_security_browser.py
+          git diff --exit-code
+      - name: Preserve only synthetic evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: account-security-php${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: qa/account-security/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,portable,native]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Primary-client account security and retained client/proposal/ticket SQL passed on four PHP/database combinations, with two actual installed browser journeys. Scoped additional contacts and full-site/update acceptance remain separate. No main merge, production customer mutation, email, provider operation, payment or replacement release.' >> "$GITHUB_STEP_SUMMARY"

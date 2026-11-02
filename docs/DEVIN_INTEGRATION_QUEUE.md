@@ -1,3 +1,51 @@
+## 2026-11-01 continuation — composed candidate and remaining gates
+
+| Source | Current disposition | Remaining action |
+| --- | --- | --- |
+| #317 `84e1f4c6` | Preserved integration base; original full browser failure remains recorded | Replace only with the reviewed combined successor, then complete protected full acceptance. |
+| #323 `fb8b5627` | Focused hosted checks passed; application preserved in local composition | Current combined source/browser acceptance. |
+| #324 `8e93c2a7` | Focused hosted native checks passed; application preserved in local composition | Current combined acceptance. |
+| #325 `4668c7d9` | Eight current native artifacts independently verified; all four MySQL/MariaDB lanes passed | Current combined full browser run must establish whether earlier timeout is resolved. |
+| #326 `2dfe7697` | Independently reviewed recurring fixture correction published; local 648 checks passed | Normally triggered current PHP/database matrices, then combined acceptance. |
+| Combined current application | 47 non-inventory shipping changes exactly match the component union; local maintained drivers pass | Finish shallow-checkout proof compatibility and independent review, publish stable candidate, preserve all protected gates. |
+
+No candidate is main/released merely because its component or local checks pass. [Current status and exact local counts](../PROJECT_STATUS.md).
+
+## 2026-11-02 — FK fixture rule follow-up
+
+NEEDS CORRECTION OR ACCEPTANCE: PR #325 c2f has a confirmed new MySQL fixture failure. Its reviewed action-preserving follow-up passes one local 172/172 supplement; publish that exact source, obtain the unchanged required matrices, and admit it to the outer composition. No ready-to-merge or delivered status is inferred. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+NEEDS CORRECTION OR ACCEPTANCE: the isolated primary84 FK metadata component is implemented and locally checked; final forwarded-port fixture handling is source reviewed. Await the unchanged component matrices and finite source/evidence review, then compose the exact published head. It is not reported merged, released or fully accepted. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — PR #323 needs the reviewed settings correction
+
+| Candidate | State | Next action |
+| --- | --- | --- |
+| Draft PR #323 at `3cc10c1` | Four focused lanes passed; independently confirmed stale settings defect blocks acceptance of that behavior | Preserve the passing pre-fix checkpoint and original failures. |
+| `review/notification-pause-guard-20261102` | Two-module correction; 89/89 local native checks and retained source proofs pass; final frozen-tree review pending | Review, commit and run clean admission, then update the existing PR #323 source branch once through its normal event. |
+| PR #317 and main | Unchanged by this correction task | Preserve their separate acceptance and integration gates. |
+
+[Exact correction and evidence](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md). Neither local source proof nor the older passing matrix is corrected-source hosted/full acceptance or a main/release result.
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Successful GitHub writes supersede the earlier publication blocker; the cause of the earlier connection/UI failure remains unknown. Preserve the old records below as historical evidence.
+
+| Candidate | Current state | Next action |
+| --- | --- | --- |
+| PR #317, `84e1f4c6` | Published; full acceptance 41363630471 started, result pending at 2026-11-01 23:55 UTC | Keep this head stable while its existing run completes. |
+| Account/Notifications fixture, `ebcbbb56` | Published; reviewed local browser 54/54, hosted matrix still pending | Preserve its exact implementation and original failures in the combined candidate. |
+| Ordinary merge of `84e1f4c6` + `ebcbbb56` | Source/workflow review and exact local admission pass; awaiting isolated candidate publication and acceptance | If `chatgpt/account-notifications-acceptance-20261101` is absent, publish it; otherwise verify its tree and continue the existing run. Complete focused/full combined and main/release gates. |
+| Main, `1c44ca120e7768998fafa720b3e1c4c85990c330` | Unchanged by these publications | Integrate only the reviewed, accepted combined result; verify exact main afterward. |
+
+[Current-source integration, evidence and remaining gates](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md). No candidate is marked ready to merge from these source-only checks.
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 PR #317: reviewed local correction `77cdbc92` plus docs `be75116e` and this checkpoint await publication/current-source checks; the primary full browser run is still pending. Account/Notifications: base `fc14b841` plus its isolated fixture correction passes 54/54 local checks, with its own review, publication and hosted acceptance pending; it is not merged into the primary candidate. Main and PR #317 were not updated by the successful diagnostic-blob save. Preserve both lanes and combine only through reviewed integration. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/combined_runtime_repair.py", line 10, in <module>
+    comparison=validate(ROOT)
+               ^^^^^^^^^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/proposals_integration_contract.py", line 10, in validate
+    revision=validate_tickets(root)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/tickets_integration_contract.py", line 12, in validate
+    if changed!=set(paths):raise AssertionError('Unreviewed ticket shipping difference: '+repr(changed.symmetric_difference(paths)))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Unreviewed ticket shipping difference: {'site/app/billing/software_charge_guard.php', 'site/app/billing/software_subscription_enroll.php', 'site/app/billing/software_subscription_cancel.php', 'site/app/billing/software_orders.php', 'site/app/billing/software_client.php'}

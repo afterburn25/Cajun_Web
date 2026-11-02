@@ -1,0 +1,1020 @@
+{
+    "passed": true,
+    "count": 112,
+    "checks": [
+        {
+            "name": "suspended_concurrent_active rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_active permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_active retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_active performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_pending_first_payment rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_pending_first_payment permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_pending_first_payment retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_pending_first_payment performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_paid_off rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_paid_off permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_paid_off retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_paid_off performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_cancelled rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_cancelled permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_cancelled retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_cancelled performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_reversal_recovery rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_reversal_recovery permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_reversal_recovery retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_reversal_recovery performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_replacing rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_replacing permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_replacing retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_concurrent_replacing performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "suspended_replaced_identity rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_replaced_identity permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_replaced_identity retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_replaced_identity performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_active rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_active permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_active retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_active performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_pending_first_payment rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_pending_first_payment permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_pending_first_payment retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_pending_first_payment performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_paid_off rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_paid_off permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_paid_off retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_paid_off performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_cancelled rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_cancelled permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_cancelled retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_cancelled performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_reversal_recovery rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_reversal_recovery permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_reversal_recovery retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_reversal_recovery performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_replacing rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_replacing permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_replacing retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_concurrent_replacing performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_replaced_identity rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_replaced_identity permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_replaced_identity retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_replaced_identity performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_active rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_active permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_active retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_active performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_pending_first_payment rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_pending_first_payment permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_pending_first_payment retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_pending_first_payment performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_paid_off rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_paid_off permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_paid_off retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_paid_off performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_cancelled rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_cancelled permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_cancelled retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_cancelled performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_reversal_recovery rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_reversal_recovery permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_reversal_recovery retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_reversal_recovery performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_replacing rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_replacing permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_replacing retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_concurrent_replacing performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_replaced_identity rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_replaced_identity permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_replaced_identity retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_replaced_identity performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "active_new_replacement rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "active_new_replacement permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "active_new_replacement retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "active_new_replacement performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged_replacing rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged_replacing permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged_replacing retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged_replacing performs one readback and releases its lock",
+            "passed": true
+        },
+        {
+            "name": "sandbox_read_only rejects a stale response or returns the expected current result",
+            "passed": true
+        },
+        {
+            "name": "sandbox_read_only permits writes only against the verified snapshot",
+            "passed": true
+        },
+        {
+            "name": "sandbox_read_only retains newer state and identity",
+            "passed": true
+        },
+        {
+            "name": "sandbox_read_only performs one readback and releases its lock",
+            "passed": true
+        }
+    ],
+    "php": "8.3.6",
+    "source_sha256": "9f8e4965304ef90b0d9d22e3db02e14d870cd3a9d83fcbf46bdefbd633f0b6df",
+    "function_sha256": "d056a3595f0307acd5e8b1dc3aefc8a8350b095a595660a2163141935c7a659a",
+    "results": [
+        {
+            "case": "suspended_concurrent_active",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "active",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "suspended_concurrent_pending_first_payment",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "pending_first_payment",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "suspended_concurrent_paid_off",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "paid_off",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "suspended_concurrent_cancelled",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "cancelled",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "suspended_concurrent_reversal_recovery",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "reversal_recovery",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "suspended_concurrent_replacing",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "replacing",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "suspended_replaced_identity",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810002",
+                "status": "pending_first_payment",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 3,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "920001",
+                "payment_profile_id": "920002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "suspended_unchanged",
+            "result": "billing_suspended",
+            "exception": null,
+            "writes": 1,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "billing_suspended",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "910001",
+                "payment_profile_id": "910002",
+                "updated_at": "2026-11-02 02:08:14"
+            }
+        },
+        {
+            "case": "expired_concurrent_active",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "active",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "expired_concurrent_pending_first_payment",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "pending_first_payment",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "expired_concurrent_paid_off",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "paid_off",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "expired_concurrent_cancelled",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "cancelled",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "expired_concurrent_reversal_recovery",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "reversal_recovery",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "expired_concurrent_replacing",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "replacing",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "expired_replaced_identity",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810002",
+                "status": "pending_first_payment",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 3,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "920001",
+                "payment_profile_id": "920002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "expired_unchanged",
+            "result": "cancelled",
+            "exception": null,
+            "writes": 1,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "cancelled",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "910001",
+                "payment_profile_id": "910002",
+                "updated_at": "2026-11-02 02:08:14"
+            }
+        },
+        {
+            "case": "canceled_concurrent_active",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "active",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "canceled_concurrent_pending_first_payment",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "pending_first_payment",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "canceled_concurrent_paid_off",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "paid_off",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "canceled_concurrent_cancelled",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "cancelled",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "canceled_concurrent_reversal_recovery",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "reversal_recovery",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "canceled_concurrent_replacing",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "replacing",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "canceled_replaced_identity",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810002",
+                "status": "pending_first_payment",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 3,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "920001",
+                "payment_profile_id": "920002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "canceled_unchanged",
+            "result": "cancelled",
+            "exception": null,
+            "writes": 1,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "cancelled",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "910001",
+                "payment_profile_id": "910002",
+                "updated_at": "2026-11-02 02:08:14"
+            }
+        },
+        {
+            "case": "active_new_replacement",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810002",
+                "status": "replacing",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "active_paid_off",
+            "result": null,
+            "exception": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "paid_off",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "active_unchanged_replacing",
+            "result": "review",
+            "exception": null,
+            "writes": 1,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "review",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2026-11-02 02:08:14"
+            }
+        },
+        {
+            "case": "sandbox_read_only",
+            "result": "sandbox_verified",
+            "exception": null,
+            "writes": 0,
+            "final": {
+                "id": 7,
+                "gateway_subscription_id": "810001",
+                "status": "billing_suspended",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        }
+    ],
+    "scope": "Exact owner orchestration with strict synthetic database and gateway dependencies; deterministic concurrency injection at the readback boundary. No native SQL, real gateway, HTTP or license-access claim."
+}

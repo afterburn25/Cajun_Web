@@ -1,0 +1,40 @@
+PASS Charge uses integer minor units
+PASS Only opaque Accept.js token leaves browser
+PASS Never submit card numbers as opaque tokens
+PASS Approved charge requires nested approval code
+PASS Held fraud-screen transaction is not approved
+PASS Envelope error overrides nested code
+PASS Yearly recurring uses 12-month ARB interval
+PASS Impossible billing date refused
+PASS HMAC-SHA512 webhook accepted
+PASS Tampered webhook rejected
+PASS ARB uses one-use Accept.js opaque payment data rather than storing card details
+PASS ARB monthly interval is one month
+PASS ARB cannot begin in the past
+PASS Independent ARB readback accepts exact canceled subscription contract
+PASS One-time readback accepts exact authCapture transaction
+PASS One-time readback rejects a different transaction operation even when amount and invoice match
+PASS One-time readback rejects subscription-shaped capture transactions
+PASS Refund readback binds follow-on transaction, original transaction and exact amount
+PASS Void readback binds the exact original transaction without inventing a refund amount
+PASS Reversal readback rejects mismatched gateway transaction id
+PASS Failed subscription records recoverable payment failure without discarding paid-through access
+PASS Gateway suspension advances failed billing into durable billing suspension
+PASS Gateway termination requires owner review
+PASS Owner review is sticky across later cancellation notifications
+PASS Cancellation stops future renewal when no review is pending
+PASS Non-terminal subscription updates do not mutate local entitlement state
+PASS Active paid-term grant extends without owner review
+PASS Suspended paid-term grant preserves paid extension but requires owner review
+PASS Perpetual grant cannot masquerade as recurring renewal metadata
+PASS Twelve additive software-commerce tables
+PASS Software products have explicit version/update/install policy storage
+PASS Entitlements snapshot update cutoff, installation limit and policy revision
+PASS Software releases retain immutable first customer-visible release time
+PASS Subscription renewals keep unique gateway-transaction receipt history
+PASS One-time checkout keeps separate retry records
+PASS Refunds and voids keep unique reversal receipts
+PASS Merchant disputes keep durable owner-reviewed evidence
+PASS Paid-license delivery has a durable email outbox
+PASS Setup never requests destructive table deletion
+Software commerce payment and schema contracts PASS

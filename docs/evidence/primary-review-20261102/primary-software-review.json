@@ -1,0 +1,340 @@
+{
+  "review_kind": "Bounded independent source implementation review of remaining software-commerce clauses and paths on primary84; separate from any correction review.",
+  "reviewer": "/root/github_status_review",
+  "recorded_at_utc": "2026-11-02T01:12:46.542138+00:00",
+  "baseline": "1c44ca120e7768998fafa720b3e1c4c85990c330",
+  "target": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "target_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "decision": "Primary84 remains NOT CLEARED: SW-AUTH-01 and separate FIN-01/FIN-02 require corrected-source acceptance and review. No additional confirmed software blocker found in the stated scope.",
+  "actions": {
+    "application_edits": false,
+    "github_writes": false,
+    "actions_polling": false,
+    "database_or_service": false,
+    "provider_or_mail": false,
+    "new_native_http_or_browser": false,
+    "narrow_synthetic_probe": true
+  },
+  "coverage_counts": {
+    "full_source": 20,
+    "complete_changed_clauses": 7,
+    "partial_source": 3
+  },
+  "file_coverage": [
+    {
+      "path": "site/app/billing/software_orders.php",
+      "git_blob": "c3e3f9a4420d1ac011522e726ca04ee0107e73d7",
+      "sha256": "f5cc28db4b6aa06752ba04ce35e55ce9e7064d11126cb9e68563592b4932acdf",
+      "bytes": 5601,
+      "lines": 77,
+      "coverage": "full_source",
+      "scope": "Full source; product/policy snapshot, transaction/idempotency/tenant admission; SW-AUTH-01 confirmed at exact84."
+    },
+    {
+      "path": "site/app/billing/software_charge_guard.php",
+      "git_blob": "99897bc744652ea58db76f6acf55c74228f6b108",
+      "sha256": "71a4f180ee4ee7d0f92e69adb50c58cfd4e15c3c3d1923fea635d435abe47ce0",
+      "bytes": 4465,
+      "lines": 62,
+      "coverage": "full_source",
+      "scope": "Full source; durable attempt before transport, unchanged outcome guards; current-client admission missing at exact84 (SW-AUTH-01)."
+    },
+    {
+      "path": "site/app/billing/software_subscription_cancel.php",
+      "git_blob": "2ac1a3601ed81180292dd896d009c12aa7d8632c",
+      "sha256": "cf76198fd005b9c281aef7fe375dc5a07085f7fb468e521fe1a7f3eb26d9b5d5",
+      "bytes": 5868,
+      "lines": 97,
+      "coverage": "full_source",
+      "scope": "Full source; client/order ownership, claim before provider request, exact readback and uncertain-result state; SW-AUTH-01 at initial customer admission."
+    },
+    {
+      "path": "site/app/licenses/software_fulfill.php",
+      "git_blob": "d139c6b60113c6806585e51934d32973abf09b09",
+      "sha256": "c161360a58cf994c884b00cde78f091487c1d8f70ad186a2e2d6fb4bb1a43a63",
+      "bytes": 4243,
+      "lines": 67,
+      "coverage": "full_source",
+      "scope": "Full source; paid immutable order/quantity/dependency checks and idempotent invoice-unit entitlement issuance in a transaction."
+    },
+    {
+      "path": "site/app/licenses/software_assets.php",
+      "git_blob": "84d1e4db8ce872d412b51500c0a8126468616244",
+      "sha256": "53a38bb3b51e321f7a50c9e43a96372702f6eb8618536ecf7e87b72d883892fe",
+      "bytes": 9088,
+      "lines": 146,
+      "coverage": "full_source",
+      "scope": "Full source; private-root path/ZIP constraints, immutable SKU/version, owner revalidation, atomic publication timestamp/audit."
+    },
+    {
+      "path": "site/app/licenses/software_products.php",
+      "git_blob": "b73464d30da915cc334e70c0fd5316e5b4d58c4b",
+      "sha256": "38f39e2610f750fb09fc9ba868cf770894d561c74a43ff470801ac0a02b1ad7d",
+      "bytes": 11414,
+      "lines": 197,
+      "coverage": "full_source",
+      "scope": "Full source; bounded policy fields, dependency graph/cycle controls, locked owner/revision writes and immutable purchase snapshot."
+    },
+    {
+      "path": "site/app/licenses/software_asset_access.php",
+      "git_blob": "3171b08f57cb525e445c0a0e0167ce303510da8a",
+      "sha256": "145c3fdd9de18dbd6ab313e4ef5d7695cd7c3c487acad5ed58c903d58715844e",
+      "bytes": 1849,
+      "lines": 31,
+      "coverage": "full_source",
+      "scope": "Full source; customer/license/SKU/invoice-unit relation, ordinary active classification and release/update cutoff."
+    },
+    {
+      "path": "site/app/licenses/software_usage.php",
+      "git_blob": "b0ca6293bdee516baddac668ebed617b78c13ea0",
+      "sha256": "56343b11be9d4aae656bbadfb978363efe539fe881dde5150b2844b859373766",
+      "bytes": 2731,
+      "lines": 43,
+      "coverage": "full_source",
+      "scope": "Full source; bounded per-minute telemetry and old-row cleanup; telemetry failures do not turn a valid license off."
+    },
+    {
+      "path": "site/app/licenses/software_notices.php",
+      "git_blob": "8b8e9363ba07f198d96680381cf91f4bb210cb2e",
+      "sha256": "d031ff86c3562d5feb06d646029b49065308592bcc59d72733080b2d84d35bef",
+      "bytes": 4925,
+      "lines": 76,
+      "coverage": "full_source",
+      "scope": "Full source; paid-only notice claim, retry/lease limits, portal URL without keys and owner reset audit; best-effort mail, no exactly-once claim."
+    },
+    {
+      "path": "site/app/billing/software_subscriptions.php",
+      "git_blob": "79f505411f59aab8cb0f31037513c1e5ffd03bc5",
+      "sha256": "c7f559a7a483e3621aa313de1b5d7d3e283a204e506ed19098a9e1afd59b1627",
+      "bytes": 4827,
+      "lines": 99,
+      "coverage": "full_source",
+      "scope": "Full source; first-receipt identity, paid-through extension and sticky cancellation/review/manual-suspension states."
+    },
+    {
+      "path": "site/app/billing/software_subscription_settle.php",
+      "git_blob": "298a92028345a77d7123010ec19144ccc452e845",
+      "sha256": "072fb05aeb15189eee3f9e5d546a04c3fd172517265a056f68bbccbf12e04246",
+      "bytes": 19337,
+      "lines": 300,
+      "coverage": "full_source",
+      "scope": "Full source; exact provider amount/currency/subscription/invoice verification, durable unique receipts, original invoice/new renewal treatment, paid rights and webhook/reconciliation routing."
+    },
+    {
+      "path": "site/app/billing/software_payment_review.php",
+      "git_blob": "aa309b865617f38eb95935e3aaa4d6d74c900279",
+      "sha256": "cefeae82a989caaaf17212aa6c40bcc714bf2ef6ae81818761dbc4fac0c7d41c",
+      "bytes": 10799,
+      "lines": 161,
+      "coverage": "full_source",
+      "scope": "Full source; reversal replay/conflict and totals, immutable review history, locked owner dispute recording and audit."
+    },
+    {
+      "path": "site/app/billing/authorize_net_webhooks.php",
+      "git_blob": "5d2b2bda7d934ff149e345b8b0bed17f12b61431",
+      "sha256": "15fa2b306517e103a1e9e323f0503ede4ebddf62710d9a21931bbf38a91a243f",
+      "bytes": 1426,
+      "lines": 24,
+      "coverage": "full_source",
+      "scope": "Full source; bounded raw payload, exact HMAC SHA512 signature format and constant-time comparison."
+    },
+    {
+      "path": "site/api/software-webhook.php",
+      "git_blob": "7d666275cbaeeae052a3bf66dcdfa454de832a9e",
+      "sha256": "1619d2408b8fd78504f75ae2d1daa06fbf5baf9a798577c6edd85a7d0f949658",
+      "bytes": 942,
+      "lines": 24,
+      "coverage": "full_source",
+      "scope": "Full source; POST-only, bounded request/signature validation and generic public failure response."
+    },
+    {
+      "path": "site/api/software-download.php",
+      "git_blob": "b2ee577cbc3e614efb548252892bdfa1b9332164",
+      "sha256": "851c1e4fa0d8db327a392681f03b33751739de24281c8207f5777f6ee79222cd",
+      "bytes": 2320,
+      "lines": 41,
+      "coverage": "full_source",
+      "scope": "Full source; current owned license, support exclusion, entitlement and private-path/hash/size validation, audited private response."
+    },
+    {
+      "path": "site/portal/views/software.php",
+      "git_blob": "56c3b97ad0fba4b9a5df916687dd95b830d9681e",
+      "sha256": "22dae8e23a0ae0be7bfcdcec6d45cb062c427a6db558817600d24c7c1e624ac0",
+      "bytes": 19744,
+      "lines": 229,
+      "coverage": "full_source",
+      "scope": "Full source; owned license/order views, support/no-store guards, current policy/CSRF/consent fields, public-only gateway keys, truthful uncertain state and nonce-only submission."
+    },
+    {
+      "path": "site/assets/js/authorize-net-checkout.js",
+      "git_blob": "b5200b2136846dcd3d670d152fd3af6e84881414",
+      "sha256": "7ab84622c619d14a53fa559ff086c692a0cd9ad6e50185b94cc352ad097bb2ba",
+      "bytes": 2370,
+      "lines": 58,
+      "coverage": "full_source",
+      "scope": "Full source; browser tokenization, pending-submit guard, escaped error text, clearing/disabling raw card fields before form submit; no live provider test."
+    },
+    {
+      "path": "site/database/migrations/software_commerce_migrate.php",
+      "git_blob": "06754b4250fc6e812493a1b81b8be36955703771",
+      "sha256": "bde75d9b4ee23bc2170781ab47bd8c05acf2bc576d450bcdabd1bca94ea272e9",
+      "bytes": 13084,
+      "lines": 238,
+      "coverage": "full_source",
+      "scope": "Full source; explicit owner setup, recognized interrupted history, preserved established tables/data, additive v1/v2 to v3 metadata and final audited markers."
+    },
+    {
+      "path": "site/database/schema/software_commerce_schema.php",
+      "git_blob": "1c1058b3116ffdfe9decd1c73c3d512f037ba14c",
+      "sha256": "e8a22be1e07ed59a2b194425801d2aae57f090dd57e2d9759bea4d90b9eadd29",
+      "bytes": 6261,
+      "lines": 26,
+      "coverage": "full_source",
+      "scope": "Full source; InnoDB tables and unique invoice/unit, request, receipt, transaction and asset identities."
+    },
+    {
+      "path": "site/app/jobs/finance.php",
+      "git_blob": "1e5210c678a0de6ddeb8974f66caf0b2af4589f2",
+      "sha256": "7e3950e4a4d5c33414c46a9f9444c24785db97dac4c565dfff7d4b19a25e8895",
+      "bytes": 1270,
+      "lines": 22,
+      "coverage": "full_source",
+      "scope": "Full new source; bounded scheduler and generic CLI failure behavior; FIN-01/02 remain recorded in the separate finance lane."
+    },
+    {
+      "path": "site/api/handlers/license.php",
+      "git_blob": "87688abaf2cdda6eddc7e719f26b9f0bd17dda93",
+      "sha256": "88ff844f836af932450b1c99e56f91b9de1376750deac8cb06d51fef1ea594cd",
+      "bytes": 6000,
+      "lines": 145,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete main-to84 changed clauses and relevant caller context: product/version formats, required exact software SKU, domain-first privacy, financing and software grant/update checks, post-authorization telemetry. Legacy handler not wholly re-reviewed here."
+    },
+    {
+      "path": "site/api/bundle-download.php",
+      "git_blob": "ebdedf8a3b82ae57e649eb1a22c8a9791cf90b49",
+      "sha256": "c7264b4cb4731d7f1679df20238c9bdb81899ae90560190077a19541906d6ec4",
+      "bytes": 4163,
+      "lines": 116,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete main-to84 changed clauses: deny ordinary software licenses from legacy website bundles and fail closed on financing state. Legacy route remainder not wholly re-reviewed here."
+    },
+    {
+      "path": "site/app/licenses/bundle.php",
+      "git_blob": "d79fb7fd407b8cb9956f33a91343a30ea1a4bc59",
+      "sha256": "2a6f62734654d42230918f98bfdf3c05a010f0b839ee1e003364f328aa305ce7",
+      "bytes": 6692,
+      "lines": 140,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete main-to84 changed clauses: software classification and exclusion from legacy bundle/storage operations; not a new full review of every unchanged helper."
+    },
+    {
+      "path": "site/app/licenses/fulfill.php",
+      "git_blob": "c37e6616591122a2f57c54d10be790baf823ed02",
+      "sha256": "bdfa8e208c01e07281b560c306ac44127068e5df65747dd6dceaa11249b1e978",
+      "bytes": 6628,
+      "lines": 150,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete main-to84 changed clauses: software orders route through paid software fulfillment/notice; legacy fulfillment tail not wholly re-reviewed here."
+    },
+    {
+      "path": "site/app/licenses/legacy.php",
+      "git_blob": "ecdf5a9070e6028af50e5722849fe7a9ad0a7cec",
+      "sha256": "875542e05b93685659f0be81115b143c5ef224dde1515f4cbf9cf021272ee5dd",
+      "bytes": 4192,
+      "lines": 41,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete main-to84 changed clauses: historical website linking excludes software grants; not a new full review of unchanged administrative functionality."
+    },
+    {
+      "path": "site/app/licenses/service.php",
+      "git_blob": "26f4d721561d9c1d04107c8b8764678132e568e9",
+      "sha256": "bba380cb430d7bb8b8a3ece2fbba47be7ce67d7d9ef48cef10dae8dbeb97da43",
+      "bytes": 14652,
+      "lines": 322,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete main-to84 changed clauses: full-entropy keys, bounded entitlement-specific software installation count, paid-off consistency checks on domain/deactivation operations."
+    },
+    {
+      "path": "site/app/jobs/run.php",
+      "git_blob": "ccbabfb815813aeb4621925b886b7c8ad0fa60be",
+      "sha256": "7605cabae3933f59ae1a4da298c617573fa315ad81797f876a8fdf34cfdf5b52",
+      "bytes": 2074,
+      "lines": 37,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete main-to84 changed clauses: separate provider/finance job dispatch with bounded public diagnostics; not every unchanged scheduler helper."
+    },
+    {
+      "path": "site/app/licenses/software_grants.php",
+      "git_blob": "e21b7bed6c7b5e576765d345376c5607f76af496",
+      "sha256": "85b0ba3825d3f02e30694212c72033c68910fbf925ae13f536602b908aac144d",
+      "bytes": 29427,
+      "lines": 475,
+      "coverage": "partial_source",
+      "scope": "Source span140-240: software/orphan classification, retained table/family/issuance evidence, ordered deactivation cooldown, master-domain exclusion and lifecycle derivation. Separate primary-finance-review.json covers1-145 and235-475; together these recorded scopes cover this file, without claiming either reviewer read the entire file alone."
+    },
+    {
+      "path": "site/app/billing/software_charge.php",
+      "git_blob": "2d83a2da371ff44a7e7d7f0bdee39e501a1a36d5",
+      "sha256": "6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c",
+      "bytes": 15945,
+      "lines": 253,
+      "coverage": "partial_source",
+      "scope": "Customer software_charge_run admission/transport path220-253 and source-bound actual function probe; separate primary-finance-review.json contains full source review. No new blanket outcome-path approval from this partial pass."
+    },
+    {
+      "path": "site/app/billing/software_subscription_enroll.php",
+      "git_blob": "cc6b61d62b6cd69f2e7835ab3318978b430e8462",
+      "sha256": "b85fa4d80084874385cd5a100cc71d9dc298b945d15f7ba400f1214bd026f07f",
+      "bytes": 15253,
+      "lines": 228,
+      "coverage": "partial_source",
+      "scope": "Customer enrollment admission/claim/transport path178-228 and source-bound actual function probe; separate primary-finance-review.json contains full source review. Finalization/reconciliation not changed by the proposed authority correction."
+    }
+  ],
+  "finding": {
+    "id": "SW-AUTH-01",
+    "severity": "P1",
+    "exact84_status": "Confirmed by actual-function source-bound synthetic probe: 7 of8 stale/revoked/disabled negative cases incorrectly enter invoice/order or provider reservation. Disabled order alone already refused.",
+    "boundary": "Authority revocation/deactivation committed before new customer mutation admission, not cancellation of an operation already admitted.",
+    "report": "software-client-authority-review.json",
+    "initial_correction": "Distinct uncommitted five-file correction has passed the copied synthetic12-case probe (4 valid controls,8 negative denials); this does not clear a published source, native SQL, HTTP, matrix or full acceptance gate."
+  },
+  "separate_receipts": [
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/software-client-authority-review.json",
+      "sha256": "c813231cfae9329e3347e5e2ab025dc7f7162941ec09eccbff793d5ac1d61f7a"
+    },
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/software-client-authority-probe.php",
+      "sha256": "f5ec02f08ea9ac11022757f88a8e2caea00f02377fc002f081058a6e966e809c"
+    },
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/software-client-authority-probe.json",
+      "sha256": "b88a0043ce694efb773f528fe176a918ff1f13e9e1ba1b05d175e40059a91b28"
+    },
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/software-client-authority-corrected-probe-receipt.json",
+      "sha256": "e77647133bb9847de46002195b6decd519a773cce177c2632b8519ae350e462e"
+    },
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/primary-finance-review.json",
+      "sha256": "8c6eeeb25b0960d9a1570d48aec891324df9eaa5cd8c8e9412333ba3c0b199c7"
+    },
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/primary-shared-review.json",
+      "sha256": "87361a56067c631d1f84f477f868f1d9e7f744d49cc50ecfe28c74a9ca310676"
+    },
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/primary-hosting-review.json",
+      "sha256": "8a908a454d9a99b3149ce5cf5b3285f8cbc3303d7d96efaa014363976805967b"
+    }
+  ],
+  "remaining_limits": [
+    "Several finance migrations, financing views/admin license controls and financing review/policy tails retain the explicit partial/inventory-only limits in primary-finance-review.json; this supplement does not clear them.",
+    "No new browser visual/accessibility review, native SQL, real provider/mail, installed upgrade, release or exact-main evidence is claimed.",
+    "Source inspection does not validate full integration acceptance or every unchanged legacy subsystem.",
+    "The recorded original84 source remains frozen. The software correction requires review of its final exact source and native regressions; FIN01/02 are implemented independently by the assigned writer.",
+    "Per-path full/changed/partial classifications are deliberate; merely listing a file or hashing it is not approval."
+  ]
+}

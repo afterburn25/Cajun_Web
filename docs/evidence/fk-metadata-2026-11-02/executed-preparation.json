@@ -1,0 +1,40 @@
+{
+  "prepared_at_utc": "2026-11-02T02:49:09.684965+00:00",
+  "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "source_state": "frozen Git tree before commit",
+  "database_port": 33316,
+  "database_pid": 129190,
+  "http_port": 8092,
+  "reused_owned_server_was_verified_empty": true,
+  "new_database_daemon_started": false,
+  "shipping_files": 3051,
+  "instrumentation_changes": [
+    {
+      "path": "includes/database.php",
+      "before_sha256": "47d9fa7486fdfe579a6f503c88b9715f1ec27e96d30735db78d2e450bdb16cd0",
+      "after_sha256": "40ac2c2817dbaf6217720b8eadf5a07d86a9c0ad8b5b60d5da20b25bbf8ac3af"
+    }
+  ],
+  "external_observer_sha256": "ee13da2b458fbd33ea11137349493ec563b32525a01d7bb876c50b913b0f4025",
+  "control_sha256": {
+    "observe.php": "ee13da2b458fbd33ea11137349493ec563b32525a01d7bb876c50b913b0f4025",
+    "seed_fixture.php": "5d978cb09973c6246bf5f0f9268f9450e4d0d1362f4d773585464bc56e9fa035",
+    "replay.py": "08075fe49ef107d1ed010cdaf08e7aab0abaf196ad4bfaaab7704eea47fab454",
+    "prepare_existing.py": "0856c3e019ae05cf02ae0e902abf04499e809d35f01fa59e88891cc6444089a6",
+    "run_checks.py": "5141054c40651419d8ddb167db2fdeb265c4776e363761768eba3271a1df5286"
+  },
+  "synthetic_seed": "Fresh empty ci_ schema plus separate local native/foreign schemas",
+  "initial_failed_tree_retained": "f97c27ba06d0795fa544daf97e7387cbd2bc4316",
+  "old_databases_untouched": [
+    33306,
+    33307,
+    33309,
+    33311,
+    33312,
+    33313,
+    33314,
+    33315
+  ],
+  "private_values_in_receipt": false
+}

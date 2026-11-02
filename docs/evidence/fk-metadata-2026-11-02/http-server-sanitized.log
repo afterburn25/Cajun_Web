@@ -1,0 +1,82 @@
+[Sun Nov  1 21:49:54 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8092) started
+[Sun Nov  1 21:49:54 2026] 127.0.0.1:35120 Accepted
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35120 [200]: GET /existing/admin/index.php?view=login
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35120 Closing
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35126 Accepted
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35126 [303]: POST /existing/admin/index.php?view=login
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35126 Closing
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35138 Accepted
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35138 [200]: GET /existing/admin/index.php?view=dashboard
+[Sun Nov  1 21:49:55 2026] 127.0.0.1:35138 Closing
+[Sun Nov  1 21:49:56 2026] 127.0.0.1:35154 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35154 [200]: GET /existing/admin/index.php?view=service-agreement&record=[synthetic-record] Nov  1 21:49:57 2026] 127.0.0.1:35154 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35168 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35184 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35168 [200]: GET /existing/assets/css/site.css?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35192 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35184 [200]: GET /existing/assets/css/admin.css?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35208 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35192 [200]: GET /existing/assets/css/mail-notices.css?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35224 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35168 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35208 [200]: GET /existing/assets/css/growth.css?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35238 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35184 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35224 [200]: GET /existing/images/branding/logo.png?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35192 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35208 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35224 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35238 [200]: GET /existing/assets/js/site.js?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35238 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35250 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35260 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35250 [200]: GET /existing/assets/js/admin.js?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35264 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35260 [200]: GET /existing/assets/js/activity.js?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35264 [200]: GET /existing/assets/js/mail-notices.js?v=1.26.1
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35250 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35260 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35264 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35270 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35270 [204]: GET /existing/api/activity.php?audience=admin
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35270 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35282 Accepted
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35282 [204]: GET /existing/api/mail-notices.php
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35282 Closing
+[Sun Nov  1 21:49:57 2026] 127.0.0.1:35296 Accepted
+[Sun Nov  1 21:49:58 2026] 127.0.0.1:35296 [303]: POST /existing/admin/index.php?view=service-agreement&record=[synthetic-record] Nov  1 21:49:58 2026] 127.0.0.1:35296 Closing
+[Sun Nov  1 21:49:58 2026] 127.0.0.1:35302 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35302 [200]: GET /existing/admin/index.php?view=service-agreement&record=[synthetic-record] Nov  1 21:49:59 2026] 127.0.0.1:35302 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35316 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35332 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35316 [200]: GET /existing/assets/css/site.css?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35344 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35332 [200]: GET /existing/assets/css/admin.css?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35350 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35344 [200]: GET /existing/assets/css/mail-notices.css?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35362 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35316 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35350 [200]: GET /existing/assets/css/growth.css?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35332 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35362 [200]: GET /existing/images/branding/logo.png?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35344 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35350 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35362 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35370 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35370 [200]: GET /existing/assets/js/site.js?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35372 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35370 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35384 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35394 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35372 [200]: GET /existing/assets/js/admin.js?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35372 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35384 [200]: GET /existing/assets/js/activity.js?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35394 [200]: GET /existing/assets/js/mail-notices.js?v=1.26.1
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35384 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35394 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35398 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35398 [204]: GET /existing/api/activity.php?audience=admin
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35398 Closing
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35404 Accepted
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35404 [204]: GET /existing/api/mail-notices.php
+[Sun Nov  1 21:49:59 2026] 127.0.0.1:35404 Closing

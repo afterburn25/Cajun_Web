@@ -1,0 +1,140 @@
+{
+  "scope": "Combined source/workflow verification and automated team review; no installed candidate acceptance",
+  "candidate_branch": "chatgpt/account-notifications-acceptance-20261101",
+  "parents": {
+    "root": {
+      "commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+      "tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec"
+    },
+    "feature": {
+      "commit": "ebcbbb56336249fee2073c8f02e9d6998740b64e",
+      "tree": "845ced19cff2e22561faa47770706cdc028d84f0"
+    }
+  },
+  "common_ancestor": "366d53b1ed6b367b32664f2b91ee073fc6813544",
+  "integration_files": {
+    ".github/workflows/account-notifications-acceptance.yml": "5190514dc08427c593a456c1a066107120fb42b0cdd06aa13b67a40158cb9e56",
+    "tests/account_notification_workflow_contract.py": "92a0c02dc2108b6a1c913e9334caab7e6accb248b3222a3019fe0679d9fa49a5",
+    "tests/account_notification_fixture_provenance.py": "32a8f7ada37677c5cf80510438d1cb5361e60510cdd639a13bdf7e0ab0677ae4",
+    "docs/ACCOUNT_NOTIFICATION_FIXTURE_COMBINATION.json": "a8bd993695dde71d12f0f2bd6046f6a411d368efe71b59152dfb05e6be260243",
+    "tests/release_cases.py": "d0f4474fa827f3a1c2c1be1256e3614476f522cb11dc3b905ac93024143f77bc",
+    "tests/owner_navigation_contract.py": "b0c0e5d089e03c31d5ff0a35cddd9a676f20f949f837fa21f258414bd76ddb42",
+    "tests/provider_browser_fixture_provenance.py": "0dbc7ce034aac8283a8b92bd32396aafd4584438aceede12488d027022dc04ee",
+    "tests/core_browser_fixture_contract.py": "9faa203594949302667d2ca9bed456d9e06365296899148e7533972dc4ee4978"
+  },
+  "retained_files": {
+    ".github/workflows/application-tests.yml": "9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c",
+    ".github/workflows/account-notifications-combined.yml": "978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8",
+    ".github/workflows/client-account-security.yml": "856948e98e3e7d69eb425c9d19db7a3032be2248e93dca7c87bc9940e6e696ee",
+    ".github/workflows/notification-center.yml": "be2910a176a368673f44842b75b0e54e4ba89c2dd7c85edbcbf7d220b707c787",
+    "tools/integration/owner_navigation_fix.py": "145fb245bf869fca5ac3c1d0ac74442c12c3adde149e81c7fe24a642552f3940",
+    "tools/integration/account_notification_merge.py": "3d468f1397425ce4c0e6b442b2fe351850840822a136ef2ac1a0707705e2d8c1",
+    "tools/integration/account_security_apply.py": "92adb976c7850d46fb7d023bb3db87cee4aca69384a80a0b7063d25c4356c2b1",
+    "tools/integration/notification_center_apply.py": "70308567c0c872823d0b8a4ad4ef88ecde8d9cd7b58d76ed5f8e2e9cd82919b1",
+    "tools/integration/notification_runtime_corrections.py": "c4d4ad88ac8faa5da721bec501becbc91e03d5763c162b83293a6373e5ce5a98",
+    "docs/CORE_BROWSER_FIXTURE_REPAIRS.json": "f7aca2b087bbf43fb26be0e158d9b7945819f07ce46061191bed38e7b7ae4bbf",
+    "docs/PROVIDER_BROWSER_FIXTURE_REPAIRS_20261101.json": "9ea6c2f18879510b5475ae0d2d4ddccfbc2cbca4f86874ff3b0a579657801e2e",
+    "tests/core_browser_fixture_provenance.py": "489603afc4cdf1cf3a8ffd08329df93af77fee336904b10ff32bdadcf858ef71",
+    "tests/account_notification_browser.py": "aad7737422c97a95b59354987b76843cfe755e472b9169aa742587e6357c7367"
+  },
+  "reports": {
+    "acceptance-helpers": {
+      "passed": true,
+      "checks": 575,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "sha256": "675fbca4e405040f2f8317272d8ff164f2c31041e3a74441a7780481ea64d928"
+    },
+    "account_notification_fixture_provenance": {
+      "passed": true,
+      "checks": 36,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "sha256": "7d3a679f7c64b5f40e319ac39b12da9439ee291f7d8000740d425d09b1a9455b"
+    },
+    "provider_browser_fixture_provenance": {
+      "passed": true,
+      "checks": 241,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "sha256": "5530d32905f2f6a5518ff7f444f2f4e0e83c89dc4ab15a604c0b4ddedf28fc16"
+    },
+    "core_browser_fixture_contract": {
+      "passed": true,
+      "checks": 50,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "sha256": "9073333eea74f2d1eae4c02c30fd05bf566ece1beb42d1cd243d093f072c19fc"
+    },
+    "owner_navigation_contract_test": {
+      "passed": true,
+      "checks": 54,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "sha256": "9259f77ccfc00eb83c916d0ae8c7a79471046f0a51ef646689fd71b592518164"
+    },
+    "account_notification_workflow_contract": {
+      "passed": true,
+      "checks": 56,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "sha256": "5b1569a268ff3f4da340d36deeb8a661de111509baec207f430c71097d0f7f85"
+    }
+  },
+  "canonical_build": {
+    "command": "python3 tools/build.py --refresh",
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "tracked_source_drift": false,
+    "release_built": false,
+    "stdout_sha256": "ba976e209a189bbdaaf73c8e25419f0d43d46d1b27d94aa65a0763b66b96a3af"
+  },
+  "review": {
+    "kind": "Automated team review, not independent human approval",
+    "root_review": "Reviewed actual source-projection callers, immutable admission, complete retained acceptance/checkpoint job bytes; no blocking issue found",
+    "independent_agent_review": "Verified six parent fixture projections, exact carryover, immutable source binding, original matrix commands and evidence gates; no remaining blocker within source/workflow scope",
+    "finding": "Protected application workflow was a source-proof dependency but omitted from event paths",
+    "resolution": "Added application-tests.yml to both filters and DEPENDENCIES, and a focused negative removal case; reviewer independently reproduced all 56 checks including 20 mutations and exact retained report",
+    "externally_approved": false
+  },
+  "installed_fixture_evidence": {
+    "source_commit": "ebcbbb56336249fee2073c8f02e9d6998740b64e",
+    "equivalent_local_commit": "1bbb4041b79194085c2ff379ec993cc018e70088",
+    "tested_browser_sha256": "aad7737422c97a95b59354987b76843cfe755e472b9169aa742587e6357c7367",
+    "local_passed_checks": 54,
+    "combined_candidate_certified": false
+  },
+  "pending": [
+    "Hosted focused PHP/database matrix on published combined source",
+    "Complete combined application/update acceptance",
+    "Main integration and exact-main verification",
+    "Versioned release publication"
+  ],
+  "documentation_validation": {
+    "command": "python3 tools/check_docs.py",
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "required_documents": 12,
+    "markdown_files": 349,
+    "local_links": 2121,
+    "heading_links": 41
+  },
+  "local_admission": {
+    "execution_record": "admission-execution.json",
+    "source_checkpoint": "7feb1c5f25f44dff9ddd91b7db07a85f96a12883",
+    "tree": "e275126f3907f620ae45d6cf1b0c80df68b2240c",
+    "actual_workflow_shell_blocks": 2,
+    "both_exit_codes": 0,
+    "both_stderr_bytes": 0,
+    "emitted_sha_matches_head": true,
+    "clean_source": true,
+    "hosted_matrix_or_installed_acceptance": false,
+    "final_amendment_scope": "Documentation/evidence only; integration source hashes retained exactly"
+  },
+  "final_source_binding": {
+    "checkpoint": "7feb1c5f25f44dff9ddd91b7db07a85f96a12883",
+    "integration_file_sha256_matches": true,
+    "retained_file_sha256_matches": true,
+    "amendment_documentation_only": true
+  }
+}

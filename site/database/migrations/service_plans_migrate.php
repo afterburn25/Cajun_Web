@@ -46,7 +46,9 @@ function service_plans_validate_schema(string $name,string $sql,bool $checkout=f
         'service_subscription_events'=>['subscription_id'=>['service_subscriptions','id'],'actor_staff_id'=>['users','id'],'actor_client_id'=>['studio_clients','id']],
     };
     if($checkout && $name==='service_subscriptions')$expected['created_by_client']=['studio_clients','id'];
-    $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
+    // DISTINCT keeps this schema/table-scoped relation materialized; full constraint
+    // identity preserves separate constraints and the outer foreign-key column rows.
+    $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN (SELECT DISTINCT CONSTRAINT_SCHEMA,CONSTRAINT_NAME,TABLE_NAME,DELETE_RULE,UPDATE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME=?) r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name,config()['db']['prefix'].$name]);
     if(count($relations)!==count($expected))throw new RuntimeException('Incompatible service-plan relationships. Existing data was preserved.');
     $seen=[];
     foreach($relations as $relation) {

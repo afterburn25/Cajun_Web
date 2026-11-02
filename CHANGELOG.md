@@ -1,3 +1,33 @@
+## Unreleased — current integration continuation (2026-11-01)
+
+- Combine reviewed account/notification security, current software-customer authority, finance recovery and narrowed metadata queries on the existing integration candidate.
+- Repair the inherited finance replacement fixture using actual synthetic gateway, dispatch and observation boundaries; preserve all original assertions and application guards.
+- Preserve standalone source proofs through bounded combined-source comparison adapters. Full hosted application/update acceptance and release publication remain pending; version and previous downloads are unchanged.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+Unreleased fixture-only correction: duplicate and restore FK relationships using their observed original DELETE/UPDATE action spelling, including safe NO ACTION handling. Keep identical-occurrence and negative-rule assertions intact. Application queries, workflow bodies and timeouts are unchanged. [Current source, evidence and next gates](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Unreleased component: scope the two service-plan/recurring foreign-key metadata inputs before joining, while preserving full constraint identity and every existing validation. Add portable native cases after existing assertions, retain a separate local cross-schema supplement, and correct its CI port-forwarding identity assumption. No cache, permission change, assertion removal or timeout increase is included. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## Unreleased — honor committed notification email settings
+
+- Refresh notification delivery settings after the account mutex is acquired so a committed owner pause or outbound disable preserves pending items without starting a send.
+- Read the current owner email-queue choice inside event emission while retaining the private portal/feed projection and replay behavior.
+- Retain the original 65 native assertions and add 24 real cross-process settings checks; corrected local acceptance is 89/89. This is pending final review, corrected hosted acceptance and delivery through main. [Evidence](docs/NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Combine published acceptance correction `84e1f4c6` and Account/Notifications fixture `ebcbbb56` with both histories retained. Compose the shared navigation assertion with all five owner destinations, the separate exact-route assertion and browser diagnostics; preserve both original inverse-proof chains. Add a read-only workflow that admits the immutable integrated commit and retains every existing focused matrix command and report gate. Legacy source builders and the protected full-application workflow are unchanged.
+
+Local source admission and automated team review pass; primary full acceptance has started separately. These changes are awaiting hosted combined acceptance, main integration and release delivery. Successful branch publication supersedes earlier write-unverified notes; the prior connection error remains unexplained. [Source and verification record](docs/ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Record the interrupted local runner, retained database snapshots, original StackCP recreation failure, and logical restoration of 4,051 completed synthetic fixture tables. The resumed original StackCP commands pass 103 and 49 checks respectively at this checkpoint. This documentation/evidence update changes no product code or acceptance assertion. GitHub accepted one exact reviewed diagnostic blob; candidate publication, full acceptance, main integration and release remain pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

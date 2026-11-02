@@ -1,0 +1,31 @@
+{
+  "receipt": {
+    "path": "adjacent-resumed03/01-finance_replacement_receipts_native/stderr.log",
+    "sha256": "4ad285eb5434c2263f6a4132d318766aecd93c617da728ce036ca04ccb9ee85e",
+    "bytes": 2423,
+    "lines": 34,
+    "exact_expected_patterns": {
+      "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:29": 1,
+      "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 1,
+      "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:13": 1,
+      "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1,
+      "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:21": 1,
+      "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:16": 1,
+      "CWP [id] RuntimeException code=0 in financing_offers.php:261": 28
+    },
+    "unexpected_lines": 0,
+    "explanation": "28 deliberately unprepared seed links and six original replacement readback/cancellation fault controls; frozen04 compatibility only."
+  },
+  "pending": {
+    "path": "adjacent-resumed03/02-finance_replacement_pending_native/stderr.log",
+    "sha256": "fbb8f8d2f06d04e41e11eee739a83398f59d8f0f0bb76cc9ec8f92f8d050696c",
+    "bytes": 221,
+    "lines": 3,
+    "exact_expected_patterns": {
+      "CWP [id] RuntimeException code=0 in financing_offers.php:261": 2,
+      "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1
+    },
+    "unexpected_lines": 0,
+    "explanation": "Two unprepared seed links and one retained cancellation-timeout control; frozen04 compatibility only."
+  }
+}

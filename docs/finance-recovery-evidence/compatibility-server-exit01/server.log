@@ -1,0 +1,97 @@
+2026-11-01 20:59:18 0 [Note] Starting MariaDB 10.11.14-MariaDB-0ubuntu0.24.04.1 source revision 053f9bcb5b147bf00edb99e1310bae9125b7f125 server_uid 03dl37IJ/GZlUktjRuu1LcgsZms= as process 103744
+2026-11-01 20:59:18 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-11-01 20:59:18 0 [Note] InnoDB: Using transactional memory
+2026-11-01 20:59:18 0 [Note] InnoDB: Number of transaction pools: 1
+2026-11-01 20:59:18 0 [Note] InnoDB: Using AVX512 instructions
+2026-11-01 20:59:18 0 [Note] InnoDB: Using io_uring
+2026-11-01 20:59:18 0 [Note] InnoDB: innodb_buffer_pool_size_max=128m, innodb_buffer_pool_size=128m
+2026-11-01 20:59:18 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-11-01 20:59:18 0 [Note] InnoDB: Buffered log writes (block size=512 bytes)
+2026-11-01 20:59:18 0 [Note] InnoDB: End of log at LSN=46980
+2026-11-01 20:59:18 0 [Note] InnoDB: 128 rollback segments are active.
+2026-11-01 20:59:18 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+2026-11-01 20:59:18 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+2026-11-01 20:59:18 0 [Note] InnoDB: log sequence number 46980; transaction id 14
+2026-11-01 20:59:18 0 [Note] InnoDB: Loading buffer pool(s) from /tmp/cwp-finance-recovery-final-8cc2b4f257ab/data/ib_buffer_pool
+2026-11-01 20:59:18 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-11-01 20:59:18 0 [Note] Server socket created on IP: '127.0.0.1', port: '33313'.
+2026-11-01 20:59:18 0 [Warning] 'user' entry 'root@d20890f268b0' ignored in --skip-name-resolve mode.
+2026-11-01 20:59:18 0 [Warning] 'proxies_priv' entry '@% root@d20890f268b0' ignored in --skip-name-resolve mode.
+2026-11-01 20:59:18 0 [Note] InnoDB: Buffer pool(s) load completed at 261101 20:59:18
+2026-11-01 20:59:18 0 [Note] /usr/sbin/mariadbd: ready for connections.
+Version: '10.11.14-MariaDB-0ubuntu0.24.04.1'  socket: '/tmp/cwp-finance-recovery-final-8cc2b4f257ab/mysql.sock'  port: 33313  Ubuntu 24.04
+261101 21:43:15 [ERROR] /usr/sbin/mariadbd got signal 11 ;
+Sorry, we probably made a mistake, and this is a bug.
+
+Your assistance in bug reporting will enable us to fix this for the next release.
+To report this bug, see https://mariadb.com/kb/en/reporting-bugs about how to report
+a bug on https://jira.mariadb.org/.
+
+Please include the information from the server start above, to the end of the
+information below.
+
+Server version: 10.11.14-MariaDB-0ubuntu0.24.04.1 source revision: 053f9bcb5b147bf00edb99e1310bae9125b7f125
+
+The information page at https://mariadb.com/kb/en/how-to-produce-a-full-stack-trace-for-mariadbd/
+contains instructions to obtain a better version of the backtrace below.
+Following these instructions will help MariaDB developers provide a fix quicker.
+
+Attempting backtrace. Include this in the bug report.
+(note: Retrieving this information may fail)
+
+Thread pointer: 0x7f06c02599b8
+stack_bottom = 0x7f0708081000 thread_stack 0x49000
+/usr/sbin/mariadbd(my_print_stacktrace+0x32)[0x55cee6006802]
+/usr/sbin/mariadbd(handle_fatal_signal+0x1a3)[0x55cee5ac3be3]
+/lib/x86_64-linux-gnu/libc.so.6(+0x45330)[0x7f071e457330]
+/usr/sbin/mariadbd(_ZN8ha_maria10drop_tableEPKc+0x17)[0x55cee5c75be7]
+/usr/sbin/mariadbd(_Z14free_tmp_tableP3THDP5TABLE+0xe5)[0x55cee58b7ac5]
+/usr/sbin/mariadbd(_ZN16Create_tmp_table18cleanup_on_failureEP3THDP5TABLE+0x20)[0x55cee58b7fa0]
+/usr/sbin/mariadbd(_Z27create_tmp_table_for_schemaP3THDP15TMP_TABLE_PARAMRK15st_schema_tablexRK25st_mysql_const_lex_stringbb+0xd1)[0x55cee58b93f1]
+/usr/sbin/mariadbd(_Z19create_schema_tableP3THDP10TABLE_LIST+0x131)[0x55cee58f9ab1]
+/usr/sbin/mariadbd(_Z18mysql_schema_tableP3THDP3LEXP10TABLE_LIST+0x26)[0x55cee58f9b86]
+/usr/sbin/mariadbd(_Z11open_tablesP3THDRK14DDL_options_stPP10TABLE_LISTPjjP19Prelocking_strategy+0x3cd)[0x55cee57dfb4d]
+/usr/sbin/mariadbd(_Z30open_normal_and_derived_tablesP3THDP10TABLE_LISTjj+0x53)[0x55cee57e12b3]
+/usr/sbin/mariadbd(_Z31open_tables_only_view_structureP3THDP10TABLE_LISTb+0x4e)[0x55cee57e134e]
+/usr/sbin/mariadbd(+0x8f02bc)[0x55cee58e02bc]
+/usr/sbin/mariadbd(_Z14get_all_tablesP3THDP10TABLE_LISTP4Item+0x764)[0x55cee58f82a4]
+/usr/sbin/mariadbd(_Z24get_schema_tables_resultP4JOIN23enum_schema_table_state+0x28a)[0x55cee58fa5ca]
+/usr/sbin/mariadbd(_ZN4JOIN10exec_innerEv+0x80d)[0x55cee58db68d]
+/usr/sbin/mariadbd(_ZN4JOIN4execEv+0x3b)[0x55cee58dbf4b]
+/usr/sbin/mariadbd(_Z12mysql_selectP3THDP10TABLE_LISTR4ListI4ItemEPS4_jP8st_orderS9_S7_S9_yP13select_resultP18st_select_lex_unitP13st_select_lex+0x121)[0x55cee58da321]
+/usr/sbin/mariadbd(_Z13handle_selectP3THDP3LEXP13select_resulty+0x154)[0x55cee58daab4]
+/usr/sbin/mariadbd(+0x858e71)[0x55cee5848e71]
+/usr/sbin/mariadbd(_Z21mysql_execute_commandP3THDb+0x43b5)[0x55cee5858395]
+/usr/sbin/mariadbd(_ZN18Prepared_statement7executeEP6Stringb+0x52a)[0x55cee587d27a]
+/usr/sbin/mariadbd(_ZN18Prepared_statement12execute_loopEP6StringbPhS2_+0x99)[0x55cee587d409]
+/usr/sbin/mariadbd(+0x88e265)[0x55cee587e265]
+/usr/sbin/mariadbd(_Z19mysqld_stmt_executeP3THDPcj+0x2f)[0x55cee587e44f]
+/usr/sbin/mariadbd(_Z16dispatch_command19enum_server_commandP3THDPcjb+0x1b76)[0x55cee585c666]
+/usr/sbin/mariadbd(_Z10do_commandP3THDb+0x145)[0x55cee585db65]
+/usr/sbin/mariadbd(_Z24do_handle_one_connectionP7CONNECTb+0x38d)[0x55cee5990b3d]
+/usr/sbin/mariadbd(handle_one_connection+0x5d)[0x55cee5990e8d]
+/usr/sbin/mariadbd(+0xd1a90f)[0x55cee5d0a90f]
+/lib/x86_64-linux-gnu/libc.so.6(+0x9caa4)[0x7f071e4aeaa4]
+/lib/x86_64-linux-gnu/libc.so.6(+0x129c6c)[0x7f071e53bc6c]
+
+Connection ID (thread ID): 194
+Status: NOT_KILLED
+Query (0x7f06c0229288): SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL
+
+Optimizer switch: index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=on,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=on,condition_pushdown_for_derived=on,split_materialized=on,condition_pushdown_for_subquery=on,rowid_filter=on,condition_pushdown_from_having=on,not_null_range_scan=off,hash_join_cardinality=off,cset_narrowing=off
+
+Writing a core file...
+Working directory at /tmp/cwp-finance-recovery-final-8cc2b4f257ab/data
+Resource Limits (excludes unlimited resources):
+Limit                     Soft Limit           Hard Limit           Units     
+Max stack size            8388608              unlimited            bytes     
+Max core file size        0                    unlimited            bytes     
+Max processes             39792                39792                processes 
+Max open files            16384                16384                files     
+Max locked memory         8388608              8388608              bytes     
+Max pending signals       39792                39792                signals   
+Max msgqueue size         819200               819200               bytes     
+Max nice priority         0                    0                    
+Max realtime priority     0                    0                    
+Kernel version: Linux version 6.18.57 (root@84c140011298) (gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #1 SMP Tue Oct 20 21:56:04 UTC 2026
+

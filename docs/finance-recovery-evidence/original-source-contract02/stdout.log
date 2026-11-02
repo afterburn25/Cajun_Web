@@ -1,0 +1,33 @@
+PASS Finance agreement creator appears once
+PASS Finance agreement history appears once
+PASS Software gateway configuration appears once
+PASS License register appears once
+PASS No corrupted financing splice remains in licensing view
+PASS Owner reconciliation queue includes interrupted replacement, lifecycle and verified-reversal recovery states
+PASS Finance agreement sender list calls the retained mail-account reader without an undefined variable function
+PASS Initial finance agreement UI is site-use only and cannot pre-grant commercial rights
+PASS Owner licensing screen exposes missing, stale and recent financing scheduler health
+PASS Unsigned direct financing binding is blocked
+PASS Finance gateway setup action is wired
+PASS Finance one-time reconciliation is wired
+PASS Finance subscription reconciliation is wired
+PASS Finance-offer controller always creates site-use-only agreements
+PASS Website bundle endpoint follows financed-license payment access and fails closed on unknown state
+PASS Client workspace hides financed website bundles while payment access is locked
+PASS Published project release streaming rechecks financed-license access before file delivery
+PASS Project release UI hides financed downloads while payment access is locked or uncertain
+PASS Online checkout is scoped to financing payment requests
+PASS Financing checkout uses tokenized card fields
+PASS Raw card/CVV fields have no submitted names
+PASS Financing payment links use dedicated idempotent request preparation
+PASS Finance production charging requires code and owner-review gates
+PASS Finance cadence policy defines monthly interval
+PASS Finance ARB request is finite
+PASS Generic recurring lifecycle detects finance-managed schedules
+PASS Generic recurring invoice path cannot issue financing installments
+PASS Down-payment agreements begin payment-locked
+PASS Electronic signature binds exact finance terms and evidence hash
+PASS Service boundary and signature path refuse unpaid commercial rights in finance offers
+PASS Public validation checks product/domain authority before evaluating private financing state
+PASS Initial-payment and delinquency states expose separate definitive payment-lock reasons
+PASS Paid-off state is retained as a one-way financing boundary

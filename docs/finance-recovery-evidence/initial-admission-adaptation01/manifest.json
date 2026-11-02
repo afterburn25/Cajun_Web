@@ -1,0 +1,26 @@
+{
+  "files": {
+    "site/app/billing/finance_subscription.php": {
+      "before_sha256": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+      "after_sha256": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+      "before_evidence": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/final-native04/source/site/app/billing/finance_subscription.php"
+    },
+    "tests/finance_initial_receipts_native.php": {
+      "before_sha256": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef",
+      "after_sha256": "6d05dc5f3a09b2e8dcd7afcfbd47f805533d4b576cc52543c1cf7fb2581140d4",
+      "before_evidence": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/adjacent-full01/source/tests/finance_initial_receipts_native.php"
+    },
+    "tests/finance_replacement_payoff_recovery_cases.php": {
+      "before_sha256": "188248b9324394b235cc83bb051957a2921a7261300a01c7cbd955396c0d79ae",
+      "after_sha256": "5f8b4b1299b0088fdc98b7a2e2b52d79533115cbb8bd85d730676b4de9e0e740",
+      "before_evidence": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/final-native04/source/tests/finance_replacement_payoff_recovery_cases.php"
+    },
+    "tests/finance_replacement_payoff_initial_admission.php": {
+      "before_sha256": null,
+      "after_sha256": "087a779de88e3b6a763bf8b4a2f6fcad14ccc1905f667958cf64f040012e9a07",
+      "before_evidence": null
+    }
+  },
+  "retained_initial_assertion_expressions": 14,
+  "new_admission_checks": 26
+}

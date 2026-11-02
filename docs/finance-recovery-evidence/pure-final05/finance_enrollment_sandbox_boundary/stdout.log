@@ -1,0 +1,33 @@
+{
+    "passed": true,
+    "count": 6,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "disabled cannot admit an initial-payment exception",
+            "passed": true
+        },
+        {
+            "name": "disabled readiness boundary",
+            "passed": true
+        },
+        {
+            "name": "production cannot admit an initial-payment exception",
+            "passed": true
+        },
+        {
+            "name": "production readiness boundary",
+            "passed": true
+        },
+        {
+            "name": "sandbox cannot admit an initial-payment exception",
+            "passed": true
+        },
+        {
+            "name": "sandbox readiness boundary",
+            "passed": true
+        }
+    ],
+    "source_sha256": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+    "scope": "Exact sandbox exception function with synthetic mode and unavailable-ledger boundaries; no production setting or gateway is changed."
+}

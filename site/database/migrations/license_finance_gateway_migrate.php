@@ -5,6 +5,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/database/schema/license_finance_gateway_schema.php';
 require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
+require_once CWP_CODE_ROOT.'/database/migrations/license_finance_recovery_migrate.php';
 
 function license_finance_gateway_table_present(string $name):bool{
     return (bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
@@ -160,4 +161,5 @@ function license_finance_gateway_prepare(#[\SensitiveParameter]string $password)
         }
         license_finance_gateway_validate_schema();
     });
+    license_finance_recovery_prepare($password);
 }

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_replacement_pending_native.php",
+    "fep_fadjpend_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 12.089,
+  "stderr_bytes": 221,
+  "report_passed": true,
+  "check_count": 25,
+  "failed_checks": []
+}

@@ -1,0 +1,74 @@
+{
+  "scope": "Read-only actual retained schema relationship query, three observations during concurrent finance fixture execution. Not a controlled benchmark or proof of the separate hosted timeout. No source or timeout changes.",
+  "source": "site/database/migrations/recurring_billing_migrate.php",
+  "source_sha256": "9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9",
+  "query": "SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL",
+  "observations": [
+    {
+      "port": 33311,
+      "database_table_count": 885,
+      "table": "fep_finsafe2_recurring_billing_invoices",
+      "milliseconds": [
+        82.913738,
+        12.021177,
+        13.317938
+      ],
+      "rows": [
+        {
+          "COLUMN_NAME": "schedule_id",
+          "REFERENCED_TABLE_NAME": "fep_finsafe2_recurring_billing_schedules",
+          "REFERENCED_COLUMN_NAME": "id",
+          "DELETE_RULE": "RESTRICT",
+          "UPDATE_RULE": "RESTRICT"
+        },
+        {
+          "COLUMN_NAME": "invoice_id",
+          "REFERENCED_TABLE_NAME": "fep_finsafe2_studio_invoices",
+          "REFERENCED_COLUMN_NAME": "id",
+          "DELETE_RULE": "RESTRICT",
+          "UPDATE_RULE": "RESTRICT"
+        },
+        {
+          "COLUMN_NAME": "staff_id",
+          "REFERENCED_TABLE_NAME": "fep_finsafe2_users",
+          "REFERENCED_COLUMN_NAME": "id",
+          "DELETE_RULE": "RESTRICT",
+          "UPDATE_RULE": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "port": 33313,
+      "database_table_count": 99,
+      "table": "fep_finfinal_recurring_billing_invoices",
+      "milliseconds": [
+        26.91466,
+        5.354108,
+        4.598163
+      ],
+      "rows": [
+        {
+          "COLUMN_NAME": "schedule_id",
+          "REFERENCED_TABLE_NAME": "fep_finfinal_recurring_billing_schedules",
+          "REFERENCED_COLUMN_NAME": "id",
+          "DELETE_RULE": "RESTRICT",
+          "UPDATE_RULE": "RESTRICT"
+        },
+        {
+          "COLUMN_NAME": "invoice_id",
+          "REFERENCED_TABLE_NAME": "fep_finfinal_studio_invoices",
+          "REFERENCED_COLUMN_NAME": "id",
+          "DELETE_RULE": "RESTRICT",
+          "UPDATE_RULE": "RESTRICT"
+        },
+        {
+          "COLUMN_NAME": "staff_id",
+          "REFERENCED_TABLE_NAME": "fep_finfinal_users",
+          "REFERENCED_COLUMN_NAME": "id",
+          "DELETE_RULE": "RESTRICT",
+          "UPDATE_RULE": "RESTRICT"
+        }
+      ]
+    }
+  ]
+}

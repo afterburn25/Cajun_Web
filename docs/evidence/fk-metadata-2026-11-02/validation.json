@@ -1,0 +1,40 @@
+{
+  "scope": "Self-check source invariants and retained validation; independent reviews are separate receipts",
+  "build_refresh": {
+    "command": "python tools/build.py --refresh",
+    "exit_code": 0,
+    "scope": "Canonical installer/dependency mirrors, all shipping PHP and JavaScript syntax",
+    "shipping_bytes_match_checked_tree": true,
+    "checked_initial_tree": "f97c27ba06d0795fa544daf97e7387cbd2bc4316"
+  },
+  "touched_php_lint_exit_codes": {
+    "site/database/migrations/service_plans_migrate.php": 0,
+    "site/database/migrations/recurring_billing_migrate.php": 0,
+    "tests/foreign_key_metadata_native.php": 0,
+    "tests/foreign_key_metadata_native_cases.php": 0,
+    "tests/service_plans_native.php": 0,
+    "tests/recurring_billing_native.php": 0
+  },
+  "docs_check": {
+    "command": "python tools/check_docs.py",
+    "exit_code": 0
+  },
+  "git_diff_whitespace_check_exit_code": 0,
+  "native_hook_inverses": [
+    {
+      "path": "tests/service_plans_native.php",
+      "original_sha256": "3a79fa80e93606efae2adafd70dfe678c1857f6db37f8be707d8396853fd5ae4",
+      "current_sha256": "2a9d10bb7e9562551c68c46adc3f89ac035bf92a6f63b64a896a18404ece2bd3",
+      "two_line_hook_inverse_restores_exact_original": true
+    },
+    {
+      "path": "tests/recurring_billing_native.php",
+      "original_sha256": "f2b811ba24274cf9421521c7e7f580b95aa9e8fa55033dfc48d2c2ff42f6810a",
+      "current_sha256": "174418e3f057224efd8b40787beb870d997d0db35242a0f5a59f4b67e7e24849",
+      "two_line_hook_inverse_restores_exact_original": true
+    }
+  ],
+  "final_helper_only_change_verified_by": "forwarded-port-topology-check.json",
+  "maintained_matrix_execution_pending": true,
+  "commit_merge_release_or_deployment_claimed": false
+}

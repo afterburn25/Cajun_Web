@@ -1,3 +1,53 @@
+## 2026-11-01 continuation — reviewed four-component integration
+
+The current candidate combines PR #317 at `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd` with account/notifications #323 (`fb8b5627`), current software-customer authority #324 (`8e93c2a7`), metadata query scope #325 (`4668c7d9`), and corrected finance recovery #326 (`2dfe76973de68e60b04da5343b75f3fbdedd4d59`). All 47 non-inventory shipping changes match their exact component blobs; the complete installer inventory remains canonical. The application version remains the development candidate `1.26.1`; this is not a new released download.
+
+The finance follow-up is published and independently reviewed: its inherited recurring fixture now prepares synthetic gateway authority and records durable dispatch/observation before finalization. All 640 original checks remain, with eight additional admission/retention checks. [Correction, original failures and exact local evidence](docs/FINANCE_RECURRING_FIXTURE_20261102.md). All shipping/workflow bytes in that follow-up are unchanged.
+
+Local combined PHP 8.3.6 / MariaDB 10.11.14 checks passed: installation/upgrade 65, account security 47, notifications 89, software commerce/current authority 466, service plans 219, finance replacement/payoff 413, initial receipts 358, and corrected recurring/metadata 729. These are assertion executions in distinct maintained drivers, not a complete-site pass. Application hashes stayed unchanged throughout. Finance native stderr retains deliberate seed/fault diagnostics; empty stderr is not claimed for those two finance drivers.
+
+The finite composition proof preserves each standalone source validator and receipt, and admits four reversible historical-comparison adapters. Native, browser, migration and packaging commands continue to execute the actual combined files. Protected workflows, timeouts, assertion bodies and provider/payment activation settings remain unchanged. Current hosted component matrices, full installed application/Apache/update/recovery acceptance, final integration review, normal main merge, exact-main verification and immutable release packaging remain separate gates. Last observed main is `1c44ca120e7768998fafa720b3e1c4c85990c330`.
+
+The shallow-checkout correction is now independently reviewed and verified: a genuine depth-one clone passes the unchanged 2,724-check acceptance helper and 12 history-hydration checks, preserving HEAD, refs, index and actual source. The final composition proof passes 2,149 checks and its actual-filesystem regression suite passes 32 checks. Independent combined HTTP/Chromium execution passes all 54 account/notification/20i checks, with all four real screenshots inspected. Browser evidence uses PHP 8.3.6, MariaDB 10.11.14, Playwright 1.55 and Chromium 140; hosted PHP 8.2/8.4 and full-site results remain separate.
+
+Next action: publish this reviewed exact tree to the existing PR #317 integration lane and inspect its normally triggered complete checks. Do not duplicate queued runs. Keep the earlier full-site failure, the original shallow-source failure, and previous published assets intact. Normal main integration follows successful required combined acceptance and review.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+Publish the reviewed rule-preserving helper follow-up to c2f, then use its unchanged service-plan/recurring matrices for exact component admission. Preserve the original MySQL failures and historical c453/d672 bindings. The fresh fkrule_ local supplement passed 172/172; owned 33316 is stopped with all prior fixture data retained. No browser replay is required for this fixture-only correction. [Current source, evidence and next gates](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Publish/review the isolated FK metadata component against primary84, then await the unchanged PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 native routes before outer composition. Local execution is bound to c453b0eb; the final helper-only forwarded-port correction is separately bound and was not used for a repeated browser run. Both owned diagnostic servers are stopped with data/evidence retained. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — software correction reviewed for hosted acceptance
+
+The software customer-authority correction now has separate application/native and additive-proof reviews. Its466 native checks pass on exact tested bytes; the89-check source proof and628 maintained helpers pass with empty stderr. Root independently confirmed seven actual malformed-source/receipt refusals, and all original failures remain retained. The documentation record adds no application or fixture changes. [Review receipts and bounded decisions](docs/evidence/software-client-authority-20261102/reviews/README.md).
+
+Publish the reviewed isolated source through its normal stacked PR event, then require actual hosted acceptance and the separately reviewed finance/account combination before main integration or release. Keep PR317's protected full run frozen while it is active. Existing published assets and live deployment are unchanged.
+
+## 2026-11-02 — software correction source admission
+
+The software authority application/native checkpoint `01cd1e25` (tree `36424379`) retains its independently reviewed 466-check native evidence. Two historical source guards initially rejected the corrected application and additive fixture; preserve their original failures. A strictly scoped exact84 inverse layer now passes 89 source checks (70 rejection cases), the actual combined-runtime guard, and all 628 maintained helper checks, with empty stderr. Application modules, inventory, PHP fixtures, historical receipts/builders and native/full job bodies are unchanged by this follow-up. [Source proof, retained failures and current gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md#source-admission-follow-up).
+
+Independently review this additive proof before publication. If the stacked correction branch is absent, publish the reviewed checkpoint; otherwise verify its tree and continue its existing run. Preserve PR317's frozen acceptance head. FIN-01/FIN-02 and Account/Notifications remain separate source lanes; their eventual combination requires reviewed shared-hook/inventory composition and exact combined acceptance before main integration or release. [Durable primary review coverage and findings](docs/evidence/primary-review-20261102/README.md) explain these gates; coverage does not mean blanket approval.
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — freeze and review the notification settings correction
+
+Continue from isolated `review/notification-pause-guard-20261102`, based exactly on published `3cc10c144e2cd4e78ff5952cee9f60710a07a9ff`. Two notification modules and canonical inventory change shipping bytes. A bounded reversible proof preserves the original source receipts/builders/workflows and every existing native assertion. The original stale-pause SQL failure is retained; corrected native acceptance passes 89/89 on the new disposable port 33309, with no real mail.
+
+The published 3cc focused result remains the pre-fix checkpoint. Complete separate review of the frozen tree, commit and clean source admission, then update the existing draft PR #323 branch through its normal event. Do not publish the staging branch or move frozen PR #317. Corrected hosted/full combined acceptance, main verification and release remain gates. [Exact scope, reports and handoff](docs/NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+The GitHub publication blocker is cleared: PR #317 now holds reviewed source `84e1f4c6`, and the separate fixture branch holds `ebcbbb56`; the earlier UI failure's cause is still unknown. Primary [full acceptance 41363630471](https://github.com/afterburn25/Cajun_Web/actions/runs/41363630471) started on `84e1f4c6` at 2026-11-01 23:54 UTC and remained active at the 23:55 UTC observation. Preserve that head and run; do not dispatch a duplicate.
+
+If `chatgpt/account-notifications-acceptance-20261101` is absent, publish the reviewed ordinary merge of those two actual parents there; otherwise verify its tree and continue its existing acceptance run. The preserved local checkpoint `7feb1c5f` passed the new workflow's actual source admission and clean-SHA output commands; final entrypoint updates preserve its non-document source exactly. Let the candidate's normal push start focused acceptance, then complete full combined acceptance and required integration/release gates. The carried 54/54 real local browser result belongs to the account fixture, not the combined candidate. [Exact handoff and evidence](docs/ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Continue the active 22-command local segment on frozen source `5b478528`, started at 23:34:35 UTC; at 23:40:50 its first two commands passed and command 3 was active. Preserve the interrupted and failed-recovery evidence. Publish reviewed source `77cdbc92` plus documentation from `be75116e` and this checkpoint to the existing integration lane after rechecking the remote head. The successful single-blob write is not a branch publication. Keep the separately tested Account/Notifications fixture correction separate until review and combination. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

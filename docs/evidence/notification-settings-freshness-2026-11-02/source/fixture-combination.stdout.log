@@ -1,0 +1,150 @@
+{
+  "passed": true,
+  "scope": "Exact fixture composition and retained assertions; not installed acceptance",
+  "checks": [
+    {
+      "name": "Combined fixture is an ordinary file tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Exact root fixture reconstructed tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed combined bytes refused for root tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed historical identity refused for root tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused for root tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Exact feature fixture reconstructed tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed combined bytes refused for feature tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed historical identity refused for feature tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused for feature tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Combined fixture is an ordinary file tests/owner_navigation_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Exact feature fixture reconstructed tests/owner_navigation_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed combined bytes refused for feature tests/owner_navigation_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed historical identity refused for feature tests/owner_navigation_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused for feature tests/owner_navigation_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Combined fixture is an ordinary file tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "Exact root fixture reconstructed tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "Changed combined bytes refused for root tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "Changed historical identity refused for root tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused for root tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "Combined fixture is an ordinary file tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Exact root fixture reconstructed tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Changed combined bytes refused for root tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Changed historical identity refused for root tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused for root tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Exact feature fixture reconstructed tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Changed combined bytes refused for feature tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Changed historical identity refused for feature tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused for feature tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed combination parents refused",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed combination paths refused",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed combination verifier refused",
+      "passed": true
+    },
+    {
+      "name": "Shared navigation retains all five owner destinations including licensing",
+      "passed": true
+    },
+    {
+      "name": "Full release driver executes the shared navigation assertion exactly once",
+      "passed": true
+    },
+    {
+      "name": "Full release driver retains the separate exact-route assertion",
+      "passed": true
+    },
+    {
+      "name": "Feature core projection remains exact",
+      "passed": true
+    },
+    {
+      "name": "Core comparison rejects unrelated predecessor bytes",
+      "passed": true
+    }
+  ]
+}

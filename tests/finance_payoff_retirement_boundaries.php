@@ -3,8 +3,11 @@
 declare(strict_types=1);
 namespace FinancePayoffRetirement;
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
-function license_finance_anet_settings():array{return ['mode'=>'production']; /* Test-only mode; no real activation. */}
-function license_finance_anet_execute(string $method,array $request):array{
+function license_finance_anet_settings():array{
+    if($GLOBALS['fepReceiptGatewayPaused']??false)throw new \RuntimeException('Synthetic gateway paused before final payoff receipt.');
+    return ['mode'=>'production','login'=>'synthetic-finance-account','key'=>'synthetic-key','client_key'=>'synthetic-client-key','revision'=>1]; /* Test-only mode; no real activation. */
+}
+function license_finance_anet_execute(string $method,array $request,?array $context=null):array{
     $id=(string)($request['subscriptionId']??'');
     $sub=$id!==''?\one('SELECT * FROM '.\table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$id]):null;
     $GLOBALS['fepCalls'][]=['method'=>$method,'id'=>$id,'transaction'=>\db()->inTransaction(),'retained'=>(bool)$sub];
@@ -34,10 +37,15 @@ function license_finance_anet_execute(string $method,array $request):array{
     }
     return ['messages'=>['resultCode'=>'Ok'],'subscription'=>$reply];
 }
+$recovery=file_get_contents($root.'/site/app/billing/finance_recovery.php');
+preg_match_all('/^function ([a-zA-Z0-9_]+)\(.*?(?=^function |\z)/ms',$recovery,$recoveryFunctions,PREG_SET_ORDER);
+foreach($recoveryFunctions as $function){
+    eval('namespace FinancePayoffRetirement; use \\RuntimeException; use \\InvalidArgumentException; use \\LogicException; use \\Throwable; use \\PDOException; '.$function[0]);
+}
 $groups=[
     'app/billing/finance_subscription.php'=>['license_finance_subscription_sandbox_initial','license_finance_subscription_enrollment_offer','license_finance_subscription_reserve',
         'license_finance_subscription_create_profile','license_finance_subscription_enroll_opaque','license_finance_subscription_finalize',
-        'license_finance_subscription_payoff_due','license_finance_subscription_payoff_retire','license_finance_subscription_reconcile'],
+        'license_finance_subscription_payoff_due','license_finance_subscription_payoff_retire','license_finance_subscription_reconcile','license_finance_subscription_replacement_retire'],
     'app/billing/finance_authorize_net.php'=>['license_finance_anet_retire_paid_off_subscription'],
     'app/licenses/financing.php'=>['license_financing_sync_by_invoice'],
     'app/licenses/finance_installments.php'=>['license_finance_scheduler_run'],

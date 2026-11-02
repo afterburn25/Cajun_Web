@@ -1,7 +1,14 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
-require_once CWP_CODE_ROOT.'/includes/layout/proposals.php';
+require_once CWP_CODE_ROOT.'/includes/layout/proposals.php';require_once CWP_CODE_ROOT.'/includes/layout/notifications.php';
+require_once CWP_CODE_ROOT.'/app/clients/account_security.php';
+$accountRequested=array_key_exists('account',$_GET);
+if($accountRequested||($_POST['action']??null)==='account_password'){
+    header('Cache-Control: no-store, private');
+    if(array_key_exists('support',$_GET))fail_page('Account security is unavailable during client review.',403);
+}
+if($accountRequested&&(($_GET['account']??null)!=='1'||array_diff(array_keys($_GET),['account'])))fail_page('Invalid account request.',400);
 if(array_key_exists('proposal',$_GET)||(is_string($_POST['action']??null)&&$_POST['action']==='proposal_decide'))header('Cache-Control: no-store, private');
 // License and financing links must reach their authenticated views, not the project fallback.
 $softwareRequested=array_key_exists('software',$_GET);$financeRequested=array_key_exists('finance',$_GET);
@@ -67,9 +74,11 @@ if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['proposal']))proposals_portal_render($error);
+if(array_key_exists('notifications',$_GET))notification_center_portal_render($error);
 if(isset($_GET['services']))provider_services_portal_render();
 if(array_key_exists('tickets',$_GET)||array_key_exists('ticket',$_GET)||array_key_exists('ticket_new',$_GET))support_tickets_portal_render($client,$error);
 require CWP_CODE_ROOT.'/portal/views/auth.php';
+if($accountRequested){require CWP_CODE_ROOT.'/portal/views/account.php';}
 if($softwareRequested){require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);}
 if($financeRequested){require_once CWP_CODE_ROOT.'/portal/views/financing.php';license_finance_portal_render($client,$_GET['finance'],$error);}
 

@@ -65,6 +65,9 @@ query('CREATE TRIGGER `'.$prefix.'reject_audit` BEFORE INSERT ON '.table('audit'
 $fixture=[];
 function support_current():bool{return false;}
 function license_finance_gateway_ready():bool{return true;}
+// This native fixture owns legacy current-ID/audit storage; the recovery-native
+// suite separately exercises real durable replacement reservations.
+function license_finance_recovery_open(string $offer,bool $lock=false):?array{return null;}
 // This native fixture owns subscription/audit tables, not a paid financing
 // ledger. Keep its stale-read and rollback cases on the unpaid path; the full
 // payoff suites exercise actual ledger validation and permanent payoff.

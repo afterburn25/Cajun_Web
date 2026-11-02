@@ -1,0 +1,59 @@
+{
+  "reviewer": "root",
+  "author": "browser_continuation",
+  "reviewed_utc": "2026-11-02T02:34:42.763396+00:00",
+  "scope": "Independent source/query semantics and retained evidence verification; no independent live SQL rerun or hosted timeout reproduction.",
+  "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "patch_sha256": "ec6d6bd74135d794b21db4eb3a737fa0a6db6d0d078f022d9b0add0c4138af2f",
+  "archive_sha256": "a19db6dbf7c32dfccf4a40b79d2d2c1b6671dd812fc18bd6ee978dba431c0e4b",
+  "archive_bytes": 75123,
+  "archive_members": 32,
+  "manifest_members_verified": 31,
+  "source_bindings": [
+    {
+      "path": "site/database/migrations/service_plans_migrate.php",
+      "original_sha256": "f2795bd9d83d15dc00afdcc5e88a1d7d617a45d0378d31cee2e9782d98cf5e57",
+      "proposed_sha256": "17a5c8deb447470f6bef85049f2c3eb2cce1f9a6b5ab77b265f8e01ed0d08c66",
+      "changed_calls": 1,
+      "exact_inverse_restores_source84": true
+    },
+    {
+      "path": "site/database/migrations/recurring_billing_migrate.php",
+      "original_sha256": "9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9",
+      "proposed_sha256": "28c40db41ca670b1e7c02e2b2e3eb7156df0ebd84840df723ad1120d34beb2f9",
+      "changed_calls": 1,
+      "exact_inverse_restores_source84": true
+    }
+  ],
+  "independently_recomputed_retained_timings": [
+    {
+      "port": 33314,
+      "tables": 94,
+      "measured_pairs": 56,
+      "original_median_ms": 7.3455390000000005,
+      "candidate_median_ms": 0.600528,
+      "median_paired_ratio": 12.086535033418256
+    },
+    {
+      "port": 33311,
+      "tables": 984,
+      "measured_pairs": 56,
+      "original_median_ms": 15.3357975,
+      "candidate_median_ms": 0.5605465000000001,
+      "median_paired_ratio": 29.710065012612972
+    }
+  ],
+  "semantic_review": [
+    "Only two all() calls change; exact inverse restores the immutable source files.",
+    "The same bound owning table is used in both positions. No referenced-parent schema filter is added.",
+    "Full constraint identity in derived DISTINCT retains distinct constraints; outer KCU column multiplicity remains.",
+    "No changed validation, cache, error swallowing, authority check or timeout.",
+    "Official MariaDB metadata/optimizer and MySQL8.4 optimizer docs checked; runtime cross-engine matrix remains required."
+  ],
+  "gaps": [
+    "Existing snapshots contain no composite FK, repeated named FK on one column, or cross-schema parent; live negative/equivalence fixtures remain required.",
+    "PHP/browser/full acceptance of implemented bytes has not yet run.",
+    "This is not proof of the original hosted timeout cause."
+  ],
+  "decision": "Approved isolated implementation and targeted native/HTTP verification of the reviewed proposal, with a short explanatory comment, on a new exact84 branch. No merge/release approval."
+}

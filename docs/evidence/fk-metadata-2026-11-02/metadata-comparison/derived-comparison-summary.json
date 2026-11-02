@@ -1,0 +1,262 @@
+{
+  "scope": "Read-only query-shape comparison only; no product edit or acceptance run",
+  "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "source_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "source_binding": [
+    {
+      "path": "site/database/migrations/service_plans_migrate.php",
+      "original_sha256": "f2795bd9d83d15dc00afdcc5e88a1d7d617a45d0378d31cee2e9782d98cf5e57",
+      "proposed_sha256": "17a5c8deb447470f6bef85049f2c3eb2cce1f9a6b5ab77b265f8e01ed0d08c66",
+      "changed_calls": 1,
+      "exact_inverse_restores_source84": true
+    },
+    {
+      "path": "site/database/migrations/recurring_billing_migrate.php",
+      "original_sha256": "9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9",
+      "proposed_sha256": "28c40db41ca670b1e7c02e2b2e3eb7156df0ebd84840df723ad1120d34beb2f9",
+      "changed_calls": 1,
+      "exact_inverse_restores_source84": true
+    }
+  ],
+  "proposed_patch_sha256": "ec6d6bd74135d794b21db4eb3a737fa0a6db6d0d078f022d9b0add0c4138af2f",
+  "query_sha256": {
+    "original": "908694c8f4c53fad5f40675d4d7192595785c70710125a26b1a82f0960312592",
+    "filtered_distinct_relation": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea"
+  },
+  "measured_pairs_per_table": 7,
+  "tables_per_snapshot": 8,
+  "snapshot_results": [
+    {
+      "port": 33314,
+      "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+      "database_table_count": 94,
+      "measured_executions_per_variant": 56,
+      "all_sorted_multisets_equal": true,
+      "original_median_ms": 7.3455390000000005,
+      "candidate_median_ms": 0.600528,
+      "median_paired_original_over_candidate": 12.086535033418256,
+      "all_original_broad_rc_plans": true,
+      "all_candidate_scoped_materialization_and_indexed_join_plans": true,
+      "identity_probe_totals": {
+        "referential_constraint_rows": 20,
+        "unique_complete_constraint_identities": 20,
+        "repeated_complete_identity_groups": 0,
+        "duplicate_identity_and_rules_groups": 0,
+        "complete_identities_with_conflicting_rules": 0,
+        "foreign_key_column_rows": 20,
+        "composite_foreign_key_constraints": 0,
+        "columns_with_multiple_named_constraints": 0,
+        "owning_schema_mismatched_columns": 0,
+        "cross_reference_schema_columns": 0
+      },
+      "tables": [
+        {
+          "table": "ci_service_plans",
+          "row_count": 1,
+          "sorted_multiset_sha256": "bd92e2056dc201f03e036f5a3489ec8fdecd60b0564d6157c3098f9be16f5d78",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 7.501737,
+          "candidate_median_ms": 0.553732,
+          "median_paired_original_over_candidate": 15.476616981745169,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "ci_service_plan_events",
+          "row_count": 2,
+          "sorted_multiset_sha256": "0e1d540dd79cf7fc16b90ede5e67df01088ae0c2d8ef37adb8b47f45f0e28c50",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 7.049437,
+          "candidate_median_ms": 0.552717,
+          "median_paired_original_over_candidate": 14.624773618325472,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "ci_service_subscriptions",
+          "row_count": 3,
+          "sorted_multiset_sha256": "a7ffa5260e18bc93e3e58fb186374e2b8f49634b84c4a956de72009520f7bcbf",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 7.313534,
+          "candidate_median_ms": 0.591687,
+          "median_paired_original_over_candidate": 11.982766815444142,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "ci_service_subscription_events",
+          "row_count": 3,
+          "sorted_multiset_sha256": "7e4e4b2521835654228187679cdb523817ec19929bb09b6ecc1e1b54f5e7d0fe",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 8.293534,
+          "candidate_median_ms": 0.610828,
+          "median_paired_original_over_candidate": 10.226141810899891,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "ci_recurring_billing_sources",
+          "row_count": 1,
+          "sorted_multiset_sha256": "a6b7d734f33f7b83f49596a44bae902efb9519781d1370cf75a7868be15227b7",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 6.846361,
+          "candidate_median_ms": 0.512381,
+          "median_paired_original_over_candidate": 13.54768150787858,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "ci_recurring_billing_schedules",
+          "row_count": 4,
+          "sorted_multiset_sha256": "276cf67d96940d8e784998116bfe358bae22b65b4a0961a352c49a71efd05265",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 6.864415,
+          "candidate_median_ms": 0.770803,
+          "median_paired_original_over_candidate": 8.483816313274893,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "ci_recurring_billing_events",
+          "row_count": 3,
+          "sorted_multiset_sha256": "26bdf165633d3e8b2a9bb96a8d5f0a6861e83231c8a0b8ab1e6f01fdd20ef3b7",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 6.433974,
+          "candidate_median_ms": 0.612828,
+          "median_paired_original_over_candidate": 10.830217693231392,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "ci_recurring_billing_invoices",
+          "row_count": 3,
+          "sorted_multiset_sha256": "81d6c1d067de385dd2a76f836a7dfbccf56db306ff58b66836c1a699796a7c4c",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 8.088965,
+          "candidate_median_ms": 0.651925,
+          "median_paired_original_over_candidate": 10.250611650113127,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        }
+      ]
+    },
+    {
+      "port": 33311,
+      "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+      "database_table_count": 984,
+      "measured_executions_per_variant": 56,
+      "all_sorted_multisets_equal": true,
+      "original_median_ms": 15.3357975,
+      "candidate_median_ms": 0.5605465000000001,
+      "median_paired_original_over_candidate": 29.710065012612972,
+      "all_original_broad_rc_plans": true,
+      "all_candidate_scoped_materialization_and_indexed_join_plans": true,
+      "identity_probe_totals": {
+        "referential_constraint_rows": 20,
+        "unique_complete_constraint_identities": 20,
+        "repeated_complete_identity_groups": 0,
+        "duplicate_identity_and_rules_groups": 0,
+        "complete_identities_with_conflicting_rules": 0,
+        "foreign_key_column_rows": 20,
+        "composite_foreign_key_constraints": 0,
+        "columns_with_multiple_named_constraints": 0,
+        "owning_schema_mismatched_columns": 0,
+        "cross_reference_schema_columns": 0
+      },
+      "tables": [
+        {
+          "table": "fep_finsafe2_service_plans",
+          "row_count": 1,
+          "sorted_multiset_sha256": "e057dc11fe063278392e0f9fa15440c2f8c2769c8106c4a9f38da638eaf4ae60",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 14.509603,
+          "candidate_median_ms": 0.49787,
+          "median_paired_original_over_candidate": 36.44090685338852,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "fep_finsafe2_service_plan_events",
+          "row_count": 2,
+          "sorted_multiset_sha256": "3308d4510b13d00528de2234d04ecf2573340a27701035f48bb5b35514fce07c",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 15.080807,
+          "candidate_median_ms": 0.56475,
+          "median_paired_original_over_candidate": 26.703509517485614,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "fep_finsafe2_service_subscriptions",
+          "row_count": 3,
+          "sorted_multiset_sha256": "aff86db98cc0c1dc012aec3336005d92c651cffa271635d5e83392fcf4712301",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 28.744825,
+          "candidate_median_ms": 0.977367,
+          "median_paired_original_over_candidate": 24.790631359560944,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "fep_finsafe2_service_subscription_events",
+          "row_count": 3,
+          "sorted_multiset_sha256": "09c614f6a54a6fe4fbc2e6845a6636e8c044d28bc849b807dc7062d9a63a4de3",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 15.964411,
+          "candidate_median_ms": 0.555283,
+          "median_paired_original_over_candidate": 30.398152873077372,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "fep_finsafe2_recurring_billing_sources",
+          "row_count": 1,
+          "sorted_multiset_sha256": "92e308bf819428360efcbc5af14e9ef0278c4626e753161245f3596db2a74c55",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 14.765675,
+          "candidate_median_ms": 0.49187,
+          "median_paired_original_over_candidate": 29.82509897316226,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "fep_finsafe2_recurring_billing_schedules",
+          "row_count": 4,
+          "sorted_multiset_sha256": "f99f2eaa0bb38abadcc4b0ac65ee4f06524731e0c9a11e87d99b2de072d7110a",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 14.964598,
+          "candidate_median_ms": 0.791505,
+          "median_paired_original_over_candidate": 18.906511013828087,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "fep_finsafe2_recurring_billing_events",
+          "row_count": 3,
+          "sorted_multiset_sha256": "566b60fb72524178687bdd8c265e4a8a1b24479f5adaf79f5aba23ce3f7be569",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 14.159153,
+          "candidate_median_ms": 0.606136,
+          "median_paired_original_over_candidate": 24.66993059404713,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        },
+        {
+          "table": "fep_finsafe2_recurring_billing_invoices",
+          "row_count": 3,
+          "sorted_multiset_sha256": "3e95118fbfeda89aa8b70cfdce8c736d3a840cf01b4270a75bf57e0e8595919d",
+          "sorted_multiset_equal": true,
+          "original_median_ms": 15.232318,
+          "candidate_median_ms": 0.456886,
+          "median_paired_original_over_candidate": 35.270432089556266,
+          "original_broad_rc_plan": true,
+          "candidate_scoped_materialization_and_indexed_join": true
+        }
+      ]
+    }
+  ],
+  "candidate_enumeration_finished": true,
+  "application_modified": false,
+  "hosted_failure_reproduced_by_query_comparison": false,
+  "created_at_utc": "2026-11-02T02:31:41.186329+00:00"
+}

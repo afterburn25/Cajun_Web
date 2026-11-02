@@ -163,6 +163,16 @@
           "    refuse_owner_action(env, owner, url, 'catalog_import_create', {k:v for k,v in fields.items() if k not in ('csrf','action')}, installed_root=destination)\n    stale = dict(fields, preview_hash='0' * 64)\n    response = owner.post(url, data=stale, timeout=25)\n    retry = selected(response, '3')\n    check('Catalog import error preserves selected SKU period consent and captured stale preview', response.status_code == 200 and 'Review the preview again before importing.' in response.text and all(retry[k] == stale[k] for k in ('sku', 'term', 'confirm', 'preview_hash')) and 'owner_password' not in retry and state() == before)"
         ]
       ]
+    },
+    "tests/release_cases.py": {
+      "before_sha256": "807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af",
+      "after_sha256": "178bccbd9538de1e7d47e51659225f61c7e4324effdedc2b0a311001d36281e3",
+      "edits": [
+        [
+          "    check('Grouped owner navigation retains core destinations',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).count()==1 for label in ['Overview','Service catalog','20i connection','Administrators']))",
+          "    from owner_navigation_contract import core_admin_destinations\n    check('Grouped owner navigation retains core destinations',core_admin_destinations(p))"
+        ]
+      ]
     }
   }
 }

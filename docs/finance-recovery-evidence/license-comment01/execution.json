@@ -1,0 +1,16 @@
+{
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "path": "site/app/licenses/service.php",
+  "before_sha256": "bba380cb430d7bb8b8a3ece2fbba47be7ce67d7d9ef48cef10dae8dbeb97da43",
+  "after_sha256": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+  "executable_token_sha256": [
+    "a2d15211fc5f1e09925dc8d085ef7576a046104db47c8f4be0ccf680570afae5",
+    "a2d15211fc5f1e09925dc8d085ef7576a046104db47c8f4be0ccf680570afae5"
+  ],
+  "token_identical": true,
+  "lint_exit": 0,
+  "gate_exit": 0,
+  "gate_pass_lines": 54,
+  "gate_stderr_bytes": 0,
+  "scope": "Comment-only source invariant clarification; unmodified native PHP tokens including every permanent-payoff/activation branch; no executable change."
+}

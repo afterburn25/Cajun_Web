@@ -1,0 +1,21 @@
+diff --git a/tests/foreign_key_metadata_native_cases.php b/tests/foreign_key_metadata_native_cases.php
+index 29b6b700..4c0a2f4f 100644
+--- a/tests/foreign_key_metadata_native_cases.php
++++ b/tests/foreign_key_metadata_native_cases.php
+@@ -55,7 +55,8 @@ function fkm_run_native_cases(array $families,?string $foreign,string $namespace
+     $before=count($checks);$fkm_observations??=[];$observedBefore=count($fkm_observations);
+     try {
+         $identity=one('SELECT DATABASE() AS name,@@port AS port,VERSION() AS version');
+-        fkm_ok('Connection selects only the explicit disposable native database',$identity['name']===config()['db']['name']&&(int)$identity['port']===(int)config()['db']['port']);
++        // Container forwarding can make the server port differ from the connection endpoint.
++        fkm_ok('Connection selects only the explicit disposable native database',$identity['name']===config()['db']['name']);
+         $ownedSchemas=[config()['db']['name']];if($foreign!==null)$ownedSchemas[]=$foreign;
+         foreach($ownedSchemas as $database)fkm_ok('Owned metadata prefix is empty in '.$database,(int)query('SELECT COUNT(*) FROM information_schema.tables WHERE TABLE_SCHEMA=? AND BINARY LEFT(TABLE_NAME,?)=?',[$database,strlen($namespace),$namespace])->fetchColumn()===0);
+         fkm_ok('Both validators expose the same source-bound metadata query',$queries['plans']===$queries['recurring']);
+@@ -126,5 +127,5 @@ function fkm_run_native_cases(array $families,?string $foreign,string $namespace
+             }
+         }
+     } finally {$GLOBALS['cwp_config']['db']['prefix']=$originalPrefix;}
+-    return ['scope'=>'Actual native schema validators and original-query multiset equivalence','families'=>$families,'legacy_and_checkout'=>true,'cross_schema_executed'=>$foreign!==null,'named_checks'=>count($checks)-$before,'observations'=>array_slice($fkm_observations,$observedBefore),'source_sha256'=>array_map(static fn(string $path):string=>hash_file('sha256',$path),$sources),'query_sha256'=>array_map(static fn(string $sql):string=>hash('sha256',$sql),$queries),'original_query_sha256'=>hash('sha256',FKM_ORIGINAL),'database_version'=>$identity['version']];
++    return ['scope'=>'Actual native schema validators and original-query multiset equivalence','families'=>$families,'legacy_and_checkout'=>true,'cross_schema_executed'=>$foreign!==null,'named_checks'=>count($checks)-$before,'observations'=>array_slice($fkm_observations,$observedBefore),'source_sha256'=>array_map(static fn(string $path):string=>hash_file('sha256',$path),$sources),'query_sha256'=>array_map(static fn(string $sql):string=>hash('sha256',$sql),$queries),'original_query_sha256'=>hash('sha256',FKM_ORIGINAL),'database_version'=>$identity['version'],'configured_connection_port'=>(int)config()['db']['port'],'server_port'=>(int)$identity['port']];
+ }

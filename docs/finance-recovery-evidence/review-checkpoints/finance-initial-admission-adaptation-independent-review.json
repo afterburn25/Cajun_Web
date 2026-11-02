@@ -1,0 +1,82 @@
+{
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "adaptation_manifest": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/initial-admission-adaptation01/manifest.json",
+  "adaptation_manifest_sha256": "c787288a6250fc064323048254100f5dfe80d23745a4011f9ab46c3faf92fc1e",
+  "source_checks": {
+    "site/app/billing/finance_subscription.php": {
+      "before_sha256": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+      "after_sha256": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b"
+    },
+    "tests/finance_initial_receipts_native.php": {
+      "before_sha256": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef",
+      "after_sha256": "6d05dc5f3a09b2e8dcd7afcfbd47f805533d4b576cc52543c1cf7fb2581140d4"
+    },
+    "tests/finance_replacement_payoff_recovery_cases.php": {
+      "before_sha256": "188248b9324394b235cc83bb051957a2921a7261300a01c7cbd955396c0d79ae",
+      "after_sha256": "5f8b4b1299b0088fdc98b7a2e2b52d79533115cbb8bd85d730676b4de9e0e740"
+    },
+    "tests/finance_replacement_payoff_initial_admission.php": {
+      "before_sha256": null,
+      "after_sha256": "087a779de88e3b6a763bf8b4a2f6fcad14ccc1905f667958cf64f040012e9a07"
+    }
+  },
+  "assertion_expressions_byte_identical": true,
+  "note": "All 13 assertion call expressions and the fep_ok definition signature remain byte-identical. The retained original runtime assertion count is separately reported as 358.",
+  "probe_sha256": "db674557ce52b7afa28dddef0297820c8dc02ad499c7f32fbd0899446800b06f",
+  "status": "bounded_adaptation_source_review_pass_and_independent_regression_11_of_11",
+  "retained_fep_ok_ranges_including_definition": 14,
+  "retained_assertion_call_sites": 13,
+  "reviewed_at_utc": "2026-11-02T02:56:33.181067+00:00",
+  "reviewer": "/root/github_status_review/primary_finance_review",
+  "runtime_changed_paths_from_original_witness": [
+    "site/app/billing/finance_subscription.php"
+  ],
+  "corrected_native_evidence": "/workspace/scratch/8cc2b4f257ab/finance-initial-unresolved-native04",
+  "corrected_native": {
+    "count": 11,
+    "failed": 0,
+    "elapsed_seconds": 6.173,
+    "stderr_bytes": 134,
+    "source_files_verified": 38,
+    "result": "uncertain attempt refused before any provider call or financial mutation; declined control legally enrolled once"
+  },
+  "retained_original_witness": {
+    "path": "/workspace/scratch/8cc2b4f257ab/finance-initial-unresolved-native03",
+    "count": 11,
+    "failed": 2
+  },
+  "invalid_harness_runs_preserved": [
+    "finance-initial-unresolved-native01",
+    "finance-initial-unresolved-native02"
+  ],
+  "application_review_observations": [
+    "The covered-period invoice_clear call is inside the existing staff mutex and financial transaction, before creating the initial reservation and before provider I/O.",
+    "The same current enrollment check is called by the current finalizer; a changed admission condition produces retained retirement_pending state and exact candidate retirement instead of discarding already-admitted external identity.",
+    "Four prepared_gateway cases explicitly insert a canonical historical creating row and existing synthetic provider candidate, then use current owner reconciliation and current finalization plus an actual separate charge_record_paid writer. Other initial callers and existing fault scenarios are unchanged.",
+    "All 13 existing assertion call sites and the assertion helper signature are byte-identical. Fixture timing labels retain historical names but entry_scope and report scope explicitly identify historical admitted-result recovery.",
+    "The new helper proposes 26 runtime checks: both actual opaque/profile current callers with processing/uncertain/review refusal and declined controls, plus historical unresolved-result recovery. These 26 were source reviewed here; writer native execution was still pending at this receipt."
+  ],
+  "stderr_classification": "Exactly two expected financing_offers.php:261 seed preparation diagnostics; no database or transport error.",
+  "owned_database": {
+    "port": 33317,
+    "datadir": "/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/data",
+    "shutdown": "clean command completed",
+    "other_runtime_accessed": false
+  },
+  "limits": [
+    "This approves the bounded source adaptation and independent 11-case witness only; not a whole-tree, PR, merge or release approval.",
+    "Writer final exact-source 413-check main suite and adapted initial receipt suite remain pending at this receipt.",
+    "No real provider, charge, HTTP/browser or remote activity; ARB transport is synthetic."
+  ],
+  "evidence_sha256": {
+    "finance-initial-unresolved-native03/execution.json": "d3dcab4caf32bbbc44cb2f14518116f5b15884588719750f428f6a7561bcc121",
+    "finance-initial-unresolved-native03/native.json": "df167544588a999bc7aa73cbfa10f939573bdfe123abd20e64c3124075f1f4ec",
+    "finance-initial-unresolved-native04/execution.json": "5dc3d0bc425a0e4015d941a650b17825e1cdad7d06d60108e769cd975520b2e9",
+    "finance-initial-unresolved-native04/native.json": "4170cab576062554497f235b02044d5861e921fdcc5993afce87e7019005a37f",
+    "finance-initial-unresolved-native04/native.stderr.log": "1dd9451c8ead591834a06a28d377e6e5b7bfcc737467ee5b4924f1f3c174cde2",
+    "finance-initial-unresolved-native04/owned-db-lifecycle.json": "13253678facaff543dc9d7d09dbde4d6cdd180157dc33d423dbc802977eb11a1",
+    "finance-initial-unresolved-native04/owned-db-server.log": "813c0182b7970c29d8a9c4360fcc8f87bc82593b4bec7021ca3ad31cefcda7e6",
+    "run_finance_initial_probe_fixed.py": "61fa831e249404c045166e3a58d7d07196ba2891815d37c2aac910b125de9523",
+    "verify_finance_initial_probe_fixed.py": "61ec038dcf44c692e327278062bec50c75f191c5eb642e5b105a965b29979878"
+  }
+}

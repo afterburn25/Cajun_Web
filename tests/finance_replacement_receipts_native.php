@@ -28,7 +28,7 @@ function fep_snapshot():array{
 function fep_seed(string $name,int $initial,bool $paid=true):array{
     global $password,$expectedPreparationDiagnostics;static $id=1000;$id+=100;
     if($initial>0)$expectedPreparationDiagnostics=($expectedPreparationDiagnostics??0)+1;
-    rb_staff();rb_historical_source($id,1000);$fields=rb_fields($id+10,$id);recurring_billing_offer($fields);
+    rb_staff();if(!license_finance_recovery_ready())license_finance_recovery_prepare($password);rb_historical_source($id,1000);$fields=rb_fields($id+10,$id);recurring_billing_offer($fields);
     $now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('website_licenses').' (license_key,customer_id,product_id,created_at,updated_at) VALUES (?,1,?,?,?)',['synthetic-'.$name,'website_core',$now,$now]);$license=(int)db()->lastInsertId();
     query('INSERT INTO '.table('license_domains').' (license_id,domain,registered_at) VALUES (?,?,?)',[$license,$name.'.example.invalid',$now]);

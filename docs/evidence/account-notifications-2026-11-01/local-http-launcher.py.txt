@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+"""Local-only replacement of this fixture's Docker server launcher, not its tests."""
+from pathlib import Path
+import json
+import os
+import signal
+import socket
+import sys
+
+root=Path.cwd().resolve()
+base=Path('/workspace/cwp-account-8cc2b4f257ab')
+if root not in (base/'original',base/'corrected') or os.geteuid()==0:
+    raise SystemExit('Only the unprivileged isolated account runtime is permitted')
+name='cwp-account-security-http'
+pidfile=root/'qa/account-security/local-http-process.json'
+server=['/usr/bin/php8.3','-S','127.0.0.1:8091','-t',str(root/'test-runtime/account-web')]
+expected=['run','--rm','--init','--name',name,'--network','host','--user',f'{os.getuid()}:{os.getgid()}',
+          '-v',f'{root}:{root}','-w',str(root)]
+for key in ['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD','CWP_SOURCE_SHA']:
+    expected+=['-e',key]
+expected+=['cwp-account-review','php',*server[1:]]
+if sys.argv[1:]==expected:
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1',8091))
+    pidfile.write_text(json.dumps({'pid':os.getpid(),'command':server,'scope':'Real local PHP8.3 server; no Docker execution'})+'\n')
+    os.execv(server[0],server)
+elif sys.argv[1:]==['stop','--time','5',name]:
+    saved=json.loads(pidfile.read_text())
+    pid=int(saved['pid'])
+    actual=Path(f'/proc/{pid}/cmdline').read_bytes().rstrip(b'\0').split(b'\0')
+    if actual!=[word.encode() for word in server] or saved['command']!=server:
+        raise SystemExit('Refuse to stop any other process')
+    os.kill(pid,signal.SIGTERM)
+else:
+    raise SystemExit('Unsupported fixture control command')

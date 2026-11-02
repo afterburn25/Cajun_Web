@@ -1,0 +1,54 @@
+{
+  "scope": "Documentation-only entrypoint updates; complete prior documents retained verbatim as suffixes",
+  "checkpoint": "7feb1c5f25f44dff9ddd91b7db07a85f96a12883",
+  "files": {
+    "PROJECT_STATUS.md": {
+      "before_sha256": "4944ab955a659b60b6f7aae4d852d7a71628e603301c74efc61e7a8bd5500e1b",
+      "after_sha256": "b21240b2b4b2c4fd58153d78ff43c0da67d9be7d2092d50816866b8b5eed0e59",
+      "prefix_sha256": "4044c76c91fa27dc6c5e02ae8cb271fa5f5aadabbbadba2904b7226d6788dc29",
+      "complete_original_retained": true
+    },
+    "SESSION_HANDOFF.md": {
+      "before_sha256": "7987df332a1acaef40e251aa80ef9746d9de7a943f8e9caf9f08a8b3990303ea",
+      "after_sha256": "796bcff4b5a02affbef2d8cde9845bc0e604c55330a67299c2914cf605a1f4e8",
+      "prefix_sha256": "cb1309831a8307f362f3e7cb66d68c99d425b73417b7526b243af7608b3ae059",
+      "complete_original_retained": true
+    },
+    "CHANGELOG.md": {
+      "before_sha256": "23c3445855f7b6eace05f714a3c6583ae03bf73def60355ec1187caa9b5b6b45",
+      "after_sha256": "5ab1fa1180370ba4203b2e4dd2bea17a4ee2d5a8c3d52cdb802d976ace12cfda",
+      "prefix_sha256": "92aea0477d510a5cea8f371e5df20ba479f73c51b60a99a12061d20aa24c8c67",
+      "complete_original_retained": true
+    },
+    "docs/DEVIN_INTEGRATION_QUEUE.md": {
+      "before_sha256": "fc69b89440500cdada2bb12db3ccca3c352ccfa9d61275cc524a3e5ca4391ff7",
+      "after_sha256": "5e0d9903839a5948e6cf041e27b04a5c2f5ce13cb583891df017d4aff921503d",
+      "prefix_sha256": "5bd5420d432a797655ae6630e2d6e5a74422b0eb7c99ecbdc9426aca7d174a8d",
+      "complete_original_retained": true
+    },
+    "docs/ROADMAP.md": {
+      "before_sha256": "2110186a1b697cd1c4ac7e3b0322f3d3d7a9ba4550b75d5dd5e1afb7db3f1fff",
+      "after_sha256": "3b6ecd74703967790bdcea5bd04d24c7d0ebd212ea08d5894414a17232d0167f",
+      "prefix_sha256": "855603ce65fcd6d09435c401c3b70916e77f86b7ae9ac7295b232b5182700ba0",
+      "complete_original_retained": true
+    },
+    "docs/SESSION_LOG.md": {
+      "before_sha256": "c6ebd87efe76dc752b899bf1468d35f8578001ab537e02a92902f628e15fd058",
+      "after_sha256": "b974e6db2991da7364bd398d77f9defed9a154d1b07c9b810e677d9015b5b349",
+      "prefix_sha256": "27920a951f0b96629bedb1906f08d0633a977444e92f33f8f00c54269127c4fc",
+      "complete_original_retained": true
+    },
+    "docs/RELEASES.md": {
+      "before_sha256": "d94f551b83ed4149738b079ac12fceb00dfdb559d0b325522844754115d37744",
+      "after_sha256": "98b3e185e640c5cfced136940d8e5ac5e5154b58c0ac718cd22e79249a3c8864",
+      "prefix_sha256": "1a5fc660e88976cdb0456b6d5542f886c7c3c753471bafa128e9102919e3bb7c",
+      "complete_original_retained": true
+    },
+    "docs/DECISIONS.md": {
+      "before_sha256": "98cbdf560b4647db301c02d448f1b31b8ff511cab82549c80d6f8b1a434e1569",
+      "after_sha256": "bd7370d0ae5e97a4bce1e8b568241c4d2dc4d764f7b2b3defd2d5ff1280e68b9",
+      "prefix_sha256": "e835a9ac52bcbdfa270bdb3a9ec89e8e5a018e0ce784d36f3b4823fcbfa9ed5b",
+      "complete_original_retained": true
+    }
+  }
+}

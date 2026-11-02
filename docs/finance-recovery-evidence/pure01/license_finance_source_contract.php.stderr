@@ -1,0 +1,5 @@
+PHP Fatal error:  Uncaught RuntimeException: FAIL Permanent payoff cannot override an explicit owner license deactivation in /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/license_finance_source_contract.php:11
+Stack trace:
+#0 /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/license_finance_source_contract.php(107): fc_ok()
+#1 {main}
+  thrown in /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/license_finance_source_contract.php on line 11

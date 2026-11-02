@@ -1,0 +1,97 @@
+{
+    "passed": true,
+    "count": 22,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "paid handler outcome",
+            "passed": true
+        },
+        {
+            "name": "paid provider admission",
+            "passed": true
+        },
+        {
+            "name": "paid current client reaches reservation",
+            "passed": true
+        },
+        {
+            "name": "paid exact finite signed contract readback",
+            "passed": true
+        },
+        {
+            "name": "paid sandbox outcome retained",
+            "passed": true
+        },
+        {
+            "name": "zero handler outcome",
+            "passed": true
+        },
+        {
+            "name": "zero provider admission",
+            "passed": true
+        },
+        {
+            "name": "zero current client reaches reservation",
+            "passed": true
+        },
+        {
+            "name": "zero exact finite signed contract readback",
+            "passed": true
+        },
+        {
+            "name": "zero sandbox outcome retained",
+            "passed": true
+        },
+        {
+            "name": "ineligible handler outcome",
+            "passed": true
+        },
+        {
+            "name": "ineligible provider admission",
+            "passed": true
+        },
+        {
+            "name": "ineligible current client reaches reservation",
+            "passed": true
+        },
+        {
+            "name": "changed_before_reserve handler outcome",
+            "passed": true
+        },
+        {
+            "name": "changed_before_reserve provider admission",
+            "passed": true
+        },
+        {
+            "name": "changed_before_reserve current client reaches reservation",
+            "passed": true
+        },
+        {
+            "name": "support handler outcome",
+            "passed": true
+        },
+        {
+            "name": "support provider admission",
+            "passed": true
+        },
+        {
+            "name": "support current client reaches reservation",
+            "passed": true
+        },
+        {
+            "name": "invalid_token handler outcome",
+            "passed": true
+        },
+        {
+            "name": "invalid_token provider admission",
+            "passed": true
+        },
+        {
+            "name": "invalid_token current client reaches reservation",
+            "passed": true
+        }
+    ],
+    "source_sha256": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+    "scope": "Exact client handler with synthetic admission, reservation and provider boundaries; native companion verifies real SQL and ledger admission. No gateway\/HTTP claim."
+}

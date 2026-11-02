@@ -1,0 +1,45 @@
+{
+  "phase": "original-auth02",
+  "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "prefix": "fep_authbase2_",
+  "port": 33311,
+  "uid": 65534,
+  "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "elapsed_seconds": 8.547,
+  "exit_code": 1,
+  "check_count": 25,
+  "failures": [
+    "FIN-AUTH-01 stale_version refuses before any provider request",
+    "FIN-AUTH-01 stale_version preserves financial reservation and license records",
+    "FIN-AUTH-01 zero_down_deactivated refuses before any provider request",
+    "FIN-AUTH-01 zero_down_deactivated preserves financial reservation and license records",
+    "FIN-AUTH-01 idle_expired refuses before any provider request",
+    "FIN-AUTH-01 idle_expired preserves financial reservation and license records",
+    "FIN-AUTH-01 login_expired refuses before any provider request",
+    "FIN-AUTH-01 login_expired preserves financial reservation and license records",
+    "FIN-AUTH-01 foreign_session refuses before any provider request",
+    "FIN-AUTH-01 foreign_session preserves financial reservation and license records",
+    "FIN-AUTH-01 revocation before create stops the successor request"
+  ],
+  "stderr_bytes": 536,
+  "source_sha256": {
+    "site/app/billing/finance_subscription.php": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9",
+    "site/app/billing/finance_authorize_net.php": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+    "site/app/plans/records.php": "2d9df2440c7ef3d21cea9b6d640006fa5a6545783ef90659c24555f74d04531c",
+    "site/app/licenses/finance_installments.php": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+    "site/app/licenses/financing.php": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+    "site/app/clients/accounts.php": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
+    "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+    "tests/finance_replacement_payoff_native.php": "eaae47960f586f6b9aef01d744e56e05bfe4b5ac78350d620a361e597d928464",
+    "tests/finance_replacement_payoff_boundaries.php": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514",
+    "tests/finance_replacement_payoff_authority_native.php": "600f8a4fbcbc2afab788dadba386f0b18b29c9b7bac33c45b0a5b2556f267617",
+    "tests/finance_replacement_payoff_authority_cases.php": "49863331b3b8c12a37ed0eb55b2775dd77679f211516699291d5470e89c8c1e2"
+  },
+  "command": [
+    "/usr/bin/php8.3",
+    "/tmp/cwp-finance-authority-original-auth02-8cc2b4f257ab/tests/finance_replacement_payoff_authority_native.php",
+    "fep_authbase2_",
+    "/tmp/cwp-finance-authority-original-auth02-8cc2b4f257ab"
+  ],
+  "scope": "Exact84 application source for baseline; only two new authority fixture files overlaid. Actual native client state and separate PHP/SQL revocation, synthetic gateway only."
+}

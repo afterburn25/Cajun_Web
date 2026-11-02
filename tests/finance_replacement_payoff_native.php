@@ -28,7 +28,7 @@ function fep_snapshot():array{
 function fep_seed(string $name,int $initial,bool $paid=true):array{
     global $password,$expectedPreparationDiagnostics;static $id=1000;$id+=100;
     if($initial>0)$expectedPreparationDiagnostics=($expectedPreparationDiagnostics??0)+1;
-    rb_staff();rb_historical_source($id,1000);$fields=rb_fields($id+10,$id);recurring_billing_offer($fields);
+    rb_staff();if(!($GLOBALS['frgSkipRecoveryPreparation']??false)&&!license_finance_recovery_ready())license_finance_recovery_prepare($password);rb_historical_source($id,1000);$fields=rb_fields($id+10,$id);recurring_billing_offer($fields);
     $now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('website_licenses').' (license_key,customer_id,product_id,created_at,updated_at) VALUES (?,1,?,?,?)',['synthetic-'.$name,'website_core',$now,$now]);$license=(int)db()->lastInsertId();
     query('INSERT INTO '.table('license_domains').' (license_id,domain,registered_at) VALUES (?,?,?)',[$license,$name.'.example.invalid',$now]);
@@ -49,6 +49,7 @@ function fep_seed(string $name,int $initial,bool $paid=true):array{
     }
     return license_finance_offer_row($offer['id'],1);
 }
+require __DIR__.'/finance_replacement_payoff_recovery_cases.php';
 try{
     foreach(schema_statements($prefix)+service_plans_schema($prefix)+recurring_billing_schema($prefix)+license_financing_schema($prefix)+license_finance_offers_schema($prefix)+license_finance_gateway_schema($prefix) as $sql)query($sql);
     foreach(['studio_schema_version'=>'2','staff_schema_version'=>'1','payments_schema_version'=>'2','support_schema_version'=>'1','service_plans_schema_version'=>'1','recurring_billing_schema_version'=>'1','invoice_ledger_schema_version'=>'1','license_financing_schema_version'=>'2','license_finance_offers_schema_version'=>'1','license_finance_gateway_schema_version'=>'3'] as $k=>$v)save_setting($k,$v);
@@ -144,6 +145,7 @@ try{
         fep_ok($state.' ordinary owner reconciliation stays available',$error===null&&$result===($state==='review'?'pending_first_payment':'already_linked'));
         fep_ok($state.' owner read releases locks',(int)query('SELECT IS_FREE_LOCK(?)',['cwp-staff-'.substr(hash('sha256','cwp_test|'.$prefix),0,40)])->fetchColumn()===1&&!db()->inTransaction());
     }
+    frg_recovery_cases();
 }catch(Throwable $e){fep_ok('fixture exception: '.get_class($e).' '.$e->getMessage(),false);}
 $failed=count(array_filter($checks,fn($c)=>!$c['passed']));
 echo json_encode(['passed'=>$failed===0,'count'=>count($checks),'failed'=>$failed,'checks'=>$checks,'cases'=>$observations,'owner_commits'=>$ownerCommits,'php'=>PHP_VERSION,

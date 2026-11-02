@@ -1,0 +1,232 @@
+{
+  "passed": true,
+  "scope": "Prove current-source admission retains the existing focused acceptance gates. Not hosted or installed acceptance.",
+  "workflow_sha256": "5190514dc08427c593a456c1a066107120fb42b0cdd06aa13b67a40158cb9e56",
+  "legacy_sha256": "978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8",
+  "checks": [
+    {
+      "name": "Legacy source builder and focused workflow remain byte-identical",
+      "passed": true
+    },
+    {
+      "name": "Protected complete application workflow remains byte-identical",
+      "passed": true
+    },
+    {
+      "name": "Workflow has ordinary indentation and no alternate YAML documents",
+      "passed": true
+    },
+    {
+      "name": "Every matrix command, browser condition, source binding and report is retained exactly",
+      "passed": true
+    },
+    {
+      "name": "The final success checkpoint still depends on source and the whole matrix",
+      "passed": true
+    },
+    {
+      "name": "Current-source events are bounded push, pull request and manual events",
+      "passed": true
+    },
+    {
+      "name": "Push admission includes only main and the isolated acceptance branch",
+      "passed": true
+    },
+    {
+      "name": "Pull-request admission follows main integration",
+      "passed": true
+    },
+    {
+      "name": "All source, receipt and workflow dependencies trigger push",
+      "passed": true
+    },
+    {
+      "name": "All source, receipt and workflow dependencies trigger pull_request",
+      "passed": true
+    },
+    {
+      "name": "The entire new workflow has read-only repository permission",
+      "passed": true
+    },
+    {
+      "name": "Development concurrency is scoped to the pull request or branch",
+      "passed": true
+    },
+    {
+      "name": "Main retains each immutable acceptance run",
+      "passed": true
+    },
+    {
+      "name": "Current source admission cannot silently skip or soften failure",
+      "passed": true
+    },
+    {
+      "name": "Source checkout and evidence identity use the same immutable event commit",
+      "passed": true
+    },
+    {
+      "name": "Only the pinned checkout and evidence upload actions run during admission",
+      "passed": true
+    },
+    {
+      "name": "Current-source admission never invokes legacy source reconstruction or credentials",
+      "passed": true
+    },
+    {
+      "name": "Published parent ancestry is required 84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+      "passed": true
+    },
+    {
+      "name": "Published parent ancestry is required ebcbbb56336249fee2073c8f02e9d6998740b64e",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes python3 tests/core_browser_fixture_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes python3 tests/owner_navigation_contract_test.py",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes php tests/account_security_policy.php",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes php -n tests/account_security_policy.php",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes php tests/admin_session_no_reentry.php",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes python3 tests/acceptance_artifacts_test.py --report qa/account-notification-source/helpers.json",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes python3 tests/account_notification_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes python3 tests/account_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Original source proof still executes python3 tests/combined_runtime_repair.py",
+      "passed": true
+    },
+    {
+      "name": "Current-source proof executes account_notification_workflow_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Current-source proof executes account_notification_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "Current-source proof executes provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "Current-source proof executes notification_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Current-source proof executes tickets_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Canonical source is rebuilt and must remain unchanged before admission",
+      "passed": true
+    },
+    {
+      "name": "Admission binds actual HEAD to the requested SHA and requires clean source",
+      "passed": true
+    },
+    {
+      "name": "Exact source, dirty state and failure evidence retain unconditional upload",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: lost SQL command",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: reduced PHP matrix",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: replaced database matrix",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: skipped browser",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: weakened report gate",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: moving checkout ref",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: write permission",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: legacy reconstruction",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: missing parent",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: missing retained policy",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: lost receipt dependency",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: lost protected workflow dependency",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: unbounded push branches",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: per-commit cancellation group",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: cancelled main evidence",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: unbound source output",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: dirty source admission",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: lost failure evidence",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: legacy source-builder drift",
+      "passed": true
+    },
+    {
+      "name": "Regression rejected: protected acceptance drift",
+      "passed": true
+    }
+  ]
+}

@@ -1,3 +1,41 @@
+## Final local verification — 2026-11-01 continuation
+
+The application test drivers record 65 installation/upgrade, 47 account, 89 notification, 466 software, 219 service-plan, 413 finance-replacement, 358 initial-receipt and 729 recurring assertions, all passing. The two finance drivers retain deliberate seed/fault diagnostics; other listed focused drivers have empty stderr. Exact application hashes before and after match. The unchanged installed account/notification/20i browser fixture passes 54/54, exit zero and empty stderr, in a separate disposable runtime at committed application source `2408896ec606db7a8f3da4a47dea1fcdc74480b9`. All 47 component shipping changes remain exact in the final candidate.
+
+Eleven maintained Python source/helper entrypoints completed with exit zero and empty stderr before the bounded shallow-history correction. The final correction then passed 2,149 source checks, 32 actual-filesystem cases, and the unchanged helper with 2,724 checks inside a genuine depth-one clone, plus 12 explicit shallow-history assertions. The earlier genuine shallow helper failed because exact84 history was absent; it was not relabeled as passing. The corrected read-only fetch requests only immutable current HEAD, rejects unrelated origins, and preserves HEAD/refs/index/current-source fingerprints. The eight narrative files retain their earlier dated checkpoints.
+
+Independent finance review approved tree `5afec38a662307d073e2c54730af36971e177adb`, verified all original 640 native labels against retained hosted evidence, and rejected eleven real-file/receipt mutations. The published GitHub commit is `2dfe76973de68e60b04da5343b75f3fbdedd4d59`, matching that exact local reviewed tree. Its normally triggered workflow set was observed with four successes, three running and 33 queued; queued/running results remain pending. No duplicate run was dispatched.
+
+## 2026-11-01 continuation — current component composition
+
+The current integration combines exact PR #317 `84e1f4c6`, account/notifications #323 `fb8b5627`, software authority #324 `8e93c2a7`, metadata performance #325 `4668c7d9`, and corrected finance #326 `2dfe7697`. The 47 non-inventory shipping differences equal their component sources. Local native installation/account/notification/software/service-plan/finance suites pass, including 729 combined recurring checks. See [current status](../PROJECT_STATUS.md) and [the bounded finance fixture correction](FINANCE_RECURRING_FIXTURE_20261102.md) for exact results and limits.
+
+Historical source comparisons use a finite exact-component composition; actual runtime tests continue on current files. Full hosted application/update/recovery, main integration and release gates remain pending. No new version, published asset or live-operation completion is claimed.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+Reviewed all four completed service-plan artifacts at c2f: MariaDB 219/219 each; MySQL 151 true and 2 false entries each. Implemented and independently reviewed one helper-only action-preservation correction, then ran exactly one fresh-prefix local supplement: 172/172. Prior evidence and database namespaces remain preserved; no browser/full-native replay occurred. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Preserved the ineffective query candidates and the initial preassertion fixture failure. The corrected local tree passed 172 supplemental, 219 service-plan, 721 recurring and 3 browser checks. The two original native report prefixes remain exact. Independent review then corrected only the new helper’s forwarded-port assumption; immutable workflow topology verifies that delta without another browser run. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — continue the notification candidate after independent review
+
+Following the owner's continuation request, review of the passing published `3cc10c1` candidate reproduced stale settings in dispatch and emission. Created a separate local worktree/branch, preserved original actual-function probes, and reproduced the dispatcher defect with real PDO and a second PHP process after the original 65 native checks. The original pending item became sent despite stored pause; corrected source passes all 89 checks with empty stderr on isolated PHP 8.3.6/MariaDB 10.11.14.
+
+Added a 43-check reversible source layer, retained original builders/workflows/receipts and assertions, and verified the existing admission proof commands and canonical refresh. Preserved the initial unprivileged seed failure and a local evidence-wrapper count-format error separately from application results. Final frozen-source review and publication are pending; no remote branch update, mail, provider, payment or deployment occurred in this correction task. [Complete record](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Verified successful GitHub publication of PR #317 source `84e1f4c6` and Account/Notifications fixture `ebcbbb56`, preserving exact reviewed trees. The earlier generic rejection/connection UI failure remains unexplained. Primary full acceptance 41363630471 began at 2026-11-01 23:54 UTC; its 23:55 UTC observation was still running.
+
+Preserved both published histories in a local ordinary merge and independently checked fixture inverses, all original matrix commands, immutable source admission and carryover. Review found and corrected one missing protected-workflow trigger dependency; the final workflow proof passes 56 checks including 20 negative cases. Both actual source-admission shell blocks passed on clean checkpoint `7feb1c5f`, which is preserved locally before a documentation-only amendment. If the separate candidate branch is absent, publish it; otherwise verify its tree and continue the existing run. Focused/full hosted acceptance, main integration and release remain gates. [Complete source/evidence handoff](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 The old runner was absent after its last output at 23:15:27 UTC. A retained physical snapshot and scoped reset preceded an unchanged StackCP test failure with MariaDB 1050; both remain evidence. Logical restore retained 3,973 completed tables plus 78 successful inventory-retry tables. The replacement segment started at 23:34:35; its first two commands passed 103/103 and 49/49 by this checkpoint. GitHub successfully stored reviewed diagnostic blob `669e4a8f82ac831423479bc9cbfdc669a0071cb4`; branch publication remained pending. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

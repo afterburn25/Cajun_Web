@@ -1,0 +1,11 @@
+{
+    "passed": false,
+    "scope": "Synthetic MariaDB native recurring consent\/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.",
+    "php": "8.3.6",
+    "checks": [
+        {
+            "name": "Unexpected failure: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'rbill_fix_settings' already exists",
+            "passed": false
+        }
+    ]
+}

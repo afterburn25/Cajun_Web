@@ -1,0 +1,31 @@
+{
+  "servers": [
+    {
+      "port": 33313,
+      "pid": 134795,
+      "identity": [
+        "33313",
+        "/tmp/cwp-finance-recovery-final-8cc2b4f257ab/data/",
+        "10.11.14-MariaDB-0ubuntu0.24.04.1"
+      ],
+      "shutdown_exit": 0,
+      "stderr_bytes": 0,
+      "pid_exited": true,
+      "datadir_preserved": true
+    },
+    {
+      "port": 33315,
+      "pid": 112567,
+      "identity": [
+        "33315",
+        "/tmp/cwp-finance-recovery-release-8cc2b4f257ab/data/",
+        "10.11.14-MariaDB-0ubuntu0.24.04.1"
+      ],
+      "shutdown_exit": 0,
+      "stderr_bytes": 0,
+      "pid_exited": true,
+      "datadir_preserved": true
+    }
+  ],
+  "scope": "Only two now-idle owned finance fixture servers stopped after completed verification. All data/logs retained. Active final33319 and other runtimes untouched."
+}

@@ -9,8 +9,8 @@ function license_audit(int $actor,string $action,string $details):void{
     }
     \license_audit($actor,$action,$details);
 }
-function license_finance_anet_settings():array{return ['mode'=>'production']; /* Test-only mode; no real activation. */}
-function license_finance_anet_execute(string $method,array $request):array{
+function license_finance_anet_settings():array{return ['mode'=>'production','login'=>'synthetic-finance-account','key'=>'synthetic-key','client_key'=>'synthetic-client-key','revision'=>1]; /* Test-only mode; no real activation. */}
+function license_finance_anet_execute(string $method,array $request,?array $context=null):array{
     $id=(string)($request['subscriptionId']??'');
     $sub=$id!==''?\one('SELECT * FROM '.\table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$id]):null;
     $GLOBALS['fepCalls'][]=['method'=>$method,'id'=>$id,'transaction'=>\db()->inTransaction(),'retained'=>(bool)$sub];
@@ -38,6 +38,11 @@ function license_finance_anet_execute(string $method,array $request):array{
     $reply=$GLOBALS['provider'][$id];$reply['profile']=['customerProfileId'=>'1001','customerPaymentProfileId'=>'2001'];
     if($candidate&&$scenario==='wrong_readback')$reply['amount']='999.00';
     return ['messages'=>['resultCode'=>'Ok'],'subscription'=>$reply];
+}
+$recovery=file_get_contents($root.'/site/app/billing/finance_recovery.php');
+preg_match_all('/^function ([a-zA-Z0-9_]+)\(.*?(?=^function |\z)/ms',$recovery,$recoveryFunctions,PREG_SET_ORDER);
+foreach($recoveryFunctions as $function){
+    eval('namespace FinancePayoffRetirement; use \\RuntimeException; use \\InvalidArgumentException; use \\LogicException; use \\Throwable; use \\PDOException; '.$function[0]);
 }
 $groups=[
     'app/billing/finance_subscription.php'=>['license_finance_subscription_sandbox_initial','license_finance_subscription_enrollment_offer','license_finance_subscription_reserve',

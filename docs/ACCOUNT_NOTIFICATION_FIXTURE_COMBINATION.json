@@ -1,0 +1,108 @@
+{
+  "parents": {
+    "root": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "feature": "ebcbbb56336249fee2073c8f02e9d6998740b64e"
+  },
+  "common_source": "366d53b1ed6b367b32664f2b91ee073fc6813544",
+  "verifier_sha256": "32a8f7ada37677c5cf80510438d1cb5361e60510cdd639a13bdf7e0ab0677ae4",
+  "files": {
+    "tests/release_cases.py": {
+      "before": {
+        "root": "09f49d2f6d67f07d774d69d4872af2724d9a41258c4dee0658aa5e472b2d27d5",
+        "feature": "178bccbd9538de1e7d47e51659225f61c7e4324effdedc2b0a311001d36281e3"
+      },
+      "after_sha256": "d0f4474fa827f3a1c2c1be1256e3614476f522cb11dc3b905ac93024143f77bc",
+      "edits": {
+        "root": [
+          [
+            "    expect(p.locator('.metric-grid[aria-label=\"Website totals\"]')).to_be_visible()\n    admin_nav=p.locator('[data-admin-navigation]')\n    owner_destinations=[('Overview','dashboard'),('Service catalog','catalog'),('20i workspace','provider-settings'),('Administrators','staff'),('Licenses & software','studio-licenses')]\n    check('Grouped owner navigation retains core destinations',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).count()==1 for label,view in owner_destinations))\n    check('Grouped owner navigation links to the actual administration routes',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).get_attribute('href')==BASE+'/existing/admin/index.php?view='+view for label,view in owner_destinations))\n    billing_group=admin_nav.locator('[data-nav-group=billing]')\n    billing_group.locator('summary').click()\n",
+            "    expect(p.locator('.metric-grid[aria-label=\"Website totals\"]')).to_be_visible()\n    admin_nav=p.locator('[data-admin-navigation]')\n    owner_destinations=[('Overview','dashboard'),('Service catalog','catalog'),('20i workspace','provider-settings'),('Administrators','staff'),('Licenses & software','studio-licenses')]\n    from owner_navigation_contract import core_admin_destinations\n    check('Grouped owner navigation retains core destinations',core_admin_destinations(p))\n    check('Grouped owner navigation links to the actual administration routes',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).get_attribute('href')==BASE+'/existing/admin/index.php?view='+view for label,view in owner_destinations))\n    billing_group=admin_nav.locator('[data-nav-group=billing]')\n    billing_group.locator('summary').click()\n"
+          ]
+        ],
+        "feature": [
+          [
+            "        check('Missing PDO MySQL/GD prevents installation',not result['ok'] and any(not c['ok'] for c in result['checks']))\n    finally:noext.terminate();noext.wait(timeout=10)\n\ndef run_browser(env,browser,fixture):\n    # Real network responses and DOM assertions; no request stubs or CSP bypass.\n    context=browser.new_context(viewport={'width':320,'height':800},has_touch=True,reduced_motion='reduce')\n    page=context.new_page();errors=[];failed=[]\n    page.on('pageerror',lambda e:errors.append({'text':str(e),'url':'pageerror'}))\n    page.on('console',lambda m:errors.append({'text':m.text,'url':m.location.get('url','')}) if m.type=='error' else None)\n    page.on('requestfailed',lambda r:failed.append({'url':r.url,'failure':r.failure,'status':r.response().status if r.response() else None}))\n    for route in ['','index.php?page=compare-squarespace','index.php?page=work','index.php?page=faq','index.php?page=consultation']:\n        page.goto(BASE+'/existing/'+route,wait_until='networkidle')\n        check('Narrow mobile layout '+(route or 'home'),page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))\n",
+            "        check('Missing PDO MySQL/GD prevents installation',not result['ok'] and any(not c['ok'] for c in result['checks']))\n    finally:noext.terminate();noext.wait(timeout=10)\n\ndef retain_request_failures(page, failures):\n    # These properties are already supplied by browser events. Do not call\n    # Request.response() after failure: the target can close during delivery.\n    response_statuses = {}\n    def response_seen(response):\n        response_statuses[response.request] = response.status\n    def request_failed(request):\n        failures.append({'url':request.url,'failure':request.failure,\n                         'status':response_statuses.get(request)})\n    page.on('response', response_seen)\n    page.on('requestfailed', request_failed)\n\ndef run_browser(env,browser,fixture):\n    # Real network responses and DOM assertions; no request stubs or CSP bypass.\n    context=browser.new_context(viewport={'width':320,'height':800},has_touch=True,reduced_motion='reduce')\n    page=context.new_page();errors=[];failed=[]\n    page.on('pageerror',lambda e:errors.append({'text':str(e),'url':'pageerror'}))\n    page.on('console',lambda m:errors.append({'text':m.text,'url':m.location.get('url','')}) if m.type=='error' else None)\n    retain_request_failures(page, failed)\n    for route in ['','index.php?page=compare-squarespace','index.php?page=work','index.php?page=faq','index.php?page=consultation']:\n        page.goto(BASE+'/existing/'+route,wait_until='networkidle')\n        check('Narrow mobile layout '+(route or 'home'),page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))\n"
+          ],
+          [
+            "    check('Twelve-character administrator signs in after file overwrite',p.locator('.studio-welcome').is_visible());install.close()\n    # Owner controls also run in Chromium, with saved database evidence.\n    owner=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=owner.new_page();owner_errors=[];owner_failed=[]\n    p.on('pageerror',lambda e:owner_errors.append(str(e)));p.on('console',lambda m:owner_errors.append(m.text) if m.type=='error' else None);p.on('requestfailed',lambda r:owner_failed.append({'url':r.url,'failure':r.failure,'status':r.response().status if r.response() else None}))\n    p.goto(BASE+'/existing/admin/index.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.wait_for_url('**/admin/index.php?view=dashboard')\n    expect(p.locator('.studio-welcome')).to_be_visible()\n    expect(p.locator('.metric-grid[aria-label=\"Website totals\"]')).to_be_visible()\n    admin_nav=p.locator('[data-admin-navigation]')\n    from owner_navigation_contract import core_admin_destinations\n    check('Grouped owner navigation retains core destinations',core_admin_destinations(p))\n    billing_group=admin_nav.locator('[data-nav-group=billing]')\n    billing_group.locator('summary').click()\n    expect(billing_group).to_have_attribute('open','')\n",
+            "    check('Twelve-character administrator signs in after file overwrite',p.locator('.studio-welcome').is_visible());install.close()\n    # Owner controls also run in Chromium, with saved database evidence.\n    owner=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=owner.new_page();owner_errors=[];owner_failed=[]\n    p.on('pageerror',lambda e:owner_errors.append(str(e)));p.on('console',lambda m:owner_errors.append(m.text) if m.type=='error' else None)\n    retain_request_failures(p, owner_failed)\n    p.goto(BASE+'/existing/admin/index.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.wait_for_url('**/admin/index.php?view=dashboard')\n    expect(p.locator('.studio-welcome')).to_be_visible()\n    expect(p.locator('.metric-grid[aria-label=\"Website totals\"]')).to_be_visible()\n    admin_nav=p.locator('[data-admin-navigation]')\n    owner_destinations=[('Overview','dashboard'),('Service catalog','catalog'),('20i workspace','provider-settings'),('Administrators','staff'),('Licenses & software','studio-licenses')]\n    from owner_navigation_contract import core_admin_destinations\n    check('Grouped owner navigation retains core destinations',core_admin_destinations(p))\n    check('Grouped owner navigation links to the actual administration routes',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).get_attribute('href')==BASE+'/existing/admin/index.php?view='+view for label,view in owner_destinations))\n    billing_group=admin_nav.locator('[data-nav-group=billing]')\n    billing_group.locator('summary').click()\n    expect(billing_group).to_have_attribute('open','')\n"
+          ]
+        ]
+      }
+    },
+    "tests/owner_navigation_contract.py": {
+      "before": {
+        "root": null,
+        "feature": "ad6f2a75bacca9d6f43bbc15cf05d649be3c4fdb2e975501e6c74db1d147c5c2"
+      },
+      "after_sha256": "b0c0e5d089e03c31d5ff0a35cddd9a676f20f949f837fa21f258414bd76ddb42",
+      "edits": {
+        "root": null,
+        "feature": [
+          [
+            "\"\"\"Check current accessible navigation names AND their same-origin controller targets.\"\"\"\nfrom urllib.parse import urljoin, urlsplit, parse_qs\nDESTINATIONS=(('Overview','dashboard'),('Service catalog','catalog'),('20i workspace','provider-settings'),('Administrators','staff'))\ndef core_admin_destinations(page):\n    nav=page.locator('[data-admin-navigation]')\n    if nav.count()!=1:return False\n",
+            "\"\"\"Check current accessible navigation names AND their same-origin controller targets.\"\"\"\nfrom urllib.parse import urljoin, urlsplit, parse_qs\nDESTINATIONS=(('Overview','dashboard'),('Service catalog','catalog'),('20i workspace','provider-settings'),('Administrators','staff'),('Licenses & software','studio-licenses'))\ndef core_admin_destinations(page):\n    nav=page.locator('[data-admin-navigation]')\n    if nav.count()!=1:return False\n"
+          ]
+        ]
+      }
+    },
+    "tests/provider_browser_fixture_provenance.py": {
+      "before": {
+        "root": "5aacf4e03e1d28039b94e56e06fd8bdcc0524ea0ef8e66d39693a77e1bf94446",
+        "feature": null
+      },
+      "after_sha256": "0dbc7ce034aac8283a8b92bd32396aafd4584438aceede12488d027022dc04ee",
+      "edits": {
+        "root": [
+          [
+            "\n\ndef receipt(root):\n    return validate_receipt(json.loads((root / RECEIPT).read_text()), (root / VERIFIER).read_bytes())\n\n\ndef restore(data, path, value):\n    require(path in PATHS, 'Unreviewed provider browser predecessor: ' + path)\n    row = data['files'][path]\n    require(digest(value) == row['after_sha256'], 'Corrected provider browser source differs: ' + path)\n",
+            "\n\ndef receipt(root):\n    from account_notification_fixture_provenance import project\n    verifier=project(root,VERIFIER,(root / VERIFIER).read_bytes(),'root')\n    return validate_receipt(json.loads((root / RECEIPT).read_text()), verifier)\n\n\ndef restore(data, path, value, root):\n    from account_notification_fixture_provenance import project\n    value=project(root,path,value,'root')\n    require(path in PATHS, 'Unreviewed provider browser predecessor: ' + path)\n    row = data['files'][path]\n    require(digest(value) == row['after_sha256'], 'Corrected provider browser source differs: ' + path)\n"
+          ],
+          [
+            "\n\ndef predecessor(root, path, value):\n    return restore(receipt(root), path, value)\n\n\ndef source(root, path):\n    \"\"\"Use only at an existing historical-source comparison, never to run fixtures.\"\"\"\n    value = (root / path).read_bytes()\n    return predecessor(root, path, value) if path in PATHS else value\n\n\ndef projected_validation(root, validator, receipt_paths):\n",
+            "\n\ndef predecessor(root, path, value):\n    return restore(receipt(root), path, value, root)\n\n\ndef source(root, path):\n    \"\"\"Use only at an existing historical-source comparison, never to run fixtures.\"\"\"\n    value = (root / path).read_bytes()\n    from account_notification_fixture_provenance import core_input\n    retained=predecessor(root,path,value) if path in PATHS else value\n    return core_input(root,path,retained)\n\n\ndef projected_validation(root, validator, receipt_paths):\n"
+          ],
+          [
+            "                    and relative.as_posix() == path, 'Unsafe historical receipt path')\n            value = (root / path).read_bytes()\n            if path in PATHS:\n                value = restore(data, path, value)\n            target = historical / path\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_bytes(value)\n",
+            "                    and relative.as_posix() == path, 'Unsafe historical receipt path')\n            value = (root / path).read_bytes()\n            if path in PATHS:\n                value = restore(data, path, value, root)\n            target = historical / path\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_bytes(value)\n"
+          ],
+          [
+            "def validate(root):\n    \"\"\"Check every current source, inverse, and focused negative receipt cases.\"\"\"\n    data = receipt(root)\n    verifier = (root / VERIFIER).read_bytes()\n    checks = []\n\n    def passed(name):\n        checks.append({'name': name, 'passed': True})\n",
+            "def validate(root):\n    \"\"\"Check every current source, inverse, and focused negative receipt cases.\"\"\"\n    data = receipt(root)\n    from account_notification_fixture_provenance import project, validate as validate_combination\n    verifier = project(root,VERIFIER,(root / VERIFIER).read_bytes(),'root')\n    checks = validate_combination(root)\n\n    def passed(name):\n        checks.append({'name': name, 'passed': True})\n"
+          ],
+          [
+            "\n    for path in sorted(PATHS):\n        current = (root / path).read_bytes()\n        restore(data, path, current)\n        passed('Exact provider browser correction retains predecessor ' + path)\n        refuses('Provider browser receipt refuses altered current bytes ' + path,\n                lambda: restore(data, path, current + b'\\n# unreviewed synthetic change\\n'))\n        changed = copy.deepcopy(data)\n        changed['files'][path]['before_sha256'] = '0' * 64\n        refuses('Provider browser receipt refuses altered predecessor hash ' + path,\n                lambda: restore(changed, path, current))\n        changed = copy.deepcopy(data)\n        changed['files'][path]['edits'].pop()\n        refuses('Provider browser receipt refuses omitted edit ' + path,\n                lambda: restore(changed, path, current))\n    for case in ('base', 'missing-file', 'additional-file', 'verifier', 'unchanged-edit'):\n        changed = copy.deepcopy(data)\n        path = sorted(PATHS)[0]\n",
+            "\n    for path in sorted(PATHS):\n        current = (root / path).read_bytes()\n        restore(data, path, current, root)\n        passed('Exact provider browser correction retains predecessor ' + path)\n        refuses('Provider browser receipt refuses altered current bytes ' + path,\n                lambda: restore(data, path, current + b'\\n# unreviewed synthetic change\\n', root))\n        changed = copy.deepcopy(data)\n        changed['files'][path]['before_sha256'] = '0' * 64\n        refuses('Provider browser receipt refuses altered predecessor hash ' + path,\n                lambda: restore(changed, path, current, root))\n        changed = copy.deepcopy(data)\n        changed['files'][path]['edits'].pop()\n        refuses('Provider browser receipt refuses omitted edit ' + path,\n                lambda: restore(changed, path, current, root))\n    for case in ('base', 'missing-file', 'additional-file', 'verifier', 'unchanged-edit'):\n        changed = copy.deepcopy(data)\n        path = sorted(PATHS)[0]\n"
+          ]
+        ],
+        "feature": null
+      }
+    },
+    "tests/core_browser_fixture_contract.py": {
+      "before": {
+        "root": "dff5a0b2fcc0b130350ff6f77cd3b5a73b2f2894d5b2def610b2035c2d4c9216",
+        "feature": "31255b4878647cd150d805d30f70d3005102607fe5aff192ad418457b89de8db"
+      },
+      "after_sha256": "9faa203594949302667d2ca9bed456d9e06365296899148e7533972dc4ee4978",
+      "edits": {
+        "root": [
+          [
+            "    for path in sorted(PATHS):\n        current=(ROOT/path).read_bytes()\n        if path in provider_paths:current=provider_predecessor(ROOT,path,current)\n        restored=predecessor(ROOT,path,current)\n        check('Original bytes reconstructed '+path,hashlib.sha256(restored).hexdigest()==receipt['files'][path]['before_sha256'])\n        for case in ('changed-output','changed-predecessor','missing-edit','wrong-base'):\n",
+            "    for path in sorted(PATHS):\n        current=(ROOT/path).read_bytes()\n        if path in provider_paths:current=provider_predecessor(ROOT,path,current)\n        from account_notification_fixture_provenance import core_input\n        current=core_input(ROOT,path,current)\n        restored=predecessor(ROOT,path,current)\n        check('Original bytes reconstructed '+path,hashlib.sha256(restored).hexdigest()==receipt['files'][path]['before_sha256'])\n        for case in ('changed-output','changed-predecessor','missing-edit','wrong-base'):\n"
+          ]
+        ],
+        "feature": [
+          [
+            "from tempfile import TemporaryDirectory\nimport copy,hashlib,json\nfrom core_browser_fixture_provenance import PATHS,predecessor\nROOT=Path(__file__).resolve().parents[1]\nchecks=[]\ndef check(name,value):\n",
+            "from tempfile import TemporaryDirectory\nimport copy,hashlib,json\nfrom core_browser_fixture_provenance import PATHS,predecessor\nfrom provider_browser_fixture_provenance import PATHS as provider_paths, predecessor as provider_predecessor\nROOT=Path(__file__).resolve().parents[1]\nchecks=[]\ndef check(name,value):\n"
+          ],
+          [
+            "    root=Path(tmp);(root/'docs').mkdir()\n    for path in sorted(PATHS):\n        current=(ROOT/path).read_bytes()\n        restored=predecessor(ROOT,path,current)\n        check('Original bytes reconstructed '+path,hashlib.sha256(restored).hexdigest()==receipt['files'][path]['before_sha256'])\n        for case in ('changed-output','changed-predecessor','missing-edit','wrong-base'):\n",
+            "    root=Path(tmp);(root/'docs').mkdir()\n    for path in sorted(PATHS):\n        current=(ROOT/path).read_bytes()\n        if path in provider_paths:current=provider_predecessor(ROOT,path,current)\n        from account_notification_fixture_provenance import core_input\n        current=core_input(ROOT,path,current)\n        restored=predecessor(ROOT,path,current)\n        check('Original bytes reconstructed '+path,hashlib.sha256(restored).hexdigest()==receipt['files'][path]['before_sha256'])\n        for case in ('changed-output','changed-predecessor','missing-edit','wrong-base'):\n"
+          ]
+        ]
+      }
+    }
+  }
+}

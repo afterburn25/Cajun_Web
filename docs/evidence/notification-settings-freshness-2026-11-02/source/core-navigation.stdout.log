@@ -1,0 +1,206 @@
+{
+  "passed": true,
+  "scope": "Exact fixture identities and negative receipt checks only; not SQL, HTTP or browser results",
+  "checks": [
+    {
+      "name": "Original bytes reconstructed tests/activity_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/activity_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/activity_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/activity_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/activity_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/attempts_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/attempts_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/attempts_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/attempts_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/attempts_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/catalog_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/catalog_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/catalog_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/catalog_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/catalog_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/delivery_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/delivery_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/delivery_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/delivery_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/delivery_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/ledger_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/ledger_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/ledger_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/ledger_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/ledger_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/notifications_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/notifications_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/notifications_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/notifications_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/notifications_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/payments_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/payments_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/payments_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/payments_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/payments_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/provider_catalog_import_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/provider_catalog_import_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/provider_catalog_import_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/provider_catalog_import_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/provider_catalog_import_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/release_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Original bytes reconstructed tests/support_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-output tests/support_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject changed-predecessor tests/support_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject missing-edit tests/support_cases.py",
+      "passed": true
+    },
+    {
+      "name": "Reject wrong-base tests/support_cases.py",
+      "passed": true
+    }
+  ]
+}

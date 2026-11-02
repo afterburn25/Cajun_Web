@@ -1,0 +1,5 @@
+PHP Warning:  require(/workspace/scratch/8cc2b4f257ab/Cajun_Web_notification_pause_fix/tests/../site/includes/bootstrap.php): Failed to open stream: Permission denied in /workspace/scratch/8cc2b4f257ab/Cajun_Web_notification_pause_fix/tests/tickets_installed_seed.php on line 5
+PHP Fatal error:  Uncaught Error: Failed opening required '/workspace/scratch/8cc2b4f257ab/Cajun_Web_notification_pause_fix/tests/../site/includes/bootstrap.php' (include_path='.:/usr/share/php') in /workspace/scratch/8cc2b4f257ab/Cajun_Web_notification_pause_fix/tests/tickets_installed_seed.php:5
+Stack trace:
+#0 {main}
+  thrown in /workspace/scratch/8cc2b4f257ab/Cajun_Web_notification_pause_fix/tests/tickets_installed_seed.php on line 5

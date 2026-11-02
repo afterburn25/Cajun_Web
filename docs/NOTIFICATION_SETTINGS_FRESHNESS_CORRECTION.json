@@ -1,0 +1,76 @@
+{
+  "parent": "3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+  "shipping": [
+    "site/app/notifications/feed.php",
+    "site/app/notifications/outbox.php",
+    "site/install/inventory.generated.php"
+  ],
+  "verifier_sha256": "6257138f85bdccae7510a649251b66ccb04d9b7ef91ad5fb80f74dd33fb52f7b",
+  "files": {
+    "site/app/notifications/feed.php": {
+      "before_sha256": "9968652e7f6982cf858dcff4e18377a045a3b080223415a288cd331730a6ee22",
+      "after_sha256": "979a9e4d42f1bd6e3a9ec2a3ca25d48bb8a271b01e35b1d31316b77abb933abc",
+      "edits": [
+        [
+          "        query('INSERT INTO '.table('notification_deliveries').\" (notification_id,channel,state,attempts,last_error,sent_at,next_at,updated_at) VALUES (?,'portal','sent',1,'',?,NULL,?)\",[$n->id,$n->createdAt,gmdate('Y-m-d H:i:s')]);\n        if(setting('notification_email_enabled','0')==='1'&&notification_prefs_for($audience,$id)->emailEnabled($kind))query('INSERT INTO '.table('notification_deliveries').\" (notification_id,channel,state,attempts,last_error,sent_at,next_at,updated_at) VALUES (?,'email','pending',0,'',NULL,?,?)\",[$n->id,$n->createdAt,gmdate('Y-m-d H:i:s')]);\n    });\n",
+          "        query('INSERT INTO '.table('notification_deliveries').\" (notification_id,channel,state,attempts,last_error,sent_at,next_at,updated_at) VALUES (?,'portal','sent',1,'',?,NULL,?)\",[$n->id,$n->createdAt,gmdate('Y-m-d H:i:s')]);\n        // A prior page/request-cache read cannot authorize a future email projection.\n        $emailSetting=one('SELECT value FROM '.table('settings').' WHERE name=?',['notification_email_enabled']);\n        if(($emailSetting['value']??'0')==='1'&&notification_prefs_for($audience,$id)->emailEnabled($kind))query('INSERT INTO '.table('notification_deliveries').\" (notification_id,channel,state,attempts,last_error,sent_at,next_at,updated_at) VALUES (?,'email','pending',0,'',NULL,?,?)\",[$n->id,$n->createdAt,gmdate('Y-m-d H:i:s')]);\n    });\n"
+        ]
+      ]
+    },
+    "site/app/notifications/outbox.php": {
+      "before_sha256": "4ed8d00ed7a4588c918df625ada0f9d024847ff87635a964bb0efe8536c61969",
+      "after_sha256": "403b08766b896206c81bb120e23365e17b50417805756595946002a2db94fd2f",
+      "edits": [
+        [
+          "    return staff_locked(function()use($id,$transport):string {\n        $owner=notification_owner();notifications_feed_require();\n",
+          "    return staff_locked(function()use($id,$transport):string {\n        // Another request can commit a pause while this request waits for the mutex.\n        unset($GLOBALS['cwp_settings']);\n        $owner=notification_owner();notifications_feed_require();\n"
+        ]
+      ]
+    },
+    "site/install/inventory.generated.php": {
+      "before_sha256": "32562a0bb8fa0b6cbf82539be91b95916b7d740ff5cd3d1681aee7781ab034fa",
+      "after_sha256": "fb8d19457c999989c70748a0ef1bd8f2f3049df01b164bde7e40678f19f9290c",
+      "edits": [
+        [
+          "    'app/notifications/events.php'=>'0f370991a4ae0eba1d9e933aed5e8972542e2f4267082898ef73ed4b0c6576e3',\n    'app/notifications/feed.php'=>'9968652e7f6982cf858dcff4e18377a045a3b080223415a288cd331730a6ee22',\n    'app/notifications/metrics.php'=>'a42dd6ee32dc3d4621562af5a2e3279daf70184c3247fcac59d1b63bf2fe3e15',\n    'app/notifications/outbox.php'=>'4ed8d00ed7a4588c918df625ada0f9d024847ff87635a964bb0efe8536c61969',\n    'app/plans/documents.php'=>'8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c',\n",
+          "    'app/notifications/events.php'=>'0f370991a4ae0eba1d9e933aed5e8972542e2f4267082898ef73ed4b0c6576e3',\n    'app/notifications/feed.php'=>'979a9e4d42f1bd6e3a9ec2a3ca25d48bb8a271b01e35b1d31316b77abb933abc',\n    'app/notifications/metrics.php'=>'a42dd6ee32dc3d4621562af5a2e3279daf70184c3247fcac59d1b63bf2fe3e15',\n    'app/notifications/outbox.php'=>'403b08766b896206c81bb120e23365e17b50417805756595946002a2db94fd2f',\n    'app/plans/documents.php'=>'8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c',\n"
+        ]
+      ]
+    },
+    "tests/account_notification_contract.py": {
+      "before_sha256": "4eb1252e865f6b7733a82f42c0e856a08daf3fda751adba1602205f2ffb41865",
+      "after_sha256": "8d7d5daab48f54f9eaf640ab3e9bb93ee86e54b303936f75424ed411cef5530c",
+      "edits": [
+        [
+          "import hashlib,json,subprocess\nBASE='3e66cb490bb8c6a93119a73209434535be365f44'\n",
+          "import hashlib,json,subprocess\nfrom notification_settings_freshness_provenance import source_revision, predecessor_bytes\nBASE='3e66cb490bb8c6a93119a73209434535be365f44'\n"
+        ],
+        [
+          "def validate(root):\n    receipt=json.loads((root/'docs/ACCOUNT_NOTIFICATION_COMBINATION.json').read_text())\n    if receipt['base']!=BASE or receipt['account_source']!=ACCOUNT or set(receipt['shipping'])!=PATHS:raise AssertionError('Unexpected combined source or scope')\n    actual=set(subprocess.check_output(['git','diff','--name-only',BASE,'HEAD','--',*AREAS],cwd=root,text=True).splitlines())\n    if actual!=PATHS:raise AssertionError('Unreviewed combined shipping change: '+repr(actual.symmetric_difference(PATHS)))\n",
+          "def validate(root):\n    revision=source_revision(root)\n    receipt=json.loads((root/'docs/ACCOUNT_NOTIFICATION_COMBINATION.json').read_text())\n    if receipt['base']!=BASE or receipt['account_source']!=ACCOUNT or set(receipt['shipping'])!=PATHS:raise AssertionError('Unexpected combined source or scope')\n    actual=set(subprocess.check_output(['git','diff','--name-only',BASE,revision,'--',*AREAS],cwd=root,text=True).splitlines())\n    if actual!=PATHS:raise AssertionError('Unreviewed combined shipping change: '+repr(actual.symmetric_difference(PATHS)))\n"
+        ],
+        [
+          "        target=root/path\n        if target.is_symlink() or hashlib.sha256(target.read_bytes()).hexdigest()!=row['after']:raise AssertionError('Combined output changed: '+path)\n        before=subprocess.run(['git','show',BASE+':'+path],cwd=root,capture_output=True)\n",
+          "        target=root/path\n        if target.is_symlink() or hashlib.sha256(predecessor_bytes(root,path,target.read_bytes())).hexdigest()!=row['after']:raise AssertionError('Combined output changed: '+path)\n        before=subprocess.run(['git','show',BASE+':'+path],cwd=root,capture_output=True)\n"
+        ]
+      ]
+    },
+    "tests/notification_center_native.php": {
+      "before_sha256": "85e707a0728272247667f4b2490c7730c6eb80ce353963814b291765556cb27b",
+      "after_sha256": "b1ff20e8e5def94fd23a91fb8f5180c42c99c759491d02e873555033c3aa135e",
+      "edits": [
+        [
+          "function nc_delivery(string $id):array{return one('SELECT * FROM '.table('notification_deliveries').\" WHERE notification_id=? AND channel='email'\",[$id])??[];}\nif(isset($argv[1])&&str_starts_with($argv[1],'--worker=')){\n",
+          "function nc_delivery(string $id):array{return one('SELECT * FROM '.table('notification_deliveries').\" WHERE notification_id=? AND channel='email'\",[$id])??[];}\nrequire_once __DIR__.'/notification_settings_freshness_cases.php';\nif(isset($argv[1])&&str_starts_with($argv[1],'--worker=')){\n"
+        ],
+        [
+          "    nc_ok('Existing project metadata remains unchanged',one('SELECT title,summary,milestones FROM '.table('studio_jobs').' WHERE id=1')===['title'=>'Synthetic existing project','summary'=>'Retain this summary','milestones'=>'Retain milestones']);\n    $complete=true;\n",
+          "    nc_ok('Existing project metadata remains unchanged',one('SELECT title,summary,milestones FROM '.table('studio_jobs').' WHERE id=1')===['title'=>'Synthetic existing project','summary'=>'Retain this summary','milestones'=>'Retain milestones']);\n    nc_settings_freshness_cases();\n    $complete=true;\n"
+        ]
+      ]
+    }
+  },
+  "additions": {
+    "tests/notification_settings_freshness_cases.php": "d6a7f16d49ed5b5d4d3f12623f12928e69e88fae7ba6d56a0566d69adba94d91"
+  }
+}

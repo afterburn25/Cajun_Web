@@ -1,0 +1,23 @@
+{
+  "phase": "corrected01",
+  "original_source": false,
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "command": [
+    "/usr/bin/php8.3",
+    "/tmp/cwp-software-authority-runtime-8cc2b4f257ab/corrected01/tests/software_commerce_native.php"
+  ],
+  "uid": 65534,
+  "port": 33312,
+  "datadir": "/tmp/cwp-software-authority-8cc2b4f257ab/data/",
+  "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "elapsed_seconds": 11.999,
+  "exit_code": 0,
+  "stderr_bytes": 0,
+  "retained_original_checks": 272,
+  "new_checks": 194,
+  "failed_checks": [],
+  "stdout_passing_rows": 466,
+  "report_passed": true,
+  "source_manifest_sha256": "29410f971723e2b5b1ca24ec09ba657a41df547445a68d8969ea0627ad7c9986",
+  "scope": "Native MariaDB/PHP with independent actual owner changes, SQL row-lock contention and synthetic gateway transport/configuration only."
+}

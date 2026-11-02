@@ -1,0 +1,5 @@
+PHP Fatal error:  Uncaught Error: Call to undefined function service_plans_current_client() in /tmp/cwp-finance-outcome-EufY20:55
+Stack trace:
+#0 /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/finance_replacement_outcomes.php(75): license_finance_subscription_reenroll_opaque()
+#1 {main}
+  thrown in /tmp/cwp-finance-outcome-EufY20 on line 55

@@ -1,0 +1,7 @@
+PASS Production is disabled with no owner review and no code-level activation
+PASS Database review flag alone cannot enable live software charging
+PASS Production becomes eligible only with code-level activation and reviewed setting
+PASS Removing owner-reviewed activation disables production even when code switch exists
+PASS Owner review action is itself protected by the code-level production gate
+PASS Owner review UI cannot directly select production checkout
+Software production payment gate: PASS

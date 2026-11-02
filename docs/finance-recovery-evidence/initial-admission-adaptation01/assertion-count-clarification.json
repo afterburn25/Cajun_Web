@@ -1,0 +1,7 @@
+{
+  "original_manifest_sha256": "c787288a6250fc064323048254100f5dfe80d23745a4011f9ab46c3faf92fc1e",
+  "regex_ranges": 14,
+  "unchanged_assertion_call_sites": 13,
+  "reason": "The broad fep_ok pattern includes its function declaration. The other13 call sites include the fixture-exception site and expand through loops to the original358 runtime checks. All call-site expressions are unchanged.",
+  "source_hashes_changed": false
+}

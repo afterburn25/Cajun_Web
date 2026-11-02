@@ -1,0 +1,8 @@
+{
+  "observed_after_failure": {
+    "memory.events": "low 0\nhigh 0\nmax 48595\noom 0\noom_kill 0\noom_group_kill 0",
+    "memory.current": "8245452800",
+    "memory.max": "8589934592"
+  },
+  "scope": "Read-only owned33313 server evidence and current container counters. Counters without an earlier sample do not attribute this server exit."
+}

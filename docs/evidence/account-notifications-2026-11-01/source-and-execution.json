@@ -1,0 +1,111 @@
+{
+  "scope": "Local real SQL, installed HTTP and Chromium account/notification browser fixture correction. No shipping changes, hosted matrix result, provider operation, publication or deployment.",
+  "base": "fc14b84170407a0c30616fd278bab79a20657a24",
+  "base_tree": "a7b4238d2a26c8e807437ea6229d80003ef7f176",
+  "code_path": "tests/account_notification_browser.py",
+  "before_sha256": "2ec0b157e687ef38b1cd66426b6be8f88212299374e4a65cd63584029aefe344",
+  "after_sha256": "aad7737422c97a95b59354987b76843cfe755e472b9169aa742587e6357c7367",
+  "retained_check_call_asts": 42,
+  "current_check_call_asts": 45,
+  "all_original_checks_unchanged_in_order": true,
+  "whole_original_source_retained_by_removing_one_insertion": true,
+  "inserted_lines": 13,
+  "shipping_paths_changed": [],
+  "runtime": {
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "database_port": 33308,
+    "database_isolation": "Separate newly initialized datadir; only this instance was reset between runs.",
+    "python": "3.12.14",
+    "playwright": "1.56.0",
+    "chromium": "141.0.7390.37",
+    "uid": 65534,
+    "http_port": 8091,
+    "server_adapter": "Only the exact Docker run/stop command pair is translated to the local PHP8.3 server. All fixture/test source, HTTP, SQL and Chromium execution is real. Docker and PHP8.4 were unavailable.",
+    "adapter_sha256": "af224a4265a00711efab0dc1cd56167e25706b9127662b510bb53e644200c216"
+  },
+  "runs": {
+    "original": {
+      "passed": false,
+      "checks": 42,
+      "passed_checks": 40,
+      "failed_checks": [
+        "Actual 20i navigation opens the protected workspace",
+        "AssertionError: Actual 20i navigation opens the protected workspace"
+      ],
+      "reported_source": "fc14b84170407a0c30616fd278bab79a20657a24",
+      "browser_source_sha256": "2ec0b157e687ef38b1cd66426b6be8f88212299374e4a65cd63584029aefe344",
+      "stderr_bytes": 0,
+      "captures": []
+    },
+    "setup-redirect-attempt1": {
+      "passed": false,
+      "checks": 45,
+      "passed_checks": 43,
+      "failed_checks": [
+        "Actual 20i navigation opens the protected workspace",
+        "AssertionError: Actual 20i navigation opens the protected workspace"
+      ],
+      "reported_source": "fc14b84170407a0c30616fd278bab79a20657a24+uncommitted-fixture",
+      "browser_source_sha256": "3c5f4cb0fc74bfb8455f6eb604314267c125b0fd290825e07723bf0f09b137f5",
+      "stderr_bytes": 5694,
+      "captures": [
+        "Owner-20i-Preparation.png"
+      ]
+    },
+    "corrected": {
+      "passed": true,
+      "checks": 54,
+      "passed_checks": 54,
+      "failed_checks": [],
+      "reported_source": "fc14b84170407a0c30616fd278bab79a20657a24+uncommitted-fixture",
+      "browser_source_sha256": "aad7737422c97a95b59354987b76843cfe755e472b9169aa742587e6357c7367",
+      "stderr_bytes": 0,
+      "captures": [
+        "Client-Account-Desktop.png",
+        "Client-Account-Mobile.png",
+        "Owner-20i-Navigation.png",
+        "Owner-20i-Preparation.png"
+      ]
+    }
+  },
+  "source_gate": {
+    "command": "python3 tests/account_notification_contract.py",
+    "passed": true
+  },
+  "syntax_and_whitespace": {
+    "python_ast_parsed": true,
+    "git_diff_check": true
+  },
+  "captures_self_reviewed": [
+    "Client-Account-Desktop.png",
+    "Client-Account-Mobile.png",
+    "Owner-20i-Navigation.png",
+    "Owner-20i-Preparation.png"
+  ],
+  "evidence_files": {
+    "corrected/Client-Account-Desktop.png": "59dab7c1a14708c1414a9d66394d68cd4a112c78375afe813104784e16144f36",
+    "corrected/Client-Account-Mobile.png": "4a0b38d523d2dde89e1b08def18a85c97ade39aaa5dbe8c813f94ab438fff87a",
+    "corrected/Owner-20i-Navigation.png": "ad7eed4fc2b5294a946b6294096b6a8db80825861f9f31baa19a65063be95e64",
+    "corrected/Owner-20i-Preparation.png": "ff9abdd4c4a51239cabfde62e7829a3d5b854e3e546d0da43df0c3cd58ed9e53",
+    "corrected/account_notification_browser.py.txt": "aad7737422c97a95b59354987b76843cfe755e472b9169aa742587e6357c7367",
+    "corrected/browser-results.json": "d5aea15375b6697947225867756ab6f516363774fb2f99aecabacc651c9f2b14",
+    "corrected/server-log.txt": "1c7d94ca3a79be18f61e99a6ec8701d599b2dc9c28c07c480fe000d46f69239a",
+    "corrected/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "corrected/stdout.txt": "84b6546838a026e451247c42ba1b212ac8f7da1e747006c36b88dcce992057a9",
+    "http-port-release.json": "5c957420d817fbadd34c9df4e653809dcf05880d0a4cb25ea904165733d72378",
+    "local-http-launcher.py.txt": "af224a4265a00711efab0dc1cd56167e25706b9127662b510bb53e644200c216",
+    "original/account_notification_browser.py.txt": "2ec0b157e687ef38b1cd66426b6be8f88212299374e4a65cd63584029aefe344",
+    "original/browser-results.json": "e4796f5853d1424432aca252e7033ee3b1b40946409d988b172f13336fdc3900",
+    "original/provider-state.txt": "9246ca8977a11d1cbaca8977a6468ed0cd113d05088794fa7c598f8ad37870a8",
+    "original/server-log.txt": "45e15c325b6bbff584a621e1413bda2631d2257a8943c9c01c03ac1fea3793de",
+    "original/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original/stdout.txt": "002d4fb37579cdd4e31cb897c7e59d9e157063e170bb4e53376d5c913d9dd5e6",
+    "setup-redirect-attempt1/Owner-20i-Preparation.png": "ff9abdd4c4a51239cabfde62e7829a3d5b854e3e546d0da43df0c3cd58ed9e53",
+    "setup-redirect-attempt1/account_notification_browser.py.txt": "3c5f4cb0fc74bfb8455f6eb604314267c125b0fd290825e07723bf0f09b137f5",
+    "setup-redirect-attempt1/browser-results.json": "a400753916720b0eca6d6c9d20adcc38044553ba5c9d32c42d6799f96ec46b0f",
+    "setup-redirect-attempt1/server-log.txt": "f4a0f3f9e0781214a1e5a22e3ed35b6adfdc603afc34eae0a06d694943aaafbb",
+    "setup-redirect-attempt1/stderr.txt": "12a8a9b0dd79bb9711b23c64a5ebe10fcc75dbb54a97220689430ba9413fea51",
+    "setup-redirect-attempt1/stdout.txt": "438b871ea1f77f3a8edb1fd8a829b016c8a9cdf49970fa637a0871e3b2df0bcb"
+  }
+}

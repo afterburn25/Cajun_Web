@@ -5,7 +5,7 @@ require_once CWP_CODE_ROOT.'/app/clients/master_portal.php';
 /** Navigation only: every destination retains its existing current-access check. */
 function admin_navigation(string $view,array $user,int $new): void {
     $groups=[
-        'overview'=>['label'=>'Overview','icon'=>'dashboard','items'=>['dashboard'=>['dashboard','Overview']]],
+        'overview'=>['label'=>'Overview','icon'=>'dashboard','items'=>['dashboard'=>['dashboard','Overview'],'notifications'=>['mail','Notifications']]],
         'clients'=>['label'=>'Clients & Projects','icon'=>'user','items'=>['studio-clients'=>['user','Client workspace'],'support'=>['shield','Client support'],'tickets'=>['shield','Support tickets'],'deliveries'=>['layers','Website deliveries'],'backups'=>['shield','Backups & restore'],'proposals'=>['quote','Client proposals'],'activity'=>['mail','Workspace activity'],'studio-pipeline'=>['mail','Sales pipeline'],'leads'=>['mail','Inquiries'],'consultations'=>['mail','Consultations']]],
         'website'=>['label'=>'Website Content','icon'=>'layers','items'=>['projects'=>['layers','Portfolio'],'services'=>['code','Services'],'testimonials'=>['quote','Testimonials'],'studio-content'=>['layers','Sales content'],'studio-portfolio'=>['monitor','Portfolio previews'],'studio-history'=>['layers','Content history']]],
         'hosting'=>['label'=>'Hosting & Domains','icon'=>'monitor','items'=>['hosting-offers'=>['bag','Hosting offers'],'hosting-purchases'=>['bag','Hosting purchases'],'provider-settings'=>['gear','20i workspace'],'provider-operations'=>['shield','20i operations'],'registration-drafts'=>['layers','Registration drafts']]],

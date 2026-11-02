@@ -1,0 +1,115 @@
+{
+    "passed": true,
+    "count": 11,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "uncertain uses real charge prepare and mark on an unpaid signed period",
+            "passed": true
+        },
+        {
+            "name": "unresolved initial period attempt refuses every new ARB create",
+            "passed": true
+        },
+        {
+            "name": "unresolved initial period refusal preserves all financial records",
+            "passed": true
+        },
+        {
+            "name": "unresolved one-time outcome remains retained",
+            "passed": true
+        },
+        {
+            "name": "uncertain does not invent an installment receipt",
+            "passed": true
+        },
+        {
+            "name": "uncertain releases native mutex and keeps provider I\/O outside transactions",
+            "passed": true
+        },
+        {
+            "name": "declined uses real charge prepare and mark on an unpaid signed period",
+            "passed": true
+        },
+        {
+            "name": "explicitly declined attempt permits lawful initial enrollment",
+            "passed": true
+        },
+        {
+            "name": "declined positive control retains its exact earlier attempt",
+            "passed": true
+        },
+        {
+            "name": "declined does not invent an installment receipt",
+            "passed": true
+        },
+        {
+            "name": "declined releases native mutex and keeps provider I\/O outside transactions",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "state": "uncertain",
+            "invoice": 2,
+            "result": null,
+            "error": "RuntimeException: A separate financing collection has an unresolved outcome. Reconcile it before automatic enrollment.",
+            "creates": 0,
+            "calls": [],
+            "attempt_status_before": "uncertain",
+            "attempt_status_after": "uncertain",
+            "subscription": null,
+            "financial_before_sha256": "097911f4a2fe1f83d23d29c993903faf27b296b7dd5e85f972a80cce8cdde8e9",
+            "financial_after_sha256": "097911f4a2fe1f83d23d29c993903faf27b296b7dd5e85f972a80cce8cdde8e9",
+            "changed_tables": []
+        },
+        {
+            "state": "declined",
+            "invoice": 4,
+            "result": "pending_first_payment",
+            "error": null,
+            "creates": 1,
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "89000001",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "attempt_status_before": "declined",
+            "attempt_status_after": "declined",
+            "subscription": {
+                "id": 1,
+                "offer_id": "b83231dcf80a4d5a2e91d44ea3cb7199",
+                "gateway_subscription_id": "89000001",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 02:54:25",
+                "updated_at": "2026-11-02 02:54:26"
+            },
+            "financial_before_sha256": "202a9c6b74738d8c3f540e15f8a70850b22b4d381e22e8ac30e26d4c411099fb",
+            "financial_after_sha256": "96f79e4d2a89e7824ecb9a02dc0d55fe7cf17746fc01a72889801817daf12d82",
+            "changed_tables": [
+                "license_finance_subscriptions"
+            ]
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+    "scope": "Two isolated native admission scenarios on reviewer-owned port33317: actual signed agreement, invoice issuance, financing payment request, charge prepare\/mark and initial caller. Existing source bodies and native schema; only ARB transport\/mode and future signed invoice timing are synthetic. No real charge, provider, HTTP or original assertion changes."
+}
