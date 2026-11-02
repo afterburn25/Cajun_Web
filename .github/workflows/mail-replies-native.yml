@@ -1,0 +1,67 @@
+name: Protected reply draft storage checks
+on:
+  push:
+    branches: [main, 'devin/non20i-*']
+    paths: ['site/app/mail/**', 'site/database/**', 'site/admin/controllers/mail_*.php', 'site/admin/views/mail_*.php', 'foundation/mail-compose/**', 'foundation/mail-submission/**', 'site/includes/foundation/mail-compose/**', 'site/includes/foundation/mail-submission/**', 'tests/mail_replies_native.php', 'tests/mail_reply_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_drafts_native.php', 'tests/mail_submissions_native.php', '.github/workflows/mail-replies-native.yml']
+  pull_request:
+    paths: ['site/app/mail/**', 'site/database/**', 'site/admin/controllers/mail_*.php', 'site/admin/views/mail_*.php', 'foundation/mail-compose/**', 'foundation/mail-submission/**', 'site/includes/foundation/mail-compose/**', 'site/includes/foundation/mail-submission/**', 'tests/mail_replies_native.php', 'tests/mail_reply_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_drafts_native.php', 'tests/mail_submissions_native.php', '.github/workflows/mail-replies-native.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mail-replies-native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    name: Protected reply drafts PHP ${{ matrix.php }} and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_mysql, mbstring, iconv, ctype, openssl
+          coverage: none
+      - name: Native copied-content isolation and retained draft compatibility
+        run: |
+          mkdir -p qa
+          git rev-parse HEAD > qa/mail-replies-native-source.txt
+          for source in site/app/mail/replies.php site/database/schema/mail_replies_schema.php site/database/migrations/mail_replies_migrate.php foundation/mail-compose/*.php tests/mail_replies_native.php; do php -l "$source"; done
+          php -d memory_limit=128M tests/mail_replies_native.php
+          php tests/mail_drafts_native.php
+          php tests/mail_submissions_native.php
+          php tests/mail-compose/reply.php > qa/mail-replies-content-results.json
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mail-replies-native-${{ matrix.php }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: qa/mail-*
+          if-no-files-found: error
+          retention-days: 14

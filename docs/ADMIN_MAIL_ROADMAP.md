@@ -174,6 +174,8 @@ Treat all email content as untrusted. Sanitize HTML and isolate message renderin
 
 **Acceptance:** With two isolated test mailboxes, independently connect, receive, read, compose, reply/reply-all, forward, save/recover drafts, attach/download and send from the chosen authorized account. Verify mailbox isolation, invalid credentials, provider outage, token expiry, attachment limits, hostile email HTML, uncertain send outcome, Sent-folder behavior, external read-state changes and safe connection removal. Connection checks do not send customer email.
 
+**Progress — 2026-10-16:** Plain-text Reply and Forward are implemented on `devin/non20i-mail-replies` ([contract](MAIL_REPLY_FORWARD.md)): the exact message screen creates protected editable copies through a fresh authorized read, `mail_reply_drafts` preserves content/provenance behind content-free placeholders, format-2 submissions emit RFC `In-Reply-To`/`References`, and source Read authority gates every copied-content path. Still outstanding within A-06: reply-all, folders/Sent synchronization, attachments, HTML compose, OAuth and the full two-mailbox acceptance above.
+
 ## A-07 — Reusable sending templates
 
 Admin -> Email -> Templates supports create, edit, duplicate, preview, archive and select a template while composing. Each template has a name/category, subject and formatted body with a plain-text alternative. Support generic messages and optional project-related templates such as inquiries, proposals, payment requests, follow-ups and maintenance updates. Use the same brand styling as the site.
