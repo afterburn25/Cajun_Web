@@ -1,3 +1,9 @@
+## 2026-11-02 continuation — published sources and combined acceptance
+
+The PR #317 correction and separate Account/Notifications fixture are now published as `84e1f4c6` and `ebcbbb56`; the previous connection failure's cause remains unknown. The primary full run has started. The combined candidate's read-only source admission, preserved matrix equivalence and automated team review are complete locally.
+
+This closes a concrete CI admission gap without adding a completed product requirement or promoting integrated/released/live status. Hosted focused and full combined acceptance, normal main integration, exact-main verification and immutable release delivery remain pending. The account fixture's 54/54 local browser result stays attributed to its own source. [Current candidate and proof](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Keep PR #317's reviewed acceptance correction pending publication and complete acceptance. Local database recovery adds no completed product requirement: two resumed commands passed, while the full browser journey remains pending. The separate Account/Notifications correction passes 54/54 checks in its isolated PHP 8.3/MariaDB/Chromium run; hosted matrix, review and combination remain gates. No implemented/tested/integrated/released status is promoted from the interrupted primary run. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

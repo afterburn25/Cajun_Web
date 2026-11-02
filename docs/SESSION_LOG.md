@@ -1,3 +1,9 @@
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Verified successful GitHub publication of PR #317 source `84e1f4c6` and Account/Notifications fixture `ebcbbb56`, preserving exact reviewed trees. The earlier generic rejection/connection UI failure remains unexplained. Primary full acceptance 41363630471 began at 2026-11-01 23:54 UTC; its 23:55 UTC observation was still running.
+
+Preserved both published histories in a local ordinary merge and independently checked fixture inverses, all original matrix commands, immutable source admission and carryover. Review found and corrected one missing protected-workflow trigger dependency; the final workflow proof passes 56 checks including 20 negative cases. Both actual source-admission shell blocks passed on clean checkpoint `7feb1c5f`, which is preserved locally before a documentation-only amendment. If the separate candidate branch is absent, publish it; otherwise verify its tree and continue the existing run. Focused/full hosted acceptance, main integration and release remain gates. [Complete source/evidence handoff](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 The old runner was absent after its last output at 23:15:27 UTC. A retained physical snapshot and scoped reset preceded an unchanged StackCP test failure with MariaDB 1050; both remain evidence. Logical restore retained 3,973 completed tables plus 78 successful inventory-retry tables. The replacement segment started at 23:34:35; its first two commands passed 103/103 and 49/49 by this checkpoint. GitHub successfully stored reviewed diagnostic blob `669e4a8f82ac831423479bc9cbfdc669a0071cb4`; branch publication remained pending. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

@@ -102,10 +102,14 @@ def validate_receipt(data, verifier):
 
 
 def receipt(root):
-    return validate_receipt(json.loads((root / RECEIPT).read_text()), (root / VERIFIER).read_bytes())
+    from account_notification_fixture_provenance import project
+    verifier=project(root,VERIFIER,(root / VERIFIER).read_bytes(),'root')
+    return validate_receipt(json.loads((root / RECEIPT).read_text()), verifier)
 
 
-def restore(data, path, value):
+def restore(data, path, value, root):
+    from account_notification_fixture_provenance import project
+    value=project(root,path,value,'root')
     require(path in PATHS, 'Unreviewed provider browser predecessor: ' + path)
     row = data['files'][path]
     require(digest(value) == row['after_sha256'], 'Corrected provider browser source differs: ' + path)
@@ -123,13 +127,15 @@ def restore(data, path, value):
 
 
 def predecessor(root, path, value):
-    return restore(receipt(root), path, value)
+    return restore(receipt(root), path, value, root)
 
 
 def source(root, path):
     """Use only at an existing historical-source comparison, never to run fixtures."""
     value = (root / path).read_bytes()
-    return predecessor(root, path, value) if path in PATHS else value
+    from account_notification_fixture_provenance import core_input
+    retained=predecessor(root,path,value) if path in PATHS else value
+    return core_input(root,path,retained)
 
 
 def projected_validation(root, validator, receipt_paths):
@@ -148,7 +154,7 @@ def projected_validation(root, validator, receipt_paths):
                     and relative.as_posix() == path, 'Unsafe historical receipt path')
             value = (root / path).read_bytes()
             if path in PATHS:
-                value = restore(data, path, value)
+                value = restore(data, path, value, root)
             target = historical / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(value)
@@ -158,8 +164,9 @@ def projected_validation(root, validator, receipt_paths):
 def validate(root):
     """Check every current source, inverse, and focused negative receipt cases."""
     data = receipt(root)
-    verifier = (root / VERIFIER).read_bytes()
-    checks = []
+    from account_notification_fixture_provenance import project, validate as validate_combination
+    verifier = project(root,VERIFIER,(root / VERIFIER).read_bytes(),'root')
+    checks = validate_combination(root)
 
     def passed(name):
         checks.append({'name': name, 'passed': True})
@@ -174,18 +181,18 @@ def validate(root):
 
     for path in sorted(PATHS):
         current = (root / path).read_bytes()
-        restore(data, path, current)
+        restore(data, path, current, root)
         passed('Exact provider browser correction retains predecessor ' + path)
         refuses('Provider browser receipt refuses altered current bytes ' + path,
-                lambda: restore(data, path, current + b'\n# unreviewed synthetic change\n'))
+                lambda: restore(data, path, current + b'\n# unreviewed synthetic change\n', root))
         changed = copy.deepcopy(data)
         changed['files'][path]['before_sha256'] = '0' * 64
         refuses('Provider browser receipt refuses altered predecessor hash ' + path,
-                lambda: restore(changed, path, current))
+                lambda: restore(changed, path, current, root))
         changed = copy.deepcopy(data)
         changed['files'][path]['edits'].pop()
         refuses('Provider browser receipt refuses omitted edit ' + path,
-                lambda: restore(changed, path, current))
+                lambda: restore(changed, path, current, root))
     for case in ('base', 'missing-file', 'additional-file', 'verifier', 'unchanged-edit'):
         changed = copy.deepcopy(data)
         path = sorted(PATHS)[0]

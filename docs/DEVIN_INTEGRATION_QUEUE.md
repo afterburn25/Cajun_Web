@@ -1,3 +1,16 @@
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Successful GitHub writes supersede the earlier publication blocker; the cause of the earlier connection/UI failure remains unknown. Preserve the old records below as historical evidence.
+
+| Candidate | Current state | Next action |
+| --- | --- | --- |
+| PR #317, `84e1f4c6` | Published; full acceptance 41363630471 started, result pending at 2026-11-01 23:55 UTC | Keep this head stable while its existing run completes. |
+| Account/Notifications fixture, `ebcbbb56` | Published; reviewed local browser 54/54, hosted matrix still pending | Preserve its exact implementation and original failures in the combined candidate. |
+| Ordinary merge of `84e1f4c6` + `ebcbbb56` | Source/workflow review and exact local admission pass; awaiting isolated candidate publication and acceptance | If `chatgpt/account-notifications-acceptance-20261101` is absent, publish it; otherwise verify its tree and continue the existing run. Complete focused/full combined and main/release gates. |
+| Main, `1c44ca120e7768998fafa720b3e1c4c85990c330` | Unchanged by these publications | Integrate only the reviewed, accepted combined result; verify exact main afterward. |
+
+[Current-source integration, evidence and remaining gates](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md). No candidate is marked ready to merge from these source-only checks.
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 PR #317: reviewed local correction `77cdbc92` plus docs `be75116e` and this checkpoint await publication/current-source checks; the primary full browser run is still pending. Account/Notifications: base `fc14b841` plus its isolated fixture correction passes 54/54 local checks, with its own review, publication and hosted acceptance pending; it is not merged into the primary candidate. Main and PR #317 were not updated by the successful diagnostic-blob save. Preserve both lanes and combine only through reviewed integration. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

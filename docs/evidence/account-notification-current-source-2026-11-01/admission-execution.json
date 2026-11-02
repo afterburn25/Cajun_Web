@@ -1,0 +1,22 @@
+{
+  "scope": "Exact committed source admission commands executed locally, not hosted matrix or installed browser acceptance",
+  "commit": "7feb1c5f25f44dff9ddd91b7db07a85f96a12883",
+  "tree": "e275126f3907f620ae45d6cf1b0c80df68b2240c",
+  "stages": [
+    {
+      "name": "Verify the exact integrated source and retained proof chains",
+      "command_sha256": "6c5f8fcda072b64a0f76bb2886c5804eed266ce4d66430f08b6f3f836231d293",
+      "exit_code": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "name": "Admit only the immutable checked-out commit",
+      "command_sha256": "cc2d3202624825f3b1a05f8b1433feb582316f79438cfd5df405ebadf3897283",
+      "exit_code": 0,
+      "stderr_bytes": 0
+    }
+  ],
+  "passed": true,
+  "admitted_sha": "7feb1c5f25f44dff9ddd91b7db07a85f96a12883",
+  "clean_source": true
+}

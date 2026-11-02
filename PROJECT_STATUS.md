@@ -1,3 +1,9 @@
+## 2026-11-02 continuation — published sources and combined acceptance
+
+GitHub writes are now verified: PR #317 is published at `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd`, and the reviewed Account/Notifications fixture is published at `ebcbbb56336249fee2073c8f02e9d6998740b64e`. Their exact trees match the retained reviewed snapshots. The cause of the earlier connection/UI failure remains unknown. At the 2026-11-01 23:55 UTC observation, [primary full acceptance 41363630471](https://github.com/afterburn25/Cajun_Web/actions/runs/41363630471) had started; it was not complete. Main remains `1c44ca120e7768998fafa720b3e1c4c85990c330`.
+
+The reviewed local two-parent candidate preserves both sources and adds read-only current-source focused CI. Its exact local admission commands pass. If `chatgpt/account-notifications-acceptance-20261101` is absent, publish it there; otherwise verify its tree and continue the existing acceptance run. Keep PR #317 stable. Hosted focused/full combined acceptance, main integration, exact-main verification and release publication remain pending. [Current source, proofs, review and next steps](docs/ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Reviewed correction `77cdbc92` and preceding documentation `be75116e` remain pending publication to PR #317. A GitHub blob save succeeded with the exact reviewed object; no branch update or merge is implied. The interrupted local database and failed recovery are preserved. A fresh isolated database restored 4,051 completed fixture tables. At 23:40:50 UTC the remaining native segment had passed its first two commands (103/103 and 49/49 checks), with command 3 active; full browser acceptance remained pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

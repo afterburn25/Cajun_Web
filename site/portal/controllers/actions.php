@@ -105,10 +105,20 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif(str_starts_with($action,'recurring_')){if(!$client)throw new RuntimeException('Sign in to continue.');recurring_ui_action($action,(int)$client['id']);}
  elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}
  elseif(str_starts_with($action,'client_tickets_')){if(!$client)throw new RuntimeException('Sign in to continue.');support_tickets_portal_action($action,$client);}
+ elseif(str_starts_with($action,'notification_client_'))notification_center_portal_action($action,$client);
  elseif($action==='activity_mark')activity_post('client');
+ elseif($action==='account_password'){
+  $account=studio_account_identity();
+  $allowedIp=consume_rate(ip_key('client-account-password'),10,900);
+  $allowedAccount=consume_rate(hash_hmac('sha256','client-account-password|'.$account['id'],config()['key']),5,900);
+  if(!$allowedIp||!$allowedAccount)throw new RuntimeException('Too many password-change attempts. Wait 15 minutes before trying again.');
+  studio_account_password_change(posted('current_password',1000),posted('password',72),posted('confirm_password',72));
+  flash('Password updated. Other client sessions and unused recovery invitations were revoked.');redirect(studio_url(['account'=>1]));
+ }
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
  elseif($action==='login'){
   studio_login(strtolower(posted('email',190)),posted('password',1000));
+  if(($_GET['account']??null)==='1')redirect(studio_url(['account'=>1]));
   if(array_key_exists('finance',$_GET)&&is_string($_GET['finance']))redirect(studio_url(['finance'=>$_GET['finance']]));
   if(array_key_exists('software',$_GET))redirect(studio_url(['software'=>1]));
   require_once CWP_CODE_ROOT.'/app/hosting/catalog_login.php';redirect(studio_url(hosting_catalog_login_destination($_GET)));
@@ -137,7 +147,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   software_grant_replace_domain($licenseId,$old,$new,(int)$client['id']);flash('Domain replaced — the old site goes offline at its next license check.');redirect(studio_url(['software'=>1]));}
  if($action==='proposal_decide'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm your decision applies to this exact version.');if(!consume_rate(ip_key('client-proposal'),20,3600))throw new RuntimeException('Please wait before recording another decision.');proposal_decide(posted('proposal_id',32),posted('choice',20),posted('note',2000),$client,posted('version_id',32),posted('content_hash',64));flash('Your decision was recorded against that exact proposal version.');redirect(studio_url());}
  $job=studio_job($jobId,(int)$client['id']);
- if($action==='message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');if(!consume_rate(ip_key('client-message'),30,3600))throw new RuntimeException('Please wait before sending more messages.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$jobId,'client',$client['id'],$body,gmdate('Y-m-d H:i:s')]);flash('Message saved.');}
+ if($action==='message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');if(!consume_rate(ip_key('client-message'),30,3600))throw new RuntimeException('Please wait before sending more messages.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$jobId,'client',$client['id'],$body,gmdate('Y-m-d H:i:s')]);$notificationMessageId=(int)db()->lastInsertId();require_once CWP_CODE_ROOT.'/app/notifications/events.php';notification_project_message($jobId,$notificationMessageId,'client');flash('Message saved.');}
  elseif($action==='decision'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm the decision for this version.');$version=(int)posted('version',12);if(!one('SELECT id FROM '.table('studio_versions').' WHERE id=? AND job_id=?',[$version,$jobId]))throw new InvalidArgumentException('Review not found.');studio_decide((int)$client['id'],$version,posted('choice',20),posted('feedback',5000));flash('Your decision was recorded against that version.');}
  elseif($action==='upload'){if(!consume_rate(ip_key('client-upload'),10,3600))throw new RuntimeException('Upload limit reached.');studio_upload($jobId,'client');flash('File saved privately.');}
  else throw new InvalidArgumentException('Unknown action.');redirect(studio_url(['job'=>$jobId]));}

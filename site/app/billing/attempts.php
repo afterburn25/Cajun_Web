@@ -104,4 +104,5 @@ function payments_manual_paid(int $job,int $invoice,string $note): void {
         query('UPDATE '.table('studio_invoices')." SET status='paid',paid_note=?,paid_at=? WHERE id=?",[$note,gmdate('Y-m-d H:i:s'),$invoice]);
         payments_audit((int)$actor['id'],'manual.paid','Invoice '.$invoice.' project '.$job);
     }));
+    require_once CWP_CODE_ROOT.'/app/notifications/events.php';notification_invoice_paid($invoice);
 }

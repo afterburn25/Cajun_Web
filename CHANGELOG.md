@@ -1,3 +1,9 @@
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Combine published acceptance correction `84e1f4c6` and Account/Notifications fixture `ebcbbb56` with both histories retained. Compose the shared navigation assertion with all five owner destinations, the separate exact-route assertion and browser diagnostics; preserve both original inverse-proof chains. Add a read-only workflow that admits the immutable integrated commit and retains every existing focused matrix command and report gate. Legacy source builders and the protected full-application workflow are unchanged.
+
+Local source admission and automated team review pass; primary full acceptance has started separately. These changes are awaiting hosted combined acceptance, main integration and release delivery. Successful branch publication supersedes earlier write-unverified notes; the prior connection error remains unexplained. [Source and verification record](docs/ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Record the interrupted local runner, retained database snapshots, original StackCP recreation failure, and logical restoration of 4,051 completed synthetic fixture tables. The resumed original StackCP commands pass 103 and 49 checks respectively at this checkpoint. This documentation/evidence update changes no product code or acceptance assertion. GitHub accepted one exact reviewed diagnostic blob; candidate publication, full acceptance, main integration and release remain pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

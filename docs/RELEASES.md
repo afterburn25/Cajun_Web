@@ -1,3 +1,9 @@
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Latest observed publication remains v1.25.0. GitHub branch writes succeeded for reviewed development sources `84e1f4c6` and `ebcbbb56`; this supersedes earlier write-unverified notes but does not explain the prior connection error or constitute a release. The primary full application run has started, and the combined candidate's exact local source admission passes.
+
+The combined source still requires hosted focused/full acceptance, required review, normal main integration, exact-main verification and fresh immutable asset verification before a new version is published. Existing downloads are unchanged; no live deployment is implied. [Candidate source and remaining delivery gates](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Latest observed publication remains v1.25.0. Reviewed local source `77cdbc92`, preceding docs `be75116e` and this recovery checkpoint await candidate publication; one successful GitHub blob write is not a release or branch integration. Segmented native passes on frozen `5b478528` and the separate Account/Notifications 54/54 local result do not replace clean current-source hosted acceptance, required review, exact-main verification or immutable asset checks. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

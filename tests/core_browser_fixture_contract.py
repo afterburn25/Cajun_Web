@@ -15,6 +15,8 @@ with TemporaryDirectory(prefix='cwp-core-receipts-') as tmp:
     for path in sorted(PATHS):
         current=(ROOT/path).read_bytes()
         if path in provider_paths:current=provider_predecessor(ROOT,path,current)
+        from account_notification_fixture_provenance import core_input
+        current=core_input(ROOT,path,current)
         restored=predecessor(ROOT,path,current)
         check('Original bytes reconstructed '+path,hashlib.sha256(restored).hexdigest()==receipt['files'][path]['before_sha256'])
         for case in ('changed-output','changed-predecessor','missing-edit','wrong-base'):

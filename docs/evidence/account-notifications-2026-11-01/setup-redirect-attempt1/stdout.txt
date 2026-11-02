@@ -1,0 +1,3 @@
+{"passed":true,"scope":"Synthetic loopback fixture with existing unrelated client project and support policy; tickets not prepared"}
+AssertionError: Actual 20i navigation opens the protected workspace
+{"passed": false, "checks": 45}

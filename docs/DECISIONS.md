@@ -1,3 +1,9 @@
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Retain the two actual published parents `84e1f4c6` and `ebcbbb56` in the combined candidate. Preserve original receipts, builders, complete matrix command blocks and the protected full-application sequence. Use a separate read-only current-source workflow with immutable checkout, both published ancestry checks and clean canonical-source admission; include every pinned workflow dependency in its bounded triggers.
+
+Keep PR #317 stable while its already-started full run completes. If the separate acceptance branch is absent, publish the reviewed combination there; otherwise verify its tree and continue its existing run. Do not dispatch a duplicate. GitHub writes are now verified, while the cause of earlier connection/UI errors remains unknown. Local source proofs and the account fixture's separate 54/54 browser evidence do not replace combined hosted, main or release gates. [Reviewed decision and exact evidence](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Preserve interrupted physical/SQL fixtures and the failed recovery before restoring readable completed fixtures into a fresh local database on the same port. Exclude only the original failed `pciu_` fixture and partial `sca_` fixture; explicitly retain the successful `pciu_retry_` tables. Resume unchanged native commands with their original assertions. A successful GitHub blob creation establishes that bounded write only; it does not explain earlier bulk errors or establish a published branch update. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

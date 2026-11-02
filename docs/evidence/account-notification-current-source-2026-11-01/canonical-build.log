@@ -1,0 +1,5 @@
+PASS: 40 locked packages; 2188 exact dependency/license files; no drift.
+PASS: 2201 receiving runtime files match the canonical bundle byte-for-byte.
+PASS:6 pinned original PHPMailer7.1.1 source/license/metadata files match recorded hashes
+PASS:15 submission runtime files match the canonical bundle byte-for-byte
+Refreshed and checked canonical installer; no release built from uncommitted files.
