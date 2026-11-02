@@ -547,9 +547,11 @@ def run(tmp):
           and hashlib.sha256(json.dumps(retained_native,separators=(',',':')).encode()).hexdigest()
               ==software_native['predecessor_sha256'])
     native_commands=retained_native
+    from cloud_site_intake_wiring import verify as cloud_intake_wiring
+    native_commands,cloud_request_reports=cloud_intake_wiring(ROOT,contract,workflow,native_commands,check)
     contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
-    native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
+    native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check,cloud_request_reports)
     contract={**contract,'native_commands':native_commands}
     from reset_template_acceptance_contract import predecessor_contract
     contract,native_commands=predecessor_contract(ROOT,contract,native_commands,check)
