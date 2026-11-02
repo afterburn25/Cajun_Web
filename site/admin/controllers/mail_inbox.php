@@ -9,7 +9,7 @@ function mail_inbox_admin_action(string $action): array {
     if($action!=='mail_inbox_read')throw new InvalidArgumentException('Unknown inbox action.');
     $id=posted('account_id',32);
     if(($_GET['view']??null)!=='mail-inbox' || ($_GET['account_id']??null)!==$id)throw new InvalidArgumentException('Open the current inbox form before requesting headers.');
-    return mail_inbox_read($id,mail_accounts_revision());
+    return mail_inbox_read($id,mail_accounts_revision(),null,null,mail_inbox_folder(posted('folder',70)?:'INBOX'));
 }
 function mail_inbox_admin_render(string $error,#[\SensitiveParameter] ?array $result): never {
     header('Cache-Control: no-store, private');header('Pragma: no-cache');header('Referrer-Policy: no-referrer');

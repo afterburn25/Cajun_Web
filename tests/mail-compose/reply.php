@@ -100,6 +100,28 @@ check('multiple inline parts disclose omission without concatenating content',fu
 check('oversized raw source is refused before draft construction',fn()=>denied(fn()=>ReplyDraft::prepare('reply',raw('',str_repeat('x',262144)))));
 check('unknown action cannot prepare content',fn()=>denied(fn()=>ReplyDraft::prepare('send',raw())));
 check('constructed metadata is immutable',function(){ $m=metadata();try{$m->recipients[]='evil@example.invalid';return false;}catch(Error){return $m->recipients===['Author@example.invalid'];} });
+check('reply all keeps reply recipient and original To minus the sender',function(){
+ $d=ReplyDraft::prepare('reply-all',raw("To: me@example.invalid, other@example.invalid\r\n"),'me@example.invalid');
+ return $d->mode==='reply-all' && $d->content->to===['Author@example.invalid','other@example.invalid'] && $d->content->cc===[] && $d->thread->toArray()!==['in_reply_to'=>null,'references'=>[]];
+});
+check('reply all moves original Cc minus sender and addresses already in To',function(){
+ $d=ReplyDraft::prepare('reply-all',raw("To: me@example.invalid, other@example.invalid\r\nCc: watcher@example.invalid, other@example.invalid\r\n"),'me@example.invalid');
+ return $d->content->to===['Author@example.invalid','other@example.invalid'] && $d->content->cc===['watcher@example.invalid'];
+});
+check('reply all excludes the sender only by exact address',function(){
+ $d=ReplyDraft::prepare('reply-all',raw("To: me@example.invalid, Me@EXAMPLE.INVALID\r\n"),'me@example.INVALID');
+ return $d->content->to===['Author@example.invalid','Me@example.invalid'];
+});
+check('reply all preserves Reply-To precedence over From',function(){
+ $d=ReplyDraft::prepare('reply-all',raw("Reply-To: helper@example.invalid\r\nTo: me@example.invalid\r\n"),'me@example.invalid');
+ return $d->content->to===['helper@example.invalid'] && $d->content->cc===[];
+});
+check('reply all requires the chosen sender address',fn()=>denied(fn()=>ReplyDraft::prepare('reply-all',raw("To: me@example.invalid\r\n"))));
+check('reply all refuses malformed copied recipient headers',fn()=>denied(fn()=>ReplyDraft::prepare('reply-all',raw("Cc: Broken <a b@example.invalid>\r\n"),'me@example.invalid')));
+check('reply all still applies the total recipient bound',function(){
+ $many='To: '.implode(',',array_map(fn($i)=>'p'.$i.'@example.invalid',range(1,21)))."\r\n";
+ return denied(fn()=>ReplyDraft::prepare('reply-all',raw($many),'me@example.invalid'));
+});
 check('prepared draft is immutable and cannot expose mutable aliases',function(){ $d=ReplyDraft::prepare('reply',raw());$o=$d->omissions;$o[]='changed';return $d->omissions===[]; });
 $passed=!array_filter($checks,fn($c)=>!$c['passed']);
 echo json_encode(['scope'=>'Maintained MIME parser and bounded reply/forward content using synthetic messages; no database, account authority, application, network or sending acceptance','passed'=>$passed,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";

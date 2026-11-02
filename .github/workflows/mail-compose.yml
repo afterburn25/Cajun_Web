@@ -31,6 +31,8 @@ jobs:
             for source in foundation/mail-compose/*.php tests/mail-compose/*.php; do php -l "$source"; done
             php tests/mail-compose/run.php qa/mail-drafts-default-results.json
             php -n tests/mail-compose/run.php qa/mail-drafts-no-ini-results.json
+            php tests/mail-compose/html.php qa/mail-html-default-results.json
+            php -n tests/mail-compose/html.php qa/mail-html-no-ini-results.json
           '
       - name: Preserve named content results
         if: always()

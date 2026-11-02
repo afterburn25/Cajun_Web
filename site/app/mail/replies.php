@@ -58,7 +58,7 @@ function mail_reply_drafts_match(DraftOrigin $origin,string $source,int $revisio
 function mail_reply_drafts_existing(string $id,string $source,int $revision,string $validity,string $uid,string $mode,string $sender,int $senderRevision):?string{
     return staff_locked(function()use($id,$source,$revision,$validity,$uid,$mode,$sender,$senderRevision):?string{
         $actor=mail_reply_drafts_actor();mail_drafts_id($id);mail_message_identity($validity,$uid);
-        if(!in_array($mode,['reply','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
+        if(!in_array($mode,['reply','reply-all','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
         mail_reply_drafts_source((int)$actor['id'],$source,$revision);mail_drafts_account($sender,$senderRevision);
         if(!one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$id]))return null;
         $loaded=mail_reply_drafts_load($id,$actor);mail_reply_drafts_match($loaded['origin'],$source,$revision,$validity,$uid,$mode,$sender,$senderRevision);return $id;

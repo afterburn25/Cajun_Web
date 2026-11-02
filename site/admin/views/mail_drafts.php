@@ -44,6 +44,7 @@ $accounts=$data['accounts'];
 <p class="notice warning">This draft was discarded before your edit could be saved. Copy any text you want to keep into a new draft. The discarded draft below still contains its last saved text.</p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc','subject'=>'Subject'] as $key=>$label)admin_input($key,$label,$data['unsaved'][$key],'text','readonly'); ?>
 <label>Unsaved message<textarea rows="12" readonly><?=esc($data['unsaved']['body'])?></textarea></label>
+<?php if($data['unsaved']['body_html']!==''): ?><label>Unsaved formatted alternative<textarea rows="10" readonly><?=esc($data['unsaved']['body_html'])?></textarea></label><?php endif; ?>
 </section>
 <?php endif; ?>
 <?php if(!$accounts): ?><p class="notice">An owner must assign you a sending account before you can prepare a draft.</p>
@@ -70,7 +71,9 @@ $staleSender=$data['sender']!==''&&!array_key_exists($data['sender'],$senders);
 <p class="hint">Use bare email addresses separated by commas. Up to 20 recipients across To, Cc and Bcc. Empty fields are allowed while drafting.</p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc'] as $key=>$label)admin_input($key,$label,$values[$key],'text','maxlength="5600" autocomplete="off" spellcheck="false"');
 admin_input('subject','Subject',$values['subject'],'text','maxlength="200"');admin_textarea('body','Message',$values['body'],12,40000); ?>
-<p class="hint">Plain text only. Subject: up to 200 UTF-8 bytes. Message: up to 20,000 UTF-8 bytes. Non-English characters may use more than one byte.</p>
+<p class="hint">Subject: up to 200 UTF-8 bytes. Message: up to 20,000 UTF-8 bytes. Non-English characters may use more than one byte.</p>
+<?php admin_textarea('body_html','Formatted message (optional)',$values['body_html'],10,61440); ?>
+<p class="hint">Optional HTML for a formatted alternative sent alongside the plain text. Limited to basic formatting, tables and links — scripts, forms, images, styles and remote content are removed when you save or preview. The plain message above is always included.</p>
 <button class="btn gold" name="action" value="mail_drafts_save">Save draft</button>
 <button class="btn outline" name="action" value="mail_drafts_preview">Preview draft</button>
 <?php if(staff_can('mail.templates.manage',$data['actor'])&&mail_templates_ready()): ?>
@@ -88,15 +91,37 @@ admin_input('subject','Subject',$values['subject'],'text','maxlength="200"');adm
 <?php if($row): ?><form method="post" action="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>"><?php admin_action('mail_drafts_discard');?><input type="hidden" name="draft_id" value="<?=esc($data['id'])?>"><input type="hidden" name="revision" value="<?=(int)$data['revision']?>">
 <p class="hint">Discard keeps the last saved text and its history in your discarded drafts. Unsaved changes are not saved.</p><button class="btn outline">Discard saved draft</button></form><?php endif; ?>
 </section>
+<?php if($row&&$row['status']==='draft'): ?>
+<section class="workspace-card" data-mail-draft-files><h2>Attachments</h2>
+<?php if(mail_files_ready()): ?>
+<p class="hint">Attached files are stored privately with the saved draft and copied into the reviewed message when you send it. Each file up to 256 KiB, at most 4 files and 512 KiB in total. Adding or removing a file saves a new draft version.</p>
+<?php foreach($data['files'] as $file): ?>
+<div><strong><?=esc($file['name'])?></strong> · <?=esc($file['mime'])?> · <?=(int)$file['bytes']?> bytes
+<form method="post" action="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>" style="display:inline"><?=csrf_field()?><input type="hidden" name="draft_id" value="<?=esc($data['id'])?>"><input type="hidden" name="revision" value="<?=(int)$data['revision']?>"><input type="hidden" name="file_id" value="<?=esc($file['id'])?>">
+<button class="btn outline" name="action" value="mail_drafts_file">Download</button><button class="btn outline" name="action" value="mail_drafts_detach">Remove</button></form></div>
+<?php endforeach; ?>
+<?php if(!$data['files']): ?><p class="hint">No files are attached to this saved draft.</p><?php endif; ?>
+<form method="post" enctype="multipart/form-data" action="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>"><?=csrf_field()?><input type="hidden" name="draft_id" value="<?=esc($data['id'])?>"><input type="hidden" name="revision" value="<?=(int)$data['revision']?>">
+<label>File to attach<input type="file" name="file" required></label>
+<button class="btn outline" name="action" value="mail_drafts_attach">Attach to saved draft</button></form>
+<?php else: ?>
+<p class="notice">Attachment storage has not been prepared. An owner can prepare it from the drafts page.</p>
+<?php endif; ?>
+</section>
+<?php endif; ?>
 <?php else: ?>
 <section class="workspace-card"><h2>Discarded draft</h2><p>This retained draft is read-only.</p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc','subject'=>'Subject'] as $key=>$label): ?><p><strong><?=esc($label)?>:</strong> <?=esc($values[$key])?></p><?php endforeach; ?>
-<div class="formatted"><?=nl2br(esc($values['body']))?></div></section>
+<div class="formatted"><?=nl2br(esc($values['body']))?></div>
+<?php if($values['body_html']!==''): ?><p class="hint">Retained sanitized formatted alternative:</p>
+<iframe class="message-formatted" data-draft-formatted title="Retained formatted message" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="<?=esc(mail_message_document($values['body_html']))?>"></iframe><?php endif; ?></section>
 <?php endif; ?>
 <?php if($data['preview']): $preview=$data['preview']; ?><section class="workspace-card" data-mail-draft-preview><h2>Draft preview</h2><p class="hint">This is a preview of your entered text. It has not been sent.</p>
 <?php [$senderId]=mail_drafts_form_reference($data['sender']); ?><p><strong>From:</strong> <?=esc($accounts[$senderId]['address'])?></p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc'] as $key=>$label): ?><p><strong><?=esc($label)?>:</strong> <?=esc(implode(', ',$preview->$key))?></p><?php endforeach; ?>
-<h3><?=esc($preview->subject)?></h3><div class="formatted"><?=nl2br(esc($preview->body))?></div></section><?php endif; ?>
+<h3><?=esc($preview->subject)?></h3><div class="formatted"><?=nl2br(esc($preview->body))?></div>
+<?php if($preview->html!==null): ?><p class="hint">Sanitized formatted alternative as it will be sent:</p>
+<iframe class="message-formatted" data-draft-formatted title="Sanitized formatted message preview" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="<?=esc(mail_message_document($preview->html))?>"></iframe><?php endif; ?></section><?php endif; ?>
 <?php if($row): ?><section class="workspace-card"><h2>Draft history</h2>
 <?php foreach(array_slice($data['history'],0,20) as $event): ?><p>Version <?=(int)$event['revision']?> · <?=esc($event['action'])?> · <?=esc($event['recorded_at'])?> UTC</p><?php endforeach; ?>
 <nav aria-label="Draft history pages">
