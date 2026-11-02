@@ -193,7 +193,7 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'payments_'))return 'payments.manage';
     if(str_starts_with($action,'backups_'))return 'staff.manage'; // Restore additionally requires the current owner password and exact phrase.
     if(in_array($action,['delivery_setup','delivery_publish'],true))return 'staff.manage';
-    if($action==='activity_setup')return 'staff.manage';
+    if(in_array($action,['activity_setup','project_progress_setup'],true))return 'staff.manage';
     if($action==='activity_mark')return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
     if($action==='proposal_setup')return 'staff.manage';

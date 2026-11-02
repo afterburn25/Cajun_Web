@@ -41,6 +41,24 @@ REPAIRS = frozenset((
     'tests/owner_browser_forms_test.py',
     'tests/provider_force_ssl_controls_cases.py',
     'tests/provider_directory_listing_controls_cases.py',
+    'site/admin/controllers/actions.php',
+    'site/admin/controllers/router.php',
+    'site/admin/controllers/studio.php',
+    'site/admin/views/studio/clients.php',
+    'site/admin/views/studio/job.php',
+    'site/admin/views/studio/upgrade.php',
+    'site/app/activity/events.php',
+    'site/app/staff/accounts.php',
+    'site/assets/css/growth.css',
+    'site/includes/layout/activity.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/workspace.php',
+    'tests/apache_acceptance.py',
+    'tests/browser_acceptance.py',
+    'tests/organized_update_cases.py',
+    'tests/organized_update_fixture.php',
+    'tools/acceptance-contract.json',
+    'tools/build.py',
     'tools/acceptance-reports.json',
     'tests/acceptance_artifacts_test.py',
     'tests/cloud_site_requests_wiring.py',
@@ -66,7 +84,7 @@ REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb7974680
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'tools/build.py': '3d1746cd8fa994c46ad55da4bb8adc0429869fad6a58cc4ebfe3dfd5d47ff9f5', 'tools/acceptance-contract.json': '89d4bfc7a81f2aff461df2794390d8dc1b56550e07f0340ebb0002e17cf67673', 'tests/organized_update_fixture.php': 'ba35be3138c28ee02ccab5b9d143be4b99c2fc9aeceae19c09537bff76193e30', 'tests/organized_update_cases.py': 'd0896d5c4e03fa74b0999418d2b7086d4e53ffe50a82d8409b7f28c7b7fff0eb', 'tests/browser_acceptance.py': '27aca4197787c059ecabf757a21d6498e8942d67142099bdb0eeb1ae837ed9aa', 'tests/apache_acceptance.py': '2d84aa6b8a70482962e72f450102219c060515cfaeb787f94d78fe173b11b5ab', 'site/portal/views/workspace.php': '2d89ae467c8bdbe0004b8c99c05c14cabe3c76af1b5d1324387dbd14a9170ea3', 'site/portal/controllers/router.php': '5c83f775bb33a3b96c2441b213346201d823e408c1a21df6e7423446135304a5', 'site/includes/layout/activity.php': '6830d9de021e8d38226e046a606a0a9bb6e99b659f1717d9c89112ca3e8cdcd4', 'site/assets/css/growth.css': 'e7c5bf9194b3c364fdceea591452119d3db4e6bff42e7c2a7daab7de585c8d49', 'site/app/staff/accounts.php': '2a9bcc585e05ed30cfa19475a6353a4e2813113fd87d7478cfc680088a828d9f', 'site/app/activity/events.php': 'd4d77b3bd658206e8f31175a5e3bf6a10ff09e684e3447ce33329387bfa57a90', 'site/admin/views/studio/upgrade.php': 'd8e693f577ea08e5c31a65cc13bd9dbeb77f10815b0926dd25a93d83bc0de4a3', 'site/admin/views/studio/job.php': 'e27bb769664c7281df27c0c3cbea7e1be4403cede444bf30080f903ce0a71792', 'site/admin/views/studio/clients.php': '529680438f99dfcf9a1973b8ca42648595a12ce49e5514024c0c5a10b2e0a8f0', 'site/admin/controllers/studio.php': '65669178b1c786d939fa20f8a47516c1a4d9646326569c1e5ca3f8194a880e6f', 'site/admin/controllers/router.php': '3442a73e3d0f5cb1030007f04ef05817a46d2eac039f64bfe95937c341768700', 'site/admin/controllers/actions.php': '20e1639d2abed80d4152e01b2afd32b82471d9122dac88a4e22c2abffc9ee6b6', 'CHANGELOG.md': 'ad054f5d421b93e5498dc58cd18d442d6fd984e8656fe73055d626e9bdcb0420', 'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
