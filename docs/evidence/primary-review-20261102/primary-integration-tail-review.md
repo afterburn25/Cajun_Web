@@ -1,0 +1,15 @@
+# Primary84 remaining shipping-source review supplement
+
+**No additional confirmed blocker was found in these stated scopes. Primary84 remains blocked by SW-AUTH-01, FIN-01 and FIN-02.** The separate HOST-UI-01 navigation issue remains P3. This record is not whole-PR317, runtime, combined-source or release approval.
+
+Source is frozen `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd`, tree `a206e95562ab751cd9461db3a8ed32c4305ecbec`, against main `1c44ca120e7768998fafa720b3e1c4c85990c330`. The checkout stayed clean. The JSON records exact Git blob/SHA256, byte count, review depth and reasoning for each of43 paths:13 full-source reads,26 complete changed-clause reads, two complementary partial spans and two generated-source bindings.
+
+This closes the earlier inventory-only finance reversal/policy/migration/view, license administration, provider helper/controller, shared layout, portal and stylesheet entries at their recorded depth. Finance-offer source280-end complements the finance review's1-284; gateway validator39-61 complements that lane's existing migration review. These scopes are additive and overlap: they are not independent new feature counts.
+
+The payment-reversal pass traced exact origin/receipt relationships, conflict/replay, cumulative refund limits, immutable accounting/audit and post-commit financing sync. Schema passes traced recognized owner setup history, additive metadata and preserved records. The finance/administrator view pass traced actual controller/helper destinations, current-session owner boundaries, CSRF, immutable terms, tokenized forms, uncertain/recovery presentation, and software/legacy/master distinctions. It did not claim that source inspection fixes the separately recorded finance recovery gaps.
+
+The remaining provider, shared layout and portal clauses preserve current roles/support/CSRF while switching repeated-password boundaries to the shared current-administrator session check. Checkout history retains client/system attribution; checkout-origin service orders hide manual fulfillment choices while backend receipt enforcement remains in force. Customer legacy-license/download presentation fails closed on financing review. CSS received source-only review of its changed selectors, responsive wrapping and focus indicators; no visual approval is asserted.
+
+The two generated installer files match their actual canonical derivation. `primary-generated-source-binding.json` records exact bootstrap concatenation and all3050 other tracked shipping-file hashes matching the generated inventory. A first metadata wrapper attempt failed before comparison because it omitted `list()` around the core-module mapping keys; that reviewer-script failure is retained in the binding receipt. The corrected read-only derivation passed without changing source. This was not a full build or installer execution.
+
+No application edits, GitHub writes, Actions polling, new SQL/service/browser tests, mail or provider calls occurred. Current software and finance correction review takes priority; all conclusions remain bound to original84 until corrected-source evidence is independently reviewed.

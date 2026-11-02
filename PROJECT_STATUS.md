@@ -1,3 +1,9 @@
+## 2026-11-02 — software correction reviewed for hosted acceptance
+
+The software customer-authority correction now has separate application/native and additive-proof reviews. Its466 native checks pass on exact tested bytes; the89-check source proof and628 maintained helpers pass with empty stderr. Root independently confirmed seven actual malformed-source/receipt refusals, and all original failures remain retained. The documentation record adds no application or fixture changes. [Review receipts and bounded decisions](docs/evidence/software-client-authority-20261102/reviews/README.md).
+
+Publish the reviewed isolated source through its normal stacked PR event, then require actual hosted acceptance and the separately reviewed finance/account combination before main integration or release. Keep PR317's protected full run frozen while it is active. Existing published assets and live deployment are unchanged.
+
 ## 2026-11-02 — recheck current customers before software mutations
 
 SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).

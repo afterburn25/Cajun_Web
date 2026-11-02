@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "tools/check_docs.py"
+  ],
+  "returncode": 0,
+  "seconds": 1.544,
+  "stdout_sha256": "baf3ba19fcb7ff6edbdb222cbe333c469674c7caa7e3fea10028e38d9bc7c634",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

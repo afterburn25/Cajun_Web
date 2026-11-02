@@ -102,7 +102,9 @@ def validate_receipt(data, verifier):
 
 
 def receipt(root):
-    return validate_receipt(json.loads((root / RECEIPT).read_text()), (root / VERIFIER).read_bytes())
+    from software_authority_provenance import predecessor_bytes
+    verifier = predecessor_bytes(root, VERIFIER, (root / VERIFIER).read_bytes())
+    return validate_receipt(json.loads((root / RECEIPT).read_text()), verifier)
 
 
 def restore(data, path, value):
@@ -147,6 +149,9 @@ def projected_validation(root, validator, receipt_paths):
             require(not relative.is_absolute() and '..' not in relative.parts
                     and relative.as_posix() == path, 'Unsafe historical receipt path')
             value = (root / path).read_bytes()
+            if path == 'tests/software_commerce_native.php':
+                from software_authority_provenance import predecessor_bytes
+                value = predecessor_bytes(root, path, value)
             if path in PATHS:
                 value = restore(data, path, value)
             target = historical / path
@@ -157,8 +162,10 @@ def projected_validation(root, validator, receipt_paths):
 
 def validate(root):
     """Check every current source, inverse, and focused negative receipt cases."""
+    from software_authority_provenance import validate as validate_software_authority, predecessor_bytes
+    software_checks = validate_software_authority(root)
     data = receipt(root)
-    verifier = (root / VERIFIER).read_bytes()
+    verifier = predecessor_bytes(root, VERIFIER, (root / VERIFIER).read_bytes())
     checks = []
 
     def passed(name):
@@ -202,7 +209,7 @@ def validate(root):
             changed['files'][path]['edits'][0] = [old, old]
         refuses('Provider browser receipt refuses changed ' + case,
                 lambda: validate_receipt(changed, verifier))
-    return checks
+    return checks + software_checks
 
 
 if __name__ == '__main__':

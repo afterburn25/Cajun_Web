@@ -1,0 +1,420 @@
+{
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "reviewed_tree": "36424379fe767dd6e07dca65088cbe7d1d567c1b",
+  "head_when_bound": "01cd1e25fc6458087a5259d1e4e760abfa5b0cb0",
+  "paths": [
+    {
+      "path": ".github/workflows/software-commerce-native-fast.yml",
+      "git_blob": "7cb11d7984f0a40315bde933dbb8ff2c9361fc57",
+      "sha256": "a63ac4633a5d0f661af92a4b28db94934e675b8dcd06513b19413d31e626e408",
+      "bytes": 3955
+    },
+    {
+      "path": "CHANGELOG.md",
+      "git_blob": "38f32a0fb4f4fc93ea4a696d36c844a00de90258",
+      "sha256": "73a16b68c68cd1ccdad3262437bee5c4d3fbaf9de512ecba00a14d7c88629209",
+      "bytes": 243717
+    },
+    {
+      "path": "PROJECT_STATUS.md",
+      "git_blob": "a2f6859ebe5b4d43fbac12641448de38471f982b",
+      "sha256": "4362177b5c53a9a13ed2b0db32c0e40c39f7c8afa411c308b0493dcf8c0aacd9",
+      "bytes": 62865
+    },
+    {
+      "path": "SESSION_HANDOFF.md",
+      "git_blob": "6a2bc605f40b16378d7861b50424b137332d0070",
+      "sha256": "599f32580a6ef7934c1a6beba7b511f4d8791730486aa926fad74c9dbf46b215",
+      "bytes": 79419
+    },
+    {
+      "path": "docs/DECISIONS.md",
+      "git_blob": "748caf866aa910bed208d78e29e403924fa97511",
+      "sha256": "9f1bdbc49988695f540c3a6c00135263eecaaed22184711ebaf0382f9a9349d5",
+      "bytes": 50120
+    },
+    {
+      "path": "docs/DEVIN_INTEGRATION_QUEUE.md",
+      "git_blob": "54a3e17ce209903ac7588141b0d8e3e1e44edd89",
+      "sha256": "9d59edb8411b26739d13bf7c5e2ba217dde2321800f64bf75114abe975174c7c",
+      "bytes": 22167
+    },
+    {
+      "path": "docs/DEVIN_NON20I_SITE_COMPLETION.md",
+      "git_blob": "664a98621fc8b2fe2de11a81232b2b241a62665b",
+      "sha256": "24a3ceed840f54eae52c6ec45167c72fdb0c2e4c28ce1adad97e85c7698fefc2",
+      "bytes": 8219
+    },
+    {
+      "path": "docs/RELEASES.md",
+      "git_blob": "91ffcc82052ff81a73fb463c7b2ffcb085a8bca7",
+      "sha256": "c2905549b620298a6bb7049a006a4f69106fb090ad95b58aa54917708996214b",
+      "bytes": 69818
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "git_blob": "854af5f2dfe80c5dc53cb2a394ed3133ea2d315d",
+      "sha256": "666917170246ff9d14973255ce0d940e41dc0bf2b10af244fd80808476d5adc6",
+      "bytes": 188075
+    },
+    {
+      "path": "docs/SESSION_LOG.md",
+      "git_blob": "12092bcc4bb3dc717c641b2e210e5d103fb25516",
+      "sha256": "9a630609044b1848bcb02081fc51060d61993e5643785a81a4a444df0e93659b",
+      "bytes": 815174
+    },
+    {
+      "path": "docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md",
+      "git_blob": "3e97414d9ca66d6f6eadfa1f61595d4a3dac9d7f",
+      "sha256": "ebba05fd6e6689d730f78a071580f60d3250373f0161415d7b7f74f1e0d5b91e",
+      "bytes": 7469
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/checksums.json",
+      "git_blob": "776e30d6cfef4443980b2ed3b85a1bb9292fd2dc",
+      "sha256": "49e9e0195dc3db9bb631f9419bb9c68d6c4e2cc7f76351014afae1025555a2cc",
+      "bytes": 4776
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/corrected01/execution.json",
+      "git_blob": "971e6631ca0aa77d1832c88a45bef76c8f4ccabb",
+      "sha256": "701658852de4c45877582cd97eca8127981a3d021202b9a5b39872b1ebdb939c",
+      "bytes": 859
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/corrected01/native.json",
+      "git_blob": "4bdfaef4146b2bdf662dfd8a889a0536158e3553",
+      "sha256": "c82bfe0ca921c4728a83c57fd03ccd7f0a59622bbedbcb96f558cc32ca4e484b",
+      "bytes": 40491
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/corrected01/native.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/corrected01/native.stdout.log",
+      "git_blob": "e5016872c9fc40463c8b4cba761ba23080b200a2",
+      "sha256": "27adc47621b112eaba211e61edb9b60d144dd0f460d2d1e2da5f2e5f0415b141",
+      "bytes": 32299
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/original01/execution.json",
+      "git_blob": "d9354c1e83335480d103dd334349380b33e60450",
+      "sha256": "8cfa558a14596fd468f843a1f0527328c6af3882725b028da64bd66104b90427",
+      "bytes": 859
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/original01/native.stderr.json",
+      "git_blob": "ec20386d9962486d526229c50665ab351a410dc9",
+      "sha256": "1271ca186642c66f3ad334c82788338257832e87524e3e93c9d9a816d89ca139",
+      "bytes": 452
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/original01/native.stdout.log",
+      "git_blob": "817c491c285bc63b31caf6a75d194172be576504",
+      "sha256": "a8f59de0fbec9eafd738ea0a4f6c1dff5c6b01776ccde982e294448b7d9222f4",
+      "bytes": 19767
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/original02/execution.json",
+      "git_blob": "af6ca7d656714babfcbef0fc1c60abbfdd36d0b5",
+      "sha256": "b8b3ee68cbcfeb31e6ac7bfbd0fd1d54303950925cdeaca918116daf346b4c32",
+      "bytes": 8466
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/original02/native.json",
+      "git_blob": "7a0d8eb29f48281e1b7ff1275faa0942f1695036",
+      "sha256": "43d6fe6c654445274c0e30011e19db50a61283218a22302bda8154c1276ad86f",
+      "bytes": 38626
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/original02/native.stderr.log",
+      "git_blob": "54597bea91da9bf8e724037674b3e03358fd6e69",
+      "sha256": "a1ca61e675c5cf56406b6f2a0a0a4aab042be108867cf81eb186e1fd277075e2",
+      "bytes": 87
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/original02/native.stdout.log",
+      "git_blob": "14d201f803f93dc837f9afef4182eed166bff595",
+      "sha256": "cc11efbf522f58b96796d38ed250b1abf0b773d34e436966747b5cde4975d122",
+      "bytes": 20389
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/software-authority-review-preservation.json",
+      "git_blob": "a13dae8cbc3efe5c19ec09eaeb50592da2297adc",
+      "sha256": "4621954509d3728d9b0e83ff1594c8fb1dca78ab2fcf227ab55ab7ad23bb7ef7",
+      "bytes": 765
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/software-client-authority-corrected-probe-receipt.json",
+      "git_blob": "0a3cb6e3f63bdaf4099342b9757bc9f17100b0fd",
+      "sha256": "e77647133bb9847de46002195b6decd519a773cce177c2632b8519ae350e462e",
+      "bytes": 1705
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/software-client-authority-corrected-probe.json",
+      "git_blob": "14924e9e84cdcde298b706293aaa9ee2c4cce5ba",
+      "sha256": "bb9c035e5516820c110ef6b9351a310a18772c789615974fef33e2a128b44ecb",
+      "bytes": 19268
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/software-client-authority-probe.json",
+      "git_blob": "62eb50f22a8b37a497fdf032a9881d8e3d143f63",
+      "sha256": "b88a0043ce694efb773f528fe176a918ff1f13e9e1ba1b05d175e40059a91b28",
+      "bytes": 29184
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source-binding.json",
+      "git_blob": "64406ce2158df952ec48175a5fbea998951e486a",
+      "sha256": "52566191952cae20f95ac04e8cc2cc952e46d7279ac25a3598f943693efc6471",
+      "bytes": 2217
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/execution.json",
+      "git_blob": "c8ae1320776e456db7e954d65ba2ce73b3876579",
+      "sha256": "af27f8e554c53513e3fa957a67d4de6b39d56662a3f8063be9d287aff4f1f290",
+      "bytes": 1860
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/inventory.generated.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/inventory.generated.php.lint.stdout.log",
+      "git_blob": "d8068ba99046c83c2c3e569ec7cbd626e829586b",
+      "sha256": "b7352f8a1d351a78574df199904b20e01db773f1ca8527778ee215c20c88d68e",
+      "bytes": 66
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_charge_guard.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_charge_guard.php.lint.stdout.log",
+      "git_blob": "79d264f2c1a35d0eeb3141f59f3a3a7e953a3d38",
+      "sha256": "c23a7a5d1f2de075c2f78e4470efe86ac0cfc2efd0a32ad3448bc492be65a2d1",
+      "bytes": 72
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_client.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_client.php.lint.stdout.log",
+      "git_blob": "2af0f9b39d2fb0a9b6504612bc090545e4c91506",
+      "sha256": "adc9bfb9d8a4cc4581abd50a8f5753b1da656e9e22633592ee96ece9c24878e2",
+      "bytes": 66
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_authority.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_authority.php.lint.stdout.log",
+      "git_blob": "011dd05deca24f5371b3a07222afdb557fdea14f",
+      "sha256": "d69881db69f2cc478c322a3bd2a6697341f5ba08f529e0dccd060199af523b45",
+      "bytes": 67
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_authority_boundaries.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_authority_boundaries.php.lint.stdout.log",
+      "git_blob": "207566e38a1d5287a59902481ac6dd5d22c8d852",
+      "sha256": "9879e3a602e128f09184f7d4b39d150c7dc596c03bde02126aa55ac29d23f98c",
+      "bytes": 78
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_authority_worker.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_authority_worker.php.lint.stdout.log",
+      "git_blob": "eb6416c27b92e4b983553298127c28da8c9f3cd1",
+      "sha256": "5c93eb77e27fbd1062997d1926e08a855f5a7eb31d97ae671152c96f7397e3aa",
+      "bytes": 74
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_contract.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_contract.stdout.log",
+      "git_blob": "961217a42da57423ad131c1752c02a40926096a3",
+      "sha256": "0c15d126bb571d09bb2c6f22c0082a5d36f1851f2ed58e08a1aaa165eb82315a",
+      "bytes": 2459
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_native.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_commerce_native.php.lint.stdout.log",
+      "git_blob": "754fe33e0faee7ec293b86b4fd1c51be8fb93f95",
+      "sha256": "b83918f57a175744de02b24686282a4c9c9b282f4f4e8adeaa4b52a03c021232",
+      "bytes": 64
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_orders.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_orders.php.lint.stdout.log",
+      "git_blob": "da37366c3abec6d33d9d85a0f59d7fa8585d2972",
+      "sha256": "03dc229c0775a31022a7e878b8eaea1144a5bcdb6d244c947e1a3796b19648ba",
+      "bytes": 66
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_production_gate_contract.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_production_gate_contract.stdout.log",
+      "git_blob": "94b24c151f4e1f2113792b775e9748acdc5b1593",
+      "sha256": "0019ec667bc5ecb7d3166b093db3785d23a85a1639cfb97b02ca1dc38da9aadf",
+      "bytes": 504
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_subscription_cancel.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_subscription_cancel.php.lint.stdout.log",
+      "git_blob": "d50a0d6a21474fcab0f0ebc43a1d3f8a6f488336",
+      "sha256": "759d33f075a2f0dbc244c1629540b120bd323d052c682396d4d18a87309336c4",
+      "bytes": 79
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_subscription_enroll.php.lint.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/evidence/software-client-authority-20261102/source/software_subscription_enroll.php.lint.stdout.log",
+      "git_blob": "b7eb2699a0e4015c0df15fbffe068d70c3e49d1f",
+      "sha256": "72e695c22f650749a24249acf445a9e6d0d7df1fbca39f73bf4674940550b029",
+      "bytes": 79
+    },
+    {
+      "path": "site/app/billing/software_charge_guard.php",
+      "git_blob": "afd74c45b2ba929920bae5941db5d9d900a2b7cb",
+      "sha256": "41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a",
+      "bytes": 4509
+    },
+    {
+      "path": "site/app/billing/software_client.php",
+      "git_blob": "977330f8789ad53b79ab1c555f0466953d47e4c5",
+      "sha256": "bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7",
+      "bytes": 1531
+    },
+    {
+      "path": "site/app/billing/software_orders.php",
+      "git_blob": "34deb99935a0158efdde2d9f86577771adb1d385",
+      "sha256": "d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397",
+      "bytes": 5510
+    },
+    {
+      "path": "site/app/billing/software_subscription_cancel.php",
+      "git_blob": "73488c84cb1c67f84ffd9d6ef85dffec02139c40",
+      "sha256": "74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f",
+      "bytes": 5921
+    },
+    {
+      "path": "site/app/billing/software_subscription_enroll.php",
+      "git_blob": "4795c655271b957375d235145df7f3bd0beeaa70",
+      "sha256": "b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025",
+      "bytes": 15306
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "git_blob": "f5cfe491e91bb0d0578a22eec78a90da53b72388",
+      "sha256": "1e8dc8d47f401036c815003e2a6b2fb9fee64a25352eee8d0ce6a16c7dc2201c",
+      "bytes": 455380
+    },
+    {
+      "path": "tests/software_commerce_authority.php",
+      "git_blob": "efa08bafee150bd858ae72430ec3bf1c6491f976",
+      "sha256": "6eb139ba00638fea501c9a0a86670bf58f9888ef0e1ee0f66519a00eb6e7f6e7",
+      "bytes": 15629
+    },
+    {
+      "path": "tests/software_commerce_authority_boundaries.php",
+      "git_blob": "5d26b4976b25e9e84cfc04c500da65746d79d6a9",
+      "sha256": "53c23873ac815634ba3d93d70065fec0f66fe5c805d36944ba914baebd3af057",
+      "bytes": 3507
+    },
+    {
+      "path": "tests/software_commerce_authority_worker.php",
+      "git_blob": "d40d0e0cc1257186ce532fb55f1cd13fc446ee9c",
+      "sha256": "f68f4a9a62cbcf6df16d2aa5e3cd7ebaad1e9faf366e58bfbde636a6c22c26da",
+      "bytes": 2374
+    },
+    {
+      "path": "tests/software_commerce_native.php",
+      "git_blob": "f4cae804438fc97a210b89434b5866d9793d1a92",
+      "sha256": "e416abbf2c10a12260ad42a9752c0148a2cf15e4b868d3d1b310d62f9d16ef99",
+      "bytes": 87981
+    }
+  ],
+  "all_staged_worktree_bytes_match": true,
+  "untracked_files": 0,
+  "shipping_files": [
+    "site/app/billing/software_charge_guard.php",
+    "site/app/billing/software_client.php",
+    "site/app/billing/software_orders.php",
+    "site/app/billing/software_subscription_cancel.php",
+    "site/app/billing/software_subscription_enroll.php",
+    "site/install/inventory.generated.php"
+  ],
+  "evidence_files": 42,
+  "evidence_checksums_verified": 41,
+  "original01_lossless_stderr_bytes": 197,
+  "canonical_inventory_entries": 3051,
+  "native_test_source_files": {
+    "site/app/billing/software_orders.php": "d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397",
+    "site/app/billing/software_charge_guard.php": "41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a",
+    "site/app/billing/software_subscription_enroll.php": "b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025",
+    "site/app/billing/software_subscription_cancel.php": "74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f",
+    "site/app/billing/software_client.php": "bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7",
+    "tests/software_commerce_native.php": "e416abbf2c10a12260ad42a9752c0148a2cf15e4b868d3d1b310d62f9d16ef99",
+    "tests/software_commerce_authority.php": "6eb139ba00638fea501c9a0a86670bf58f9888ef0e1ee0f66519a00eb6e7f6e7",
+    "tests/software_commerce_authority_boundaries.php": "53c23873ac815634ba3d93d70065fec0f66fe5c805d36944ba914baebd3af057",
+    "tests/software_commerce_authority_worker.php": "f68f4a9a62cbcf6df16d2aa5e3cd7ebaad1e9faf366e58bfbde636a6c22c26da"
+  },
+  "source_checks": {
+    "php_lints": 10,
+    "software_commerce_contract": 39,
+    "software_production_gate_contract": 6
+  },
+  "workflow_admission": "Only3 filter additions; protected/ordinary native workflow and all existing permissions/concurrency/jobs unchanged.",
+  "prior_reviewer_wrapper_attempt": {
+    "error": "AssertionError comparing inventory bytes",
+    "cause": "Reviewer sorted Path objects rather than the generator's relative POSIX path strings; corrected the read-only derivation to use the actual generator ordering. No source or runtime change; all evidence/source checks preceding this comparison had passed."
+  }
+}

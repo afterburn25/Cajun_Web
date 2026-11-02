@@ -1,0 +1,363 @@
+{
+  "passed": true,
+  "count": 89,
+  "checks": [
+    {
+      "name": "SW authority exact84 parent tree and ancestry verified",
+      "passed": true
+    },
+    {
+      "name": "SW authority shipping scope is exactly five application modules and canonical inventory",
+      "passed": true
+    },
+    {
+      "name": "SW authority fixture, adapter and native-fast filter scope is exact",
+      "passed": true
+    },
+    {
+      "name": "SW authority preserves 877 historical test, tool, workflow and JSON receipt files",
+      "passed": true
+    },
+    {
+      "name": "SW authority inventory binds every current shipping file without regenerating it",
+      "passed": true
+    },
+    {
+      "name": "SW authority added proof and receipt are absent at exact84",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor .github/workflows/software-commerce-native-fast.yml",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes .github/workflows/software-commerce-native-fast.yml",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 .github/workflows/software-commerce-native-fast.yml",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 .github/workflows/software-commerce-native-fast.yml",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse .github/workflows/software-commerce-native-fast.yml",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse .github/workflows/software-commerce-native-fast.yml",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor site/app/billing/software_charge_guard.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes site/app/billing/software_charge_guard.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 site/app/billing/software_charge_guard.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 site/app/billing/software_charge_guard.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse site/app/billing/software_charge_guard.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse site/app/billing/software_charge_guard.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor site/app/billing/software_orders.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes site/app/billing/software_orders.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 site/app/billing/software_orders.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 site/app/billing/software_orders.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse site/app/billing/software_orders.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse site/app/billing/software_orders.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor site/app/billing/software_subscription_cancel.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes site/app/billing/software_subscription_cancel.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 site/app/billing/software_subscription_cancel.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 site/app/billing/software_subscription_cancel.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse site/app/billing/software_subscription_cancel.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse site/app/billing/software_subscription_cancel.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor site/app/billing/software_subscription_enroll.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes site/app/billing/software_subscription_enroll.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 site/app/billing/software_subscription_enroll.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 site/app/billing/software_subscription_enroll.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse site/app/billing/software_subscription_enroll.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse site/app/billing/software_subscription_enroll.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse tests/provider_browser_fixture_provenance.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor tests/software_commerce_native.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes tests/software_commerce_native.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 tests/software_commerce_native.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 tests/software_commerce_native.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse tests/software_commerce_native.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse tests/software_commerce_native.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact reversible predecessor tests/tickets_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered current bytes tests/tickets_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered before_sha256 tests/tickets_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered after_sha256 tests/tickets_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses omitted inverse tests/tickets_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses altered inverse tests/tickets_integration_contract.py",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact added source site/app/billing/software_client.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses changed addition site/app/billing/software_client.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses missing addition site/app/billing/software_client.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses addition present at parent site/app/billing/software_client.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact added source tests/software_commerce_authority.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses changed addition tests/software_commerce_authority.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses missing addition tests/software_commerce_authority.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses addition present at parent tests/software_commerce_authority.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact added source tests/software_commerce_authority_boundaries.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses changed addition tests/software_commerce_authority_boundaries.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses missing addition tests/software_commerce_authority_boundaries.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses addition present at parent tests/software_commerce_authority_boundaries.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority exact added source tests/software_commerce_authority_worker.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses changed addition tests/software_commerce_authority_worker.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses missing addition tests/software_commerce_authority_worker.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses addition present at parent tests/software_commerce_authority_worker.php",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses receipt drift parent",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses receipt drift parent_tree",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses receipt drift shipping",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses receipt drift files",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses receipt drift verifier",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses receipt drift additions",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses changed verifier bytes",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses unrelated parent ancestry",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses wrong parent tree",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses broader shipping scope",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses missing shipping scope",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses untracked shipping bytes",
+      "passed": true
+    },
+    {
+      "name": "SW authority refuses noncanonical inventory",
+      "passed": true
+    }
+  ],
+  "scope": "Exact current-source identities and reversible historical comparisons only; no native, HTTP, browser, merchant or release certification."
+}

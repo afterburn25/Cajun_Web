@@ -1,3 +1,15 @@
+## 2026-11-02 — software correction reviewed for hosted acceptance
+
+The software customer-authority correction now has separate application/native and additive-proof reviews. Its466 native checks pass on exact tested bytes; the89-check source proof and628 maintained helpers pass with empty stderr. Root independently confirmed seven actual malformed-source/receipt refusals, and all original failures remain retained. The documentation record adds no application or fixture changes. [Review receipts and bounded decisions](docs/evidence/software-client-authority-20261102/reviews/README.md).
+
+Publish the reviewed isolated source through its normal stacked PR event, then require actual hosted acceptance and the separately reviewed finance/account combination before main integration or release. Keep PR317's protected full run frozen while it is active. Existing published assets and live deployment are unchanged.
+
+## 2026-11-02 — software correction source admission
+
+The software authority application/native checkpoint `01cd1e25` (tree `36424379`) retains its independently reviewed 466-check native evidence. Two historical source guards initially rejected the corrected application and additive fixture; preserve their original failures. A strictly scoped exact84 inverse layer now passes 89 source checks (70 rejection cases), the actual combined-runtime guard, and all 628 maintained helper checks, with empty stderr. Application modules, inventory, PHP fixtures, historical receipts/builders and native/full job bodies are unchanged by this follow-up. [Source proof, retained failures and current gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md#source-admission-follow-up).
+
+Independently review this additive proof before publication. If the stacked correction branch is absent, publish the reviewed checkpoint; otherwise verify its tree and continue its existing run. Preserve PR317's frozen acceptance head. FIN-01/FIN-02 and Account/Notifications remain separate source lanes; their eventual combination requires reviewed shared-hook/inventory composition and exact combined acceptance before main integration or release. [Durable primary review coverage and findings](docs/evidence/primary-review-20261102/README.md) explain these gates; coverage does not mean blanket approval.
+
 ## 2026-11-02 — recheck current customers before software mutations
 
 SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).

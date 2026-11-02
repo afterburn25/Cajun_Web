@@ -1,0 +1,380 @@
+{
+  "reviewer": "/root/github_status_review",
+  "recorded_at_utc": "2026-11-02T01:18:31.587540+00:00",
+  "baseline": "1c44ca120e7768998fafa720b3e1c4c85990c330",
+  "target": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "target_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "review_kind": "Bounded source supplement closing the explicitly inventoried primary shipping-path tails; independent of current software/finance correction implementation.",
+  "decision": "No additional confirmed blocker in these recorded scopes. Primary84 remains blocked by SW-AUTH-01, FIN-01 and FIN-02; HOST-UI-01 P3 remains separately recorded. This is not whole-PR, runtime, combined-source or release approval.",
+  "coverage_counts": {
+    "full_source": 13,
+    "complete_changed_clauses": 26,
+    "complementary_partial_source": 2,
+    "generated_source_binding": 2
+  },
+  "file_coverage": [
+    {
+      "path": "site/app/billing/finance_payment_review.php",
+      "git_blob": "270a62e5d8dfeb1ba20788ed4a03a58604914d55",
+      "sha256": "490728d01e5d0d04363b2f0ce48b314f55fa942a427e10da30dfe6bfb63b7295",
+      "bytes": 10804,
+      "coverage": "full_source",
+      "scope": "Exact original receipt lookup, replay/conflict, cumulative reversal caps, atomic immutable ledger reversal/audit and post-commit financing sync; FIN01/02 remain separate."
+    },
+    {
+      "path": "site/app/licenses/financing_policy.php",
+      "git_blob": "7d28b93a67ecdda0ebdf11d3a2ca8dae4ce502ac",
+      "sha256": "696a21991d9392efae18ed2bbb6a02f225b28b3034e75c8e63cb4905046ec1d4",
+      "bytes": 8014,
+      "coverage": "full_source",
+      "scope": "Pure date/term math, issued-period grace/payoff evaluation, original/replacement period mapping, settlement/recovery status allowlists, commercial-rights implications."
+    },
+    {
+      "path": "site/database/migrations/license_finance_offers_migrate.php",
+      "git_blob": "3a1ccfe0c729d4f7be1872f9938a06d6b00a3f10",
+      "sha256": "ae77078078e1f5cc9e443e9f76920e086376d4d06c5b221f401a52816d6052ab",
+      "bytes": 4763,
+      "coverage": "full_source",
+      "scope": "Current owner setup, recognized pending history, exact columns/schema and no adoption of unmarked or populated interrupted offer storage."
+    },
+    {
+      "path": "site/database/schema/license_finance_offers_schema.php",
+      "git_blob": "8cc400aaff47cce612d2858fa0527b4fd91343f7",
+      "sha256": "24d20ddda12ba3203ca50b94adeeb2ff8a379955a84f3cdb9ee016b6a85992a7",
+      "bytes": 3169,
+      "coverage": "full_source",
+      "scope": "Immutable client/project/schedule/terms/signature fields, unique schedule and restrictive foreign-key relationships."
+    },
+    {
+      "path": "site/database/migrations/license_financing_migrate.php",
+      "git_blob": "943a954e2fd8b4c06f57515f65dd8a1e5f8cfa05",
+      "sha256": "470a01c0ab9bc0c32f97097250b181efdcaa07738ed315b74882d60261f23fb0",
+      "bytes": 6542,
+      "coverage": "full_source",
+      "scope": "Current owner setup, recognized versions/pending markers, additive v1/v2 rights-grant history and exact schema/index validation."
+    },
+    {
+      "path": "site/database/schema/license_financing_schema.php",
+      "git_blob": "3cc498a288868eb7010b059f63d073d6596b527b",
+      "sha256": "5a0cfab75cd96686f6dc81ea519182cfce39c0f03ae2b4a5c45ffe482b679e2a",
+      "bytes": 2993,
+      "coverage": "full_source",
+      "scope": "Unique license/schedule and rights-invoice relationships, retained terms/payoff/rights history and restrictive references."
+    },
+    {
+      "path": "site/admin/views/studio/licenses.php",
+      "git_blob": "9bd0b6bb05933e1306ccfd2004e2f988e7df6455",
+      "sha256": "ecb1ed274ab43b72a442f288d107e4def377b7f3cdf87db8010d112bf17e055a",
+      "bytes": 56542,
+      "coverage": "full_source",
+      "scope": "Complete view source: actual setup prerequisites, software/legacy distinction, owner form destinations, policy/consent/reconciliation/uncertain-state presentation, license/source/rights/download separation, escaping and CSRF helpers. No new visual run."
+    },
+    {
+      "path": "site/admin/views/studio/license_overview.php",
+      "git_blob": "371823f747ff8b821a1241fe3b65e51459792ad9",
+      "sha256": "dbadf559bce85e8e3fae3cb5d33580fbf036cf635b164d4090c7689d82782fe9",
+      "bytes": 3262,
+      "coverage": "full_source",
+      "scope": "Read-only readiness and canonical current navigation; prepares records without enabling live card charging."
+    },
+    {
+      "path": "site/portal/views/financing.php",
+      "git_blob": "928bfab3810a0534401fbb53a6e3fb9170f6cd24",
+      "sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8",
+      "bytes": 16970,
+      "coverage": "full_source",
+      "scope": "Owned authenticated agreement/terms, support exclusion, explicit sign/decline and tokenized enrollment/recovery forms, escaped private display and restricted public gateway keys. FIN01/02 backend blockers remain."
+    },
+    {
+      "path": "site/app/licenses/software_license_policy.php",
+      "git_blob": "b54e901172284b5c26800df88c004198b1b0e04b",
+      "sha256": "a369fe95acb531bf6756e055d7d8320e72a5467ccfd0bd047997ae2ada469497",
+      "bytes": 5851,
+      "coverage": "full_source",
+      "scope": "Pure issue/authorization policy: domain normalization, strict UTC expiry, internal master restrictions, standard versus finite license types."
+    },
+    {
+      "path": "site/app/billing/payment_link_view.php",
+      "git_blob": "d929c6a3b4ccc4fac5d59f4db500e2201f1f29b2",
+      "sha256": "109e7b076bcb333ce812c10a1e24e0524aea1b9df7d6d3279074e1e5a78dca51",
+      "bytes": 3549,
+      "coverage": "full_source",
+      "scope": "Private bearer request projection: terminal states expose no invoice fields, active client/job/invoice/fingerprint/currency/amount restrictions, escaped prepared-card details."
+    },
+    {
+      "path": "site/pages/pay/index.php",
+      "git_blob": "0025c844874fd8600dc26d26c34d71a6218b3384",
+      "sha256": "151d6165f8398a90fad2cf717ee637c7f6f9d2a2aaffac8283f785af6369bc41",
+      "bytes": 433,
+      "coverage": "full_source",
+      "scope": "Bounded bearer token entrypoint into existing payments_link_page; no session creation or payment mutation in this page wrapper."
+    },
+    {
+      "path": "site/assets/css/tickets.css",
+      "git_blob": "3f10249fa8557d850ae3183b2f6eec054958648a",
+      "sha256": "bd67fdf732fed0bf08f2b77721713bb3b75e2827bba97910264a2f8401f9e0c1",
+      "bytes": 891,
+      "coverage": "full_source",
+      "scope": "Full stylesheet: bounded wrapping, focus/target outline, narrow mobile layout; source review only."
+    },
+    {
+      "path": "site/database/migrations/payments_migrate.php",
+      "git_blob": "7f8a72515fbdaef1779589fd14bcb6c50660775a",
+      "sha256": "b4be1d49fb7d88d1c6cea8035e1ecf357c8f926a20e8e205f678a896f722c48a",
+      "bytes": 2336,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete changed clauses: supported schema versions, additive encrypted-link/hash columns/index, preserve prior records and audited version transition."
+    },
+    {
+      "path": "site/database/schema/payments_schema.php",
+      "git_blob": "13d4de6c09b94d004daed8641919ffecc10de38f",
+      "sha256": "4d06ce6118eb0a4ddf61a38e7925d4ece597ef5f12852ec4b586172f4d36806d",
+      "bytes": 1530,
+      "coverage": "complete_changed_clauses",
+      "scope": "Complete changed clause: nullable link hash/ciphertext and unique bearer-token hash."
+    },
+    {
+      "path": "site/admin/controllers/studio.php",
+      "git_blob": "cff1bd161d8783839d80f4572413863979b4cd74",
+      "sha256": "17aaf38b95c2ccdff5c3f8535c2e44eb1c1ef8e8c7c99ced1517e7b5df9dd8ba",
+      "bytes": 37471,
+      "coverage": "complete_changed_clauses",
+      "scope": "All main-to84 changed clauses and called helper contexts: CSRF/administrator dispatch, bounded software/finance inputs, owner/backend mutation guards, truthful response states, legacy/software/master separation. Existing unrelated actions are not wholly re-reviewed."
+    },
+    {
+      "path": "site/admin/controllers/domain_contracts.php",
+      "git_blob": "65ae3a85441f1398f0b54dbbdcade725d92896aa",
+      "sha256": "3c239c90b6c78eed12cc1054e5bd0d68d7d013e6c266910fd83999c8a53f1cd1",
+      "bytes": 1193,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed redirect retains domains workspace and existing renewal-date target."
+    },
+    {
+      "path": "site/admin/controllers/domain_expiry.php",
+      "git_blob": "323c8a29c02694275dc7c533f492b6f50fa74795",
+      "sha256": "58095ab5e262aca557a42110231e3bffe84a7b36941fa9e3e0e4c61e358488e7",
+      "bytes": 1184,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed redirect retains domains workspace and existing expiry target."
+    },
+    {
+      "path": "site/admin/controllers/domain_renewal_agreements.php",
+      "git_blob": "80999fc386b0353c20f3cabad7a6c75a1aebf0cc",
+      "sha256": "30f8b619cd6dd910d5f9185c706e3720197eef01056bef553b2cde9667820ab6",
+      "bytes": 2878,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed setup redirect retains domains workspace; operation input/authority flow unchanged."
+    },
+    {
+      "path": "site/admin/controllers/domain_renewals.php",
+      "git_blob": "626f5f77b07340912b6bfc032ef734eae6586487",
+      "sha256": "4e10a8c0407f0d4e63f26ffad5a0ff9ecc3602c3637ec09aa7c589eab637dbe4",
+      "bytes": 1048,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed redirect retains domains workspace and renewal-request target."
+    },
+    {
+      "path": "site/admin/controllers/maintenance.php",
+      "git_blob": "41824e6bc36abbd51915305e1d0f3de91dfa21b1",
+      "sha256": "4ee060d30b80a02ea343e1d00717f7c07a16772e4b2f177e3ec18b017d62d7ce",
+      "bytes": 2810,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed media cleanup adds current hosting-catalog image references under existing staff mutex, preserving owner/filename/symlink constraints."
+    },
+    {
+      "path": "site/admin/controllers/service_observations.php",
+      "git_blob": "9be05c18769e6c7edc5381c4a38d27e213a1eb68",
+      "sha256": "879a1a30855d24fed2777e10c23f8f45c95b7946d33643efedd543fddea30b96",
+      "bytes": 1135,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed redirect retains website workspace and service-observation target."
+    },
+    {
+      "path": "site/app/hosting/records.php",
+      "git_blob": "9c6231269903e03e115c1e1d3299a3b8ce2000e5",
+      "sha256": "c226bb6a94df7f8cbe7525111e3179fcc99f4b8a7703592537886e5eead4ca50",
+      "bytes": 10672,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed owner password boundary now uses current admin_session_matches; read owner function to retain active-owner/permissions/support/readiness constraints."
+    },
+    {
+      "path": "site/app/providers/settings.php",
+      "git_blob": "fa5b61da68cb18f3cc52dd31f48859bc8da0999c",
+      "sha256": "732c929b8196668afe95c47ea56014ee7c0c5a3f6c1a90b2e918435055d7873b",
+      "bytes": 6665,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed owner boundary now uses current admin_session_matches; read provider manager to retain active-owner, staff permission, support and readiness gates."
+    },
+    {
+      "path": "site/app/providers/domain_registration_drafts.php",
+      "git_blob": "05e685ea9b7c68765beea1466149908dee84833a",
+      "sha256": "570ba71f0cb778897431f0c7325c00383d2449299589ec98337ceeff3667d820",
+      "bytes": 13540,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed owner boundary always rechecks admin session; read owner/support/client/target context, retaining owner role and direct-client exclusion."
+    },
+    {
+      "path": "site/admin/views/domain_registration_drafts.php",
+      "git_blob": "2fee99f632494af88af7f2be18a10cf846591825",
+      "sha256": "aec9a94c00c2780e988c389f8ad1fc8b0059e4f61b422cb6dc4ec3c1dd8a5aed",
+      "bytes": 2960,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed prepare form removes repeated owner-password field; CSRF, explicit action and current-owner backend remain."
+    },
+    {
+      "path": "site/admin/views/domain_renewals.php",
+      "git_blob": "cee122cfe88ada4b5f108f9ed33c6174fbc8aa0e",
+      "sha256": "b9ec093e2e1fd04b985e8a1fb93878f0a93a92edaa926a55415f7d70e82318b3",
+      "bytes": 2011,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed pagination retains domains workspace and bounded page cursor."
+    },
+    {
+      "path": "site/admin/views/operations.php",
+      "git_blob": "e96e8a795a1d7be3460a27f394e328e75cef8237",
+      "sha256": "9e6aef58629ea6fbe459e3e6db4bae068d78d5bfdd688f9912355203219b35b5",
+      "bytes": 6310,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed connection link now selects connection workspace; provider approval behavior unchanged."
+    },
+    {
+      "path": "site/includes/layout/deliveries.php",
+      "git_blob": "ceb1b70bea3d06db5f08eda4cb78dd2915e48b5b",
+      "sha256": "2ac031b1d11712a77729278cbc7f5c84e98b0f44871e7dbb9b5e39a012d38727",
+      "bytes": 12849,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed customer download presentation enforces financing access/review fail-closed while preserving staff/support semantics and original release/hash."
+    },
+    {
+      "path": "site/includes/layout/plans.php",
+      "git_blob": "6286ab338ff342babf24c007cc39f9e60df00c32",
+      "sha256": "57baac1e25234c4161d1991ac6992a61455ea65e8ecbaedf6f3a0aa3eded096c",
+      "bytes": 8883,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed owner confirmation removes repeated password and displays validated checkout-origin client/system history distinctly."
+    },
+    {
+      "path": "site/includes/layout/recurring_billing.php",
+      "git_blob": "1d8744d145bb89ddb843a05f814e458195defa99",
+      "sha256": "2fb55974369a05644dfd707bb0f071b5c7a19a283bc547cbaec5c560faf165f7",
+      "bytes": 19922,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed checkout history/command labels and current-session owner setup form; no weakened retained backend transition."
+    },
+    {
+      "path": "site/includes/layout/service_orders.php",
+      "git_blob": "768258ece8d5843876d98a73213efc290884adc2",
+      "sha256": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
+      "bytes": 9169,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed validated checkout-origin presentation requires verified receipt, removes manual-bypass commands and uses canonical invoice route."
+    },
+    {
+      "path": "site/pages/services/products.php",
+      "git_blob": "864349b0706f86b8431f5804940bebcb55380239",
+      "sha256": "9c4c229a136e1b2567a97562794421a02b25087ce28df3f538387c28fd59fbe4",
+      "bytes": 2214,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed published software navigation/copy points to authenticated My Software and preserves public catalog projection."
+    },
+    {
+      "path": "site/portal/views/auth.php",
+      "git_blob": "575054b749b536955cd1b0884df54eca6b0d39d3",
+      "sha256": "6dcc6c059097d6fe9c1c245e168f1fdf2e86a1365b599ed7913b811b5e3443eb",
+      "bytes": 2059,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed safe hosting destination copy and master-admin link; existing credential/CSRF fields retained."
+    },
+    {
+      "path": "site/portal/views/mailboxes.php",
+      "git_blob": "34b524a91e926751b6e0c444c5dcca4d529e48f5",
+      "sha256": "dc0ec928df4cfd6ee5800672911b0adc5881dcfd871c7ae2073eee34064b4a0a",
+      "bytes": 2960,
+      "coverage": "complete_changed_clauses",
+      "scope": "Changed owner form removes repeated password only; explicit mailbox credentials, confirmation and CSRF remain."
+    },
+    {
+      "path": "site/portal/views/workspace.php",
+      "git_blob": "cefa8498c94b5f4a448beae5a3ff0193429ac05e",
+      "sha256": "32669a80a78767e539f3e7d06a0e05474722cf237fc2df37ce97c70a4ba50b20",
+      "bytes": 14850,
+      "coverage": "complete_changed_clauses",
+      "scope": "All changed clauses: gated navigation, proposal section, software-versus-legacy register, financing state/privacy, download and paid-off deactivation presentation."
+    },
+    {
+      "path": "site/assets/css/admin.css",
+      "git_blob": "a1388954b5b21bdf5e69e3d072b4df9dd790b2a7",
+      "sha256": "07b148b45acf645ce2117b50cf9eb7f403272038f35fff714d537aa8c73dd0ee",
+      "bytes": 35734,
+      "coverage": "complete_changed_clauses",
+      "scope": "All added CSS for owner provider workspace/catalog filters: responsive wrapping/layout, focus indicators and existing navy/gold palette; no browser certification."
+    },
+    {
+      "path": "site/assets/css/growth.css",
+      "git_blob": "b8de9e3264dc6d404251823f83682b0ede4967ba",
+      "sha256": "7bbc3ed26641d67cc272a13bafb17c3c6698f37407292cfd4dd3853fc96f5a6a",
+      "bytes": 13618,
+      "coverage": "complete_changed_clauses",
+      "scope": "All added CSS for provider variants and public billing selector: bounded inputs/layout/focus and mobile wrapping; no visual certification."
+    },
+    {
+      "path": "site/assets/css/site.css",
+      "git_blob": "fdd5d0ce76f4c30fe60aff4226e3ec469978c511",
+      "sha256": "ecf7a54945d89e62b86fd43741aeafbee7480a752d4133e17053ddffe251abcf",
+      "bytes": 34275,
+      "coverage": "complete_changed_clauses",
+      "scope": "Added product-artwork class only; contained dimensions and object-fit."
+    },
+    {
+      "path": "site/app/licenses/financing_offers.php",
+      "git_blob": "ac12043b957a4122bff1883a806a3d03dfbf36ef",
+      "sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+      "bytes": 27378,
+      "coverage": "complementary_partial_source",
+      "scope": "Read280-end: retained payment-request assignment, local account-revision-bound email draft, matching-client listing and validated offered-schedule candidates. Separate finance receipt covers1-284; combined source scope closes its prior tail gap."
+    },
+    {
+      "path": "site/database/migrations/license_finance_gateway_migrate.php",
+      "git_blob": "a8f006c5ecd04a6002f640cd862658f0d132143f",
+      "sha256": "c3661c16c4c6e25fa567c236820764409a610c08be4ac4b671e87646d85520d2",
+      "bytes": 9761,
+      "coverage": "complementary_partial_source",
+      "scope": "Read1-90 including exact index/schema validator39-61 and upgrade helpers; separate finance receipt covers setup/readiness/remaining additive version logic. This closes its specifically recorded validator gap."
+    },
+    {
+      "path": "site/install/bootstrap.generated.php",
+      "git_blob": "ffb26bb8ce43a546b10ddddddf37dba8a5545891",
+      "sha256": "f7504c541b3bc5330cc4dee906bbbb2a4bc4839633aef284cc96a58e96b741ec",
+      "bytes": 27298,
+      "coverage": "generated_source_binding",
+      "scope": "Full changed clauses read and exact canonical module-concatenation equality independently derived read-only; see primary-generated-source-binding.json."
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "git_blob": "bf07eaf547f7019eaf459b29016c84f7a37e5c8d",
+      "sha256": "d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a",
+      "bytes": 455273,
+      "coverage": "generated_source_binding",
+      "scope": "Exact generated bytes independently reconstructed from all3050 other tracked site-file SHA256 entries; see primary-generated-source-binding.json. No hand-authored runtime logic."
+    }
+  ],
+  "generated_binding_receipt": {
+    "path": "/workspace/scratch/8cc2b4f257ab/primary-generated-source-binding.json",
+    "sha256": "5ff586faf69cf722ea1161bc5ffa3901470579f44af036d52dee98ad430abf55"
+  },
+  "activity": {
+    "source_edits": false,
+    "remote_writes": false,
+    "actions_polling": false,
+    "services_or_native_test": false,
+    "provider_or_mail": false,
+    "read_only_generated_derivation": true
+  },
+  "limits": [
+    "Changed-clause reads deliberately exclude unrelated unchanged legacy logic.",
+    "Current-session replacement does not remove caller role, permission, CSRF, support or transaction guards; historical password parameter compatibility is not a credential bypass.",
+    "No SQL/HTTP/browser/visual/native-matrix/upgrade execution occurred in this supplemental pass.",
+    "Generated-source equality proves canonical bytes, not installer/runtime behavior.",
+    "Exact84 remains frozen; actual corrections and their final evidence need independent review before any combined-candidate decision."
+  ]
+}

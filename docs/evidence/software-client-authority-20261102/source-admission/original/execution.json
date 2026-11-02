@@ -1,0 +1,28 @@
+[
+  {
+    "name": "combined-runtime",
+    "command": [
+      "python3",
+      "tests/combined_runtime_repair.py"
+    ],
+    "exit_code": 1,
+    "stderr_bytes": 1120,
+    "seconds": 0.064,
+    "stdout_tail": "",
+    "stderr_tail": "tion_contract.py\", line 10, in validate\n    revision=validate_tickets(root)\n             ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/tickets_integration_contract.py\", line 12, in validate\n    if changed!=set(paths):raise AssertionError('Unreviewed ticket shipping difference: '+repr(changed.symmetric_difference(paths)))\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Unreviewed ticket shipping difference: {'site/app/billing/software_charge_guard.php', 'site/app/billing/software_subscription_enroll.php', 'site/app/billing/software_subscription_cancel.php', 'site/app/billing/software_orders.php', 'site/app/billing/software_client.php'}\n"
+  },
+  {
+    "name": "artifact-helpers",
+    "command": [
+      "python3",
+      "tests/acceptance_artifacts_test.py",
+      "--report",
+      "/workspace/scratch/8cc2b4f257ab/software-authority-local-evidence/source-admission/helpers.json"
+    ],
+    "exit_code": 1,
+    "stderr_bytes": 2235,
+    "seconds": 1.584,
+    "stdout_tail": "{\"passed\": false, \"checks\": 436, \"error\": \"AssertionError: Repaired source changed: tests/software_commerce_native.php\"}\n",
+    "stderr_tail": "File \"/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/combined_repair_provenance.py\", line 29, in validate\n    seen.add(path);predecessor(root,path,(root/path).read_bytes());checks.append({'name':'Exact repaired file and predecessor retained '+path,'passed':True})\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/combined_repair_provenance.py\", line 13, in predecessor\n    if hashlib.sha256(value).hexdigest()!=row['after_sha256']:raise AssertionError('Repaired source changed: '+path)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Repaired source changed: tests/software_commerce_native.php\n"
+  }
+]

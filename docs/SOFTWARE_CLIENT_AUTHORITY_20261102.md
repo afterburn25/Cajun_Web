@@ -4,7 +4,23 @@
 
 Requirement **SW-AUTH-01** corrects the four customer software entrypoints on exact published PR317 source `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd`. The enclosing commit identifies this isolated correction on `review/software-client-authority-20261102`. Current observed main remains `1c44ca120e7768998fafa720b3e1c4c85990c330`; latest observed release remains v1.25.0.
 
-Implemented and locally tested; independent semantic/source/evidence review completed, with final frozen-tree review and hosted acceptance still pending at this checkpoint. This is not main integration, a release, installed HTTP acceptance or live deployment. FIN-01/FIN-02 remain separate mature blockers under correction. Preserve PR317's active full acceptance on its frozen source.
+Implemented and locally tested. Separate frozen application/native and additive-proof reviews are complete; their [exact receipts](evidence/software-client-authority-20261102/reviews/README.md) preserve both the initially blocked checkpoint and the later cleared source-admission result. Hosted acceptance remains pending. This is not main integration, a release, installed HTTP acceptance or live deployment. FIN-01/FIN-02 remain separate mature blockers under correction. Preserve PR317's active full acceptance on its frozen source.
+
+## Source-admission follow-up
+
+The application/native checkpoint is local `01cd1e25fc6458087a5259d1e4e760abfa5b0cb0`, tree `36424379fe767dd6e07dca65088cbe7d1d567c1b`. Its independent frozen review preserved all 466 native checks but found two source-admission failures: the historical ticket guard rejected the five software application paths, and the historical fixture guard rejected the additive software native fixture. Those original failed commands and their complete nonsecret outputs remain [retained](evidence/software-client-authority-20261102/source-admission/original/).
+
+The additive [correction receipt](SOFTWARE_CLIENT_AUTHORITY_CORRECTION.json) and `tests/software_authority_provenance.py` now bind exact84 ancestry, precisely six shipping paths, the unchanged tested application/native bytes, unique reversible edits, exact added helpers, and the current canonical inventory. They also verify 877 unchanged historical test, tool, workflow and JSON receipt files. No historical receipt, original assertion or protected workflow was rewritten.
+
+Only the ticket guard's historical revision/byte comparisons and the provider fixture guard's historical verifier/native comparisons use predecessors. Native and browser acceptance continue to execute current files. The provider guard keeps its original checks in order and also runs the new proof through the maintained helper suite. This standalone proof admits no finance or Account/Notifications combination; shared hooks and inventory will need a separately reviewed composition.
+
+| Current-source command | Result |
+| --- | --- |
+| `python3 tests/software_authority_provenance.py` | 89 checks passed, including 70 rejection cases; exit 0, empty stderr. |
+| `python3 tests/combined_runtime_repair.py` | Passed; exit 0, empty stderr. |
+| `python3 tests/acceptance_artifacts_test.py --report …` | 628 checks passed; exit 0, empty stderr. |
+
+[Exact source binding](evidence/software-client-authority-20261102/source-admission/source-binding.json), [corrected command records](evidence/software-client-authority-20261102/source-admission/corrected/execution.json), and [checksums](evidence/software-client-authority-20261102/source-admission/checksums.json) preserve this distinction. The native 466-check evidence is reused without rerunning it because all five application modules, inventory and four PHP fixtures are byte-identical to the reviewed checkpoint. The additive proof now awaits independent review; hosted, combined, main and release gates remain pending. The [primary exact84 review](evidence/primary-review-20261102/README.md) records why the separate corrections are required, without granting blanket approval.
 
 ## Problem and correction
 

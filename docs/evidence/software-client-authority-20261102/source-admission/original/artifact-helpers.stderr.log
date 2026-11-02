@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/acceptance_artifacts_test.py", line 586, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/acceptance_artifacts_test.py", line 583, in main
+    if error:raise error
+             ^^^^^^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/acceptance_artifacts_test.py", line 577, in main
+    with tempfile.TemporaryDirectory(prefix='cwp-artifact-tests-') as temp:run(Path(temp))
+                                                                           ^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/acceptance_artifacts_test.py", line 398, in run
+    for outcome in projected_validation(ROOT,validate_repairs,('docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json','docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json')):check(outcome['name'],outcome['passed'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/provider_browser_fixture_provenance.py", line 155, in projected_validation
+    return validator(historical)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/combined_repair_provenance.py", line 29, in validate
+    seen.add(path);predecessor(root,path,(root/path).read_bytes());checks.append({'name':'Exact repaired file and predecessor retained '+path,'passed':True})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_authority_fix/tests/combined_repair_provenance.py", line 13, in predecessor
+    if hashlib.sha256(value).hexdigest()!=row['after_sha256']:raise AssertionError('Repaired source changed: '+path)
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Repaired source changed: tests/software_commerce_native.php
