@@ -44,3 +44,6 @@
 .hosting-billing-selector p{font-size:14px;line-height:1.6;margin:12px 0 0;max-width:70ch}
 .hosting-billing-selector a:focus-visible,.hosting-billing-pages a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
 .hosting-billing-pages{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+
+/* Dated client-visible project history. */
+.project-progress{margin:2rem 0;min-width:0}.progress-event{margin:1rem 0;scroll-margin-top:6rem}.progress-event:target{outline:2px solid var(--gold,#d9b66b);outline-offset:3px}.progress-event h3,.progress-editor p{overflow-wrap:anywhere}.progress-fields{margin:1rem 0;display:grid;grid-template-columns:minmax(6rem,.3fr) minmax(0,1fr);gap:.5rem 1rem}.progress-fields dt{font-weight:700}.progress-fields dd{margin:0;white-space:normal;overflow-wrap:anywhere;min-width:0}.progress-pages{display:flex;flex-wrap:wrap;align-items:center;gap:1rem}.progress-editor input,.progress-editor textarea,.progress-editor select{max-width:100%;box-sizing:border-box}.progress-editor textarea{white-space:pre-wrap}.progress-pages .btn{white-space:normal;text-align:center;max-width:100%}@media(max-width:600px){.progress-fields{grid-template-columns:minmax(0,1fr);gap:.25rem}.progress-fields dd{margin-bottom:.75rem}.progress-pages{align-items:stretch;flex-direction:column}.progress-event{padding:1rem}}
