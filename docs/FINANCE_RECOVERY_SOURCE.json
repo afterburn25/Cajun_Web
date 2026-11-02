@@ -16,7 +16,7 @@
     "site/database/schema/license_finance_recovery_schema.php",
     "site/install/inventory.generated.php"
   ],
-  "verifier_sha256": "5e88dbb7062314e70ad289558c05e36512df483b5baba1dbe7aac5272e17b9e7",
+  "verifier_sha256": "a5d325dc5fd23e7ef81f69637aef2718a001cf40cf36968815e07497a5c1962f",
   "files": {
     "site/admin/views/studio/licenses.php": {
       "before_sha256": "ecb1ed274ab43b72a442f288d107e4def377b7f3cdf87db8010d112bf17e055a",
@@ -411,6 +411,24 @@
         [
           "    receipt=json.loads((root/'docs/TICKETS_COMBINED_SOURCE.json').read_text())\n    if receipt['base']!=BASE or receipt['ticket_source']!=SOURCE:raise AssertionError('Unknown ticket source identities')\n    paths=receipt['shipping']\n    changed=set(subprocess.check_output(['git','diff','--name-only',BASE,'HEAD','--',*AREAS],cwd=root,text=True).splitlines())\n    if changed!=set(paths):raise AssertionError('Unreviewed ticket shipping difference: '+repr(changed.symmetric_difference(paths)))\n    for path,row in paths.items():\n        p=Path(path)\n        if p.is_absolute() or '..' in p.parts:raise AssertionError('Unsafe ticket receipt path')\n        target=root/p\n        if target.is_symlink() or hashlib.sha256(target.read_bytes()).hexdigest()!=row['after']:raise AssertionError('Changed ticket output: '+path)\n        old=subprocess.run(['git','show',BASE+':'+path],cwd=root,capture_output=True)\n        if row['before'] is None:\n            if old.returncode==0:raise AssertionError('Unexpected ticket addition: '+path)\n",
           "    receipt=json.loads((root/'docs/TICKETS_COMBINED_SOURCE.json').read_text())\n    if receipt['base']!=BASE or receipt['ticket_source']!=SOURCE:raise AssertionError('Unknown ticket source identities')\n    paths=receipt['shipping']\n    revision=finance_recovery.source_revision(root)\n    changed=set(subprocess.check_output(['git','diff','--name-only',BASE,revision,'--',*AREAS],cwd=root,text=True).splitlines())\n    if changed!=set(paths):raise AssertionError('Unreviewed ticket shipping difference: '+repr(changed.symmetric_difference(paths)))\n    for path,row in paths.items():\n        p=Path(path)\n        if p.is_absolute() or '..' in p.parts:raise AssertionError('Unsafe ticket receipt path')\n        target=root/p\n        value=finance_recovery.predecessor_bytes(root,path,target.read_bytes())\n        if target.is_symlink() or hashlib.sha256(value).hexdigest()!=row['after']:raise AssertionError('Changed ticket output: '+path)\n        old=subprocess.run(['git','show',BASE+':'+path],cwd=root,capture_output=True)\n        if row['before'] is None:\n            if old.returncode==0:raise AssertionError('Unexpected ticket addition: '+path)\n"
+        ]
+      ]
+    },
+    "tests/license_financing_native_cases.php": {
+      "before_sha256": "66234b40d1f1e8773b13c5186a75d076d493775adcd0e44eacec6526213c655a",
+      "after_sha256": "219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88",
+      "edits": [
+        [
+          "\n$reserved=license_finance_subscription_replacement_reserve((string)$offer['id']);\n",
+          "\n// This storage-only fixture admits a replacement through the current recovery\n// boundaries. The account is synthetic sandbox data; no adapter is invoked.\n$replacementMode=(string)setting('software_gateway_mode','disabled');\n$replacementGateway=one('SELECT * FROM '.table('payment_gateways').' WHERE environment=?',['sandbox']);\nrb_ok('Recurring replacement fixture begins with a disabled and unconfigured sandbox gateway',\n    $replacementMode==='disabled'&&$replacementGateway===null);\n$replacementSnapshot=static fn():array=>[\n    'subscription'=>license_finance_subscription_row((string)$offer['id']),\n    'attempts'=>all('SELECT * FROM '.table('license_finance_replacement_attempts').' WHERE offer_id=? ORDER BY id',[$offer['id']]),\n    'history'=>all('SELECT * FROM '.table('license_finance_subscription_history').' WHERE offer_id=? ORDER BY id',[$offer['id']]),\n    'audit'=>rb_count('audit'),\n];\n$disabledBefore=$replacementSnapshot();$disabledReplacement=false;\ntry{license_finance_subscription_replacement_reserve((string)$offer['id']);}\ncatch(RuntimeException $error){\n    if($error instanceof PDOException)throw $error;\n    $disabledReplacement=$error->getMessage()==='Authorize.Net checkout is disabled.';\n}\nrb_ok('Disabled gateway refuses replacement admission without subscription recovery or audit mutation',\n    $disabledReplacement&&$replacementSnapshot()===$disabledBefore&&!db()->inTransaction());\npayments_save('sandbox',0,[\n    'api_login_id'=>'synthetic-recurring','transaction_key'=>'SyntheticKey1234',\n    'signature_key'=>str_repeat('a',128),'public_client_key'=>'synthetic-recurring-client',\n],$password);\nsave_setting('software_gateway_mode','sandbox');\ntry{\n$replacementSettings=license_finance_anet_settings();\n$reserved=license_finance_subscription_replacement_reserve((string)$offer['id']);\n"
+        ],
+        [
+          "    ($reserved['gateway_subscription_id']??'')==='810001'&&($reserved['status']??'')==='replacing');\n$replacementState=license_finance_subscription_replacement_finalize(\n",
+          "    ($reserved['gateway_subscription_id']??'')==='810001'&&($reserved['status']??'')==='replacing');\n$unadmittedBefore=$replacementSnapshot();\nrb_deny('Replacement finalization refuses a reservation before its dispatch boundary',\n    fn()=>license_finance_subscription_replacement_finalize(\n        (string)$offer['id'],'810001','810002',$replacement,\n        ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment','canceled'));\nrb_ok('Refused undispatched replacement finalization retains all financial and audit state',\n    $replacementSnapshot()===$unadmittedBefore&&!db()->inTransaction());\nrb_ok('Synthetic retired predecessor admits one durable replacement dispatch',\n    license_finance_recovery_dispatch((string)$offer['id'],'810001','canceled',$replacementSettings));\n$unobservedBefore=$replacementSnapshot();\nrb_deny('Replacement finalization refuses a dispatched reservation without an observed successor',\n    fn()=>license_finance_subscription_replacement_finalize(\n        (string)$offer['id'],'810001','810002',$replacement,\n        ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment','canceled'));\nrb_ok('Refused unobserved replacement finalization retains all financial and audit state',\n    $replacementSnapshot()===$unobservedBefore&&!db()->inTransaction());\nlicense_finance_recovery_observe((string)$offer['id'],'810001','810002');\n$replacementState=license_finance_subscription_replacement_finalize(\n"
+        ],
+        [
+          "    license_finance_subscription_lifecycle_review('net.authorize.customer.subscription.suspended','810001')==='historical_subscription');\n\n",
+          "    license_finance_subscription_lifecycle_review('net.authorize.customer.subscription.suspended','810001')==='historical_subscription');\n}finally{\n    save_setting('software_gateway_mode',$replacementMode);\n    query('DELETE FROM '.table('payment_gateways').' WHERE environment=?',['sandbox']);\n}\nrb_ok('Recurring replacement fixture restores disabled gateway state before later payoff cases',\n    setting('software_gateway_mode','disabled')===$replacementMode\n    &&one('SELECT * FROM '.table('payment_gateways').' WHERE environment=?',['sandbox'])===$replacementGateway);\n\n"
         ]
       ]
     }
@@ -1329,6 +1347,25 @@
     "tests/finance_replacement_payoff_initial_admission.php": "087a779de88e3b6a763bf8b4a2f6fcad14ccc1905f667958cf64f040012e9a07",
     "tests/finance_replacement_payoff_recovery_boundaries.php": "50f1233955582fcf8e21d1dcb2b94890f67e23605c031f3e0a2294bc3541220d",
     "tests/finance_replacement_payoff_recovery_cases.php": "5f8b4b1299b0088fdc98b7a2e2b52d79533115cbb8bd85d730676b4de9e0e740",
-    "tests/finance_replacement_payoff_recovery_safety.php": "bd284178430c6c49b40d0402da67aef49f6270b531a3eecaedf12ad60d1aa6c2"
+    "tests/finance_replacement_payoff_recovery_safety.php": "bd284178430c6c49b40d0402da67aef49f6270b531a3eecaedf12ad60d1aa6c2",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/execution.json": "a3895e4ba7b63ad9a7267563f55a60d3efbd772f101c7064b0be8c07401dfa61",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/fixture.php": "66234b40d1f1e8773b13c5186a75d076d493775adcd0e44eacec6526213c655a",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/native.json": "eea7477f5db06a137cd1376c52dc5ae56b1d1087b9aebeb039fd678b8cd072b5",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/stderr.log": "0e18d5350bc080441a090fe6553a9590d847e29d10969bb7eced1e4373dfd58f",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/stdout.log": "f19883f7b9dc39f509b62061d424c302423dba1fabcae519ad2020320fc8ac4b",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/execution.json": "d6c5ac0923ee0de37c19827ba7875c69e2715f7e1d6593c51563fc4ea951b5ed",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/fixture.php": "219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/native.json": "59dc78ef0c0d7d1c5a674e0e7f6f68ad7bb73127ff7bb1a282e9b158a494f111",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/stderr.log": "45320b11e7fec931b665160c138655404f7e8553cfced1deaa0bd86aec091c73",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/stdout.log": "1fba2cadb989018a7eab40cf872b3c5dd67f97a33cfc8214e4c2e9e750c1bfcb",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/execution.json": "c2273cd071f5991c4487443b52d67c4e7c3c37576a1ebf70fcec7df58b1625ab",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/fixture.php": "219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/native.json": "f732f04fd37e60b8752878daec7864f59b7a104bc940ddbe56f5a33077124e1e",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/stdout.log": "06e0c22a340376389b57875a5541c9aeac2d44eac011580a171db16baff06886",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/local-runner.py": "1bfb3667d8e3772ddd2f905929b91e0bb0ef5b3ba7348a7b3b921538a67103e9",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/parent-source.json": "850f7b113c778aa55b4af94accd973eac9feb0057e56b29271a19f7e8ef2bdcc",
+    "docs/finance-recovery-evidence/recurring-fixture-20261102/parent-verifier.py": "5e88dbb7062314e70ad289558c05e36512df483b5baba1dbe7aac5272e17b9e7",
+    "docs/FINANCE_RECURRING_FIXTURE_20261102.md": "fd7281dadb2c8612f6a892fff69ecd61a0b03d44c23e32e0fed03bd940111620"
   }
 }

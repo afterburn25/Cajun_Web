@@ -39,6 +39,7 @@ BEFORE = {'site/admin/views/studio/licenses.php': 'ecb1ed274ab43b72a442f288d107e
  'tests/finance_replacement_pending_native.php': 'a50d417723e0bcb2bbc008bd5ad7a20f00295865d63dc4745c108cb478e5297e',
  'tests/finance_replacement_receipts_native.php': '2aac58b0831628f4c420afbd52a16f262d3b6445d8f6cfc6c7cc1bb75bbe18da',
  'tests/license_finance_reconcile_native.php': '51448f66376845283988503cc9dde8f5f8aad79d3da82131ca1f1ec10b286df7',
+ 'tests/license_financing_native_cases.php': '66234b40d1f1e8773b13c5186a75d076d493775adcd0e44eacec6526213c655a',
  'tests/tickets_integration_contract.py': '318992e307c192108e6de7ceb975ed2df719d6e9358d4bdda574c6a4305552df'}
 AFTER = {'site/admin/views/studio/licenses.php': '897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc',
  'site/app/billing/finance_authorize_net.php': '484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba',
@@ -61,9 +62,11 @@ AFTER = {'site/admin/views/studio/licenses.php': '897c428f411be19b73dfb89004bcd5
  'tests/finance_replacement_pending_native.php': '4c6596b46ed19d2ad0612979ab3fea859f97cb6eb5e6c053203156bba9e59240',
  'tests/finance_replacement_receipts_native.php': 'fcd673714810f5978cce053c47a423dd365522226dc3cfe7e0e06ab13921016a',
  'tests/license_finance_reconcile_native.php': 'afd2870bf217c7994e749c1361c11a6fa6aaff2b5d07b64eac70ec1eb2ed9b11',
+ 'tests/license_financing_native_cases.php': '219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88',
  'tests/tickets_integration_contract.py': 'f92edde9d74b80ec806427802a991718372043ca2305c8c0115b0d21889361e2'}
 ADDED = {'docs/FINANCE_RECOVERY_CORRECTION.md': '5773f6fb9fcbfdb14a5f713ade6f27d5b9d4b5a1c7f4734812f42206e05a8f06',
  'docs/FINANCE_RECOVERY_VERIFICATION.json': '27ccb4efa4858a11eef8b3ec37a79299c9b273a8c18e8a2fc7d059f4540c0de7',
+ 'docs/FINANCE_RECURRING_FIXTURE_20261102.md': 'fd7281dadb2c8612f6a892fff69ecd61a0b03d44c23e32e0fed03bd940111620',
  'docs/finance-recovery-evidence/adjacent-compatibility02/01-finance_payoff_retirement_native/execution.json': '92f08799522a00fb3ab8740d2bc9aa66fbf20ccb4c9fbf180c82b55ada71ef61',
  'docs/finance-recovery-evidence/adjacent-compatibility02/01-finance_payoff_retirement_native/native.json': '3dcfd11de3980376556724dc7ba322483fcd7a87d6d61fba90f057782f4549b1',
  'docs/finance-recovery-evidence/adjacent-compatibility02/01-finance_payoff_retirement_native/stderr.log': '08709cb125f67c804508b963809ec2d770d042e3c6b7c2f097d2f349741fe09c',
@@ -904,6 +907,24 @@ ADDED = {'docs/FINANCE_RECOVERY_CORRECTION.md': '5773f6fb9fcbfdb14a5f713ade6f27d
  'docs/finance-recovery-evidence/pure01/license_finance_replacement_contract.php.stdout': 'f0318ab5c476cd6982d7e1a00184ce731187549075d09ee89cf2bede6e87cc59',
  'docs/finance-recovery-evidence/pure01/license_finance_source_contract.php.stderr': 'a0e605d1197800f1c20408cd691f9dd38523117ef9e4526011e729d832a080f8',
  'docs/finance-recovery-evidence/pure01/license_finance_source_contract.php.stdout': '1d381bc446b9e88248041f2da90ffbbc140fc0c011af027393af59e79a50fdfe',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/execution.json': 'a3895e4ba7b63ad9a7267563f55a60d3efbd772f101c7064b0be8c07401dfa61',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/fixture.php': '66234b40d1f1e8773b13c5186a75d076d493775adcd0e44eacec6526213c655a',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/native.json': 'eea7477f5db06a137cd1376c52dc5ae56b1d1087b9aebeb039fd678b8cd072b5',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/stderr.log': '0e18d5350bc080441a090fe6553a9590d847e29d10969bb7eced1e4373dfd58f',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/baseline/stdout.log': 'f19883f7b9dc39f509b62061d424c302423dba1fabcae519ad2020320fc8ac4b',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/execution.json': 'd6c5ac0923ee0de37c19827ba7875c69e2715f7e1d6593c51563fc4ea951b5ed',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/fixture.php': '219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/native.json': '59dc78ef0c0d7d1c5a674e0e7f6f68ad7bb73127ff7bb1a282e9b158a494f111',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/stderr.log': '45320b11e7fec931b665160c138655404f7e8553cfced1deaa0bd86aec091c73',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected01/stdout.log': '1fba2cadb989018a7eab40cf872b3c5dd67f97a33cfc8214e4c2e9e750c1bfcb',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/execution.json': 'c2273cd071f5991c4487443b52d67c4e7c3c37576a1ebf70fcec7df58b1625ab',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/fixture.php': '219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/native.json': 'f732f04fd37e60b8752878daec7864f59b7a104bc940ddbe56f5a33077124e1e',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/stderr.log': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/corrected02/stdout.log': '06e0c22a340376389b57875a5541c9aeac2d44eac011580a171db16baff06886',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/local-runner.py': '1bfb3667d8e3772ddd2f905929b91e0bb0ef5b3ba7348a7b3b921538a67103e9',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/parent-source.json': '850f7b113c778aa55b4af94accd973eac9feb0057e56b29271a19f7e8ef2bdcc',
+ 'docs/finance-recovery-evidence/recurring-fixture-20261102/parent-verifier.py': '5e88dbb7062314e70ad289558c05e36512df483b5baba1dbe7aac5272e17b9e7',
  'docs/finance-recovery-evidence/review-checkpoints/finance-authority-baseline-review.json': '68ac90634dcd59d98a5e60a9150ffde8540e7e6177bc8883d02655415cbd04a1',
  'docs/finance-recovery-evidence/review-checkpoints/finance-authority-baseline-review.md': '930aec4a05a5eef593ed0f996e51348c7e31b42c29bec15f62f4a84e740a3796',
  'docs/finance-recovery-evidence/review-checkpoints/finance-initial-admission-adaptation-independent-review.json': '9ecc0454b50c108ea003918068d0004ca3d3abc4628b2b9bee516ab174ff1dd9',
@@ -1269,6 +1290,50 @@ def original_assertion_bodies(root):
                     'Independent initial-admission witness application is not current: ' + path)
 
 
+def recurring_fixture_evidence(root, data):
+    """Admit only the three insertion-only current gateway/recovery fixture repairs."""
+    base = 'docs/finance-recovery-evidence/recurring-fixture-20261102/'
+    path = 'tests/license_financing_native_cases.php'
+    prior = json.loads(ordinary_bytes(root, base + 'parent-source.json'))
+    require(digest(ordinary_bytes(root, base + 'parent-verifier.py')) == prior['verifier_sha256'],
+            'Original finance verifier and receipt binding changed')
+    require(set(data['files']) == set(prior['files']) | {path}
+            and all(data['files'][name] == row for name, row in prior['files'].items())
+            and all(data['additions'][name] == value for name, value in prior['additions'].items()),
+            'Recurring fixture repair changed an earlier finance source or evidence identity')
+    old = ordinary_bytes(root, base + 'baseline/fixture.php')
+    current = ordinary_bytes(root, path)
+    require(reconstruct(data, path, current) == old,
+            'Recurring fixture inverse did not preserve every original source byte')
+    import difflib
+    edits = [row for row in difflib.SequenceMatcher(
+        a=old.splitlines(keepends=True), b=current.splitlines(keepends=True),
+        autojunk=False).get_opcodes() if row[0] != 'equal']
+    require(len(edits) == 3 and all(row[0] == 'insert' for row in edits)
+            and sum(row[4] - row[3] for row in edits) == 51,
+            'Recurring fixture must retain all original lines and assertion order')
+    original = json.loads(ordinary_bytes(root, base + 'baseline/native.json'))
+    final = json.loads(ordinary_bytes(root, base + 'corrected02/native.json'))
+    require(not original['passed'] and len(original['checks']) == 238
+            and all(row['passed'] for row in original['checks'][:-1])
+            and original['checks'][-1] == {'name': 'Unexpected failure: Authorize.Net checkout is disabled.', 'passed': False},
+            'Original recurring gateway failure evidence changed')
+    require(final['passed'] and len(final['checks']) == 648
+            and all(row['passed'] for row in final['checks'])
+            and final['checks'][:237] == original['checks'][:237],
+            'Current recurring execution is incomplete or omits original passing entries')
+    execution = json.loads(ordinary_bytes(root, base + 'corrected02/execution.json'))
+    require(execution['exit_code'] == 0 and execution['shipping_diff'] == []
+            and execution['base_head'] == '3ccd7c29e629525a9c586d1710bcae06bb2ac5bc',
+            'Current recurring execution changed its component or shipping scope')
+    for name, expected in execution['source_sha256'].items():
+        require(digest(ordinary_bytes(root, name)) == expected,
+                'Current recurring evidence is not actual current source: ' + name)
+    for name, expected in execution['files'].items():
+        require(digest(ordinary_bytes(root, base + 'corrected02/' + name)) == expected,
+                'Current recurring output identity changed: ' + name)
+
+
 def verify_current(root):
     proof_modes(root)
     data = receipt(root)
@@ -1300,6 +1365,7 @@ def verify_current(root):
             retained += 1
     validate_inventory(ordinary_bytes(root, INVENTORY), canonical_inventory(root))
     original_assertion_bodies(root)
+    recurring_fixture_evidence(root, data)
     return data, retained
 
 
@@ -1346,6 +1412,7 @@ def validate(root):
     passed('All 358 initial receipt checks execute exact current source; four historical-result entries are explicit')
     passed('Independent unchanged 11-check initial-admission witness fails twice before and passes on current subscription')
     passed('Current runtime entry invokes recovery and authority cases without workflow changes')
+    passed('Recurring fixture retains every original line and 640 checks; eight added admission controls pass on current source')
     for path in sorted(BEFORE):
         current = ordinary_bytes(root, path)
         passed('Exact reversible finance predecessor ' + path)

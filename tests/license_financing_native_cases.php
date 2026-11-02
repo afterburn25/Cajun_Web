@@ -398,9 +398,53 @@ rb_ok('Replacement ARB contract begins at the first future unpaid signed install
     $replacement['period_offset']===1&&$replacement['occurrences']===3
     &&$replacement['start_date']===$p1['start']&&$replacement['amount_cents']===2500);
 
+// This storage-only fixture admits a replacement through the current recovery
+// boundaries. The account is synthetic sandbox data; no adapter is invoked.
+$replacementMode=(string)setting('software_gateway_mode','disabled');
+$replacementGateway=one('SELECT * FROM '.table('payment_gateways').' WHERE environment=?',['sandbox']);
+rb_ok('Recurring replacement fixture begins with a disabled and unconfigured sandbox gateway',
+    $replacementMode==='disabled'&&$replacementGateway===null);
+$replacementSnapshot=static fn():array=>[
+    'subscription'=>license_finance_subscription_row((string)$offer['id']),
+    'attempts'=>all('SELECT * FROM '.table('license_finance_replacement_attempts').' WHERE offer_id=? ORDER BY id',[$offer['id']]),
+    'history'=>all('SELECT * FROM '.table('license_finance_subscription_history').' WHERE offer_id=? ORDER BY id',[$offer['id']]),
+    'audit'=>rb_count('audit'),
+];
+$disabledBefore=$replacementSnapshot();$disabledReplacement=false;
+try{license_finance_subscription_replacement_reserve((string)$offer['id']);}
+catch(RuntimeException $error){
+    if($error instanceof PDOException)throw $error;
+    $disabledReplacement=$error->getMessage()==='Authorize.Net checkout is disabled.';
+}
+rb_ok('Disabled gateway refuses replacement admission without subscription recovery or audit mutation',
+    $disabledReplacement&&$replacementSnapshot()===$disabledBefore&&!db()->inTransaction());
+payments_save('sandbox',0,[
+    'api_login_id'=>'synthetic-recurring','transaction_key'=>'SyntheticKey1234',
+    'signature_key'=>str_repeat('a',128),'public_client_key'=>'synthetic-recurring-client',
+],$password);
+save_setting('software_gateway_mode','sandbox');
+try{
+$replacementSettings=license_finance_anet_settings();
 $reserved=license_finance_subscription_replacement_reserve((string)$offer['id']);
 rb_ok('Suspended ARB identity is retained while replacement enrollment is reserved',
     ($reserved['gateway_subscription_id']??'')==='810001'&&($reserved['status']??'')==='replacing');
+$unadmittedBefore=$replacementSnapshot();
+rb_deny('Replacement finalization refuses a reservation before its dispatch boundary',
+    fn()=>license_finance_subscription_replacement_finalize(
+        (string)$offer['id'],'810001','810002',$replacement,
+        ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment','canceled'));
+rb_ok('Refused undispatched replacement finalization retains all financial and audit state',
+    $replacementSnapshot()===$unadmittedBefore&&!db()->inTransaction());
+rb_ok('Synthetic retired predecessor admits one durable replacement dispatch',
+    license_finance_recovery_dispatch((string)$offer['id'],'810001','canceled',$replacementSettings));
+$unobservedBefore=$replacementSnapshot();
+rb_deny('Replacement finalization refuses a dispatched reservation without an observed successor',
+    fn()=>license_finance_subscription_replacement_finalize(
+        (string)$offer['id'],'810001','810002',$replacement,
+        ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment','canceled'));
+rb_ok('Refused unobserved replacement finalization retains all financial and audit state',
+    $replacementSnapshot()===$unobservedBefore&&!db()->inTransaction());
+license_finance_recovery_observe((string)$offer['id'],'810001','810002');
 $replacementState=license_finance_subscription_replacement_finalize(
     (string)$offer['id'],'810001','810002',$replacement,
     ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment','canceled'
@@ -416,6 +460,13 @@ rb_ok('Replacement ARB archives the suspended identity and activates only remain
     &&($oldSub['replaced_by_gateway_subscription_id']??'')==='810002');
 rb_ok('Delayed lifecycle event from retired ARB identity is historical and cannot mutate current billing',
     license_finance_subscription_lifecycle_review('net.authorize.customer.subscription.suspended','810001')==='historical_subscription');
+}finally{
+    save_setting('software_gateway_mode',$replacementMode);
+    query('DELETE FROM '.table('payment_gateways').' WHERE environment=?',['sandbox']);
+}
+rb_ok('Recurring replacement fixture restores disabled gateway state before later payoff cases',
+    setting('software_gateway_mode','disabled')===$replacementMode
+    &&one('SELECT * FROM '.table('payment_gateways').' WHERE environment=?',['sandbox'])===$replacementGateway);
 
 $paidInvoices=[(int)$invoice0['id']];
 for($period=1;$period<4;$period++){

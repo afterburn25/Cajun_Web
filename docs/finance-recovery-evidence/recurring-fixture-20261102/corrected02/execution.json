@@ -1,0 +1,39 @@
+{
+  "stage": "corrected02",
+  "started_at": "2026-11-02T04:23:18.248283+00:00",
+  "finished_at": "2026-11-02T04:26:30.143266+00:00",
+  "elapsed_seconds": 191.895,
+  "command": [
+    "php",
+    "-d",
+    "disable_functions=curl_exec",
+    "tests/recurring_billing_native.php"
+  ],
+  "exit_code": 0,
+  "base_head": "3ccd7c29e629525a9c586d1710bcae06bb2ac5bc",
+  "base_site_tree": "9b376dab9e2193cc1d226f884a54e7041109b7af",
+  "shipping_diff": [],
+  "source_sha256": {
+    "tests/recurring_billing_native.php": "f2b811ba24274cf9421521c7e7f580b95aa9e8fa55033dfc48d2c2ff42f6810a",
+    "tests/license_financing_native_cases.php": "219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88",
+    "site/app/billing/finance_subscription.php": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+    "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/billing/payments.php": "c41ff35d04b5f87baccdc0ecada491a510540ffc2a91342cd405d3ca8bab2ecb",
+    "site/app/licenses/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f"
+  },
+  "php": "8.3.6",
+  "database": "MariaDB 10.11.14; disposable cwp_test on loopback port 33329",
+  "namespace": "rbill_24e5fdb",
+  "network_scope": "curl_exec disabled in this local supplement; no gateway transport is required by this storage fixture.",
+  "files": {
+    "fixture.php": "219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88",
+    "native.json": "f732f04fd37e60b8752878daec7864f59b7a104bc940ddbe56f5a33077124e1e",
+    "stdout.log": "06e0c22a340376389b57875a5541c9aeac2d44eac011580a171db16baff06886",
+    "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

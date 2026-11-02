@@ -1,0 +1,4 @@
+PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'rbill_fix_settings' already exists in /workspace/scratch/3c40afcc1eee/cajun-finance/tests/recurring_billing_native.php:54
+Stack trace:
+#0 /workspace/scratch/3c40afcc1eee/cajun-finance/tests/recurring_billing_native.php(54): PDO->exec()
+#1 {main}
