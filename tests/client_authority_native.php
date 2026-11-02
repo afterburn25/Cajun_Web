@@ -47,6 +47,13 @@ if(($argv[1]??'')==='activate-worker') {
     try{studio_activate($argv[2],'Synthetic activated client passphrase');echo 'activated';}
     catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
+if(($argv[1]??'')==='upload-worker') {
+    $_SESSION=['client_auth'=>$argv[5],'contact_auth'=>$argv[6],'client_last'=>time(),'client_login'=>time()];
+    $media=$private.'/media';@mkdir($media,0700,true);$bytes=random_bytes(64);
+    echo "ready\n";fflush(STDOUT);
+    try{studio_upload_write((int)$argv[2],'contact',['id'=>(int)$argv[3]],['id'=>(int)$argv[4]],$argv[7],$media.'/studio-'.$argv[7].'.php','worker-upload.png','image/png',strlen($bytes),$bytes);echo 'written';}
+    catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
 try {
     foreach(schema_statements('caci_') as $sql)db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
@@ -98,6 +105,29 @@ try {
     staff_locked(function()use($id,$token,$row):void {$GLOBALS['activation_waiter']=ca_worker('activate-worker',[$token]);if(trim(fgets($GLOBALS['activation_waiter'][1][1]))!=='ready')throw new RuntimeException('Activation did not reach guard');usleep(500000);ca_ok('Public activation cannot bypass the shared hosting guard',ca_client($id)===$row);studio_client_save($id,$row['auth_version'],'Revoked while waiting','client@example.invalid',false);});$before=ca_snapshot();ca_ok('Client deactivated while activation waits cannot establish credentials',ca_finish($GLOBALS['activation_waiter'])==='denied'&&ca_snapshot()===$before);
     studio_client_save($id,ca_version($id),'Restored','client@example.invalid',true);$token=ca_token(studio_new_invite($id,ca_version($id)));
     staff_locked(function()use($id,$token):void {$GLOBALS['expired_waiter']=ca_worker('activate-worker',[$token]);if(trim(fgets($GLOBALS['expired_waiter'][1][1]))!=='ready')throw new RuntimeException('Expiry activation did not reach guard');query('UPDATE '.table('studio_clients').' SET invite_expires=? WHERE id=?',[time()-1,$id]);});$before=ca_snapshot();ca_ok('Token expiry is rechecked after waiting for shared guard',ca_finish($GLOBALS['expired_waiter'])==='denied'&&ca_snapshot()===$before);
+    save_setting('contacts_schema_version','1');
+    query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,'Upload boundary','s','m',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);$job=(int)db()->lastInsertId();
+    query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,permissions,enabled,auth_version,created_at) VALUES (?,?,?,?,1,?,?)',[$id,'Boundary contact','boundary-contact@example.invalid',json_encode(['projects']),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);$contact=(int)db()->lastInsertId();
+    $clientAuth=ca_version($id);
+    $fileRows=fn()=>all('SELECT * FROM '.table('studio_files'));$contactAudit=fn()=>all('SELECT * FROM '.table('audit')." WHERE action='file.upload.contact'");$media=fn()=>glob($private.'/media/studio-*')?:[];
+    foreach([
+      'disabled contact'=>fn()=>query('UPDATE '.table('studio_contacts').' SET enabled=0 WHERE id=?',[$contact]),
+      'rotated contact credentials'=>fn()=>query('UPDATE '.table('studio_contacts').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$contact]),
+      'removed project permission'=>fn()=>query('UPDATE '.table('studio_contacts')." SET permissions='[\"billing\"]' WHERE id=?",[$contact]),
+      'deactivated client'=>fn()=>query('UPDATE '.table('studio_clients').' SET active=0,auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$id]),
+    ] as $label=>$revoke){
+        $contactAuth=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'];
+        staff_locked(function()use($job,$id,$contact,$clientAuth,$contactAuth,$revoke,$label):void{
+            $GLOBALS['upload_waiter']=ca_worker('upload-worker',[(string)$job,(string)$id,(string)$contact,$clientAuth,$contactAuth,ca_id(9100+strlen($label))]);
+            if(trim(fgets($GLOBALS['upload_waiter'][1][1]))!=='ready')throw new RuntimeException('Upload writer did not reach the guard');
+            $revoke();
+        });
+        ca_ok('Contact upload denied after '.$label.' committed at the write boundary',ca_finish($GLOBALS['upload_waiter'])==='denied'&&$fileRows()===[]&&$contactAudit()===[]&&$media()===[]);
+        query('UPDATE '.table('studio_contacts')." SET enabled=1,permissions='[\"projects\"]' WHERE id=?",[$contact]);
+        query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=?',[$id]);$clientAuth=ca_version($id);
+    }
+    $contactAuth=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'];
+    ca_ok('Permitted contact upload writes the file row with contact attribution',ca_finish(ca_worker('upload-worker',[(string)$job,(string)$id,(string)$contact,$clientAuth,$contactAuth,ca_id(9999)]))==="ready\nwritten"&&$fileRows()!==[]&&$fileRows()[0]['author_type']==='contact'&&$contactAudit()!==[]&&count($media())===1);
     $audit=json_encode(all('SELECT * FROM '.table('audit')));ca_ok('Client audit excludes names emails passwords raw invitations and password hashes',!str_contains($audit,'@example.invalid')&&!str_contains($audit,'Cajun')&&!str_contains($audit,$password)&&!str_contains($audit,$token)&&!str_contains($audit,ca_client($id)['password_hash']));
     ca_ok('Client account changes create no provider or email credentials',!is_file($private.'/provider-master.key')&&!is_file($private.'/mail-master.key')&&!all('SELECT * FROM '.table('provider_profiles'))&&!all('SELECT * FROM '.table('mail_accounts')));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
