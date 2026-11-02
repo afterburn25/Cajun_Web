@@ -31,7 +31,7 @@ def verify(root, contract, workflow, commands, check):
     guard = item['published_baseline']['input_guard_correction']
     original_guard = (root / guard['path']).read_text()
     check('Published archive negative test changes only unapproved future version', original_guard.count(guard['after']) == 1 and hashlib.sha256(original_guard.replace(guard['after'], guard['before'], 1).encode()).hexdigest() == guard['predecessor_sha256'])
-    reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
+    reports = json.loads(fixture_predecessor_source(root, 'tools/acceptance-reports.json'))
     for key, facts in item['predecessor_reports'].items():
         current = reports[key]
         additions = item['reports'] + (item['upgrade']['reports'] if key == 'final' else [])

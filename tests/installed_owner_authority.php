@@ -4,6 +4,9 @@ declare(strict_types=1);
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOST')!=='127.0.0.1')exit(2);
 $root=realpath($argv[1]??'');$runtime=realpath(__DIR__.'/../test-runtime');$mode=$argv[2]??'';
 if(!$root||!$runtime||!str_starts_with($root,$runtime.DIRECTORY_SEPARATOR)||!is_file($root.'/.installed.php')||!in_array($mode,['snapshot','revoke','restore'],true))exit(2);
+$input=json_decode(stream_get_contents(STDIN),true,32,JSON_THROW_ON_ERROR);if(!is_array($input))exit(2);
+$ownerId=array_key_exists('owner_id',$input)?$input['owner_id']:1;
+if(!is_int($ownerId)||$ownerId<1||$ownerId>2147483647)exit(2);
 define('CWP_BOOT',true);define('CWP_ROOT',$root);require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';$cfg=config();$database=$cfg['db']??[];
 if(($database['name']??'')!=='cwp_test'||($database['host']??'')!=='127.0.0.1'||(int)($database['port']??0)!==(int)getenv('CWP_TEST_PORT')||!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{0,39}$/D',$database['prefix']??''))exit(2);
@@ -24,18 +27,17 @@ function installed_authority_snapshot(string $storage,string $prefix):array {
     }
     ksort($files);return ['tables'=>$tables,'files'=>$files];
 }
-$profile=one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1');
+$profile=one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=?',[$ownerId]);
 if(!$profile||(int)$profile['enabled']!==1)throw new LogicException('Expected enabled owner fixture.');
 if($mode!=='snapshot'){
-    $input=json_decode(stream_get_contents(STDIN),true,32,JSON_THROW_ON_ERROR);
     $original=$input['original']??null;
-    if(!is_array($original)||(int)($original['user_id']??0)!==1||($original['role']??'')!=='owner'||(int)($original['enabled']??0)!==1||!is_string($original['permissions']??null))throw new LogicException('Invalid original profile.');
+    if(!is_array($original)||(int)($original['user_id']??0)!==$ownerId||($original['role']??'')!=='owner'||(int)($original['enabled']??0)!==1||!is_string($original['permissions']??null))throw new LogicException('Invalid original profile.');
     $revoked=$original;$revoked['role']='administrator';$revoked['permissions']='[]';
     $expected=$mode==='revoke'?$original:$revoked;
     if($profile!==$expected&&!($mode==='restore'&&$profile===$original))throw new LogicException('Concurrent fixture profile change.');
     $target=$mode==='revoke'?$revoked:$original;
-    query('UPDATE '.table('staff_profiles').' SET role=?,permissions=? WHERE user_id=1',[$target['role'],$target['permissions']]);
-    if(one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1')!==$target)throw new LogicException('Fixture profile update failed.');
+    query('UPDATE '.table('staff_profiles').' SET role=?,permissions=? WHERE user_id=?',[$target['role'],$target['permissions'],$ownerId]);
+    if(one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=?',[$ownerId])!==$target)throw new LogicException('Fixture profile update failed.');
     $profile=$target;
 }
 echo json_encode(['profile'=>$profile,'snapshot'=>installed_authority_snapshot($storage,$database['prefix'])],JSON_THROW_ON_ERROR).PHP_EOL;

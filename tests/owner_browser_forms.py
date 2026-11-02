@@ -36,7 +36,7 @@ def assert_no_owner_reprompt(check, form, label):
     check(label + ' retains a nonempty CSRF field', token.count() == 1 and bool(token.input_value()))
 
 
-def refuse_owner_action(env, session, url, action, changes, *, installed_root=None):
+def refuse_owner_action(env, session, url, action, changes, *, installed_root=None, owner_id=1):
     """Submit a valid captured form after revoking this same owner's role.
 
     The existing CLI fixture checks exact database/schema/private-file retention
@@ -64,7 +64,7 @@ def refuse_owner_action(env, session, url, action, changes, *, installed_root=No
     if urlsplit(submit_url)[:2] != target[:2] or not urlsplit(submit_url).path.startswith('/' + root.name + '/admin/'):
         raise AssertionError('Form action left the admitted installation')
     fields.update(changes)
-    with revoked_owner(root, env['php']):
+    with revoked_owner(root, env['php'], owner_id=owner_id):
         denied = session.post(submit_url, data=fields, timeout=30, allow_redirects=False)
         env['check'](action + ' refuses the same signed-in owner after permission revocation',
                      denied.status_code == 403 or (denied.status_code == 200

@@ -53,6 +53,58 @@ with tempfile.TemporaryDirectory(prefix='cwp-owner-http-') as tmp:
         check(case + ' accepts only unchanged successful probe execution', error is None if case == 'normal' else error is not None)
         if case == 'http-error':
             check('Original HTTP failure is preserved after successful restoration', isinstance(error, ValueError) and str(error) == 'Synthetic HTTP failure')
+    # Actor-specific recovery belongs to the dedicated owner, not user 1.
+    # Exercise the real orchestration with both profiles present in the double.
+    dedicated = {**original, 'user_id': 12}
+    for case in ('normal', 'http-error', 'data-write', 'private-write', 'revoke-error'):
+        state = {'profile': copy.deepcopy(dedicated), 'snapshot': copy.deepcopy(base['snapshot'])}
+        other = copy.deepcopy(original); calls = []; error = None
+        def actor_run(args, **kwargs):
+            operation = args[-1]; calls.append(operation)
+            request = json.loads(kwargs['input'])
+            check('Dedicated ' + case + ' pins the selected actor for ' + operation,
+                  request['owner_id'] == 12 and args[2] == str(installed) and kwargs['timeout'] == 90)
+            if operation == 'revoke':
+                state['profile'] = {**dedicated, 'role': 'administrator', 'permissions': '[]'}
+                if case == 'revoke-error':
+                    return SimpleNamespace(returncode=1, stdout='', stderr='Synthetic selected-owner probe failure')
+            elif operation == 'restore':
+                check('Dedicated ' + case + ' restores its captured profile', request['original'] == dedicated)
+                state['profile'] = copy.deepcopy(dedicated)
+            return SimpleNamespace(returncode=0, stdout=json.dumps(state), stderr='')
+        with patch.dict(os.environ, env), patch.object(target, 'ROOT', root), patch.object(target.subprocess, 'run', actor_run):
+            try:
+                with target.revoked_owner(installed, '/synthetic/php', owner_id=12):
+                    check('Dedicated ' + case + ' revokes the selected owner only',
+                          state['profile']['role'] == 'administrator' and other == original)
+                    if case == 'http-error': raise ValueError('Synthetic selected-owner HTTP failure')
+                    if case == 'data-write': state['snapshot']['tables']['fixture_data'] = 'changed'
+                    if case == 'private-write': state['snapshot']['files']['key'] = 'changed'
+            except Exception as exc:
+                error = exc
+        check('Dedicated ' + case + ' restores the selected profile without changing the setup owner',
+              state['profile'] == dedicated and other == original and calls[-1] == 'restore')
+        check('Dedicated ' + case + ' retains strict state and failure checks',
+              error is None if case == 'normal' else error is not None)
+        if case == 'http-error':
+            check('Selected-owner HTTP failure remains visible after restoration',
+                  isinstance(error, ValueError) and str(error) == 'Synthetic selected-owner HTTP failure')
+    for owner_id in (0, -1, True, False, '12', 12.0, None, 2147483648):
+        with patch.dict(os.environ, env), patch.object(target, 'ROOT', root), patch.object(target.subprocess, 'run') as runner:
+            denied = False
+            try:
+                with target.revoked_owner(installed, '/synthetic/php', owner_id=owner_id): pass
+            except AssertionError:
+                denied = True
+            check('Rejects invalid selected actor before subprocess: ' + repr(owner_id), denied and not runner.called)
+    with patch.dict(os.environ, env), patch.object(target, 'ROOT', root), patch.object(target.subprocess, 'run',
+            return_value=SimpleNamespace(returncode=0, stdout=json.dumps(base), stderr='')) as runner:
+        denied = False
+        try:
+            with target.revoked_owner(installed, '/synthetic/php', owner_id=12): pass
+        except AssertionError:
+            denied = True
+        check('Rejects a different returned actor before revoking anyone', denied and runner.call_count == 1)
     for case in ('database', 'host', 'outside', 'uninstalled'):
         current_env = dict(env); location = installed
         if case == 'database': current_env['CWP_TEST_DATABASE'] = 'production'

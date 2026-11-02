@@ -1,3 +1,9 @@
+## 2026-11-02 — PR317 full acceptance correction
+
+The current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](../SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.
+
+Next action: complete the focused real installed verification and independent finite-source review, publish the reviewed correction to the existing PR317 branch with an expected-head nonforce update, inspect its normal complete acceptance, then recheck current main before the authorized normal merge. Main was last observed at `1c44ca120e7768998fafa720b3e1c4c85990c330`; the candidate remains unmerged. Poll Actions at no faster than approximately ten minutes and do not duplicate a pending run.
+
 ## 2026-11-01 continuation — composed candidate and remaining gates
 
 | Source | Current disposition | Remaining action |

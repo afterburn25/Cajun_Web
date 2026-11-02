@@ -206,12 +206,89 @@ def orchestration_evidence_checks(tmp, ctx):
          lambda: a.seal(forbidden, ctx, tmp / 'orchestration-forbidden-seal', 'build', outcomes('build'), ''))
 
 
+def software_authority_report_checks(tmp):
+    """Package retained SQL evidence as test data; never rerun or invent SQL results."""
+    name = 'software-commerce-native-authority.json'
+    registry = a.load(ROOT / 'tools/acceptance-reports.json')
+    for mode, count, digest in [
+        ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
+        ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
+    ]:
+        current = registry[mode]
+        check('Software authority named report is required exactly once in ' + mode,
+              current.count(name) == 1 and len(current) == len(set(current)))
+        retained = [item for item in current if item != name]
+        check('Software authority inventory retains every original ordered ' + mode + ' report',
+              len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
+    body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
+    report = json.loads(body)
+    check('Authority packaging fixture retains the exact recorded194 passing SQL assertions',
+          hashlib.sha256(body).hexdigest() == 'c82bfe0ca921c4728a83c57fd03ccd7f0a59622bbedbcb96f558cc32ca4e484b'
+          and report['passed'] is True and report['original_checks_passed'] == 272
+          and len(report['checks']) == len({item['name'] for item in report['checks']}) == 194
+          and all(item['passed'] is True for item in report['checks']))
+    ctx = context(); ctx['reports_sha256'] = a.digest(ROOT / 'tools/acceptance-reports.json')
+    expected = {'browser': ['http-results.json', name],
+                'final': ['http-results.json', 'structure-results.json', 'apache-results.json', name]}
+    check('Authority protocol fixture uses only actual required report names',
+          all(set(expected[mode]) <= set(registry[mode]) for mode in expected))
+    input_sha = '7' * 64
+    for scenario in ('complete', 'missing', 'failed assertion', 'failed summary', 'renamed', 'extra', 'malformed assertion', 'browser failure'):
+        case = tmp / scenario.replace(' ', '-'); incoming = case / 'incoming'; bindings = {}
+        data = copy.deepcopy(report)
+        if scenario == 'failed assertion': data['checks'][0]['passed'] = False
+        if scenario == 'failed summary': data['passed'] = False
+        if scenario == 'malformed assertion': data['checks'][0]['passed'] = 'true'
+        for index, lane in enumerate(a.LANES):
+            root = case / lane; root.mkdir(parents=True)
+            if lane == 'build': packages(root, ctx)
+            elif lane == 'native-browser':
+                named(root / 'qa/http-results.json', scenario != 'browser failure')
+                if scenario != 'missing':
+                    filename = name.upper() if scenario == 'renamed' else name
+                    blob(root / 'qa' / filename, body if scenario not in ('failed assertion', 'failed summary', 'malformed assertion') else json.dumps(data).encode())
+                if scenario == 'extra': named(root / 'qa/software-commerce-native-unreviewed.json')
+            elif lane == 'recovery': named(root / 'qa/structure-results.json')
+            else: named(root / 'qa/apache-results.json')
+            sealed = a.seal(root, ctx, incoming / lane, lane, outcomes(lane), input_sha)
+            bindings[lane] = {'result': 'success', 'artifact_id': str(index + 1), 'sha256': sealed,
+                             **({'input_sha256': input_sha} if lane == 'build' else {}),
+                             **({'checkpoint_id': '9', 'checkpoint_digest': '6' * 64} if lane == 'native-browser' else {})}
+        for checkpoint in (False, True):
+            mode = 'checkpoint' if checkpoint else 'full'; current_bindings = copy.deepcopy(bindings)
+            if checkpoint:
+                for lane in ('recovery', 'apache'): current_bindings[lane] = {'result': 'skipped', 'artifact_id': '', 'sha256': ''}
+            target = case / mode
+            result = a.aggregate(target, ctx, incoming, current_bindings, expected, checkpoint)
+            check('Authority report ' + scenario + ' retains strict ' + mode + ' acceptance',
+                  result['complete'] is (scenario == 'complete') and result['full_partition_checks_passed'] is (scenario == 'complete' and not checkpoint))
+            if scenario == 'complete':
+                facts = result['reports'][name]
+                check('Authority ' + mode + ' preserves all194 named outcomes and exact evidence bytes',
+                      facts['passed'] and facts['executions'] == facts['unique_names'] == 194
+                      and facts['sha256'] == hashlib.sha256(body).hexdigest() and (target / 'qa' / name).read_bytes() == body)
+            elif scenario in ('missing', 'renamed'):
+                check('Authority ' + scenario + ' is explicitly missing from ' + mode,
+                      'Missing reports: ' + name in result['errors'])
+            elif scenario == 'extra':
+                check('Authority filename does not admit an unreviewed sibling in ' + mode,
+                      'Unexpected reports: software-commerce-native-unreviewed.json' in result['errors'])
+            elif scenario in ('failed assertion', 'failed summary', 'browser failure'):
+                failed = 'http-results.json' if scenario == 'browser failure' else name
+                check('Authority ' + scenario + ' remains a named failure in ' + mode,
+                      'One or more named reports failed' in result['errors'] and not result['reports'][failed]['passed'])
+            else:
+                check('Malformed authority outcome is rejected in ' + mode,
+                      any(error.startswith('Report/package validation: Malformed named result') for error in result['errors']))
+
+
 def run(tmp):
     def remove_partition(path):
         resolved=path.resolve();require_parent=tmp.resolve()
         assert resolved.is_relative_to(require_parent) and resolved.name=='native-browser'
         shutil.rmtree(resolved)
     ctx = context(); source = tmp / 'source'; fixtures(source, ctx)
+    software_authority_report_checks(tmp / 'software-authority-report')
     orchestration_evidence_checks(tmp, ctx)
     # Exercise the actual entry points and GitHub output file, including the
     # numeric suffix used by both immutable artifact-manifest outputs.

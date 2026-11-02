@@ -1,3 +1,9 @@
+## 2026-11-02 — PR317 full acceptance correction
+
+The current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](../SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.
+
+Next action: complete the focused real installed verification and independent finite-source review, publish the reviewed correction to the existing PR317 branch with an expected-head nonforce update, inspect its normal complete acceptance, then recheck current main before the authorized normal merge. Main was last observed at `1c44ca120e7768998fafa720b3e1c4c85990c330`; the candidate remains unmerged. Poll Actions at no faster than approximately ten minutes and do not duplicate a pending run.
+
 ## Combined-source review completed — 2026-11-01 continuation
 
 A separate automated reviewer approved the final composition/hydration verifier `160e0c686365af222a6e61cf221a461a722665d87f855edb8647aa8fe4762561`, regression source `131bb4e4b3ccd4344627dada4a3596e4cb79779924688b917556b442f906e410`, receipt and four exact adapters. Independent isolated execution passes 2,149 source checks and 32 filesystem rejection/compatibility checks; the genuine shallow-checkout result passes 12 checks plus the unchanged 2,724-check acceptance helper. Root reviewed the actual implementation and verified the union of all shipping paths. The protected application workflow retains SHA256 `9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c`.

@@ -59,10 +59,12 @@ try:
         return form
     env={'BASE':'http://127.0.0.1:8091','WEB':ROOT/'test-runtime/web','php':'php','check':check,'form_for':form_for,
          'form_data':lambda f:{x['name']:x.get('value','') for x in f.select('input[name]')}}
-    for scenario in ('403','permission-notice','success','login-redirect','server-error','mutated-state','HTTP-error'):
+    for actor_id, scenario in [(actor, case) for actor in (1,12) for case in ('403','permission-notice','success','login-redirect','server-error','mutated-state','HTTP-error')]:
+        prefix = '' if actor_id == 1 else 'Dedicated owner '
         state={'revoked':False,'restored':False,'posts':0}
         @contextmanager
-        def authority(root, php):
+        def authority(root, php, *, owner_id=1):
+            check(prefix+scenario+' revokes the exact selected actor',owner_id==actor_id)
             state['revoked']=True
             try:
                 yield
@@ -71,11 +73,11 @@ try:
                 state['revoked']=False;state['restored']=True
         class Session:
             def get(self, dest, **kwargs):
-                check(scenario+' captures an authorized owner form before revocation',not state['revoked'] and dest==url)
+                check(prefix+scenario+' captures an authorized owner form before revocation',not state['revoked'] and dest==url)
                 return SimpleNamespace(status_code=200,url=url,text=body)
             def post(self, dest, **kwargs):
                 state['posts']+=1
-                check(scenario+' posts original CSRF under revoked permission',state['revoked'] and kwargs['data']['csrf']=='captured-token' and kwargs['data']['action']=='staff_save' and kwargs['data']['name']=='Synthetic member' and kwargs['allow_redirects'] is False)
+                check(prefix+scenario+' posts original CSRF under revoked permission',state['revoked'] and kwargs['data']['csrf']=='captured-token' and kwargs['data']['action']=='staff_save' and kwargs['data']['name']=='Synthetic member' and kwargs['allow_redirects'] is False)
                 if scenario=='HTTP-error':raise OSError('Synthetic HTTP failure')
                 status={'403':403,'login-redirect':303,'server-error':500}.get(scenario,200)
                 return SimpleNamespace(status_code=status,text='Your account does not have access to this action.' if scenario in ('permission-notice','mutated-state') else 'Synthetic response')
@@ -84,11 +86,11 @@ try:
             if not passed:raise AssertionError(name)
         trial_env={**env,'check':protocol_check}
         with patch.object(target,'revoked_owner',authority):
-            try:target.refuse_owner_action(trial_env,Session(),url,'staff_save',{'name':'Synthetic member'})
+            try:target.refuse_owner_action(trial_env,Session(),url,'staff_save',{'name':'Synthetic member'},owner_id=actor_id)
             except (AssertionError,OSError) as e:failed=e
         expected=scenario not in ('403','permission-notice')
-        check(scenario+' has the intended result',(failed is not None)==expected)
-        check(scenario+' always restores original owner authority',state['restored'] and not state['revoked'] and state['posts']==1)
+        check(prefix+scenario+' has the intended result',(failed is not None)==expected)
+        check(prefix+scenario+' always restores original owner authority',state['restored'] and not state['revoked'] and state['posts']==1)
     for override in ({'csrf':'bad'},{'action':'other'},{'owner_password':'wrong'},{'current_password':'wrong'},{'password':'wrong'}):
         failed=False
         try:target.refuse_owner_action(env,Session(),url,'staff_save',override)

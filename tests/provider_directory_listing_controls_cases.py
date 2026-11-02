@@ -82,14 +82,14 @@ def run_browser(env, browser):
     profile = db('SELECT id,revision FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]
     client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']
     prepare = 'provider_directory_indexing_control_prepare'; refresh = 'provider_inventory_directory_indexing_refresh'; share = 'provider_inventory_directory_indexing_share'
-    def refuse(action, match, **fields):
+    def refuse(action, match, *, actor_session=setup, actor_id=original_owner['id'], **fields):
         def selected_form(response, selected_action):
             forms = [form for form in soup(response).select('form')
                      if form.select_one('input[name=action][value="' + selected_action + '"]') is not None
                      and all(form.select_one('input[name="' + name + '"][value="' + str(value) + '"]') is not None for name, value in match.items())]
             if len(forms) != 1: raise AssertionError('Capture exactly one directory listing control form for the selected resource')
             return forms[0]
-        return refuse_owner_action({**env, 'form_for': selected_form, 'check': check}, setup, url, action, fields)
+        return refuse_owner_action({**env, 'form_for': selected_form, 'check': check}, actor_session, url, action, fields, owner_id=actor_id)
     def post(action, **fields):
         action_url = inventory_url if action in ('provider_inventory_refresh', 'provider_inventory_link') else url
         page = owner.get(action_url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
@@ -217,7 +217,7 @@ def run_browser(env, browser):
                                     ('confirmation', {'reviewed': '0'}, 'Review restoring this request’s saved history first.'),
                                     ('review hash', {'ledger_sha256': 'f' * 64}, 'The reviewed dispatch completion changed. Reload its history.')]:
         if label == 'revoked owner':
-            response = refuse(recovery_action, {'request_id': interrupted['id']}, reviewed='1')
+            response = refuse(recovery_action, {'request_id': interrupted['id']}, actor_session=owner, actor_id=directory_indexing_owner['id'], reviewed='1')
             refused = response.status_code == 403 or (response.status_code == 200 and 'Your account does not have access to this action.' in response.text)
         else:
             response = owner.post(url, data={**recovery_fields, **changed})

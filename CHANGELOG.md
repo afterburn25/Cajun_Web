@@ -1,3 +1,7 @@
+## 2026-11-02 — PR317 full acceptance correction
+
+The current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.
+
 ## Unreleased — current integration continuation (2026-11-01)
 
 - Combine reviewed account/notification security, current software-customer authority, finance recovery and narrowed metadata queries on the existing integration candidate.

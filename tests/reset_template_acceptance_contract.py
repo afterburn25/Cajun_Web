@@ -1,6 +1,7 @@
 """Verify additive template acceptance while retaining every predecessor recipe check."""
 import hashlib
 import json
+from provider_browser_fixture_provenance import source as fixture_predecessor_source
 
 
 def predecessor_contract(root, contract, native_commands, check):
@@ -33,7 +34,7 @@ def predecessor_contract(root, contract, native_commands, check):
     )
     check('Template browser acceptance remains in its reviewed local sequence',
         following.startswith(next_hook))
-    reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
+    reports = json.loads(fixture_predecessor_source(root, 'tools/acceptance-reports.json'))
     names = ['password-reset-template-contract-results.json', 'password-reset-template-contract-minimal-results.json', 'password-reset-template-native-results.json']
     for lane in ('browser', 'final'):
         check('Template reports are required exactly once in '+lane, all(reports[lane].count(name) == 1 for name in names))

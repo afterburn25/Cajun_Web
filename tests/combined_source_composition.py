@@ -1,7 +1,8 @@
 """Exact component composition for historical source checks, never runtime code.
 
-The live checkout must equal the finite union of the reviewed component trees.
-Only the canonical inventory and four reversible comparison adapters differ.
+The live checkout must equal the finite union of the reviewed component trees,
+plus the canonical inventory, four reversible comparison adapters and the exact
+integration-test repairs bound to the retained failed acceptance checkpoint.
 Unmodified standalone validators run in disposable exact-component checkouts;
 PHP, browser, migration and packaging commands continue to use the live checkout.
 """
@@ -30,6 +31,21 @@ RECEIPT = 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
 VERIFIER = 'tests/combined_source_composition.py'
 REGRESSION = 'tests/combined_source_composition_test.py'
 INVENTORY = 'site/install/inventory.generated.php'
+REPAIR_BASE = '6247ab257ff8562afb317908cf5de9a602b34d9c'
+REPAIR_BASE_TREE = '9620a10bdd3be1876b7a994a14d739a76e5e3745'
+REPAIRS = frozenset((
+    'tests/installed_owner_authority.php',
+    'tests/installed_owner_authority.py',
+    'tests/installed_owner_authority_test.py',
+    'tests/owner_browser_forms.py',
+    'tests/owner_browser_forms_test.py',
+    'tests/provider_force_ssl_controls_cases.py',
+    'tests/provider_directory_listing_controls_cases.py',
+    'tools/acceptance-reports.json',
+    'tests/acceptance_artifacts_test.py',
+    'tests/cloud_site_requests_wiring.py',
+    'tests/reset_template_acceptance_contract.py',
+))
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
 NARRATIVES = frozenset((
@@ -45,8 +61,12 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '131bb4e4b3ccd4344627dada4a3596e4cb79779924688b917556b442f906e410'
+REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849'
 # END GENERATED COMPOSITION IDENTITIES
+
+# BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
+REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9'}
+# END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
 _HISTORICAL_RESULTS = {}
@@ -224,9 +244,10 @@ def expected_union(root):
 
 def validate_receipt(data, verifier):
     require(isinstance(data, dict) and set(data) == {
-        'format', 'base', 'base_tree', 'components', 'verifier_sha256', 'regression_sha256', 'adapters'},
+        'format', 'base', 'base_tree', 'components', 'verifier_sha256', 'regression_sha256', 'adapters',
+        'repair_base', 'repair_base_tree', 'integration_repairs'},
         'Unexpected composition receipt fields')
-    require(data['format'] == 1 and data['base'] == BASE and data['base_tree'] == BASE_TREE
+    require(data['format'] == 2 and data['base'] == BASE and data['base_tree'] == BASE_TREE
             and data['components'] == COMPONENTS, 'Unreviewed component source identity')
     require(data['verifier_sha256'] == digest(verifier), 'Composition verifier changed')
     require(data['regression_sha256'] == REGRESSION_SHA256, 'Composition regression identity changed')
@@ -243,6 +264,21 @@ def validate_receipt(data, verifier):
             require(isinstance(edit, list) and len(edit) == 2
                     and all(isinstance(part, str) and part for part in edit)
                     and edit[0] != edit[1], 'Malformed adapter inverse: ' + path)
+    require(data['repair_base'] == REPAIR_BASE and data['repair_base_tree'] == REPAIR_BASE_TREE,
+            'Unreviewed integration repair checkpoint')
+    require(set(data['integration_repairs']) == REPAIRS and set(REPAIR_SHA256) == REPAIRS,
+            'Unreviewed integration repair scope')
+    for path, row in data['integration_repairs'].items():
+        require(isinstance(row, dict) and set(row) == {'original_sha256', 'current_sha256', 'edits'},
+                'Malformed integration repair: ' + path)
+        require(row['current_sha256'] == REPAIR_SHA256[path]
+                and isinstance(row['original_sha256'], str) and len(row['original_sha256']) == 64,
+                'Unreviewed integration repair identity: ' + path)
+        require(isinstance(row['edits'], list) and bool(row['edits']), 'Missing integration repair inverse: ' + path)
+        for edit in row['edits']:
+            require(isinstance(edit, list) and len(edit) == 2
+                    and all(isinstance(part, str) and part for part in edit)
+                    and edit[0] != edit[1], 'Malformed integration repair inverse: ' + path)
     return data
 
 
@@ -261,6 +297,25 @@ def reconstruct_adapter(data, path, current):
         require(text.count(before) == 1, 'Nonunique comparison adapter forward change: ' + path)
         text = text.replace(before, after, 1)
     require(text.encode('utf-8') == current, 'Comparison adapter is not reversible: ' + path)
+    return original
+
+
+def reconstruct_repair(data, path, current):
+    """Admit exact current tests; restore old bytes only for source comparison."""
+    require(path in REPAIRS, 'Unknown integration repair')
+    row = data['integration_repairs'][path]
+    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path],
+            'Current integration repair changed: ' + path)
+    text = current.decode('utf-8')
+    for before, after in reversed(row['edits']):
+        require(text.count(after) == 1, 'Nonunique integration repair inverse: ' + path)
+        text = text.replace(after, before, 1)
+    original = text.encode('utf-8')
+    require(digest(original) == row['original_sha256'], 'Failed-checkpoint source differs: ' + path)
+    for before, after in row['edits']:
+        require(text.count(before) == 1, 'Nonunique integration repair forward change: ' + path)
+        text = text.replace(before, after, 1)
+    require(text.encode('utf-8') == current, 'Integration repair is not reversible: ' + path)
     return original
 
 
@@ -320,13 +375,22 @@ def verify_current(root):
             'Composition proof file mode changed')
     require(digest(ordinary(root, REGRESSION)) == REGRESSION_SHA256, 'Composition regression changed')
     ensure_history(root)
+    require(git(root, 'rev-parse', REPAIR_BASE + '^{tree}').decode().strip() == REPAIR_BASE_TREE,
+            'Failed acceptance checkpoint tree changed')
+    git(root, 'merge-base', '--is-ancestor', REPAIR_BASE, 'HEAD')
     expected, changed = expected_union(root)
+    require(REPAIRS <= set(expected) and not REPAIRS & ADAPTERS,
+            'Integration repairs must retain existing component files')
     allowed = set(expected) | ADAPTERS | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
         value = ordinary(root, path)
+        if path in REPAIRS:
+            value = reconstruct_repair(data, path, value)
+            require(value == git(root, 'cat-file', 'blob', REPAIR_BASE + ':' + path),
+                    'Integration repair no longer retains its exact failed-checkpoint source: ' + path)
         blob = hashlib.sha1(b'blob ' + str(len(value)).encode() + b'\0' + value).hexdigest()
         require(blob == oid and mode(root, path) == permission, 'Current component source or mode differs: ' + path)
     for path in sorted(ADAPTERS):
@@ -338,8 +402,9 @@ def verify_current(root):
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
     return [
         {'name': 'Exact common ancestor and all four component commit/tree/ancestry identities', 'passed': True},
-        {'name': 'Current bytes and executable modes match the exact component union for ' + str(len(expected)) + ' retained files', 'passed': True},
+        {'name': 'Current or exactly reconstructed bytes and executable modes match the component union for ' + str(len(expected)) + ' retained files', 'passed': True},
         {'name': 'Four finite comparison adapters retain exact original assertions through reversible edits', 'passed': True},
+        {'name': str(len(REPAIRS)) + ' exact integration-test repairs retain the failed checkpoint through reversible edits; runtime uses current bytes', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
@@ -422,7 +487,9 @@ def account_call(root, module, method, *, path=None, value=None, side=None):
     verify_current(root)
     arguments = {}
     if path is not None:
-        require(path.startswith('tests/'), 'Historical projections never supply shipping/runtime file bytes')
+        require(path.startswith('tests/') or (module == 'provider_browser_fixture_provenance'
+                and method == 'source' and path == 'tools/acceptance-reports.json'),
+                'Historical projections never supply shipping/runtime file bytes')
         ordinary(root, path)
         arguments['path'] = path
     if value is not None:

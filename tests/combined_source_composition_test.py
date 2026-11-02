@@ -35,7 +35,7 @@ def run(root=ROOT):
         subprocess.run(['git', 'checkout', '--quiet', '--detach', proof.git(root, 'rev-parse', 'HEAD').decode().strip()], cwd=fixture, check=True)
         # The test also runs before the new comparison adapters are committed.
         # Copy only their finite reviewed bytes into the disposable checkout.
-        for path in proof.ADAPTERS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY}:
+        for path in proof.ADAPTERS | proof.REPAIRS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY}:
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(proof.ordinary(root, path))
@@ -127,6 +127,44 @@ def run(root=ROOT):
 
         refuses('Refuses simultaneous comparison code and receipt-hash substitution', forged_adapter_and_receipt)
 
+        for path in sorted(proof.REPAIRS):
+            refuses('Refuses altered exact integration repair ' + path,
+                    lambda path=path: modified(path, lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed repair\n')))
+        refuses('Refuses a changed executable mode on an integration repair',
+                lambda: modified('tests/installed_owner_authority.php', lambda target: target.chmod(0o755)))
+        for path in ('tests/provider_force_ssl_controls_cases.py', 'tests/provider_directory_listing_controls_cases.py'):
+            refuses('Refuses replacing the original recovery actor with the setup owner in ' + path,
+                    lambda path=path: modified(path, lambda target: target.write_bytes(
+                        target.read_bytes().replace(b'actor_session=owner, actor_id=', b'actor_session=setup, actor_id=', 1))))
+        for group in ('browser', 'final'):
+            def omit_required(target, group=group):
+                inventory = json.loads(target.read_bytes())
+                inventory[group].remove('software-commerce-native-authority.json')
+                target.write_text(json.dumps(inventory))
+            refuses('Refuses dropping required software authority evidence from ' + group,
+                    lambda: modified('tools/acceptance-reports.json', omit_required))
+        refuses('Refuses substituting the failed acceptance checkpoint',
+                lambda: altered_receipt(lambda data: data.__setitem__('repair_base', '0' * 40)))
+        refuses('Refuses omitted exact integration repair admission',
+                lambda: altered_receipt(lambda data: data['integration_repairs'].pop('tests/installed_owner_authority.php')))
+        refuses('Refuses omitted integration repair inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tests/provider_force_ssl_controls_cases.py']['edits'].pop()))
+
+        def forged_repair_and_receipt():
+            repair = fixture / 'tests/installed_owner_authority.py'
+            receipt = fixture / proof.RECEIPT
+            old_repair, old_receipt = repair.read_bytes(), receipt.read_bytes()
+            try:
+                repair.write_bytes(old_repair + b'\n# changed selected actor\n')
+                data = json.loads(old_receipt)
+                data['integration_repairs']['tests/installed_owner_authority.py']['current_sha256'] = proof.digest(repair.read_bytes())
+                receipt.write_text(json.dumps(data))
+                proof.verify_current(fixture)
+            finally:
+                repair.write_bytes(old_repair)
+                receipt.write_bytes(old_receipt)
+        refuses('Refuses simultaneous runtime fixture code and repair-receipt hash substitution', forged_repair_and_receipt)
+
         source = fixture / 'tests/software_authority_provenance.py'
         cached = Path(importlib.util.cache_from_source(str(source)))
         py_compile.compile(str(source), cfile=str(cached), doraise=True)
@@ -148,6 +186,16 @@ def run(root=ROOT):
             fixture, 'software_commerce_native', 'run'))
         refuses('Historical projection never returns shipping application bytes', lambda: proof.account_call(
             fixture, 'provider_browser_fixture_provenance', 'source', path='site/app/billing/software_client.php'))
+        refuses('The finite report-inventory comparison does not admit other tools', lambda: proof.account_call(
+            fixture, 'provider_browser_fixture_provenance', 'source', path='tools/acceptance_artifacts.py'))
+        refuses('The finite report-inventory comparison cannot supply runtime input', lambda: proof.account_call(
+            fixture, 'provider_browser_fixture_provenance', 'predecessor', path='tools/acceptance-reports.json',
+            value=proof.ordinary(fixture, 'tools/acceptance-reports.json')))
+        historical_reports = proof.account_call(fixture, 'provider_browser_fixture_provenance', 'source',
+                                               path='tools/acceptance-reports.json')
+        assert historical_reports == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':tools/acceptance-reports.json')
+        assert historical_reports != proof.ordinary(fixture, 'tools/acceptance-reports.json')
+        passed('Historical report comparison is exact while runtime retains the new required evidence')
         refuses('Historical projection cannot dispatch an arbitrary callback', lambda: proof.projected_validation(
             fixture, lambda root: [], ('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)))
         proof.verify_current(fixture)
@@ -170,7 +218,7 @@ def shallow_acceptance(root=ROOT):
     with tempfile.TemporaryDirectory(prefix='cwp-composition-shallow-') as directory:
         fixture = Path(directory) / 'source'
         subprocess.run(['git', 'clone', '--quiet', '--depth', '1', '--no-tags', root.as_uri(), str(fixture)], check=True)
-        for path in proof.ADAPTERS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY}:
+        for path in proof.ADAPTERS | proof.REPAIRS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY}:
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(proof.ordinary(root, path))
