@@ -28,7 +28,20 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <?php elseif($content['has_html']&&!$content['format_available']): ?><p class="notice" data-message-format-unavailable>Formatted content is unavailable on this host. Use the plain text above, when provided, or open the message in your regular email app.</p><?php endif; ?>
 <?php if($content['text']===null&&$content['html']===null&&!$content['has_html']): ?><p data-message-no-body>No supported inline text was provided. Attachment contents are not displayed.</p><?php endif; ?>
 <?php if($content['additional_inline_parts']>0): ?><p class="hint"><?=(int)$content['additional_inline_parts']?> additional inline parts are not displayed.</p><?php endif; ?>
-</article><?php endif; ?>
+</article>
+<?php if(mail_replies_ready()&&mail_drafts_ready()): ?>
+<section class="workspace-card" data-mail-reply><h3>Reply or forward this message</h3>
+<?php if(!$replySenders): ?><p class="hint">No sending account is currently assigned to you. An owner can review your email account assignments before you reply or forward.</p>
+<?php else: ?>
+<p class="hint">The draft copies only the displayed message under your current access and saves it privately. Attachments, hidden recipients and raw headers are not copied. Nothing is sent until you review and send the saved draft.</p>
+<form method="post" action="<?=esc(admin_url('mail-message',$route))?>" data-mail-reply-form>
+<?=csrf_field()?><?php foreach($route as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?>
+<input type="hidden" name="draft_id" value="<?=esc(bin2hex(random_bytes(16)))?>">
+<label>From account<select name="sender" required><?php foreach($replySenders as $sendAccount): ?><option value="<?=esc($sendAccount['id'].':'.$sendAccount['revision'])?>"><?=esc($sendAccount['label'].' · '.$sendAccount['address'])?></option><?php endforeach; ?></select></label>
+<button class="btn gold" name="action" value="mail_message_reply">Reply</button>
+<button class="btn outline" name="action" value="mail_message_forward">Forward</button></form></section>
+<?php endif; endif; ?>
+<?php endif; ?>
 <?php $historyPage=max(1,min((int)($_GET['p']??1),100000));$history=mail_message_history($accountId,$historyPage); ?>
 <h3>Your recent message requests</h3><p class="hint">History keeps outcomes and message identifiers. Subjects, senders and message contents are not saved.</p>
 <?php if(!$history): ?><p>No message requests recorded.</p><?php endif; ?>

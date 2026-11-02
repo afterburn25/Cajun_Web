@@ -20,7 +20,7 @@ $accounts=$data['accounts'];
 <div class="workspace-grid">
 <?php foreach(array_slice($data['rows'],0,20) as $row): ?>
 <article class="workspace-card"><h2><a href="<?=esc(admin_url('mail-draft',['draft_id'=>$row['id']]))?>"><?=esc($row['subject']!==''?$row['subject']:'Untitled draft')?></a></h2>
-<p><?=badge($row['status'])?> · Saved version <?=(int)$row['revision']?></p><p>Updated <?=esc($row['updated_at'])?> UTC</p></article>
+<p><?=badge($row['status'])?><?php if(!empty($row['copied'])): ?> · Copied message<?php endif; ?> · Saved version <?=(int)$row['revision']?></p><p>Updated <?=esc($row['updated_at'])?> UTC</p></article>
 <?php endforeach; ?>
 </div>
 <?php if($accounts&&!$data['rows']): ?><p class="notice">You have no drafts in this view.</p><?php endif; ?>
@@ -31,7 +31,13 @@ $accounts=$data['accounts'];
 <?php else: $row=$data['row'];$values=$data['values']; ?>
 <p><a class="text-link" href="<?=esc(admin_url('mail-drafts',['account_id'=>$data['account']]))?>">Back to my drafts</a></p>
 <?php if($row&&$row['status']==='draft'): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-send',['draft_id'=>$data['id']]))?>">Review saved message for sending</a></p><?php endif; ?>
-<?php if($row): ?><p><?=badge($row['status'])?> · Saved version <?=(int)$row['revision']?> · Updated <?=esc($row['updated_at'])?> UTC</p><?php endif; ?>
+<?php if($row): ?><p><?=badge($row['status'])?><?php if(!empty($row['copied'])): ?> · Copied message<?php endif; ?> · Saved version <?=(int)$row['revision']?> · Updated <?=esc($row['updated_at'])?> UTC</p><?php endif; ?>
+<?php if($row&&!empty($row['copied'])): $origin=$row['origin']; ?>
+<section class="workspace-card" data-mail-draft-origin><h2>Message origin</h2>
+<p>This draft was created by <?=esc($origin['mode']==='reply'?'replying to':'forwarding')?> a message you loaded from an assigned inbox (UID <?=esc($origin['uid'])?>). The original stays on the server and is not stored here.</p>
+<?php if($origin['omissions']): ?><p class="notice warning">Not everything could be copied: <?=esc(implode('; ',array_map(static fn(string $flag):string=>match($flag){'subject_or_header_shortened'=>'a long subject or header was shortened','plain_text_unavailable'=>'no plain-text body was available in the source','additional_inline_parts'=>'additional inline message parts were not copied','quoted_text_shortened'=>'quoted text was shortened to fit the draft',default=>$flag},$origin['omissions'])))?>.</p><?php endif; ?>
+<p class="hint">Current access to the original inbox is rechecked whenever this draft opens or sends.</p></section>
+<?php endif; ?>
 <?php if($row&&(int)$row['revision']!==$data['revision']): ?><p class="notice warning">Your entered text is preserved with its earlier version. Open the saved draft in a separate tab to compare before making a new edit.</p><p><a class="btn outline" target="_blank" rel="noopener" href="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>">Open current saved version</a></p><?php endif; ?>
 <?php if($data['unsaved']!==null): ?>
 <section class="workspace-card" data-mail-draft-unsaved><h2>Your unsaved text</h2>

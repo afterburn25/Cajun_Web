@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "9f0a34152770bde7250b2a92d22fc69bf82cc9d1b0057b687952167b4cd9a9f6",
+  "verifier_sha256": "27f37e501c02d850d4c0bb6be5a0dc3fc318c2a1502a6eac0d958f3046f3f8c8",
   "regression_sha256": "05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -257,6 +257,589 @@
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
         ]
+      ]
+    },
+    "CHANGELOG.md": {
+      "original_sha256": "0d3059b972802813560edf62a39b445cba44f3b8403d31ce59b8701b6412fb6f",
+      "current_sha256": "4e23cb6ea9325fe9ac5e6fd23c9a5bf47c45e631935f55c6620d4a18ad3cb88f",
+      "edits": [
+        {
+          "value": [
+            "## Unreleased \u2014 current integration continuation (2026-11-01)\n",
+            "## Unreleased - 2026-11-02 reconcile port\n\nPort webmail reply/forward on protected copied drafts (PR161) onto the 1.26.1 consolidation base.\n\n## 2026-11-02 \u2014 PR317 financing acceptance correction\n\nThe complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.\n\nThis fixture follow-up adds one fresh rate-limit window before the first financing validation request. Two focused runs proved that repair, then exposed stale support-ready and paid-off workspace text expectations (234/235 and 259/260 passing checks respectively). The support fallback now requires the exact current owner-review message, absence of the setup form and both stored readiness settings. The two payoff text literals now follow the retained permanent-unlock requirement; domain-removal refusal, domain replacement and all other policy assertions remain intact. One finite repair row contains three exact inverses, preserving all seventy check sites, fourteen probes and eleven previous repairs. Final-source verification passed 56 filesystem cases, 12 shallow-history checks and all 2,763 maintained helpers. Following independent pre-execution review, the third focused journey passed all 65 native seed checks, 274 maintained HTTP/browser checks and fourteen original financing validation probes. Its separate exhausted-window control still returned ten HTTP 200 responses then two HTTP 429 responses, and the actual mobile capture was directly inspected. Source stayed unchanged and owned services stopped. Publication requires final independent source/runtime review, followed by full corrected hosted acceptance, final integration clearance, normal merge and exact-main verification; those hosted and merge gates are not implied by the focused result. See the current [handoff](SESSION_HANDOFF.md) for exact scope, retained failures and next action.\n\n## 2026-11-02 \u2014 PR317 full acceptance correction\n\nThe current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.\n\n## Unreleased \u2014 current integration continuation (2026-11-01)\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "docs/ADMIN_MAIL_ROADMAP.md": {
+      "original_sha256": "31875e44e509981d657b888a57dd7df8e6e7f2f5bd566c84512f8a5feffe0854",
+      "current_sha256": "2f73fc4dfef0948034099dd01097f2a6be30ba4a3cfceaa453460734acf1bc15",
+      "edits": [
+        {
+          "value": [
+            "\n## A-07 \u2014 Reusable sending templates\n",
+            "\n**Progress \u2014 2026-10-16:** Plain-text Reply and Forward are implemented on `devin/non20i-mail-replies` ([contract](MAIL_REPLY_FORWARD.md)): the exact message screen creates protected editable copies through a fresh authorized read, `mail_reply_drafts` preserves content/provenance behind content-free placeholders, format-2 submissions emit RFC `In-Reply-To`/`References`, and source Read authority gates every copied-content path. Still outstanding within A-06: reply-all, folders/Sent synchronization, attachments, HTML compose, OAuth and the full two-mailbox acceptance above.\n\n## A-07 \u2014 Reusable sending templates\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "foundation/mail-submission/PreparedMime.php": {
+      "original_sha256": "7098d40c00e9362a11d86867af54202a867c15ab6d8703d69fd220c1f2c462dd",
+      "current_sha256": "57d6ea2dc31d9e9627a4a33553bff2380c0d2438f35925440d33c40024d39861",
+      "edits": [
+        {
+          "value": [
+            "            $mail->isHTML(false);\n            if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');\n",
+            "            $mail->isHTML(false);\n            // RFC 5322 reply threading from the saved, exact snapshot context.\n            if($snapshot->thread!==null) {\n                $expected=0;\n                if($snapshot->thread->inReplyTo!==null){$expected++;if(!$mail->addCustomHeader('In-Reply-To',$snapshot->thread->inReplyTo))throw new PreparationFailure('encoding_failed');}\n                if($snapshot->thread->references!==[]){$expected++;if(!$mail->addCustomHeader('References',implode(' ',$snapshot->thread->references)))throw new PreparationFailure('encoding_failed');}\n                if(count($mail->getCustomHeaders())!==$expected)throw new PreparationFailure('encoding_failed');\n            }\n            if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "foundation/mail-submission/SubmissionSnapshot.php": {
+      "original_sha256": "4c4975d5e9b110db9c95dc0367111252386036ff7b2d0c551220d2c759bcc694",
+      "current_sha256": "5db65556acb830f23fe29433933160369fc8f1ba1fbe839ed4e215ccaf03df8c",
+      "edits": [
+        {
+          "value": [
+            "use CajunWebPro\\Foundation\\MailCompose\\DraftContent;\nuse InvalidArgumentException;\n",
+            "use CajunWebPro\\Foundation\\MailCompose\\DraftContent;\nuse CajunWebPro\\Foundation\\MailCompose\\MessageThread;\nuse InvalidArgumentException;\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "require_once __DIR__.'/../mail-compose/DraftContent.php';\n\n",
+            "require_once __DIR__.'/../mail-compose/DraftContent.php';\nrequire_once __DIR__.'/../mail-compose/MessageThread.php';\n\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        public int $preparedEpoch,\n    ) {\n",
+            "        public int $preparedEpoch,\n        public ?MessageThread $thread = null,\n        public ?string $originFingerprint = null,\n    ) {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "            throw new InvalidArgumentException('Select at least one recipient before preparing a submission.');\n        }\n",
+            "            throw new InvalidArgumentException('Select at least one recipient before preparing a submission.');\n        }\n        // Copied-content submissions bind their immutable origin and thread\n        // context together; one without the other is not a supported shape.\n        if (($thread===null)!==($originFingerprint===null)) {\n            throw new InvalidArgumentException('Copied-content submissions require thread context and origin binding together.');\n        }\n        if ($originFingerprint!==null && !preg_match('/\\A[a-f0-9]{64}\\z/',$originFingerprint)) {\n            throw new InvalidArgumentException('Invalid copied draft origin binding.');\n        }\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        return [\n",
+            "        $payload=[\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        ];\n    }\n",
+            "        ];\n        // Format 2 appends origin/thread fields; format-1 bytes stay identical.\n        if ($this->thread!==null) {\n            $payload['format']=2;\n            $payload['thread']=$this->thread->toArray();\n            $payload['origin_fingerprint']=$this->originFingerprint;\n        }\n        return $payload;\n    }\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/controllers/mail_drafts.php": {
+      "original_sha256": "656b0be5097be9ce9d2113176d02f1e67f1ce69782611fd89ec7b4113b1b57c2",
+      "current_sha256": "eda62c45120848c6a89dc027f545ecb13c249cc11aa9b333c2202bfc4f9dd880",
+      "edits": [
+        {
+          "value": [
+            "require_once CWP_CODE_ROOT.'/app/mail/drafts.php';\n\n",
+            "require_once CWP_CODE_ROOT.'/app/mail/drafts.php';\nrequire_once CWP_CODE_ROOT.'/app/mail/replies.php';\n\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    }\n    return staff_locked(function()use($action):?DraftContent {\n",
+            "    }\n    if($action==='mail_drafts_replies_setup') {\n        mail_replies_migrate(posted('current_password',200));flash('Protected Reply and Forward drafts are ready.');redirect(admin_url('mail-drafts'));\n    }\n    return staff_locked(function()use($action):?DraftContent {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        $revision=mail_drafts_form_revision($_POST,'revision');\n        if($action==='mail_drafts_discard') {\n",
+            "        $revision=mail_drafts_form_revision($_POST,'revision');\n        $copied=mail_replies_ready()&&one('SELECT id FROM '.table('mail_reply_drafts').' WHERE id=?',[$id]);\n        if($action==='mail_drafts_discard') {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "            $old=mail_drafts_get($id);mail_drafts_discard($id,$revision);\n",
+            "            $old=$copied?mail_reply_drafts_get($id):mail_drafts_get($id);\n            if($copied)mail_reply_drafts_discard($id,$revision);else mail_drafts_discard($id,$revision);\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        if($old) {\n            $old=mail_drafts_get($id);\n            if($old['status']!=='draft'||(int)$old['revision']!==$revision) {\n",
+            "        if($old) {\n            $old=$copied?mail_reply_drafts_get($id):mail_drafts_get($id);\n            if($old['status']!=='draft'||(int)$old['revision']!==$revision) {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "                if(!($action==='mail_drafts_save'&&$revision===0))throw new RuntimeException('The draft changed. Reload before continuing.');\n",
+            "                if(!($action==='mail_drafts_save'&&$revision===0&&!$copied))throw new RuntimeException('The draft changed. Reload before continuing.');\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        }elseif($revision!==0)throw new RuntimeException('The draft changed. Reload before continuing.');\n",
+            "        }elseif($revision!==0||$copied)throw new RuntimeException('The draft changed. Reload before continuing.');\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        mail_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');\n",
+            "        if($copied)mail_reply_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');\n        else mail_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        $row=$id!==''?mail_drafts_get($id):null;\n        $account=is_string($_GET['account_id']??null)?$_GET['account_id']:'';\n",
+            "        $row=$id!==''?mail_drafts_get($id):null;\n        if($row&&$row['status']==='source') {\n            // Copied-message drafts hold their real content and origin only in\n            // prepared protected storage; the placeholder is never editable.\n            if(!mail_replies_ready())throw new RuntimeException('This copied-message draft requires prepared Reply/Forward storage.');\n            $row=mail_reply_drafts_get($id)+['copied'=>true];\n        }\n        $account=is_string($_GET['account_id']??null)?$_GET['account_id']:'';\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        if($view==='mail-drafts')return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$account!==''?mail_drafts_list($account,$status,$page):[]];\n",
+            "        if($view==='mail-drafts') {\n            // One stable ordering applies the page boundary across both draft kinds;\n            // per-kind offsets would drop records between merged pages.\n            $rows=$account===''?[]:(mail_replies_ready()?mail_drafts_combined_list($account,$status,$page):mail_drafts_list($account,$status,$page));\n            return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$rows];\n        }\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?mail_drafts_history($id,$historyPage):[];\n",
+            "        $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?($row['copied']??false?mail_reply_drafts_history($id,$historyPage):mail_drafts_history($id,$historyPage)):[];\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    }else {\n        try {$data=mail_drafts_admin_data($view,$preview);require CWP_CODE_ROOT.'/admin/views/mail_drafts.php';}\n",
+            "    }else {\n        if(!mail_replies_ready()) {\n            echo '<section class=\"workspace-card\"><h2>Prepare protected Reply and Forward drafts</h2><p>Replying to or forwarding an inbox message copies it into a protected private draft. An owner prepares this storage once; existing drafts and submission history are preserved.</p>';\n            if($actor['role']==='owner') {echo '<form method=\"post\">';admin_action('mail_drafts_replies_setup');admin_input('current_password','Your current password','','password','required autocomplete=\"current-password\"');echo '<button class=\"btn gold\">Prepare Reply and Forward drafts</button></form>';}\n            else echo '<p>An owner must prepare protected drafts before Reply and Forward appear on inbox messages.</p>';\n            echo '</section>';\n        }\n        try {$data=mail_drafts_admin_data($view,$preview);require CWP_CODE_ROOT.'/admin/views/mail_drafts.php';}\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/controllers/mail_message.php": {
+      "original_sha256": "d0c856f6d5c9b8caf9ea52e51343e2a3bac9e74fa648d871e19da47af78fbe53",
+      "current_sha256": "5725bd137681e2ce3a6b8fef1af8cd2d9fe4ec02c9567b3a43598b5e045a096f",
+      "edits": [
+        {
+          "value": [
+            "require_once CWP_CODE_ROOT.'/app/mail/notices.php';\nfunction mail_message_route(): array {\n",
+            "require_once CWP_CODE_ROOT.'/app/mail/notices.php';\nrequire_once CWP_CODE_ROOT.'/app/mail/replies.php';\nrequire_once CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php';\nuse CajunWebPro\\Foundation\\MailCompose\\ReplyDraft;\nfunction mail_message_route(): array {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    if($action!=='mail_message_read'||($_GET['view']??null)!=='mail-message')throw new InvalidArgumentException('Open the current message form before requesting content.');\n",
+            "    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_reply','mail_message_forward'],true))throw new InvalidArgumentException('Open the current message form before requesting content.');\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);\n",
+            "    if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);\n    // Reply/Forward: stable posted draft identity resolves an exact replay without another mailbox request.\n    $mode=$action==='mail_message_reply'?'reply':'forward';\n    $draftId=posted('draft_id',32);mail_drafts_id($draftId);\n    [$sender,$senderRevision]=mail_drafts_form_reference(posted('sender',43));\n    if(mail_reply_drafts_existing($draftId,$route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],$mode,$sender,$senderRevision)) {\n        flash('Your existing draft for this message is open. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$draftId]));\n    }\n    $read=mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null,true);\n    if($read['code']!=='ok')return $read;\n    mail_reply_drafts_create($draftId,$sender,$senderRevision,$read,ReplyDraft::prepare($mode,$read['content']['source']));\n    flash('An editable draft was created from the loaded message. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$draftId]));\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        }\n    }catch(InvalidArgumentException|RuntimeException $e) {\n",
+            "        }\n        // Reply/Forward senders: only accounts with a current Send grant for this actor.\n        $replySenders=[];\n        if($result!==null&&$result['code']==='ok'&&mail_replies_ready()&&mail_drafts_ready()) {\n            try {\n                staff_locked(function()use(&$replySenders):void {\n                    foreach(array_slice(mail_accounts_assigned(1),0,20) as $assigned)if($assigned['can_send'])$replySenders[$assigned['id']]=mail_drafts_account($assigned['id']);\n                });\n            }catch(InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;$replySenders=[];}\n        }\n    }catch(InvalidArgumentException|RuntimeException $e) {\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/views/mail_drafts.php": {
+      "original_sha256": "af66f18d73869e8bbf2be2b5089fae45a35e477e5746ef2f2b22434ec2d4df9b",
+      "current_sha256": "17de0b764bd4ca6157cd9f3f4399170ccbe0dc646ce5881ebc02218be7f22fc2",
+      "edits": [
+        {
+          "value": [
+            "<p><?=badge($row['status'])?> \u00b7 Saved version <?=(int)$row['revision']?></p><p>Updated <?=esc($row['updated_at'])?> UTC</p></article>\n",
+            "<p><?=badge($row['status'])?><?php if(!empty($row['copied'])): ?> \u00b7 Copied message<?php endif; ?> \u00b7 Saved version <?=(int)$row['revision']?></p><p>Updated <?=esc($row['updated_at'])?> UTC</p></article>\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "<?php if($row): ?><p><?=badge($row['status'])?> \u00b7 Saved version <?=(int)$row['revision']?> \u00b7 Updated <?=esc($row['updated_at'])?> UTC</p><?php endif; ?>\n",
+            "<?php if($row): ?><p><?=badge($row['status'])?><?php if(!empty($row['copied'])): ?> \u00b7 Copied message<?php endif; ?> \u00b7 Saved version <?=(int)$row['revision']?> \u00b7 Updated <?=esc($row['updated_at'])?> UTC</p><?php endif; ?>\n<?php if($row&&!empty($row['copied'])): $origin=$row['origin']; ?>\n<section class=\"workspace-card\" data-mail-draft-origin><h2>Message origin</h2>\n<p>This draft was created by <?=esc($origin['mode']==='reply'?'replying to':'forwarding')?> a message you loaded from an assigned inbox (UID <?=esc($origin['uid'])?>). The original stays on the server and is not stored here.</p>\n<?php if($origin['omissions']): ?><p class=\"notice warning\">Not everything could be copied: <?=esc(implode('; ',array_map(static fn(string $flag):string=>match($flag){'subject_or_header_shortened'=>'a long subject or header was shortened','plain_text_unavailable'=>'no plain-text body was available in the source','additional_inline_parts'=>'additional inline message parts were not copied','quoted_text_shortened'=>'quoted text was shortened to fit the draft',default=>$flag},$origin['omissions'])))?>.</p><?php endif; ?>\n<p class=\"hint\">Current access to the original inbox is rechecked whenever this draft opens or sends.</p></section>\n<?php endif; ?>\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/views/mail_message.php": {
+      "original_sha256": "cb2762f4a0400b12877782f1c9b8311c5811bb9fef933fdb3e467bc9e2ee5a88",
+      "current_sha256": "e434e332c3387685369de5aad6fc8b3993a60c59919576479739bfbb402eec30",
+      "edits": [
+        {
+          "value": [
+            "</article><?php endif; ?>\n",
+            "</article>\n<?php if(mail_replies_ready()&&mail_drafts_ready()): ?>\n<section class=\"workspace-card\" data-mail-reply><h3>Reply or forward this message</h3>\n<?php if(!$replySenders): ?><p class=\"hint\">No sending account is currently assigned to you. An owner can review your email account assignments before you reply or forward.</p>\n<?php else: ?>\n<p class=\"hint\">The draft copies only the displayed message under your current access and saves it privately. Attachments, hidden recipients and raw headers are not copied. Nothing is sent until you review and send the saved draft.</p>\n<form method=\"post\" action=\"<?=esc(admin_url('mail-message',$route))?>\" data-mail-reply-form>\n<?=csrf_field()?><?php foreach($route as $key=>$value): ?><input type=\"hidden\" name=\"<?=esc($key)?>\" value=\"<?=esc($value)?>\"><?php endforeach; ?>\n<input type=\"hidden\" name=\"draft_id\" value=\"<?=esc(bin2hex(random_bytes(16)))?>\">\n<label>From account<select name=\"sender\" required><?php foreach($replySenders as $sendAccount): ?><option value=\"<?=esc($sendAccount['id'].':'.$sendAccount['revision'])?>\"><?=esc($sendAccount['label'].' \u00b7 '.$sendAccount['address'])?></option><?php endforeach; ?></select></label>\n<button class=\"btn gold\" name=\"action\" value=\"mail_message_reply\">Reply</button>\n<button class=\"btn outline\" name=\"action\" value=\"mail_message_forward\">Forward</button></form></section>\n<?php endif; endif; ?>\n<?php endif; ?>\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/app/mail/messages.php": {
+      "original_sha256": "75274a012250157603b25447836f501b7609a9c980b86f06584b290d8330c08a",
+      "current_sha256": "d5061fbf24e8f06a294b47f9a283f55c9feb0d51c70e9c6cfaac5a5807841846",
+      "edits": [
+        {
+          "value": [
+            "function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null): array {\n",
+            "function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null,bool $retainSource=false): array {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle):array {\n",
+            "    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle,$retainSource):array {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "                    $content=mail_message_content($response,$started['uidvalidity'],$started['uid']);\n                    $authorize();\n",
+            "                    $content=mail_message_content($response,$started['uidvalidity'],$started['uid']);\n                    // Only an internal caller that must re-parse the exact bytes\n                    // (protected Reply/Forward draft creation) may retain the raw\n                    // source; it is never persisted or returned to display paths.\n                    if($retainSource)$content['source']=$response['raw'];\n                    $authorize();\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/app/mail/submission_views.php": {
+      "original_sha256": "ddb6e170914c910a39e21950ab838af70d938d9217134ddfb87f2b8699c55178",
+      "current_sha256": "21165ec8496403fafbf5deb9cfb6a14ff9a3b31ebc384f31a1e77ee250b0f8ae",
+      "edits": [
+        {
+          "value": [
+            "            $result[]=['id'=>$row['id'],'draft_id'=>$row['draft_id'],'draft_revision'=>(int)$row['draft_revision'],'created_at'=>$row['created_at'],'subject'=>$message->snapshot->content->subject,'status'=>$status];\n",
+            "            // Copied content needs current origin Read; a revoked grant masks the subject rather than dropping history.\n            $subject=$message->snapshot->content->subject;\n            if($message->snapshot->thread!==null){try{mail_submissions_origin($row,$message,$actor);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$subject='Copied message unavailable';}}\n            $result[]=['id'=>$row['id'],'draft_id'=>$row['draft_id'],'draft_revision'=>(int)$row['draft_revision'],'created_at'=>$row['created_at'],'subject'=>$subject,'status'=>$status];\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        $actor=mail_submissions_actor();$saved=mail_drafts_get($draft);\n",
+            "        $actor=mail_submissions_actor();$saved=mail_drafts_get($draft);$thread=null;$originFingerprint=null;\n        if($saved['status']==='source') {\n            // Copied-message content lives only in prepared protected storage.\n            if(!mail_replies_ready())throw new RuntimeException('This copied-message draft requires prepared Reply/Forward storage.');\n            $saved=mail_reply_drafts_get($draft);\n            $copied=mail_reply_drafts_for_submission($draft,$actor);\n            $thread=$copied['thread'];$originFingerprint=$copied['origin_fingerprint'];\n        }\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        \\CajunWebPro\\Foundation\\MailSubmission\\PreparedMime::fromSnapshot(new \\CajunWebPro\\Foundation\\MailSubmission\\SubmissionSnapshot(str_repeat('0',32),(int)$actor['id'],$draft,(int)$saved['revision'],$account['id'],$account['revision'],$account['address'],$content,time()));\n",
+            "        \\CajunWebPro\\Foundation\\MailSubmission\\PreparedMime::fromSnapshot(new \\CajunWebPro\\Foundation\\MailSubmission\\SubmissionSnapshot(str_repeat('0',32),(int)$actor['id'],$draft,(int)$saved['revision'],$account['id'],$account['revision'],$account['address'],$content,time(),$thread,$originFingerprint));\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/app/mail/submissions.php": {
+      "original_sha256": "6a3875226b958dd15f119ee92c63df82716287c294b991193e6aeb10bc4916f3",
+      "current_sha256": "93f2cc10799361fca6e0f75862488ae6986003dcad3f968c9c23fff5779f247e",
+      "edits": [
+        {
+          "value": [
+            "require_once CWP_CODE_ROOT.'/app/mail/drafts.php';\nrequire_once CWP_CODE_ROOT.'/includes/foundation/mail-submission/TransportOutcome.php';\n",
+            "require_once CWP_CODE_ROOT.'/app/mail/drafts.php';\nrequire_once CWP_CODE_ROOT.'/app/mail/replies.php';\nrequire_once CWP_CODE_ROOT.'/includes/foundation/mail-submission/TransportOutcome.php';\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "use CajunWebPro\\Foundation\\MailCompose\\DraftContent;\n",
+            "use CajunWebPro\\Foundation\\MailCompose\\{DraftContent,MessageThread};\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        if(!is_array($p) || array_keys($p)!==['format','id','author_id','draft_id','draft_revision','account_id','account_revision','from','message_id','prepared_epoch','to','cc','bcc','subject','body'] || $p['format']!==1)throw new InvalidArgumentException('Invalid preparation format.');\n",
+            "        $base=['format','id','author_id','draft_id','draft_revision','account_id','account_revision','from','message_id','prepared_epoch','to','cc','bcc','subject','body'];\n        $format=is_array($p)?($p['format']??null):null;$thread=null;$origin=null;\n        if($format===1) {\n            if(array_keys($p)!==$base)throw new InvalidArgumentException('Invalid preparation format.');\n        }elseif($format===2) {\n            if(array_keys($p)!==[...$base,'thread','origin_fingerprint'])throw new InvalidArgumentException('Invalid preparation format.');\n            $thread=MessageThread::fromStored(is_array($p['thread'])?$p['thread']:[]);\n            if(!is_string($p['origin_fingerprint']))throw new InvalidArgumentException('Invalid copied draft binding.');\n            $origin=$p['origin_fingerprint'];\n        }else throw new InvalidArgumentException('Invalid preparation format.');\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch']);\n",
+            "        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch'],$thread,$origin);\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "}\nfunction mail_submissions_get(string $id):array {\n",
+            "}\n/** Stored copied content stays private only while current origin Read authority holds. */\nfunction mail_submissions_origin(array $row,PreparedMime $mime,array $actor):void {\n    if($mime->snapshot->thread===null)return;\n    if(!mail_replies_ready())throw new RuntimeException('Copied-message storage is unavailable. Existing data was preserved.');\n    $loaded=mail_reply_drafts_for_submission($row['draft_id'],$actor);\n    if(!hash_equals($loaded['origin_fingerprint'],(string)$mime->snapshot->originFingerprint)||$loaded['thread']->toArray()!==$mime->snapshot->thread->toArray())throw new RuntimeException('The copied draft origin changed. Existing data was preserved.');\n}\nfunction mail_submissions_get(string $id):array {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        $message=mail_submissions_message($row);\n",
+            "        $message=mail_submissions_message($row);mail_submissions_origin($row,$message,$actor);\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "            mail_drafts_account($existing['account_id']);mail_submissions_message($existing);return ['id'=>$id,'created'=>false];\n",
+            "            mail_drafts_account($existing['account_id']);mail_submissions_origin($existing,mail_submissions_message($existing),$actor);return ['id'=>$id,'created'=>false];\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        if($saved['status']!=='draft' || (int)$saved['revision']!==$draftRevision || (int)$saved['account_revision']!==$accountRevision)throw new RuntimeException('The draft or sender changed. Reload and review before submitting.');\n",
+            "        $thread=null;$originFingerprint=null;$content=null;\n        if($saved['status']==='source') {\n            // A copied-message draft keeps its content and immutable origin in\n            // protected storage; current source Read authority is revalidated here.\n            $copied=mail_reply_drafts_for_submission($draft,$actor,true);\n            if($copied['row']['status']!=='draft' || (int)$copied['base']['revision']!==$draftRevision || (int)$copied['base']['account_revision']!==$accountRevision || $copied['base']['account_id']!==$account['id'])throw new RuntimeException('The draft or sender changed. Reload and review before submitting.');\n            $content=$copied['content'];$thread=$copied['thread'];$originFingerprint=$copied['origin_fingerprint'];\n        }else {\n            if($saved['status']!=='draft' || (int)$saved['revision']!==$draftRevision || (int)$saved['account_revision']!==$accountRevision)throw new RuntimeException('The draft or sender changed. Reload and review before submitting.');\n            $content=mail_drafts_content($saved);\n        }\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "            mail_submissions_message($existing);return ['id'=>$existing['id'],'created'=>false];\n",
+            "            mail_submissions_origin($existing,mail_submissions_message($existing),$actor);return ['id'=>$existing['id'],'created'=>false];\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        $mime=PreparedMime::fromSnapshot(new SubmissionSnapshot($id,(int)$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$account['address'],mail_drafts_content($saved),$now));\n",
+            "        $mime=PreparedMime::fromSnapshot(new SubmissionSnapshot($id,(int)$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$account['address'],$content,$now,$thread,$originFingerprint));\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    if($saved['status']!=='draft' || (int)$saved['revision']!==(int)$row['draft_revision'] || $saved['account_id']!==$row['account_id'] || (int)$saved['account_revision']!==(int)$row['account_revision'])throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');\n",
+            "    $copied=$saved['status']==='source';\n    if($copied!==($mime->snapshot->thread!==null))throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');\n    if($copied) {\n        // Origin Read authority, integrity fingerprints and revision are all\n        // rechecked here; revoked access refuses dispatch of copied content.\n        $loaded=mail_reply_drafts_for_submission($row['draft_id'],$actor,db()->inTransaction());\n        if($loaded['row']['status']!=='draft' || (int)$loaded['base']['revision']!==(int)$row['draft_revision'] || $loaded['base']['account_id']!==$row['account_id'] || (int)$loaded['base']['account_revision']!==(int)$row['account_revision'])throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');\n        if(!hash_equals($loaded['origin_fingerprint'],(string)$mime->snapshot->originFingerprint) || $loaded['thread']->toArray()!==$mime->snapshot->thread->toArray())throw new RuntimeException('The reviewed draft origin changed. No message was submitted.');\n        $content=$loaded['content'];\n    }else {\n        if($saved['status']!=='draft' || (int)$saved['revision']!==(int)$row['draft_revision'] || $saved['account_id']!==$row['account_id'] || (int)$saved['account_revision']!==(int)$row['account_revision'])throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');\n        $content=mail_drafts_content($saved);\n    }\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    $content=mail_drafts_content($saved);$p=$mime->snapshot->content;\n",
+            "    $p=$mime->snapshot->content;\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/app/staff/accounts.php": {
+      "original_sha256": "770a254a1be25310872ae0f591c2d9ffa17f3c02538ee0f92ff36b88488ce21d",
+      "current_sha256": "170035dd6248ce4454de10aae65f36865fb4772501cfca44e21e480ae3733516",
+      "edits": [
+        {
+          "value": [
+            "    if($action==='mail_drafts_setup')return 'staff.manage';\n",
+            "    if(in_array($action,['mail_drafts_setup','mail_drafts_replies_setup'],true))return 'staff.manage';\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    if($action==='mail_message_read')return null; // mail_message_read enforces the exact current account scope.\n    if($action==='mail_inbox_setup')return 'staff.manage';\n",
+            "    if($action==='mail_message_read')return null; // mail_message_read enforces the exact current account scope.\n    if(in_array($action,['mail_message_reply','mail_message_forward'],true))return null; // Reply/Forward revalidate exact read authority and current Send access internally.\n    if($action==='mail_inbox_setup')return 'staff.manage';\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/includes/foundation/mail-submission/PreparedMime.php": {
+      "original_sha256": "7098d40c00e9362a11d86867af54202a867c15ab6d8703d69fd220c1f2c462dd",
+      "current_sha256": "57d6ea2dc31d9e9627a4a33553bff2380c0d2438f35925440d33c40024d39861",
+      "edits": [
+        {
+          "value": [
+            "            $mail->isHTML(false);\n            if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');\n",
+            "            $mail->isHTML(false);\n            // RFC 5322 reply threading from the saved, exact snapshot context.\n            if($snapshot->thread!==null) {\n                $expected=0;\n                if($snapshot->thread->inReplyTo!==null){$expected++;if(!$mail->addCustomHeader('In-Reply-To',$snapshot->thread->inReplyTo))throw new PreparationFailure('encoding_failed');}\n                if($snapshot->thread->references!==[]){$expected++;if(!$mail->addCustomHeader('References',implode(' ',$snapshot->thread->references)))throw new PreparationFailure('encoding_failed');}\n                if(count($mail->getCustomHeaders())!==$expected)throw new PreparationFailure('encoding_failed');\n            }\n            if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/includes/foundation/mail-submission/SubmissionSnapshot.php": {
+      "original_sha256": "4c4975d5e9b110db9c95dc0367111252386036ff7b2d0c551220d2c759bcc694",
+      "current_sha256": "5db65556acb830f23fe29433933160369fc8f1ba1fbe839ed4e215ccaf03df8c",
+      "edits": [
+        {
+          "value": [
+            "use CajunWebPro\\Foundation\\MailCompose\\DraftContent;\nuse InvalidArgumentException;\n",
+            "use CajunWebPro\\Foundation\\MailCompose\\DraftContent;\nuse CajunWebPro\\Foundation\\MailCompose\\MessageThread;\nuse InvalidArgumentException;\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "require_once __DIR__.'/../mail-compose/DraftContent.php';\n\n",
+            "require_once __DIR__.'/../mail-compose/DraftContent.php';\nrequire_once __DIR__.'/../mail-compose/MessageThread.php';\n\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        public int $preparedEpoch,\n    ) {\n",
+            "        public int $preparedEpoch,\n        public ?MessageThread $thread = null,\n        public ?string $originFingerprint = null,\n    ) {\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "            throw new InvalidArgumentException('Select at least one recipient before preparing a submission.');\n        }\n",
+            "            throw new InvalidArgumentException('Select at least one recipient before preparing a submission.');\n        }\n        // Copied-content submissions bind their immutable origin and thread\n        // context together; one without the other is not a supported shape.\n        if (($thread===null)!==($originFingerprint===null)) {\n            throw new InvalidArgumentException('Copied-content submissions require thread context and origin binding together.');\n        }\n        if ($originFingerprint!==null && !preg_match('/\\A[a-f0-9]{64}\\z/',$originFingerprint)) {\n            throw new InvalidArgumentException('Invalid copied draft origin binding.');\n        }\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        return [\n",
+            "        $payload=[\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        ];\n    }\n",
+            "        ];\n        // Format 2 appends origin/thread fields; format-1 bytes stay identical.\n        if ($this->thread!==null) {\n            $payload['format']=2;\n            $payload['thread']=$this->thread->toArray();\n            $payload['origin_fingerprint']=$this->originFingerprint;\n        }\n        return $payload;\n    }\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/apache_acceptance.py": {
+      "original_sha256": "6b13057ae453e252606982dd32e787c9c5f7c49f83dd16881c4732700ee0f45d",
+      "current_sha256": "66c03df9440f1c1b919ef5bb62c6aa57f7171899c2bc1e9d5a5b6a08c09ac699",
+      "edits": [
+        {
+          "value": [
+            "                for n in ['app/licenses/legacy.php', 'app/mail/submissions.php', 'app/mail/submission_dispatch.php', 'app/mail/submission_views.php', 'admin/controllers/mail_submissions.php', 'admin/views/mail_submissions.php', 'database/schema/mail_submissions_schema.php', 'database/migrations/mail_submissions_migrate.php', 'includes/foundation/mail-submission/SubmissionChannel.php', 'includes/foundation/mail-submission/vendor/phpmailer/src/SMTP.php', 'app/mail/drafts.php', 'admin/controllers/mail_drafts.php', 'admin/views/mail_drafts.php', 'database/schema/mail_drafts_schema.php', 'database/migrations/mail_drafts_migrate.php', 'includes/foundation/mail-compose/DraftContent.php', 'app/providers/settings.php', 'app/providers/credentials.php', 'app/providers/checks.php', 'admin/controllers/providers.php', 'admin/views/providers.php', 'database/schema/provider_settings_schema.php', 'database/migrations/provider_settings_migrate.php', 'includes/foundation/twentyi/FixedHttpTransport.php', 'includes/foundation/provider/ProviderGateway.php', 'app/mail/notices.php', 'admin/controllers/mail_notices.php', 'admin/views/mail_notices.php', 'api/handlers/mail_notices.php', 'database/schema/mail_notices_schema.php', 'database/migrations/mail_notices_migrate.php', 'app/mail/messages.php', 'admin/controllers/mail_message.php', 'admin/views/mail_message.php', 'database/schema/mail_messages_schema.php', 'database/migrations/mail_messages_migrate.php', 'includes/foundation/mail-receiving/MessageReader.php', 'includes/foundation/mail-receiving/BodyDecoder.php', 'includes/foundation/mail-receiving/BodyHtml.php', 'includes/foundation/mail-receiving/vendor/symfony/html-sanitizer/HtmlSanitizer.php', 'includes/foundation/mail-receiving/vendor/autoload.php', 'includes/foundation/mail-receiving/vendor/composer/installed.json', 'includes/foundation/mail-receiving/composer.lock', 'includes/bootstrap.php', 'app/staff/accounts.php', 'pages/home/body.php', 'database/schema/base.php', 'config/example.php', 'admin/controllers/router.php', 'admin/views/auth.php', 'portal/controllers/router.php', 'api/handlers/inquiry.php', 'media/serve.php', 'webhooks/authorize-net/receive.php', 'config.php', 'includes/', 'images/', 'assets/js/', 'storage/', 'upload/', 'app/clients/accounts.php', 'app/clients/identity.php', 'admin/views/studio/clients.php', 'portal/controllers/actions.php', 'app/hosting/records.php', 'app/hosting/storage.php', 'app/hosting/orders.php', 'app/hosting/order_document.php', 'app/hosting/fulfillment.php', 'app/hosting/fulfillment_views.php', 'app/hosting/fulfillment_confirmation.php', 'includes/layout/hosting_fulfillment.php', 'database/schema/hosting_fulfillment_schema.php', 'database/migrations/hosting_fulfillment_migrate.php', 'app/hosting/order_links.php', 'database/schema/hosting_order_links_schema.php', 'database/migrations/hosting_order_links_migrate.php', 'app/hosting/order_views.php', 'app/hosting/order_link_views.php', 'includes/layout/hosting_order_links.php', 'includes/layout/service_orders.php', 'database/schema/service_orders_schema.php', 'database/migrations/service_orders_migrate.php', 'app/hosting/operations.php', 'app/hosting/reconciliation.php', 'database/schema/hosting_reconciliation_schema.php', 'database/migrations/hosting_reconciliation_migrate.php', 'database/schema/hosting_records_schema.php', 'database/schema/hosting_operations_schema.php', 'database/migrations/hosting_records_migrate.php', 'database/migrations/hosting_operations_migrate.php', 'includes/foundation/hosting/HostingAccount.php', 'includes/foundation/hosting/HostingJournal.php', 'includes/foundation/hosting/HostingPackage.php', 'includes/foundation/hosting/OperationResult.php', 'includes/foundation/hosting/PlanChange.php', 'includes/foundation/hosting/StackCpGrant.php', 'app/plans/views.php', 'admin/controllers/plans.php', 'admin/views/plans.php', 'portal/controllers/plans.php', 'portal/views/plans.php', 'app/plans/forms.php', 'includes/layout/plans.php', 'app/plans/documents.php', 'admin/controllers/recurring_billing.php', 'portal/controllers/recurring_billing.php', 'includes/layout/recurring_billing.php', 'app/billing/recurring_billing_actions.php', 'app/billing/recurring_billing_views.php', 'app/billing/ledger_fulfillment.php', 'app/billing/recurring_billing_forms.php', 'app/billing/recurring_billing.php', 'app/billing/recurring_billing_invoices.php', 'database/schema/recurring_billing_schema.php', 'database/migrations/recurring_billing_migrate.php', 'app/plans/records.php', 'database/schema/service_plans_schema.php', 'database/migrations/service_plans_migrate.php', 'includes/foundation/service-plans/ServicePlan.php', 'includes/foundation/service-plans/PlanSubscription.php', 'app/providers/domain_search.php', 'app/providers/domain_search_clients.php', 'database/schema/provider_domain_client_schema.php', 'portal/controllers/domain_search.php', 'portal/views/domain_search.php', 'admin/views/provider_domain_clients.php', 'database/schema/provider_domain_search_schema.php', 'database/migrations/provider_domain_search_migrate.php', 'admin/views/provider_domain_search.php', 'includes/foundation/twentyi-inventory-reader/DomainSearch.php', 'includes/foundation/twentyi-operations/NameserverChange.php', 'includes/foundation/twentyi-operations/MailboxCreate.php', 'app/providers/mailbox_storage.php', 'app/providers/mailbox_policies.php', 'app/providers/mailboxes.php', 'app/providers/mailbox_views.php', 'database/schema/provider_mailbox_schema.php', 'admin/controllers/provider_mailboxes.php', 'admin/views/provider_mailboxes.php', 'portal/controllers/mailboxes.php', 'portal/views/mailboxes.php', 'app/providers/cloud_links.php', 'admin/views/provider_cloud.php', 'admin/views/provider_cloud_links.php', 'app/providers/domain_renewals.php', 'app/providers/domain_renewals_document.php', 'app/providers/domain_renewals_storage.php', 'app/providers/domain_renewals_views.php', 'admin/controllers/domain_renewals.php', 'admin/views/domain_renewals.php', 'portal/controllers/domain_renewals.php', 'portal/views/domain_renewals.php', 'database/schema/domain_renewals_schema.php', 'app/providers/service_observations.php', 'app/providers/service_observations_storage.php', 'app/providers/service_observations_document.php', 'app/providers/service_observations_views.php', 'admin/controllers/service_observations.php', 'admin/views/service_observations.php', 'portal/controllers/service_observations.php', 'portal/views/service_observations.php', 'database/schema/service_observations_schema.php', 'app/providers/registrar.php', 'app/providers/registrar_storage.php', 'database/schema/provider_registrar_schema.php', 'admin/controllers/provider_registrar.php', 'admin/views/provider_registrar.php', 'portal/views/registered_domains.php', 'includes/foundation/twentyi-inventory/InventoryDomain.php', 'app/providers/plan_catalog.php', 'app/providers/plan_catalog_document.php', 'database/schema/provider_plan_catalog_schema.php', 'includes/layout/provider_plan_catalog.php', 'includes/foundation/twentyi-operations/CloudWebsiteCreate.php', 'app/providers/cloud_sites.php', 'admin/views/provider_cloud_sites.php', 'app/providers/cloud_site_confirmation.php', 'app/providers/cloud_confirmation_storage.php', 'database/schema/provider_cloud_confirmation_schema.php', 'admin/controllers/provider_cloud_confirmation.php', 'admin/views/provider_cloud_confirmation.php', 'app/providers/forwarding.php', 'app/providers/forwarding_document.php', 'app/providers/forwarding_storage.php', 'app/providers/forwarding_views.php', 'admin/controllers/provider_forwarding.php', 'admin/views/provider_forwarding.php', 'portal/controllers/forwarding.php', 'portal/views/forwarding.php', 'database/schema/provider_forwarding_schema.php', 'includes/foundation/twentyi-operations/ForwardingRequest.php', 'app/jobs/run.php', 'app/providers/schedule.php', 'app/providers/schedule_document.php', 'app/providers/schedule_storage.php', 'admin/controllers/provider_schedule.php', 'admin/views/provider_schedule.php', 'database/schema/provider_schedule_schema.php', 'app/providers/registration_periods.php', 'app/providers/registration_period_storage.php', 'app/providers/registration_period_views.php', 'database/schema/provider_registration_period_schema.php', 'admin/controllers/provider_registration_periods.php', 'admin/views/provider_registration_periods.php', 'includes/foundation/twentyi-inventory/RegistrationPeriod.php', 'includes/foundation/twentyi-inventory-reader/RegistrationPeriods.php', 'app/providers/cloud_providers.php', 'app/providers/cloud_providers_storage.php', 'database/schema/provider_cloud_providers_schema.php', 'admin/controllers/provider_cloud_providers.php', 'admin/views/provider_cloud_providers.php', 'includes/foundation/twentyi-inventory/CloudProviderList.php', 'includes/foundation/twentyi-inventory/InventoryCloudProvider.php', 'app/providers/domain_contracts.php', 'app/providers/domain_contracts_storage.php', 'app/providers/domain_contracts_views.php', 'admin/controllers/domain_contracts.php', 'admin/views/domain_contracts.php', 'portal/controllers/domain_contracts.php', 'portal/views/domain_contracts.php', 'database/schema/domain_contracts_schema.php', 'includes/foundation/twentyi-domain-contracts/DomainContract.php', 'includes/foundation/twentyi-domain-contracts/DomainContractBinding.php', 'includes/foundation/twentyi-domain-contracts/DomainContractObservation.php', 'app/providers/package_php.php', 'app/providers/package_php_storage.php', 'app/providers/package_php_views.php', 'admin/controllers/provider_package_php.php', 'admin/views/provider_package_php.php', 'portal/controllers/package_php.php', 'portal/views/package_php.php', 'database/schema/provider_package_php_schema.php', 'includes/foundation/twentyi-package-php/PackagePhpVersion.php', 'includes/foundation/twentyi-package-php/PackagePhpVersionBinding.php', 'includes/foundation/twentyi-package-php/PackagePhpVersionObservation.php', 'app/providers/domain_expiry.php', 'app/providers/domain_expiry_storage.php', 'app/providers/domain_expiry_views.php', 'admin/controllers/domain_expiry.php', 'admin/views/domain_expiry.php', 'portal/controllers/domain_expiry.php', 'portal/views/domain_expiry.php', 'database/schema/domain_expiry_schema.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiry.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiryBinding.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiryObservation.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiryReader.php', 'app/providers/document_roots.php', 'app/providers/document_roots_storage.php', 'app/providers/document_roots_views.php', 'database/schema/provider_document_roots_schema.php', 'admin/controllers/provider_document_roots.php', 'admin/views/provider_document_roots.php', 'portal/controllers/document_roots.php', 'portal/views/document_roots.php', 'includes/foundation/twentyi-document-roots/DocumentRootsBinding.php', 'includes/foundation/twentyi-document-roots/DocumentRootsObservation.php', 'includes/foundation/twentyi-document-roots/DocumentRootsReader.php', 'app/providers/package_force_ssl.php', 'app/providers/package_force_ssl_storage.php', 'app/providers/package_force_ssl_views.php', 'admin/controllers/provider_package_force_ssl.php', 'admin/views/provider_package_force_ssl.php', 'portal/controllers/package_force_ssl.php', 'portal/views/package_force_ssl.php', 'database/schema/provider_package_force_ssl_schema.php', 'includes/foundation/twentyi-package-force-ssl/PackageForceSsl.php', 'includes/foundation/twentyi-package-force-ssl/PackageForceSslBinding.php', 'includes/foundation/twentyi-package-force-ssl/PackageForceSslObservation.php', 'app/providers/directory_listing.php', 'app/providers/directory_listing_storage.php', 'app/providers/directory_listing_views.php', 'admin/controllers/provider_directory_listing.php', 'admin/views/provider_directory_listing.php', 'portal/controllers/directory_listing.php', 'portal/views/directory_listing.php', 'database/schema/provider_directory_listing_schema.php', 'includes/foundation/twentyi-directory-listing/DirectoryListingBinding.php', 'includes/foundation/twentyi-directory-listing/DirectoryListingObservation.php', 'includes/foundation/twentyi-directory-listing/DirectoryListingReader.php', 'app/providers/force_ssl_controls.php', 'app/providers/force_ssl_controls_storage.php', 'app/providers/force_ssl_controls_views.php', 'admin/controllers/provider_force_ssl_controls.php', 'database/schema/provider_force_ssl_controls_schema.php', 'includes/foundation/twentyi-operations/ForceSslChange.php', 'app/providers/domain_renewal_agreements.php', 'app/providers/domain_renewal_agreements_document.php', 'app/providers/domain_renewal_agreements_storage.php', 'app/providers/domain_renewal_agreements_views.php', 'admin/controllers/domain_renewal_agreements.php', 'admin/views/domain_renewal_agreements.php', 'database/schema/domain_renewal_agreements_schema.php', 'app/providers/package_wordpress_installed.php', 'app/providers/package_wordpress_installed_storage.php', 'app/providers/package_wordpress_installed_views.php', 'database/schema/provider_package_wordpress_installed_schema.php', 'admin/controllers/provider_package_wordpress_installed.php', 'admin/views/provider_package_wordpress_installed.php', 'portal/controllers/package_wordpress_installed.php', 'portal/views/package_wordpress_installed.php', 'includes/foundation/twentyi-package-wordpress-installed/PackageWordpressInstalledBinding.php', 'includes/foundation/twentyi-package-wordpress-installed/PackageWordpressInstalledObservation.php', 'includes/foundation/twentyi-package-wordpress-installed/PackageWordpressInstalled.php', 'app/providers/domain_renewal_dispatch.php', 'app/providers/domain_renewal_dispatch_document.php', 'app/providers/domain_renewal_dispatch_storage.php', 'app/providers/domain_renewal_dispatch_views.php', 'app/providers/domain_renewal_dispatch_routes.php', 'admin/controllers/domain_renewal_dispatch.php', 'database/schema/domain_renewal_dispatch_schema.php', 'includes/foundation/twentyi-operations/DomainRenewal.php', 'app/providers/directory_listing_controls.php', 'app/providers/directory_listing_controls_storage.php', 'app/providers/directory_listing_controls_views.php', 'database/schema/provider_directory_listing_controls_schema.php', 'admin/controllers/provider_directory_listing_controls.php', 'includes/foundation/twentyi-operations/DirectoryIndexingChange.php', 'app/providers/stackcp_documents.php', 'app/providers/stackcp_auth_vault.php', 'app/providers/stackcp_auth_storage.php', 'app/providers/stackcp_read_projection.php', 'app/providers/stackcp_auth.php', 'app/providers/stackcp_assignment_storage.php', 'app/providers/stackcp_assignments.php', 'app/providers/stackcp_prerequisite_views.php', 'database/schema/provider_stackcp_auth_schema.php', 'database/schema/provider_stackcp_assignment_schema.php', 'admin/controllers/provider_stackcp_prerequisites.php', 'includes/foundation/twentyi-support-handoff/StackCpHandoffContext.php', 'includes/foundation/twentyi-support-handoff/StackCpHandoffContract.php', 'includes/foundation/twentyi-support-handoff/StackCpSensitiveResponse.php', 'admin/controllers/domain_registration_drafts.php', 'admin/views/domain_registration_drafts.php', 'app/providers/domain_registration_drafts.php', 'app/providers/domain_registration_drafts_crypto.php', 'app/providers/domain_registration_drafts_document.php', 'app/providers/domain_registration_drafts_storage.php', 'app/providers/domain_registration_drafts_views.php', 'database/schema/domain_registration_drafts_schema.php', 'includes/foundation/twentyi-domain-registration/RegistrationContact.php', 'includes/foundation/twentyi-domain-registration/RegistrationContract.php', 'includes/foundation/twentyi-domain-registration/RegistrationDraft.php', 'portal/controllers/domain_registration_drafts.php', 'portal/views/domain_registration_drafts.php', 'app/providers/stackcp_access.php', 'app/providers/stackcp_access_documents.php', 'app/providers/stackcp_access_sources.php', 'app/providers/stackcp_access_storage.php', 'app/providers/stackcp_access_views.php', 'admin/controllers/provider_stackcp_access.php', 'database/schema/provider_stackcp_access_schema.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessBinding.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessJson.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessObservation.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessRead.php', 'app/providers/cloud_assignment.php', 'app/providers/cloud_assignment_storage.php', 'database/schema/provider_cloud_assignment_schema.php', 'includes/foundation/twentyi-cloud-assignment/CloudAssignmentBinding.php']:\n",
+            "                for n in ['app/licenses/legacy.php', 'app/mail/submissions.php', 'app/mail/submission_dispatch.php', 'app/mail/submission_views.php', 'admin/controllers/mail_submissions.php', 'admin/views/mail_submissions.php', 'database/schema/mail_submissions_schema.php', 'database/migrations/mail_submissions_migrate.php', 'includes/foundation/mail-submission/SubmissionChannel.php', 'includes/foundation/mail-submission/vendor/phpmailer/src/SMTP.php', 'app/mail/drafts.php', 'admin/controllers/mail_drafts.php', 'admin/views/mail_drafts.php', 'database/schema/mail_drafts_schema.php', 'database/migrations/mail_drafts_migrate.php', 'includes/foundation/mail-compose/DraftContent.php', 'app/providers/settings.php', 'app/providers/credentials.php', 'app/providers/checks.php', 'admin/controllers/providers.php', 'admin/views/providers.php', 'database/schema/provider_settings_schema.php', 'database/migrations/provider_settings_migrate.php', 'includes/foundation/twentyi/FixedHttpTransport.php', 'includes/foundation/provider/ProviderGateway.php', 'app/mail/notices.php', 'admin/controllers/mail_notices.php', 'admin/views/mail_notices.php', 'api/handlers/mail_notices.php', 'database/schema/mail_notices_schema.php', 'database/migrations/mail_notices_migrate.php', 'app/mail/messages.php', 'admin/controllers/mail_message.php', 'admin/views/mail_message.php', 'database/schema/mail_messages_schema.php', 'database/migrations/mail_messages_migrate.php', 'includes/foundation/mail-receiving/MessageReader.php', 'includes/foundation/mail-receiving/BodyDecoder.php', 'includes/foundation/mail-receiving/BodyHtml.php', 'includes/foundation/mail-receiving/vendor/symfony/html-sanitizer/HtmlSanitizer.php', 'includes/foundation/mail-receiving/vendor/autoload.php', 'includes/foundation/mail-receiving/vendor/composer/installed.json', 'includes/foundation/mail-receiving/composer.lock', 'includes/bootstrap.php', 'app/staff/accounts.php', 'pages/home/body.php', 'database/schema/base.php', 'config/example.php', 'admin/controllers/router.php', 'admin/views/auth.php', 'portal/controllers/router.php', 'api/handlers/inquiry.php', 'media/serve.php', 'webhooks/authorize-net/receive.php', 'config.php', 'includes/', 'images/', 'assets/js/', 'storage/', 'upload/', 'app/clients/accounts.php', 'app/clients/identity.php', 'admin/views/studio/clients.php', 'portal/controllers/actions.php', 'app/hosting/records.php', 'app/hosting/storage.php', 'app/hosting/orders.php', 'app/hosting/order_document.php', 'app/hosting/fulfillment.php', 'app/hosting/fulfillment_views.php', 'app/hosting/fulfillment_confirmation.php', 'includes/layout/hosting_fulfillment.php', 'database/schema/hosting_fulfillment_schema.php', 'database/migrations/hosting_fulfillment_migrate.php', 'app/hosting/order_links.php', 'database/schema/hosting_order_links_schema.php', 'database/migrations/hosting_order_links_migrate.php', 'app/hosting/order_views.php', 'app/hosting/order_link_views.php', 'includes/layout/hosting_order_links.php', 'includes/layout/service_orders.php', 'database/schema/service_orders_schema.php', 'database/migrations/service_orders_migrate.php', 'app/hosting/operations.php', 'app/hosting/reconciliation.php', 'database/schema/hosting_reconciliation_schema.php', 'database/migrations/hosting_reconciliation_migrate.php', 'database/schema/hosting_records_schema.php', 'database/schema/hosting_operations_schema.php', 'database/migrations/hosting_records_migrate.php', 'database/migrations/hosting_operations_migrate.php', 'includes/foundation/hosting/HostingAccount.php', 'includes/foundation/hosting/HostingJournal.php', 'includes/foundation/hosting/HostingPackage.php', 'includes/foundation/hosting/OperationResult.php', 'includes/foundation/hosting/PlanChange.php', 'includes/foundation/hosting/StackCpGrant.php', 'app/plans/views.php', 'admin/controllers/plans.php', 'admin/views/plans.php', 'portal/controllers/plans.php', 'portal/views/plans.php', 'app/plans/forms.php', 'includes/layout/plans.php', 'app/plans/documents.php', 'admin/controllers/recurring_billing.php', 'portal/controllers/recurring_billing.php', 'includes/layout/recurring_billing.php', 'app/billing/recurring_billing_actions.php', 'app/billing/recurring_billing_views.php', 'app/billing/ledger_fulfillment.php', 'app/billing/recurring_billing_forms.php', 'app/billing/recurring_billing.php', 'app/billing/recurring_billing_invoices.php', 'database/schema/recurring_billing_schema.php', 'database/migrations/recurring_billing_migrate.php', 'app/plans/records.php', 'database/schema/service_plans_schema.php', 'database/migrations/service_plans_migrate.php', 'includes/foundation/service-plans/ServicePlan.php', 'includes/foundation/service-plans/PlanSubscription.php', 'app/providers/domain_search.php', 'app/providers/domain_search_clients.php', 'database/schema/provider_domain_client_schema.php', 'portal/controllers/domain_search.php', 'portal/views/domain_search.php', 'admin/views/provider_domain_clients.php', 'database/schema/provider_domain_search_schema.php', 'database/migrations/provider_domain_search_migrate.php', 'admin/views/provider_domain_search.php', 'includes/foundation/twentyi-inventory-reader/DomainSearch.php', 'includes/foundation/twentyi-operations/NameserverChange.php', 'includes/foundation/twentyi-operations/MailboxCreate.php', 'app/providers/mailbox_storage.php', 'app/providers/mailbox_policies.php', 'app/providers/mailboxes.php', 'app/providers/mailbox_views.php', 'database/schema/provider_mailbox_schema.php', 'admin/controllers/provider_mailboxes.php', 'admin/views/provider_mailboxes.php', 'portal/controllers/mailboxes.php', 'portal/views/mailboxes.php', 'app/providers/cloud_links.php', 'admin/views/provider_cloud.php', 'admin/views/provider_cloud_links.php', 'app/providers/domain_renewals.php', 'app/providers/domain_renewals_document.php', 'app/providers/domain_renewals_storage.php', 'app/providers/domain_renewals_views.php', 'admin/controllers/domain_renewals.php', 'admin/views/domain_renewals.php', 'portal/controllers/domain_renewals.php', 'portal/views/domain_renewals.php', 'database/schema/domain_renewals_schema.php', 'app/providers/service_observations.php', 'app/providers/service_observations_storage.php', 'app/providers/service_observations_document.php', 'app/providers/service_observations_views.php', 'admin/controllers/service_observations.php', 'admin/views/service_observations.php', 'portal/controllers/service_observations.php', 'portal/views/service_observations.php', 'database/schema/service_observations_schema.php', 'app/providers/registrar.php', 'app/providers/registrar_storage.php', 'database/schema/provider_registrar_schema.php', 'admin/controllers/provider_registrar.php', 'admin/views/provider_registrar.php', 'portal/views/registered_domains.php', 'includes/foundation/twentyi-inventory/InventoryDomain.php', 'app/providers/plan_catalog.php', 'app/providers/plan_catalog_document.php', 'database/schema/provider_plan_catalog_schema.php', 'includes/layout/provider_plan_catalog.php', 'includes/foundation/twentyi-operations/CloudWebsiteCreate.php', 'app/providers/cloud_sites.php', 'admin/views/provider_cloud_sites.php', 'app/providers/cloud_site_confirmation.php', 'app/providers/cloud_confirmation_storage.php', 'database/schema/provider_cloud_confirmation_schema.php', 'admin/controllers/provider_cloud_confirmation.php', 'admin/views/provider_cloud_confirmation.php', 'app/providers/forwarding.php', 'app/providers/forwarding_document.php', 'app/providers/forwarding_storage.php', 'app/providers/forwarding_views.php', 'admin/controllers/provider_forwarding.php', 'admin/views/provider_forwarding.php', 'portal/controllers/forwarding.php', 'portal/views/forwarding.php', 'database/schema/provider_forwarding_schema.php', 'includes/foundation/twentyi-operations/ForwardingRequest.php', 'app/jobs/run.php', 'app/providers/schedule.php', 'app/providers/schedule_document.php', 'app/providers/schedule_storage.php', 'admin/controllers/provider_schedule.php', 'admin/views/provider_schedule.php', 'database/schema/provider_schedule_schema.php', 'app/providers/registration_periods.php', 'app/providers/registration_period_storage.php', 'app/providers/registration_period_views.php', 'database/schema/provider_registration_period_schema.php', 'admin/controllers/provider_registration_periods.php', 'admin/views/provider_registration_periods.php', 'includes/foundation/twentyi-inventory/RegistrationPeriod.php', 'includes/foundation/twentyi-inventory-reader/RegistrationPeriods.php', 'app/providers/cloud_providers.php', 'app/providers/cloud_providers_storage.php', 'database/schema/provider_cloud_providers_schema.php', 'admin/controllers/provider_cloud_providers.php', 'admin/views/provider_cloud_providers.php', 'includes/foundation/twentyi-inventory/CloudProviderList.php', 'includes/foundation/twentyi-inventory/InventoryCloudProvider.php', 'app/providers/domain_contracts.php', 'app/providers/domain_contracts_storage.php', 'app/providers/domain_contracts_views.php', 'admin/controllers/domain_contracts.php', 'admin/views/domain_contracts.php', 'portal/controllers/domain_contracts.php', 'portal/views/domain_contracts.php', 'database/schema/domain_contracts_schema.php', 'includes/foundation/twentyi-domain-contracts/DomainContract.php', 'includes/foundation/twentyi-domain-contracts/DomainContractBinding.php', 'includes/foundation/twentyi-domain-contracts/DomainContractObservation.php', 'app/providers/package_php.php', 'app/providers/package_php_storage.php', 'app/providers/package_php_views.php', 'admin/controllers/provider_package_php.php', 'admin/views/provider_package_php.php', 'portal/controllers/package_php.php', 'portal/views/package_php.php', 'database/schema/provider_package_php_schema.php', 'includes/foundation/twentyi-package-php/PackagePhpVersion.php', 'includes/foundation/twentyi-package-php/PackagePhpVersionBinding.php', 'includes/foundation/twentyi-package-php/PackagePhpVersionObservation.php', 'app/providers/domain_expiry.php', 'app/providers/domain_expiry_storage.php', 'app/providers/domain_expiry_views.php', 'admin/controllers/domain_expiry.php', 'admin/views/domain_expiry.php', 'portal/controllers/domain_expiry.php', 'portal/views/domain_expiry.php', 'database/schema/domain_expiry_schema.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiry.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiryBinding.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiryObservation.php', 'includes/foundation/twentyi-domain-expiry/DomainExpiryReader.php', 'app/providers/document_roots.php', 'app/providers/document_roots_storage.php', 'app/providers/document_roots_views.php', 'database/schema/provider_document_roots_schema.php', 'admin/controllers/provider_document_roots.php', 'admin/views/provider_document_roots.php', 'portal/controllers/document_roots.php', 'portal/views/document_roots.php', 'includes/foundation/twentyi-document-roots/DocumentRootsBinding.php', 'includes/foundation/twentyi-document-roots/DocumentRootsObservation.php', 'includes/foundation/twentyi-document-roots/DocumentRootsReader.php', 'app/providers/package_force_ssl.php', 'app/providers/package_force_ssl_storage.php', 'app/providers/package_force_ssl_views.php', 'admin/controllers/provider_package_force_ssl.php', 'admin/views/provider_package_force_ssl.php', 'portal/controllers/package_force_ssl.php', 'portal/views/package_force_ssl.php', 'database/schema/provider_package_force_ssl_schema.php', 'includes/foundation/twentyi-package-force-ssl/PackageForceSsl.php', 'includes/foundation/twentyi-package-force-ssl/PackageForceSslBinding.php', 'includes/foundation/twentyi-package-force-ssl/PackageForceSslObservation.php', 'app/providers/directory_listing.php', 'app/providers/directory_listing_storage.php', 'app/providers/directory_listing_views.php', 'admin/controllers/provider_directory_listing.php', 'admin/views/provider_directory_listing.php', 'portal/controllers/directory_listing.php', 'portal/views/directory_listing.php', 'database/schema/provider_directory_listing_schema.php', 'includes/foundation/twentyi-directory-listing/DirectoryListingBinding.php', 'includes/foundation/twentyi-directory-listing/DirectoryListingObservation.php', 'includes/foundation/twentyi-directory-listing/DirectoryListingReader.php', 'app/providers/force_ssl_controls.php', 'app/providers/force_ssl_controls_storage.php', 'app/providers/force_ssl_controls_views.php', 'admin/controllers/provider_force_ssl_controls.php', 'database/schema/provider_force_ssl_controls_schema.php', 'includes/foundation/twentyi-operations/ForceSslChange.php', 'app/providers/domain_renewal_agreements.php', 'app/providers/domain_renewal_agreements_document.php', 'app/providers/domain_renewal_agreements_storage.php', 'app/providers/domain_renewal_agreements_views.php', 'admin/controllers/domain_renewal_agreements.php', 'admin/views/domain_renewal_agreements.php', 'database/schema/domain_renewal_agreements_schema.php', 'app/providers/package_wordpress_installed.php', 'app/providers/package_wordpress_installed_storage.php', 'app/providers/package_wordpress_installed_views.php', 'database/schema/provider_package_wordpress_installed_schema.php', 'admin/controllers/provider_package_wordpress_installed.php', 'admin/views/provider_package_wordpress_installed.php', 'portal/controllers/package_wordpress_installed.php', 'portal/views/package_wordpress_installed.php', 'includes/foundation/twentyi-package-wordpress-installed/PackageWordpressInstalledBinding.php', 'includes/foundation/twentyi-package-wordpress-installed/PackageWordpressInstalledObservation.php', 'includes/foundation/twentyi-package-wordpress-installed/PackageWordpressInstalled.php', 'app/providers/domain_renewal_dispatch.php', 'app/providers/domain_renewal_dispatch_document.php', 'app/providers/domain_renewal_dispatch_storage.php', 'app/providers/domain_renewal_dispatch_views.php', 'app/providers/domain_renewal_dispatch_routes.php', 'admin/controllers/domain_renewal_dispatch.php', 'database/schema/domain_renewal_dispatch_schema.php', 'includes/foundation/twentyi-operations/DomainRenewal.php', 'app/providers/directory_listing_controls.php', 'app/providers/directory_listing_controls_storage.php', 'app/providers/directory_listing_controls_views.php', 'database/schema/provider_directory_listing_controls_schema.php', 'admin/controllers/provider_directory_listing_controls.php', 'includes/foundation/twentyi-operations/DirectoryIndexingChange.php', 'app/providers/stackcp_documents.php', 'app/providers/stackcp_auth_vault.php', 'app/providers/stackcp_auth_storage.php', 'app/providers/stackcp_read_projection.php', 'app/providers/stackcp_auth.php', 'app/providers/stackcp_assignment_storage.php', 'app/providers/stackcp_assignments.php', 'app/providers/stackcp_prerequisite_views.php', 'database/schema/provider_stackcp_auth_schema.php', 'database/schema/provider_stackcp_assignment_schema.php', 'admin/controllers/provider_stackcp_prerequisites.php', 'includes/foundation/twentyi-support-handoff/StackCpHandoffContext.php', 'includes/foundation/twentyi-support-handoff/StackCpHandoffContract.php', 'includes/foundation/twentyi-support-handoff/StackCpSensitiveResponse.php', 'admin/controllers/domain_registration_drafts.php', 'admin/views/domain_registration_drafts.php', 'app/providers/domain_registration_drafts.php', 'app/providers/domain_registration_drafts_crypto.php', 'app/providers/domain_registration_drafts_document.php', 'app/providers/domain_registration_drafts_storage.php', 'app/providers/domain_registration_drafts_views.php', 'database/schema/domain_registration_drafts_schema.php', 'includes/foundation/twentyi-domain-registration/RegistrationContact.php', 'includes/foundation/twentyi-domain-registration/RegistrationContract.php', 'includes/foundation/twentyi-domain-registration/RegistrationDraft.php', 'portal/controllers/domain_registration_drafts.php', 'portal/views/domain_registration_drafts.php', 'app/providers/stackcp_access.php', 'app/providers/stackcp_access_documents.php', 'app/providers/stackcp_access_sources.php', 'app/providers/stackcp_access_storage.php', 'app/providers/stackcp_access_views.php', 'admin/controllers/provider_stackcp_access.php', 'database/schema/provider_stackcp_access_schema.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessBinding.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessJson.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessObservation.php', 'includes/foundation/twentyi-stackcp-access/StackCpAccessRead.php', 'app/providers/cloud_assignment.php', 'app/providers/cloud_assignment_storage.php', 'database/schema/provider_cloud_assignment_schema.php', 'includes/foundation/twentyi-cloud-assignment/CloudAssignmentBinding.php', 'app/mail/replies.php', 'database/schema/mail_replies_schema.php', 'database/migrations/mail_replies_migrate.php', 'includes/foundation/mail-compose/DraftOrigin.php', 'includes/foundation/mail-compose/MessageThread.php', 'includes/foundation/mail-compose/ReplyDraft.php', 'includes/foundation/mail-compose/ReplyMetadata.php']:\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/browser_acceptance.py": {
+      "original_sha256": "0a1f1248faaef87afa5ce07c03118bd4f5163035f73e6fe3715cc5b8e36ef114",
+      "current_sha256": "05a4046b4547ab1ad1caac2f1d603f4771c709fe23b87e48f14b2e90bad4c4c9",
+      "edits": [
+        {
+          "value": [
+            "            submissions_browser(globals(),browser)\n            from client_authority_cases import run_browser as client_authority_browser\n",
+            "            submissions_browser(globals(),browser)\n            from mail_reply_cases import run_browser as reply_browser\n            reply_browser(globals(),browser)\n            from client_authority_cases import run_browser as client_authority_browser\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/mail_inbox_http_server.py": {
+      "original_sha256": "37fcc014d33ba7b6510508b2b66fb0ecdf7807140558cebe99c7e94505b3df4b",
+      "current_sha256": "f419383c115ca1aa4d767fbaa3c8ec7aa57cb1873be039590fde9bd4d25c0aa1",
+      "edits": [
+        {
+          "value": [
+            "                    head='From: Synthetic sender <synthetic@example.net>\\r\\nSubject: SYNTHETIC PRIVATE MESSAGE <img src=\"https://untrusted.example.invalid/header\">\\r\\nDate: Tue, 13 Oct 2026 12:00:00 +0000\\r\\nMIME-Version: 1.0\\r\\n'\n",
+            "                    head='From: Synthetic sender <synthetic@example.net>\\r\\nSubject: SYNTHETIC PRIVATE MESSAGE <img src=\"https://untrusted.example.invalid/header\">\\r\\nDate: Tue, 13 Oct 2026 12:00:00 +0000\\r\\nMessage-ID: <synthetic-82@example.invalid>\\r\\nMIME-Version: 1.0\\r\\n'\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/mail_submission_server.py": {
+      "original_sha256": "3cbd5e4e2a37d5097a0fb6fb8cb989515dcf887a627fc41b3499b5a1eade37f6",
+      "current_sha256": "fb7b6d970aaf1c3bd40f3a071d795ca54b3ef76a2468902dbe6abc99e117cdab",
+      "edits": [
+        {
+          "value": [
+            "        self.mode='accepted';self.encryption='ssl';self.connections=0;self.attempts=[];self.errors=[]\n        self.stopped=threading.Event();self.idle=threading.Event();self.idle.set()\n",
+            "        self.mode='accepted';self.encryption='ssl';self.connections=0;self.attempts=[];self.errors=[]\n        self.sender='sender@example.invalid';self.recipients=['first@example.invalid','copy@example.invalid','private@example.invalid']\n        self.stopped=threading.Event();self.idle=threading.Event();self.idle.set()\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    def configure(self,encryption='ssl',mode='accepted'):\n",
+            "    def configure(self,encryption='ssl',mode='accepted',sender=None,recipients=None):\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        assert mode in ('accepted','authentication','sender','recipient','data','final450','final550','disconnect_final','malformed_final','disconnect_body')\n        self.encryption=encryption;self.mode=mode\n",
+            "        assert mode in ('accepted','authentication','sender','recipient','data','final450','final550','disconnect_final','malformed_final','disconnect_body')\n        self.sender=sender or 'sender@example.invalid'\n        recipients=['first@example.invalid','copy@example.invalid','private@example.invalid'] if recipients is None else list(recipients)\n        assert 0<len(recipients)<=10 and all(isinstance(a,str) and '@' in a for a in recipients),'Synthetic recipient list invalid'\n        self.recipients=recipients\n        self.encryption=encryption;self.mode=mode\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "            self.idle.clear();self.connections+=1;mode=self.mode;encryption=self.encryption\n            attempt={'mode':mode,'encryption':encryption,'commands':[],'data':b'','terminator':False,'authenticated':False,'recipients':[]}\n",
+            "            self.idle.clear();self.connections+=1;mode=self.mode;encryption=self.encryption\n            sender=self.sender;recipients=list(self.recipients)\n            attempt={'mode':mode,'encryption':encryption,'commands':[],'data':b'','terminator':False,'authenticated':False,'recipients':[]}\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "                expect('MAIL FROM:<sender@example.invalid>');send('550 Sender refused' if mode=='sender' else '250 Sender accepted')\n",
+            "                expect('MAIL FROM:<'+sender+'>');send('550 Sender refused' if mode=='sender' else '250 Sender accepted')\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "                for address in ['first@example.invalid','copy@example.invalid','private@example.invalid']:\n",
+            "                for index,address in enumerate(recipients):\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "                    refused=mode=='recipient' and address=='copy@example.invalid'\n",
+            "                    refused=mode=='recipient' and index==1\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tools/acceptance-contract.json": {
+      "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
+      "current_sha256": "e4bf74cc50980ff24f33c3274e0fd02eb4db1817c31e915238b85bb0c21e68b9",
+      "edits": [
+        {
+          "value": [
+            "    \"tests/browser_acceptance.py\": \"254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10\",\n",
+            "    \"tests/browser_acceptance.py\": \"05a4046b4547ab1ad1caac2f1d603f4771c709fe23b87e48f14b2e90bad4c4c9\",\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    \"tests/apache_acceptance.py\": \"cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703\",\n",
+            "    \"tests/apache_acceptance.py\": \"66c03df9440f1c1b919ef5bb62c6aa57f7171899c2bc1e9d5a5b6a08c09ac699\",\n"
+          ],
+          "Count": 2
+        }
       ]
     }
   }
