@@ -41,6 +41,43 @@ REPAIRS = frozenset((
     'tests/owner_browser_forms_test.py',
     'tests/provider_force_ssl_controls_cases.py',
     'tests/provider_directory_listing_controls_cases.py',
+    'docs/CLIENT_PORTAL_ROADMAP.md',
+    'site/admin/controllers/studio.php',
+    'site/admin/views/studio.php',
+    'site/admin/views/studio/job.php',
+    'site/app/clients/files.php',
+    'site/app/clients/workspace.php',
+    'site/app/staff/accounts.php',
+    'site/database/migrations/provider_inventory_migrate.php',
+    'site/database/migrations/workspace.php',
+    'site/database/schema/base.php',
+    'site/database/schema/workspace.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/workspace.php',
+    'tests/activity_cases.py',
+    'tests/browser_acceptance.py',
+    'tests/catalog_cases.py',
+    'tests/client_authority_native.php',
+    'tests/delivery_cases.py',
+    'tests/delivery_native.php',
+    'tests/hosting_delete_retry_native.php',
+    'tests/hosting_operations_native.php',
+    'tests/hosting_reconciliation_native.php',
+    'tests/hosting_records_native.php',
+    'tests/hosting_retry_native.php',
+    'tests/ledger_cases.py',
+    'tests/ledger_native.php',
+    'tests/license_native.php',
+    'tests/native.php',
+    'tests/notifications_cases.py',
+    'tests/payments_cases.py',
+    'tests/portfolio_cases.py',
+    'tests/provider_inventory_native.php',
+    'tests/provider_inventory_upgrade_native.php',
+    'tests/release_cases.py',
+    'tests/staff_cases.py',
+    'tests/support_cases.py',
+    'tools/acceptance-contract.json',
     'tools/acceptance-reports.json',
     'tests/acceptance_artifacts_test.py',
     'tests/cloud_site_requests_wiring.py',
@@ -66,7 +103,7 @@ REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb7974680
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'tools/acceptance-contract.json': '9cb82c404f319a5e34a74b9d2ebc9e18ea8f7f46597561fa3c4aabfb1ee364b1', 'tests/support_cases.py': 'ce5f25ac29b441282afad637752e89ccfffecb1e56fa71ab939aae7414f54ca1', 'tests/staff_cases.py': 'ea64ca8a2e19ee1eb4db354b28d312cb4d5316663e67a9d809b386a07eca3771', 'tests/release_cases.py': 'b039a52bb03c288cafdfc950ba7cb13a089764e987e6247209e7c6f6ddbe9256', 'tests/provider_inventory_upgrade_native.php': '3da1192df5035e3fc70402b914fc582d16732abdd645034248cbd9d5c6d5ab5d', 'tests/provider_inventory_native.php': '15b482ff6c958f6f87cdb7460ea771ea7257937ac32170690f997ae4415bbd5c', 'tests/portfolio_cases.py': '1bdb65c7bdc16ccb3987bdb8d1c9b0d87f3f75f789f778fc4ac26fd583e3dd0e', 'tests/payments_cases.py': 'f21727ec5e1abc8239e4661da0170e0706bb9406bc700a977f61d8e194692851', 'tests/notifications_cases.py': '5a04e28e33bf03e7fd649684727397bf6111ac6d3905a608d56975dd2836922b', 'tests/native.php': '4d4a27f8dad2d65d60f1480a26f1a2408465360c8664f81154a2944e037492e8', 'tests/license_native.php': '8341be508788d5a5a861faccda130acad07a877d409c9146f13b0bafda34cfe2', 'tests/ledger_native.php': 'ed3945e15ce7a3e1d6c6d004661a3ca274c454d6799e0d891738ab495a01f8f3', 'tests/ledger_cases.py': 'e1d0ca8223ae507821631f3f53aeacc322d9e0e189985edbb8f31ddea7f3e309', 'tests/hosting_retry_native.php': 'a381e2d490a75bec8814f6c2865d43618dab7e906603f3918d259f5ad9410956', 'tests/hosting_records_native.php': 'c9b560d2274e6a3ed915a07830d63e2f07f7aae41f8dcf496d0bc14f626561f4', 'tests/hosting_reconciliation_native.php': '28b0807bf4de270f7fe9ba1343ec64858ccd14499b496b5bc6759126fa21ba01', 'tests/hosting_operations_native.php': 'a76b22f5b033c216e3b19f8b6486b511b6591b35d93dc10c4fdf0d07569c6c4a', 'tests/hosting_delete_retry_native.php': '1e1ce2be0081446908bffdb1fe5cdb960fa8402894ac9080654805298241ff9d', 'tests/delivery_native.php': 'e5797005a13ff06cbafc95955cc44cdd4b6af069190f1de7ccde3a766c301fa5', 'tests/delivery_cases.py': '78b0c1f1aee96f6d7b3fcefe580cc91ec54e425a8c5e630d93e141576952c100', 'tests/client_authority_native.php': 'd6818624e309416ca34689654ef7d833d5f8ed5e8c28922105304f524f3a212e', 'tests/catalog_cases.py': 'c20e0aca747f3f25bab954361d95abba3f903e19fe3185d49bf1a18580efd780', 'tests/browser_acceptance.py': '8d0f33e3ca7e2709e02b8c475a86ead0428123c3d089b1cdb3ce24ff718046ca', 'tests/activity_cases.py': '8f9a10c1017114fc080e842e15e41f7b62c27eddae5f920a359201a869ffbad0', 'site/portal/views/workspace.php': '3b16d1016eda4f4622c525f9eeff9a120a133f28fc8befebe86980286621c128', 'site/portal/controllers/router.php': 'a7a1420b7c6557a50cd55782d4b41886be3b714a7d569529e4b447b3891b7664', 'site/database/schema/workspace.php': 'd82e47c58068e18df30be21cec43ddfbaf3649ea60c769cf1f0d5be1a5d4c533', 'site/database/schema/base.php': 'a2eb4ae26595d400eb7bab0249a727e44070c326bfdcca51248aee935b1a33a3', 'site/database/migrations/workspace.php': 'db5ca7a62f7683ab3945a16eb3fa31b2a0597be12f5c4645bd808f55d7ae4b1e', 'site/database/migrations/provider_inventory_migrate.php': 'de292c074871f6ed551bec8732dc2fa9a69f063a095163ccda2ed41c808b99ee', 'site/app/staff/accounts.php': '1ff07bfe3bfca33dff2dc6cae29f3806036258de46ecd0212efbe25998aee9b6', 'site/app/clients/workspace.php': '8e8bb9cd60b1f7843db2307f7fc45def7ad67adf3da135d9ae011eeb6f3049f8', 'site/app/clients/files.php': 'daa70542dfb17a18bb7cb6e0ee3720c930c3efa3d79ffdf278f4c58d3adbf89d', 'site/admin/views/studio/job.php': 'c469a7ed57af246b139efaacf9a3d59fc7f7da22439bfcc651b1116bec6c473d', 'site/admin/views/studio.php': '0bff238772aa995b300a00f855c3c6d9563385d2c527a7b5d5b28143e4f9f802', 'site/admin/controllers/studio.php': '92bd5a657225f98244be41cd27e8808a44469e274e449e54c107f9e8d8d4e3a3', 'docs/CLIENT_PORTAL_ROADMAP.md': '284e3e1cc4427e44bc2c96148bb1361bbfd42ab65fa59b710583b0a005500de1', 'CHANGELOG.md': '47e883833425bb66a07f6b15a29c3322148ee930a121c60dd832d2fae693106e', 'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}

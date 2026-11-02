@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "9f0a34152770bde7250b2a92d22fc69bf82cc9d1b0057b687952167b4cd9a9f6",
+  "verifier_sha256": "323f8ab4504679a062620948a60bda09f55809c25aa6762c37effa65986c0455",
   "regression_sha256": "05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -257,6 +257,577 @@
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
         ]
+      ]
+    },
+    "CHANGELOG.md": {
+      "original_sha256": "0d3059b972802813560edf62a39b445cba44f3b8403d31ce59b8701b6412fb6f",
+      "current_sha256": "47e883833425bb66a07f6b15a29c3322148ee930a121c60dd832d2fae693106e",
+      "edits": [
+        {
+          "value": [
+            "## Unreleased \u2014 current integration continuation (2026-11-01)\n",
+            "## Unreleased - 2026-11-02 reconcile port\n\nPort protected staff-uploaded version previews (PR198) onto the 1.26.1 consolidation base.\n\n## 2026-11-02 \u2014 PR317 financing acceptance correction\n\nThe complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.\n\nThis fixture follow-up adds one fresh rate-limit window before the first financing validation request. Two focused runs proved that repair, then exposed stale support-ready and paid-off workspace text expectations (234/235 and 259/260 passing checks respectively). The support fallback now requires the exact current owner-review message, absence of the setup form and both stored readiness settings. The two payoff text literals now follow the retained permanent-unlock requirement; domain-removal refusal, domain replacement and all other policy assertions remain intact. One finite repair row contains three exact inverses, preserving all seventy check sites, fourteen probes and eleven previous repairs. Final-source verification passed 56 filesystem cases, 12 shallow-history checks and all 2,763 maintained helpers. Following independent pre-execution review, the third focused journey passed all 65 native seed checks, 274 maintained HTTP/browser checks and fourteen original financing validation probes. Its separate exhausted-window control still returned ten HTTP 200 responses then two HTTP 429 responses, and the actual mobile capture was directly inspected. Source stayed unchanged and owned services stopped. Publication requires final independent source/runtime review, followed by full corrected hosted acceptance, final integration clearance, normal merge and exact-main verification; those hosted and merge gates are not implied by the focused result. See the current [handoff](SESSION_HANDOFF.md) for exact scope, retained failures and next action.\n\n## 2026-11-02 \u2014 PR317 full acceptance correction\n\nThe current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.\n\n## Unreleased \u2014 current integration continuation (2026-11-01)\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "docs/CLIENT_PORTAL_ROADMAP.md": {
+      "original_sha256": "d93a0f094b8d9aa1d36ce03dc9cf181e53a328ece3ebc975b488c10040021078",
+      "current_sha256": "284e3e1cc4427e44bc2c96148bb1361bbfd42ab65fa59b710583b0a005500de1",
+      "edits": [
+        {
+          "value": [
+            "\nProvide protected preview/staging links, design versions, feedback threads, revision requests, client content uploads, version-specific approvals, deliverables and payment milestones. Distinguish staff-only notes from published client updates. A design approval references the exact reviewed version; changing it creates a new revision rather than rewriting history. Financial progress and production progress remain separate.\n",
+            "\n**Partial delivery:** staff can bind one private PDF/PNG/JPEG preview artifact to an exact published version. The preview lives in guarded private storage, is served inline only after project-owner (or authorized staff/support) verification with integrity checks, and never becomes a public media URL. External `preview_url` staging links remain available and are labeled external. Version approval, feedback threads, uploads and milestones already ship. Remaining: first-party hosted staging deployments rather than attached preview files.\n\nProvide protected preview/staging links, design versions, feedback threads, revision requests, client content uploads, version-specific approvals, deliverables and payment milestones. Distinguish staff-only notes from published client updates. A design approval references the exact reviewed version; changing it creates a new revision rather than rewriting history. Financial progress and production progress remain separate.\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/controllers/studio.php": {
+      "original_sha256": "ef5aa79c4e6a12c470109b1823a4e738edb2202b63eff86b94875379b4c0b0e0",
+      "current_sha256": "92bd5a657225f98244be41cd27e8808a44469e274e449e54c107f9e8d8d4e3a3",
+      "edits": [
+        {
+          "value": [
+            "    }elseif(in_array($action,['studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true)){\n",
+            "    }elseif(in_array($action,['studio_message','studio_publish','studio_upload','studio_preview','studio_invoice','studio_paid'],true)){\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "        if($action==='studio_upload')studio_upload($id,'admin');\n        if($action==='studio_invoice'){$amount=gcents(posted('amount',20));$title=posted('title',160);if($amount===null||$amount<=0||$title==='')throw new InvalidArgumentException('Enter an invoice title and positive amount.');query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (?,?,?,?,?,?)',[$id,'INV-'.strtoupper(bin2hex(random_bytes(6))),$title,$amount,posted('instructions',6000),gmdate('Y-m-d H:i:s')]);}\n",
+            "        if($action==='studio_upload')studio_upload($id,'admin');\n        if($action==='studio_preview')studio_preview_upload($id,gint($_POST,'version_id',1,2147483647));\n        if($action==='studio_invoice'){$amount=gcents(posted('amount',20));$title=posted('title',160);if($amount===null||$amount<=0||$title==='')throw new InvalidArgumentException('Enter an invoice title and positive amount.');query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (?,?,?,?,?,?)',[$id,'INV-'.strtoupper(bin2hex(random_bytes(6))),$title,$amount,posted('instructions',6000),gmdate('Y-m-d H:i:s')]);}\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/views/studio.php": {
+      "original_sha256": "bb384bc66aaf2f6be14c864228ba51125fc60e8eba82a0a54743a81042f49653",
+      "current_sha256": "0bff238772aa995b300a00f855c3c6d9563385d2c527a7b5d5b28143e4f9f802",
+      "edits": [
+        {
+          "value": [
+            "    if($view==='studio-job'&&isset($_GET['file']))studio_download(is_string($_GET['file'])?$_GET['file']:'',null);\n    admin_head(studio_admin_views()[$view],$view,$user);if($error)echo '<div class=\"notice error\" role=\"alert\">'.esc($error).'</div>';\n",
+            "    if($view==='studio-job'&&isset($_GET['file']))studio_download(is_string($_GET['file'])?$_GET['file']:'',null);\n    if($view==='studio-job'&&isset($_GET['preview']))studio_preview_download(is_string($_GET['preview'])&&ctype_digit($_GET['preview'])?(int)$_GET['preview']:0,null);\n    admin_head(studio_admin_views()[$view],$view,$user);if($error)echo '<div class=\"notice error\" role=\"alert\">'.esc($error).'</div>';\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/views/studio/job.php": {
+      "original_sha256": "ce378f3973746670d6cf3c220b796dd7b5e71c3f9df1e671e721b23ce5b00cce",
+      "current_sha256": "c469a7ed57af246b139efaacf9a3d59fc7f7da22439bfcc651b1116bec6c473d",
+      "edits": [
+        {
+          "value": [
+            "      $id=gint($_GET,'id',1,2147483647);$j=studio_job($id);echo '<p><a class=\"btn outline\" href=\"'.esc(admin_url('deliveries',['job_id'=>$id])).'\">Website deliveries \u2192</a></p>';?><section class=\"workspace-card\"><form method=\"post\"><?php admin_action('studio_job');studio_hidden('id',$id);studio_hidden('client_id',$j['client_id']);admin_input('title','Project title',$j['title']);admin_select('stage','Stage',studio_stages(),$j['stage']);admin_textarea('summary','Summary',$j['summary']);admin_textarea('milestones','Milestones',$j['milestones']);?><button class=\"btn gold\">Save project</button></form></section><div class=\"workspace-grid\"><section class=\"workspace-card\"><h2>Publish a design or proposal version</h2><p>Published versions are immutable. To revise, publish a new version; pending older versions cannot be approved.</p><form method=\"post\"><?php admin_action('studio_publish');studio_hidden('job_id',$id);admin_select('kind','Review type',['design'=>'Design','proposal'=>'Proposal'],'design');admin_input('title','Version title','','text','required');admin_textarea('body','Design details / proposal scope','',8,30000);admin_input('preview_url','HTTPS preview link (optional)','','url');?><button class=\"btn gold\">Publish new version</button></form><?php foreach(all('SELECT * FROM '.table('studio_versions').' WHERE job_id=? ORDER BY id DESC',[$id]) as $v)echo '<div class=\"workspace-version\" id=\"review-'.(int)$v['id'].'\"><strong>'.esc($v['kind'].' v'.$v['version_no'].' \u00b7 '.$v['title']).'</strong><p>'.esc($v['decision']).' \u00b7 '.esc($v['feedback']).'</p></div>';?></section><section class=\"workspace-card\"><h2>Conversation</h2><?php foreach(all('SELECT * FROM '.table('studio_messages').' WHERE job_id=? ORDER BY (id=?) DESC,id DESC LIMIT 100',[$id,(int)($_GET['focus_message']??0)]) as $m)echo '<div class=\"workspace-message\" id=\"message-'.(int)$m['id'].'\"><small>'.esc($m['author_type'].' \u00b7 '.$m['created_at']).' UTC</small>'.esc($m['body']).'</div>';?><form method=\"post\"><?php admin_action('studio_message');studio_hidden('job_id',$id);admin_textarea('body','Message');?><button class=\"btn gold\">Save message to workspace</button></form><h3>Private files</h3><?php foreach(all('SELECT * FROM '.table('studio_files').' WHERE job_id=?',[$id]) as $f)echo '<p id=\"file-'.esc($f['id']).'\"><a href=\"'.esc(admin_url('studio-job',['id'=>$id,'file'=>$f['id']])).'\">'.esc($f['original_name']).' \u2193</a></p>';?><form method=\"post\" enctype=\"multipart/form-data\"><?php admin_action('studio_upload');studio_hidden('job_id',$id);?><label>PDF, PNG or JPEG, up to 8 MB<input name=\"document\" type=\"file\" required accept=\".pdf,.png,.jpg,.jpeg\"></label><button class=\"btn outline\">Upload privately</button></form></section></div><section class=\"workspace-card\"><h2>Manual invoices</h2><?php catalog_project_entry($id);if(payments_ready()&&staff_can('payments.manage'))echo '<p><a href=\"'.esc(admin_url('payments')).'\">Prepare an invoice payment request</a></p>';?><p>No card charging or recurring billing is enabled. Mark paid only after independently verifying payment.</p><form method=\"post\"><?php admin_action('studio_invoice');studio_hidden('job_id',$id);admin_input('title','Invoice title');admin_input('amount','Amount in USD (for example 125.00)');admin_textarea('instructions','Payment instructions');?><button class=\"btn gold\">Issue invoice</button></form><?php foreach(all('SELECT * FROM '.table('studio_invoices').' WHERE job_id=? ORDER BY id DESC',[$id]) as $inv):?><div class=\"workspace-version\"><h3><?=esc($inv['reference'].' \u00b7 '.$inv['title'])?></h3><p>$<?=gmoney((int)$inv['amount_cents'])?> USD \u00b7 <?=esc($inv['status'])?></p><?php catalog_invoice_view($inv);catalog_void_form($inv);if(ledger_ready()&&staff_can('payments.manage'))echo '<p><a href=\"'.esc(admin_url('invoice-payments',['invoice_id'=>$inv['id']])).'\">Review balance and payment history</a></p>';if(!ledger_ready()&&$inv['status']==='issued'&&(!catalog_snapshot((int)$inv['id'])||staff_can('catalog.manage'))):?><form method=\"post\"><?php admin_action('studio_paid');studio_hidden('job_id',$id);studio_hidden('invoice_id',$inv['id']);admin_input('paid_note','Verified payment reference');admin_check('confirm','I independently verified that payment was received.',false);?><button class=\"btn outline\">Record received payment</button></form><?php endif;?></div><?php endforeach;?></section><?php\n",
+            "      $id=gint($_GET,'id',1,2147483647);$j=studio_job($id);echo '<p><a class=\"btn outline\" href=\"'.esc(admin_url('deliveries',['job_id'=>$id])).'\">Website deliveries \u2192</a></p>';?><section class=\"workspace-card\"><form method=\"post\"><?php admin_action('studio_job');studio_hidden('id',$id);studio_hidden('client_id',$j['client_id']);admin_input('title','Project title',$j['title']);admin_select('stage','Stage',studio_stages(),$j['stage']);admin_textarea('summary','Summary',$j['summary']);admin_textarea('milestones','Milestones',$j['milestones']);?><button class=\"btn gold\">Save project</button></form></section><div class=\"workspace-grid\"><section class=\"workspace-card\"><h2>Publish a design or proposal version</h2><p>Published versions are immutable. To revise, publish a new version; pending older versions cannot be approved.</p><form method=\"post\"><?php admin_action('studio_publish');studio_hidden('job_id',$id);admin_select('kind','Review type',['design'=>'Design','proposal'=>'Proposal'],'design');admin_input('title','Version title','','text','required');admin_textarea('body','Design details / proposal scope','',8,30000);admin_input('preview_url','HTTPS preview link (optional)','','url');?><button class=\"btn gold\">Publish new version</button></form><?php foreach(all('SELECT v.*,b.file_id AS preview_file FROM '.table('studio_versions').' v LEFT JOIN '.table('studio_version_files').' b ON b.version_id=v.id WHERE v.job_id=? ORDER BY v.id DESC',[$id]) as $v):?><div class=\"workspace-version\" id=\"review-<?=(int)$v['id']?>\"><strong><?=esc($v['kind'].' v'.$v['version_no'].' \u00b7 '.$v['title'])?></strong><p><?=esc($v['decision'].' \u00b7 '.$v['feedback'])?></p><?php if($v['preview_file']):?><p><a class=\"btn outline\" href=\"<?=esc(admin_url('studio-job',['id'=>$id,'preview'=>(int)$v['id']]))?>\" target=\"_blank\" rel=\"noopener noreferrer\">Open protected preview \u2197</a></p><?php else:?><form method=\"post\" enctype=\"multipart/form-data\"><?php admin_action('studio_preview');studio_hidden('job_id',$id);studio_hidden('version_id',$v['id']);?><label>Protected preview \u2014 PDF, PNG or JPEG, up to 8 MB<input name=\"document\" type=\"file\" required accept=\".pdf,.png,.jpg,.jpeg\"></label><button class=\"btn outline\">Attach preview</button></form><?php endif;?></div><?php endforeach;?></section><section class=\"workspace-card\"><h2>Conversation</h2><?php foreach(all('SELECT * FROM '.table('studio_messages').' WHERE job_id=? ORDER BY (id=?) DESC,id DESC LIMIT 100',[$id,(int)($_GET['focus_message']??0)]) as $m)echo '<div class=\"workspace-message\" id=\"message-'.(int)$m['id'].'\"><small>'.esc($m['author_type'].' \u00b7 '.$m['created_at']).' UTC</small>'.esc($m['body']).'</div>';?><form method=\"post\"><?php admin_action('studio_message');studio_hidden('job_id',$id);admin_textarea('body','Message');?><button class=\"btn gold\">Save message to workspace</button></form><h3>Private files</h3><?php foreach(all('SELECT * FROM '.table('studio_files').' WHERE job_id=?',[$id]) as $f)echo '<p id=\"file-'.esc($f['id']).'\"><a href=\"'.esc(admin_url('studio-job',['id'=>$id,'file'=>$f['id']])).'\">'.esc($f['original_name']).' \u2193</a></p>';?><form method=\"post\" enctype=\"multipart/form-data\"><?php admin_action('studio_upload');studio_hidden('job_id',$id);?><label>PDF, PNG or JPEG, up to 8 MB<input name=\"document\" type=\"file\" required accept=\".pdf,.png,.jpg,.jpeg\"></label><button class=\"btn outline\">Upload privately</button></form></section></div><section class=\"workspace-card\"><h2>Manual invoices</h2><?php catalog_project_entry($id);if(payments_ready()&&staff_can('payments.manage'))echo '<p><a href=\"'.esc(admin_url('payments')).'\">Prepare an invoice payment request</a></p>';?><p>No card charging or recurring billing is enabled. Mark paid only after independently verifying payment.</p><form method=\"post\"><?php admin_action('studio_invoice');studio_hidden('job_id',$id);admin_input('title','Invoice title');admin_input('amount','Amount in USD (for example 125.00)');admin_textarea('instructions','Payment instructions');?><button class=\"btn gold\">Issue invoice</button></form><?php foreach(all('SELECT * FROM '.table('studio_invoices').' WHERE job_id=? ORDER BY id DESC',[$id]) as $inv):?><div class=\"workspace-version\"><h3><?=esc($inv['reference'].' \u00b7 '.$inv['title'])?></h3><p>$<?=gmoney((int)$inv['amount_cents'])?> USD \u00b7 <?=esc($inv['status'])?></p><?php catalog_invoice_view($inv);catalog_void_form($inv);if(ledger_ready()&&staff_can('payments.manage'))echo '<p><a href=\"'.esc(admin_url('invoice-payments',['invoice_id'=>$inv['id']])).'\">Review balance and payment history</a></p>';if(!ledger_ready()&&$inv['status']==='issued'&&(!catalog_snapshot((int)$inv['id'])||staff_can('catalog.manage'))):?><form method=\"post\"><?php admin_action('studio_paid');studio_hidden('job_id',$id);studio_hidden('invoice_id',$inv['id']);admin_input('paid_note','Verified payment reference');admin_check('confirm','I independently verified that payment was received.',false);?><button class=\"btn outline\">Record received payment</button></form><?php endif;?></div><?php endforeach;?></section><?php\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/app/clients/files.php": {
+      "original_sha256": "240db0d553fa492b677767de7207f7f05e620d5f8a4522a94dc2770c26d26149",
+      "current_sha256": "daa70542dfb17a18bb7cb6e0ee3720c930c3efa3d79ffdf278f4c58d3adbf89d",
+      "edits": [
+        {
+          "value": [
+            "\n/** Verify existing table types, transaction engine and required unique keys before adoption. */\n",
+            "\nfunction studio_preview_upload(int $jobId,int $versionId): void {\n require_admin();$job=studio_job($jobId);\n $version=one('SELECT id FROM '.table('studio_versions').' WHERE id=? AND job_id=?',[$versionId,$jobId]);if(!$version)throw new InvalidArgumentException('Choose a version that belongs to this project.');\n $f=$_FILES['document']??null;\n if(!is_array($f)||!is_int($f['error']??null)||$f['error']!==UPLOAD_ERR_OK||!is_string($f['tmp_name']??null)||!is_uploaded_file($f['tmp_name']))throw new InvalidArgumentException('Choose a PDF, PNG or JPEG preview.');\n $size=filesize($f['tmp_name']);if($size===false||$size<1||$size>8*1024*1024)throw new InvalidArgumentException('Files must be between 1 byte and 8 MB.');\n $mime=(new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);if(!in_array($mime,['application/pdf','image/png','image/jpeg'],true))throw new InvalidArgumentException('Only PDF, PNG and JPEG files are accepted.');\n $bytes=file_get_contents($f['tmp_name']);if($bytes===false||strlen($bytes)!==$size)throw new RuntimeException('File could not be read completely.');\n $extension=strtolower(pathinfo(is_string($f['name']??null)?$f['name']:'',PATHINFO_EXTENSION));\n if(!in_array($extension,['pdf','png','jpg','jpeg'],true)||preg_match('/<\\?(?:php|=)/i',$bytes))throw new InvalidArgumentException('Only PDF, PNG and JPEG files without executable code are accepted.');\n $name=substr(preg_replace('/[^a-zA-Z0-9 ._()-]/','_',basename(is_string($f['name']??null)?$f['name']:'preview')),0,180)?:'preview';\n studio_preview_store($jobId,$versionId,$name,$bytes,$mime,$size);\n}\n\n/** Persist an authorized preview after locking the same project row ordinary uploads use, so preview/preview and preview/upload quota checks cannot interleave. */\nfunction studio_preview_store(int $jobId,int $versionId,string $name,string $bytes,string $mime,int $size): string {\n $id=bin2hex(random_bytes(16));$path=config()['storage'].'/media/studio-'.$id.'.php';\n db()->beginTransaction();$written=false;try {\n  if(!one('SELECT id FROM '.table('studio_jobs').' WHERE id=? FOR UPDATE',[$jobId]))throw new InvalidArgumentException('Project not found.');\n  if(!one('SELECT id FROM '.table('studio_versions').' WHERE id=? AND job_id=? FOR UPDATE',[$versionId,$jobId]))throw new InvalidArgumentException('Choose a version that belongs to this project.');\n  $sum=(int)query('SELECT COALESCE(SUM(bytes),0) FROM '.table('studio_files').' WHERE job_id=?',[$jobId])->fetchColumn();if($sum+$size>100*1024*1024)throw new RuntimeException('This project has reached its 100 MB file limit.');\n  write_private_file($path,CWP_GUARD.$bytes);$written=true;\n  query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?)',[$id,$jobId,'admin',$name,basename($path),$mime,$size,hash('sha256',$bytes),gmdate('Y-m-d H:i:s')]);\n  query('INSERT INTO '.table('studio_version_files').' (version_id,file_id,created_at) VALUES (?,?,?)',[$versionId,$id,gmdate('Y-m-d H:i:s')]);db()->commit();return $id;\n }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();if($written)@unlink($path);throw $e;}\n}\n\nfunction studio_preview_download(int $versionId,?int $clientId): never {\n if($ctx=support_current()){\n  $fresh=support_resolve($ctx['session']['id']);if(!$fresh||!staff_can('support.download',$fresh['actor'])||$clientId!==(int)$fresh['client']['id']){support_record('file.preview','version',(string)$versionId,'denied');fail_page('Support preview is not permitted.',403);}\n  $GLOBALS['cwp_support']=$fresh;\n }\n $p=[$versionId];$sql='SELECT f.* FROM '.table('studio_version_files').' b JOIN '.table('studio_files').' f ON f.id=b.file_id JOIN '.table('studio_versions').' v ON v.id=b.version_id JOIN '.table('studio_jobs').' j ON j.id=v.job_id WHERE b.version_id=?';if($clientId!==null){$c=studio_client();if(!$c||(int)$c['id']!==$clientId)fail_page('Sign in to view this preview.',403);$sql.=' AND j.client_id=?';$p[]=$clientId;}else require_admin();\n $f=one($sql,$p);if(!$f){if(support_current())support_record('file.preview','version',(string)$versionId,'denied');fail_page('Preview not found.',404);}if(!preg_match('/^studio-[a-f0-9]{32}\\.php$/D',$f['stored_name']))fail_page('Invalid file record.',500);if(!in_array($f['mime'],['application/pdf','image/png','image/jpeg'],true))fail_page('Invalid preview record.',500);\n $path=config()['storage'].'/media/'.$f['stored_name'];if(is_link($path)||!is_file($path))fail_page('Preview unavailable.',404);$fh=fopen($path,'rb');if(!$fh)fail_page('Preview unavailable.',404);if(fread($fh,strlen(CWP_GUARD))!==CWP_GUARD){fclose($fh);fail_page('Preview failed its safety check.',500);}$ctx=hash_init('sha256');$count=hash_update_stream($ctx,$fh);if($count!==(int)$f['bytes']||!hash_equals($f['sha256'],hash_final($ctx))){fclose($fh);fail_page('Preview integrity check failed.',500);}fseek($fh,strlen(CWP_GUARD));if(support_current())support_record('file.preview','version',(string)$versionId);header('Content-Type: '.$f['mime']);header('Content-Disposition: inline; filename=\"'.str_replace(['\"',\"\\r\",\"\\n\"],'',$f['original_name']).'\"');header('Content-Length: '.$f['bytes']);header('Cache-Control: no-store, private');header('X-Content-Type-Options: nosniff');fpassthru($fh);fclose($fh);exit;\n}\n\n/** Verify existing table types, transaction engine and required unique keys before adoption. */\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/app/clients/workspace.php": {
+      "original_sha256": "347b6e6eedaab3f8798d298a1e3ed403242d26a1b8dca8cc0f219ee794c085a9",
+      "current_sha256": "8e8bb9cd60b1f7843db2307f7fc45def7ad67adf3da135d9ae011eeb6f3049f8",
+      "edits": [
+        {
+          "value": [
+            "function studio_ready(): bool {return setting('studio_schema_version')==='2';}\n",
+            "function studio_ready(): bool {return setting('studio_schema_version')==='3';}\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/app/staff/accounts.php": {
+      "original_sha256": "770a254a1be25310872ae0f591c2d9ffa17f3c02538ee0f92ff36b88488ce21d",
+      "current_sha256": "1ff07bfe3bfca33dff2dc6cae29f3806036258de46ecd0212efbe25998aee9b6",
+      "edits": [
+        {
+          "value": [
+            "    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';\n",
+            "    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_preview','studio_invoice','studio_paid'],true))return 'clients.manage';\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/database/migrations/provider_inventory_migrate.php": {
+      "original_sha256": "c865aad2d81b997a586315db1d956f4ff1aea4f4af5f86c2d13107e82b206bed",
+      "current_sha256": "de292c074871f6ed551bec8732dc2fa9a69f063a095163ccda2ed41c808b99ee",
+      "edits": [
+        {
+          "value": [
+            "        if((one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??'')!=='2')throw new RuntimeException('Prepare the client workspace before provider inventory.');\n",
+            "        if(!in_array((one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??''),['2','3'],true))throw new RuntimeException('Prepare the client workspace before provider inventory.');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/database/migrations/workspace.php": {
+      "original_sha256": "f19fa9f84352e918bdb03ac20181b053c2446b2b9c8193c9da4ddff2522f290a",
+      "current_sha256": "db5ca7a62f7683ab3945a16eb3fa31b2a0597be12f5c4645bd808f55d7ae4b1e",
+      "edits": [
+        {
+          "value": [
+            " try{foreach(studio_schema(config()['db']['prefix']) as $key=>$sql){\n  $exists=one('SELECT table_name FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].$key]);\n  if($exists){$columns=all('SHOW COLUMNS FROM '.table($key));$cols=array_column($columns,'Field');preg_match_all('/(?:\\(|,)\\s*([a-z_][a-z0-9_]*) (?:INT|BIGINT|VARCHAR|CHAR|TINYINT|DATETIME|LONGTEXT|TEXT)/',$sql,$m);if($cols!==$m[1]||!studio_schema_compatible($key,$sql,$columns))throw new RuntimeException('An incompatible table already uses '.$key.'. No existing table was overwritten.');}\n  else db()->exec($sql);\n }\n if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].'audit'])){\n  foreach(['action'=>\"action VARCHAR(80) COLLATE utf8mb4_bin NOT NULL\",'detail'=>\"detail VARCHAR(400) COLLATE utf8mb4_bin NOT NULL\"] as $column=>$definition){\n   $collation=one('SELECT COLLATION_NAME FROM information_schema.columns WHERE table_schema=? AND table_name=? AND column_name=?',[config()['db']['name'],config()['db']['prefix'].'audit',$column]);\n   if(($collation['COLLATION_NAME']??'')!=='utf8mb4_bin')db()->exec('ALTER TABLE '.table('audit').' MODIFY '.$definition);\n",
+            " try{\n  // Read the recorded marker/table family before DDL. studio_version_files\n  // is established only at marker 3; a v2 site may still add it, but a v3\n  // site missing that binding history must recover it instead of silently\n  // recreating an empty table.\n  $marker=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??'');\n  if(!in_array($marker,['','0','1','2','3'],true))throw new RuntimeException('This workspace schema version is not supported by this installation. No changes were made.');\n  $schema=studio_schema(config()['db']['prefix']);$present=[];\n  foreach($schema as $key=>$sql)$present[$key]=(bool)one('SELECT table_name FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].$key]);\n  $v2Tables=array_values(array_diff(array_keys($schema),['studio_version_files']));\n  $required=$marker==='3'?array_keys($schema):($marker==='2'?$v2Tables:[]);\n  foreach($required as $key)if(!$present[$key])throw new RuntimeException('Established workspace history is missing '.config()['db']['prefix'].$key.'. Recover the table instead of recreating empty records. No changes were made.');\n  foreach($schema as $key=>$sql){\n   if($present[$key]){$columns=all('SHOW COLUMNS FROM '.table($key));$cols=array_column($columns,'Field');preg_match_all('/(?:\\(|,)\\s*([a-z_][a-z0-9_]*) (?:INT|BIGINT|VARCHAR|CHAR|TINYINT|DATETIME|LONGTEXT|TEXT)/',$sql,$m);if($cols!==$m[1]||!studio_schema_compatible($key,$sql,$columns))throw new RuntimeException('An incompatible table already uses '.$key.'. No existing table was overwritten.');}\n   else db()->exec($sql);\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "  if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_action']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_action(action)');\n  if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_detail']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_detail(detail(191))');\n }\n save_setting('studio_schema_version','2');log_event('studio.schema','Additive workspace schema 2');}\n",
+            "  if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].'audit'])){\n   foreach(['action'=>\"action VARCHAR(80) COLLATE utf8mb4_bin NOT NULL\",'detail'=>\"detail VARCHAR(400) COLLATE utf8mb4_bin NOT NULL\"] as $column=>$definition){\n    $collation=one('SELECT COLLATION_NAME FROM information_schema.columns WHERE table_schema=? AND table_name=? AND column_name=?',[config()['db']['name'],config()['db']['prefix'].'audit',$column]);\n    if(($collation['COLLATION_NAME']??'')!=='utf8mb4_bin')db()->exec('ALTER TABLE '.table('audit').' MODIFY '.$definition);\n   }\n   if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_action']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_action(action)');\n   if(!one('SELECT INDEX_NAME FROM information_schema.statistics WHERE table_schema=? AND table_name=? AND index_name=?',[config()['db']['name'],config()['db']['prefix'].'audit','audit_detail']))db()->exec('ALTER TABLE '.table('audit').' ADD INDEX audit_detail(detail(191))');\n  }\n  save_setting('studio_schema_version','3');log_event('studio.schema','Additive workspace schema 3');}\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            " $expected=$key==='studio_clients'?['PRIMARY'=>['id'],'email'=>['email']]:($key==='studio_versions'?['PRIMARY'=>['id'],'version_lookup'=>['job_id','kind','version_no']]:($key==='studio_invoices'?['PRIMARY'=>['id'],'reference'=>['reference']]:['PRIMARY'=>['id']]));\n",
+            " $expected=$key==='studio_clients'?['PRIMARY'=>['id'],'email'=>['email']]:($key==='studio_versions'?['PRIMARY'=>['id'],'version_lookup'=>['job_id','kind','version_no']]:($key==='studio_invoices'?['PRIMARY'=>['id'],'reference'=>['reference']]:($key==='studio_version_files'?['PRIMARY'=>['id'],'version_binding'=>['version_id'],'file_binding'=>['file_id']]:['PRIMARY'=>['id']])));\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/database/schema/base.php": {
+      "original_sha256": "0d86d5ece3df57f17769b99d7becca94a27f7427821aae966342533f77828e1d",
+      "current_sha256": "a2eb4ae26595d400eb7bab0249a727e44070c326bfdcca51248aee935b1a33a3",
+      "edits": [
+        {
+          "value": [
+            "    'site_published'=>'0','studio_schema_version'=>'2',\n",
+            "    'site_published'=>'0','studio_schema_version'=>'3',\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/database/schema/workspace.php": {
+      "original_sha256": "a89d1b5b33c9d6691de7b8264b8a5b4a90b46b27642ed12fff0a57695322f0bc",
+      "current_sha256": "d82e47c58068e18df30be21cec43ddfbaf3649ea60c769cf1f0d5be1a5d4c533",
+      "edits": [
+        {
+          "value": [
+            " 'studio_files'=>'CREATE TABLE '.$t('studio_files').\" (id CHAR(32) PRIMARY KEY,job_id INT UNSIGNED NOT NULL,author_type VARCHAR(10) NOT NULL,original_name VARCHAR(190) NOT NULL,stored_name VARCHAR(80) NOT NULL,mime VARCHAR(100) NOT NULL,bytes INT UNSIGNED NOT NULL,sha256 CHAR(64) NOT NULL,created_at DATETIME NOT NULL,INDEX job_lookup(job_id,id))\".$e,\n 'studio_revisions'=>'CREATE TABLE '.$t('studio_revisions').\" (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,setting_name VARCHAR(100) NOT NULL,old_value LONGTEXT NOT NULL,new_value LONGTEXT NOT NULL,author_id INT UNSIGNED NOT NULL,created_at DATETIME NOT NULL,INDEX content_lookup(setting_name,id))\".$e,\n",
+            " 'studio_files'=>'CREATE TABLE '.$t('studio_files').\" (id CHAR(32) PRIMARY KEY,job_id INT UNSIGNED NOT NULL,author_type VARCHAR(10) NOT NULL,original_name VARCHAR(190) NOT NULL,stored_name VARCHAR(80) NOT NULL,mime VARCHAR(100) NOT NULL,bytes INT UNSIGNED NOT NULL,sha256 CHAR(64) NOT NULL,created_at DATETIME NOT NULL,INDEX job_lookup(job_id,id))\".$e,\n 'studio_version_files'=>'CREATE TABLE '.$t('studio_version_files').\" (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,version_id INT UNSIGNED NOT NULL,file_id CHAR(32) NOT NULL,created_at DATETIME NOT NULL,UNIQUE version_binding(version_id),UNIQUE file_binding(file_id))\".$e,\n 'studio_revisions'=>'CREATE TABLE '.$t('studio_revisions').\" (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,setting_name VARCHAR(100) NOT NULL,old_value LONGTEXT NOT NULL,new_value LONGTEXT NOT NULL,author_id INT UNSIGNED NOT NULL,created_at DATETIME NOT NULL,INDEX content_lookup(setting_name,id))\".$e,\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/portal/controllers/router.php": {
+      "original_sha256": "03d604fe2c411c3908aaddd3acb6d3d9510b1d2da9a80fb247149d61f17bd826",
+      "current_sha256": "a7a1420b7c6557a50cd55782d4b41886be3b714a7d569529e4b447b3891b7664",
+      "edits": [
+        {
+          "value": [
+            "if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}\nif(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();\n",
+            "if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}\nif(isset($_GET['preview'])){if(!$client)fail_page('Sign in to view this preview.',403);studio_preview_download(is_string($_GET['preview'])&&ctype_digit($_GET['preview'])?(int)$_GET['preview']:0,(int)$client['id']);}\nif(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/portal/views/workspace.php": {
+      "original_sha256": "42f1fb62fac27ac6e989fe3ea1f17d1fc3bc35dfbdc1ccafeb0c141e2d9d8bd2",
+      "current_sha256": "3b16d1016eda4f4622c525f9eeff9a120a133f28fc8befebe86980286621c128",
+      "edits": [
+        {
+          "value": [
+            "if(delivery_ready())echo '<p><a class=\"btn gold\" href=\"'.esc(studio_url(['downloads'=>1,'job'=>$jobId])).'\">Website releases & downloads \u2192</a></p>';?><div class=\"workspace-card\"><span class=\"workspace-status\"><?=esc(studio_stages()[$job['stage']]??$job['stage'])?></span><h2><?=esc($job['title'])?></h2><p><?=nl2br(esc($job['summary']))?></p><h3>Milestones</h3><div class=\"prose\"><?=nl2br(esc($job['milestones']))?></div></div><div class=\"workspace-grid\"><div><h2>Designs & proposals</h2><?php $versions=all('SELECT * FROM '.table('studio_versions').' WHERE job_id=? ORDER BY (id=?) DESC,id DESC LIMIT 100',[$jobId,(int)($_GET['focus_review']??0)]);$latestVersions=array_column(all('SELECT kind,MAX(version_no) AS version_no FROM '.table('studio_versions').' WHERE job_id=? GROUP BY kind',[$jobId]),'version_no','kind');foreach($versions as $v):$latest=(int)$v['version_no']===(int)$latestVersions[$v['kind']];?><article class=\"workspace-version\" id=\"review-<?=(int)$v['id']?>\"><span class=\"eyebrow\"><?=esc($v['kind'])?> / VERSION <?=(int)$v['version_no']?></span><h3><?=esc($v['title'])?></h3><div class=\"prose\"><?=esc($v['body'])?></div><?php if($v['preview_url']):?><p><a class=\"btn outline\" href=\"<?=esc($v['preview_url'])?>\" target=\"_blank\" rel=\"noopener noreferrer\">Open design preview \u2197</a></p><?php endif;?><p class=\"workspace-status\"><?=esc(!$latest&&$v['decision']==='pending'?'Superseded':$v['decision'])?></p><?php if($latest&&$v['decision']==='pending'&&!support_current()):?><form method=\"post\"><?=support_csrf_field()?><input type=\"hidden\" name=\"action\" value=\"decision\"><input type=\"hidden\" name=\"version\" value=\"<?=(int)$v['id']?>\"><label>Decision<select name=\"choice\"><option value=\"changes\">Request changes</option><option value=\"approved\">Approve this version</option></select></label><label>Feedback<textarea name=\"feedback\" maxlength=\"5000\" rows=\"3\"></textarea></label><label class=\"check\"><input type=\"checkbox\" name=\"confirm\" value=\"1\" required>I confirm my decision applies to this exact version.</label><button class=\"btn gold\">Record decision \u2192</button></form><?php elseif($v['feedback']):?><p><?=nl2br(esc($v['feedback']))?></p><?php endif;?></article><?php endforeach;if(!$versions)echo '<p>No reviews have been published yet.</p>';?></div>\n",
+            "if(delivery_ready())echo '<p><a class=\"btn gold\" href=\"'.esc(studio_url(['downloads'=>1,'job'=>$jobId])).'\">Website releases & downloads \u2192</a></p>';?><div class=\"workspace-card\"><span class=\"workspace-status\"><?=esc(studio_stages()[$job['stage']]??$job['stage'])?></span><h2><?=esc($job['title'])?></h2><p><?=nl2br(esc($job['summary']))?></p><h3>Milestones</h3><div class=\"prose\"><?=nl2br(esc($job['milestones']))?></div></div><div class=\"workspace-grid\"><div><h2>Designs & proposals</h2><?php $versions=all('SELECT v.*,b.file_id AS preview_file FROM '.table('studio_versions').' v LEFT JOIN '.table('studio_version_files').' b ON b.version_id=v.id WHERE v.job_id=? ORDER BY (v.id=?) DESC,v.id DESC LIMIT 100',[$jobId,(int)($_GET['focus_review']??0)]);$latestVersions=array_column(all('SELECT kind,MAX(version_no) AS version_no FROM '.table('studio_versions').' WHERE job_id=? GROUP BY kind',[$jobId]),'version_no','kind');foreach($versions as $v):$latest=(int)$v['version_no']===(int)$latestVersions[$v['kind']];?><article class=\"workspace-version\" id=\"review-<?=(int)$v['id']?>\"><span class=\"eyebrow\"><?=esc($v['kind'])?> / VERSION <?=(int)$v['version_no']?></span><h3><?=esc($v['title'])?></h3><div class=\"prose\"><?=esc($v['body'])?></div><?php if($v['preview_file']):?><p><a class=\"btn gold\" href=\"<?=esc(studio_url(['preview'=>(int)$v['id']]))?>\" target=\"_blank\" rel=\"noopener noreferrer\">Open protected preview \u2197</a></p><?php endif;?><?php if($v['preview_url']):?><p><a class=\"btn outline\" href=\"<?=esc($v['preview_url'])?>\" target=\"_blank\" rel=\"noopener noreferrer\">Open external staging link \u2197</a></p><?php endif;?><p class=\"workspace-status\"><?=esc(!$latest&&$v['decision']==='pending'?'Superseded':$v['decision'])?></p><?php if($latest&&$v['decision']==='pending'&&!support_current()):?><form method=\"post\"><?=support_csrf_field()?><input type=\"hidden\" name=\"action\" value=\"decision\"><input type=\"hidden\" name=\"version\" value=\"<?=(int)$v['id']?>\"><label>Decision<select name=\"choice\"><option value=\"changes\">Request changes</option><option value=\"approved\">Approve this version</option></select></label><label>Feedback<textarea name=\"feedback\" maxlength=\"5000\" rows=\"3\"></textarea></label><label class=\"check\"><input type=\"checkbox\" name=\"confirm\" value=\"1\" required>I confirm my decision applies to this exact version.</label><button class=\"btn gold\">Record decision \u2192</button></form><?php elseif($v['feedback']):?><p><?=nl2br(esc($v['feedback']))?></p><?php endif;?></article><?php endforeach;if(!$versions)echo '<p>No reviews have been published yet.</p>';?></div>\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/activity_cases.py": {
+      "original_sha256": "128a44cbcadc0d6ab31a033f8adf915f8e7ee6cd432bb7412d4cf88d702bac8a",
+      "current_sha256": "8f9a10c1017114fc080e842e15e41f7b62c27eddae5f920a359201a869ffbad0",
+      "edits": [
+        {
+          "value": [
+            "    after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings))\n",
+            "    after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/browser_acceptance.py": {
+      "original_sha256": "0a1f1248faaef87afa5ce07c03118bd4f5163035f73e6fe3715cc5b8e36ef114",
+      "current_sha256": "8d0f33e3ca7e2709e02b8c475a86ead0428123c3d089b1cdb3ce24ff718046ca",
+      "edits": [
+        {
+          "value": [
+            "from bs4 import BeautifulSoup\nROOT=Path(__file__).resolve().parents[1];BASE='http://127.0.0.1:8091';WEB=ROOT/'test-runtime/web';QA=ROOT/'qa';QA.mkdir(exist_ok=True)\n",
+            "from bs4 import BeautifulSoup\nimport release_cases\nfrom release_cases import db\nROOT=Path(__file__).resolve().parents[1];BASE='http://127.0.0.1:8091';WEB=ROOT/'test-runtime/web';QA=ROOT/'qa';QA.mkdir(exist_ok=True)\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "php=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)\nerror=None\n",
+            "php=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)\nrelease_cases.php=php;release_cases.ROOT=ROOT\ndb=release_cases.db\nerror=None\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    r=requests.get(fileurl);check('Anonymous private-file request denied',r.status_code==403)\n    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_invoice',{'title':'HTTP manual invoice','amount':'125.00','instructions':'Synthetic manual payment instructions; do not send money.'});check('Manual invoice created',r.status_code==200 and 'HTTP manual invoice' in r.text and '$125.00' in r.text)\n",
+            "    r=requests.get(fileurl);check('Anonymous private-file request denied',r.status_code==403)\n    vrow=db(\"SELECT id FROM ci_studio_versions WHERE job_id=1 ORDER BY id DESC LIMIT 1\")[0]\n    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':str(vrow['id'])},files={'document':('version-preview.png',f,'image/png')})\n    check('Protected preview attaches to a version',r.status_code==200 and 'Open protected preview' in r.text)\n    r=alice.get(BASE+'/existing/portal/index.php?job=1');links=[a['href'] for a in soup(r).select('a[href]') if 'preview=' in a['href']];check('Client sees the protected preview link',bool(links))\n    r=alice.get(links[0]);check('Owner opens the protected preview inline',r.status_code==200 and r.content==(ROOT/'site/images/icons/favicon.png').read_bytes() and r.headers.get('Content-Disposition','').startswith('inline') and r.headers.get('Content-Type','').startswith('image/png') and 'no-store' in r.headers.get('Cache-Control',''))\n    r=bob.get(BASE+'/existing/portal/index.php?preview='+str(vrow['id']));check('Other client cannot open the protected preview',r.status_code==404)\n    r=requests.get(BASE+'/existing/portal/index.php?preview='+str(vrow['id']));check('Anonymous preview request is refused',r.status_code==403)\n    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':'999999'},files={'document':('stray.png',f,'image/png')})\n    check('Preview upload to a foreign version is refused','belongs to this project' in r.text)\n    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':str(vrow['id'])},files={'document':('duplicate.png',f,'image/png')})\n    check('A second preview on the same version is refused','could not be saved' in r.text)\n    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_invoice',{'title':'HTTP manual invoice','amount':'125.00','instructions':'Synthetic manual payment instructions; do not send money.'});check('Manual invoice created',r.status_code==200 and 'HTTP manual invoice' in r.text and '$125.00' in r.text)\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/catalog_cases.py": {
+      "original_sha256": "f1965b1c43409d0784ce5f657717fae4526cdf05ca2e86061bd0dfc042b47c0b",
+      "current_sha256": "c20e0aca747f3f25bab954361d95abba3f903e19fe3185d49bf1a18580efd780",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.3.0 owner signs in before catalog upgrade','Sales pipeline' in r.text)\n    r=submit(up,root+'?view=catalog','catalog_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})\n",
+            "    check('Actual 1.3.0 owner signs in before catalog upgrade','Sales pipeline' in r.text)\n    r=submit(up,root+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})\n    check('Actual 1.3.0 workspace upgrade precedes catalog migration','Database update completed' in r.text)\n    r=submit(up,root+'?view=catalog','catalog_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    settings={r['name']:r['value'] for r in db('SELECT * FROM catalogup_settings')};check('Actual 1.3.0 retains all original settings',all(settings[r['name']]==r['value'] for r in before['settings']))\n",
+            "    settings={r['name']:r['value'] for r in db('SELECT * FROM catalogup_settings')};check('Actual 1.3.0 retains all original settings',all(settings[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/client_authority_native.php": {
+      "original_sha256": "8673ee5bbd0808bfb0a0c6f2eb8aa89dfe3e282c7cf83b8d2b43dade4565a49d",
+      "current_sha256": "d6818624e309416ca34689654ef7d833d5f8ed5e8c28922105304f524f3a212e",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('studio_schema_version','2');\n",
+            "    save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/delivery_cases.py": {
+      "original_sha256": "cb5e76dc1e398b51eb7ef654e0a1d6ccd62492e2757b2ead7f66b357d9da2afb",
+      "current_sha256": "78b0c1f1aee96f6d7b3fcefe580cc91ec54e425a8c5e630d93e141576952c100",
+      "edits": [
+        {
+          "value": [
+            "    after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings))\n",
+            "    after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/delivery_native.php": {
+      "original_sha256": "62fa41642dcfc620183f072f8dc320b54024834c4ab3c997d0e72a57c47e2d08",
+      "current_sha256": "e5797005a13ff06cbafc95955cc44cdd4b6af069190f1de7ccde3a766c301fa5",
+      "edits": [
+        {
+          "value": [
+            "    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');save_setting('staff_schema_version','1');\n",
+            "    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','3');save_setting('staff_schema_version','1');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/hosting_delete_retry_native.php": {
+      "original_sha256": "1348a92bfc797a164a167cd54dafdf9ecbc3b921764bce1d455139afccb8b182",
+      "current_sha256": "1e1ce2be0081446908bffdb1fe5cdb960fa8402894ac9080654805298241ff9d",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('studio_schema_version','2');\n",
+            "    save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/hosting_operations_native.php": {
+      "original_sha256": "b422aa2df165cf2e71b0a394fd840b41f49e5cb10de767556a7b891c457215bb",
+      "current_sha256": "a76b22f5b033c216e3b19f8b6486b511b6591b35d93dc10c4fdf0d07569c6c4a",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('studio_schema_version','2');\n",
+            "    save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/hosting_reconciliation_native.php": {
+      "original_sha256": "89a10ecff43c126da6736ea8d6394657db9bcb0a378894719ed28897198ffc48",
+      "current_sha256": "28b0807bf4de270f7fe9ba1343ec64858ccd14499b496b5bc6759126fa21ba01",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('studio_schema_version','2');\n",
+            "    save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/hosting_records_native.php": {
+      "original_sha256": "5f8a8f762a6f8b28d0617e7f321a3ddab6b99908eaf5d5c62719fac24c3a94e2",
+      "current_sha256": "c9b560d2274e6a3ed915a07830d63e2f07f7aae41f8dcf496d0bc14f626561f4",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('studio_schema_version','2');\n",
+            "    save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/hosting_retry_native.php": {
+      "original_sha256": "8170eea987037deac3bdb64dd5f9dbaa6a4cf8e6af4f92051296cfedb6356a3e",
+      "current_sha256": "a381e2d490a75bec8814f6c2865d43618dab7e906603f3918d259f5ad9410956",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('studio_schema_version','2');\n",
+            "    save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/ledger_cases.py": {
+      "original_sha256": "01f3e2f8c590ef6377c13e9bb5ee133e9afd37534dedd1628cc4f16475717964",
+      "current_sha256": "e1d0ca8223ae507821631f3f53aeacc322d9e0e189985edbb8f31ddea7f3e309",
+      "edits": [
+        {
+          "value": [
+            "    after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings))\n",
+            "    after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/ledger_native.php": {
+      "original_sha256": "a05b9b2678db9fc66b8bcd81b81b803d229ac2bae589d6b21b6494508b604044",
+      "current_sha256": "ed3945e15ce7a3e1d6c6d004661a3ca274c454d6799e0d891738ab495a01f8f3",
+      "edits": [
+        {
+          "value": [
+            "    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');\n",
+            "    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/license_native.php": {
+      "original_sha256": "a65002ff413dade5fb1da8518626e98686259f01a50ea106da79efd3367f1da6",
+      "current_sha256": "8341be508788d5a5a861faccda130acad07a877d409c9146f13b0bafda34cfe2",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('staff_schema_version','1');save_setting('studio_schema_version','2');save_setting('catalog_schema_version','1');\n",
+            "    save_setting('staff_schema_version','1');save_setting('studio_schema_version','3');save_setting('catalog_schema_version','1');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/native.php": {
+      "original_sha256": "553cc86c4f1c554d066e981688a21e8d3345d67ce842a85955cda868a6bbbcf4",
+      "current_sha256": "4d4a27f8dad2d65d60f1480a26f1a2408465360c8664f81154a2944e037492e8",
+      "edits": [
+        {
+          "value": [
+            "    ok('Additive upgrade creates seven workspace tables',count(all(\"SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE 'ci_studio_%'\"))===7);\n",
+            "    ok('Additive upgrade creates nine workspace tables',count(all(\"SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE 'ci_studio_%'\"))===9);\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    studio_migrate();ok('Repeated migration is idempotent',rowcount('leads')===1&&rowcount('users')===1);\n    // Digit-bearing fields must be recognized; incompatible schemas still fail.\n",
+            "    studio_migrate();ok('Repeated migration is idempotent',rowcount('leads')===1&&rowcount('users')===1);\n    db()->exec('DROP TABLE '.table('studio_version_files'));\n    rejected('Migration refuses missing established preview binding history',fn()=>studio_migrate());\n    ok('Missing v3 binding table is not silently recreated',!one('SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'studio_version_files']));\n    save_setting('studio_schema_version','2');studio_migrate();\n    ok('v2 to v3 migration adds preview bindings additively',(bool)one('SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'studio_version_files'])&&studio_ready());\n    save_setting('studio_schema_version','9');rejected('Migration refuses an unknown workspace marker',fn()=>studio_migrate());save_setting('studio_schema_version','3');\n    // Digit-bearing fields must be recognized; incompatible schemas still fail.\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    ok('Prior version content immutable',one('SELECT body FROM '.table('studio_versions').' WHERE id=?',[$v1])['body']==='Original version text');\n    studio_publish(1,'proposal','Proposal one','Scope and fee for review','');$proposal=(int)query('SELECT MAX(id) FROM '.table('studio_versions'))->fetchColumn();\n",
+            "    ok('Prior version content immutable',one('SELECT body FROM '.table('studio_versions').' WHERE id=?',[$v1])['body']==='Original version text');\n    $previewId=studio_preview_store(1,$v2,'approved-preview.png','png preview bytes','image/png',17);\n    $previewFile=one('SELECT * FROM '.table('studio_files').' WHERE id=?',[$previewId]);$previewPath=config()['storage'].'/media/'.$previewFile['stored_name'];\n    ok('Preview store binds the protected file to its version',(bool)one('SELECT id FROM '.table('studio_version_files').' WHERE version_id=? AND file_id=?',[$v2,$previewId])&&is_file($previewPath)&&hash('sha256',substr(file_get_contents($previewPath),strlen(CWP_GUARD)))===hash('sha256','png preview bytes'));\n    studio_publish(1,'proposal','Proposal one','Scope and fee for review','');$proposal=(int)query('SELECT MAX(id) FROM '.table('studio_versions'))->fetchColumn();\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    ok('Change request records feedback',one('SELECT decision FROM '.table('studio_versions').' WHERE id=?',[$proposal])['decision']==='changes');\n    client_session(1);$oldAuth=$_SESSION['client_auth'];studio_new_invite(1,one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=1')['auth_version']);ok('New invitation revokes older client session',studio_client()===null);\n",
+            "    ok('Change request records feedback',one('SELECT decision FROM '.table('studio_versions').' WHERE id=?',[$proposal])['decision']==='changes');\n    // The other connection owns the project row lock that ordinary uploads and\n    // all previews now share; the attempted preview must stop there and leave no\n    // file or binding row behind.\n    $db=config()['db'];$blocking=new PDO('mysql:host='.$db['host'].';port='.(int)$db['port'].';dbname='.$db['name'].';charset=utf8mb4',$db['user'],$db['pass'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);\n    $blocking->beginTransaction();$blocking->query('SELECT id FROM '.table('studio_jobs').' WHERE id=1 FOR UPDATE');\n    $mediaBefore=glob(config()['storage'].'/media/studio-*.php')?:[];$blocked=false;\n    query('SET SESSION innodb_lock_wait_timeout=1');\n    try{studio_preview_store(1,$proposal,'blocked-preview.png','blocked bytes','image/png',13);}catch(Throwable){$blocked=true;}\n    finally{query('SET SESSION innodb_lock_wait_timeout=50');}\n    $blocking->rollBack();\n    ok('Preview store shares the project lock used by uploads', $blocked&&(glob(config()['storage'].'/media/studio-*.php')?:[])===$mediaBefore&&!one('SELECT id FROM '.table('studio_version_files').' WHERE version_id=?',[$proposal])&&!one('SELECT id FROM '.table('studio_files').' WHERE original_name=?',['blocked-preview.png']));\n    client_session(1);$oldAuth=$_SESSION['client_auth'];studio_new_invite(1,one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=1')['auth_version']);ok('New invitation revokes older client session',studio_client()===null);\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/notifications_cases.py": {
+      "original_sha256": "32cfd8aa40001d4a5e0b84f5117f840d53ead5d8f18ee7cce40bad5f082bc771",
+      "current_sha256": "5a04e28e33bf03e7fd649684727397bf6111ac6d3905a608d56975dd2836922b",
+      "edits": [
+        {
+          "value": [
+            "    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings))\n",
+            "    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/payments_cases.py": {
+      "original_sha256": "297a99bf92e6d377e212444488cab85a777f2b49787adf481398aab23fff79d4",
+      "current_sha256": "f21727ec5e1abc8239e4661da0170e0706bb9406bc700a977f61d8e194692851",
+      "edits": [
+        {
+          "value": [
+            "    up=requests.Session();url=BASE+'/payment-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})\n    r=submit(up,url+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})\n",
+            "    up=requests.Session();url=BASE+'/payment-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})\n    r=submit(up,url+'?view=studio-upgrade','studio_migrate',{'confirm':'1'});check('Workspace schema upgrade precedes the feature migration','Database update completed' in r.text)\n    r=submit(up,url+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    now={v['name']:v['value'] for v in db('SELECT * FROM paymentup_settings')};check('Actual 1.4.0 retains all original settings',all(now[s['name']]==s['value'] for s in settings))\n",
+            "    now={v['name']:v['value'] for v in db('SELECT * FROM paymentup_settings')};check('Actual 1.4.0 retains all original settings',all(now[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    r=alice.post(PAY,data={'action':'payments_prepare','csrf':token(r),**{k:v for k,v in review.items() if k not in ['action','csrf']}},allow_redirects=False);check('Client cannot prepare administrator request',r.status_code==303 and 'login' in r.headers.get('Location',''))\n",
+            "    r=alice.post(PAY,data={'action':'payments_prepare','csrf':token(alice.get(PAY)),**{k:v for k,v in review.items() if k not in ['action','csrf']}},allow_redirects=False);check('Client cannot prepare administrator request',r.status_code==303 and 'login' in r.headers.get('Location',''))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/portfolio_cases.py": {
+      "original_sha256": "bde46efabd0310ba4f87c3ece8c020d833cfa672771c416af83a5a390920d242",
+      "current_sha256": "1bdb65c7bdc16ccb3987bdb8d1c9b0d87f3f75f789f778fc4ac26fd583e3dd0e",
+      "edits": [
+        {
+          "value": [
+            "    client=requests.Session();portal=BASE+'/portfolio-upgrade/portal/index.php'\n    submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'})\n",
+            "    client=requests.Session();portal=BASE+'/portfolio-upgrade/portal/index.php'\n    owner=requests.Session();admin=BASE+'/portfolio-upgrade/admin/index.php'\n    submit(owner,admin+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})\n    r=submit(owner,admin+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})\n    check('Workspace schema upgrade precedes retained portal and finance checks','Database update completed' in r.text)\n    submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'})\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/provider_inventory_native.php": {
+      "original_sha256": "e83b494cc53be679871a01366dc9404e50a3241eb6cf91599b2b2a2bf2176c5b",
+      "current_sha256": "15b482ff6c958f6f87cdb7460ea771ea7257937ac32170690f997ae4415bbd5c",
+      "edits": [
+        {
+          "value": [
+            "    save_setting('studio_schema_version','2');\n",
+            "    save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/provider_inventory_upgrade_native.php": {
+      "original_sha256": "7366beb01c99f4f319d1b9298d2f0e8105681a714cb0fd192c90ca42d7b1aa30",
+      "current_sha256": "3da1192df5035e3fc70402b914fc582d16732abdd645034248cbd9d5c6d5ab5d",
+      "edits": [
+        {
+          "value": [
+            "    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');\n",
+            "    foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','3');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/release_cases.py": {
+      "original_sha256": "d0f4474fa827f3a1c2c1be1256e3614476f522cb11dc3b905ac93024143f77bc",
+      "current_sha256": "b039a52bb03c288cafdfc950ba7cb13a089764e987e6247209e7c6f6ddbe9256",
+      "edits": [
+        {
+          "value": [
+            "    check('HTTP upgrade can safely repeat',db(\"SELECT value FROM upgrade_settings WHERE name='studio_schema_version'\")[0]['value']=='2')\n",
+            "    check('HTTP upgrade can safely repeat',db(\"SELECT value FROM upgrade_settings WHERE name='studio_schema_version'\")[0]['value']=='3')\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/staff_cases.py": {
+      "original_sha256": "570d6d6d49a9b7b9bd693115c4996caedbad2beb112ae5b2784e39f4bffd8071",
+      "current_sha256": "ea64ca8a2e19ee1eb4db354b28d312cb4d5316663e67a9d809b386a07eca3771",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.1.0 retains all original settings',all(after[r['name']]==r['value'] for r in before['settings']))\n",
+            "    check('Actual 1.1.0 retains all original settings',all(after[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/support_cases.py": {
+      "original_sha256": "ed2a13b8fd8a7403e6f5a1aa1c63389c3976c2a590e1a11614b85d8699f7ea15",
+      "current_sha256": "ce5f25ac29b441282afad637752e89ccfffecb1e56fa71ab939aae7414f54ca1",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.2.0 retains original settings',all(after[r['name']]==r['value'] for r in before['settings']))\n",
+            "    check('Actual 1.2.0 retains original settings',all(after[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tools/acceptance-contract.json": {
+      "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
+      "current_sha256": "9cb82c404f319a5e34a74b9d2ebc9e18ea8f7f46597561fa3c4aabfb1ee364b1",
+      "edits": [
+        {
+          "value": [
+            "    \"tests/browser_acceptance.py\": \"254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10\",\n",
+            "    \"tests/browser_acceptance.py\": \"8d0f33e3ca7e2709e02b8c475a86ead0428123c3d089b1cdb3ce24ff718046ca\",\n"
+          ],
+          "Count": 2
+        }
       ]
     }
   }

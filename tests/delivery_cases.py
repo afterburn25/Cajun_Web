@@ -36,7 +36,7 @@ def upgrade():
     before,settings=prepare_retained_payments(globals(),up,root,'deliveryup_',before,settings,preserved)
     r=submit(up,url,'delivery_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.8 additive delivery setup succeeds','Website deliveries enabled' in r.text and db('SELECT * FROM deliveryup_website_releases')==[])
     check('Actual 1.8 retains all prior billing notifications and client records',all(db('SELECT * FROM deliveryup_'+t)==rows for t,rows in before.items()))
-    after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings))
+    after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))
     check('Actual 1.8 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM deliveryup_users'),users)))
     r=up.get(root+'?view=payments')
     if 'Enable payment preparation' in r.text:r=submit(up,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})

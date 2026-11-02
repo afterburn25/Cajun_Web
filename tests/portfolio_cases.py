@@ -27,6 +27,10 @@ def upgrade():
     submit(owner,admin+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     before,_settings=prepare_retained_payments(globals(),owner,admin,'portfolioup_',before,before['settings'],preserved)
     client=requests.Session();portal=BASE+'/portfolio-upgrade/portal/index.php'
+    owner=requests.Session();admin=BASE+'/portfolio-upgrade/admin/index.php'
+    submit(owner,admin+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    r=submit(owner,admin+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})
+    check('Workspace schema upgrade precedes retained portal and finance checks','Database update completed' in r.text)
     submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'})
     r=client.get(portal+'?activity=1');check('Retained client activity still renders after portfolio update',r.status_code==200 and 'Studio message' in r.text)
     check('Retained read marker survives client browsing',db('SELECT * FROM portfolioup_activity_reads')==before['activity_reads'] and len(before['activity_reads'])==1)
